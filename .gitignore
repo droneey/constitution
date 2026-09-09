@@ -1,0 +1,8 @@
+# OS
+.DS_Store
+
+# Local-only specs and plans
+/local/
+
+# JS
+**/node_modules/
