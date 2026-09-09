@@ -1,0 +1,9 @@
+name: mobile-react-expo
+sphere: mobile
+blocks:
+  - languages/typescript
+  - spheres/client
+  - concerns/ui
+  - spheres/mobile
+  - frameworks/react
+  - stacks/expo
