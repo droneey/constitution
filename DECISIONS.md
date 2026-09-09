@@ -328,3 +328,10 @@
 - **Context.** The dependency rule, the manifests and the budget were held by hand; a pin needs a tag to point at.
 - **Decision.** The repository is a Bun project on the devkit packages with one `check`: lint, types, tests with the native coverage gate at 100 percent, and `blocks:check`, a script that loads every manifest through a schema and applies one rule per file — manifests, assemblies, kind direction, budget, links, prose references, decision numbering. Pull requests run it in CI; merges into `main` cut tags through the fleet's shared workflows. (→ `intro` §3–§8, README)
 - **Why.** A rule only reviewers hold rots; the check makes the dependency rule and the composition contract mechanical, the same standard the chapters demand of every other repository.
+
+## ADR-0060 — Bun dependency updates wait for a Dependabot that reads lockfile version 2
+**Date:** 2026-09-09 · **Status:** Accepted · **Deviates:** `security` §3, for this repository
+
+- **Context.** A fresh `bun install` on Bun 1.4 writes `bun.lock` at lockfile version 2; the updater image Dependabot runs ships Bun 1.3.5 and reads version 1 only, so the weekly bun job failed on its first run. Older repositories still carry version 1 lockfiles and are not affected until they regenerate them.
+- **Decision.** `dependabot.yml` watches GitHub Actions only. The bun packages are bumped by hand in fix pull requests until Dependabot's updater reads version 2, at which point the ecosystem returns.
+- **Rejected.** Regenerating the lockfile at version 1 with an older Bun — a hidden dependency on a runtime the repository does not pin, silently undone by the next `bun install` that migrates the file.
