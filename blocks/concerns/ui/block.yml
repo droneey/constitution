@@ -1,0 +1,13 @@
+kind: concern
+name: ui
+summary: >-
+  The design system and how components are authored in any application with a
+  component-based user interface: tokens as the single source of appearance,
+  variant mechanisms chosen by reach, building on accessible primitives,
+  vendored sources adapted on arrival, compound composition, prop conventions,
+  routing kept out of presentational components, accessibility as a contract,
+  locale-agnostic primitives. Brand-free: the styling framework, the primitive
+  library and the component source are the stack's.
+requires: [spheres/client]
+chapters:
+  ui: ui.md
