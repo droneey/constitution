@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": [
+    "@droneey/devkit-ts-biome/base",
+    "@droneey/devkit-ts-biome/node",
+    "@droneey/devkit-ts-biome/test"
+  ],
+  "files": {
+    "includes": [
+      "**",
+      "!**/coverage"
+    ]
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/__tests__/**"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    }
+  ]
+}

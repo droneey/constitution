@@ -1,0 +1,13 @@
+name: 🔖 Pre-release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  pre-release:
+    uses: droneey/.github/.github/workflows/cd-release.yml@v2.0.0
+    permissions:
+      contents: write
+    with:
+      prerelease: true

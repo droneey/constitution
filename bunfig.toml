@@ -1,0 +1,9 @@
+[test]
+coverage = true
+coverageReporter = ["text"]
+coverageSkipTestFiles = true
+coverageThreshold = { functions = 1.0, lines = 1.0 }
+coveragePathIgnorePatterns = [
+  "**/__tests__/**",
+  "scripts/blocks-check/main.ts",
+]

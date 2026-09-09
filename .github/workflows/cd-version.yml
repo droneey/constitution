@@ -1,0 +1,21 @@
+name: 🏷️ Version
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: version
+  cancel-in-progress: false
+
+jobs:
+  version:
+    if: "!startsWith(github.event.head_commit.message, 'chore: Release v')"
+    uses: droneey/.github/.github/workflows/cd-version.yml@v2.0.0
+    permissions:
+      contents: write
+      pull-requests: read
+    with:
+      version-command: npm version --no-git-tag-version "$VERSION"
+    secrets:
+      token: ${{ secrets.GH_TOKEN }}

@@ -1,0 +1,9 @@
+name: web-react-tanstack
+sphere: web
+blocks:
+  - languages/typescript
+  - concerns/ui
+  - spheres/client
+  - spheres/web
+  - frameworks/react
+  - stacks/tanstack-spa

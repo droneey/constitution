@@ -1,0 +1,12 @@
+kind: stack
+name: bun
+summary: >-
+  The toolbox of a command-line tool and its binding to the cli anatomy: Bun
+  as runtime, package manager, bundler and test runner, TypeScript, a command
+  framework the commands are declared with, zod as the schema engine, YAML for
+  the document and a dotenv loader for the environment, Biome,
+  dependency-cruiser and lefthook through the devkit, mise for the pinned
+  toolchain. Resolves every concern the cli chapter names to a brand.
+requires: [spheres/cli]
+chapters:
+  stack: stack.md

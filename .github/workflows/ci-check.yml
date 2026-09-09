@@ -1,0 +1,48 @@
+name: ☑️ Check
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: 📦 Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: 🔍 Lint
+        run: bun run lint:check
+
+      - name: 🧾 Typecheck
+        run: bun run type:check
+
+      - name: 🧪 Test
+        run: bun run test:unit
+
+      - name: 🧱 Check the blocks
+        run: bun run blocks:check
+
+      - name: ✅ Lint the workflows
+        run: |
+          set -euo pipefail
+          bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12 "${RUNNER_TEMP}"
+          "${RUNNER_TEMP}/actionlint" -color

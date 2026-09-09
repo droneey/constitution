@@ -6,3 +6,5 @@
 
 # JS
 **/node_modules/
+**/coverage/
+*.tsbuildinfo
