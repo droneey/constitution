@@ -289,3 +289,10 @@
 - **Context.** The stacks were `tanstack-spa`, `expo` and `bun-cli`: two named after the application shell, one after the runtime plus the sphere.
 - **Decision.** A stack carries the name of the layer that makes it that stack — the application shell of a browser or device client, the runtime of a tool that runs on it — and never repeats the sphere, which the assembly already names. `bun-cli` becomes `bun`; the assembly stays `cli-bun`. (→ `intro` §3)
 - **Why.** Bun is tooling in the browser stacks and the platform in the tool's; the name says which.
+
+## ADR-0054 — Script names follow `<subject>:<action>`
+**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0046**
+
+- **Context.** One stack said `typecheck` and `test:unit`, the other `type:check` and `test`.
+- **Decision.** `lint:check`, `type:check`, `test:unit`, `architecture:check`, `build`, and the umbrella `check`, in every stack. (→ stack chapters §6)
+- **Why.** One pattern, nothing to guess; a repository that differs renames in a fix.

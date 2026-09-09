@@ -141,7 +141,7 @@ Swapping any of these is an edit here: the `ui` chapter's principles are unaffec
 
 ## 9. Verification
 
-`check` runs, in this order: `lint:check` (Biome), `type:check` (`tsc --noEmit`, the real type gate), `test` (Vitest with coverage thresholds of 100 percent for functions and lines in its configuration file), `architecture:check` (dependency-cruiser), `build` (Vite production build; it does **not** type-check).
+`check` runs, in this order: `lint:check` (Biome), `type:check` (`tsc --noEmit`, the real type gate), `test:unit` (Vitest with coverage thresholds of 100 percent for functions and lines in its configuration file), `architecture:check` (dependency-cruiser), `build` (Vite production build; it does **not** type-check).
 
 ```bash
 bun run check

@@ -76,7 +76,7 @@ coveragePathIgnorePatterns = ["**/__tests__/**", "src/app/composition.ts", "src/
 
 ## 6. Verification
 
-`check` runs, in this order: `lint:check` (Biome), `typecheck` (`tsc --noEmit`), `test:unit` (`bun test` with the gate), `architecture:check` (dependency-cruiser). `build` runs in CI after `check`.
+`check` runs, in this order: `lint:check` (Biome), `type:check` (`tsc --noEmit`), `test:unit` (`bun test` with the gate), `architecture:check` (dependency-cruiser). `build` runs in CI after `check`.
 
 ```bash
 bun run check
