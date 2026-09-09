@@ -1,0 +1,9 @@
+kind: stack
+name: expo
+summary: >-
+  The toolbox of a device client on React Native and its binding to the
+  client anatomy. A skeleton until the first mobile project: the concerns are
+  listed, the brands are not chosen yet.
+requires: [spheres/mobile, frameworks/react, concerns/ui]
+chapters:
+  stack: stack.md

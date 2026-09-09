@@ -1,0 +1,12 @@
+kind: stack
+name: tanstack-spa
+summary: >-
+  The toolbox of a browser client and its binding to the client anatomy: Bun
+  as runtime and script runner, TanStack Start in SPA mode with TanStack
+  Router, Query, Table and Form, ky, zod, Tailwind with cva and cn(), Radix
+  through vendored shadcn source, Storybook, Vitest with Testing Library,
+  Biome, dependency-cruiser and lefthook through the devkit. Resolves every
+  concern the client, web, ui and react chapters name to a brand.
+requires: [spheres/web, frameworks/react, concerns/ui]
+chapters:
+  stack: stack.md
