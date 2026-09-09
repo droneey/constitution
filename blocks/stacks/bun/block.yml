@@ -1,5 +1,5 @@
 kind: stack
-name: bun-cli
+name: bun
 summary: >-
   The toolbox of a command-line tool and its binding to the cli anatomy: Bun
   as runtime, package manager, bundler and test runner, TypeScript, a command

@@ -282,3 +282,10 @@
 - **Context.** `ui` named `libs/ui`, `shared/ui`, `root/ui` and `features/*/ui` — the client anatomy — in its theming, prop-reuse and locale rules, and carried the table that maps a location to a prefix.
 - **Decision.** The prefix table and the `-widget` suffix move to the client `architecture` chapter's homes section; the remaining rules speak of the theme module, the primitive library and every UI folder. `ui` has no `requires`. (→ `ui` rules 1, 5, 6, 11, 15; client `architecture` §8)
 - **Why.** A concern that names one sphere's folders cannot be taken by another; independence is replaceability.
+
+## ADR-0053 — A stack is named after its platform layer, never after the sphere
+**Date:** 2026-09-09 · **Status:** Accepted
+
+- **Context.** The stacks were `tanstack-spa`, `expo` and `bun-cli`: two named after the application shell, one after the runtime plus the sphere.
+- **Decision.** A stack carries the name of the layer that makes it that stack — the application shell of a browser or device client, the runtime of a tool that runs on it — and never repeats the sphere, which the assembly already names. `bun-cli` becomes `bun`; the assembly stays `cli-bun`. (→ `intro` §3)
+- **Why.** Bun is tooling in the browser stacks and the platform in the tool's; the name says which.

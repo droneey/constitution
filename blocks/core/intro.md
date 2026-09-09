@@ -35,7 +35,7 @@ A block is a folder under `blocks/<kind>/<name>/` holding a manifest, `block.yml
 | `concern` | one cross-cutting concern several kinds of application share | `ui` |
 | `sphere` | the anatomy and laws of one kind of application | `client`, `web`, `mobile`, `cli`, `api` |
 | `framework` | the discipline of one framework | `react` |
-| `stack` | the toolbox and its binding to the architecture | `tanstack-spa`, `expo`, `bun-cli` |
+| `stack` | the toolbox and its binding to the architecture, named after its platform layer | `tanstack-spa`, `expo`, `bun` |
 
 The order of the table is the order of the kinds: a block depends only on blocks of its own kind or of a kind above it (§6).
 

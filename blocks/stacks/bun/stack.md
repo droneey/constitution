@@ -1,4 +1,4 @@
-# Stack — Bun CLI
+# Stack — Bun
 
 > The **stack axis in one chapter** for a command-line tool: the toolbox and the binding of the cli `architecture` chapter to it. **This is the only chapter that names a brand.** Where a rule and this chapter cover the same ground, the rule chapter states the law and this one the mechanics — the law wins.
 

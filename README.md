@@ -13,7 +13,7 @@ Start with [`blocks/core/intro.md`](blocks/core/intro.md).
 | `blocks/spheres` | The anatomy of one kind of application — `client`, `web`, `mobile`, `cli` |
 | `blocks/concerns` | One cross-cutting concern — `ui` |
 | `blocks/frameworks` | The discipline of one framework — `react` |
-| `blocks/stacks` | A toolbox and its binding — `tanstack-spa`, `expo`, `bun-cli` |
+| `blocks/stacks` | A toolbox and its binding — `tanstack-spa`, `expo`, `bun` |
 | `assemblies` | Named, ordered lists of blocks a project can pin |
 | `DECISIONS.md` | The constitution's own decision log |
 
@@ -25,7 +25,7 @@ A block is a folder with a `block.yml` manifest — kind, summary, `requires`, `
 |---|---|---|
 | `web-react-tanstack` | typescript · ui · client · web · react · tanstack-spa | complete |
 | `mobile-react-expo` | typescript · ui · client · mobile · react · expo | skeleton — `mobile` and `expo` carry `TODO:` until the first mobile project |
-| `cli-bun` | typescript · cli · bun-cli | complete |
+| `cli-bun` | typescript · cli · bun | complete |
 
 ## 🚀 Using it in a project
 
