@@ -1,0 +1,37 @@
+{
+  "name": "@droneey/constitution",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The engineering constitution of droneey: blocks of rules assembled per project.",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "Dmytro Kurovskyi",
+    "url": "https://kurovskyi.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/droneey/constitution.git"
+  },
+  "type": "module",
+  "scripts": {
+    "prepare": "lefthook install",
+    "lint:check": "biome check",
+    "lint:fix": "biome check --write",
+    "type:check": "tsc --noEmit",
+    "test:unit": "bun test",
+    "blocks:check": "bun run ./scripts/blocks-check/main.ts",
+    "check": "bun lint:check && bun type:check && bun test:unit && bun blocks:check"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.12",
+    "@droneey/devkit-ts-biome": "^1.9.2",
+    "@droneey/devkit-ts-lefthook": "^1.9.2",
+    "@droneey/devkit-ts-tsconfig": "^1.9.2",
+    "@types/bun": "^1.4.1",
+    "@types/node": "^26",
+    "lefthook": "^2.1.4",
+    "typescript": "^7.0.2",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.13"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "@droneey/devkit-ts-tsconfig/node",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "node",
+      "bun"
+    ]
+  },
+  "include": [
+    "scripts/**/*.ts"
+  ],
+  "exclude": [
+    "**/coverage"
+  ]
+}
