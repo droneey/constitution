@@ -321,3 +321,10 @@
 
 - **Context.** A client may ship a second bundle — an embed script a host page loads — whose home the anatomy did not name, and a contract shared by the app and that bundle had no owner.
 - **Decision.** `src/entrypoints/<name>/` holds everything that ships only in that bundle and composes like a screen through public indexes; nothing imports an entrypoint. A contract two bundles share belongs to the feature that owns it. Generated output gets its own top-level folder, named by the stack. (→ client `architecture` §1, §7)
+
+## ADR-0059 — The constitution verifies itself and is released by tags
+**Date:** 2026-09-09 · **Status:** Accepted
+
+- **Context.** The dependency rule, the manifests and the budget were held by hand; a pin needs a tag to point at.
+- **Decision.** The repository is a Bun project on the devkit packages with one `check`: lint, types, tests with the native coverage gate at 100 percent, and `blocks:check`, a script that loads every manifest through a schema and applies one rule per file — manifests, assemblies, kind direction, budget, links, prose references, decision numbering. Pull requests run it in CI; merges into `main` cut tags through the fleet's shared workflows. (→ `intro` §3–§8, README)
+- **Why.** A rule only reviewers hold rots; the check makes the dependency rule and the composition contract mechanical, the same standard the chapters demand of every other repository.
