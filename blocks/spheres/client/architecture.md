@@ -205,6 +205,18 @@ routes/      → root, features' public index, shared, libs, framework libs
 
 **A component** — stop at the first "yes": (1) used only by one screen, not reusable → beside that screen (§1); (2) knows a feature's domain → that feature's `ui/`; (3) generic primitive, zero app knowledge → `libs/ui`; (4) app-specific, used by 2+ features, no single feature's domain → `shared/ui`; (5) app-wide shell/provider composition → `root/ui`.
 
+**Naming by location.** Every component lives in its own folder (`ui` chapter, rule 6); the folder name carries the prefix or suffix its location and role give it:
+
+| Location | Prefix / suffix | Example |
+| --- | --- | --- |
+| `libs/ui/*` | none (domain-agnostic) | `button/`, `card/` |
+| `shared/ui/*` | none (location encodes it) | `page-header/` |
+| `root/ui/*` | `root-` (mandatory — flags shell role) | `root-header/`, `root-splash/` |
+| `features/*/ui/*` | feature-name prefix | `orders-table/`, `orders-summary/` |
+| any smart component | `-widget` suffix (mandatory) | `orders-table-widget/` |
+
+The `-widget` suffix is mandatory because a widget is the only UI that carries business logic; the suffix makes that responsibility visible at every import site.
+
 **A tool** is placed by the two principles of `principles` §2: name the concern, not the brand; a tool never defines the shape of a layer it doesn't belong to. So a transport SDK's wire shapes die in `infra`; the cache engine's types never reach `domain`; a validation engine *conforms to* domain types; a rendering or i18n library never crosses into `domain`/`app`.
 
 ---

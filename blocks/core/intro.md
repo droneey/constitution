@@ -32,10 +32,12 @@ A block is a folder under `blocks/<kind>/<name>/` holding a manifest, `block.yml
 | --- | --- | --- |
 | `core` | what holds for any software in any language | principles, workflow, testing, security, collaboration |
 | `language` | how code is written in one language | `typescript` |
+| `concern` | one cross-cutting concern several kinds of application share | `ui` |
 | `sphere` | the anatomy and laws of one kind of application | `client`, `web`, `mobile`, `cli`, `api` |
-| `concern` | one cross-cutting concern some applications have | `ui` |
 | `framework` | the discipline of one framework | `react` |
 | `stack` | the toolbox and its binding to the architecture | `tanstack-spa`, `expo`, `bun-cli` |
+
+The order of the table is the order of the kinds: a block depends only on blocks of its own kind or of a kind above it (§6).
 
 The manifest is the block's interface:
 
@@ -67,8 +69,8 @@ name: web-react-tanstack
 sphere: web
 blocks:
   - languages/typescript
-  - spheres/client
   - concerns/ui
+  - spheres/client
   - spheres/web
   - frameworks/react
   - stacks/tanstack-spa
@@ -88,7 +90,7 @@ The order is the reading order and the precedence order: a later block refines a
 
 ## 6. The dependency rule for documents
 
-Blocks depend inward, like code. A chapter refers only to a block of its own kind or of a kind above it in the table of §3, and only by the name of the concern, never by brand: `core` names no language, a language names no sphere, a sphere names no framework or tool, a framework names no stack. The only places a lower block is named are the manifests and the table of kinds in §3. Code blocks may illustrate with the default stack; prose may not.
+Blocks depend inward, like code. A chapter refers only to a block of its own kind or of a kind above it in the table of §3, and only by the name of the concern, never by brand: `core` names no language, a language names no concern, a concern names no sphere, a sphere names no framework or tool, a framework names no stack. The only places a lower block is named are the manifests and the table of kinds in §3. Code blocks may illustrate with the default stack; prose may not.
 
 `DECISIONS.md` refers to chapters; chapters never cite decisions by number. A block therefore copies into any assembly without dangling into one history.
 

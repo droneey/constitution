@@ -23,8 +23,8 @@ A block is a folder with a `block.yml` manifest — kind, summary, `requires`, `
 
 | Assembly | Blocks | State |
 |---|---|---|
-| `web-react-tanstack` | typescript · client · ui · web · react · tanstack-spa | complete |
-| `mobile-react-expo` | typescript · client · ui · mobile · react · expo | skeleton — `mobile` and `expo` carry `TODO:` until the first mobile project |
+| `web-react-tanstack` | typescript · ui · client · web · react · tanstack-spa | complete |
+| `mobile-react-expo` | typescript · ui · client · mobile · react · expo | skeleton — `mobile` and `expo` carry `TODO:` until the first mobile project |
 | `cli-bun` | typescript · cli · bun-cli | complete |
 
 ## 🚀 Using it in a project

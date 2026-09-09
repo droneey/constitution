@@ -268,3 +268,17 @@
 
 - **Decision.** The still-valid decisions of the first web kit are carried here as ADR-0001 to ADR-0034 with their original dates; superseded generations and project-local decisions are not.
 - **Why.** The rationale behind the chapters must stay re-derivable; a log that starts at the blocks would present the inherited laws as unexplained.
+
+## ADR-0051 — Concerns rank above spheres
+**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0036, ADR-0037**
+
+- **Context.** The kinds table placed `concern` below `sphere` while `web` and `mobile` required and refined `ui`, and `ui` required `client` — a cycle between kinds, the very thing the dependency rule forbids.
+- **Decision.** The kinds are ordered core, language, concern, sphere, framework, stack. A concern is what several kinds of application share, so it ranks above the spheres that refine it; assemblies list blocks in that order. (→ `intro` §3, §6)
+- **Why.** The order of the table is the direction of dependency, and the check enforces it.
+
+## ADR-0052 — The `ui` concern requires nothing; naming by location belongs to the client anatomy
+**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0038**
+
+- **Context.** `ui` named `libs/ui`, `shared/ui`, `root/ui` and `features/*/ui` — the client anatomy — in its theming, prop-reuse and locale rules, and carried the table that maps a location to a prefix.
+- **Decision.** The prefix table and the `-widget` suffix move to the client `architecture` chapter's homes section; the remaining rules speak of the theme module, the primitive library and every UI folder. `ui` has no `requires`. (→ `ui` rules 1, 5, 6, 11, 15; client `architecture` §8)
+- **Why.** A concern that names one sphere's folders cannot be taken by another; independence is replaceability.

@@ -8,6 +8,5 @@ summary: >-
   routing kept out of presentational components, accessibility as a contract,
   locale-agnostic primitives. Brand-free: the styling framework, the primitive
   library and the component source are the stack's.
-requires: [spheres/client]
 chapters:
   ui: ui.md

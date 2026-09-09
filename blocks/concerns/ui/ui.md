@@ -10,9 +10,9 @@
 ## Theming
 
 ### 1. The design system is the single source of truth
-All visual values (colour, spacing, sizing, typography, radius, motion) originate as tokens in `libs/ui/theme/`. Nothing visual is hardcoded anywhere else.
+All visual values (colour, spacing, sizing, typography, radius, motion) originate as tokens in the design system's **theme module** — the `architecture` chapter says where it lives. Nothing visual is hardcoded anywhere else.
 
-- Theme artefacts live only under `libs/ui/theme/`: the token definitions, the language-side constants, the theme enums (e.g. `ThemeMode`), the theme binding units (e.g. `useTheme`).
+- Theme artefacts live only in the theme module: the token definitions, the language-side constants, the theme enums (e.g. `ThemeMode`), the theme binding units (e.g. `useTheme`).
 - **Three token layers, no overlap.** `PRIMITIVE` = raw literals (`--p-size-8`), never consumed by UI. `SEMANTIC` = role-based (`--color-surface-level-1`, `--text-sm`), consumed by UI. `COMMON` = cross-cutting shell constants (`--spacing-below-header`), consumed by UI. Test: a token is `SEMANTIC` if its name is meaningful in a conversation about UI *intent*.
 - **Escape to a raw utility rarely.** Reach for a design-system token first. A bare framework utility is allowed only when (a) no token expresses the need **and** (b) minting one would be irrational (`flex`, `items-center`, `grid-cols-2`, `truncate`). Otherwise add the token at the correct layer rather than reaching for a raw value.
 
@@ -51,14 +51,14 @@ Build UI from the project's **component source** and accessible **primitive libr
 Components from an external source library are installed as **local source**, never imported from a package. **The code is theirs; the look is fully ours.**
 
 Before review, every installed component MUST be:
-1. Placed and named per our conventions (rule 6).
+1. Placed and named per our conventions (rule 6 and the `architecture` chapter's homes).
 2. Restyled so every raw colour/spacing value becomes a design-system token (rule 1) — driven by our tokens, not the source's defaults.
 3. Stripped of props no call site exercises (rule 12).
 4. Made to conform on prop shape (rules 9–11) at the component, not per call site.
 
-Pre-install, grep `libs/ui` for an existing primitive that already covers the need (rule 7). Installing is a last resort. A source component merged verbatim is a foreign body — **integrate it or reject it.**
+Pre-install, grep the primitive library for an existing primitive that already covers the need (rule 7). Installing is a last resort. A source component merged verbatim is a foreign body — **integrate it or reject it.**
 
-### 6. One folder per component; naming reflects location
+### 6. One folder per component
 Every component lives in its own folder; `index.ts` exports only the public surface (internals stay unexported).
 
 ```
@@ -73,17 +73,7 @@ Every component lives in its own folder; `index.ts` exports only the public surf
   index.ts              // public exports ONLY
 ```
 
-**Naming prefix by location:**
-
-| Location | Prefix / suffix | Example |
-| --- | --- | --- |
-| `libs/ui/*` | none (domain-agnostic) | `button/`, `card/` |
-| `shared/ui/*` | none (location encodes it) | `page-header/` |
-| `root/ui/*` | `root-` (mandatory — flags shell role) | `root-header/`, `root-splash/` |
-| `features/*/ui/*` | feature-name prefix | `orders-table/`, `orders-summary/` |
-| any smart component | `-widget` suffix (mandatory) | `orders-table-widget/` |
-
-The `-widget` suffix is mandatory because a widget is the only UI that carries business logic; the suffix makes that responsibility visible at every import site.
+Where a component lives, and the prefix or suffix its location and role give it — the mandatory `-widget` suffix of a smart component included — is the `architecture` chapter's (its homes section).
 
 ### 7. Composition over duplication
 Build a new component by composing existing primitives. Reimplementing markup that already lives in a primitive is forbidden. Decision order: cover it with existing components → extend a primitive → only if genuinely new, author the primitive and compose it.
@@ -134,7 +124,7 @@ This rule governs **component props**. A data or configuration schema names its 
 Callback props are named `on` + event in PascalCase (`onClick`, `onValueChange`, `onRangeChange`). The internal handler may be `handleClick`, but the prop is `onClick`. Action-verb (`click`), `handle*` props and past-tense (`onClicked`) are forbidden.
 
 ### 11. Reuse an existing prop name before inventing one
-Before adding a prop, grep `libs/ui`, `shared/ui` and `features/*/ui` for an existing prop with the same semantic and adopt its exact name. Synonym drift (`isLoading` vs `isPending` vs `isFetching` for the same thing) is forbidden; if variants already exist, converge them in the change.
+Before adding a prop, grep every UI folder of the application for an existing prop with the same semantic and adopt its exact name. Synonym drift (`isLoading` vs `isPending` vs `isFetching` for the same thing) is forbidden; if variants already exist, converge them in the change.
 
 ### 12. Delete unused props
 An optional prop that no call site exercises is dead — remove it from the types, drop the destructuring, hardcode the former default at the point of use. Reintroduce it only when a concrete use case returns. Every optional prop is a standing commitment to every future caller.
@@ -167,8 +157,8 @@ Every interactive component MUST be fully operable through the platform's input 
 - An icon that is the sole content of an interactive element needs an accessible label; a decorative icon is hidden from assistive technology.
 - Before shipping any interactive component, verify by hand with the platform's input methods; the refining sphere lists the exact checks.
 
-### 15. `libs/ui` is locale-agnostic
-Components in `libs/ui` contain no hardcoded user-facing text and import no i18n library. Text arrives via props (`string | node`); consumers (`shared/ui`, `features/*/ui`, the screens, `root/ui`) supply translated strings. Language-neutral structural glyphs (`…`, `/`, `—`) and icons are fine.
+### 15. The primitive library is locale-agnostic
+Components in the primitive library contain no hardcoded user-facing text and import no i18n library. Text arrives via props (`string | node`); every consumer above it supplies translated strings. Language-neutral structural glyphs (`…`, `/`, `—`) and icons are fine.
 
 ```tsx
 function DataTable({ emptyMessage, … }) { return rows.length === 0 ? <span>{emptyMessage}</span> : /* … */; }  // ✓
