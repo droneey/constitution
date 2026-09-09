@@ -61,7 +61,7 @@ The dependency rules are part of `check`. A change that introduces a boundary vi
 - **Every change reaches `main` through a pull request.** No direct pushes, no force pushes, no history rewrites on shared branches.
 - A pull request is **squash-merged**; its title becomes the commit subject and follows the commit format.
 - The required check is the repository's `check` run in CI. A red check blocks the merge.
-- The merged branch prefix decides the version: `feature` bumps minor, `fix` and `hotfix` bump patch. The tag and the pre-release are cut by the shared workflows; a human promotes a pre-release to a release.
+- Where a repository versions itself, the merged branch prefix decides the version: `feature` bumps minor, `fix` and `hotfix` bump patch. The tag and the pre-release are cut by the repository's release automation; a human promotes a pre-release to a release.
 - Small and reviewable beats big and complete: split a pull request that mixes concerns.
 
 ---

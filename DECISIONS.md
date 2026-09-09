@@ -296,3 +296,15 @@
 - **Context.** One stack said `typecheck` and `test:unit`, the other `type:check` and `test`.
 - **Decision.** `lint:check`, `type:check`, `test:unit`, `architecture:check`, `build`, and the umbrella `check`, in every stack. (→ stack chapters §6)
 - **Why.** One pattern, nothing to guess; a repository that differs renames in a fix.
+
+## ADR-0055 — Environment names are declared in one place per repository
+**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0045**
+
+- **Context.** `security` §1 spoke of a document declaring `${NAME}` references — the command-line tool's mechanism, not a rule every application can follow.
+- **Decision.** The rule is the declaration: every name a repository reads is listed in one place — `.env.example` for an application, the tool's own document for a tool — and code reads no undeclared name. (→ `security` §1)
+
+## ADR-0056 — Core states release rules, never the release mechanism
+**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0047**
+
+- **Context.** `workflow` §7 and `security` §6 named the fleet's shared workflows and a version bump every repository would perform — a repository on another forge, or one that publishes no versions, could not comply.
+- **Decision.** Core keeps the rules: pull requests only, squash, the required check, prefix-driven bumps where a repository versions itself, shared automation wherever the forge offers it. The mechanism is the repository's. (→ `workflow` §7, `security` §6)

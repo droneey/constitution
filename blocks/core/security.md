@@ -6,7 +6,7 @@
 
 ## 1. Secrets are never literals
 - A secret never appears in a repository, a document, a test, a fixture, a log or an error — not in code, not in configuration, not in examples.
-- A document names its inputs as **references**, `${NAME}`, and the value lives in the environment. Code reads only the names the document declares; **it never reads a variable by a name of its own invention.**
+- Every environment name a repository reads is **declared in one place** — `.env.example` for an application, the tool's own document for a tool that reads one — and the value lives in the environment. Code reads only declared names; **it never reads a variable by a name of its own invention.**
 - `.env` is local and ignored. `.env.example` carries placeholders only and every name the project needs, so a newcomer sees the full list without seeing a value.
 
 ---
@@ -38,5 +38,5 @@ Anything that destroys data, spends money, changes a live system or publishes ou
 ---
 
 ## 6. The repository's own supply chain
-- Hooks, linters and workflows come from the fleet's shared packages and shared workflows, pinned. A repository does not carry hand-rolled copies that drift.
+- Hooks, linters and release automation come from the fleet's shared packages and shared workflows, pinned, wherever the forge offers them. A repository does not carry hand-rolled copies that drift.
 - The main branch is protected: pull requests only, the required check, no force pushes, no deletion.
