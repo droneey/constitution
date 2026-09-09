@@ -258,7 +258,7 @@
 - **Why.** No mobile project runs on the constitution yet; writing a stack nobody chose would invent rules. The sphere and the stack list their questions as `TODO:` and the client chapter alone applies meanwhile.
 
 ## ADR-0049 — Delivery: one clone per machine and user-level pointers
-**Date:** 2026-09-09 · **Status:** Proposed
+**Date:** 2026-09-09 · **Status:** Superseded by ADR-0057
 
 - **Decision.** The constitution is cloned once per machine at a fixed path; agent tooling points at it from the user's own configuration; a project commits only `PROJECT.md` and `DECISIONS.md`. Skills built from the chapters are linked from the clone. Implementation follows in a later release.
 - **Rejected.** Copying the documents into each project and ignoring them; a git submodule (a committed pointer to a private repository); a private package (registry authentication on every machine and in CI).
@@ -308,3 +308,10 @@
 
 - **Context.** `workflow` §7 and `security` §6 named the fleet's shared workflows and a version bump every repository would perform — a repository on another forge, or one that publishes no versions, could not comply.
 - **Decision.** Core keeps the rules: pull requests only, squash, the required check, prefix-driven bumps where a repository versions itself, shared automation wherever the forge offers it. The mechanism is the repository's. (→ `workflow` §7, `security` §6)
+
+## ADR-0057 — The project's own agent file delivers the constitution
+**Date:** 2026-09-09 · **Status:** Accepted · **Supersedes ADR-0049**
+
+- **Context.** ADR-0049 put the pointer in the user's machine-wide configuration, invisible inside the repository.
+- **Decision.** A project commits a `CLAUDE.md` from the `core` template: it imports the `intro` chapter from the constitution's clone at the fleet's path and says nothing else. No machine-wide file, no copy of the documents, no submodule. The clone path is a fleet convention; skills built on the chapters follow later. (→ `intro` §1)
+- **Why.** The file in the repository makes the governance visible where the work happens; the import keeps the documents in one private place.

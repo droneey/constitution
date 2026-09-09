@@ -8,7 +8,7 @@ Start with [`blocks/core/intro.md`](blocks/core/intro.md).
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `PROJECT.md` and `DECISIONS.md` templates |
+| `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `PROJECT.md`, `DECISIONS.md` and `CLAUDE.md` templates |
 | `blocks/languages` | How code is written in one language — `typescript` |
 | `blocks/spheres` | The anatomy of one kind of application — `client`, `web`, `mobile`, `cli` |
 | `blocks/concerns` | One cross-cutting concern — `ui` |
@@ -31,10 +31,11 @@ A block is a folder with a `block.yml` manifest — kind, summary, `requires`, `
 
 1. Write `PROJECT.md` from `blocks/core/templates/PROJECT.md` — the generator in `project-generator.md` says how — and pin the constitution tag and the assembly in its front matter.
 2. Copy `blocks/core/templates/DECISIONS.md` as the project's `DECISIONS.md`.
-3. Read the blocks in the assembly's order; before a change, read the chapter of its axis.
-4. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — never a silent divergence, never an edit to a block.
+3. Copy `blocks/core/templates/CLAUDE.md` to the root: it imports the `intro` chapter from the clone at the fleet's path, `~/Developer/personal/droneey/constitution/repos/constitution`.
+4. Read the blocks in the assembly's order; before a change, read the chapter of its axis.
+5. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — never a silent divergence, never an edit to a block.
 
-The per-machine delivery — one clone at a fixed path and the pointer files for agent tooling — and the skills built on the chapters follow in later releases.
+The skills built on the chapters follow in later releases.
 
 ## 🛠️ Changing it
 

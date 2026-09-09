@@ -9,8 +9,9 @@
 - **The assembly** the project names in its `PROJECT.md`: an ordered list of blocks. The `core` block is part of every assembly and is never listed.
 - **`PROJECT.md`**, committed at the root of the repository: the product context, plus the pin of the constitution version and the assembly.
 - **`DECISIONS.md`**, committed at the root: the project's own decision log. A departure from a block is recorded there, never applied silently.
+- **`CLAUDE.md`**, committed at the root, copied from the `core` template: the agent's entry point. It imports this chapter from the constitution's clone and states nothing else.
 
-Tool-specific files, such as an agent's instruction file, do not restate rules. They point here. **Any agent or human works from these documents.**
+An agent's instruction file never restates a rule; it imports this chapter. **Any agent or human works from these documents.**
 
 ---
 

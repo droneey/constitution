@@ -16,3 +16,4 @@ templates:
   project: templates/PROJECT.md
   project-generator: templates/project-generator.md
   decisions: templates/DECISIONS.md
+  agent: templates/CLAUDE.md
