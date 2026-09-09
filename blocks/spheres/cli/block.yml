@@ -1,0 +1,12 @@
+kind: sphere
+name: cli
+summary: >-
+  The anatomy of a command-line tool that converges a declared state: a
+  document in, validation, rendering, plan and apply; thin commands over
+  feature slices, ports named in the tool's own words, adapters per vendor,
+  a kit of pure primitives; coded errors mapped to exit codes; every run
+  idempotent. Framework-free: the command framework, the schema engine and
+  the runtime are the stack's.
+requires: [languages/typescript]
+chapters:
+  architecture: architecture.md
