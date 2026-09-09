@@ -6,12 +6,3 @@ updates:
       interval: weekly
     commit-message:
       prefix: chore
-  - package-ecosystem: bun
-    directory: /
-    schedule:
-      interval: weekly
-    groups:
-      dependencies:
-        patterns: ['*']
-    commit-message:
-      prefix: chore
