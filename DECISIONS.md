@@ -315,3 +315,9 @@
 - **Context.** ADR-0049 put the pointer in the user's machine-wide configuration, invisible inside the repository.
 - **Decision.** A project commits a `CLAUDE.md` from the `core` template: it imports the `intro` chapter from the constitution's clone at the fleet's path and says nothing else. No machine-wide file, no copy of the documents, no submodule. The clone path is a fleet convention; skills built on the chapters follow later. (→ `intro` §1)
 - **Why.** The file in the repository makes the governance visible where the work happens; the import keeps the documents in one private place.
+
+## ADR-0058 — Additional entrypoints live under `src/entrypoints/<name>`
+**Date:** 2026-09-09 · **Status:** Accepted
+
+- **Context.** A client may ship a second bundle — an embed script a host page loads — whose home the anatomy did not name, and a contract shared by the app and that bundle had no owner.
+- **Decision.** `src/entrypoints/<name>/` holds everything that ships only in that bundle and composes like a screen through public indexes; nothing imports an entrypoint. A contract two bundles share belongs to the feature that owns it. Generated output gets its own top-level folder, named by the stack. (→ client `architecture` §1, §7)

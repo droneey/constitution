@@ -44,6 +44,7 @@ src/
 │
 ├── routes/         # SCREENS: thin composition above features + access guards.
 │                   # Screen-private pieces co-locate beside their screen (mechanics: the sphere's refinement).
+├── entrypoints/    # ADDITIONAL BUNDLES: a script a host page loads, a worker. One folder per entry (below).
 ├── router.*        # router instance + wiring (stack)
 ├── types.d.ts      # the project's semantic aliases (code chapter §7)
 └── styles.*
@@ -52,6 +53,8 @@ src/
 Composition flows **up**: `routes`/`root` may import features (through their public `index.ts`) and assemble them. This is not a violation of feature isolation — the law forbids feature↔feature only; someone above must do the assembling.
 
 **Co-location at the screens level.** A screen's non-reusable pieces — the parts that exist only for that one screen — live beside their screen, excluded from routing and private to the screen. They are **not** reusable components and never travel to another screen; reusable UI goes to `features/*/ui`, `shared/ui`, or `libs/ui` (§8). The concrete folder convention and its pitfalls are the refining sphere's and the stack's.
+
+**Additional entrypoints.** A second build entry — a script a host page loads, a worker — lives under `src/entrypoints/<name>/` with everything that ships only in that bundle: its pieces, its constants, its build entry. It composes like a screen: features through their public `index.ts`, `shared` and `libs`; nothing imports an entrypoint. A contract two bundles share — the events an embedded frame and its host script exchange — is the business of the feature that owns it, declared in that feature's `domain` and reached through its public `index.ts`. A tool's generated output gets its own top-level folder, named by the stack and never hand-edited.
 
 ---
 
@@ -195,9 +198,10 @@ shared/      → kernel, libs, sibling shared, external, global types
 libs/        → external + sibling libs ONLY
 root/        → shared, libs, features' public index, framework libs (USED ONLY by the screens layer and the router)
 routes/      → root, features' public index, shared, libs, framework libs
+entrypoints/ → features' public index, shared, libs, kernel (types), external — a separate bundle
 ```
 
-**Hard prohibitions (the check fails):** feature↔feature; `domain`/`kernel` importing anything impure; `ui` reaching `infra`/use-cases/ports directly (entities are type-only); `queries`↔`commands`; `libs` importing any app code (incl. `kernel`); `shared` importing `features`/`root`/`routes` (`kernel` is allowed); deep imports past a feature's `index.ts`; `root` imported by non-entrypoints; cycles.
+**Hard prohibitions (the check fails):** feature↔feature; `domain`/`kernel` importing anything impure; `ui` reaching `infra`/use-cases/ports directly (entities are type-only); `queries`↔`commands`; `libs` importing any app code (incl. `kernel`); `shared` importing `features`/`root`/`routes` (`kernel` is allowed); deep imports past a feature's `index.ts`; `root` imported by anything but the screens layer and the router; an entrypoint imported by anything; cycles.
 
 ---
 
