@@ -1,0 +1,9 @@
+kind: language
+name: typescript
+summary: >-
+  How TypeScript is written in every droneey repository: imports, naming,
+  enums, absence sentinels, escape hatches, comments, semantic aliases, type
+  ownership, discriminated unions and typed errors. Stack-free: the resolver,
+  the linter and the runtime are the stack's business.
+chapters:
+  code: code.md
