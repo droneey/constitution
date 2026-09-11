@@ -335,3 +335,10 @@
 - **Context.** A fresh `bun install` on Bun 1.4 writes `bun.lock` at lockfile version 2; the updater image Dependabot runs ships Bun 1.3.5 and reads version 1 only, so the weekly bun job failed on its first run. Older repositories still carry version 1 lockfiles and are not affected until they regenerate them.
 - **Decision.** `dependabot.yml` watches GitHub Actions only. The bun packages are bumped by hand in fix pull requests until Dependabot's updater reads version 2, at which point the ecosystem returns.
 - **Rejected.** Regenerating the lockfile at version 1 with an older Bun — a hidden dependency on a runtime the repository does not pin, silently undone by the next `bun install` that migrates the file.
+
+## ADR-0061 — A test case is three marked sections, never merged
+**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0044**
+
+- **Context.** `testing` §5 named Arrange, Act, Assert in one clause; cases in the fleet were already written that way, but nothing said a section may not absorb another — a `beforeEach` that acts, an expectation inside Act, a second Act after an Assert.
+- **Decision.** Every case is three sections in that order, each opened by its own marker, each present once; a section never merges into another; a second Act is a second case; a failure is captured in Act and checked in Assert. (→ `testing` §6)
+- **Why.** The three markers are what make a case readable at a glance and reviewable without running it; a merged section is where the intent of a test goes missing.

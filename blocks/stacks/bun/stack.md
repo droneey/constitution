@@ -70,7 +70,7 @@ coveragePathIgnorePatterns = ["**/__tests__/**", "src/app/composition.ts", "src/
 
 - The threshold check runs only with the `text` reporter; the line stays.
 - Fakes live in `__tests__/fake-<port>.ts` beside the port or kit primitive they replace; a command spec drives the CLI with a fake command context and captures the console and the exit code.
-- `toStrictEqual` over loose matchers; Arrange / Act / Assert marked in every case.
+- `toStrictEqual` is the strict matcher the `testing` chapter asks for.
 
 ---
 
