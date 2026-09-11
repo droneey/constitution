@@ -8,7 +8,7 @@ Start with [`blocks/core/intro.md`](blocks/core/intro.md).
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `project-init` and `adr` skills |
+| `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `ratify` and `amend` skills |
 | `blocks/languages` | How code is written in one language — `typescript` |
 | `blocks/spheres` | The anatomy of one kind of application — `client`, `web`, `mobile`, `cli` |
 | `blocks/concerns` | One cross-cutting concern — `ui` |
@@ -43,13 +43,13 @@ claude plugin marketplace add droneey/constitution
 claude plugin install constitution@droneey
 ```
 
-`claude plugin marketplace update` pulls a newer version. From then on, every session opened in a repository whose `PROJECT.md` names an assembly starts with the `intro` chapter, the assembly and its blocks in context, and the skills `/project-init` and `/adr` are available.
+`claude plugin marketplace update` pulls a newer version. From then on, every session opened in a repository whose `PROJECT.md` names an assembly starts with the `intro` chapter, the assembly and its blocks in context, and the skills `/ratify` and `/amend` are available.
 
 ## 🚀 Using it in a project
 
-1. Run `/project-init` in the repository: it interviews you, writes `PROJECT.md` with the pin and the assembly, and `DECISIONS.md` beside it. By hand, the same two files start from `templates/`.
+1. Run `/ratify` in the repository: it interviews you, writes `PROJECT.md` with the pin and the assembly, and `DECISIONS.md` beside it. By hand, the same two files start from `templates/`.
 2. Read the blocks in the assembly's order; before a change, read the chapter of its axis.
-3. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — `/adr` writes one — never a silent divergence, never an edit to a block.
+3. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — `/amend` writes one — never a silent divergence, never an edit to a block.
 
 The recipes of the client sphere follow as skills in later releases.
 

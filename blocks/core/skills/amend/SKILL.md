@@ -1,11 +1,11 @@
 ---
-name: adr
-description: Append a decision to this repository's DECISIONS.md in the constitution's format, with a Deviates line when it departs from a chapter.
+name: amend
+description: Record a decision in this repository's DECISIONS.md in the constitution's format, with a Deviates line when it departs from a chapter.
 argument-hint: "[title]"
 disable-model-invocation: true
 ---
 
-# Record a decision
+# Amend the decision log
 
 Last entry in this repository:
 
