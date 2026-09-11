@@ -1,6 +1,6 @@
 {
   "name": "@droneey/constitution",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "The engineering constitution of droneey: blocks of rules assembled per project.",
   "license": "UNLICENSED",
