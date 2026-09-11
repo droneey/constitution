@@ -34,7 +34,7 @@ A block is a folder under `blocks/<kind>/<name>/` holding a manifest, `block.yml
 | `core` | what holds for any software in any language | principles, workflow, testing, security, collaboration |
 | `language` | how code is written in one language | `typescript` |
 | `concern` | one cross-cutting concern several kinds of application share | `ui` |
-| `sphere` | the anatomy and laws of one kind of application | `client`, `web`, `mobile`, `cli`, `api` |
+| `sphere` | the anatomy and laws of one kind of application | `client`, `web`, `mobile`, `cli`, `library`, `api` |
 | `framework` | the discipline of one framework | `react` |
 | `stack` | the toolbox and its binding to the architecture, named after its platform layer | `tanstack-spa`, `expo`, `bun` |
 

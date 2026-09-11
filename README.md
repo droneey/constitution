@@ -10,10 +10,10 @@ Start with [`blocks/core/intro.md`](blocks/core/intro.md).
 |---|---|
 | `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `ratify` and `amend` skills |
 | `blocks/languages` | How code is written in one language — `typescript` |
-| `blocks/spheres` | The anatomy of one kind of application — `client`, `web`, `mobile`, `cli` |
+| `blocks/spheres` | The anatomy of one kind of application — `client`, `web`, `mobile`, `cli`, `library` |
 | `blocks/concerns` | One cross-cutting concern — `ui` |
 | `blocks/frameworks` | The discipline of one framework — `react` |
-| `blocks/stacks` | A toolbox and its binding — `tanstack-spa`, `expo`, `bun` |
+| `blocks/stacks` | A toolbox and its binding — `tanstack-spa`, `expo`, `bun`, `bun-workspaces` |
 | `assemblies` | Named, ordered lists of blocks a project can pin |
 | `templates` | The `PROJECT.md` and `DECISIONS.md` a project starts from |
 | `hooks` | The session-start hook that puts the constitution into context |
@@ -30,6 +30,7 @@ A block is a folder with a `block.yml` manifest — kind, summary, `requires`, `
 | `web-react-tanstack` | typescript · ui · client · web · react · tanstack-spa | complete |
 | `mobile-react-expo` | typescript · ui · client · mobile · react · expo | skeleton — `mobile` and `expo` carry `TODO:` until the first mobile project |
 | `cli-bun` | typescript · cli · bun | complete |
+| `library-bun` | typescript · library · bun-workspaces | complete |
 
 ## 🔌 Install
 

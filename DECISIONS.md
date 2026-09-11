@@ -384,3 +384,10 @@
 - **Context.** Nothing said whether a repository needs a license; the question came up when the scaffolding skill was tempted to write one.
 - **Decision.** A public repository carries a license file at its root naming the author; a private one need not, since without a file all rights stay reserved. Which license, and the file itself, are the repository's own — the constitution states the rule and ships no template. (→ `security` §6)
 - **Why.** The rule is governance; the file is scaffolding, and the fleet keeps copies out of the shared repositories unless something extends them.
+
+## ADR-0068 — A `library` sphere and a `bun-workspaces` stack, by the symptom of the devkit
+**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0038, ADR-0053**
+
+- **Context.** The devkit is a monorepo of packages other repositories install; no sphere described it, so it could not be ratified, and the `bun` stack binds the command-line anatomy, not a workspace of packages.
+- **Decision.** The `library` sphere states the anatomy and laws of a package monorepo — one package per folder with a curated surface, a common area, one version for all, templates copied once — free of tools. The `bun-workspaces` stack binds it: Bun workspaces, the devkit configurations, npm through the fleet's deploy with trusted publishing. The assembly is `library-bun`. (→ `library` architecture, `bun-workspaces` stack)
+- **Why.** A sphere appears when a real repository has no home; the stack is named after its platform layer, and Bun's workspaces are that layer here, distinct from Bun as the platform of a tool.
