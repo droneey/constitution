@@ -30,6 +30,8 @@ These are the canonical tools. Introducing a library outside this set requires a
 | Bundler / dev server | Vite |
 | Lint + format | Biome, through `@droneey/devkit-ts-biome` |
 | Dependency boundaries | dependency-cruiser |
+| Package manifests | Syncpack, through `@droneey/devkit-ts-syncpack`: the field order of `package.json` and the version ranges |
+| Dependency updates | Renovate, through the fleet preset `github>droneey/.github` |
 | Git hooks | lefthook, through `@droneey/devkit-ts-lefthook` |
 | TypeScript config | `@droneey/devkit-ts-tsconfig` |
 | Tests | Vitest + React Testing Library |
@@ -141,7 +143,7 @@ Swapping any of these is an edit here: the `ui` chapter's principles are unaffec
 
 ## 9. Verification
 
-`check` runs, in this order: `lint:check` (Biome), `type:check` (`tsc --noEmit`, the real type gate), `test:unit` (Vitest with coverage thresholds of 100 percent for functions and lines in its configuration file), `architecture:check` (dependency-cruiser), `build` (Vite production build; it does **not** type-check).
+`check` runs, in this order: `lint:check` (Biome), `packages:check` (`syncpack lint && syncpack format --check`), `type:check` (`tsc --noEmit`, the real type gate), `test:unit` (Vitest with coverage thresholds of 100 percent for functions and lines in its configuration file), `architecture:check` (dependency-cruiser), `build` (Vite production build; it does **not** type-check).
 
 ```bash
 bun run check

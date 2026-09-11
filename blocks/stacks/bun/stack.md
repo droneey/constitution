@@ -23,6 +23,8 @@ Bun is the runtime, package manager, bundler, script runner and test runner.
 | Lint + format | Biome, through `@droneey/devkit-ts-biome` (`base`, `node`, `test`) |
 | Dependency boundaries | dependency-cruiser |
 | Git hooks | lefthook, through `@droneey/devkit-ts-lefthook` |
+| Package manifests | Syncpack, through `@droneey/devkit-ts-syncpack`: the field order of `package.json` and the version ranges |
+| Dependency updates | Renovate, through the fleet preset `github>droneey/.github` |
 | Tests | `bun test`, configured in `bunfig.toml` |
 | Developer toolchain pins | mise (`mise.toml`), `mise trust && mise install` |
 | Build | `bun build ./src/main.ts --target=bun --outdir dist` |
@@ -65,9 +67,10 @@ coverage = true
 coverageReporter = ["text"]
 coverageSkipTestFiles = true
 coverageThreshold = { functions = 1.0, lines = 1.0 }
-coveragePathIgnorePatterns = ["**/__tests__/**", "src/app/composition.ts", "src/main.ts"]
+coveragePathIgnorePatterns = ["**/__tests__/**", "**/main.ts", "**/composition.ts"]
 ```
 
+- The file is the devkit template `packages/typescript/templates/bun/bunfig.toml`, copied as it is: the entrypoint is `main.ts` and the composition root `composition.ts`, so the globs hold and the file is identical in every repository.
 - The threshold check runs only with the `text` reporter; the line stays.
 - Fakes live in `__tests__/fake-<port>.ts` beside the port or kit primitive they replace; a command spec drives the CLI with a fake command context and captures the console and the exit code.
 - `toStrictEqual` is the strict matcher the `testing` chapter asks for.
@@ -76,7 +79,7 @@ coveragePathIgnorePatterns = ["**/__tests__/**", "src/app/composition.ts", "src/
 
 ## 6. Verification
 
-`check` runs, in this order: `lint:check` (Biome), `type:check` (`tsc --noEmit`), `test:unit` (`bun test` with the gate), `architecture:check` (dependency-cruiser). `build` runs in CI after `check`.
+`check` runs, in this order: `lint:check` (Biome), `packages:check` (`syncpack lint && syncpack format --check`), `type:check` (`tsc --noEmit`), `test:unit` (`bun test` with the gate), `architecture:check` (dependency-cruiser). `build` runs in CI after `check`.
 
 ```bash
 bun run check

@@ -357,3 +357,17 @@
 - **Context.** The `PROJECT.md` and `DECISIONS.md` templates sat under `blocks/core/templates/` behind a `templates` key the core manifest alone carried — a bend in the block model for files that are copied once, not read as rules.
 - **Decision.** `templates/` at the root holds the two files a project starts from, reachable by hand; the interview that fills them is the `project-init` skill in `blocks/core/skills/`; a block manifest carries chapters only. (→ README)
 - **Why.** A block is rules; a template is a starting point; a skill is a procedure. Three kinds of thing, three homes.
+
+## ADR-0064 — Package manifests are checked by Syncpack through the devkit
+**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0054**
+
+- **Context.** `package.json` had no gate: field order and version ranges drifted per repository, and the devkit checked only its own versions.
+- **Decision.** Every stack with a `package.json` extends `@droneey/devkit-ts-syncpack` from a one-line `.syncpackrc.mjs` and runs `packages:check`, `syncpack lint` for versions and ranges and `syncpack format --check` for the field order, as the second step of `check`. Dependency updates come from Renovate through the fleet preset, so `dependabot.yml` leaves. (→ stack chapters §1, §6)
+- **Why.** The order and the ranges are one decision for the fleet, made once in the devkit and enforced where the manifest lives; a check that only fixes cannot hold a rule.
+
+## ADR-0065 — The bun test configuration is the devkit template
+**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0044**
+
+- **Context.** `bunfig.toml` has no `extends`; each repository listed its own entrypoints in the coverage ignores, so the file differed everywhere for one line.
+- **Decision.** The ignores are globs bound to the anatomy — `**/__tests__/**`, `**/main.ts`, `**/composition.ts` — and the file is the devkit template copied as it is; a repository with another entrypoint records the extra line as a departure. (→ `bun` stack §5)
+- **Why.** A file that cannot be shared can still be identical; naming the entrypoints by convention makes it so without a checker.
