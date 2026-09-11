@@ -32,7 +32,7 @@ A block is a folder with a `block.yml` manifest — kind, summary, `requires`, `
 
 1. Write `PROJECT.md` from `blocks/core/templates/PROJECT.md` — the generator in `project-generator.md` says how — and pin the constitution tag and the assembly in its front matter.
 2. Copy `blocks/core/templates/DECISIONS.md` as the project's `DECISIONS.md`.
-3. Copy `blocks/core/templates/CLAUDE.md` to the root: it imports the `intro` chapter from the clone at the fleet's path, `~/Developer/personal/droneey/constitution/repos/constitution`.
+3. Copy `blocks/core/templates/CLAUDE.md` to the root: it imports the `intro` chapter from the clone at the fleet's path, `~/Developer/personal/droneey/constitution/repos/droneey-constitution`.
 4. Read the blocks in the assembly's order; before a change, read the chapter of its axis.
 5. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — never a silent divergence, never an edit to a block.
 
