@@ -12,8 +12,3 @@ chapters:
   testing: testing.md
   security: security.md
   collaboration: collaboration.md
-templates:
-  project: templates/PROJECT.md
-  project-generator: templates/project-generator.md
-  decisions: templates/DECISIONS.md
-  agent: templates/CLAUDE.md

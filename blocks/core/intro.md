@@ -9,9 +9,9 @@
 - **The assembly** the project names in its `PROJECT.md`: an ordered list of blocks. The `core` block is part of every assembly and is never listed.
 - **`PROJECT.md`**, committed at the root of the repository: the product context, plus the pin of the constitution version and the assembly.
 - **`DECISIONS.md`**, committed at the root: the project's own decision log. A departure from a block is recorded there, never applied silently.
-- **`CLAUDE.md`**, committed at the root, copied from the `core` template: the agent's entry point. It imports this chapter from the constitution's clone and states nothing else.
+- **The plugin**, installed once per machine: at every session start it reads `PROJECT.md` and, when it names an assembly, puts this chapter, the assembly and the manifests of its blocks into the agent's context. A project carries no agent file of its own.
 
-An agent's instruction file never restates a rule; it imports this chapter. **Any agent or human works from these documents.**
+No file in a project restates a rule; the plugin brings the rules in. **Any agent or human works from these documents.**
 
 ---
 
@@ -105,7 +105,7 @@ Whatever can be expressed as a check lives in a tool — dependency boundaries i
 
 ## 8. Amendments and versions
 
-The constitution is versioned by tags. A project pins the version in `PROJECT.md` and upgrades by bumping the pin and passing a conformance pass against the chapters that changed.
+The constitution is versioned by tags. A project pins the version in `PROJECT.md` and upgrades by bumping the pin and passing a conformance pass against the chapters that changed; the plugin says at session start when the pin and the installed version differ.
 
 An amendment is a pull request against the block at its source, shipped together with its entry in the constitution's own `DECISIONS.md`. A project never edits a block. A project-local departure is an entry in the project's `DECISIONS.md` with a `Deviates:` line naming the chapter and section — the only way a project departs.
 

@@ -1,0 +1,12 @@
+{
+  "name": "constitution",
+  "description": "The droneey constitution: the blocks and assemblies every repository is built by, put into context at session start, with its recipes as skills.",
+  "author": {
+    "name": "droneey",
+    "url": "https://github.com/droneey"
+  },
+  "repository": "https://github.com/droneey/constitution",
+  "skills": [
+    "./blocks/core/skills/"
+  ]
+}
