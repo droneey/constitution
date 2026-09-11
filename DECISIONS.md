@@ -371,3 +371,9 @@
 - **Context.** `bunfig.toml` has no `extends`; each repository listed its own entrypoints in the coverage ignores, so the file differed everywhere for one line.
 - **Decision.** The ignores are globs bound to the anatomy — `**/__tests__/**`, `**/main.ts`, `**/composition.ts` — and the file is the devkit template copied as it is; a repository with another entrypoint records the extra line as a departure. (→ `bun` stack §5)
 - **Why.** A file that cannot be shared can still be identical; naming the entrypoints by convention makes it so without a checker.
+
+## ADR-0066 — The skills are named `ratify` and `amend`
+**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0062, ADR-0063**
+
+- **Context.** `project-init` and `adr` named their output, not the act; `init` would collide with Claude Code's built-in command; a prefix such as `co-` would add nothing, since a plugin's skills are already namespaced as `/constitution:<name>`.
+- **Decision.** `/ratify` brings a repository under the constitution, `/amend` records a decision in its log. Names come from the constitution's own vocabulary and read as verbs; later recipes follow the same register. (→ README)

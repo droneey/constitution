@@ -1,11 +1,11 @@
 ---
-name: project-init
-description: Write PROJECT.md and DECISIONS.md for a repository joining the constitution, by interviewing the human. Never invents; leaves honest TODOs.
+name: ratify
+description: Bring a repository under the constitution — write its PROJECT.md and DECISIONS.md by interviewing the human. Never invents; leaves honest TODOs.
 argument-hint: "[assembly]"
 disable-model-invocation: true
 ---
 
-# Bring a repository under the constitution
+# Ratify the constitution in this repository
 
 Installed constitution:
 
