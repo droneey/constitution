@@ -1,0 +1,6 @@
+name: library-bun
+sphere: library
+blocks:
+  - languages/typescript
+  - spheres/library
+  - stacks/bun-workspaces
