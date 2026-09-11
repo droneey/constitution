@@ -6,10 +6,10 @@
       "name": "@droneey/constitution",
       "devDependencies": {
         "@biomejs/biome": "^2.5.12",
-        "@droneey/devkit-ts-biome": "^1.10.0",
-        "@droneey/devkit-ts-lefthook": "^1.10.0",
-        "@droneey/devkit-ts-syncpack": "^1.10.0",
-        "@droneey/devkit-ts-tsconfig": "^1.10.0",
+        "@droneey/devkit-ts-biome": "^1.10.2",
+        "@droneey/devkit-ts-lefthook": "^1.10.2",
+        "@droneey/devkit-ts-syncpack": "^1.10.2",
+        "@droneey/devkit-ts-tsconfig": "^1.10.2",
         "@types/bun": "^1.4.1",
         "@types/node": "^26",
         "lefthook": "^2.1.4",
@@ -39,13 +39,13 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.12", "", { "os": "win32", "cpu": "x64" }, "sha512-B1R/l+CwEpKFSuqiwePzPNRk1EiJN8kc0UhdafNz6MZN9v5OFP9HYP1irptvWzHrwVI4blVNGMbxc5zt70m3IA=="],
 
-    "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.10.1", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-4ip227fiRpGCUd0kFLj6oz/kiVqDePLfH0KrdygM0eG0hQWyVW5tx8s9mpwXgVf7zf5OOCFM+dgB3rI8Ohuh7A=="],
+    "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.10.2", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-W3omlDOtZo/vaUls7n3VhbFx4w7s+5NpJ5/GxP5tcc75nfxfVaYgQWdEhwggkKmbP72ceITq8EgqFRdtZUXBYQ=="],
 
-    "@droneey/devkit-ts-lefthook": ["@droneey/devkit-ts-lefthook@1.10.1", "", { "peerDependencies": { "lefthook": ">=1.0.0" } }, "sha512-jowSCKfq1Nk1rfYnug2AL4dDBR90R8Lw3+mNclHbiLR8j+c1e9Vphr0W3ZRPG94rGfnCMQYy6OBrrNe6oYm38g=="],
+    "@droneey/devkit-ts-lefthook": ["@droneey/devkit-ts-lefthook@1.10.2", "", { "peerDependencies": { "lefthook": ">=1.0.0" } }, "sha512-rMdEZhwXhBowt/2ERBAX70MaEIn5F67TurzJUlY4UzA9QNv3vju97d5joKaps5FUEURJJQMlE3t8fyEqA76TwQ=="],
 
-    "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.10.1", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-lJsAhz2/bdxFvW7p/ujS29xLjfC7073YxTZv5d27J8qZIo9FksGQ0HP7htCeq4ZAj4ILXdAcz9G6tWsrVQcJgg=="],
+    "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.10.2", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-iuA5fwnZIxAC03VgY7kshqFrpMhaGO6hgXyxzMAWW1O79uEAutVqEzPD3Y38+fEMGQ/aUf6pjtHa0UH/kHGq/g=="],
 
-    "@droneey/devkit-ts-tsconfig": ["@droneey/devkit-ts-tsconfig@1.10.1", "", { "peerDependencies": { "typescript": "^5 || ^7" } }, "sha512-8KH0+K0oYqDuFH6QK0gsBF9+2gyA/qssAX9u8XxYZaxXdnZRnrJYwdwlTkn2vsLpV717rQrP9DmmTr8ktMwgHQ=="],
+    "@droneey/devkit-ts-tsconfig": ["@droneey/devkit-ts-tsconfig@1.10.2", "", { "peerDependencies": { "typescript": "^5 || ^7" } }, "sha512-EbuTcdNUJw+XgD8D5WJHPsoOIR2dt+BPl7JHj96ezOcJZIz5MP8xRFWBKGfg1OkUL/rrdQWuFJzC6r+ZUDm9kA=="],
 
     "@types/bun": ["@types/bun@1.4.2", "", { "dependencies": { "bun-types": "1.4.2" } }, "sha512-GimotNn7+ZV0uVArItBbriZsR1oNf0+WTzPkdcFrzShI7k2norL0uzEaJT8T33dWr7O/c9ZDuAFQrctKCi72oQ=="],
 
