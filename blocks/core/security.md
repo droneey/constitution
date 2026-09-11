@@ -40,3 +40,4 @@ Anything that destroys data, spends money, changes a live system or publishes ou
 ## 6. The repository's own supply chain
 - Hooks, linters and release automation come from the fleet's shared packages and shared workflows, pinned, wherever the forge offers them. A repository does not carry hand-rolled copies that drift.
 - The main branch is protected: pull requests only, the required check, no force pushes, no deletion.
+- A public repository carries a license file at its root, with the author named; a private one need not — without a file, all rights stay reserved.

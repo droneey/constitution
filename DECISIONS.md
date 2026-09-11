@@ -377,3 +377,10 @@
 
 - **Context.** `project-init` and `adr` named their output, not the act; `init` would collide with Claude Code's built-in command; a prefix such as `co-` would add nothing, since a plugin's skills are already namespaced as `/constitution:<name>`.
 - **Decision.** `/ratify` brings a repository under the constitution, `/amend` records a decision in its log. Names come from the constitution's own vocabulary and read as verbs; later recipes follow the same register. (→ README)
+
+## ADR-0067 — A public repository carries a license file
+**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0045**
+
+- **Context.** Nothing said whether a repository needs a license; the question came up when the scaffolding skill was tempted to write one.
+- **Decision.** A public repository carries a license file at its root naming the author; a private one need not, since without a file all rights stay reserved. Which license, and the file itself, are the repository's own — the constitution states the rule and ships no template. (→ `security` §6)
+- **Why.** The rule is governance; the file is scaffolding, and the fleet keeps copies out of the shared repositories unless something extends them.
