@@ -51,7 +51,10 @@ interface Constitution {
   assemblies: readonly Assembly[];
   blocks: readonly Block[];
   decisions: string | undefined;
+  hooks: string | undefined;
+  marketplace: string | undefined;
   paths: ReadonlySet<string>;
+  plugin: string | undefined;
   readme: string | undefined;
 }
 

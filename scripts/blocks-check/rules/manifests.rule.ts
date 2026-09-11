@@ -26,19 +26,10 @@ const filesExist = (
   block: Block,
   paths: ReadonlySet<string>,
 ): readonly Finding[] =>
-  [
-    ...Object.entries(block.manifest.chapters).map(([axis, file]) => ({
-      file,
-      label: `chapter "${axis}"`,
-    })),
-    ...Object.entries(block.manifest.templates ?? {}).map(([name, file]) => ({
-      file,
-      label: `template "${name}"`,
-    })),
-  ]
-    .filter((entry) => !paths.has(`${block.dir}/${entry.file}`))
-    .map((entry) => ({
-      message: `${entry.label} points at a missing file "${entry.file}"`,
+  Object.entries(block.manifest.chapters)
+    .filter(([, file]) => !paths.has(`${block.dir}/${file}`))
+    .map(([axis, file]) => ({
+      message: `chapter "${axis}" points at a missing file "${file}"`,
       path: `${block.dir}/block.yml`,
     }));
 

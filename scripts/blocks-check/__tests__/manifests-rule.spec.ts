@@ -62,13 +62,9 @@ describe('manifestsRule', () => {
     ]);
   });
 
-  it('should report a chapter or template whose file is missing', () => {
+  it('should report a chapter whose file is missing', () => {
     // Arrange
-    const files = without(
-      validFiles(),
-      'blocks/concerns/ui/ui.md',
-      'blocks/core/templates/PROJECT.md',
-    );
+    const files = without(validFiles(), 'blocks/concerns/ui/ui.md');
 
     // Act
     const findings = manifestsRule(loadFiles(files));
@@ -78,11 +74,6 @@ describe('manifestsRule', () => {
       {
         message: 'chapter "ui" points at a missing file "ui.md"',
         path: UI,
-      },
-      {
-        message:
-          'template "project" points at a missing file "templates/PROJECT.md"',
-        path: 'blocks/core/block.yml',
       },
     ]);
   });
