@@ -32,6 +32,9 @@ jobs:
       - name: 🔍 Lint
         run: bun run lint:check
 
+      - name: 📦 Check packages
+        run: bun run packages:check
+
       - name: 🧾 Typecheck
         run: bun run type:check
 

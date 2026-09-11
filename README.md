@@ -58,7 +58,7 @@ The recipes of the client sphere follow as skills in later releases.
 ```bash
 mise trust && mise install   # bun, node
 bun install                  # installs the git hooks
-bun run check                # lint, types, tests with the coverage gate, then the blocks check
+bun run check                # lint, package manifests, types, tests with the coverage gate, then the blocks check
 ```
 
 `blocks:check` reads every `block.yml` and assembly and fails on: a manifest that does not match the schema or its folder; a chapter or template file that is missing; an assembly that lists an unknown block, lists one twice, lists core, misses a `requires`, or lists a `refines` target after its refiner; a block that depends on a kind below its own; a chapter over 500 lines or without a title; a link to a missing file; a chapter that names a lower block in prose; a decision log that skips or repeats a number.
