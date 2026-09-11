@@ -310,7 +310,7 @@
 - **Decision.** Core keeps the rules: pull requests only, squash, the required check, prefix-driven bumps where a repository versions itself, shared automation wherever the forge offers it. The mechanism is the repository's. (→ `workflow` §7, `security` §6)
 
 ## ADR-0057 — The project's own agent file delivers the constitution
-**Date:** 2026-09-09 · **Status:** Accepted · **Supersedes ADR-0049**
+**Date:** 2026-09-09 · **Status:** Superseded by ADR-0062 · **Supersedes ADR-0049**
 
 - **Context.** ADR-0049 put the pointer in the user's machine-wide configuration, invisible inside the repository.
 - **Decision.** A project commits a `CLAUDE.md` from the `core` template: it imports the `intro` chapter from the constitution's clone at the fleet's path and says nothing else. No machine-wide file, no copy of the documents, no submodule. The clone path is a fleet convention; skills built on the chapters follow later. (→ `intro` §1)
@@ -342,3 +342,18 @@
 - **Context.** `testing` §5 named Arrange, Act, Assert in one clause; cases in the fleet were already written that way, but nothing said a section may not absorb another — a `beforeEach` that acts, an expectation inside Act, a second Act after an Assert.
 - **Decision.** Every case is three sections in that order, each opened by its own marker, each present once; a section never merges into another; a second Act is a second case; a failure is captured in Act and checked in Assert. (→ `testing` §6)
 - **Why.** The three markers are what make a case readable at a glance and reviewable without running it; a merged section is where the intent of a test goes missing.
+
+## ADR-0062 — The constitution is delivered as a Claude Code plugin from its own repository
+**Date:** 2026-09-11 · **Status:** Accepted · **Supersedes ADR-0057**
+
+- **Context.** ADR-0057 put a machine path into a committed file: the agent template imported the intro from a clone at one developer's layout, and a folder rename broke it within two days.
+- **Decision.** The repository is a plugin and its own marketplace: `.claude-plugin/plugin.json` and `marketplace.json`, installed once per machine with two commands. A `SessionStart` hook reads `PROJECT.md` from the session's directory and, when it names an assembly, prints the `intro` chapter, the assembly and the manifests of its blocks into context from the plugin's own root; it also reports a pin that differs from the installed version, which `package.json` carries. The recipes are skills the plugin ships from inside their blocks. A project commits `PROJECT.md` and `DECISIONS.md` and no agent file. (→ `intro` §1, §8; README)
+- **Rejected.** A fixed home path such as `~/.constitution` — still a path and still a confirmation dialog per project. A dependency in `package.json` — the `@droneey` scope already lives on npmjs and cannot point at a private registry, and a git dependency needs private access in every consumer's CI. A machine-level agent file — invisible in the repository and tied to one tool without versioning.
+- **Why.** Nothing in any repository names a machine; the version comes with the install; the same channel carries the rules and the recipes.
+
+## ADR-0063 — Templates live at the root; scaffolding is the `project-init` skill
+**Date:** 2026-09-11 · **Status:** Accepted
+
+- **Context.** The `PROJECT.md` and `DECISIONS.md` templates sat under `blocks/core/templates/` behind a `templates` key the core manifest alone carried — a bend in the block model for files that are copied once, not read as rules.
+- **Decision.** `templates/` at the root holds the two files a project starts from, reachable by hand; the interview that fills them is the `project-init` skill in `blocks/core/skills/`; a block manifest carries chapters only. (→ README)
+- **Why.** A block is rules; a template is a starting point; a skill is a procedure. Three kinds of thing, three homes.

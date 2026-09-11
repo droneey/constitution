@@ -20,7 +20,6 @@ const blockManifestSchema = z.strictObject({
   refines: z.array(blockIdSchema).default([]),
   requires: z.array(blockIdSchema).default([]),
   summary: z.string().min(1),
-  templates: z.record(z.string().regex(SLUG), z.string().min(1)).optional(),
 });
 
 const assemblyManifestSchema = z.strictObject({

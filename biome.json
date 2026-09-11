@@ -20,6 +20,9 @@
         "rules": {
           "complexity": {
             "noExcessiveLinesPerFunction": "off"
+          },
+          "suspicious": {
+            "noTemplateCurlyInString": "off"
           }
         }
       }

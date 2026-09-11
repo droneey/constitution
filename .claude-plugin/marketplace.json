@@ -1,0 +1,17 @@
+{
+  "name": "droneey",
+  "owner": {
+    "name": "droneey",
+    "url": "https://github.com/droneey"
+  },
+  "metadata": {
+    "description": "The plugins of droneey: the constitution every repository is built by."
+  },
+  "plugins": [
+    {
+      "name": "constitution",
+      "source": "./",
+      "description": "The rules every droneey repository is built by, assembled per project from blocks."
+    }
+  ]
+}

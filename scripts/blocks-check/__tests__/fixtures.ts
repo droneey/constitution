@@ -9,6 +9,21 @@ type Files = Record<string, string>;
 const yamlOf = (value: unknown): string => stringify(value);
 
 const validFiles = (): Files => ({
+  '.claude-plugin/marketplace.json': JSON.stringify({
+    name: 'droneey',
+    plugins: [
+      {
+        name: 'constitution',
+        source: './',
+      },
+    ],
+  }),
+  '.claude-plugin/plugin.json': JSON.stringify({
+    name: 'constitution',
+    skills: [
+      './blocks/core/skills/',
+    ],
+  }),
   'DECISIONS.md':
     '# Decisions\n\n## ADR-0001 — First\n\n## ADR-0002 — Second\n',
   'README.md': '# constitution\n\nStart with [intro](blocks/core/intro.md).\n',
@@ -39,13 +54,11 @@ const validFiles = (): Files => ({
     kind: 'core',
     name: 'core',
     summary: 'The laws.',
-    templates: {
-      project: 'templates/PROJECT.md',
-    },
   }),
   'blocks/core/intro.md':
-    '# Intro\n\nWrite [the project file](templates/PROJECT.md) first.\n',
-  'blocks/core/templates/PROJECT.md': '---\nassembly: <name>\n---\n',
+    '# Intro\n\nWrite [the project file](../../templates/PROJECT.md) first.\n',
+  'blocks/core/skills/project-init/SKILL.md':
+    '---\nname: project-init\n---\n\n# Bring a repository under the constitution\n',
   'blocks/languages/typescript/block.yml': yamlOf({
     chapters: {
       code: 'code.md',
@@ -98,6 +111,10 @@ const validFiles = (): Files => ({
   }),
   'blocks/stacks/vite/stack.md':
     '# Stack — Vite\n\nBinds spheres/web to Vite.\n',
+  'hooks/hooks.json':
+    '{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "bash \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}',
+  'hooks/session-start.sh': '#!/usr/bin/env bash\n',
+  'templates/PROJECT.md': '---\nassembly: <name>\n---\n',
 });
 
 const without = (files: Files, ...paths: readonly string[]): Files =>

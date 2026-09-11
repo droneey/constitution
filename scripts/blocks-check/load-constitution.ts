@@ -1,5 +1,4 @@
 import { parse } from 'yaml';
-import type { ZodType } from 'zod';
 
 import type { FileTree } from './file-tree';
 import type { Assembly, Block, Chapter, Constitution, Finding } from './models';
@@ -8,11 +7,16 @@ import {
   blockManifestSchema,
   kindOfFolder,
 } from './models';
+import type { Parsed } from './parse-manifest';
+import { parseManifest } from './parse-manifest';
 
 const BLOCK_MANIFEST = /^blocks\/(?:core|([a-z]+)\/([a-z0-9-]+))\/block\.yml$/;
 const ASSEMBLY = /^assemblies\/([a-z0-9-]+)\.yml$/;
 const DECISIONS = 'DECISIONS.md';
 const README = 'README.md';
+const PLUGIN = '.claude-plugin/plugin.json';
+const MARKETPLACE = '.claude-plugin/marketplace.json';
+const HOOKS = 'hooks/hooks.json';
 
 const optionalFile = (input: {
   path: string;
@@ -25,49 +29,6 @@ interface Loaded {
   constitution: Constitution;
   findings: readonly Finding[];
 }
-
-interface Parsed<T> {
-  finding?: Finding;
-  value?: T;
-}
-
-const parseManifest = <T>(input: {
-  path: string;
-  schema: ZodType<T>;
-  text: string;
-}): Parsed<T> => {
-  let raw: unknown;
-
-  try {
-    raw = parse(input.text);
-  } catch (error) {
-    return {
-      finding: {
-        message: `is not valid YAML: ${error instanceof Error ? error.message : String(error)}`,
-        path: input.path,
-      },
-    };
-  }
-
-  const result = input.schema.safeParse(raw);
-
-  if (!result.success) {
-    const issues = result.error.issues
-      .map((issue) => `${issue.path.join('.') || '<root>'}: ${issue.message}`)
-      .join('; ');
-
-    return {
-      finding: {
-        message: `does not match the manifest schema: ${issues}`,
-        path: input.path,
-      },
-    };
-  }
-
-  return {
-    value: result.data,
-  };
-};
 
 const chaptersOf = (input: {
   dir: string;
@@ -107,6 +68,8 @@ const loadBlock = (input: {
 
   const dir = input.path.slice(0, -'/block.yml'.length);
   const parsed = parseManifest({
+    format: 'YAML',
+    parse,
     path: input.path,
     schema: blockManifestSchema,
     text: input.tree.read(input.path),
@@ -139,6 +102,8 @@ const loadAssembly = (input: {
   tree: FileTree;
 }): Parsed<Assembly> => {
   const parsed = parseManifest({
+    format: 'YAML',
+    parse,
     path: input.path,
     schema: assemblyManifestSchema,
     text: input.tree.read(input.path),
@@ -215,7 +180,22 @@ const loadConstitution = (tree: FileTree): Loaded => {
         paths,
         tree,
       }),
+      hooks: optionalFile({
+        path: HOOKS,
+        paths,
+        tree,
+      }),
+      marketplace: optionalFile({
+        path: MARKETPLACE,
+        paths,
+        tree,
+      }),
       paths,
+      plugin: optionalFile({
+        path: PLUGIN,
+        paths,
+        tree,
+      }),
       readme: optionalFile({
         path: README,
         paths,

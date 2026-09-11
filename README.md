@@ -8,13 +8,16 @@ Start with [`blocks/core/intro.md`](blocks/core/intro.md).
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `PROJECT.md`, `DECISIONS.md` and `CLAUDE.md` templates |
+| `blocks/core` | The laws for any software: principles, workflow, testing, security, collaboration; the `project-init` and `adr` skills |
 | `blocks/languages` | How code is written in one language — `typescript` |
 | `blocks/spheres` | The anatomy of one kind of application — `client`, `web`, `mobile`, `cli` |
 | `blocks/concerns` | One cross-cutting concern — `ui` |
 | `blocks/frameworks` | The discipline of one framework — `react` |
 | `blocks/stacks` | A toolbox and its binding — `tanstack-spa`, `expo`, `bun` |
 | `assemblies` | Named, ordered lists of blocks a project can pin |
+| `templates` | The `PROJECT.md` and `DECISIONS.md` a project starts from |
+| `hooks` | The session-start hook that puts the constitution into context |
+| `.claude-plugin` | The plugin and marketplace manifests |
 | `scripts/blocks-check` | The check that keeps the manifests, assemblies and chapters sound |
 | `DECISIONS.md` | The constitution's own decision log |
 
@@ -28,15 +31,27 @@ A block is a folder with a `block.yml` manifest — kind, summary, `requires`, `
 | `mobile-react-expo` | typescript · ui · client · mobile · react · expo | skeleton — `mobile` and `expo` carry `TODO:` until the first mobile project |
 | `cli-bun` | typescript · cli · bun | complete |
 
+## 🔌 Install
+
+The constitution is a Claude Code plugin served from this repository. Once per machine:
+
+```bash
+claude plugin marketplace add droneey/constitution
+```
+
+```bash
+claude plugin install constitution@droneey
+```
+
+`claude plugin marketplace update` pulls a newer version. From then on, every session opened in a repository whose `PROJECT.md` names an assembly starts with the `intro` chapter, the assembly and its blocks in context, and the skills `/project-init` and `/adr` are available.
+
 ## 🚀 Using it in a project
 
-1. Write `PROJECT.md` from `blocks/core/templates/PROJECT.md` — the generator in `project-generator.md` says how — and pin the constitution tag and the assembly in its front matter.
-2. Copy `blocks/core/templates/DECISIONS.md` as the project's `DECISIONS.md`.
-3. Copy `blocks/core/templates/CLAUDE.md` to the root: it imports the `intro` chapter from the clone at the fleet's path, `~/Developer/personal/droneey/constitution/repos/droneey-constitution`.
-4. Read the blocks in the assembly's order; before a change, read the chapter of its axis.
-5. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — never a silent divergence, never an edit to a block.
+1. Run `/project-init` in the repository: it interviews you, writes `PROJECT.md` with the pin and the assembly, and `DECISIONS.md` beside it. By hand, the same two files start from `templates/`.
+2. Read the blocks in the assembly's order; before a change, read the chapter of its axis.
+3. A departure from a block is a `DECISIONS.md` entry with a `Deviates:` line — `/adr` writes one — never a silent divergence, never an edit to a block.
 
-The skills built on the chapters follow in later releases.
+The recipes of the client sphere follow as skills in later releases.
 
 ## 🛠️ Development
 
