@@ -82,4 +82,4 @@ Every constitution version a project pins is one of those tags.
 
 ## 📄 License
 
-Private. All rights reserved.
+[PolyForm Internal Use 1.0.0](LICENSE.md): use it inside your own organisation, commercially or not; do not distribute, sublicense or sell it; keep the author's notice. Copyright Dmytro Kurovskyi.

@@ -391,3 +391,11 @@
 - **Context.** The devkit is a monorepo of packages other repositories install; no sphere described it, so it could not be ratified, and the `bun` stack binds the command-line anatomy, not a workspace of packages.
 - **Decision.** The `library` sphere states the anatomy and laws of a package monorepo — one package per folder with a curated surface, a common area, one version for all, templates copied once — free of tools. The `bun-workspaces` stack binds it: Bun workspaces, the devkit configurations, npm through the fleet's deploy with trusted publishing. The assembly is `library-bun`. (→ `library` architecture, `bun-workspaces` stack)
 - **Why.** A sphere appears when a real repository has no home; the stack is named after its platform layer, and Bun's workspaces are that layer here, distinct from Bun as the platform of a tool.
+
+## ADR-0069 — The constitution is licensed under PolyForm Internal Use
+**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0067**
+
+- **Context.** The repository goes public so the plugin installs without private access, and the author wants the constitution used, not resold, redistributed or passed off as someone else's.
+- **Decision.** `LICENSE.md` carries PolyForm Internal Use 1.0.0 verbatim under the author's required notice: anyone may use the constitution inside their own organisation, commercially or not; distribution, sublicensing and transfer are forbidden; changes stay internal; the notice travels with every copy. `package.json` says `SEE LICENSE IN LICENSE.md`, since the licence has no SPDX identifier.
+- **Rejected.** No file — a public repository with no licence grants nothing at all, which is not the offer. PolyForm Strict — forbids commercial use, and the consumers are companies. An open-source licence — permits redistribution and derivative works, the two things the author withholds. A custom text — possible later, with a lawyer, when a paid offer needs an agreement.
+- **Why.** The rule in `security` §6 says a public repository carries a licence naming its author; this is the one that grants use and withholds the rest.
