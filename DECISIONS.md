@@ -399,3 +399,11 @@
 - **Decision.** `LICENSE.md` carries PolyForm Internal Use 1.0.0 verbatim under the author's required notice: anyone may use the constitution inside their own organisation, commercially or not; distribution, sublicensing and transfer are forbidden; changes stay internal; the notice travels with every copy. `package.json` says `SEE LICENSE IN LICENSE.md`, since the licence has no SPDX identifier.
 - **Rejected.** No file — a public repository with no licence grants nothing at all, which is not the offer. PolyForm Strict — forbids commercial use, and the consumers are companies. An open-source licence — permits redistribution and derivative works, the two things the author withholds. A custom text — possible later, with a lawyer, when a paid offer needs an agreement.
 - **Why.** The rule in `security` §6 says a public repository carries a licence naming its author; this is the one that grants use and withholds the rest.
+
+## ADR-0070 — `PROJECT.md` carries no `TODO`: the interview asks, and leaves out what stays unanswered
+**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0063**
+
+- **Context.** The first two ratifications landed with `TODO:` lines in `PROJECT.md`, as the `ratify` skill instructed for anything the author had not answered. A `TODO:` is a plan, and `PROJECT.md` is the stable description of the product read first by every session; the plan sat where only facts belong.
+- **Decision.** The skill asks about what it does not know and lets the human answer, confirm or correct; what stays unanswered is left out. Nothing in `PROJECT.md` is marked `TODO:` or points at the future; a section with nothing to say is dropped. A departure recorded in `DECISIONS.md` states the decision, never a follow-up.
+- **Rejected.** Honest `TODO:` markers — they read as gaps to fill and turn the product context into a backlog. Inventing an answer — the skill never invents.
+- **Why.** A shorter file that is true beats a complete one that is not, and the product context has to be stable for every session that starts with it.
