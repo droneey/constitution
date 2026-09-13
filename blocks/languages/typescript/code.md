@@ -5,14 +5,15 @@
 
 ---
 
-## 1. Imports: `#/` across top-level folders, relative within
-Use the **`#/` alias** for imports **across** top-level source folders; use **relative** imports between files in the **same** top-level folder. A module never imports its own top-level folder via `#/`. The stack fixes how `#/` resolves; the rule is the same everywhere.
+## 1. Imports: `#/` across modules, relative within
+Use the **`#/` alias** for an import that **leaves** the importing module; use **relative** imports between files **inside** it. A module is the unit the `architecture` chapter draws a boundary around and reaches through its public surface — a feature, a library — or a top-level source folder that has no such units inside. A module never imports itself via `#/`. The stack fixes how `#/` resolves; the rule is the same everywhere.
 
 ```ts
 // inside src/features/orders/ui/components/order-summary.tsx
-import { Card } from '#/libs/ui';                 // different top-level folder → #/
-import { useOrders } from '../../app/use-cases';  // same top-level folder → relative
-import { OrderTotal } from './order-total';       // sibling file → relative
+import { Card } from '#/libs/ui';                    // another module → #/
+import { useCart } from '#/features/cart/public';    // another feature → #/
+import { useOrders } from '../../app/use-cases';     // same feature → relative
+import { OrderTotal } from './order-total';          // sibling file → relative
 ```
 
 ---
@@ -20,7 +21,7 @@ import { OrderTotal } from './order-total';       // sibling file → relative
 ## 2. Naming
 - **Files & folders: `kebab-case`** — always.
 - **Exports:** `PascalCase` for components, classes, types, interfaces, enums; `camelCase` for functions, hooks, variables, instances.
-- One primary export per file; the file name matches the export in kebab-case (`order-status.ts` → `OrderStatus`).
+- A file is **one semantic unit**, named after it in kebab-case. With one export, the name matches that export (`order-status.ts` → `OrderStatus`). With several, they must form one unit — a family of field schemas, the mappers of one external system, a model with the types only it uses — and the file name names that unit (`order-fields.ts`). A file that gathers unrelated exports is split.
 - A file carries a **role suffix** when the folder alone does not say what it is — `.model.ts`, `.use-case.ts`, `.port.ts`, `.error.ts`, `.command.ts`, `.spec.ts`. The set a sphere uses is fixed in its `architecture` chapter; a suffix is never invented per file.
 
 ---
@@ -44,7 +45,7 @@ Internal code uses **`undefined`** as the sole "absence" value. Inventing `null`
 
 `null` is permitted only: in raw API types (mirroring the wire), at third-party SDK adapter boundaries, and as a framework's own explicit "nothing" value where the framework demands it. Mappers at the boundary convert `null → undefined` when mapping to the inner model.
 
-- Optional params/props: `?: T`. "No result" returns: `T | undefined` (`return;`).
+- Optional params/props: `?: T` — the value may be absent. Write `?: T | undefined` only where an explicit `undefined` is itself meaningful; the compiler's `exactOptionalPropertyTypes` keeps the two apart and is on in every repository. "No result" returns: `T | undefined` (`return;`).
 - Comparisons are strict: `=== undefined`, `=== null`. Never `== null` / `!= null`.
 - Use `??` for defaults and `?.` for access. Never `!value` as a nullish check on a non-boolean (it also catches `0`, `''`, `NaN`).
 
