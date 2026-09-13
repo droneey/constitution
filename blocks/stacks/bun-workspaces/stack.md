@@ -15,6 +15,7 @@ Bun is the runtime, package manager, workspace manager, script runner and test r
 | --- | --- |
 | Language | TypeScript, config through `@droneey/devkit-ts-tsconfig` |
 | Lint + format | Biome, through `@droneey/devkit-ts-biome` (`base`, `node`, `test`) |
+| Dependency boundaries | dependency-cruiser |
 | Package manifests | Syncpack, through `@droneey/devkit-ts-syncpack`, plus the workspace version groups of §3 |
 | Git hooks | lefthook, through `@droneey/devkit-ts-lefthook` |
 | Tests | `bun test`, configured by the devkit template `bunfig.toml` |
@@ -68,7 +69,7 @@ done
 
 ## 6. Verification
 
-`check` runs, in this order: `lint:check` (Biome), `packages:check` (`syncpack lint && syncpack format --check`), `test:unit` (`bun test` with the gate). CI builds every package that has a `build` script after `check`.
+`check` runs, in this order: `lint:check` (Biome), `packages:check` (`syncpack lint && syncpack format --check`), `type:check` (`tsc --noEmit`), `test:unit` (`bun test` with the gate), `architecture:check` (dependency-cruiser). CI builds every package that has a `build` script after `check`.
 
 ```bash
 bun run check

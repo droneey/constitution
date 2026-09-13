@@ -2,7 +2,7 @@
 
 > The single source of truth for how a **library monorepo** is structured: a repository whose product is a set of packages other repositories install, not an application. Every developer — and every agent — follows this. No improvisation.
 > This chapter states **principles and boundaries**, not micro-instructions; particulars are *derived*. It is **tool-free**: the package manager, the registry and the workspace mechanics are named by concern, and the `stack` chapter binds them.
-> The manifest check and the tests enforce what they can. An un-enforced rule is decoration.
+> The dependency checker, the manifest check and the tests enforce what they can. An un-enforced rule is decoration.
 
 ---
 
@@ -82,7 +82,7 @@ A repository takes a kit package through the mechanism its tool offers, in this 
 
 ---
 
-## 7. Dependency rules (enforced by the manifest check and the tests)
+## 7. Dependency rules (enforced by the dependency checker, the manifest check and the tests)
 
 ```
 packages/common/            → nothing

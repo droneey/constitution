@@ -3,10 +3,10 @@ name: bun-workspaces
 summary: >-
   The toolbox of a library monorepo and its binding to the library anatomy:
   Bun as runtime, package manager, workspaces, script runner and test runner,
-  TypeScript, Biome, Syncpack with workspace version groups, lefthook,
-  npm as the registry through the fleet's deploy workflow with trusted
-  publishing, Renovate. Resolves every concern the library chapter names to
-  a brand.
+  TypeScript, Biome, dependency-cruiser, Syncpack with workspace version
+  groups, lefthook, npm as the registry through the fleet's deploy workflow
+  with trusted publishing, Renovate. Resolves every concern the library
+  chapter names to a brand.
 requires: [spheres/library]
 chapters:
   stack: stack.md
