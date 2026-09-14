@@ -9,7 +9,7 @@
 - **The assembly** the project names in its `PROJECT.md`: an ordered list of blocks. The `core` block is part of every assembly and is never listed.
 - **`PROJECT.md`**, committed at the root of the repository: the product context, plus the pin of the constitution version and the assembly.
 - **`DECISIONS.md`**, committed at the root: the project's own decision log. A departure from a block is recorded there, never applied silently.
-- **The plugin**, installed once per machine: at every session start it reads `PROJECT.md` and, when it names an assembly, puts this chapter, the assembly and the manifests of its blocks into the agent's context. A project carries no agent file of its own.
+- **The plugin**, installed once per machine: at every session start it reads `PROJECT.md` and puts this chapter and every chapter of `core` into the agent's context, then, when the file names an assembly, the assembly and every chapter of the blocks it lists. A project carries no agent file of its own.
 
 No file in a project restates a rule; the plugin brings the rules in. **Any agent or human works from these documents.**
 
@@ -17,8 +17,8 @@ No file in a project restates a rule; the plugin brings the rules in. **Any agen
 
 ## 2. How to use it
 
-1. Find the assembly in `PROJECT.md`, open it under `assemblies/`, and read the summary of every block it lists.
-2. **Before writing or moving code, read the chapter that governs what you are about to do:** `architecture` before a module moves, `code` before a line is written, `ui` before a component, `workflow` before every change. The rules are binding defaults.
+1. Find the assembly in `PROJECT.md`. With the plugin, its chapters are already in context; without it, open the assembly under `assemblies/` and read every chapter of its blocks and of `core`.
+2. **Before writing or moving code, apply the chapter that governs what you are about to do** — `architecture` before a module moves, `code` before a line is written, `ui` before a component, `workflow` before every change — **and before handing the work back, check it against every chapter of the assembly,** not only the one the task seemed to touch. The rules are binding defaults.
 3. **Deviation requires explicit, per-change human consent,** recorded in the change itself and in `DECISIONS.md` with a `Deviates:` line. No blanket waivers.
 4. **When two rules seem to conflict,** apply the precedence of §5.
 5. **If a situation isn't covered,** derive the answer from the nearest principle. A real gap is an amendment to the block at its source — never a local convention.
