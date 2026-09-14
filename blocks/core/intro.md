@@ -8,7 +8,7 @@
 
 - **The assembly** the project names in its `PROJECT.md`: an ordered list of blocks. The `core` block is part of every assembly and is never listed.
 - **`PROJECT.md`**, committed at the root of the repository: the product context, plus the pin of the constitution version and the assembly.
-- **`DECISIONS.md`**, committed at the root: the project's own decision log. A departure from a block is recorded there, never applied silently.
+- **`DECISIONS.md`**, committed at the root: the project's departures from its blocks, each with its reason, and nothing else. A departure is recorded there, never applied silently; a decision the blocks already allow lives in its pull request.
 - **The plugin**, installed once per machine: at every session start it reads `PROJECT.md` and puts this chapter and every chapter of `core` into the agent's context, then, when the file names an assembly, the assembly and every chapter of the blocks it lists. A project carries no agent file of its own.
 
 No file in a project restates a rule; the plugin brings the rules in. **Any agent or human works from these documents.**

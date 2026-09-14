@@ -51,7 +51,7 @@ The dependency rules are part of `check`. A change that introduces a boundary vi
 - Branch names match **`(feature|fix|hotfix)/<id>-<kebab-name>`**, where `<id>` is the issue the branch resolves. Hook-enforced.
 - **One logical change per commit** — a refactor and a behaviour change are two, never the same commit, so a rollback never drags structural cleanup with it. The subject states **what** changed, not a narration of files touched.
 - **Format — one line, enforced by the `commit-msg` hook: `type: Subject`.** No scope. Header **≤ 100 characters**. The subject is **sentence-case** (capitalised first word) and imperative (`Add…`, `Fix…`). The **body and footer are empty**. Allowed types: `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `docs`, `build`, `ci`, `chore`.
-- The **why** lives in the pull request description — and in `DECISIONS.md` when the change is a decision.
+- The **why** lives in the pull request description. A change that departs from a block also carries its `DECISIONS.md` entry (§8).
 - **No tool attribution.** A commit, a pull request or a file never names an assistant, a model or a tool as its author or helper: no trailers, no generated-by lines.
 - Never commit a change that fails `check`. Never commit a second lockfile or a generated artefact the build produces.
 
@@ -67,7 +67,7 @@ The dependency rules are part of `check`. A change that introduces a boundary vi
 ---
 
 ## 8. Decisions move with the change
-A change that contradicts or extends a rule ships the amendment **and its `DECISIONS.md` entry** in the same change. For a block, the entry goes into the constitution's log with the pull request; for a project departure, into the project's log with a `Deviates:` line. A rule edit without its entry — or code that silently diverges — is an incomplete change. This rule is what keeps the documents the truth instead of a wish.
+A change that contradicts or extends a rule ships the amendment **and its `DECISIONS.md` entry** in the same change. For a block, the entry goes into the constitution's log with the pull request; for a project departure, into the project's log with a `Deviates:` line, and the change that ends the departure removes its entry. A rule edit without its entry — or code that silently diverges — is an incomplete change. This rule is what keeps the documents the truth instead of a wish.
 
 ---
 

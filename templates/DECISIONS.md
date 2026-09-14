@@ -1,15 +1,15 @@
 # Decision Log
 
-> A journal of the decisions behind this repository and the reasoning behind them. **Not a rulebook** — the constitution's chapters say *how things are*; this log records *why we decided it and what we rejected*.
+> The departures of this repository from the constitution, each with its reason. **Only departures:** a decision the chapters already allow lives in the description of its pull request.
 >
-> **Conventions:** append-only. One entry per decision, numbered. To change a decision, add a **new** entry that supersedes the old one (mark the old `Superseded by ADR-NNNN`) — never rewrite history. Statuses: `Accepted` · `Superseded` · `Proposed`. A departure from a block carries a **`Deviates:`** line naming the chapter and section — it is the only way this repository departs from the constitution.
+> **Conventions:** one entry per departure in force, numbered; a number is never reused. Every entry carries a **`Deviates:`** line naming the chapter and section — it is the only way this repository departs from the constitution. The change that ends a departure removes its entry; git keeps the history.
 
 <!--
 ## ADR-0001 — Title
-**Date:** YYYY-MM-DD · **Status:** Accepted · **Deviates:** `spheres/client` architecture §3
+**Date:** YYYY-MM-DD · **Deviates:** `spheres/client` architecture §3
 
-- **Context.** What forced a decision.
-- **Decision.** What was decided.
+- **Context.** What forced the departure.
+- **Decision.** What the repository does instead.
 - **Rejected.** The alternatives and why each lost.
 - **Why.** The reasoning that would let someone re-derive the decision.
 -->
