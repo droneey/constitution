@@ -22,7 +22,7 @@
     "type:check": "tsc --noEmit",
     "test:unit": "bun test",
     "blocks:check": "bun run ./scripts/blocks-check/main.ts",
-    "check": "bun lint:check && bun packages:check && bun type:check && bun test:unit && bun blocks:check"
+    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run blocks:check"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.12",
