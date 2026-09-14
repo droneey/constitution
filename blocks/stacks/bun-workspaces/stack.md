@@ -10,6 +10,7 @@ Bun is the runtime, package manager, workspace manager, script runner and test r
 
 - Install with `bun install`; run scripts with `bun run <script>`; execute binaries with `bunx <bin>`. Never `npm`/`yarn`/`pnpm`/`npx` — except `npm publish`, which the deploy workflow runs for the registry.
 - One lockfile, `bun.lock`. No second lockfile is ever committed.
+- `bun run` starts every tool on Bun, a Node shebang included: the devkit template `bunfig.toml` sets `[run] bun = true`. `check` runs on the Bun the repository pins, never on a `node` a machine or a runner image happens to carry.
 
 | Concern | Tool |
 | --- | --- |
