@@ -10,6 +10,7 @@ Bun is the runtime, package manager, bundler, script runner and test runner.
 
 - Install with `bun install`; run scripts with `bun run <script>`; execute binaries with `bunx <bin>`. Never `npm`/`yarn`/`pnpm`/`npx`.
 - One lockfile, `bun.lock`. No second lockfile is ever committed.
+- `bun run` starts every tool on Bun, a Node shebang included: `bunfig.toml` sets `[run] bun = true` (§5). `check` runs on the Bun the repository pins, never on a `node` a machine or a runner image happens to carry.
 - Fall back to another tool only when something is genuinely incompatible with Bun, and record the reason in the relevant config or script.
 
 | Concern | Tool |
@@ -53,13 +54,13 @@ Introducing a library outside this set requires a concrete justification recorde
 
 ## 4. Engines
 
-Engines the tool drives — an infrastructure runner, a configuration-management runner, their interpreters — are not vendored: they are downloaded per release into the tool's home directory, pinned by version and checksum, and reached only through the toolchain port. The developer machine pins its own copies through mise; CI installs the same versions.
+Engines the tool drives — an infrastructure runner, a configuration-management runner, their interpreters — are not vendored: they are downloaded per release into the tool's home directory, pinned by version and checksum, and reached only through the toolchain port. The tool also links each engine it installed into one directory of its home, `bin`, under the engine's own name. The developer machine and CI run exactly those engines: `mise.toml` puts that directory on `PATH` with `[env] _.path`, and mise-action carries it into the steps of a workflow. The versions live in the tool alone; mise pins the rest of the developer toolchain.
 
 ---
 
 ## 5. Tests
 
-- `bun test` with `bunfig.toml`:
+- `bun test` and `bun run` with `bunfig.toml`:
 
 ```toml
 [test]
@@ -68,6 +69,9 @@ coverageReporter = ["text"]
 coverageSkipTestFiles = true
 coverageThreshold = { functions = 1.0, lines = 1.0 }
 coveragePathIgnorePatterns = ["**/__tests__/**", "**/main.ts", "**/composition.ts"]
+
+[run]
+bun = true
 ```
 
 - The file is the devkit template `packages/typescript/templates/bun/bunfig.toml`, copied as it is: the entrypoint is `main.ts` and the composition root `composition.ts`, so the globs hold and the file is identical in every repository.

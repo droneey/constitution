@@ -8,3 +8,6 @@ coveragePathIgnorePatterns = [
   "**/main.ts",
   "**/composition.ts",
 ]
+
+[run]
+bun = true

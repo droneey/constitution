@@ -439,3 +439,19 @@
 - **Decision.** The hook prints every chapter of `core` and, when `PROJECT.md` names an assembly, every chapter of the blocks it lists, in reading order, after each block's manifest. The intro says the chapters are in context and that work is checked against every chapter of the assembly before it is handed back. `collaboration` §7: an agent that delegates hands its sub-agents every chapter that governs their task, in full. (→ intro §1, §2; `collaboration` §7)
 - **Rejected.** A digest of rule headlines — a headline without its rule is what failed. Reading on demand — also what failed. A hook for sub-agents — Claude Code offers none, so the rule sits with the agent that delegates.
 - **Why.** A rule the agent does not have in front of it is decoration. About twelve thousand tokens at each session start is cheap next to a review round the owner has to run by hand.
+
+## ADR-0075 — The developer runs the engines the tool installed
+**Date:** 2026-09-14 · **Status:** Accepted
+
+- **Context.** The `bun` stack had the developer machine pin its own copies of the engines through mise, and CI install the same versions. The versions then lived twice, in the tool's pin table with its checksums and in `mise.toml`, and only memory kept the two together. In nydra they came apart: the tool installed Python 3.13.15, CI got 3.13.15 because it happened to be the newest 3.13, and a laptop ran its mise copy of ansible-core on 3.14.2.
+- **Decision.** The tool links each engine it installed into a `bin` directory of its home, under the engine's own name. `mise.toml` puts that directory on `PATH` with `[env] _.path`, and mise-action carries it into CI, so the developer machine and CI run the very engines the tool gives its users. mise pins the rest of the developer toolchain. (→ `bun` stack §4)
+- **Rejected.** A spec comparing `mise.toml` with the tool's pin table: it keeps two lists in step instead of having one. Versioned paths into the tool's home in CI: the same duplication, moved into YAML. The tool reading `mise.toml`: its users have none.
+- **Why.** One version per engine, in the place that pins it by checksum, and the checks run on what the tool ships.
+
+## ADR-0076 — Scripts run their tools on Bun
+**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0065**
+
+- **Context.** `bun run` starts a tool with a Node shebang on the first `node` on `PATH`: the one a runner image ships, or a laptop's global one. `check` ran on a runtime no repository pinned, and a tool that fails under Bun, like dependency-cruiser with its swc parser, went unseen wherever a `node` happened to be.
+- **Decision.** The devkit `bunfig.toml` gains `[run] bun = true`, and `bun run` starts every tool on Bun, a Node shebang included. A tool Bun cannot run is the stack's fallback, with its reason recorded. (→ `bun` stack §1, §5; `bun-workspaces` stack §1)
+- **Rejected.** `--bun` on every script line: one flag to remember per line. Pinning Node beside Bun: a second runtime for tools the first one runs.
+- **Why.** The stack makes Bun the runtime and the script runner; `check` proves a repository only when it runs on what the repository pins.
