@@ -423,3 +423,11 @@
 - **Decision.** `check` runs `lint:check`, `packages:check`, `type:check` (`tsc --noEmit`), `test:unit`, `architecture:check` (dependency-cruiser), the order of the `bun` stack; dependency-cruiser joins the toolbox. The `library` chapter names the dependency checker among its enforcers: a package importing another package's files, and `common` importing anything, are import boundaries. (→ `library` architecture §7, `bun-workspaces` stack §1, §6)
 - **Rejected.** Leaving both steps to each library repository as a departure — the same departure in every repository is a missing rule. Proving the boundaries with specs — a spec that walks the imports re-implements the checker.
 - **Why.** The stack says what `check` runs; a stack that runs less than `workflow` §3 demands leaves the gap for every repository on it to find alone.
+
+## ADR-0073 — Numbers another system defines are numeric enums
+**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0016**
+
+- **Context.** §3 made every group of named values a string enum, and ADR-0016 gave the reason: a string enum has no numeric hole. nydra's error work met two groups whose values are numbers fixed elsewhere — its exit statuses and the HTTP statuses of the vendors it calls — and had to record a departure for each; every repository that speaks HTTP would record the same one. The linter forbids a bare number, so without an enum each adapter named its own copy of 401, 403 and 500.
+- **Decision.** A group of numbers another system defines is a numeric enum with every value written out. TypeScript still lets any `number` into a numeric enum type, so a number that comes in from outside stays `number` and is compared against the members. Every other group stays a string enum; a numeric enum whose numbers nobody defined, or whose values are left implicit, stays forbidden. (→ `code` §3)
+- **Rejected.** A string enum with a second table from names to numbers — two maps for one fact. A departure in every repository — the same entry everywhere is a missing rule.
+- **Why.** The string rule keeps a value reading as what it means; a number another system fixed already means exactly one thing, and the enum only gives it a name. Keeping inbound numbers as `number` closes the hole ADR-0016 guarded against, where the hole could still bite.
