@@ -27,10 +27,12 @@ import { OrderTotal } from './order-total';          // sibling file → relativ
 ---
 
 ## 3. `enum` for grouped values; `as const` for atomic ones
-A group of related named values is a TypeScript **string `enum`**. `as const` is for arrays/tuples and single literal constants — never an object imitating an enum.
+A group of related named values is a TypeScript **string `enum`**. A group of numbers another system defines — exit statuses, HTTP statuses — is a **numeric `enum` with every value written out**; TypeScript lets any `number` into a numeric enum type, so a number that arrives from outside stays `number` and is compared against the members, never typed as the enum. `as const` is for arrays/tuples and single literal constants — never an object imitating an enum.
 
 ```ts
 enum CardColoring { Default = 'default', Blue = 'blue', Pink = 'pink' }   // ✓ grouped values
+enum HttpStatus { NotFound = 404, InternalServerError = 500 }             // ✓ numbers another system defines
+enum Priority { Low, High }                                               // ✗ numbers nobody defined
 const NAV_ITEMS = [/* … */] as const;                                     // ✓ array
 const ORDERS_PATH = '/orders' as const;                                   // ✓ single literal
 const CardColoring = { Default: 'default', Blue: 'blue' } as const;       // ✗ enum in disguise
