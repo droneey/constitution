@@ -53,4 +53,4 @@ An agent that delegates to sub-agents keeps the responsibility. A sub-agent does
 ---
 
 ## 8. Memory
-What an agent learns about the product goes into `PROJECT.md` through a change; what was decided goes into `DECISIONS.md`. A fact that lives only in an agent's private memory is not the project's fact.
+What an agent learns about the product goes into `PROJECT.md` through a change; a departure from a block goes into `DECISIONS.md`, and any other decision into the description of its pull request. A fact that lives only in an agent's private memory is not the project's fact.

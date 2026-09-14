@@ -455,3 +455,11 @@
 - **Decision.** The devkit `bunfig.toml` gains `[run] bun = true`, and `bun run` starts every tool on Bun, a Node shebang included. A tool Bun cannot run is the stack's fallback, with its reason recorded. (→ `bun` stack §1, §5; `bun-workspaces` stack §1)
 - **Rejected.** `--bun` on every script line: one flag to remember per line. Pinning Node beside Bun: a second runtime for tools the first one runs.
 - **Why.** The stack makes Bun the runtime and the script runner; `check` proves a repository only when it runs on what the repository pins.
+
+## ADR-0077 — A project's decision log holds its departures and nothing else
+**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0042**
+
+- **Context.** The chapters sent a project's departures to its `DECISIONS.md`, and "what was decided" too. Projects logged both, so the few departures a reader needs sat among entries that restated a ratification, a design the rules already allowed or a CI layout: three of nydra's eight entries, three of devkit's four.
+- **Decision.** A project's `DECISIONS.md` lists its departures in force, each with its `Deviates:` line; a decision the chapters allow lives in the description of its pull request. The change that ends a departure removes its entry, git keeps the history, and a number is never reused. The template and `/amend` follow, and `/amend` numbers a new entry from the highest the repository has ever used. The constitution's own log keeps recording every amendment. (→ `intro` §1, `workflow` §6, §8, `collaboration` §8)
+- **Rejected.** Every decision in the project's log: the departures drown in it. An append-only log with a status per entry: a reader wants what is in force, and git already holds what was.
+- **Why.** The log tells a reader where a project differs from the rules and why; the rest is in its pull requests and its code.
