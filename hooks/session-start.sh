@@ -16,6 +16,32 @@ field() {
   front_matter | awk -v key="$1:" '$1 == key { $1 = ""; sub(/^ +/, ""); print; exit }'
 }
 
+chapters() {
+  awk '/^chapters:/ { listing = 1; next } listing && /^  [^ ]/ { sub(/^  [^:]+:[[:space:]]*/, ""); print; next } listing { exit }' "$1"
+}
+
+print_chapter() {
+  if [ -d "$1" ]; then
+    cat "$1/index.md"
+    for file in "$1"/*.md; do
+      [ "${file##*/}" = "index.md" ] && continue
+      printf '\n'
+      cat "${file}"
+    done
+    return
+  fi
+
+  cat "$1"
+}
+
+print_chapters() {
+  chapters "${root}/blocks/$1/block.yml" | while IFS= read -r chapter; do
+    [ "$1/${chapter}" = "core/intro.md" ] && continue
+    printf '\n'
+    print_chapter "${root}/blocks/$1/${chapter}"
+  done
+}
+
 pin="$(field constitution)"
 assembly="$(field assembly)"
 installed="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${root}/package.json" | head -1)"
@@ -29,6 +55,7 @@ if [ "${pin}" != "${installed}" ]; then
 fi
 printf '\n'
 cat "${root}/blocks/core/intro.md"
+print_chapters core
 
 if [ -z "${assembly}" ]; then
   printf '\nPROJECT.md maps applications to assemblies; read the map there, then the assembly under %s/assemblies.\n' "${root}"
@@ -46,4 +73,5 @@ cat "${file}"
 awk '/^blocks:/ { listing = 1; next } listing && /^  - / { sub(/^  - /, ""); print }' "${file}" | while IFS= read -r id; do
   printf '\n## Block %s\n\n' "${id}"
   cat "${root}/blocks/${id}/block.yml"
+  print_chapters "${id}"
 done

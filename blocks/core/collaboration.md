@@ -48,7 +48,7 @@ No commit, pull request, comment, document or file names an assistant, a model o
 ---
 
 ## 7. Delegated agents
-An agent that delegates to sub-agents keeps the responsibility. A sub-agent never commits, never runs a live system and never calls a real API; it verifies statically and reports. Its findings are checked before they are acted on.
+An agent that delegates to sub-agents keeps the responsibility. A sub-agent does not see the session's context, so the agent hands it every chapter that governs its task, in full — not a digest of the rules it thinks relevant. A sub-agent never commits, never runs a live system and never calls a real API; it verifies statically and reports. Its findings are checked before they are acted on.
 
 ---
 
