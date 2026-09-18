@@ -72,10 +72,37 @@ Code documents itself through names and structure; comments are the rare excepti
 
 ---
 
-## 5. Definition of done
+## 5. Layout
+
+Folders carry meaning of their own. A reader who opens one must be able to say what it is for, and a
+file must have exactly one folder it could belong to.
+
+- **A folder is named for its purpose and holds one purpose.** Say what it is for in one phrase: if
+  the phrase needs "and", it is two folders. Name it for what its contents are *for*, never for what
+  they are made of — a folder named after a technical shape (`types`, `helpers`, `classes`) tells a
+  reader nothing about the system.
+- **A set owns its folder.** Where files are of one kind and arrive one at a time — one per vendor,
+  per command, per rule, per section — they live together in a folder named for the member in the
+  plural, and nothing else lives there. Adding the next member is then adding a file, and no one has
+  to tell members from machinery by reading their names.
+- **What is *about* a set sits beside that folder, never inside it:** the contract its members
+  satisfy, the registry that indexes them, the operation that runs them all. The members are plural
+  and repeat; these are singular and do not.
+- **The surface file of a folder** — the file the language resolves when the folder itself is
+  imported — carries re-exports and nothing else: no declaration, no table, no function. It is a
+  door, not a room. A file never imports the surface of its own folder; that is where import cycles
+  begin.
+- **Depth by need.** A folder appears to separate purposes that are already mixed, never in
+  anticipation of members that do not exist yet. One member is reason enough when the alternative is
+  leaving it among the things that describe it.
+
+---
+
+## 6. Definition of done
 
 - [ ] The change lives in the layer that owns its reason to change; every import points inward
 - [ ] Nothing volatile reached the core; every external shape was mapped at the edge
 - [ ] Every state has one home; every failure is typed and surfaced
 - [ ] The public surface exposes only what a consumer may couple to
+- [ ] Every folder holds one purpose; each set sits in a folder of its own and every surface file only re-exports
 - [ ] The tool-enforced checks pass; the rules no tool holds were reviewed against the chapters that govern the change
