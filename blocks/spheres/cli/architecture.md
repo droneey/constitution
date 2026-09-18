@@ -19,14 +19,14 @@
 ```
 src/
 ├── main.ts          # entrypoint: builds the CLI from app/ and runs it
-├── app/             # WIRING: commands/, the composition root, the command context, the error handler, exit codes
-│   └── commands/    # one <name>.command.ts per command; shared flag definitions; the document requirement
+├── app/             # WIRING: commands/, the shared flags and the document requirement, the composition root, the command context, the error handler, exit codes
+│   └── commands/    # one <name>.command.ts per command, and nothing else
 ├── features/        # vertical slices, one per concern of the tool (config, environment, platform, dns, …)
 │   └── <feature>/
 │       ├── public/      # index.ts — the feature's ONLY surface to the outside
 │       ├── use-cases/   # <name>/<name>.use-case.ts (+ steps/ when the use-case is a pipeline)
 │       ├── shared/      # models/ and the helpers several use-cases of THIS feature share
-│       └── providers/   # OPTIONAL — one file per vendor the feature knows by name, plus the registry
+│       └── providers/   # OPTIONAL — the contract, the registry, and vendors/ with one file per vendor
 ├── ports/           # what the inner layers need from the outside, in the tool's words: <name>/<name>.port.ts + models/
 ├── adapters/        # one folder per external system: implements ports, knows the vendor's API, nothing else
 │   └── <vendor>/    # create-<vendor>-<role>.ts, models/, public/index.ts
@@ -42,7 +42,7 @@ Composition flows **down** from `app`: the composition root instantiates adapter
 - **`public/index.ts` is curated** (principles, Law 7): it exports the use-cases and the types another feature or the app may couple to — nothing else.
 - **`use-cases/<name>/`** holds one operation as `<name>.use-case.ts`. A use-case that runs as a pipeline keeps its stages under `steps/`, each a function over a pipeline context; the use-case file orders the stages, and a stage never calls another stage.
 - **`shared/models/`** holds the feature's types with the `.model.ts` suffix; `shared/<topic>/` holds helpers several use-cases share. Co-location by reason to change: a helper one use-case needs lives beside that use-case.
-- **`providers/`** exists only in a feature that maps a concern to vendors: `<concern>-provider.model.ts` declares what a vendor must provide, one `<vendor>.ts` per vendor realises it, and `index.ts` is the registry keyed by the vendor's name in the document. **Adding a vendor is adding a file** — there is no conditional on a vendor name anywhere else.
+- **`providers/`** exists only in a feature that maps a concern to vendors, and it is laid out as `principles` §5 asks: `vendors/` holds one `<vendor>.ts` per vendor and nothing else, `<concern>-provider.model.ts` beside it declares what a vendor must provide, `registry.ts` is the registry keyed by the vendor's name in the document, and `index.ts` only re-exports. **Adding a vendor is adding a file** — there is no conditional on a vendor name anywhere else.
 - Cross-feature access goes through `public` only; a feature never reaches another's `use-cases` or `shared`.
 
 ---
@@ -107,7 +107,7 @@ Per the `testing` chapter: every effect has a kit primitive with a fake — file
 ## 9. Recipes
 
 - **Add a command:** `<name>.command.ts` in `app/commands` (flags, the document requirement, one use-case call) → register it in the commands index → a spec through the CLI with a fake context.
-- **Add a vendor:** the provider file in the feature's `providers/` and its registry entry → the adapter under `adapters/<vendor>/` implementing the port → the composition root wires the factory → fixtures of the vendor's API for the adapter's spec.
+- **Add a vendor:** the file in the feature's `providers/vendors/` and its registry entry → the adapter under `adapters/<vendor>/` implementing the port → the composition root wires the factory → fixtures of the vendor's API for the adapter's spec.
 - **Add a port:** `ports/<name>/` with the interface and models → a fake in its `__tests__/` → the adapter that implements it.
 - **Add a document section:** the schema in the config feature → the cross-field rules → the feature that consumes it → the JSON schema regenerated.
 
