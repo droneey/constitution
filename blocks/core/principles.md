@@ -10,7 +10,9 @@
 
 **Dependencies point inward, toward stability.** Business rules are the most stable thing in a system and depend on nothing volatile. Frameworks, transports, vendors and user interfaces are volatile and depend on the rules — never the reverse.
 
-**By symptom, not by speculation.** A structure, an abstraction, a pattern or a shared module appears when a concrete, present force demands it — never because it might help later. An abstraction introduced before its second real use is a liability, not foresight.
+**By symptom, not by speculation.** A structure, a pattern or a shared module appears when a concrete, present force demands it — never because it might help later. An **internal** abstraction introduced before its second real use is a liability, not foresight: the axis it guesses at is usually the wrong one, and a seam in the wrong place costs more than no seam, because it has to be torn out before it can be fixed.
+
+**A boundary is not a speculation.** Where the system meets something outside it — a vendor, an engine, a transport, a format, a clock — the seam is justified by the boundary being there, not by a second implementation arriving. A port with one adapter is complete, not premature.
 
 **A rule a tool can hold is held by the tool.** Prose carries only what no tool can express. An un-enforced rule is decoration.
 
