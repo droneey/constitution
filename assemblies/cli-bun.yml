@@ -1,6 +1,0 @@
-name: cli-bun
-sphere: cli
-blocks:
-  - languages/typescript
-  - spheres/cli
-  - stacks/bun

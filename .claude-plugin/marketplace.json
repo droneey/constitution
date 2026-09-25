@@ -11,7 +11,7 @@
     {
       "name": "constitution",
       "source": "./",
-      "description": "The rules every droneey repository is built by, assembled per project from blocks."
+      "description": "The rules every droneey repository is built by, declared per project in constitution.yaml."
     }
   ]
 }

@@ -2,7 +2,7 @@
   "name": "@droneey/constitution",
   "version": "0.8.0",
   "private": true,
-  "description": "The engineering constitution of droneey: blocks of rules assembled per project.",
+  "description": "The engineering constitution of droneey: blocks of rules a project declares in constitution.yaml.",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Dmytro Kurovskyi",
@@ -13,6 +13,9 @@
     "url": "https://github.com/droneey/constitution.git"
   },
   "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
   "scripts": {
     "prepare": "lefthook install",
     "lint:check": "biome check",
@@ -21,7 +24,7 @@
     "packages:fix": "syncpack fix && syncpack format",
     "type:check": "tsc --noEmit",
     "test:unit": "bun test",
-    "blocks:check": "bun run ./scripts/blocks-check/main.ts",
+    "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run blocks:check"
   },
   "devDependencies": {

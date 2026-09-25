@@ -2,13 +2,18 @@
   "extends": "@droneey/devkit-ts-tsconfig/node",
   "compilerOptions": {
     "noEmit": true,
+    "paths": {
+      "#/*": [
+        "./src/*"
+      ]
+    },
     "types": [
       "node",
       "bun"
     ]
   },
   "include": [
-    "scripts/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "**/coverage"
