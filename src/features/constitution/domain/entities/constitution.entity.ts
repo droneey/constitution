@@ -8,7 +8,8 @@ import type {
 import type { RequirementAnswer } from './requirement-answer.entity';
 import type { Rule } from './rule.entity';
 
-interface PluginDocuments {
+interface Documents {
+  decisions: string | undefined;
   hooks: ManifestRead<HooksManifest> | undefined;
   marketplace: ManifestRead<MarketplaceManifest> | undefined;
   plugin: ManifestRead<PluginManifest> | undefined;
@@ -17,10 +18,10 @@ interface PluginDocuments {
 
 interface Constitution {
   blocks: readonly Block[];
-  documents: PluginDocuments;
+  documents: Documents;
   paths: ReadonlySet<string>;
   requirementAnswers: readonly RequirementAnswer[];
   rules: readonly Rule[];
 }
 
-export type { Constitution, PluginDocuments };
+export type { Constitution, Documents };

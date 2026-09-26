@@ -62,7 +62,8 @@ bun run check                # lint, package manifests, types, tests with the co
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;
 - a malformed Requirements row, or an answer to a rule its block may not answer;
 - a file over 500 lines, and a link to a missing file;
-- a broken plugin, marketplace or hooks manifest.
+- a broken plugin, marketplace or hooks manifest;
+- a decision log that is missing, skips or repeats a number, or has an entry without its date and status.
 
 It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.
 

@@ -71,6 +71,25 @@ describe('linksCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
+  it('should report a link to a missing file when the decision log holds one', () => {
+    // Arrange
+    const files = validFiles();
+    files['DECISIONS.md'] =
+      '# Decision Log\n\nSee [the plan](local/plan.md).\n';
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = linksCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'links to a missing file "local/plan.md"',
+        path: 'DECISIONS.md',
+      },
+    ]);
+  });
+
   it('should check the blocks alone when the README is missing', () => {
     // Arrange
     const files = without({

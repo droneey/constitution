@@ -1,497 +1,288 @@
 # Decision Log
 
-> A journal of the decisions behind the constitution and the reasoning behind them. **Not a rulebook** — the chapters say *how things are*; this log records *why we decided it and what we rejected*.
+> A journal of the decisions behind the constitution and the reasoning behind them. **Not a rulebook** — the blocks say *how things are*; this log records *why it was decided and what was rejected*.
 >
-> **Conventions:** append-only. One entry per decision, numbered. To change a decision, add a **new** entry that supersedes the old one (mark the old `Superseded by ADR-NNNN`) — never rewrite history. Statuses: `Accepted` · `Superseded` · `Proposed`. Entries up to ADR-0034 are inherited from the first web kit's log, condensed, with their original dates; the decisions that shaped the constitution itself start at ADR-0035.
+> **Conventions:** append-only. One entry per decision, numbered. To change a decision, add a **new** entry and mark the old one `Superseded by ADR-NNNN` — never rewrite history. Statuses: `Accepted` · `Proposed` · `Superseded by ADR-NNNN`.
+>
+> The log starts anew with the 1.0 design. Its first entries record that design in theme order, each with the date it was taken; the log of the 0.x constitution is in git at tag `v0.8.0`.
+
+| Theme | Entries |
+|---|---|
+| The rebuild | ADR-0001 – ADR-0003 |
+| Blocks and layers | ADR-0004 – ADR-0010 |
+| Project files | ADR-0011 – ADR-0014 |
+| Rules and roles | ADR-0015 – ADR-0020 |
+| Overrides and precedence | ADR-0021 – ADR-0022 |
+| Delivery | ADR-0023 – ADR-0029 |
+| The anatomy | ADR-0030 – ADR-0038 |
+| The rest | ADR-0039 – ADR-0047 |
 
 ---
 
-## ADR-0001 — Clean Architecture organized by feature (vertical slices)
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0001 — The constitution is rebuilt directly as 1.0
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Context.** Folder-by-type scatters a single feature across many directories.
-- **Decision.** Strict Clean Architecture, sliced by feature; layer slots filled lazily. (→ client `architecture` §0–2)
-- **Rejected.** Folder-by-type; orthodox feature-sliced design whose `entities` carry UI; full enterprise ceremony everywhere.
+- **Context.** The 0.x constitution assembled blocks into named assemblies, and its session-start hook printed 57 to 105 thousand characters. Claude Code caps hook output at 10,000, so an agent saw a file path and a preview, and a sub-agent saw nothing. The owner is its only consumer.
+- **Decision.** The constitution is rewritten in seven steps — the frame, core, the TypeScript-stack blocks, the devkit checks, delivery, Python with server and AI, and the migration of the owner's projects — and every step produces final files. Nothing is kept for 0.x: no old pins, no automatic migration of `Deviates:` lines, no upgrade command. `/ratify` reads a project's old `PROJECT.md` and `DECISIONS.md` and proposes each departure as an override, for the owner's consent. Each step lands as issues and pull requests that the owner merges; each merge cuts a 0.x pre-release, and 1.0.0 comes on the owner's word.
+- **Rejected.** A 0.8.1 hotfix of the hook; an interim model that kept 0.x projects working.
 
-## ADR-0002 — Layer naming: `root`, feature `app`, `kernel`
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0002 — The decision log starts anew
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** The application shell is `root`; the feature-level framework-binding layer is `app`; the shared business kernel is `kernel`. (→ client `architecture` §1)
-- **Rejected.** `core` for the shell (means the centre, but it is the outer shell); `shared/kernel` (`shared` carries no business).
+- **Decision.** This log opens with the decisions of the 1.0 design, grouped by theme. The 0.x log stays in git at tag `v0.8.0`, and no block and no entry here refers to it.
+- **Why.** Most 0.x entries describe the model this design replaces; carried over, they would read as current.
 
-## ADR-0003 — CQRS-lite: two port interfaces, one implementation
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0003 — Not now: versions per block, rules for other AI tools
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** Reads and writes are separated at the use-case and binding-unit level always; two repository interfaces for interface segregation, one implementation per external system. (→ client `architecture` §3)
-- **Rejected.** A single port (loses type-level read/write protection); full CQRS with separate models and two implementations (ceremony against one backend).
+- **Decision.** The constitution is versioned as a whole, and it is written for Claude Code alone.
+- **Why.** Neither has a present consumer.
 
-## ADR-0004 — No DI container; the binding unit is the composition root
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0004 — Four layers: core, domains, contexts, implementations
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** The `app` binding unit binds the concrete repository and calls the use-case; a plain composition function exists only for a non-reactive caller. (→ client `architecture` §2)
-- **Rejected.** DI containers (almost never pay off on a client); a plain function per operation kept "just in case" (dead indirection until a second consumer appears).
+- **Decision.** Blocks sit in four layers, from the most abstract down: `core`, true for any program; domains, an aspect a project has or has not whatever its technology — `ui`, `api`, `i18n`; contexts, where the code runs (a platform such as `browser` or `cli`) or what it is written in (a language such as `typescript`); and implementations, a framework, library or tool — `react-dom`, `bun`, `git`. A block's `kind` names its layer. There is no `web` block: a browser application is `browser` plus `ui`. Implementations carry no framework, library or tool tag.
+- **Rejected.** The 0.x kinds — spheres, concerns, frameworks and stacks bound to slots — and the toolchains and assemblies that chose blocks behind a project's back.
+- **Why.** Each layer combines freely with every element of the others and reduces to none of them; a combination lives in the more specific block or in a seam file.
 
-## ADR-0005 — Shared kernel; duplication across contexts by default
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0005 — Two links between blocks: requires and extends
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** Genuinely universal, stable business types lift down into `kernel`; contexts otherwise duplicate; structural mixins (`WithId`, `Paginated`) are composed, never subtracted from a god-type; the kernel-or-shared choice is a codified tree. (→ client `architecture` §5)
-- **Rejected.** Feature↔feature imports; a large shared kernel; a `BaseEntity` with `Omit` per entity.
+- **Decision.** `requires` names a block that must also be active; it points up the layers, or to a peer implementation the block cannot work without. `extends` joins implementations only, and the base comes with its heir. A domain requires nothing, since above it is only core, which is always active. A tool never adds a domain: the project lists every domain, environment properties such as `untrusted-client` included. Choosing a tool, or using one that has no block, is not a departure.
+- **Rejected.** An `activates` link through which a platform switched domains on, and inheritance from several bases.
+- **Why.** Every block a project follows stays visible in its own file; nothing is added behind its back except the base of an implementation.
 
-## ADR-0006 — Value Objects as branded types + functions, not classes
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0006 — Abstract blocks only among implementations
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Why.** Branded primitives serialize through JSON, cache and URL cleanly; classes lose their prototype and add `new`/`this` friction. (→ client `architecture` §4)
+- **Decision.** An abstract block is an implementation never used alone, such as `_react`. Its id starts with `_` exactly when `abstract: true`, its folder sits flat beside its heirs, and it has at least one heir and names none of them. `extends` inherits an abstract base (`react-dom` from `_react`) or builds on a concrete block (`next` on `react-dom`), and names one base either way. Requiring an abstract block is satisfied by any of its heirs. A new abstract block waits for its second heir.
+- **Rejected.** Abstract domains or platforms; a block with two bases.
+- **Why.** Every rule of a base must hold for every heir, which only a shared technology guarantees. Platforms share properties only in part, so they require property domains instead.
 
-## ADR-0007 — Entities are data shapes; behaviour lives in use-cases
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0007 — Seam rules live in with/ files
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Why.** The server owns entities and holds their invariant; a client-owned entity may carry a validating factory. (→ client `architecture` §4)
+- **Decision.** A rule that needs two blocks lives in `<block>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/with/remote-data.md`, `browser/with/a11y.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
+- **Rejected.** Conditional sections inside a block's main file.
+- **Why.** A file per seam stays readable as seams multiply, and its name says when it applies.
 
-## ADR-0008 — Validation in three homes; one atomic rule reused
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0008 — A block owns its brand, language and file names
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** Untrusted responses validated in `infra`; business invariants in `domain`; form input through the kernel predicate reused. (→ client `architecture` §6)
+- **Decision.** A block lists in `owns` the words that belong to it: `_react` owns "React"; `typescript` owns "TypeScript", `.ts` and `index.ts`. A word appears only in its owner, in the blocks that depend on it, and in the `with/` files named after one of these; fenced code is exempt. A standard such as HTTP, JSON or WCAG belongs to no block.
+- **Rejected.** Two lists, `brands` and `forms`, for one purpose.
+- **Why.** Core and the domains stay free of any language or brand, which is what lets a project in any language follow them.
 
-## ADR-0009 — State ownership: server data in the cache, view state in its home, per-feature key factory
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0009 — Every schema is complete
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** Server data lives only in the data layer's cache; shareable view state in the sphere's home (the URL on the web); a command invalidates only its own keys. (→ client `architecture` §9)
-- **Rejected.** Duplicating server data into a store; one feature reaching into another's cache.
+- **Decision.** A block's front matter declares every field of the schema, in the schema's order, with `[]`, `null` or `false` where it has nothing to say; the constitution's check rejects a missing or extra field. `constitution.yaml` lists every key the same way, with `[]` or `{}` where empty, and the hook warns about a missing one.
+- **Why.** No reader, hook or check has to guess whether an absent field means empty or forgotten.
 
-## ADR-0010 — Feature isolation with composition above; public API via `index.ts`
-**Date:** 2026-05-29 · **Status:** Accepted
+## ADR-0010 — Where a rule goes
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** No feature imports another; `routes`/`root` compose through each feature's public index, which exposes widgets and entity types only. (→ client `architecture` §1, §10)
+- **Decision.** A rule goes to the layer found by asking what must disappear for it to lose its meaning: nothing → core; the project has no UI → `ui`; the code does not run in a browser → `browser`; the code is not React → `_react`. Rules alike across siblings are lifted to a domain or to core when their result and their "how" match, and a property the platforms share becomes a domain they require. A new layer is added only when the new entity combines freely with every element of every existing layer.
+- **Why.** Each rule then lives in exactly one block.
 
-## ADR-0011 — Authorization as a feature; guards at the screens layer
-**Date:** 2026-05-29 · **Status:** Accepted · (→ client `architecture` §11)
+## ADR-0011 — A project keeps constitution.yaml and PROJECT.md
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0012 — Co-location by reason to change
-**Date:** 2026-05-29 · **Status:** Accepted
+- **Decision.** A project declares the blocks it follows, its applications, its check command and its overrides in `constitution.yaml`, and describes the product — what it is, for whom, its domains, entities and glossary — in `PROJECT.md`. A project keeps no `DECISIONS.md`: a departure is an override, and git history keeps its record.
+- **Rejected.** An assembly named in `PROJECT.md`; `Deviates:` lines in a project log.
 
-- **Decision.** Code lives in the layer that owns its reason to change, beside its consumer, and lifts on the second consumer; business logic stays in `domain` even with one consumer. (→ `principles` Law 12)
-- **Rejected.** "Used once → next to the caller" as the sole criterion (pulls business logic into UI folders).
+## ADR-0012 — A project pins a released version
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0013 — Boundaries enforced by the dependency checker
-**Date:** 2026-05-29 · **Status:** Accepted
+- **Decision.** `constitution.yaml` pins a released version; until 1.0.0 it pins the current 0.x one. The plugin delivers the rules of its installed version and says so when the pin differs.
+- **Rejected.** Delivering the rules of the pinned line, deferred until a need arises.
 
-- **Why.** Rules held only by discipline rot after a few deadlines; every law expressible as an import graph fails the check. (→ `principles` Law 15)
+## ADR-0013 — A project names its check command
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0014 — DDD patterns deliberately not adopted on the client
-**Date:** 2026-05-29 · **Status:** Accepted
+- **Decision.** `constitution.yaml` names the one command that runs every check of the repository — `check: bun run check` — and the key is required. `/check` runs it, and the hand-back gate waits for it to pass.
 
-- **Decision.** Entities, Value Objects, Repositories per aggregate root, Bounded Contexts, Anti-Corruption Layer, use-cases, Shared Kernel, Ubiquitous Language — yes. Domain Events, Event Sourcing, Specifications, heavyweight Factories — no: the server is the source of truth and the data layer handles reactivity. (→ client `architecture` §4)
+## ADR-0014 — Local blocks
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0015 — `#/` subpath imports as the path alias
-**Date:** 2026-05-29 · **Status:** Accepted
+- **Decision.** A project may keep blocks under `./rules/` with the same contract as a constitution block and name them in `constitution.yaml` by path. A local block is `status: draft` until a person reviews it, and it moves into the constitution when a second project needs it.
 
-- **Why.** Native to Bun and Node, one source of truth, zero resolver config; `@/` needs tsconfig paths, a bundler alias and a runtime shim. (→ `code` §1)
+## ADR-0015 — Rules: one format, global slugs
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0016 — `enum` for grouped values; `as const` for atomic ones
-**Date:** 2026-05-29 · **Status:** Accepted
+- **Decision.** A rule is a heading `## <slug> · MUST|SHOULD|MAY`, its statement, then the labels **Why**, **Check** and **Tags**, and **Example** and **Implements** where they are needed. A slug is kebab-case, unique across the whole constitution, carries no number and is never renamed once published; an outdated rule is marked deprecated, and its replacement gets a new slug. Blocks, labels and hook output are written in English.
+- **Rejected.** Numbered rules, which shift with every insertion.
 
-- **Why.** `ThemeMode.Dark` reads better and is stricter than bare strings; string enums avoid the numeric hole; the runtime object is an accepted cost. (→ `code` §3)
+## ADR-0016 — No rule names a tool
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0017 — Page pieces co-located beside routes; no `pages`/`layouts` layers
-**Date:** 2026-05-31 · **Status:** Accepted
+- **Decision.** No rule names a tool, at any layer. A rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a devkit preset or the project's own — built to hold every active rule of its roles.
+- **Rejected.** Tables that map each rule to a setting of a tool.
+- **Why.** A tool can then be swapped without touching a rule.
 
-- **Why.** The router excludes prefixed folders from generation while allowing imports; extra layers were unjustified ceremony. Pitfall recorded: a folder layout file is `route.tsx`, not `index.tsx`. (→ web `architecture` §2, `tanstack-spa` §6)
+## ADR-0017 — A tool-checked rule names its role
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0018 — Page sections are dumb; the route loads and passes down (revisable per screen)
-**Date:** 2026-05-31 · **Status:** Accepted
+- **Decision.** A rule's check is `test`, `review`, or `tool — <role>` with a role from a closed list: `format`, `lint`, `types`, `architecture`, `names`, `unused`, `versions`, `tests`, `coverage`, `mutation`, `secrets`, `audit`. A language or an implementation lists the roles it checks in `checks`. When a tool-checked MUST rule's role has no tool for a language the rule applies to, the hook warns and the constitution's check reports it.
+- **Why.** Only MUST rules count, so a missing tool for an advisory rule raises no noise.
 
-- **Why.** One obvious place where a screen's data and URL state assemble; a piece may take its own binding unit when a single loading point hurts. (→ web `architecture` §1–2)
+## ADR-0018 — Every rule carries a lens
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0019 — Barrels for every grouping folder; a barrel is a curated surface, not a mirror
-**Date:** 2026-06-01 · **Status:** Accepted
+- **Decision.** Every rule has at least one tag from a closed list of lenses — `a11y`, `security`, `performance`, `ux` and the rest — so a review can run by lens across all layers at once.
 
-- **Decision.** Any folder that groups items carries an `index.ts`, regardless of child count; a barrel exports only what consumers may couple to. (→ client `architecture` §10)
+## ADR-0019 — References obey the layers
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0020 — Precise sub-barrels; layer folders carry no aggregate index
-**Date:** 2026-06-04 · **Status:** Accepted
+- **Decision.** A rule refers to another only through its Implements line, and only to a rule of its own block, of a layer above, or of its closure. A block refers to another only through its front matter and its `with/` file names.
+- **Why.** A reference is a dependency, and dependencies point up.
 
-- **Why.** The import path states the coupling, same-named contracts coexist in their own sub-barrels, and the dependency rules bite with no aggregate to launder through. (→ client `architecture` §2)
+## ADR-0020 — Rules taken from an external review plugin
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0021 — Two-layer typed errors; `shared` may depend on `kernel`
-**Date:** 2026-06-04 · **Status:** Accepted
+- **Decision.** The rules of an installed review plugin were inventoried one by one. Those marked to take, or to take in part, and one adapted rule are written into the blocks they belong to, in this constitution's format.
 
-- **Decision.** Universal errors in `kernel/errors`, feature errors in `domain/errors`; a shared `mapApiToDomainError` helper in `shared` maps transport failures in every repository's `catch`; `shared` may reference the kernel, `libs` may not. (→ client `architecture` §6–7)
+## ADR-0021 — Precedence
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0022 — Domain use-cases exist only when business logic exists
-**Date:** 2026-06-12 · **Status:** Accepted
+- **Decision.** A project's override is stronger than any rule. Otherwise the more specific layer wins — implementations, then contexts, then domains, then core — and a block only tightens what is above it. A clash between a platform and a language means the rule is misplaced, and it moves to an implementation or to the project. A request against a MUST is answered with the conflict and an alternative, never obeyed silently.
 
-- **Why.** A pass-through use-case is dead indirection; the trigger is mechanical — does any rule of the operation survive the no-UI test? (→ client `architecture` §2)
+## ADR-0022 — Overrides: any rule, with consent and a reason
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0023 — The port owns its operation contract, in one file
-**Date:** 2026-06-12 · **Status:** Accepted
+- **Decision.** An override lowers one rule to SHOULD or MAY — any rule, core MUST included. It is added only with the user's explicit consent in the chat, for that override; `reason` is required and `until` is optional. Written under an application in `apps:`, it applies to that application's files.
+- **Rejected.** Rules no override may lower; blanket waivers.
 
-- **Why.** One owner per type, one file per port, the import path states the coupling; three earlier layouts (folder + types file, CQRS buckets, folder per port) and contract aliasing through use-cases had produced drift. (→ client `architecture` §2)
+## ADR-0023 — The run time is a shell hook and markdown skills
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0024 — Repositories are module objects, not classes
-**Date:** 2026-06-12 · **Status:** Accepted · (→ client `architecture` §3)
+- **Decision.** The plugin runs only a shell hook and markdown skills. Everything the hook reads is generated here, committed, and verified by regeneration. Nothing from the constitution is installed into a project: no TypeScript, no Bun, no generated configuration.
 
-## ADR-0025 — Streaming ports expose `AsyncIterable` of domain events
-**Date:** 2026-06-12 · **Status:** Accepted
+## ADR-0024 — The run time is language-agnostic
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Rejected.** Callback parameters (invert control, invite wire types inward); library stream types in port signatures (couple the contract to a tool). (→ client `architecture` §3)
+- **Decision.** The hook reads only `constitution.yaml`, the committed index and the front matter of the local blocks the file names. It scans no manifest of any language; `/ratify` lets the agent look at the repository instead.
+- **Rejected.** Detecting a project's technology from its files, and a `skip:` key for blocks detected but not declared.
+- **Why.** A project in any language, R included, can follow the constitution.
 
-## ADR-0026 — The binding-unit result contract: `undefined`-first, no fabricated defaults
-**Date:** 2026-06-12 · **Status:** Accepted · (→ client `architecture` §2)
+## ADR-0025 — Files, not chapters, in the output
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0027 — Optimistic updates live in the mutation lifecycle
-**Date:** 2026-06-12 · **Status:** Accepted · (→ client `architecture` §9, `tanstack-spa` §5)
+- **Decision.** The digest and the reminders name the files to read, and the agent reads them. No whole chapter passes through the output of a hook or a skill.
 
-## ADR-0028 — One adapter per external system
-**Date:** 2026-06-12 · **Status:** Accepted · (→ `principles` §3, client `architecture` §3)
+## ADR-0026 — The digest is an index
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0029 — Chapters name concerns; only the stack names brands
-**Date:** 2026-06-12 · **Status:** Accepted
+- **Decision.** At session start and in every sub-agent the hook prints, within Claude Code's 10,000-character cap: a header naming the plugin root, the warnings, core's part, the active blocks grouped by layer — one line each, the path derived from the root, the layer and the id — the active overrides, then MUST headlines while space lasts, a lowered one marked as such.
+- **Why.** Every agent receives the rules, sub-agents and sessions after compaction included.
 
-- **Why.** Laws should survive tool churn: the placement rule is the law, the brand is configuration; the design-system toolchain is a swappable choice, not a structural assumption. (→ `principles` §2, `intro` §6)
+## ADR-0027 — Warnings: one header, one line each
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0030 — Variant mechanisms by reach: a declarative map for self-contained variants, data-attributes for cascade
-**Date:** 2026-06-12 · **Status:** Accepted · (→ `ui` rule 3)
+- **Decision.** Warnings come under one header, `⚠️ Warnings`, one line each in a fixed form, `- <code>: <fact> — <fix>`, with a closed list of codes. Only at `startup` does the header ask the agent to tell the user.
+- **Rejected.** An emoji on every line.
 
-## ADR-0031 — Conventional commits as the hook enforces them; rules move with the change
-**Date:** 2026-06-12 · **Status:** Accepted
+## ADR-0028 — Generated files are committed only here, in digests/
+**Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** One line, `type: Subject`, no scope, empty body; the why in the pull request; any change that contradicts or extends a rule ships the amendment and its decision entry together. (→ `workflow` §6, §8)
+- **Decision.** The pieces the hook reads are generated into `digests/`, committed, and verified by regeneration. This is the one repository that commits generated files; the `workflow` rules keep forbidding them in projects.
 
-## ADR-0032 — Illegal states unrepresentable; errors never swallowed
-**Date:** 2026-06-12 · **Status:** Accepted · (→ `principles` Laws 13–14, `code` §9–10)
+## ADR-0029 — Three skills and one agent
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0033 — The observability axis is deferred; the no-swallow rule binds now
-**Date:** 2026-06-12 · **Status:** Accepted
+- **Decision.** The plugin ships `/ratify`, `/amend` and `/check [all|edits] [lens]`, and one agent, `reviewer`. The model may invoke `/check` as well as the user. `/upgrade` comes after 1.0.
+- **Rejected.** Recipe skills, a skill per block or per lens, and separate commands for the hand-back and for conformance.
 
-- **Decision.** Structured logging, levels, correlation and safe-context conventions are deferred and tracked here; what may be logged is already fixed by `security` §4.
+## ADR-0030 — root/, adapters/, libs/ and the feature surface
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0034 — The testing axis is deferred
-**Date:** 2026-06-12 · **Status:** Superseded by ADR-0044
+- **Decision.** `root/` is the composition root, `adapters/` holds port implementations, `libs/` holds project-agnostic code, and a feature's surface is the index at the feature's root.
 
----
+## ADR-0031 — Every grouping folder has a surface
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0035 — The constitution is its own private repository; devkit is its executable half
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** Every folder that groups modules has a surface file that re-exports what its consumers may couple to — the module's offer — and nothing else.
 
-- **Context.** The rules lived as gitignored copies inside one web project and were meant to be copied verbatim into every new one. A hub was needed for web, mobile and the command-line tool alike, kept private.
-- **Decision.** A private repository, `droneey/constitution`, holds the rules. The public `devkit` holds the executable rules — linter, hooks, TypeScript configs. One-way dependency: chapters name devkit packages in their "enforced by" cells; devkit never references the constitution.
-- **Rejected.** A folder inside devkit (public, published to npm, different release cadence); a name describing a property (`devkit-secret`) rather than the thing.
+## ADR-0032 — Role folders and suffixes follow the reference applications
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0036 — Blocks of six kinds, assembled per project; composition over inheritance
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** The folders named for a role and the file suffixes — `.entity`, `.port`, `.use-case`, `.utils` and the rest — follow the owner's reference web application and API.
 
-- **Context.** The rules had to serve any software, then a kind of application, then a stack, then a project — without editing a shared document per project.
-- **Decision.** Every unit of rules is a block of one kind — `core`, `language`, `sphere`, `concern`, `framework`, `stack` — with a `block.yml` interface: summary, `requires`, `refines`, chapters. A project pins a named assembly, an ordered list of blocks. Shared material is a block other blocks require; nothing is inherited.
-- **Rejected.** A single ladder of levels (shared client material had no home without duplication); per-project block lists in `PROJECT.md` (drift across projects; presets are the hub's job); folder nesting to express sharing (hidden coupling instead of a declared dependency).
+## ADR-0033 — composition/ replaces integrations/
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0037 — The dependency rule for documents and the precedence
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** The only code that knows several features lives in `composition/`, and only once a second consumer needs it; until then it lives in the delivery unit that needs it.
 
-- **Decision.** A chapter refers only to blocks of its own kind or above, by concern; lower blocks are named only in manifests; the log refers to chapters and chapters never cite the log. Precedence: a tool-enforced rule wins; within an axis the more specific block tightens; across axes structure wins. (→ `intro` §5–6)
-- **Why.** The same law that keeps code swappable keeps the blocks swappable, and a script can hold it.
+## ADR-0034 — What dead code is
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0038 — Spheres are named by kind of application; `client` is shared; `ui` is a concern; `react` is a framework
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** Dead code means unused files, dependencies and internal code. An unused export of a surface is not dead code: a surface offers what its consumers may use.
 
-- **Context.** "Frontend" and "backend" say little; the repositories are already named `-web`, `-mobile`, `-cli`. Web and mobile share most of their anatomy and all of the design-system principles; two stacks share the React discipline.
-- **Decision.** Spheres are `web`, `mobile`, `cli`, later `api`. The anatomy they share is the `client` sphere both require and refine. The design system is the `ui` concern, requirable and swappable on its own. React is a `framework` block, created because two stacks consume it. A sphere is framework-free and names its reactive unit by concern; examples illustrate with the default stack.
-- **Rejected.** One `frontend` sphere (mobile and web laws diverge in navigation and persistence); duplicating the client anatomy in both spheres; a sphere that binds a framework (the framework became unswappable).
+## ADR-0035 — Coverage is 100 percent on every gated layer
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0039 — Core is one block
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** Every gated layer is held at 100 percent. UI code, and a project that adopts the gate late, reach it through a ratchet floor that only rises.
 
-- **Why.** No assembly ever omits a core chapter; splitting core into blocks would create units nothing composes differently. A block exists only when some assembly takes it separately or swaps it.
+## ADR-0036 — Lint limits are errors
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0040 — The chapter budget: 500 lines and a summary per block
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** A function holds at most 100 lines, a file 500, and cognitive complexity stays at 10 or below; the linter reports each as an error. Specs have no line limit.
 
-- **Decision.** A chapter stays under 500 lines and becomes a folder with an index when it grows; every block carries a one-paragraph summary an agent reads before opening chapters.
-- **Why.** Agents load chapters into a bounded context; a summary lets them pick, a budget keeps a pick affordable.
+## ADR-0037 — A UI application composes through its providers and binding units
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0041 — Naming: uppercase root signal files, kebab-case inside
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** In a UI application, providers build the shared transport and configuration, adapters are module objects over them, each binding unit binds its operation's adapter, and tests replace the transport through the test sandbox. It is stated in `ui/with/remote-data.md`.
+- **Why.** It is the form of the owner's reference web application.
 
-- **Decision.** `README.md`, `PROJECT.md`, `DECISIONS.md` and the files tools look for keep uppercase names at a repository root; everything inside folders is kebab-case.
-- **Why.** Uppercase marks a convention a tool or a person recognises at a glance; the rest is a library of documents and follows the code naming rule.
+## ADR-0038 — Vendor libraries stay out of the domain
+**Date:** 2026-09-26 · **Status:** Accepted
 
-## ADR-0042 — Deviations are project decisions with a `Deviates:` line
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Context.** The first validator of this repository parsed YAML and checked schemas with a validation engine inside its domain code, reading the purity law as "no side effects".
+- **Decision.** No vendor library is imported under `domain/`, a pure one included. Parsing a format and checking its wire shape happen in an adapter behind a port, with the wire shapes as that adapter's models, and the domain checks its own rules on the parsed data. The repository's own project-agnostic helpers in `libs/` may be used, as the features of a command-line tool use its kit.
+- **Why.** The core imports only itself and the shared kernel, so a vendor's types and upgrades never reach it.
 
-- **Decision.** A project never edits a block. It departs through an entry in its own `DECISIONS.md` carrying `Deviates:` with the chapter and section; the default rules stay in force everywhere else.
-- **Why.** Departures stay visible, reviewable and reversible; the fleet's default stays strict.
+## ADR-0039 — Language and tool specifics live in their blocks
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0043 — Semantic aliases: the mechanism is fleet-wide, the vocabulary is the project's
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** What depends on a language lives in that language's block, and what depends on a tool lives in the tool's block. Core states each rule once, by concern.
 
-- **Context.** The web kit listed a fixed set of global aliases (`Id`, `Email`, …); the command-line tool used none.
-- **Decision.** Any project may declare semantic aliases in one ambient file and prefer them over bare primitives; each project declares only the aliases it uses. The rule prescribes the mechanism, never the list. (→ `code` §7)
-- **Rejected.** A fixed fleet-wide list (every project would carry vocabulary it does not have); dropping the mechanism (readable signatures were the point).
+## ADR-0040 — Failure categories and idempotency apply everywhere
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0044 — The testing axis is adopted from the command-line tool's practice
-**Date:** 2026-09-09 · **Status:** Accepted · **Supersedes ADR-0034**
+- **Decision.** The two categories of failure and idempotency hold for every application. problem+json belongs to the domain `api`, and expand/contract migrations to `persistence`.
 
-- **Context.** The web kit had deferred testing; the command-line tool already ran a 100 percent gate with fakes behind ports and no real world in tests.
-- **Decision.** A `testing` chapter in core: tests in the same change, inward-out, fakes over mocks, no network or real effects, `__tests__/<name>.spec.*` beside the unit, a native coverage threshold of 100 percent for functions and lines held in the runner's configuration. (→ `testing`)
-- **Rejected.** Co-located `<name>.test.ts` files (the fleet's real practice is `__tests__/`); a script parsing coverage output (the runner has a native gate).
+## ADR-0041 — Version control is a domain; git and git flows are implementations
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0045 — Security and collaboration are core chapters
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** The domain `version-control` is the base any git flow follows. The implementation `git` carries git's specifics; `lefthook` extends `git`, and so do git-flow frameworks. CI design and the major-bump mechanism stay the owner's separate work.
+- **Rejected.** Leaving version control out of the constitution altogether.
 
-- **Context.** Secrets, environment references, pinning and the rules for working with agents lived in chat and in one tool's README.
-- **Decision.** `security` fixes secrets as references, least privilege, exact pins, safe logging and gated irreversible operations; `collaboration` fixes decide-in-chat, consent boundaries, scope honesty, branch-only work, no tool attribution and the limits of delegated agents.
+## ADR-0042 — Agents are a domain on top of llm
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0046 — One `check` script per repository
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** `agents` is a domain. Its rules about the model sit in `agents/with/llm.md`, and `langgraph` requires `agents`.
 
-- **Decision.** Every repository exposes `check`; the stack chapter says what it runs. The `workflow` chapter names only the script. (→ `workflow` §3)
-- **Why.** Core must not name a runner or a tool; a stable script name is the one interface that survives every stack.
+## ADR-0043 — Lingui is a block; Paraglide stays local
+**Date:** 2026-09-25 · **Status:** Accepted
 
-## ADR-0047 — Every change through a pull request; the branch prefix decides the version
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** `lingui` is the i18n implementation of the constitution. A project that uses Paraglide keeps it as a local block, with no override, until a second project needs it.
 
-- **Decision.** No direct pushes to `main`; squash merges; the required `check`; `feature` bumps minor, `fix` and `hotfix` bump patch through the shared workflows; a human promotes a pre-release. (→ `workflow` §7)
-- **Why.** Direct pushes skipped the check and never produced a version.
+## ADR-0044 — One token grammar for ui
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0048 — Mobile blocks are skeletons until the first mobile project
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** The design-token grammar of the owner's reference web application is the standard of `ui`.
 
-- **Why.** No mobile project runs on the constitution yet; writing a stack nobody chose would invent rules. The sphere and the stack list their questions as `TODO:` and the client chapter alone applies meanwhile.
+## ADR-0045 — Python configs and tools live in devkit
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0049 — Delivery: one clone per machine and user-level pointers
-**Date:** 2026-09-09 · **Status:** Superseded by ADR-0057
+- **Decision.** The shared configurations of the Python tools live in devkit, under `packages/python/`, beside the TypeScript ones.
 
-- **Decision.** The constitution is cloned once per machine at a fixed path; agent tooling points at it from the user's own configuration; a project commits only `PROJECT.md` and `DECISIONS.md`. Skills built from the chapters are linked from the clone. Implementation follows in a later release.
-- **Rejected.** Copying the documents into each project and ignoring them; a git submodule (a committed pointer to a private repository); a private package (registry authentication on every machine and in CI).
+## ADR-0046 — The error and logging libraries get their own repository
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0050 — The log is seeded with the inherited decisions, condensed
-**Date:** 2026-09-09 · **Status:** Accepted
+- **Decision.** The owner's error and logging libraries, first written inside one API, move to a separate repository of runtime libraries.
 
-- **Decision.** The still-valid decisions of the first web kit are carried here as ADR-0001 to ADR-0034 with their original dates; superseded generations and project-local decisions are not.
-- **Why.** The rationale behind the chapters must stay re-derivable; a log that starts at the blocks would present the inherited laws as unexplained.
+## ADR-0047 — oxlint is not adopted now
+**Date:** 2026-09-24 · **Status:** Accepted
 
-## ADR-0051 — Concerns rank above spheres
-**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0036, ADR-0037**
-
-- **Context.** The kinds table placed `concern` below `sphere` while `web` and `mobile` required and refined `ui`, and `ui` required `client` — a cycle between kinds, the very thing the dependency rule forbids.
-- **Decision.** The kinds are ordered core, language, concern, sphere, framework, stack. A concern is what several kinds of application share, so it ranks above the spheres that refine it; assemblies list blocks in that order. (→ `intro` §3, §6)
-- **Why.** The order of the table is the direction of dependency, and the check enforces it.
-
-## ADR-0052 — The `ui` concern requires nothing; naming by location belongs to the client anatomy
-**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0038**
-
-- **Context.** `ui` named `libs/ui`, `shared/ui`, `root/ui` and `features/*/ui` — the client anatomy — in its theming, prop-reuse and locale rules, and carried the table that maps a location to a prefix.
-- **Decision.** The prefix table and the `-widget` suffix move to the client `architecture` chapter's homes section; the remaining rules speak of the theme module, the primitive library and every UI folder. `ui` has no `requires`. (→ `ui` rules 1, 5, 6, 11, 15; client `architecture` §8)
-- **Why.** A concern that names one sphere's folders cannot be taken by another; independence is replaceability.
-
-## ADR-0053 — A stack is named after its platform layer, never after the sphere
-**Date:** 2026-09-09 · **Status:** Accepted
-
-- **Context.** The stacks were `tanstack-spa`, `expo` and `bun-cli`: two named after the application shell, one after the runtime plus the sphere.
-- **Decision.** A stack carries the name of the layer that makes it that stack — the application shell of a browser or device client, the runtime of a tool that runs on it — and never repeats the sphere, which the assembly already names. `bun-cli` becomes `bun`; the assembly stays `cli-bun`. (→ `intro` §3)
-- **Why.** Bun is tooling in the browser stacks and the platform in the tool's; the name says which.
-
-## ADR-0054 — Script names follow `<subject>:<action>`
-**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0046**
-
-- **Context.** One stack said `typecheck` and `test:unit`, the other `type:check` and `test`.
-- **Decision.** `lint:check`, `type:check`, `test:unit`, `architecture:check`, `build`, and the umbrella `check`, in every stack. (→ stack chapters §6)
-- **Why.** One pattern, nothing to guess; a repository that differs renames in a fix.
-
-## ADR-0055 — Environment names are declared in one place per repository
-**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0045**
-
-- **Context.** `security` §1 spoke of a document declaring `${NAME}` references — the command-line tool's mechanism, not a rule every application can follow.
-- **Decision.** The rule is the declaration: every name a repository reads is listed in one place — `.env.example` for an application, the tool's own document for a tool — and code reads no undeclared name. (→ `security` §1)
-
-## ADR-0056 — Core states release rules, never the release mechanism
-**Date:** 2026-09-09 · **Status:** Accepted · **Refines ADR-0047**
-
-- **Context.** `workflow` §7 and `security` §6 named the fleet's shared workflows and a version bump every repository would perform — a repository on another forge, or one that publishes no versions, could not comply.
-- **Decision.** Core keeps the rules: pull requests only, squash, the required check, prefix-driven bumps where a repository versions itself, shared automation wherever the forge offers it. The mechanism is the repository's. (→ `workflow` §7, `security` §6)
-
-## ADR-0057 — The project's own agent file delivers the constitution
-**Date:** 2026-09-09 · **Status:** Superseded by ADR-0062 · **Supersedes ADR-0049**
-
-- **Context.** ADR-0049 put the pointer in the user's machine-wide configuration, invisible inside the repository.
-- **Decision.** A project commits a `CLAUDE.md` from the `core` template: it imports the `intro` chapter from the constitution's clone at the fleet's path and says nothing else. No machine-wide file, no copy of the documents, no submodule. The clone path is a fleet convention; skills built on the chapters follow later. (→ `intro` §1)
-- **Why.** The file in the repository makes the governance visible where the work happens; the import keeps the documents in one private place.
-
-## ADR-0058 — Additional entrypoints live under `src/entrypoints/<name>`
-**Date:** 2026-09-09 · **Status:** Accepted
-
-- **Context.** A client may ship a second bundle — an embed script a host page loads — whose home the anatomy did not name, and a contract shared by the app and that bundle had no owner.
-- **Decision.** `src/entrypoints/<name>/` holds everything that ships only in that bundle and composes like a screen through public indexes; nothing imports an entrypoint. A contract two bundles share belongs to the feature that owns it. Generated output gets its own top-level folder, named by the stack. (→ client `architecture` §1, §7)
-
-## ADR-0059 — The constitution verifies itself and is released by tags
-**Date:** 2026-09-09 · **Status:** Accepted
-
-- **Context.** The dependency rule, the manifests and the budget were held by hand; a pin needs a tag to point at.
-- **Decision.** The repository is a Bun project on the devkit packages with one `check`: lint, types, tests with the native coverage gate at 100 percent, and `blocks:check`, a script that loads every manifest through a schema and applies one rule per file — manifests, assemblies, kind direction, budget, links, prose references, decision numbering. Pull requests run it in CI; merges into `main` cut tags through the fleet's shared workflows. (→ `intro` §3–§8, README)
-- **Why.** A rule only reviewers hold rots; the check makes the dependency rule and the composition contract mechanical, the same standard the chapters demand of every other repository.
-
-## ADR-0060 — Bun dependency updates wait for a Dependabot that reads lockfile version 2
-**Date:** 2026-09-09 · **Status:** Accepted · **Deviates:** `security` §3, for this repository
-
-- **Context.** A fresh `bun install` on Bun 1.4 writes `bun.lock` at lockfile version 2; the updater image Dependabot runs ships Bun 1.3.5 and reads version 1 only, so the weekly bun job failed on its first run. Older repositories still carry version 1 lockfiles and are not affected until they regenerate them.
-- **Decision.** `dependabot.yml` watches GitHub Actions only. The bun packages are bumped by hand in fix pull requests until Dependabot's updater reads version 2, at which point the ecosystem returns.
-- **Rejected.** Regenerating the lockfile at version 1 with an older Bun — a hidden dependency on a runtime the repository does not pin, silently undone by the next `bun install` that migrates the file.
-
-## ADR-0061 — A test case is three marked sections, never merged
-**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0044**
-
-- **Context.** `testing` §5 named Arrange, Act, Assert in one clause; cases in the fleet were already written that way, but nothing said a section may not absorb another — a `beforeEach` that acts, an expectation inside Act, a second Act after an Assert.
-- **Decision.** Every case is three sections in that order, each opened by its own marker, each present once; a section never merges into another; a second Act is a second case; a failure is captured in Act and checked in Assert. (→ `testing` §6)
-- **Why.** The three markers are what make a case readable at a glance and reviewable without running it; a merged section is where the intent of a test goes missing.
-
-## ADR-0062 — The constitution is delivered as a Claude Code plugin from its own repository
-**Date:** 2026-09-11 · **Status:** Accepted · **Supersedes ADR-0057**
-
-- **Context.** ADR-0057 put a machine path into a committed file: the agent template imported the intro from a clone at one developer's layout, and a folder rename broke it within two days.
-- **Decision.** The repository is a plugin and its own marketplace: `.claude-plugin/plugin.json` and `marketplace.json`, installed once per machine with two commands. A `SessionStart` hook reads `PROJECT.md` from the session's directory and, when it names an assembly, prints the `intro` chapter, the assembly and the manifests of its blocks into context from the plugin's own root; it also reports a pin that differs from the installed version, which `package.json` carries. The recipes are skills the plugin ships from inside their blocks. A project commits `PROJECT.md` and `DECISIONS.md` and no agent file. (→ `intro` §1, §8; README)
-- **Rejected.** A fixed home path such as `~/.constitution` — still a path and still a confirmation dialog per project. A dependency in `package.json` — the `@droneey` scope already lives on npmjs and cannot point at a private registry, and a git dependency needs private access in every consumer's CI. A machine-level agent file — invisible in the repository and tied to one tool without versioning.
-- **Why.** Nothing in any repository names a machine; the version comes with the install; the same channel carries the rules and the recipes.
-
-## ADR-0063 — Templates live at the root; scaffolding is the `project-init` skill
-**Date:** 2026-09-11 · **Status:** Accepted
-
-- **Context.** The `PROJECT.md` and `DECISIONS.md` templates sat under `blocks/core/templates/` behind a `templates` key the core manifest alone carried — a bend in the block model for files that are copied once, not read as rules.
-- **Decision.** `templates/` at the root holds the two files a project starts from, reachable by hand; the interview that fills them is the `project-init` skill in `blocks/core/skills/`; a block manifest carries chapters only. (→ README)
-- **Why.** A block is rules; a template is a starting point; a skill is a procedure. Three kinds of thing, three homes.
-
-## ADR-0064 — Package manifests are checked by Syncpack through the devkit
-**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0054**
-
-- **Context.** `package.json` had no gate: field order and version ranges drifted per repository, and the devkit checked only its own versions.
-- **Decision.** Every stack with a `package.json` extends `@droneey/devkit-ts-syncpack` from a one-line `.syncpackrc.mjs` and runs `packages:check`, `syncpack lint` for versions and ranges and `syncpack format --check` for the field order, as the second step of `check`. Dependency updates come from Renovate through the fleet preset, so `dependabot.yml` leaves. (→ stack chapters §1, §6)
-- **Why.** The order and the ranges are one decision for the fleet, made once in the devkit and enforced where the manifest lives; a check that only fixes cannot hold a rule.
-
-## ADR-0065 — The bun test configuration is the devkit template
-**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0044**
-
-- **Context.** `bunfig.toml` has no `extends`; each repository listed its own entrypoints in the coverage ignores, so the file differed everywhere for one line.
-- **Decision.** The ignores are globs bound to the anatomy — `**/__tests__/**`, `**/main.ts`, `**/composition.ts` — and the file is the devkit template copied as it is; a repository with another entrypoint records the extra line as a departure. (→ `bun` stack §5)
-- **Why.** A file that cannot be shared can still be identical; naming the entrypoints by convention makes it so without a checker.
-
-## ADR-0066 — The skills are named `ratify` and `amend`
-**Date:** 2026-09-11 · **Status:** Accepted · **Refines ADR-0062, ADR-0063**
-
-- **Context.** `project-init` and `adr` named their output, not the act; `init` would collide with Claude Code's built-in command; a prefix such as `co-` would add nothing, since a plugin's skills are already namespaced as `/constitution:<name>`.
-- **Decision.** `/ratify` brings a repository under the constitution, `/amend` records a decision in its log. Names come from the constitution's own vocabulary and read as verbs; later recipes follow the same register. (→ README)
-
-## ADR-0067 — A public repository carries a license file
-**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0045**
-
-- **Context.** Nothing said whether a repository needs a license; the question came up when the scaffolding skill was tempted to write one.
-- **Decision.** A public repository carries a license file at its root naming the author; a private one need not, since without a file all rights stay reserved. Which license, and the file itself, are the repository's own — the constitution states the rule and ships no template. (→ `security` §6)
-- **Why.** The rule is governance; the file is scaffolding, and the fleet keeps copies out of the shared repositories unless something extends them.
-
-## ADR-0068 — A `library` sphere and a `bun-workspaces` stack, by the symptom of the devkit
-**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0038, ADR-0053**
-
-- **Context.** The devkit is a monorepo of packages other repositories install; no sphere described it, so it could not be ratified, and the `bun` stack binds the command-line anatomy, not a workspace of packages.
-- **Decision.** The `library` sphere states the anatomy and laws of a package monorepo — one package per folder with a curated surface, a common area, one version for all, templates copied once — free of tools. The `bun-workspaces` stack binds it: Bun workspaces, the devkit configurations, npm through the fleet's deploy with trusted publishing. The assembly is `library-bun`. (→ `library` architecture, `bun-workspaces` stack)
-- **Why.** A sphere appears when a real repository has no home; the stack is named after its platform layer, and Bun's workspaces are that layer here, distinct from Bun as the platform of a tool.
-
-## ADR-0069 — The constitution is licensed under PolyForm Internal Use
-**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0067**
-
-- **Context.** The repository goes public so the plugin installs without private access, and the author wants the constitution used, not resold, redistributed or passed off as someone else's.
-- **Decision.** `LICENSE.md` carries PolyForm Internal Use 1.0.0 verbatim under the author's required notice: anyone may use the constitution inside their own organisation, commercially or not; distribution, sublicensing and transfer are forbidden; changes stay internal; the notice travels with every copy. `package.json` says `SEE LICENSE IN LICENSE.md`, since the licence has no SPDX identifier.
-- **Rejected.** No file — a public repository with no licence grants nothing at all, which is not the offer. PolyForm Strict — forbids commercial use, and the consumers are companies. An open-source licence — permits redistribution and derivative works, the two things the author withholds. A custom text — possible later, with a lawyer, when a paid offer needs an agreement.
-- **Why.** The rule in `security` §6 says a public repository carries a licence naming its author; this is the one that grants use and withholds the rest.
-
-## ADR-0070 — `PROJECT.md` carries no `TODO`: the interview asks, and leaves out what stays unanswered
-**Date:** 2026-09-12 · **Status:** Accepted · **Refines ADR-0063**
-
-- **Context.** The first two ratifications landed with `TODO:` lines in `PROJECT.md`, as the `ratify` skill instructed for anything the author had not answered. A `TODO:` is a plan, and `PROJECT.md` is the stable description of the product read first by every session; the plan sat where only facts belong.
-- **Decision.** The skill asks about what it does not know and lets the human answer, confirm or correct; what stays unanswered is left out. Nothing in `PROJECT.md` is marked `TODO:` or points at the future; a section with nothing to say is dropped. A departure recorded in `DECISIONS.md` states the decision, never a follow-up.
-- **Rejected.** Honest `TODO:` markers — they read as gaps to fill and turn the product context into a backlog. Inventing an answer — the skill never invents.
-- **Why.** A shorter file that is true beats a complete one that is not, and the product context has to be stable for every session that starts with it.
-
-## ADR-0071 — The code chapter draws imports by module, files by semantic unit, optional properties exactly
-**Date:** 2026-09-13 · **Status:** Accepted · **Refines ADR-0015**
-
-- **Context.** An audit of nydra against the code chapter hit three rules that read differently from how a whole cli codebase is, and should be, written. §1 drew the `#/` line at top-level folders, so one feature importing another's public surface would need `../../../config/public`, while every feature in practice imports `#/features/<name>/public`. §2's one primary export per file would split a family of field schemas, or one vendor's mappers, into a file each, against co-location by reason to change; about ninety files broke it. §4's `?: T` left open the case where an explicit `undefined` is a real value, and without the compiler the difference between absent and `undefined` stayed invisible.
-- **Decision.** §1: `#/` for an import that leaves the importing module — the unit the architecture chapter bounds with a public surface — and relative paths inside it. §2: a file is one semantic unit named after it; a single export names the file, several exports must form one unit that the name describes. §4: `?: T` by default and `?: T | undefined` only where an explicit `undefined` means something, with `exactOptionalPropertyTypes` on in every repository through the devkit tsconfig. (→ `code` §1, §2, §4)
-- **Rejected.** Keeping the top-level rule and rewriting imports as deep relative paths — longer, and blind to the boundary the public surface already draws. One file per export — scatters one reason to change across many files. Dropping `| undefined` everywhere without the compiler flag — the distinction would live in prose only.
-- **Why.** A rule the code keeps breaking for good reasons is the wrong rule; drawing each line where the architecture already draws it keeps the chapter and the code in agreement.
-
-## ADR-0072 — The Bun workspaces check runs the type checker and the dependency checker
-**Date:** 2026-09-13 · **Status:** Accepted · **Refines ADR-0068**
-
-- **Context.** `workflow` §3 has every `check` run the type checker and the dependency checker; the `bun-workspaces` stack listed neither, and the `library` chapter named only the manifest check and the tests as its enforcers, so a repository on the stack was out of conformance by default. The devkit, the one repository on it, turned the type check on as a departure and found two errors on the first run; no import boundary between its packages was checked at all.
-- **Decision.** `check` runs `lint:check`, `packages:check`, `type:check` (`tsc --noEmit`), `test:unit`, `architecture:check` (dependency-cruiser), the order of the `bun` stack; dependency-cruiser joins the toolbox. The `library` chapter names the dependency checker among its enforcers: a package importing another package's files, and `common` importing anything, are import boundaries. (→ `library` architecture §7, `bun-workspaces` stack §1, §6)
-- **Rejected.** Leaving both steps to each library repository as a departure — the same departure in every repository is a missing rule. Proving the boundaries with specs — a spec that walks the imports re-implements the checker.
-- **Why.** The stack says what `check` runs; a stack that runs less than `workflow` §3 demands leaves the gap for every repository on it to find alone.
-
-## ADR-0073 — Numbers another system defines are numeric enums
-**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0016**
-
-- **Context.** §3 made every group of named values a string enum, and ADR-0016 gave the reason: a string enum has no numeric hole. nydra's error work met two groups whose values are numbers fixed elsewhere — its exit statuses and the HTTP statuses of the vendors it calls — and had to record a departure for each; every repository that speaks HTTP would record the same one. The linter forbids a bare number, so without an enum each adapter named its own copy of 401, 403 and 500.
-- **Decision.** A group of numbers another system defines is a numeric enum with every value written out. TypeScript still lets any `number` into a numeric enum type, so a number that comes in from outside stays `number` and is compared against the members. Every other group stays a string enum; a numeric enum whose numbers nobody defined, or whose values are left implicit, stays forbidden. (→ `code` §3)
-- **Rejected.** A string enum with a second table from names to numbers — two maps for one fact. A departure in every repository — the same entry everywhere is a missing rule.
-- **Why.** The string rule keeps a value reading as what it means; a number another system fixed already means exactly one thing, and the enum only gives it a name. Keeping inbound numbers as `number` closes the hole ADR-0016 guarded against, where the hole could still bite.
-
-## ADR-0074 — Every chapter is in context, and a delegation hands the chapters on
-**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0062**
-
-- **Context.** The session-start hook put the intro, the assembly and the block manifests into context; the rules themselves were to be read on demand, chapter by chapter. In practice the chapters outside the one a task seemed to touch went unread. nydra's error work shipped HTTP statuses named anew in every adapter and comments that restated names — `principles` forbids both — and neither the agent nor its sub-agents saw it until the owner pointed. Sub-agents never see the session's context; the digests they were handed left those rules out. The whole `cli-bun` assembly is about 9,100 words.
-- **Decision.** The hook prints every chapter of `core` and, when `PROJECT.md` names an assembly, every chapter of the blocks it lists, in reading order, after each block's manifest. The intro says the chapters are in context and that work is checked against every chapter of the assembly before it is handed back. `collaboration` §7: an agent that delegates hands its sub-agents every chapter that governs their task, in full. (→ intro §1, §2; `collaboration` §7)
-- **Rejected.** A digest of rule headlines — a headline without its rule is what failed. Reading on demand — also what failed. A hook for sub-agents — Claude Code offers none, so the rule sits with the agent that delegates.
-- **Why.** A rule the agent does not have in front of it is decoration. About twelve thousand tokens at each session start is cheap next to a review round the owner has to run by hand.
-
-## ADR-0075 — The developer runs the engines the tool installed
-**Date:** 2026-09-14 · **Status:** Accepted
-
-- **Context.** The `bun` stack had the developer machine pin its own copies of the engines through mise, and CI install the same versions. The versions then lived twice, in the tool's pin table with its checksums and in `mise.toml`, and only memory kept the two together. In nydra they came apart: the tool installed Python 3.13.15, CI got 3.13.15 because it happened to be the newest 3.13, and a laptop ran its mise copy of ansible-core on 3.14.2.
-- **Decision.** The tool links each engine it installed into a `bin` directory of its home, under the engine's own name. `mise.toml` puts that directory on `PATH` with `[env] _.path`, and mise-action carries it into CI, so the developer machine and CI run the very engines the tool gives its users. mise pins the rest of the developer toolchain. (→ `bun` stack §4)
-- **Rejected.** A spec comparing `mise.toml` with the tool's pin table: it keeps two lists in step instead of having one. Versioned paths into the tool's home in CI: the same duplication, moved into YAML. The tool reading `mise.toml`: its users have none.
-- **Why.** One version per engine, in the place that pins it by checksum, and the checks run on what the tool ships.
-
-## ADR-0076 — Scripts run their tools on Bun
-**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0065**
-
-- **Context.** `bun run` starts a tool with a Node shebang on the first `node` on `PATH`: the one a runner image ships, or a laptop's global one. `check` ran on a runtime no repository pinned, and a tool that fails under Bun, like dependency-cruiser with its swc parser, went unseen wherever a `node` happened to be.
-- **Decision.** The devkit `bunfig.toml` gains `[run] bun = true`, and `bun run` starts every tool on Bun, a Node shebang included. A tool Bun cannot run is the stack's fallback, with its reason recorded. (→ `bun` stack §1, §5; `bun-workspaces` stack §1)
-- **Rejected.** `--bun` on every script line: one flag to remember per line. Pinning Node beside Bun: a second runtime for tools the first one runs.
-- **Why.** The stack makes Bun the runtime and the script runner; `check` proves a repository only when it runs on what the repository pins.
-
-## ADR-0077 — A project's decision log holds its departures and nothing else
-**Date:** 2026-09-14 · **Status:** Accepted · **Refines ADR-0042**
-
-- **Context.** The chapters sent a project's departures to its `DECISIONS.md`, and "what was decided" too. Projects logged both, so the few departures a reader needs sat among entries that restated a ratification, a design the rules already allowed or a CI layout: three of nydra's eight entries, three of devkit's four.
-- **Decision.** A project's `DECISIONS.md` lists its departures in force, each with its `Deviates:` line; a decision the chapters allow lives in the description of its pull request. The change that ends a departure removes its entry, git keeps the history, and a number is never reused. The template and `/amend` follow, and `/amend` numbers a new entry from the highest the repository has ever used. The constitution's own log keeps recording every amendment. (→ `intro` §1, `workflow` §6, §8, `collaboration` §8)
-- **Rejected.** Every decision in the project's log: the departures drown in it. An append-only log with a status per entry: a reader wants what is in force, and git already holds what was.
-- **Why.** The log tells a reader where a project differs from the rules and why; the rest is in its pull requests and its code.
-
-## ADR-0078 — Folders are laid out by purpose, and a set lives in a folder of its own
-**Date:** 2026-09-18 · **Status:** Accepted
-
-- **Context.** The chapters said how a file is written and where a rule lives, and nothing about how folders are laid out. Folders that hold a set — one file per vendor, per command, per rule — also held the contract those files satisfy and the registry that indexes them, so a reader could not tell a member from machinery without opening files. The `cli` chapter prescribed exactly that shape and put the registry in the folder's surface file; a surface file holding a table is also a file the folder's own members import, which is where import cycles start.
-- **Decision.** `principles` §5 states the rule for every language and stack: a folder is named for its purpose and holds one purpose, named for what its contents are for and never for what they are made of; a set of same-kind members owns a folder named for the member in the plural and holds nothing else; the contract, the registry and the operation that runs the members sit beside that folder; the surface file of a folder carries re-exports and nothing else, and a file never imports the surface of its own folder. Depth appears to separate purposes that are already mixed, never in anticipation. The definition of done gains the line, and `cli` §1, §2 and §9 follow: `providers/` becomes `vendors/` plus the contract, `registry.ts` and a surface that only re-exports, and `commands/` holds commands alone while the shared flags and the document requirement move beside it in `app/`. (→ `principles` §5, `cli` §1, §2, §9)
-- **Rejected.** Leaving it to each sphere: the question is not about command-line tools, and three spheres would answer it three ways. A threshold — a folder only once a set has two members — the mixing is there at one member, and a layout that reshapes on the second is churn nobody schedules.
-- **Why.** A folder is the first thing a reader sees and the cheapest place to carry meaning. When it holds one purpose, where a new file goes stops being a matter of taste.
-
-## ADR-0079 — A boundary is not a speculation
-**Date:** 2026-09-19 · **Status:** Accepted
-
-- **Context.** `principles` §0 called an abstraction introduced before its second real use a liability. Read as written, it condemned every port with one adapter — and a tool that speaks to vendors is made of ports with exactly one adapter each, which the architecture chapters require. The core rule contradicted the chapters built on it. Recorded late: the amendment shipped in #46 without its entry.
-- **Decision.** §0 narrows the rule to an **internal** abstraction, whose guessed axis is usually the wrong one, and adds that a boundary is not a speculation: where the system meets something outside it — a vendor, an engine, a transport, a format, a clock — the seam is justified by the boundary being there, and a port with one adapter is complete. (→ `principles` §0)
-- **Rejected.** Dropping the rule: it is right about seams inside a program. An exception listed in each sphere: the contradiction is in `core`, so it is mended there.
-- **Why.** A seam at a real boundary is what lets a vendor change; a seam inside the program before its second use is a guess. The two need different rules.
-
-## ADR-0080 — A command-line tool isolates its features and composes them above
-**Date:** 2026-09-22 · **Status:** Accepted
-
-- **Context.** `cli` let a feature import another feature's `public/` (§7), made the document's schema one feature among the rest (§4), and had no layer between the features and `app/` (§1). In the one tool built to it, that is where coupling grew: the feature that renders DNS records read the machines, the edge and the panel sections of the document and imported two other features to do it, until every section was every feature's business. The client sphere had decided the opposite in ADR-0010.
-- **Decision.** A feature imports no other feature and no document type: it takes an input built for its use-case, returns what it owns, and declares its own vocabulary. `integrations/`, with a feature's shape, is the only code that knows several features: it holds the document, reads it whole, builds each feature's input and orders the run. It reaches a feature only through `public/` and may use another integration's `public/`. A fact two features share is derived there and handed to each. The dependency checker holds it, one row per layer. (→ `cli` §0, §1, §2, §4, §7, §9, §10)
-- **Rejected.** A section of the document that declares the links between the others: it moves the coupling into the file and sends a reader to two places for one fact. Features importing each other's `public/`: the coupling it permits is the coupling that grew. Integrations blind to each other, as features are: a run cannot be ordered without the document.
-- **Why.** A feature that sees no one is read, tested and changed alone, and what joins features sits in one place a reader can find and a checker can hold.
-
-## ADR-0081 — A section may be absent; a field inside one may not
-**Date:** 2026-09-22 · **Status:** Accepted
-
-- **Context.** `cli` §4 said a resource exists by presence and that absent means untouched. Read down to the field, silence became a second way of saying something: a field left out was mirrored from the vendor, so the vendor's web interface stayed the source of truth for it, drift there went unseen, and a plan had nothing to compare against. Defaults filled in what the document did not say, so what converged was not what it said.
-- **Decision.** A section may be absent, and an absent section is untouched. Inside a declared section every field the tool manages is stated, and "there is none" is written rather than left silent; a switched feature is off explicitly and carries nothing else. (→ `cli` §4)
-- **Rejected.** Mirroring the vendor for a silent field: it hides drift where nothing reviews it. A marker that defers a field on purpose: the mirror under a name that sounds deliberate. Required sections: a tool that manages no DNS has nothing to say about DNS, and saying it in empty blocks is noise.
-- **Why.** A tool that exists to take state out of a vendor's interface cannot let its document be silent about a field it manages.
+- **Decision.** oxlint is not adopted now; the current linter keeps holding the lint rules.
