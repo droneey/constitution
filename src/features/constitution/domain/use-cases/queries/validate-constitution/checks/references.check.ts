@@ -11,6 +11,7 @@ import { linkTargetsOf } from '../link-targets.utils';
 const IMPLEMENTS_LINE = /^\*\*Implements:\*\*/;
 const TABLE_ROW = /^\s*\|/;
 const FOLDER_SEPARATOR = '/';
+const DECISION = /\bADR-\d{4}\b/g;
 
 const ownerOf = (input: {
   blocks: readonly Block[];
@@ -77,6 +78,14 @@ const slugFindings = (input: {
   });
 };
 
+const decisionFindings = (file: BlockFile): readonly Finding[] =>
+  [
+    ...new Set(withoutCodeFences(file.body).match(DECISION)),
+  ].map((decision) => ({
+    message: `cites ${decision}; a block states its rules without citing the decision log`,
+    path: file.path,
+  }));
+
 const referencesCheck: Check = ({
   constitution,
 }: CheckInput): readonly Finding[] => {
@@ -99,6 +108,7 @@ const referencesCheck: Check = ({
         file,
         slugs,
       }),
+      ...decisionFindings(file),
     ]),
   );
 };

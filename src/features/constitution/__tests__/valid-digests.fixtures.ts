@@ -14,6 +14,7 @@ const GOLDEN_INDEX = `${[
   'role\tmutation\tfalse',
   'role\tsecrets\ttrue',
   'role\taudit\tfalse',
+  'role\tcommits\ttrue',
   'block\tcore\tcore\tThe core block.\tprinciples.md\t\t\t\tfalse\t\t\t\t\t',
   'block\ti18n\tdomain\tThe i18n block.\t\t\t\t\tfalse\t\t\t\t\t',
   'block\tremote-data\tdomain\tThe remote-data block.\t\t\t\t\tfalse\t\t\t\t\t',

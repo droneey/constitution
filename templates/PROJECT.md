@@ -22,6 +22,10 @@
 
 <!-- What is out of scope, so no one builds it by assumption. -->
 
+## Critical scenarios
+
+<!-- The journeys that must never break, one line each. Each one has an end-to-end test. -->
+
 ## Glossary
 
 <!-- The business's own words, one per line: **Term** — what it means here. Code and conversation use these words. -->

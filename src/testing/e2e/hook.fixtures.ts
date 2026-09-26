@@ -100,7 +100,9 @@ const inputOf = (input: {
 };
 
 // A clean environment: the session that runs the tests sets CLAUDE_PROJECT_DIR
-// and CLAUDE_PLUGIN_ROOT of its own.
+// and CLAUDE_PLUGIN_ROOT of its own. Bun's test runner keeps its dates in UTC,
+// so the hook reads its date in UTC too, or the two disagree on "today" for
+// the hours around midnight.
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
   const result = spawnSync(
@@ -124,6 +126,10 @@ const runHook = (call: HookCall): HookRun => {
         [
           'LC_ALL',
           LOCALE,
+        ],
+        [
+          'TZ',
+          'UTC',
         ],
         ...(call.pluginRootUnset === true
           ? []

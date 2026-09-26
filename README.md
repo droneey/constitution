@@ -8,7 +8,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | The laws for any program, always active |
+| `blocks/core` | What holds for any program, always active: `core.md`, how to use the constitution, and the chapters it lists, `principles` first |
 | `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `api`, `version-control` |
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli`, `server` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
@@ -30,6 +30,28 @@ Every data view shows four states: loading, empty, error and content.
 **Check:** test
 **Tags:** ux, a11y
 ```
+
+A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The digest prints MUST headlines, and only MUST rules raise the hook's warnings.
+
+A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role of the tool that holds it, never the tool; a tool's block lists the roles it checks:
+
+| 🔎 Role | ✅ The tool proves |
+|---|---|
+| `format` | the code is formatted |
+| `lint` | code-level rules hold |
+| `types` | the types check |
+| `architecture` | imports follow the layers |
+| `names` | files and folders follow the vocabulary; any language |
+| `unused` | no unused file, dependency or code |
+| `versions` | each dependency has one version |
+| `tests` | the tests pass |
+| `coverage` | the coverage gate holds |
+| `mutation` | every mutant of the logic is killed |
+| `secrets` | no secret is committed; any language |
+| `audit` | no known vulnerability, and only allowed licences |
+| `commits` | commit messages and branch names follow their format; any language |
+
+A rule's Tags are lenses, for reviewing a project across every layer at once: `a11y`, `architecture`, `data`, `errors`, `naming`, `performance`, `security`, `testing`, `types`, `ux`, `workflow`.
 
 A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `with/<other>.md`. A brand, a language or a file form belongs to the block that `owns` it, and only that block and the blocks that depend on it may name it.
 
