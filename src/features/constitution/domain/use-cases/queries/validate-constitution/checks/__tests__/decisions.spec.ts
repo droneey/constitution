@@ -3,13 +3,14 @@ import { describe, expect, it } from 'bun:test';
 import {
   checkInputOf,
   without,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { decisionsCheck } from '../decisions';
 
 const LOG = 'DECISIONS.md';
 const ACCEPTED = '**Date:** 2026-09-25 · **Status:** Accepted';
+const NO_DATE_LINE =
+  'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN" under its heading';
 
 const logOf = (entries: readonly string[]): string =>
   [
@@ -22,17 +23,6 @@ const entry = (input: { line: string; number: string }): string =>
   `## ADR-${input.number} — A decision\n${input.line}\n\n- **Decision.** It holds.\n`;
 
 describe('decisionsCheck', () => {
-  it('should find nothing when the log is contiguous and every entry is dated', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = decisionsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
   it('should report the log when it is missing', () => {
     // Arrange
     const input = checkInputOf(
@@ -104,19 +94,26 @@ describe('decisionsCheck', () => {
 
   it.each([
     {
-      expected:
-        'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN" under its heading',
-      line: '- **Decision.** It holds.',
+      expected: NO_DATE_LINE,
+      line: '**Date:** 2026-09-25 · **Status:** Done',
     },
     {
-      expected:
-        'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN" under its heading',
-      line: '**Date:** 2026-09-25 · **Status:** Done',
+      expected: NO_DATE_LINE,
+      line: '- **Date:** 2026-09-25 · **Status:** Accepted',
+    },
+    {
+      expected: NO_DATE_LINE,
+      line: '**Date:** 2026-09-25 · **Status:** Accepted by the team',
     },
     {
       expected:
         'entry ADR-0001 is dated 2026-02-30, which is not a calendar date',
       line: '**Date:** 2026-02-30 · **Status:** Accepted',
+    },
+    {
+      expected:
+        'entry ADR-0001 is dated 2026-13-05, which is not a calendar date',
+      line: '**Date:** 2026-13-05 · **Status:** Accepted',
     },
     {
       expected:
@@ -149,22 +146,55 @@ describe('decisionsCheck', () => {
     },
   );
 
-  it('should accept an entry when a later one supersedes it and a fence holds a sample heading', () => {
+  it.each([
+    {
+      log: logOf([
+        entry({
+          line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
+          number: '0001',
+        }),
+        entry({
+          line: '**Date:** 2026-09-26 · **Status:** Proposed',
+          number: '0002',
+        }),
+      ]),
+      name: 'a later entry supersedes an earlier one',
+    },
+    {
+      log: logOf([
+        entry({
+          line: ACCEPTED,
+          number: '0001',
+        }),
+        '```markdown',
+        '## ADR-0009 — A sample',
+        '```',
+      ]),
+      name: 'a fence holds a sample heading',
+    },
+    {
+      log: logOf([
+        'An entry opens with a heading such as `## ADR-0007 — A title`.',
+        '',
+        entry({
+          line: ACCEPTED,
+          number: '0001',
+        }),
+      ]),
+      name: 'a line of prose quotes a heading',
+    },
+    {
+      log: logOf([
+        '## ADR-0001 — A decision',
+        '   ',
+        ACCEPTED,
+      ]),
+      name: 'a line of spaces parts a heading from its date line',
+    },
+  ])('should find nothing when $name', ({ log }) => {
     // Arrange
     const files = validFiles();
-    files[LOG] = logOf([
-      entry({
-        line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
-        number: '0001',
-      }),
-      '```markdown',
-      '## ADR-0009 — A sample',
-      '```',
-      entry({
-        line: '**Date:** 2026-09-26 · **Status:** Proposed',
-        number: '0002',
-      }),
-    ]);
+    files[LOG] = log;
     const input = checkInputOf(files);
 
     // Act

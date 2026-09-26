@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeDigestWriter } from '#/features/constitution/__tests__/fake-digest-writer';
-
+import { createFakeDigestWriter } from '../../../../../__tests__/digest-writer.fake';
 import { writeDigests } from '../write-digests.use-case';
 
 describe('writeDigests', () => {

@@ -1,295 +1,449 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeFrontMatterParser } from '#/features/constitution/__tests__/fake-front-matter-parser';
-import type { BlockFixture } from '#/features/constitution/__tests__/fixtures';
-import { mainFile } from '#/features/constitution/__tests__/fixtures';
-import { createYamlFrontMatterParser } from '#/features/constitution/adapters/yaml';
-
+import { createFakeFrontMatterParser } from '../../../../../__tests__/front-matter-parser.fake';
+import type { FrontMatterFields, FrontMatterRead } from '../../../../contracts';
 import { readFrontMatter } from '../front-matter.utils';
 
 const PATH = 'blocks/domains/ui/ui.md';
+const TEXT = '---\nid: ui\n---\n# UI\n';
+const BODY = '# UI\n';
+const FIELDS: FrontMatterFields = {
+  abstract: false,
+  chapters: [],
+  checks: [],
+  extends: null,
+  governs: [],
+  id: 'ui',
+  kind: 'domain',
+  owns: [],
+  requires: [],
+  status: 'stable',
+  summary: 'The ui block.',
+};
+const KEYS = [
+  'id',
+  'kind',
+  'summary',
+  'chapters',
+  'requires',
+  'extends',
+  'abstract',
+  'checks',
+  'owns',
+  'governs',
+  'status',
+];
 
-const uiFile = (overrides: Partial<BlockFixture>): string =>
-  mainFile({
-    body: '# UI\n',
-    id: 'ui',
-    kind: 'domain',
-    ...overrides,
+const mappingOf = (input: {
+  fields?: Partial<FrontMatterFields>;
+  keys?: readonly string[];
+}): FrontMatterRead => ({
+  fields: {
+    ...FIELDS,
+    ...input.fields,
+  },
+  issues: [],
+  keys: input.keys ?? KEYS,
+  status: 'mapping',
+});
+
+const readOf = (read: FrontMatterRead): ReturnType<typeof readFrontMatter> =>
+  readFrontMatter({
+    parser: createFakeFrontMatterParser(read),
+    path: PATH,
+    text: TEXT,
   });
 
-const messagesOf = (text: string): readonly string[] =>
-  readFrontMatter({
-    parser: createYamlFrontMatterParser(),
-    path: PATH,
-    text,
-  }).findings.map((finding) => finding.message);
-
 describe('readFrontMatter', () => {
-  it('should return the typed front matter and the body when every field is sound', () => {
+  it('should return the typed front matter and the body when every field keeps its rule', () => {
     // Arrange
-    const text = uiFile({
-      governs: [
-        '**/ui/**',
-      ],
+    const read = mappingOf({
+      fields: {
+        chapters: [
+          'data-states.md',
+        ],
+        checks: [
+          'lint',
+        ],
+        governs: [
+          '**/ui/**',
+        ],
+        owns: [
+          'UI kit',
+        ],
+        requires: [
+          'remote-data',
+        ],
+      },
     });
 
     // Act
-    const read = readFrontMatter({
-      parser: createYamlFrontMatterParser(),
-      path: PATH,
-      text,
-    });
+    const loaded = readOf(read);
 
     // Assert
-    expect(read).toStrictEqual({
-      body: '\n# UI\n',
+    expect(loaded).toStrictEqual({
+      body: BODY,
       findings: [],
       frontMatter: {
         abstract: false,
-        chapters: [],
-        checks: [],
+        chapters: [
+          'data-states.md',
+        ],
+        checks: [
+          'lint',
+        ],
         extends: null,
         governs: [
           '**/ui/**',
         ],
         id: 'ui',
         kind: 'domain',
-        owns: [],
-        requires: [],
+        owns: [
+          'UI kit',
+        ],
+        requires: [
+          'remote-data',
+        ],
         status: 'stable',
         summary: 'The ui block.',
       },
     });
   });
 
-  it('should report the missing front matter at the file when the text opens with no delimiter', () => {
+  it('should accept a summary when it holds exactly 70 characters', () => {
     // Arrange
-    const text = '# UI\n';
+    const read = mappingOf({
+      fields: {
+        summary: `${'A'.repeat(69)}.`,
+      },
+    });
 
     // Act
-    const read = readFrontMatter({
-      parser: createYamlFrontMatterParser(),
-      path: PATH,
-      text,
-    });
+    const loaded = readOf(read);
 
     // Assert
-    expect(read).toStrictEqual({
-      body: '# UI\n',
-      findings: [
-        {
-          message: 'has no front matter; a main file opens with it',
-          path: PATH,
-        },
-      ],
-    });
+    expect(loaded.findings).toStrictEqual([]);
   });
 
-  it.each([
+  it.each<{
+    lines: readonly string[];
+    message: string;
+    name: string;
+    read: FrontMatterRead;
+  }>([
     {
-      expected: [
-        'front matter line 4 (summary) is not valid YAML: Nested mappings are not allowed in compact mappings',
+      lines: [
+        'id: ui',
+        'kind: domain',
+        'summary: Screens: states.',
       ],
-      name: 'an unquoted colon in the summary',
-      text: uiFile({
-        summary: 'Screens: states and tokens.',
-      }),
+      message: 'front matter line 4 (summary) is not valid YAML: broken',
+      name: 'a YAML error on the line of a field',
+      read: {
+        line: 3,
+        reason: 'broken',
+        status: 'not-yaml',
+      },
     },
     {
-      expected: [
-        'front matter line 12 (governs) is not valid YAML: an unquoted value starts with "*", which YAML reads as an alias; quote it',
+      lines: [
+        'id: ui',
+        'governs:',
+        '  - pattern: *.tsx',
       ],
-      name: 'an unquoted glob in a block list',
-      text: uiFile({}).replace('governs: []', 'governs:\n  - *.tsx'),
+      message: 'front matter line 4 (governs) is not valid YAML: broken',
+      name: 'a YAML error on a nested line under a field',
+      read: {
+        line: 3,
+        reason: 'broken',
+        status: 'not-yaml',
+      },
     },
     {
-      expected: [
-        'front matter is not a mapping of fields',
+      lines: [
+        '- id',
+        'kind: domain',
       ],
-      name: 'a list instead of a mapping',
-      text: '---\n- id\n---\n',
+      message: 'front matter line 2 is not valid YAML: broken',
+      name: 'a YAML error above every field',
+      read: {
+        line: 1,
+        reason: 'broken',
+        status: 'not-yaml',
+      },
     },
     {
-      expected: [
-        'front matter lacks "status"; every block declares every field',
-        'front matter has "brands", which is not a field',
+      lines: [
+        'id: ui',
       ],
-      name: 'a missing and an unknown field',
-      text: uiFile({}).replace('status: stable', 'brands: []'),
+      message: 'front matter is not valid YAML: broken',
+      name: 'a YAML error at no known line',
+      read: {
+        line: undefined,
+        reason: 'broken',
+        status: 'not-yaml',
+      },
     },
     {
-      expected: [
-        'front matter lists its fields out of order; the order is id, kind, summary, chapters, requires, extends, abstract, checks, owns, governs, status',
+      lines: [
+        '- id',
       ],
-      name: 'the fields out of order',
-      text: uiFile({}).replace('id: ui\nkind: domain', 'kind: domain\nid: ui'),
+      message: 'front matter is not a mapping of fields',
+      name: 'a list',
+      read: {
+        status: 'not-a-mapping',
+      },
     },
     {
-      expected: [
-        'front matter: abstract: Invalid input: expected boolean, received string',
+      lines: [
+        'abstract: "no"',
       ],
+      message: 'front matter: abstract: expected a boolean',
       name: 'a field of the wrong type',
-      text: uiFile({}).replace('abstract: false', 'abstract: "no"'),
+      read: {
+        fields: undefined,
+        issues: [
+          {
+            field: 'abstract',
+            message: 'expected a boolean',
+          },
+        ],
+        keys: KEYS,
+        status: 'mapping',
+      },
     },
   ])(
-    'should report the messages when the front matter has $name',
-    ({ expected, text }) => {
+    'should report "$message" when the parser reads $name',
+    ({ lines, message, read }) => {
       // Arrange
-      const input = text;
+      const parser = createFakeFrontMatterParser(read);
+      const text = [
+        '---',
+        ...lines,
+        '---',
+        '# UI',
+      ].join('\n');
 
       // Act
-      const messages = messagesOf(input);
+      const loaded = readFrontMatter({
+        parser,
+        path: PATH,
+        text,
+      });
 
       // Assert
-      expect(messages).toStrictEqual(expected);
+      expect(loaded).toStrictEqual({
+        body: '# UI',
+        findings: [
+          {
+            message,
+            path: PATH,
+          },
+        ],
+      });
     },
   );
 
-  it('should report the YAML reason alone when the parser knows no line', () => {
-    // Arrange
-    const parser = createFakeFrontMatterParser({
-      line: undefined,
-      reason: 'broken',
-      status: 'not-yaml',
-    });
-
-    // Act
-    const read = readFrontMatter({
-      parser,
-      path: PATH,
-      text: '---\nid: ui\n---\n',
-    });
-
-    // Assert
-    expect(read.findings).toStrictEqual([
-      {
-        message: 'front matter is not valid YAML: broken',
-        path: PATH,
-      },
-    ]);
-  });
-
-  it.each([
+  it.each<{
+    fields?: Partial<FrontMatterFields>;
+    keys?: readonly string[];
+    message: string;
+    name: string;
+  }>([
     {
-      expected: 'front matter: id "Bad_Id" is not a kebab-case block id',
-      fixture: {
-        id: 'Bad_Id',
-      },
+      keys: KEYS.filter((key) => key !== 'status'),
+      message: 'front matter lacks "status"; every block declares every field',
+      name: 'a missing field',
     },
     {
-      expected:
-        'front matter: kind "platform" is not one of core, domain, context, implementation',
-      fixture: {
+      keys: [
+        ...KEYS,
+        'brands',
+      ],
+      message: 'front matter has "brands", which is not a field',
+      name: 'an unknown field',
+    },
+    {
+      keys: [
+        'kind',
+        'id',
+        ...KEYS.slice(2),
+      ],
+      message:
+        'front matter lists its fields out of order; the order is id, kind, summary, chapters, requires, extends, abstract, checks, owns, governs, status',
+      name: 'its fields out of order',
+    },
+    {
+      fields: {
+        id: 'ui_kit',
+      },
+      message: 'front matter: id "ui_kit" is not a kebab-case block id',
+      name: 'an id in snake case',
+    },
+    {
+      fields: {
         kind: 'platform',
       },
+      message:
+        'front matter: kind "platform" is not one of core, domain, context, implementation',
+      name: 'an unknown kind',
     },
     {
-      expected: 'front matter: summary has 71 characters; it holds at most 70',
-      fixture: {
+      fields: {
         summary: `${'A'.repeat(70)}.`,
       },
+      message: 'front matter: summary has 71 characters; it holds at most 70',
+      name: 'a summary of 71 characters',
     },
     {
-      expected:
-        'front matter: summary is one sentence on one line, ending with a full stop',
-      fixture: {
-        summary: 'Screens for issue #42 and tokens.',
+      fields: {
+        summary: 'Screens. And tokens',
       },
+      message:
+        'front matter: summary is one sentence on one line, ending with a full stop',
+      name: 'a summary with no full stop at its end',
     },
     {
-      expected: 'front matter: extends "Bad", which is not a block id',
-      fixture: {
+      fields: {
+        summary: 'Screens\nand tokens.',
+      },
+      message:
+        'front matter: summary is one sentence on one line, ending with a full stop',
+      name: 'a summary over two lines',
+    },
+    {
+      fields: {
         extends: 'Bad',
       },
+      message: 'front matter: extends "Bad", which is not a block id',
+      name: 'an extends that is no block id',
     },
     {
-      expected: 'front matter: status "done" is not one of stable, draft',
-      fixture: {
+      fields: {
         status: 'done',
       },
+      message: 'front matter: status "done" is not one of stable, draft',
+      name: 'an unknown status',
     },
     {
-      expected:
-        'front matter: chapters lists "Parts.md", which is not a kebab-case .md file name',
-      fixture: {
+      fields: {
         chapters: [
           'Parts.md',
         ],
       },
+      message:
+        'front matter: chapters lists "Parts.md", which is not a kebab-case .md file name',
+      name: 'a chapter name with a capital letter',
     },
     {
-      expected:
-        'front matter: chapters lists the main file ui.md; chapters are the files after it',
-      fixture: {
+      fields: {
+        chapters: [
+          'parts.mdx',
+        ],
+      },
+      message:
+        'front matter: chapters lists "parts.mdx", which is not a kebab-case .md file name',
+      name: 'a chapter that is no .md file',
+    },
+    {
+      fields: {
         chapters: [
           'ui.md',
         ],
       },
+      message:
+        'front matter: chapters lists the main file ui.md; chapters are the files after it',
+      name: 'the main file among its chapters',
     },
     {
-      expected: 'front matter: requires "Bad", which is not a block id',
-      fixture: {
+      fields: {
         requires: [
           'Bad',
         ],
       },
+      message: 'front matter: requires "Bad", which is not a block id',
+      name: 'a requires entry that is no block id',
     },
     {
-      expected: 'front matter: checks "linting", which is not a role',
-      fixture: {
+      fields: {
         checks: [
           'linting',
         ],
       },
+      message: 'front matter: checks "linting", which is not a role',
+      name: 'a checks entry that is no role',
     },
     {
-      expected: 'front matter: owns and governs hold no empty entry',
-      fixture: {
+      fields: {
         owns: [
           ' ',
+          '  ',
         ],
       },
+      message: 'front matter: owns and governs hold no empty entry',
+      name: 'owns entries of whitespace only',
     },
     {
-      expected:
-        'front matter: governs lists "src/my ui/**", which holds whitespace; the index separates globs with spaces',
-      fixture: {
+      fields: {
+        governs: [
+          '',
+        ],
+      },
+      message: 'front matter: owns and governs hold no empty entry',
+      name: 'an empty governs entry',
+    },
+    {
+      fields: {
         governs: [
           'src/my ui/**',
         ],
       },
+      message:
+        'front matter: governs lists "src/my ui/**", which holds whitespace; the index separates globs with spaces',
+      name: 'a governs glob with a space',
     },
     {
-      expected:
-        'front matter: governs lists "src/ui\\t**", which holds whitespace; the index separates globs with spaces',
-      fixture: {
+      fields: {
         governs: [
           'src/ui\t**',
         ],
       },
+      message:
+        'front matter: governs lists "src/ui\\t**", which holds whitespace; the index separates globs with spaces',
+      name: 'a governs glob with a tab',
     },
     {
-      expected: 'front matter: requires lists "i18n" twice',
-      fixture: {
+      fields: {
         requires: [
           'i18n',
           'i18n',
         ],
       },
+      message: 'front matter: requires lists "i18n" twice',
+      name: 'the same block in requires twice',
     },
   ])(
-    'should report "$expected" when a field breaks its rule',
-    ({ expected, fixture }) => {
+    'should report "$message" when the front matter has $name',
+    ({ fields, keys, message }) => {
       // Arrange
-      const text = uiFile(fixture);
+      const read = mappingOf({
+        fields,
+        keys,
+      });
 
       // Act
-      const messages = messagesOf(text);
+      const loaded = readOf(read);
 
       // Assert
-      expect(messages).toStrictEqual([
-        expected,
-      ]);
+      expect(loaded).toStrictEqual({
+        body: BODY,
+        findings: [
+          {
+            message,
+            path: PATH,
+          },
+        ],
+      });
     },
   );
 });

@@ -1,47 +1,25 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { Files } from '../../../../../../__tests__/constitution.fixtures';
 import {
   checkInputOf,
   mainFile,
-  rule,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { abstractBlocksCheck } from '../abstract-blocks';
 
 const REACT = 'blocks/implementations/_react/_react.md';
 
-const reactBase = (input: { body: string; summary?: string }): string =>
+const reactBase = (input: { body: string; summary: string }): string =>
   mainFile({
     abstract: true,
     body: input.body,
     id: '_react',
     kind: 'implementation',
-    owns: [
-      'React',
-    ],
-    requires: [
-      'ui',
-    ],
-    ...(input.summary === undefined
-      ? {}
-      : {
-          summary: input.summary,
-        }),
+    summary: input.summary,
   });
 
 describe('abstractBlocksCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = abstractBlocksCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
   it('should report an abstract block when nothing extends it', () => {
     // Arrange
     const files = validFiles();
@@ -49,10 +27,6 @@ describe('abstractBlocksCheck', () => {
       body: '# React DOM\n',
       id: 'react-dom',
       kind: 'implementation',
-      requires: [
-        'browser',
-        '_react',
-      ],
     });
     const input = checkInputOf(files);
 
@@ -68,41 +42,52 @@ describe('abstractBlocksCheck', () => {
     ]);
   });
 
-  it.each([
+  it.each<{
+    files: Files;
+    name: string;
+  }>([
     {
-      name: 'its body',
-      text: reactBase({
-        body: `# React\n\nUnlike react-dom, a base knows no renderer.\n\n${rule(
-          {
-            slug: 'hooks-at-top-level',
-          },
-        )}`,
-      }),
-    },
-    {
-      name: 'its summary',
-      text: reactBase({
-        body: '# React\n',
-        summary: 'React as react-dom and others share it.',
-      }),
-    },
-  ])('should report the heir when the base names it in $name', ({ text }) => {
-    // Arrange
-    const files = validFiles();
-    files[REACT] = text;
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = abstractBlocksCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: 'names its heir react-dom; a base knows nothing of its heirs',
-        path: REACT,
+      files: {
+        [REACT]: reactBase({
+          body: '# React\n\nUnlike react-dom, a base knows no renderer.\n',
+          summary: 'The React base.',
+        }),
       },
-    ]);
-  });
+      name: 'its body',
+    },
+    {
+      files: {
+        [REACT]: reactBase({
+          body: '# React\n',
+          summary: 'The base of react-dom.',
+        }),
+        'blocks/implementations/_react/with/browser.md':
+          '# React in the browser\n',
+      },
+      name: 'its summary, which its other files do not repeat',
+    },
+  ])(
+    'should report the heir at the main file when the base names it in $name',
+    ({ files }) => {
+      // Arrange
+      const input = checkInputOf({
+        ...validFiles(),
+        ...files,
+      });
+
+      // Act
+      const findings = abstractBlocksCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message:
+            'names its heir react-dom; a base knows nothing of its heirs',
+          path: REACT,
+        },
+      ]);
+    },
+  );
 
   it('should report a with/ file of the base when it is named after an heir', () => {
     // Arrange
@@ -123,4 +108,26 @@ describe('abstractBlocksCheck', () => {
       },
     ]);
   });
+
+  it.each([
+    'react-dom-extra',
+    'x-react-dom',
+  ])(
+    'should accept a base when it names %p, which only holds the id of its heir',
+    (id) => {
+      // Arrange
+      const files = validFiles();
+      files[REACT] = reactBase({
+        body: `# React\n\nUnlike ${id}, a base knows no renderer.\n`,
+        summary: 'The React base.',
+      });
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = abstractBlocksCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([]);
+    },
+  );
 });

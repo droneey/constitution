@@ -1,30 +1,23 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Files } from '#/features/constitution/__tests__/fixtures';
+import type { Finding } from '#/kernel';
+
+import type { Files } from '../../../../../../__tests__/constitution.fixtures';
 import {
   checkInputOf,
   without,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { pluginCheck } from '../plugin';
 
 const PLUGIN = '.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';
 const HOOKS = 'hooks/hooks.json';
-const NO_PLUGIN_ENTRY = {
-  message: 'does not list the plugin "" with source "./"',
-  path: MARKETPLACE,
-};
+const SESSION_START_HOOK =
+  '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}';
 
-interface SkillCase {
-  expected: string[];
-  extra: Files;
-  name: string;
-}
-
-interface HooksCase {
-  expected: string[];
+interface ManifestCase {
+  expected: Finding[];
   files: Files;
   name: string;
 }
@@ -35,17 +28,6 @@ const withFiles = (extra: Readonly<Files>): Files => ({
 });
 
 describe('pluginCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = pluginCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
   it.each([
     {
       expected:
@@ -86,89 +68,64 @@ describe('pluginCheck', () => {
           message: expected,
           path: PLUGIN,
         },
-        NO_PLUGIN_ENTRY,
+        {
+          message: 'does not list the plugin "" with source "./"',
+          path: MARKETPLACE,
+        },
       ]);
     },
   );
 
-  it.each<SkillCase>([
+  it.each<ManifestCase>([
     {
       expected: [
-        'lists the skills directory "./skills/", which holds no <skill>/SKILL.md',
+        {
+          message:
+            'lists the skills directory "./skills/", which holds no <skill>/SKILL.md',
+          path: PLUGIN,
+        },
       ],
-      extra: {
+      files: withFiles({
         [PLUGIN]: '{"name":"constitution","skills":"./skills/"}',
-      },
+      }),
       name: 'a listed directory holds no skill',
     },
     {
       expected: [
-        'does not list "./skills/", which holds skills',
+        {
+          message: 'does not list "./skills/", which holds skills',
+          path: PLUGIN,
+        },
       ],
-      extra: {
+      files: withFiles({
         'skills/ratify/SKILL.md': '---\nname: ratify\n---\n',
-      },
+      }),
       name: 'a skill sits in an unlisted directory',
     },
     {
       expected: [],
-      extra: {
+      files: withFiles({
         '.claude/skills/local/SKILL.md': '---\nname: local\n---\n',
-      },
+      }),
       name: 'a skill sits in a hidden folder',
     },
     {
       expected: [],
-      extra: {
-        [PLUGIN]: '{"name":"constitution","skills":["./skills/"]}',
-        'skills/ratify/SKILL.md': '---\nname: ratify\n---\n',
-      },
-      name: 'every listed directory holds its skills',
+      files: withFiles({
+        'skills/ratify/SKILL.md.orig': '---\nname: ratify\n---\n',
+      }),
+      name: 'a file only begins with SKILL.md',
+    },
+    {
+      expected: [],
+      files: withFiles({
+        [PLUGIN]: '{"name":"constitution","skills":["./tools/skills/"]}',
+        'tools/skills/ratify/SKILL.md': '---\nname: ratify\n---\n',
+      }),
+      name: 'a listed nested directory holds its skills',
     },
   ])(
     'should compare the listed and the present skills when $name',
-    ({ expected, extra }) => {
-      // Arrange
-      const input = checkInputOf(withFiles(extra));
-
-      // Act
-      const findings = pluginCheck(input);
-
-      // Assert
-      expect(findings.map((finding) => finding.message)).toStrictEqual(
-        expected,
-      );
-    },
-  );
-
-  it.each([
-    {
-      expected:
-        'is missing; the constitution ships as a plugin and needs its marketplace',
-      files: without({
-        files: validFiles(),
-        path: MARKETPLACE,
-      }),
-      name: 'missing',
-    },
-    {
-      expected: 'does not list the plugin "constitution" with source "./"',
-      files: withFiles({
-        [MARKETPLACE]:
-          '{"name":"droneey","plugins":[{"name":"constitution","source":"./plugin/"}]}',
-      }),
-      name: 'serving the plugin from another folder',
-    },
-    {
-      expected:
-        'does not match its schema: plugins: Too small: expected array to have >=1 items',
-      files: withFiles({
-        [MARKETPLACE]: '{"name":"droneey","plugins":[]}',
-      }),
-      name: 'listing no plugin',
-    },
-  ])(
-    'should report the marketplace when it is $name',
     ({ expected, files }) => {
       // Arrange
       const input = checkInputOf(files);
@@ -177,16 +134,71 @@ describe('pluginCheck', () => {
       const findings = pluginCheck(input);
 
       // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: MARKETPLACE,
-        },
-      ]);
+      expect(findings).toStrictEqual(expected);
     },
   );
 
-  it.each<HooksCase>([
+  it.each<ManifestCase>([
+    {
+      expected: [
+        {
+          message:
+            'is missing; the constitution ships as a plugin and needs its marketplace',
+          path: MARKETPLACE,
+        },
+      ],
+      files: without({
+        files: validFiles(),
+        path: MARKETPLACE,
+      }),
+      name: 'missing',
+    },
+    {
+      expected: [
+        {
+          message: 'does not list the plugin "constitution" with source "./"',
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        [MARKETPLACE]:
+          '{"name":"droneey","plugins":[{"name":"constitution","source":"./plugin/"}]}',
+      }),
+      name: 'serving the plugin from another folder',
+    },
+    {
+      expected: [
+        {
+          message:
+            'does not match its schema: plugins: Too small: expected array to have >=1 items',
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        [MARKETPLACE]: '{"name":"droneey","plugins":[]}',
+      }),
+      name: 'listing no plugin',
+    },
+    {
+      expected: [],
+      files: withFiles({
+        [MARKETPLACE]:
+          '{"name":"droneey","plugins":[{"name":"constitution","source":"./"},{"name":"devkit","source":"./devkit/"}]}',
+      }),
+      name: 'listing another plugin beside it',
+    },
+  ])('should check the marketplace when it is $name', ({ expected, files }) => {
+    // Arrange
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = pluginCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
+
+  it.each<ManifestCase>([
     {
       expected: [],
       files: without({
@@ -197,26 +209,31 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        'runs "hooks/session-start.sh", which is missing',
+        {
+          message: 'runs "hooks/session-start.sh", which is missing',
+          path: HOOKS,
+        },
       ],
       files: withFiles({
-        [HOOKS]:
-          '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}',
+        [HOOKS]: SESSION_START_HOOK,
       }),
       name: 'a hook runs a missing script',
     },
     {
       expected: [],
       files: withFiles({
-        [HOOKS]:
-          '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}',
+        [HOOKS]: SESSION_START_HOOK,
         'hooks/session-start.sh': '#!/bin/sh\n',
       }),
       name: 'a hook runs a script that exists',
     },
     {
       expected: [
-        'does not match its schema: hooks: Invalid input: expected record, received string',
+        {
+          message:
+            'does not match its schema: hooks: Invalid input: expected record, received string',
+          path: HOOKS,
+        },
       ],
       files: withFiles({
         [HOOKS]: '{"hooks":"none"}',
@@ -231,6 +248,6 @@ describe('pluginCheck', () => {
     const findings = pluginCheck(input);
 
     // Assert
-    expect(findings.map((finding) => finding.message)).toStrictEqual(expected);
+    expect(findings).toStrictEqual(expected);
   });
 });

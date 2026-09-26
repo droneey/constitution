@@ -33,6 +33,18 @@
           "complexity": {
             "noExcessiveLinesPerFunction": "off"
           },
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "filenameCases": [
+                  "kebab-case"
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.])?(?:spec|fake|fixtures)[.]ts)"
+              }
+            }
+          },
           "suspicious": {
             "noTemplateCurlyInString": "off"
           }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { Rule } from '../../../../entities';
 import { parseRules } from '../rules.utils';
 
 const FILE = 'blocks/core/principles.md';
@@ -19,7 +20,7 @@ const sourceOf = (
 });
 
 describe('parseRules', () => {
-  it('should read the slug, level, statement and labels when a rule is complete', () => {
+  it('should read the slug, the level, the statement and the labels when a rule is complete', () => {
     // Arrange
     const source = {
       ...sourceOf([
@@ -63,7 +64,66 @@ describe('parseRules', () => {
     });
   });
 
-  it('should keep a rule intact when a heading of another level follows it', () => {
+  it('should trim the statement and the labels when their lines are blank, indented or padded', () => {
+    // Arrange
+    const source = sourceOf([
+      '## four-data-states · MUST',
+      '',
+      '  Every data view shows',
+      '  four states.  ',
+      '**Why:** an empty screen cannot be told from a slow one.  ',
+    ]);
+
+    // Act
+    const parsed = parseRules(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [
+        {
+          block: 'core',
+          file: FILE,
+          labels: {
+            why: 'an empty screen cannot be told from a slow one.',
+          },
+          level: 'MUST',
+          slug: 'four-data-states',
+          statement: 'Every data view shows four states.',
+          with: null,
+        },
+      ],
+    });
+  });
+
+  it('should keep a bold label in the statement when it sits inside a line', () => {
+    // Arrange
+    const source = sourceOf([
+      '## reasons-are-given · SHOULD',
+      'A rule names its reason after **Why:** in one sentence.',
+    ]);
+
+    // Act
+    const parsed = parseRules(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [
+        {
+          block: 'core',
+          file: FILE,
+          labels: {},
+          level: 'SHOULD',
+          slug: 'reasons-are-given',
+          statement: 'A rule names its reason after **Why:** in one sentence.',
+          with: null,
+        },
+      ],
+    });
+  });
+
+  it('should end each rule at the next heading when headings of several levels follow one another', () => {
     // Arrange
     const source = sourceOf([
       '## a · SHOULD',
@@ -71,8 +131,8 @@ describe('parseRules', () => {
       '**Check:** tool — architecture',
       '### b · MUST',
       '**Check:** test',
-      '## Requirements for implementation',
-      'Not a rule.',
+      '## c · MAY',
+      'C.',
     ]);
 
     // Act
@@ -99,16 +159,22 @@ describe('parseRules', () => {
           statement: 'A.',
           with: null,
         },
+        {
+          block: 'core',
+          file: FILE,
+          labels: {},
+          level: 'MAY',
+          slug: 'c',
+          statement: 'C.',
+          with: null,
+        },
       ],
     });
   });
 
   it.each([
     '## x - MUST',
-    '## x — MUST',
-    '## x • MUST',
-    '## x ·MUST',
-    '## x (MAY)',
+    '## x · MUST.',
     '# x · SHOULD',
   ])(
     'should report %p as a stray heading when it misses the rule heading form',
@@ -135,45 +201,79 @@ describe('parseRules', () => {
     },
   );
 
-  it('should report a label when a rule gives it twice', () => {
+  it('should neither read nor report a heading when a level word sits inside it', () => {
     // Arrange
     const source = sourceOf([
-      '## a · MAY',
-      'A.',
-      '**Why:** one.',
-      '**Why:** two.',
+      '## MUST, SHOULD and MAY in practice',
+      'Text.',
     ]);
 
     // Act
     const parsed = parseRules(source);
 
     // Assert
-    expect(parsed.findings).toStrictEqual([
-      {
-        message: 'rule "a" has the label "Why" twice',
-        path: FILE,
-      },
-    ]);
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [],
+    });
   });
 
-  it('should report a label when it is none of the rule labels', () => {
-    // Arrange
-    const source = sourceOf([
-      '## a · MAY',
-      'A.',
-      '**Implement:** `b`',
-    ]);
-
-    // Act
-    const parsed = parseRules(source);
-
-    // Assert
-    expect(parsed.findings).toStrictEqual([
-      {
-        message:
-          'rule "a" has the label "Implement", which is not one of Why, Check, Tags, Example, Implements',
-        path: FILE,
+  it.each<{
+    labels: Rule['labels'];
+    lines: readonly string[];
+    message: string;
+  }>([
+    {
+      labels: {
+        why: 'one.',
       },
-    ]);
-  });
+      lines: [
+        '**Why:** one.',
+        '**Why:** two.',
+      ],
+      message: 'rule "a" has the label "Why" twice',
+    },
+    {
+      labels: {},
+      lines: [
+        '**Implement:** `b`',
+      ],
+      message:
+        'rule "a" has the label "Implement", which is not one of Why, Check, Tags, Example, Implements',
+    },
+  ])(
+    'should report that $message and read the rest of the rule when a label line is not one the rule takes',
+    ({ labels, lines, message }) => {
+      // Arrange
+      const source = sourceOf([
+        '## a · MAY',
+        'A.',
+        ...lines,
+      ]);
+
+      // Act
+      const parsed = parseRules(source);
+
+      // Assert
+      expect(parsed).toStrictEqual({
+        findings: [
+          {
+            message,
+            path: FILE,
+          },
+        ],
+        rules: [
+          {
+            block: 'core',
+            file: FILE,
+            labels,
+            level: 'MAY',
+            slug: 'a',
+            statement: 'A.',
+            with: null,
+          },
+        ],
+      });
+    },
+  );
 });

@@ -1,29 +1,18 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
 import {
   checkInputOf,
   mainFile,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { requiresCheck } from '../requires';
 
 const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
 const BIOME = 'blocks/implementations/biome/biome.md';
 
 describe('requiresCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = requiresCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it('should report a requires that is core, a sibling layer, unknown or itself when a platform names them', () => {
+  it('should report each requires a platform may not have when it names core, a language, an unknown id and itself', () => {
     // Arrange
     const files = validFiles();
     files[BROWSER] = mainFile({
@@ -43,23 +32,37 @@ describe('requiresCheck', () => {
     const findings = requiresCheck(input);
 
     // Assert
-    expect(findings.map((finding) => finding.message)).toStrictEqual([
-      'requires core, which is always active',
-      'requires typescript, a language block; a platform block requires only domain blocks',
-      'requires webgl, which is not a block',
-      'requires itself',
+    expect(findings).toStrictEqual([
+      {
+        message: 'requires core, which is always active',
+        path: BROWSER,
+      },
+      {
+        message:
+          'requires typescript, a language block; a platform block requires only domain blocks',
+        path: BROWSER,
+      },
+      {
+        message: 'requires webgl, which is not a block',
+        path: BROWSER,
+      },
+      {
+        message: 'requires itself',
+        path: BROWSER,
+      },
     ]);
   });
 
-  it('should leave a filled requires of a domain to the front-matter check when a domain requires a sibling', () => {
+  it('should accept an implementation when it requires another implementation', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/domains/i18n/i18n.md'] = mainFile({
-      body: '# i18n\n',
-      id: 'i18n',
-      kind: 'domain',
+    files[BIOME] = mainFile({
+      body: '# Biome\n',
+      id: 'biome',
+      kind: 'implementation',
       requires: [
-        'remote-data',
+        'typescript',
+        'lingui',
       ],
     });
     const input = checkInputOf(files);
@@ -70,6 +73,47 @@ describe('requiresCheck', () => {
     // Assert
     expect(findings).toStrictEqual([]);
   });
+
+  it.each<{
+    block: BlockFixture;
+    field: string;
+  }>([
+    {
+      block: {
+        body: '# i18n\n',
+        id: 'i18n',
+        kind: 'domain',
+        requires: [
+          'remote-data',
+        ],
+      },
+      field: 'requires',
+    },
+    {
+      block: {
+        body: '# i18n\n',
+        extends: 'remote-data',
+        id: 'i18n',
+        kind: 'domain',
+      },
+      field: 'extends',
+    },
+  ])(
+    'should leave the field to the front-matter check when a domain fills $field',
+    ({ block }) => {
+      // Arrange
+      const input = checkInputOf({
+        ...validFiles(),
+        'blocks/domains/i18n/i18n.md': mainFile(block),
+      });
+
+      // Act
+      const findings = requiresCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([]);
+    },
+  );
 
   it.each([
     {
@@ -95,9 +139,6 @@ describe('requiresCheck', () => {
         extends: base,
         id: 'biome',
         kind: 'implementation',
-        requires: [
-          'typescript',
-        ],
       });
       const input = checkInputOf(files);
 

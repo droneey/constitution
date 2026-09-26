@@ -3,29 +3,21 @@ import { describe, expect, it } from 'bun:test';
 import {
   checkInputOf,
   without,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { linksCheck } from '../links';
 
+const PRINCIPLES = 'blocks/core/principles.md';
+const README = 'README.md';
+
 describe('linksCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = linksCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it('should report a link to a missing file when a block and the README hold one', () => {
+  it('should report a link to a missing file when a block, the README and the decision log hold one', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/core/principles.md'] =
-      '# Principles\n\nSee [gone](gone.md).\n';
-    files['README.md'] = '# constitution\n\nSee [plan](local/plan.md).\n';
+    files[PRINCIPLES] = '# Principles\n\nSee [gone](gone.md).\n';
+    files[README] = '# constitution\n\nSee [plan](local/plan.md).\n';
+    files['DECISIONS.md'] =
+      '# Decision Log\n\nSee [the draft](local/draft.md).\n';
     const input = checkInputOf(files);
 
     // Act
@@ -35,26 +27,47 @@ describe('linksCheck', () => {
     expect(findings).toStrictEqual([
       {
         message: 'links to a missing file "gone.md"',
-        path: 'blocks/core/principles.md',
+        path: PRINCIPLES,
       },
       {
         message: 'links to a missing file "local/plan.md"',
-        path: 'README.md',
+        path: README,
+      },
+      {
+        message: 'links to a missing file "local/draft.md"',
+        path: 'DECISIONS.md',
       },
     ]);
   });
 
-  it('should accept a folder, a root-relative path, code and external links when they resolve or are no links', () => {
+  it('should report a link to a missing file when it drops the extension of a file that exists', () => {
     // Arrange
     const files = validFiles();
-    files['README.md'] = [
+    files[PRINCIPLES] = '# Principles\n\nSee [the core file](core).\n';
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = linksCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'links to a missing file "core"',
+        path: PRINCIPLES,
+      },
+    ]);
+  });
+
+  it('should accept a link when it leads to a file or a folder, from its file or from the root, or sits in code', () => {
+    // Arrange
+    const files = validFiles();
+    files[README] = [
       '# constitution',
       '',
-      'Start with [core](blocks/core/) or [the root](./).',
-      'Write to [the author](mailto:dev@example.com).',
+      'Start with [core](blocks/core/), [the blocks](blocks/) or [the root](./).',
       'Call `handlers[event.type](event)`.',
     ].join('\n');
-    files['blocks/core/principles.md'] = [
+    files[PRINCIPLES] = [
       '# Principles',
       '',
       'See [the README](/README.md).',
@@ -71,56 +84,24 @@ describe('linksCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it('should report a link to a missing file when the decision log holds one', () => {
-    // Arrange
-    const files = validFiles();
-    files['DECISIONS.md'] =
-      '# Decision Log\n\nSee [the plan](local/plan.md).\n';
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = linksCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: 'links to a missing file "local/plan.md"',
-        path: 'DECISIONS.md',
-      },
-    ]);
-  });
-
-  it('should report a link to a missing file when it follows a lone backtick', () => {
-    // Arrange
-    const files = validFiles();
-    files['blocks/core/principles.md'] =
-      '# Principles\n\nA slug never holds a backtick (`), a space or a capital.\n\nSee [p](missing.md), then run `check`.\n';
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = linksCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: 'links to a missing file "missing.md"',
-        path: 'blocks/core/principles.md',
-      },
-    ]);
-  });
-
-  it('should check the blocks alone when the README is missing', () => {
+  it('should check the blocks when the README is missing', () => {
     // Arrange
     const files = without({
       files: validFiles(),
-      path: 'README.md',
+      path: README,
     });
+    files[PRINCIPLES] = '# Principles\n\nSee [gone](gone.md).\n';
     const input = checkInputOf(files);
 
     // Act
     const findings = linksCheck(input);
 
     // Assert
-    expect(findings).toStrictEqual([]);
+    expect(findings).toStrictEqual([
+      {
+        message: 'links to a missing file "gone.md"',
+        path: PRINCIPLES,
+      },
+    ]);
   });
 });

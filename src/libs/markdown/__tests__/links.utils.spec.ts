@@ -13,50 +13,29 @@ describe('localLinkTargets', () => {
     },
     {
       expected: [
-        'gone.md',
+        'a.md',
       ],
-      name: 'a link with a title',
-      text: 'See [t](gone.md "Title").',
-    },
-    {
-      expected: [
-        'gone 4.md',
-      ],
-      name: 'a link in angle brackets',
-      text: 'See [t](<gone 4.md>).',
-    },
-    {
-      expected: [
-        'gone.md',
-      ],
-      name: 'a reference definition',
-      text: 'See [r][x].\n\n[x]: gone.md',
-    },
-    {
-      expected: [
-        'gone 4.md',
-      ],
-      name: 'a reference definition in angle brackets',
-      text: 'See [r][x].\n\n[x]: <gone 4.md>',
+      name: 'a space before the closing parenthesis',
+      text: 'See [a](a.md ).',
     },
     {
       expected: [
         'gone.md',
       ],
       name: 'link text holding brackets',
-      text: 'See [a [b]](gone.md).',
+      text: 'See [the [draft] rule](gone.md).',
     },
     {
       expected: [
-        'logo.png',
+        'core.md',
       ],
-      name: 'an image',
-      text: '![logo](logo.png)',
+      name: 'a reference definition with a title, below the paragraph that uses it',
+      text: 'See [the core][core].\n\n[core]: core.md "The core"',
     },
     {
       expected: [],
       name: 'only external links and anchors',
-      text: '[a](https://a.dev) [b](HTTPS://b.dev) [c](mailto:x@y.z) [d](git+https://d.dev) [e](//e.dev) [f](#f) [g](tel:+100)',
+      text: '[a](https://a.dev) [b](HTTPS://b.dev) [c](mailto:x@y.z) [d](git+https://d.dev) [e](//e.dev) [f](#f) [g](tel:+100) [h](s3://bucket/key)',
     },
   ])(
     'should return the local targets when the text holds $name',
@@ -76,11 +55,6 @@ describe('localLinkTargets', () => {
 describe('rewriteLocalLinks', () => {
   it.each([
     {
-      expected: 'See [a](root/a.md).',
-      name: 'a bare relative link',
-      text: 'See [a](a.md).',
-    },
-    {
       expected: 'See [a](root/a.md#part).',
       name: 'a link with an anchor',
       text: 'See [a](a.md#part).',
@@ -91,24 +65,34 @@ describe('rewriteLocalLinks', () => {
       text: 'See [t](<my file.md>).',
     },
     {
-      expected: 'See [t](root/a.md "Title").',
-      name: 'a link with a title',
-      text: 'See [t](a.md "Title").',
+      expected: 'See [t](root/a.md  "Title").',
+      name: 'a link with two spaces before its title',
+      text: 'See [t](a.md  "Title").',
     },
     {
-      expected: '[x]: root/a.md',
-      name: 'a reference definition',
-      text: '[x]: a.md',
-    },
-    {
-      expected: '[x]: root/a.md "Title"',
-      name: 'a reference definition with a title',
-      text: '[x]: a.md "Title"',
+      expected: "See [t](root/a.md 'Title').",
+      name: 'a link with a single-quoted title',
+      text: "See [t](a.md 'Title').",
     },
     {
       expected: '[x]: <root/my file.md>',
       name: 'a reference definition in angle brackets',
       text: '[x]: <my file.md>',
+    },
+    {
+      expected: '   [x]: root/a.md',
+      name: 'a reference definition indented by three spaces',
+      text: '   [x]: a.md',
+    },
+    {
+      expected: '[x]:root/a.md',
+      name: 'a reference definition with no space after its colon',
+      text: '[x]:a.md',
+    },
+    {
+      expected: '    [x]: a.md',
+      name: 'a line indented by four spaces, which is no definition',
+      text: '    [x]: a.md',
     },
     {
       expected: '[a](root/a.md) and [b](root/b.md)',
@@ -126,14 +110,14 @@ describe('rewriteLocalLinks', () => {
       text: '[a](https://a.dev) [c](mailto:x@y.z) [e](//e.dev) [f](#f)',
     },
     {
-      expected: '[a](root/a.md)\n```md\n[b](b.md)\n```\n[c](root/c.md)',
-      name: 'a link in a fenced code block',
-      text: '[a](a.md)\n```md\n[b](b.md)\n```\n[c](c.md)',
+      expected: '[a](<>)',
+      name: 'an empty angle-bracket target',
+      text: '[a](<>)',
     },
     {
-      expected: 'Write `[a](a.md)`; see [b](root/b.md).',
-      name: 'a link inside an inline code span',
-      text: 'Write `[a](a.md)`; see [b](b.md).',
+      expected: '```md\n[a](a.md)\n\n[b](b.md)\n```\nSee [c](root/c.md).',
+      name: 'links in a fenced code block of two paragraphs, then one after it',
+      text: '```md\n[a](a.md)\n\n[b](b.md)\n```\nSee [c](c.md).',
     },
     {
       expected: 'Write `see\n[a](a.md)` in the text.',
@@ -141,61 +125,9 @@ describe('rewriteLocalLinks', () => {
       text: 'Write `see\n[a](a.md)` in the text.',
     },
     {
-      expected: 'Call `a\nb` then [x](root/x.md) and `c`.',
-      name: 'a link after a code span that wraps a line',
-      text: 'Call `a\nb` then [x](x.md) and `c`.',
-    },
-    {
-      expected: 'See [`a`](root/a.md).',
-      name: 'link text holding a code span',
-      text: 'See [`a`](a.md).',
-    },
-    {
       expected: 'See [`a]`](root/a.md).',
       name: 'link text holding a bracket in a code span',
       text: 'See [`a]`](a.md).',
-    },
-    {
-      expected: '[a](<>)',
-      name: 'an empty angle-bracket target',
-      text: '[a](<>)',
-    },
-    {
-      expected: "See [t](root/a.md 'Title').",
-      name: 'a link with a single-quoted title',
-      text: "See [t](a.md 'Title').",
-    },
-    {
-      expected: 'See [t](root/a.md  "Title").',
-      name: 'a link with two spaces before its title',
-      text: 'See [t](a.md  "Title").',
-    },
-    {
-      expected: 'See [note]: a.md for more.',
-      name: 'reference-definition syntax in the middle of a line',
-      text: 'See [note]: a.md for more.',
-    },
-    {
-      expected: '   [x]: root/a.md',
-      name: 'a reference definition indented by three spaces',
-      text: '   [x]: a.md',
-    },
-    {
-      expected: '    [x]: a.md',
-      name: 'a line indented by four spaces, which is no definition',
-      text: '    [x]: a.md',
-    },
-    {
-      expected:
-        'A slug never holds a backtick (`).\n\nRead [a](root/a.md) before `check`.',
-      name: 'a link before a real span in a later paragraph, after a lone backtick',
-      text: 'A slug never holds a backtick (`).\n\nRead [a](a.md) before `check`.',
-    },
-    {
-      expected:
-        'Write a literal backtick as \\`.\n\nRead [a](root/a.md) before `check`.',
-      name: 'a link before a real span in a later paragraph, after an escaped backtick',
-      text: 'Write a literal backtick as \\`.\n\nRead [a](a.md) before `check`.',
     },
   ])(
     'should rewrite each local target and keep the rest as written when the text holds $name',

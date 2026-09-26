@@ -33,9 +33,18 @@ describe('sectionsOf', () => {
     ]);
   });
 
-  it('should read a hash without a following space as text when the line is not a heading', () => {
+  it.each([
+    {
+      line: '#hashtag',
+      name: 'no space follows its hashes',
+    },
+    {
+      line: 'Write the client in C# and F#.',
+      name: 'its hash stands inside the line',
+    },
+  ])('should keep a line as text of its section when $name', ({ line }) => {
     // Arrange
-    const text = '# Title\n#hashtag';
+    const text = `# Title\n${line}`;
 
     // Act
     const sections = sectionsOf(text);
@@ -45,7 +54,7 @@ describe('sectionsOf', () => {
       {
         heading: '# Title',
         lines: [
-          '#hashtag',
+          line,
         ],
       },
     ]);

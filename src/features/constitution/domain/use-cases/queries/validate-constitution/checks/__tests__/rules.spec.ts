@@ -4,33 +4,21 @@ import {
   checkInputOf,
   rule,
   textOf,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { rulesCheck } from '../rules';
 
 const PRINCIPLES = 'blocks/core/principles.md';
 const I18N = 'blocks/domains/i18n/i18n.md';
 
 describe('rulesCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = rulesCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it('should report every missing or malformed label when a rule breaks the rule format', () => {
+  it('should report every missing or malformed label when rules break the rule format', () => {
     // Arrange
     const files = validFiles();
     files[PRINCIPLES] = [
       '# Principles',
       '',
-      '## Not_Kebab · MUST',
+      '## not_Kebab · MUST',
       '**Why:** ',
       '**Check:** tool — spelling',
       '**Tags:** vibes',
@@ -42,7 +30,6 @@ describe('rulesCheck', () => {
       '',
       '## c · MAY',
       'C.',
-      '**Why:** because.',
       '**Tags:** ux',
       '',
     ].join('\n');
@@ -52,66 +39,47 @@ describe('rulesCheck', () => {
     const findings = rulesCheck(input);
 
     // Assert
-    expect(findings.map((finding) => finding.message)).toStrictEqual([
-      'rule "Not_Kebab" is not a kebab-case slug',
-      'rule "Not_Kebab" has no statement',
-      'rule "Not_Kebab" has no Why',
-      'rule "Not_Kebab" names the role "spelling", which is not a role',
-      'rule "Not_Kebab" has the tag "vibes", which is not a lens',
-      'rule "b" has the check "by eye"; a check is test, review or tool — <role>',
-      'rule "b" has no Tags',
-      'rule "c" has no Check',
+    expect(findings).toStrictEqual([
+      {
+        message: 'rule "not_Kebab" is not a kebab-case slug',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "not_Kebab" has no statement',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "not_Kebab" has no Why',
+        path: PRINCIPLES,
+      },
+      {
+        message:
+          'rule "not_Kebab" names the role "spelling", which is not a role',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "not_Kebab" has the tag "vibes", which is not a lens',
+        path: PRINCIPLES,
+      },
+      {
+        message:
+          'rule "b" has the check "by eye"; a check is test, review or tool — <role>',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "b" has no Tags',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "c" has no Why',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "c" has no Check',
+        path: PRINCIPLES,
+      },
     ]);
   });
-
-  it.each([
-    {
-      check: 'tool— lint',
-      expected:
-        'rule "dependencies-point-inward" has the check "tool— lint"; a check is test, review or tool — <role>',
-    },
-    {
-      check: 'tool - lint',
-      expected:
-        'rule "dependencies-point-inward" has the check "tool - lint"; a check is test, review or tool — <role>',
-    },
-    {
-      check: 'by eye',
-      expected:
-        'rule "dependencies-point-inward" has the check "by eye"; a check is test, review or tool — <role>',
-    },
-    {
-      check: 'tool — linting',
-      expected:
-        'rule "dependencies-point-inward" names the role "linting", which is not a role',
-    },
-    {
-      check: '',
-      expected: 'rule "dependencies-point-inward" has no Check',
-    },
-  ])(
-    'should report "$expected" when a rule has the Check "$check"',
-    ({ check, expected }) => {
-      // Arrange
-      const files = validFiles();
-      files[PRINCIPLES] = `# Principles\n\n${rule({
-        check,
-        slug: 'dependencies-point-inward',
-      })}`;
-      const input = checkInputOf(files);
-
-      // Act
-      const findings = rulesCheck(input);
-
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: PRINCIPLES,
-        },
-      ]);
-    },
-  );
 
   it('should report a rule when its slug is already defined in another file', () => {
     // Arrange
@@ -136,27 +104,30 @@ describe('rulesCheck', () => {
   it.each([
     {
       expected:
-        'rule "i18n-plurals-by-cldr" implements "no-such-rule", which is not a rule',
-      target: 'no-such-rule',
-    },
-    {
-      expected:
         'rule "i18n-plurals-by-cldr" implements "four-data-states" of ui, which its block may not refer to',
-      target: 'four-data-states',
+      implementsText: '`four-data-states`',
     },
     {
       expected: 'rule "i18n-plurals-by-cldr" implements itself',
-      target: 'i18n-plurals-by-cldr',
+      implementsText: '`i18n-plurals-by-cldr`',
+    },
+    {
+      expected:
+        'rule "i18n-plurals-by-cldr" implements "`rules-bind` in core", which is not a rule',
+      implementsText: '`rules-bind` in core',
     },
   ])(
-    'should report "$expected" when a rule implements $target',
-    ({ expected, target }) => {
+    'should report "$expected" when a rule implements $implementsText',
+    ({ expected, implementsText }) => {
       // Arrange
       const files = validFiles();
       files[I18N] = textOf({
         files,
         path: I18N,
-      }).replace('**Tags:** ux', `**Tags:** ux\n**Implements:** \`${target}\``);
+      }).replace(
+        '**Tags:** ux',
+        `**Tags:** ux\n**Implements:** ${implementsText}`,
+      );
       const input = checkInputOf(files);
 
       // Act

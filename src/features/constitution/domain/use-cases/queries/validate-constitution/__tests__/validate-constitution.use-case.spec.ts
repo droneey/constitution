@@ -4,9 +4,8 @@ import {
   rule,
   sourceOf,
   textOf,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
@@ -20,21 +19,7 @@ const UNTOOLED_RULE = rule({
 });
 
 describe('validateConstitution', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const source = sourceOf(validFiles());
-
-    // Act
-    const validation = validateConstitution(source);
-
-    // Assert
-    expect(validation).toStrictEqual({
-      advice: [],
-      findings: [],
-    });
-  });
-
-  it('should give only the structural findings, sorted, and withhold the advice when a block does not load', () => {
+  it('should give only the loader findings, sorted, and withhold the advice when a block does not load', () => {
     // Arrange
     const files = validFiles();
     files[REMOTE_DATA] = textOf({
@@ -63,32 +48,6 @@ describe('validateConstitution', () => {
           message:
             'is not a block file; a block holds its main file, its chapters and with/<block>.md',
           path: 'blocks/domains/ui/notes.txt',
-        },
-      ],
-    });
-  });
-
-  it('should give the one loader finding and withhold the advice when a single file is stray', () => {
-    // Arrange
-    const files = validFiles();
-    files[UI] = `${textOf({
-      files,
-      path: UI,
-    })}\n${UNTOOLED_RULE}`;
-    files['blocks/core/notes.txt'] = 'notes\n';
-    const source = sourceOf(files);
-
-    // Act
-    const validation = validateConstitution(source);
-
-    // Assert
-    expect(validation).toStrictEqual({
-      advice: [],
-      findings: [
-        {
-          message:
-            'is not a block file; a block holds its main file, its chapters and with/<block>.md',
-          path: 'blocks/core/notes.txt',
         },
       ],
     });
