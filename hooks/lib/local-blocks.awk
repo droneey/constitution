@@ -1,0 +1,138 @@
+# Only a local block's front matter is read: its rules are not in the index
+# (spec §4.3). A file is opened only when the hook's "local file <path>" record
+# says it is regular and readable.
+
+function unquote(v,   c, n) {
+  c = substr(v, 1, 1)
+  n = length(v)
+  if ((c == "\"" || c == "'") && n >= 2 && substr(v, n, 1) == c) return substr(v, 2, n - 2)
+  return v
+}
+
+# A list becomes words separated by one space, as the index writes lists.
+function front_matter_value(v,   n, a, k, out, item) {
+  v = trim(v)
+  if (v == "null" || v == "~") return ""
+  if (v !~ /^\[.*\]$/) return unquote(v)
+  n = split(substr(v, 2, length(v) - 2), a, ",")
+  out = ""
+  for (k = 1; k <= n; k++) {
+    item = unquote(trim(a[k]))
+    if (item != "") out = out (out == "" ? "" : " ") item
+  }
+  return out
+}
+
+function front_matter(file,   line, r, key, value) {
+  delete FM
+  r = (getline line < file)
+  if (r < 0) return 0
+  sub(/\r$/, "", line)
+  if (r == 0 || line != "---") {
+    close(file)
+    return -1
+  }
+  key = ""
+  while ((getline line < file) > 0) {
+    sub(/\r$/, "", line)
+    if (line == "---") {
+      close(file)
+      return 1
+    }
+    if (match(line, /^[a-z]+:/)) {
+      key = substr(line, 1, RLENGTH - 1)
+      FM[key] = front_matter_value(substr(line, RLENGTH + 1))
+    } else if (key != "" && line ~ /^[ \t]*- /) {
+      value = line
+      sub(/^[ \t]*- /, "", value)
+      FM[key] = trim(FM[key] " " front_matter_value(value))
+    }
+  }
+  close(file)
+  return -1
+}
+
+function local_block(s, i,   path, key, name, r, n, a, k, missing) {
+  path = ITEXT[i]
+  key = IKEY[i]
+  if (path !~ /^\.\// || path ~ /(^|\/)\.\.(\/|$)/) {
+    warn("local-block", path " is not inside the repository — name a file under ./rules/")
+    return
+  }
+  if (path !~ /\.md$/) {
+    warn("local-block", path " is not a block file — name the block's .md file")
+    return
+  }
+  name = path
+  sub(/^.*\//, "", name)
+  name = substr(name, 1, length(name) - 3)
+  if (FILE_STATE[path] == "other") {
+    warn("local-block", path " is not a file — name the block's .md file")
+    return
+  }
+  if (FILE_STATE[path] == "unreadable") {
+    warn("local-block", path " cannot be read — make it readable")
+    return
+  }
+  r = (FILE_STATE[path] == "file") ? front_matter(ENVIRON["CONSTITUTION_PROJECT"] "/" substr(path, 3)) : 0
+  if (r == 0) {
+    warn("local-block", path " does not exist — create it or remove it from " key)
+    return
+  }
+  if (r < 0) {
+    warn("local-block", path " has no front matter — open it with the block's manifest between --- lines")
+    return
+  }
+  missing = ""
+  n = split(FIELDS, a, " ")
+  for (k = 1; k <= n; k++) if (!(a[k] in FM)) missing = missing (missing == "" ? "" : ", ") a[k]
+  if (missing != "") warn("local-block", path " has no " missing " — fix its front matter")
+  if (("kind" in FM) && FM["kind"] != KIND_OF[key]) warn("local-block", path " has kind " FM["kind"] " — make it " KIND_OF[key] " or move the block out of " key)
+  if (("id" in FM) && FM["id"] != name) warn("local-block", path " has id " FM["id"] " — make it " name ", the file's name")
+  if (name in KNOWN) {
+    warn("local-block", path " repeats the constitution id " name " — rename it")
+    return
+  }
+  if (FM["extends"] != "" && !(FM["extends"] in KNOWN)) warn("local-block", path " extends " FM["extends"] ", which is not a constitution block — fix its front matter")
+  n = split(FM["requires"], a, " ")
+  for (k = 1; k <= n; k++) if (!(a[k] in KNOWN) && !(a[k] in LOCAL)) warn("local-block", path " requires " a[k] ", which is not a block — fix its front matter")
+  LPATH[++nlocal] = path
+  LID[nlocal] = name
+  LLAYER[nlocal] = LAYER_OF[key]
+  LSUMMARY[nlocal] = FM["summary"]
+  LSTATUS[nlocal] = FM["status"]
+  LREQUIRES[nlocal] = FM["requires"]
+  LEXTENDS[nlocal] = FM["extends"]
+  LCHECKS[nlocal] = FM["checks"]
+  LSCOPE[nlocal] = s
+  IN[s, name] = 1
+  if (FM["extends"] in KNOWN) add_with_bases(s, FM["extends"])
+}
+
+# A local block's languages, as the index gives them for a constitution block:
+# the language blocks in its closure. Another local block passes on its own, so
+# the pass repeats until nothing changes, whatever the order of the file.
+function local_languages(   k, n, a, m, j, changed) {
+  for (k = 1; k <= nlocal; k++) LLANGS[k] = (LLAYER[k] == "language") ? LID[k] : ""
+  do {
+    changed = 0
+    for (k = 1; k <= nlocal; k++) {
+      n = split(LREQUIRES[k] " " LEXTENDS[k], a, " ")
+      for (m = 1; m <= n; m++) {
+        if (a[m] in KNOWN) changed += add_languages(k, LANGS[a[m]])
+        else for (j = 1; j <= nlocal; j++) if (LID[j] == a[m]) changed += add_languages(k, LLANGS[j])
+      }
+    }
+  } while (changed)
+}
+
+function add_languages(k, list,   n, a, m, added) {
+  n = split(list, a, " ")
+  added = 0
+  for (m = 1; m <= n; m++) {
+    if (has(LLANGS[k], a[m])) continue
+    LLANGS[k] = trim(LLANGS[k] " " a[m])
+    added = 1
+  }
+  return added
+}

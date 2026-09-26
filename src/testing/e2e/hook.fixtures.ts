@@ -1,0 +1,253 @@
+import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+type HookEvent = 'startup' | 'clear' | 'compact' | 'subagent';
+
+// Folders are relative to the project root.
+interface HookCall {
+  cwd?: string | undefined;
+  event: HookEvent;
+  nonUtf8Byte?: boolean | undefined;
+  // CLAUDE_PLUGIN_ROOT is unset, though the command still names the root
+  pluginRootUnset?: boolean | undefined;
+  project: string;
+  projectDir?: string | undefined;
+  root: string;
+  // the process starts outside the project, so only the event names cwd
+  spawnOutside?: boolean | undefined;
+}
+
+interface HookRun {
+  exitCode: number | undefined;
+  stderr: string;
+  stdout: string;
+}
+
+interface HookOutput {
+  context: string;
+  event: string;
+}
+
+// The macOS job sets HOOK_SHELL=/bin/bash to run the hook under bash 3.2.
+const SHELL: string = process.env['HOOK_SHELL'] ?? 'bash';
+const WARNINGS = '⚠️ Warnings';
+// A session carries the user's locale; the hook must not depend on it.
+const LOCALE = 'en_US.UTF-8';
+const PLACEHOLDER = '@';
+const NOT_UTF8 = 0xe9;
+// A hook that blocks, on a named pipe say, fails its case instead of the run.
+const TIMEOUT_MS = 20_000;
+
+// Claude Code names the event's fields in snake case.
+const eventOf = (input: {
+  cwd: string;
+  event: HookEvent;
+}): Readonly<Record<string, string>> =>
+  Object.fromEntries([
+    [
+      'session_id',
+      `session-${PLACEHOLDER}`,
+    ],
+    [
+      'transcript_path',
+      '/transcripts/session-1.jsonl',
+    ],
+    [
+      'cwd',
+      input.cwd,
+    ],
+    ...(input.event === 'subagent'
+      ? [
+          [
+            'hook_event_name',
+            'SubagentStart',
+          ],
+          [
+            'agent_id',
+            'agent-1',
+          ],
+          [
+            'agent_type',
+            'Explore',
+          ],
+        ]
+      : [
+          [
+            'hook_event_name',
+            'SessionStart',
+          ],
+          [
+            'source',
+            input.event,
+          ],
+        ]),
+  ]);
+
+const inputOf = (input: {
+  cwd: string;
+  event: HookEvent;
+  nonUtf8Byte: boolean;
+}): Buffer => {
+  const bytes = Buffer.from(JSON.stringify(eventOf(input)));
+
+  bytes[bytes.indexOf(PLACEHOLDER)] = input.nonUtf8Byte
+    ? NOT_UTF8
+    : PLACEHOLDER.charCodeAt(0);
+
+  return bytes;
+};
+
+// A clean environment: the session that runs the tests sets CLAUDE_PROJECT_DIR
+// and CLAUDE_PLUGIN_ROOT of its own.
+const runHook = (call: HookCall): HookRun => {
+  const cwd = join(call.project, call.cwd ?? '');
+  const result = spawnSync(
+    SHELL,
+    [
+      join(call.root, 'hooks', 'session-start.sh'),
+    ],
+    {
+      cwd: call.spawnOutside !== true && existsSync(cwd) ? cwd : tmpdir(),
+      encoding: 'utf8',
+      timeout: TIMEOUT_MS,
+      env: Object.fromEntries([
+        [
+          'PATH',
+          process.env['PATH'] ?? '',
+        ],
+        [
+          'LANG',
+          LOCALE,
+        ],
+        [
+          'LC_ALL',
+          LOCALE,
+        ],
+        ...(call.pluginRootUnset === true
+          ? []
+          : [
+              [
+                'CLAUDE_PLUGIN_ROOT',
+                call.root,
+              ],
+            ]),
+        ...(call.projectDir === undefined
+          ? []
+          : [
+              [
+                'CLAUDE_PROJECT_DIR',
+                join(call.project, call.projectDir),
+              ],
+            ]),
+      ]),
+      input: inputOf({
+        cwd,
+        event: call.event,
+        nonUtf8Byte: call.nonUtf8Byte === true,
+      }),
+    },
+  );
+
+  return {
+    exitCode: result.status ?? undefined,
+    stderr: result.stderr,
+    stdout: result.stdout,
+  };
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+// JSON.parse refuses a second object, so a parse proves there is exactly one.
+const outputOf = (run: HookRun): HookOutput => {
+  const parsed: unknown = JSON.parse(run.stdout);
+  const inner = isRecord(parsed) ? parsed['hookSpecificOutput'] : undefined;
+
+  if (
+    !isRecord(parsed) ||
+    Object.keys(parsed).length !== 1 ||
+    !isRecord(inner) ||
+    Object.keys(inner).length !== 2 ||
+    typeof inner['additionalContext'] !== 'string' ||
+    typeof inner['hookEventName'] !== 'string'
+  ) {
+    throw new Error(
+      `The hook printed no hookSpecificOutput object: ${run.stdout}`,
+    );
+  }
+
+  return {
+    context: inner['additionalContext'],
+    event: inner['hookEventName'],
+  };
+};
+
+const contextOf = (run: HookRun): string => outputOf(run).context;
+
+const linesOf = (context: string): readonly string[] =>
+  context.replace(/\n$/, '').split('\n');
+
+const headerOf = (context: string): readonly string[] =>
+  linesOf(context.slice(0, context.indexOf('\n\n')));
+
+const factsOf = (context: string): readonly string[] =>
+  headerOf(context).slice(1);
+
+const blockListOf = (context: string): readonly string[] => {
+  const lines = linesOf(context);
+  const start = lines.findIndex((line) => line.startsWith("Core's files")) + 2;
+
+  return lines.slice(start, lines.indexOf('', start));
+};
+
+const headlineOf = (input: { context: string; slug: string }): string =>
+  linesOf(input.context).find((line) => line.startsWith(`- ${input.slug} `)) ??
+  '';
+
+// The hook dates an override by the local calendar, as `date` prints it.
+const localToday = (): string => {
+  const now = new Date();
+
+  return [
+    String(now.getFullYear()),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+  ].join('-');
+};
+
+const warningsOf = (context: string): readonly string[] => {
+  const lines = linesOf(context);
+  const start = lines.findIndex((line) => line.startsWith(WARNINGS));
+
+  if (start === -1) {
+    return [];
+  }
+
+  const end = lines.indexOf('', start);
+
+  return lines.slice(start, end === -1 ? undefined : end);
+};
+
+const bytesAfterHeader = (context: string): number =>
+  Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
+
+const lastLinesOf = (input: {
+  context: string;
+  count: number;
+}): readonly string[] => linesOf(input.context).slice(-input.count);
+
+export type { HookEvent, HookOutput, HookRun };
+export {
+  blockListOf,
+  bytesAfterHeader,
+  contextOf,
+  factsOf,
+  headlineOf,
+  lastLinesOf,
+  localToday,
+  outputOf,
+  runHook,
+  warningsOf,
+};
