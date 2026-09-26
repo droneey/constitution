@@ -19,5 +19,6 @@ wiring.console.write(
     ? 'blocks: every block is sound\n'
     : `blocks: ${findings.length} finding(s)\n`,
 );
+
 // exitCode, not exit(): exit() drops output still buffered for a pipe.
 process.exitCode = findings.length === 0 ? 0 : 1;
