@@ -18,6 +18,7 @@
 | The rest | ADR-0037 – ADR-0045 |
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
+| Core | ADR-0053 – ADR-0057 |
 
 ---
 
@@ -108,7 +109,7 @@
 - **Why.** A tool can then be swapped without touching a rule.
 
 ## ADR-0015 — A tool-checked rule names its role
-**Date:** 2026-09-25 · **Status:** Accepted
+**Date:** 2026-09-25 · **Status:** Superseded by ADR-0054
 
 - **Decision.** A rule's check is `test`, `review`, or `tool — <role>` with a role from a closed list: `format`, `lint`, `types`, `architecture`, `names`, `unused`, `versions`, `tests`, `coverage`, `mutation`, `secrets`, `audit`. A language or an implementation lists the roles it checks in `checks`. When a tool-checked MUST rule's role has no tool for a language the rule applies to, the hook warns and the constitution's check reports it.
 - **Why.** Only MUST rules count, so a missing tool for an advisory rule raises no noise.
@@ -321,3 +322,36 @@
 - **Decision.** Outside a folder, a caller imports only its surface; inside, files import each other directly and never their own folder's surface. A folder of one role — `entities`, `contracts`, `use-cases`, `queries`, `commands`, `repositories`, `components`, `utils`, `models` — and each module inside it has a surface. A layer folder (`domain/`, `app/`, `infra/`, `adapters/`, `ui/`) and an area folder (`src/`, `features/`, `libs/`) is never an import target and has none: a caller imports the role folder inside it.
 - **Rejected.** A surface that aggregates a layer; Biome's `noPrivateImports`, which demands a surface at every level.
 - **Why.** An import names the role it couples to, and no aggregate hides an edge the layer rules forbid.
+
+## ADR-0053 — A rule's level says how plainly it is wrong to break it
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A rule is MUST where a violation is plainly wrong and the answer is yes or no, most often given by a tool; SHOULD where following it takes judgement or has reasonable exceptions; MAY where it names a permitted choice. SHOULD is the default.
+- **Rejected.** Every rule MUST, which fills the digest, multiplies warnings and makes every change a major release; every rule SHOULD, which leaves the digest and the warnings nothing to say.
+- **Why.** The level decides what the digest shows, which rules raise warnings and which changes are major, so it has to mean the same thing in every block.
+
+## ADR-0054 — The check roles of 1.0
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A rule's check is `test`, `review`, or `tool — <role>` with a role from this closed list: `format`, `lint`, `types`, `architecture`, `names`, `unused`, `versions`, `tests`, `coverage`, `mutation`, `secrets`, `audit`, `commits`. `names`, `secrets` and `commits` hold in any language; the others are checked per language. A language or an implementation lists the roles it checks in `checks`. When a tool-checked MUST rule's role has no tool for a language the rule applies to, the hook warns and the constitution's check reports it.
+- **Rejected.** Checking commit messages and branch names under `lint`, which is checked per language and would report a missing tool for every language.
+- **Why.** A commit message belongs to no language, and a rule held by a tool must say so to be counted.
+
+## ADR-0055 — The laws of 1.0
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** The laws are the MUST rules of `principles`, and the only MUST rules there. The fourteen laws of 0.8 stay; mechanical enforcement becomes the law that every rule whose check names a role is held by a tool of that role; extension by addition, contracts shaped by the role that uses them, and untrusted input parsed once at the edge join them.
+- **Rejected.** Dropping mechanical enforcement as a mechanism rather than a law.
+- **Why.** Each of the added three was already required by several blocks; as laws they are stated once and bind everywhere.
+
+## ADR-0056 — version-control holds what is true of any version control
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line. Everything about git — commit messages, branch names, worktrees, its commands — belongs to the implementation `git`.
+- **Why.** A rule that names a git concept loses its meaning without git, so it belongs to the git block.
+
+## ADR-0057 — A block never cites the decision log
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A block states its rules, with their reasons, without citing an entry of this log; the constitution's check reports a citation.
+- **Why.** A rule must stand on its own when a project reads it, and the log explains the constitution's history, not a project's duty.

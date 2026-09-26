@@ -86,7 +86,38 @@ describe('referencesCheck', () => {
     ]);
   });
 
+  it('should report each decision a block cites by number', () => {
+    // Arrange
+    const files = validFiles();
+    files[UI] = uiWith(
+      '# UI\n\nAs ADR-0012 decided, and `ADR-0030` after it; ADR-0012 again.\n',
+    );
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = referencesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'cites ADR-0012; a block states its rules without citing the decision log',
+        path: UI,
+      },
+      {
+        message:
+          'cites ADR-0030; a block states its rules without citing the decision log',
+        path: UI,
+      },
+    ]);
+  });
+
   it.each([
+    {
+      name: 'a fence cites a decision',
+      path: UI,
+      text: uiWith('# UI\n\n```md\nSee ADR-0012.\n```\n'),
+    },
     {
       name: 'a block names its own rule',
       path: PRINCIPLES,

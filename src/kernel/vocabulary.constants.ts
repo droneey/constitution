@@ -54,6 +54,7 @@ const ROLES = [
   'mutation',
   'secrets',
   'audit',
+  'commits',
 ] as const;
 
 type Role = (typeof ROLES)[number];
@@ -61,6 +62,7 @@ type Role = (typeof ROLES)[number];
 const LANGUAGE_FREE_ROLES: readonly Role[] = [
   'names',
   'secrets',
+  'commits',
 ];
 
 const TAGS = [

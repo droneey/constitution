@@ -11,3 +11,26 @@ role	coverage	false
 role	mutation	false
 role	secrets	true
 role	audit	false
+role	commits	true
+block	core	core	What holds for any program, in any language, of any kind.	principles.md				false					
+rule	dependencies-point-inward-without-cycles	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Imports point inward, toward stability, and form no cycle, direct or through a chain of modules.
+rule	inner-layers-declare-their-contracts	core	blocks/core/principles.md		MUST	review			architecture	The inner layer declares, in its own words, the contracts it needs; the outer layer implements them.
+rule	domain-imports-only-itself-and-kernel	core	blocks/core/principles.md		MUST	tool	architecture		architecture	The domain imports only itself and the shared kernel: no framework, no input or output, no vendor library, however pure.
+rule	one-reason-to-change	core	blocks/core/principles.md		MUST	review			architecture	Each layer, module and unit has one reason to change.
+rule	one-home-per-datum	core	blocks/core/principles.md		MUST	review			architecture data	Every datum and every piece of state lives in one place; everything else reads it or derives from it.
+rule	features-blind-to-each-other	core	blocks/core/principles.md		MUST	tool	architecture		architecture	A feature never imports another feature.
+rule	access-only-through-curated-surface	core	blocks/core/principles.md		MUST	tool	architecture		architecture	A module is reached from outside only through its surface, and the surface is curated: it offers what a caller may couple to and nothing else.
+rule	external-shapes-mapped-at-boundary	core	blocks/core/principles.md		MUST	review			architecture data	An external shape — a response, a row, a message, a file format — is mapped to the inner model at the edge, in both directions.
+rule	side-effects-at-the-edges	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Input and output, network, storage, clock, randomness and processes live in adapters.
+rule	one-explicit-composition-root	core	blocks/core/principles.md		MUST	review			architecture	Concrete implementations are chosen and wired in one known place, the composition root.
+rule	reads-and-writes-apart	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Where one operation reads and another writes, the read path and the write path never import each other.
+rule	code-lives-with-its-reason-to-change	core	blocks/core/principles.md		MUST	review			architecture	Code lives in the layer that owns its reason to change, beside its consumer when they share that reason, and lifts to the nearest common level only when a second consumer appears.
+rule	illegal-states-unrepresentable	core	blocks/core/principles.md		MUST	review			types	A value with distinct stages is a union keyed by its state, not a bag of optional fields and flags that allows combinations no stage has.
+rule	errors-surfaced-never-swallowed	core	blocks/core/principles.md		MUST	tool	lint		errors	A caught error is handled, rethrown, or mapped to a typed error.
+rule	rules-held-by-tools	core	blocks/core/principles.md		MUST	review			workflow	Every rule whose Check names a role is held by a tool of that role in the project's check, configured to fail on a violation.
+rule	contracts-shaped-by-role	core	blocks/core/principles.md		MUST	review			architecture	A contract is shaped by the role that uses it: a reader sees only reads, a writer only writes, and no caller receives an operation it has no reason to call.
+rule	untrusted-input-parsed-at-edge	core	blocks/core/principles.md		MUST	review			types security	Input from outside the program — a request, a response, a file, the environment — is parsed once, at the edge, into a known type.
+rule	extension-by-addition	core	blocks/core/principles.md		MUST	review			architecture	A new kind of thing — a vendor, a command, a format, a rule — is added as a new member and its registration, without editing the code that handles the other kinds.
+rule	duplication-across-contexts-by-default	core	blocks/core/principles.md		SHOULD	review			architecture	Across bounded contexts, duplication is the default and sharing the exception.
+rule	value-objects-guard-their-invariant	core	blocks/core/principles.md		SHOULD	review			types	A value object is built only through the function that checks its invariant, so a value that exists is valid.
+rule	entities-guarded-where-the-program-owns-them	core	blocks/core/principles.md		SHOULD	review			architecture data	Where the program owns the data it changes, every change goes through its aggregate's root, which keeps the aggregate consistent; an aggregate stays small, and a child with a life of its own becomes an aggregate referenced by identifier.

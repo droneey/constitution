@@ -1,3 +1,17 @@
+---
+id: core
+kind: core
+summary: What holds for any program, in any language, of any kind.
+chapters: [principles.md]
+requires: []
+extends: null
+abstract: false
+checks: []
+owns: []
+governs: []
+status: stable
+---
+
 # The droneey constitution
 
 The rules a droneey repository is built by. The digest at session start lists the active blocks and their files; the files hold the rules, so read the ones that govern the work.
@@ -32,5 +46,3 @@ Apply the rules of the project's domains and language to it directly, and check 
 ## Reading order
 
 This file, then `principles`, then the chapter of the task: `architecture` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `workflow` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.
-
-Laws: dependencies-point-inward-without-cycles, inner-layers-declare-their-contracts, domain-imports-only-itself-and-kernel, one-reason-to-change, one-home-per-datum, features-blind-to-each-other, access-only-through-curated-surface, external-shapes-mapped-at-boundary, side-effects-at-the-edges, one-explicit-composition-root, reads-and-writes-apart, code-lives-with-its-reason-to-change, illegal-states-unrepresentable, errors-surfaced-never-swallowed, rules-held-by-tools, contracts-shaped-by-role, untrusted-input-parsed-at-edge, extension-by-addition.
