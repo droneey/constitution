@@ -4,7 +4,7 @@ export type {
   BlockFileRole,
   FrontMatter,
 } from './block.entity';
-export type { Constitution, PluginDocuments } from './constitution.entity';
+export type { Constitution, Documents } from './constitution.entity';
 export type {
   FieldIssue,
   HooksManifest,

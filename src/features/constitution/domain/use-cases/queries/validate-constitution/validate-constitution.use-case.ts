@@ -12,6 +12,7 @@ import {
   abstractBlocksCheck,
   budgetCheck,
   cyclesCheck,
+  decisionsCheck,
   frontMatterCheck,
   linksCheck,
   ownedWordsCheck,
@@ -37,6 +38,7 @@ const CHECKS: readonly Check[] = [
   budgetCheck,
   linksCheck,
   pluginCheck,
+  decisionsCheck,
 ];
 
 // The checks run on a sound structure only: a block that did not load would

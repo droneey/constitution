@@ -13,7 +13,7 @@ const linksCheck: Check = ({
   constitution,
 }: CheckInput): readonly Finding[] => {
   const folders = foldersOf(constitution.paths);
-  const readme = constitution.documents.readme;
+  const { decisions, readme } = constitution.documents;
   const documents: readonly Document[] = [
     ...constitution.blocks.flatMap((block) =>
       block.files.map((file) => ({
@@ -21,14 +21,25 @@ const linksCheck: Check = ({
         text: file.body,
       })),
     ),
-    ...(readme === undefined
-      ? []
-      : [
-          {
-            path: DOCUMENT_PATHS.readme,
-            text: readme,
-          },
-        ]),
+    ...[
+      {
+        path: DOCUMENT_PATHS.readme,
+        text: readme,
+      },
+      {
+        path: DOCUMENT_PATHS.decisions,
+        text: decisions,
+      },
+    ].flatMap(({ path, text }) =>
+      text === undefined
+        ? []
+        : [
+            {
+              path,
+              text,
+            },
+          ],
+    ),
   ];
 
   return documents.flatMap((document) =>

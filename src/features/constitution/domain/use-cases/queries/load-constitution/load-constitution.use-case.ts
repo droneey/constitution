@@ -11,7 +11,7 @@ import type {
 import type {
   Block,
   Constitution,
-  PluginDocuments,
+  Documents,
   RequirementAnswer,
   Rule,
 } from '../../../entities';
@@ -99,7 +99,7 @@ const documentsOf = (input: {
   parser: ManifestParser;
   paths: ReadonlySet<string>;
   tree: FileTree;
-}): PluginDocuments => {
+}): Documents => {
   const textOf = (path: string): string | undefined =>
     input.paths.has(path) ? input.tree.read(path) : undefined;
   const hooks = textOf(DOCUMENT_PATHS.hooks);
@@ -107,6 +107,7 @@ const documentsOf = (input: {
   const plugin = textOf(DOCUMENT_PATHS.plugin);
 
   return {
+    decisions: textOf(DOCUMENT_PATHS.decisions),
     hooks: hooks === undefined ? undefined : input.parser.hooks(hooks),
     marketplace:
       marketplace === undefined

@@ -14,6 +14,18 @@ const pluginFiles = (): Files => ({
   '.claude-plugin/plugin.json': JSON.stringify({
     name: 'constitution',
   }),
+  'DECISIONS.md': [
+    '# Decision Log',
+    '',
+    '## ADR-0001 — Blocks sit in layers',
+    '**Date:** 2026-09-25 · **Status:** Accepted',
+    '',
+    '- **Decision.** Four layers; see [core](blocks/core/core.md).',
+    '',
+    '## ADR-0002 — Two links join blocks',
+    '**Date:** 2026-09-25 · **Status:** Accepted',
+    '',
+  ].join('\n'),
   'README.md': '# constitution\n\nStart with [core](blocks/core/core.md).\n',
   'hooks/hooks.json': JSON.stringify({
     hooks: {},

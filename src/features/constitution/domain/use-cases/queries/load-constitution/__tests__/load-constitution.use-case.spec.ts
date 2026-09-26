@@ -152,7 +152,7 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should parse the plugin documents and keep the README text when every document exists', () => {
+  it('should parse the plugin documents and keep the README and the log as text when every document exists', () => {
     // Arrange
     const files = validFiles();
 
@@ -161,6 +161,10 @@ describe('loadConstitution', () => {
 
     // Assert
     expect(loaded.constitution.documents).toStrictEqual({
+      decisions: textOf({
+        files,
+        path: 'DECISIONS.md',
+      }),
       hooks: {
         status: 'parsed',
         value: {
