@@ -18,21 +18,21 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v7.0.1
 
-      - name: 📦 Setup Bun
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v2.2.0
         with:
           bun-version: 1.4.2
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: ☑️ Check
+      - name: Check
         run: bun run check
 
-      - name: ☑️ Lint the workflows
+      - name: Lint the workflows
         run: |
           set -euo pipefail
           bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12 "${RUNNER_TEMP}"
