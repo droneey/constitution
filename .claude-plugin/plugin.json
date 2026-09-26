@@ -1,12 +1,9 @@
 {
   "name": "constitution",
-  "description": "The droneey constitution: the blocks and assemblies every repository is built by, put into context at session start, with its recipes as skills.",
+  "description": "The droneey constitution: the rules a project declares in constitution.yaml, delivered at session start.",
   "author": {
     "name": "droneey",
     "url": "https://github.com/droneey"
   },
-  "repository": "https://github.com/droneey/constitution",
-  "skills": [
-    "./blocks/core/skills/"
-  ]
+  "repository": "https://github.com/droneey/constitution"
 }
