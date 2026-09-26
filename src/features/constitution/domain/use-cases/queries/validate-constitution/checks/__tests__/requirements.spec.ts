@@ -10,6 +10,7 @@ import { validFiles } from '#/features/constitution/__tests__/valid-files';
 import { requirementsCheck } from '../requirements';
 
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
+const BIOME_WITH_LINGUI = 'blocks/implementations/biome/with/lingui.md';
 const ANSWER = '| `i18n-plurals-by-cldr` | ICU plural | met |';
 
 const answering = (
@@ -36,17 +37,57 @@ describe('requirementsCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it('should report a Requirements table once per file when a block that is no implementation holds one', () => {
+  it.each([
+    {
+      name: 'a chapter',
+      path: 'blocks/core/principles.md',
+    },
+    {
+      name: 'a with/ file',
+      path: 'blocks/domains/ui/with/remote-data.md',
+    },
+  ])(
+    'should report a Requirements table once per file when $name of a block that is no implementation holds one',
+    ({ path }) => {
+      // Arrange
+      const files = validFiles();
+      files[path] = [
+        textOf({
+          files,
+          path,
+        }),
+        '## Requirements',
+        '| `four-data-states` | tests | met |',
+        '| `reads-are-cancellable` | tests | met |',
+      ].join('\n');
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = requirementsCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: 'answers requirements, which only an implementation does',
+          path,
+        },
+      ]);
+    },
+  );
+
+  it('should report a with/ file once when an implementation answers two requirements in it', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/core/principles.md'] = [
-      textOf({
-        files,
-        path: 'blocks/core/principles.md',
-      }),
+    files[BIOME_WITH_LINGUI] = [
+      '# Biome with Lingui',
+      '',
       '## Requirements',
-      '| `four-data-states` | tests | met |',
-      '| `reads-are-cancellable` | tests | met |',
+      '',
+      '| Requirement | How | Status |',
+      '|---|---|---|',
+      '| `no-any` | the noExplicitAny rule | met |',
+      '| `dependencies-point-inward` | review | met |',
+      '',
     ].join('\n');
     const input = checkInputOf(files);
 
@@ -56,8 +97,9 @@ describe('requirementsCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message: 'answers requirements, which only an implementation does',
-        path: 'blocks/core/principles.md',
+        message:
+          'answers requirements in a with/ file; a block answers them in its main file or a chapter',
+        path: BIOME_WITH_LINGUI,
       },
     ]);
   });

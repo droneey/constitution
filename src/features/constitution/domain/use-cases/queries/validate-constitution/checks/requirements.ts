@@ -1,9 +1,9 @@
 import type { Finding } from '#/kernel';
 
 import type { RequirementAnswer, Rule } from '../../../../entities';
+import type { BlocksById } from '../../../../utils';
+import { mayReferTo } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import type { BlocksById } from '../closure.utils';
-import { mayReferTo } from '../closure.utils';
 
 const STATUS = /^(?:met|not met|partial: \S.*)$/;
 
@@ -96,16 +96,34 @@ const requirementsCheck: Check = ({
 }: CheckInput): readonly Finding[] => {
   const isInImplementation = (answer: RequirementAnswer): boolean =>
     byId.get(answer.block)?.layer === 'implementation';
+  const fileFindings = (input: {
+    isMisplaced: (answer: RequirementAnswer) => boolean;
+    message: string;
+  }): readonly Finding[] =>
+    [
+      ...new Set(
+        constitution.requirementAnswers
+          .filter(input.isMisplaced)
+          .map((answer) => answer.file),
+      ),
+    ].map((path) => ({
+      message: input.message,
+      path,
+    }));
   const outside = [
-    ...new Set(
-      constitution.requirementAnswers
-        .filter((answer) => !isInImplementation(answer))
-        .map((answer) => answer.file),
-    ),
-  ].map((path) => ({
-    message: 'answers requirements, which only an implementation does',
-    path,
-  }));
+    ...fileFindings({
+      isMisplaced: (answer: RequirementAnswer): boolean =>
+        !isInImplementation(answer),
+      message: 'answers requirements, which only an implementation does',
+    }),
+    // The index gives an answer no seam, so a with/ file holds no answer.
+    ...fileFindings({
+      isMisplaced: (answer: RequirementAnswer): boolean =>
+        isInImplementation(answer) && answer.with !== null,
+      message:
+        'answers requirements in a with/ file; a block answers them in its main file or a chapter',
+    }),
+  ];
 
   return [
     ...outside,

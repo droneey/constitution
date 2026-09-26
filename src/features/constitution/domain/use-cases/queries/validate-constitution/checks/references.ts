@@ -4,8 +4,9 @@ import type { Finding } from '#/kernel';
 import { inlineCodeSpans, withoutCodeFences } from '#/libs/markdown';
 
 import type { Block, BlockFile, Rule } from '../../../../entities';
+import { resolveLink } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import { linkTargetsOf, resolveLink } from '../link-targets.utils';
+import { linkTargetsOf } from '../link-targets.utils';
 
 const IMPLEMENTS_LINE = /^\*\*Implements:\*\*/;
 const TABLE_ROW = /^\s*\|/;

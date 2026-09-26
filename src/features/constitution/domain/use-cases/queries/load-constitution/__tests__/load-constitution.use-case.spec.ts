@@ -7,6 +7,10 @@ import {
   textOf,
   without,
 } from '#/features/constitution/__tests__/fixtures';
+import {
+  GOLDEN_CORE,
+  GOLDEN_INDEX,
+} from '#/features/constitution/__tests__/valid-digests';
 import { validFiles } from '#/features/constitution/__tests__/valid-files';
 
 describe('loadConstitution', () => {
@@ -36,6 +40,35 @@ describe('loadConstitution', () => {
       'ui',
       'untrusted-client',
       'browser',
+      'typescript',
+      '_react',
+      'biome',
+      'lingui',
+      'react-dom',
+    ]);
+  });
+
+  it('should put every platform before every language when a language id sorts before a platform id', () => {
+    // Arrange
+    const files = validFiles();
+    files['blocks/contexts/platforms/web/web.md'] = mainFile({
+      body: '# Web\n',
+      id: 'web',
+      kind: 'context',
+    });
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.constitution.blocks.map((block) => block.id)).toStrictEqual([
+      'core',
+      'i18n',
+      'remote-data',
+      'ui',
+      'untrusted-client',
+      'browser',
+      'web',
       'typescript',
       '_react',
       'biome',
@@ -152,7 +185,7 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should parse the plugin documents and keep the README and the log as text when every document exists', () => {
+  it('should parse the plugin documents and keep the README, the log and the digests as text when every document exists', () => {
     // Arrange
     const files = validFiles();
 
@@ -165,6 +198,10 @@ describe('loadConstitution', () => {
         files,
         path: 'DECISIONS.md',
       }),
+      digests: {
+        core: GOLDEN_CORE,
+        index: GOLDEN_INDEX,
+      },
       hooks: {
         status: 'parsed',
         value: {

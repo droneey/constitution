@@ -2,6 +2,7 @@ export { abstractBlocksCheck } from './abstract-blocks';
 export { budgetCheck } from './budget';
 export { cyclesCheck } from './cycles';
 export { decisionsCheck } from './decisions';
+export { digestsCheck } from './digests';
 export { frontMatterCheck } from './front-matter';
 export { linksCheck } from './links';
 export { ownedWordsCheck } from './owned-words';

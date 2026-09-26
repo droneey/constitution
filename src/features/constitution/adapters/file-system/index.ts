@@ -1,1 +1,1 @@
-export { createNodeFileTree } from './node-file-tree';
+export { createNodeFileSystem } from './node-file-system';

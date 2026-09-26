@@ -10,6 +10,10 @@ import type { Rule } from './rule.entity';
 
 interface Documents {
   decisions: string | undefined;
+  digests: {
+    core: string | undefined;
+    index: string | undefined;
+  };
   hooks: ManifestRead<HooksManifest> | undefined;
   marketplace: ManifestRead<MarketplaceManifest> | undefined;
   plugin: ManifestRead<PluginManifest> | undefined;

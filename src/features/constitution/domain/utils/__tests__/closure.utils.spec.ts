@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf } from '#/features/constitution/__tests__/fixtures';
+import {
+  blockOf,
+  checkInputOf,
+} from '#/features/constitution/__tests__/fixtures';
 import { validFiles } from '#/features/constitution/__tests__/valid-files';
 
 import {
@@ -30,10 +33,13 @@ describe('linksOf', () => {
   it('should list the required blocks, then the base, when a block both requires and extends', () => {
     // Arrange
     const { byId } = checkInputOf(validFiles());
-    const block = byId.get('react-dom');
+    const block = blockOf({
+      byId,
+      id: 'react-dom',
+    });
 
     // Act
-    const links = block === undefined ? [] : linksOf(block);
+    const links = linksOf(block);
 
     // Assert
     expect(links).toStrictEqual([

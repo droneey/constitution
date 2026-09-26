@@ -1,8 +1,9 @@
 import type { Finding } from '#/kernel';
 
 import { DOCUMENT_PATHS } from '../../../../constants';
+import { resolveLink } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import { foldersOf, linkTargetsOf, resolveLink } from '../link-targets.utils';
+import { foldersOf, linkTargetsOf } from '../link-targets.utils';
 
 interface Document {
   path: string;

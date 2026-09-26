@@ -1,5 +1,6 @@
 import type { Files } from './fixtures';
 import { mainFile, rule } from './fixtures';
+import { digestFiles } from './valid-digests';
 
 const pluginFiles = (): Files => ({
   '.claude-plugin/marketplace.json': JSON.stringify({
@@ -44,7 +45,6 @@ const upperFiles = (): Files => ({
     kind: 'core',
   }),
   'blocks/core/principles.md': `# Principles\n\n${rule({
-    check: 'tool — architecture',
     slug: 'dependencies-point-inward',
   })}`,
   'blocks/domains/i18n/i18n.md': mainFile({
@@ -195,6 +195,7 @@ const implementationFiles = (): Files => ({
 
 const validFiles = (): Files => ({
   ...pluginFiles(),
+  ...digestFiles(),
   ...upperFiles(),
   ...contextFiles(),
   ...implementationFiles(),
