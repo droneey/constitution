@@ -181,8 +181,8 @@ An adapter implements, over one external system, every contract of its owner tha
 **Tags:** architecture
 
 ## adapter-built-by-factory-or-module-object · SHOULD
-An adapter with injected dependencies is built by a factory function; a stateless adapter may be a module object. A lower block may let an adapter use shared instances its composition roots build.
-**Why:** a factory makes every dependency visible and replaceable, and a module object is the smallest form of an adapter that needs none.
+An adapter receives its dependencies — the transport, the clients it speaks through — and is built by a factory function from them; it never imports a shared instance. An adapter with no dependency may be a module object.
+**Why:** a factory makes every dependency visible and replaceable, in production and in tests, and a module object is the smallest form of an adapter that needs none.
 **Check:** review
 **Tags:** architecture
 

@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – |
+| Blocks | ADR-0064 – ADR-0067 |
 
 ---
 
@@ -218,7 +218,7 @@
 - **Decision.** A function holds at most 100 lines, a file 500, and cognitive complexity stays at 10 or below; the linter reports each as an error. Specs have no line limit.
 
 ## ADR-0035 — A UI application composes through its providers and binding units
-**Date:** 2026-09-25 · **Status:** Accepted
+**Date:** 2026-09-25 · **Status:** Superseded by ADR-0066
 
 - **Decision.** In a UI application, providers build the shared transport and configuration, adapters are module objects over them, each binding unit binds its operation's adapter, and tests replace the transport through the test sandbox. It is stated in `ui/with/remote-data.md`.
 - **Why.** It is the form of the owner's reference web application.
@@ -298,7 +298,7 @@
 - **Why.** Tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test.
 
 ## ADR-0049 — UI is tested the way a user uses it
-**Date:** 2026-09-26 · **Status:** Accepted
+**Date:** 2026-09-26 · **Status:** Superseded by ADR-0067
 
 - **Decision.** A screen is a boundary: its spec renders it with fakes of its use cases and proves each data state — loading, empty, error, content — each interaction that changes something, each message the user sees and each navigation. A reusable component's spec proves the variants that change behaviour or meaning, keyboard, focus and ARIA. Elements are found by role, label and text, never by class or internal state, so a test changes only when behaviour does, and a change of behaviour updates its spec in the same change. Every screen and component spec runs an accessibility scan with zero violations. Appearance is compared by screenshot only where the look is the contract, in a design system.
 - **Rejected.** A coverage floor for UI; snapshots of the DOM.
@@ -410,3 +410,17 @@
 - **Decision.** A value with a unit carries it in its name; code and dependencies that only tests reach are unused; a dependency deprecated as a whole is replaced. They are core rules, not rules of one language.
 - **Rejected.** Keeping them in the language block until a second language repeats them.
 - **Why.** What must disappear for them to lose their meaning is nothing, so by the placement question they belong to core.
+
+## ADR-0066 — An adapter receives its transport
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** An adapter is built by a factory from the transport and clients it speaks through, and never imports a shared instance — in every kind of application, a user interface included. In a UI application the providers are the composition root: they build the configuration, the transport and the cache client, build each adapter from the transport, and hand the adapters to the binding units.
+- **Rejected.** Adapters as module objects over a shared transport instance, which the reference web application used.
+- **Why.** An adapter that receives its dependencies can be given another in a test or another application, and the composition root stays the one place that makes a concrete choice.
+
+## ADR-0067 — UI is tested the way a user uses it, over the real adapters
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A screen is a boundary: its spec renders it inside its providers, with the transport replaced by captured responses, and proves each data state — loading, empty, error, content — each interaction that changes something, each message the user sees and each navigation. Fakes of use-cases serve only a screen that shows no remote data. A reusable component's spec proves the variants that change behaviour or meaning, keyboard, focus and accessible name, role and state. Elements are found by role, label and text, never by class or internal state. Every screen and component spec runs an accessibility scan with zero violations. Appearance is compared by screenshot only where the look is the contract, in a design system.
+- **Rejected.** Faking a screen's use-cases, which never sees a response the mapping gets wrong; a coverage floor for UI; snapshots of the DOM.
+- **Why.** A spec written against what the user sees, over the real binding units and adapters, fails when the user's experience or the data they receive changes.
