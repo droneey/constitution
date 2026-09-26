@@ -12,7 +12,7 @@ role	mutation	false
 role	secrets	true
 role	audit	false
 role	commits	true
-block	core	core	What holds for any program, in any language, of any kind.	principles.md architecture.md code.md				false					
+block	core	core	What holds for any program, in any language, of any kind.	principles.md architecture.md code.md testing.md security.md				false					
 rule	dependencies-point-inward-without-cycles	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Imports point inward, toward stability, and form no cycle, direct or through a chain of modules.
 rule	inner-layers-declare-their-contracts	core	blocks/core/principles.md		MUST	review			architecture	The inner layer declares, in its own words, the contracts it needs; the outer layer implements them.
 rule	domain-imports-only-itself-and-kernel	core	blocks/core/principles.md		MUST	tool	architecture		architecture	The domain imports only itself and the shared kernel: no framework, no input or output, no vendor library, however pure.
@@ -113,3 +113,48 @@ rule	inheritance-only-for-errors-and-framework-points	core	blocks/core/code.md		
 rule	dry-applies-to-knowledge	core	blocks/core/code.md		SHOULD	review			architecture	Don't-repeat-yourself applies to knowledge, not to text that merely looks alike.
 rule	function-answers-or-changes-state	core	blocks/core/code.md		SHOULD	review			architecture	A function either answers a question or changes state, never both.
 rule	talk-only-to-neighbours	core	blocks/core/code.md		SHOULD	review			architecture	A unit calls its own collaborators, never the collaborators of their collaborators: no chain that walks into another object's internals.
+rule	spec-per-boundary	core	blocks/core/testing.md		SHOULD	review			testing	A spec proves one boundary and is named after it.
+rule	constant-tested-only-as-contract	core	blocks/core/testing.md		SHOULD	review			testing	A constant gets a spec only when a reader outside the code relies on it — a code users script against, a name another system reads — and then as one table per contract.
+rule	assert-what-a-caller-observes	core	blocks/core/testing.md		SHOULD	review			testing	A case checks an outcome a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call itself is the behaviour.
+rule	case-earns-its-place	core	blocks/core/testing.md		SHOULD	review			testing	A case earns its place by failing for a plausible bug no other case catches.
+rule	one-intent-per-case	core	blocks/core/testing.md		SHOULD	review			testing	A case proves one intent and asserts it with strict equality on the whole outcome.
+rule	variants-in-one-table	core	blocks/core/testing.md		SHOULD	review			testing	Variants of one behaviour are one table of cases, each row naming its condition.
+rule	no-unreadable-snapshots	core	blocks/core/testing.md		SHOULD	review			testing	No snapshot of a structure a reader cannot check by eye.
+rule	every-declared-failure-has-a-case	core	blocks/core/testing.md		SHOULD	review			testing errors	Every failure a boundary declares has a case that produces it and checks what the caller receives.
+rule	edge-cases-by-risk	core	blocks/core/testing.md		SHOULD	review			testing	Edge cases are chosen by risk: empty input, limits, Unicode, invalid input, a concurrent call, a lost connection.
+rule	property-tests-where-they-pay	core	blocks/core/testing.md		SHOULD	review			testing	An invariant is proven by a property test where one pays — a value object's guard, an invertible mapper, a reducer — with its cases in the spec of its unit.
+rule	lifecycle-tested-to-final-state	core	blocks/core/testing.md		SHOULD	review			testing	A lifecycle test takes an object made by its factory through every transition to its final state, and checks each step.
+rule	one-contract-suite-per-port	core	blocks/core/testing.md		SHOULD	review			testing	Each port has one contract suite, run against its fake and against its real adapter.
+rule	tests-ship-with-the-behaviour	core	blocks/core/testing.md		MUST	review			testing	Tests ship in the same change as the behaviour they prove.
+rule	test-seen-failing	core	blocks/core/testing.md		SHOULD	review			testing	Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment.
+rule	bug-fix-starts-with-failing-test	core	blocks/core/testing.md		SHOULD	review			testing	A bug fix begins with the test that reproduces the bug, seen failing before the fix.
+rule	tests-first-from-a-description	core	blocks/core/testing.md		SHOULD	review			testing	When a behaviour is described before it is built — in an issue or a plan — an agent writes its tests from the description first.
+rule	tests-run-in-a-sandbox	core	blocks/core/testing.md		MUST	review			testing security	Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential.
+rule	effects-faked-through-ports	core	blocks/core/testing.md		SHOULD	review			testing	Network, time, randomness, processes and credentials are faked through their ports, with one fake per port, named `<port>.fake`.
+rule	adapter-integration-tested-in-sandbox	core	blocks/core/testing.md		SHOULD	review			testing	Each adapter is proven against its real engine inside the sandbox, in `<name>.integration.spec`, with a case for each port operation and each failure it maps.
+rule	end-to-end-per-critical-scenario	core	blocks/core/testing.md		SHOULD	review			testing	Each critical scenario `PROJECT.md` names has one end-to-end test through the delivery layer, in `<name>.e2e.spec`.
+rule	test-files-named-by-role	core	blocks/core/testing.md		MUST	tool	names		testing naming	A file in `__tests__/`, or in the folder of end-to-end specs, is a spec named after the file or scenario it proves — `<name>.spec`, `<name>.integration.spec`, `<name>.e2e.spec` — a fake `<port>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling.
+rule	test-code-unreachable-from-production	core	blocks/core/testing.md		MUST	tool	architecture		testing architecture	Production code never imports a file of `__tests__/` or of the end-to-end folder.
+rule	cases-named-should-when	core	blocks/core/testing.md		SHOULD	tool	lint		testing naming	A suite is named after its boundary, and a case reads `should <behaviour> when <condition>`, in the language's spelling.
+rule	arrange-act-assert-marked	core	blocks/core/testing.md		SHOULD	review			testing	A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call.
+rule	no-skipped-or-empty-tests	core	blocks/core/testing.md		MUST	tool	lint		testing	No test is skipped, pending, focused or without an assertion.
+rule	tests-pass-in-check	core	blocks/core/testing.md		MUST	tool	tests		testing	The project's check runs the tests, and fails when one fails.
+rule	coverage-holds-all-logic	core	blocks/core/testing.md		MUST	tool	coverage		testing	All logic — the domain, the adapters, the libraries, the UI — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries.
+rule	mutants-all-killed	core	blocks/core/testing.md		MUST	tool	mutation		testing	Mutation testing measures the tests, and every mutant of the logic is killed.
+rule	no-secret-in-repository	core	blocks/core/security.md		MUST	tool	secrets		security	No secret is committed — not in code, documents, tests, fixtures or history.
+rule	secret-never-in-url-or-artefact	core	blocks/core/security.md		MUST	review			security	A secret never travels in a URL, and never reaches a build artefact: an image layer, a client bundle, a variable baked in at build time.
+rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	review			security	A secret that leaked — into a commit, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.
+rule	no-secret-or-personal-data-in-output	core	blocks/core/security.md		MUST	review			security data	No secret and no personal data appear in logs, errors, test data or documents.
+rule	environment-names-declared-in-one-place	core	blocks/core/security.md		SHOULD	review			security	Every environment variable the program reads is declared in one place, and code reads only declared names.
+rule	least-privilege-credentials	core	blocks/core/security.md		SHOULD	review			security	A credential belongs to one identity and one purpose, per environment, with only the permissions its job needs, documented beside its use.
+rule	dependencies-pinned-by-lockfile	core	blocks/core/security.md		MUST	review			security	A language uses one package manager, and one lockfile, committed.
+rule	ci-steps-pinned-to-immutable-references	core	blocks/core/security.md		MUST	review			security	A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
+rule	dependencies-updated-by-bot	core	blocks/core/security.md		SHOULD	review			security workflow	Dependency updates arrive as pull requests from an update bot, each passing the check before it is merged.
+rule	dependency-release-cooldown	core	blocks/core/security.md		SHOULD	review			security	A new release of a dependency is adopted only after a cooldown of some days, except a fix for a known vulnerability.
+rule	new-dependency-vetted	core	blocks/core/security.md		SHOULD	review			security	A new dependency is a decision: it needs a reason it cannot be a few lines of the project's own, and it is checked against the risk signs of a new package — a name one typo from a popular one, younger than thirty days, under a hundred weekly downloads, a recent change of owner, no source repository, obfuscated code.
+rule	install-scripts-only-for-listed-dependencies	core	blocks/core/security.md		MUST	review			security	A dependency's install scripts run only when the dependency is listed by name as allowed to run them.
+rule	known-vulnerabilities-fail-the-check	core	blocks/core/security.md		MUST	tool	audit		security	A high or critical known vulnerability in any dependency, development dependencies included, fails the check.
+rule	licences-from-an-allowlist	core	blocks/core/security.md		MUST	tool	audit		security	Every dependency's licence is on the project's allowlist.
+rule	shared-tooling-from-pinned-packages	core	blocks/core/security.md		SHOULD	review			security workflow	Commit hooks, linter configurations and release automation come from shared, pinned packages, not from copies in each repository.
+rule	irreversible-operations-behind-flag-and-human	core	blocks/core/security.md		MUST	review			security ux	An operation that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
+rule	access-denied-unless-granted	core	blocks/core/security.md		MUST	test			security	Access is denied unless a rule grants it.

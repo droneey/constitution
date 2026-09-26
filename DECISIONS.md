@@ -18,7 +18,7 @@
 | The rest | ADR-0037 – ADR-0045 |
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
-| Core | ADR-0053 – ADR-0060 |
+| Core | ADR-0053 – ADR-0061 |
 
 ---
 
@@ -374,3 +374,10 @@
 
 - **Decision.** A YAML file ends in `.yaml`, never `.yml`, in every repository; the `names` role holds it.
 - **Why.** One spelling of one format lets every glob, tool and reader find all of them.
+
+## ADR-0061 — How a UI is tested belongs to the interface blocks
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** Core's `testing` counts a screen and a reusable component among the boundaries and holds the UI to the coverage gate. How a screen and a component are proven — the data states, finding elements by role, label and text, screenshots only where the look is the contract — is stated by `ui`, and the accessibility scan with zero violations by `a11y`.
+- **Rejected.** Stating them in core, which would give a program with no interface rules about screens.
+- **Why.** A rule that loses its meaning without an interface belongs to the block of the interface.

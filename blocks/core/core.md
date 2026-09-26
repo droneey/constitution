@@ -2,7 +2,7 @@
 id: core
 kind: core
 summary: What holds for any program, in any language, of any kind.
-chapters: [principles.md, architecture.md, code.md]
+chapters: [principles.md, architecture.md, code.md, testing.md, security.md]
 requires: []
 extends: null
 abstract: false
