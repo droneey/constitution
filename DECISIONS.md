@@ -18,7 +18,7 @@
 | The rest | ADR-0037 – ADR-0045 |
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
-| Core | ADR-0053 – ADR-0057 |
+| Core | ADR-0053 – ADR-0060 |
 
 ---
 
@@ -355,3 +355,22 @@
 
 - **Decision.** A block states its rules, with their reasons, without citing an entry of this log; the constitution's check reports a citation.
 - **Why.** A rule must stand on its own when a project reads it, and the log explains the constitution's history, not a project's duty.
+
+## ADR-0058 — Placement lifts on the second consumer, abstraction waits for the third
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** Code moves to the nearest common level when a second consumer needs it; a shared abstraction over similar code waits for its third occurrence. Don't-repeat-yourself applies to knowledge, not to text that looks alike.
+- **Rejected.** One threshold for both, which either shares code too late or abstracts it too early.
+- **Why.** Moving code changes where it lives, not what it means; an abstraction commits to an axis of variation, which two cases cannot yet show.
+
+## ADR-0059 — The wiring file is root/wiring
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** The one file of `root/` that instantiates and binds what an application shares is named `wiring`, with the language's extension.
+- **Why.** One name in every repository lets a reader, a coverage exclusion and a layer rule find it without asking.
+
+## ADR-0060 — A YAML file ends in .yaml
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A YAML file ends in `.yaml`, never `.yml`, in every repository; the `names` role holds it.
+- **Why.** One spelling of one format lets every glob, tool and reader find all of them.
