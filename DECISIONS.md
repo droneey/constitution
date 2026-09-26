@@ -17,6 +17,7 @@
 | The anatomy | ADR-0030 – ADR-0038 |
 | The rest | ADR-0039 – ADR-0047 |
 | Testing | ADR-0048 – ADR-0051 |
+| Code | ADR-0052 |
 
 ---
 
@@ -315,3 +316,10 @@
 - **Decision.** A screen is a boundary: its spec renders it with fakes of its use cases and proves each data state — loading, empty, error, content — each interaction that changes something, each message the user sees and each navigation. A reusable component's spec proves the variants that change behaviour or meaning, keyboard, focus and ARIA. Elements are found by role, label and text, never by class or internal state, so a test changes only when behaviour does, and a change of behaviour updates its spec in the same change. Every screen and component spec runs an accessibility scan with zero violations. Appearance is compared by screenshot only where the look is the contract, in a design system.
 - **Rejected.** A coverage floor for UI; snapshots of the DOM.
 - **Why.** A test written against what the user sees survives refactoring and fails when the user's experience changes.
+
+## ADR-0052 — Absence is undefined, and the tools hold it
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** Internal code spells absence as `undefined`. `null` lives only in wire types and in the adapters, which map it to `undefined`, and where a platform API returns it, which the code compares and never passes on. The compiler runs with `exactOptionalPropertyTypes`; the linter forbids `==` with `null` and, through a GritQL rule, any `null` outside the adapters but a comparison. devkit's presets carry the three, so every project gets them.
+- **Rejected.** Holding the rule by review alone; banning every `null`, comparisons included.
+- **Why.** Two spellings of absence make every check ask twice. Held only by review, the rule slipped even here: the domain spelled an absent base and an absent seam as `null`.

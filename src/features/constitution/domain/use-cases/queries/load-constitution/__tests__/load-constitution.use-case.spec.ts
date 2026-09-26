@@ -224,21 +224,21 @@ describe('loadConstitution', () => {
             lines: 15,
             path: 'blocks/domains/ui/ui.md',
             role: 'main',
-            with: null,
+            with: undefined,
           },
           {
             body: '# Remote data\n\nText.',
             lines: 3,
             path: 'blocks/domains/ui/remote-data.md',
             role: 'chapter',
-            with: null,
+            with: undefined,
           },
           {
             body: '# A\n',
             lines: 1,
             path: 'blocks/domains/ui/a.md',
             role: 'chapter',
-            with: null,
+            with: undefined,
           },
           {
             body: '# UI with remote data\n',
@@ -465,7 +465,7 @@ describe('loadConstitution', () => {
           how: 'ICU plural',
           requirement: 'i18n-plurals-by-cldr',
           status: 'met',
-          with: null,
+          with: undefined,
         },
       ],
       findings: [
@@ -484,13 +484,13 @@ describe('loadConstitution', () => {
         [
           'i18n',
           'blocks/domains/i18n/i18n.md',
-          null,
+          undefined,
           'i18n-plurals-by-cldr',
         ],
         [
           'lingui',
           'blocks/implementations/lingui/catalogs.md',
-          null,
+          undefined,
           'catalogs-are-compiled',
         ],
         [

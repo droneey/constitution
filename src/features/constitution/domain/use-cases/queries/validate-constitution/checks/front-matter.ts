@@ -35,7 +35,7 @@ const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {
 };
 
 const isEmpty = (value: FrontMatter[LayerField]): boolean =>
-  value === null ||
+  value === undefined ||
   value === false ||
   (Array.isArray(value) && value.length === 0);
 

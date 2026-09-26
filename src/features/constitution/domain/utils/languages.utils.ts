@@ -27,7 +27,7 @@ const ruleLanguagesOf = (input: {
     ...new Set(
       [
         input.rule.block,
-        ...(input.rule.with === null
+        ...(input.rule.with === undefined
           ? []
           : [
               input.rule.with,

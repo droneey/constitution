@@ -11,7 +11,28 @@
       "!**/coverage"
     ]
   },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noDoubleEquals": {
+          "level": "error",
+          "options": {
+            "ignoreNull": false
+          }
+        }
+      }
+    }
+  },
   "overrides": [
+    {
+      "includes": [
+        "src/**",
+        "!src/**/adapters/**"
+      ],
+      "plugins": [
+        "./biome/no-null.grit"
+      ]
+    },
     {
       "includes": [
         ".syncpackrc.mjs"

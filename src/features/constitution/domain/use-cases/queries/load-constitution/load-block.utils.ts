@@ -168,7 +168,7 @@ const loadBlock = (input: {
           lines: lineCount(text),
           path: main.path,
           role: 'main',
-          with: null,
+          with: undefined,
         },
         secondary,
       }),

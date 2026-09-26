@@ -131,7 +131,7 @@ const scalarMessages = (fields: FrontMatterFields): readonly string[] => [
       ]
     : []),
   ...summaryMessages(fields.summary),
-  ...(fields.extends === null || BLOCK_ID.test(fields.extends)
+  ...(fields.extends === undefined || BLOCK_ID.test(fields.extends)
     ? []
     : [
         `front matter: extends "${fields.extends}", which is not a block id`,

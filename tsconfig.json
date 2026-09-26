@@ -1,6 +1,7 @@
 {
   "extends": "@droneey/devkit-ts-tsconfig/node",
   "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
     "noEmit": true,
     "paths": {
       "#/*": [

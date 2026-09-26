@@ -43,7 +43,7 @@ const pairingMessage = (
 const pairingFindings = (subject: Subject): readonly Finding[] =>
   subject.block.files.flatMap((file) => {
     const message =
-      file.with === null
+      file.with === undefined
         ? undefined
         : pairingMessage({
             ...subject,

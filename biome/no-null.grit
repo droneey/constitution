@@ -1,0 +1,14 @@
+// Internal code spells absence as undefined (typescript code §4); null lives
+// only at the boundary, in the adapters, where it is mapped to undefined. A
+// comparison with null stays allowed: a platform API may return it.
+language js
+
+`null` as $value where {
+  $value <: not within or {
+    `$_ === null`,
+    `$_ !== null`,
+    `null === $_`,
+    `null !== $_`
+  } ,
+  register_diagnostic(span=$value, message="null outside the boundary: internal code spells absence as undefined", severity="error")
+}

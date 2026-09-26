@@ -38,9 +38,9 @@ const requireMessage = (
 
 const extendsMessage = (subject: Subject): string | undefined => {
   const base = subject.block.frontMatter.extends;
-  const target = base === null ? undefined : subject.byId.get(base);
+  const target = base === undefined ? undefined : subject.byId.get(base);
 
-  if (base === null) {
+  if (base === undefined) {
     return undefined;
   }
 

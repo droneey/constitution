@@ -17,7 +17,7 @@ interface Rule {
   level: Level;
   slug: string;
   statement: string;
-  with: string | null;
+  with: string | undefined;
 }
 
 export type { Rule, RuleLabel };

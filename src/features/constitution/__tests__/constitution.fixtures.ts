@@ -18,7 +18,7 @@ interface BlockFixture {
   body: string;
   chapters?: readonly string[];
   checks?: readonly string[];
-  extends?: string | null;
+  extends?: string | undefined;
   governs?: readonly string[];
   id: string;
   kind: string;

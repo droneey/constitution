@@ -4,7 +4,7 @@ interface RequirementAnswer {
   how: string;
   requirement: string;
   status: string;
-  with: string | null;
+  with: string | undefined;
 }
 
 export type { RequirementAnswer };

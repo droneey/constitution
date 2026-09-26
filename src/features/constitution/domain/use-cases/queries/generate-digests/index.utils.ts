@@ -58,7 +58,7 @@ const blockRecord = (input: {
       .join(LIST),
     block.files
       .flatMap((file) =>
-        file.with === null
+        file.with === undefined
           ? []
           : [
               file.with,
