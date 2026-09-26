@@ -13,7 +13,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli`, `server` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
-| `hooks` | The session-start hook that puts the rules into context |
+| `hooks` | The plugin's hook manifest; the session-start hook that puts the rules into context arrives with #54 |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
@@ -28,7 +28,7 @@ Every data view shows four states: loading, empty, error and content.
 **Tags:** ux, a11y
 ```
 
-A block refers only to layers above it. The rules at the seam of two blocks live in the block's `with/<other>.md`. A brand, a language or a file form belongs to the block that `owns` it, and only that block and the blocks that depend on it may name it.
+A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `with/<other>.md`. A brand, a language or a file form belongs to the block that `owns` it, and only that block and the blocks that depend on it may name it.
 
 ## 🔌 Install
 
@@ -53,15 +53,18 @@ bun run check                # lint, package manifests, types, tests with the co
 ```
 
 `blocks:check` loads every block and fails on:
-- a front matter that lacks a field, adds one, lists them out of order, or sets one its layer leaves empty;
-- a `requires`, `extends` or `with/` file that points sideways or down;
+- a file outside a block folder, a stray file inside one, or two blocks with one id;
+- a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty;
+- a `requires` or `extends` that points down, or sideways where the layer allows no peer, a `with/` file named after a block below its own layer, and a cycle between implementations;
+- a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or an Implements line;
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
-- a rule without a Why, a Check or a known tag;
-- a malformed requirement answer;
-- a file over 500 lines;
-- a link to a missing file;
+- a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;
+- a malformed Requirements row, or an answer to a rule its block may not answer;
+- a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest.
+
+It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.
 
 ## ⚙️ Workflows
 

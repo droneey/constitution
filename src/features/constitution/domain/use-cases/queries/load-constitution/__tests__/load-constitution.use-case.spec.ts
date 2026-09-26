@@ -1,180 +1,205 @@
 import { describe, expect, it } from 'bun:test';
 
 import {
-  createFakeFileTree,
+  loadedOf,
   mainFile,
-  validFiles,
+  rule,
+  textOf,
   without,
-} from '../../../../../__tests__/fixtures';
-import { loadConstitution } from '../load-constitution.use-case';
-
-const load = (files: Record<string, string>) =>
-  loadConstitution({
-    tree: createFakeFileTree(files),
-  });
+} from '#/features/constitution/__tests__/fixtures';
+import { validFiles } from '#/features/constitution/__tests__/valid-files';
 
 describe('loadConstitution', () => {
-  it('should load every block of the valid constitution without findings', () => {
+  it('should load without a finding when the constitution is valid', () => {
+    // Arrange
+    const files = validFiles();
+
     // Act
-    const { constitution, findings } = load(validFiles());
+    const loaded = loadedOf(files);
 
     // Assert
-    expect(findings).toStrictEqual([]);
-    expect(constitution.blocks.map((block) => block.id)).toStrictEqual([
-      '_react',
-      'biome',
-      'browser',
+    expect(loaded.findings).toStrictEqual([]);
+  });
+
+  it('should order the blocks by layer, then id, when the constitution is valid', () => {
+    // Arrange
+    const files = validFiles();
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.constitution.blocks.map((block) => block.id)).toStrictEqual([
       'core',
       'i18n',
-      'lingui',
-      'react-dom',
       'remote-data',
-      'typescript',
       'ui',
       'untrusted-client',
-    ]);
-    expect(constitution.rules).toHaveLength(11);
-    expect(constitution.requirementAnswers).toHaveLength(1);
-    expect(constitution.documents.plugin).toContain('constitution');
-  });
-
-  it('should strip the main file of its front matter and keep chapters and with/ files in order', () => {
-    // Act
-    const { constitution } = load(validFiles());
-    const core = constitution.blocks.find((block) => block.id === 'core');
-    const ui = constitution.blocks.find((block) => block.id === 'ui');
-
-    // Assert
-    expect(
-      [
-        ...(core?.files ?? []),
-        ...(ui?.files ?? []),
-      ].map((file) => [
-        file.role,
-        file.with,
-      ]),
-    ).toStrictEqual([
-      [
-        'main',
-        null,
-      ],
-      [
-        'chapter',
-        null,
-      ],
-      [
-        'main',
-        null,
-      ],
-      [
-        'with',
-        'remote-data',
-      ],
-    ]);
-    expect(ui?.files[0]?.text.startsWith('---')).toBe(false);
-  });
-
-  it('should report a folder without its main file', () => {
-    // Arrange
-    const files = without(validFiles(), 'blocks/domains/i18n/i18n.md');
-    files['blocks/domains/i18n/notes.md'] = '# Notes\n';
-
-    // Act
-    const { findings } = load(files);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: 'has no main file i18n.md',
-        path: 'blocks/domains/i18n',
-      },
+      'browser',
+      'typescript',
+      '_react',
+      'biome',
+      'lingui',
+      'react-dom',
     ]);
   });
 
-  it('should report a stray file and a file outside every layer folder', () => {
+  it.each([
+    {
+      message:
+        'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations',
+      path: 'blocks/domains/a11y.md',
+    },
+    {
+      message:
+        'is not a block file; a block holds its main file, its chapters and with/<block>.md',
+      path: 'blocks/domains/ui/notes.txt',
+    },
+  ])('should report $path when it is no block file', ({ message, path }) => {
     // Arrange
     const files = validFiles();
-    files['blocks/domains/ui/.DS_Store'] = '';
-    files['blocks/spheres/web/web.md'] = '# Web\n';
+    files[path] = 'text\n';
 
     // Act
-    const { findings } = load(files);
+    const loaded = loadedOf(files);
 
     // Assert
-    expect(findings).toStrictEqual([
+    expect(loaded.findings).toStrictEqual([
       {
-        message:
-          'is not inside a layer folder: core, domains, contexts/platforms, contexts/languages or implementations',
-        path: 'blocks/spheres/web/web.md',
-      },
-      {
-        message:
-          'is not a block file; a block holds its main file, its chapters and with/<block>.md',
-        path: 'blocks/domains/ui/.DS_Store',
+        message,
+        path,
       },
     ]);
   });
 
-  it('should report an unlisted chapter, a missing one and a chapter with front matter', () => {
+  it('should report both blocks when two layers hold the same id', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/core/core.md'] = mainFile({
-      body: '# Core\n',
-      chapters: [
-        'principles.md',
-        'testing.md',
-      ],
-      id: 'core',
-      kind: 'core',
+    files['blocks/implementations/ui/ui.md'] = mainFile({
+      body: '# UI kit\n',
+      id: 'ui',
+      kind: 'implementation',
     });
-    files['blocks/core/security.md'] = '# Security\n';
-    files['blocks/core/principles.md'] = '---\nid: x\n---\n# Principles\n';
 
     // Act
-    const { findings } = load(files);
+    const loaded = loadedOf(files);
 
     // Assert
-    expect(findings).toStrictEqual([
+    expect(loaded.findings).toStrictEqual([
       {
-        message: 'has front matter; only the main file of a block carries it',
+        message:
+          'shares the id "ui" with blocks/implementations/ui/ui.md; an id names one block',
+        path: 'blocks/domains/ui/ui.md',
+      },
+      {
+        message:
+          'shares the id "ui" with blocks/domains/ui/ui.md; an id names one block',
+        path: 'blocks/implementations/ui/ui.md',
+      },
+    ]);
+  });
+
+  it('should read neither rules nor answers when they sit in a code fence', () => {
+    // Arrange
+    const files = validFiles();
+    files['blocks/core/principles.md'] = [
+      textOf({
+        files,
+        path: 'blocks/core/principles.md',
+      }),
+      '````markdown',
+      rule({
+        slug: 'sample-rule',
+      }),
+      '## Requirements',
+      '| `sample-rule` | sample | met |',
+      '````',
+    ].join('\n');
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect([
+      loaded.constitution.rules.some((parsed) => parsed.slug === 'sample-rule'),
+      loaded.constitution.requirementAnswers.map((answer) => answer.file),
+    ]).toStrictEqual([
+      false,
+      [
+        'blocks/implementations/lingui/lingui.md',
+      ],
+    ]);
+  });
+
+  it('should report a heading when it looks like a rule outside a fence', () => {
+    // Arrange
+    const files = validFiles();
+    files['blocks/core/principles.md'] = `${textOf({
+      files,
+      path: 'blocks/core/principles.md',
+    })}\n### loose · MUST\n`;
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.findings).toStrictEqual([
+      {
+        message:
+          'heading "### loose · MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
         path: 'blocks/core/principles.md',
       },
-      {
-        message: 'is not listed in the chapters of core',
-        path: 'blocks/core/security.md',
-      },
-      {
-        message: 'lists the chapter testing.md, which does not exist',
-        path: 'blocks/core/core.md',
-      },
     ]);
   });
 
-  it('should leave a block with an invalid front matter out of the model', () => {
+  it('should parse the plugin documents and keep the README text when every document exists', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/domains/i18n/i18n.md'] = '# i18n\n';
 
     // Act
-    const { constitution, findings } = load(files);
+    const loaded = loadedOf(files);
 
     // Assert
-    expect(findings).toHaveLength(1);
-    expect(constitution.blocks.some((block) => block.id === 'i18n')).toBe(
-      false,
-    );
+    expect(loaded.constitution.documents).toStrictEqual({
+      hooks: {
+        status: 'parsed',
+        value: {
+          commands: [],
+        },
+      },
+      marketplace: {
+        status: 'parsed',
+        value: {
+          plugins: [
+            {
+              name: 'constitution',
+              source: './',
+            },
+          ],
+        },
+      },
+      plugin: {
+        status: 'parsed',
+        value: {
+          name: 'constitution',
+          skills: [],
+        },
+      },
+      readme: '# constitution\n\nStart with [core](blocks/core/core.md).\n',
+    });
   });
 
-  it('should leave the plugin documents undefined when they are absent', () => {
+  it('should leave a document out when its file does not exist', () => {
+    // Arrange
+    const files = without({
+      files: validFiles(),
+      path: 'hooks/hooks.json',
+    });
+
     // Act
-    const { constitution } = load({});
+    const loaded = loadedOf(files);
 
     // Assert
-    expect(constitution.documents).toStrictEqual({
-      hooks: undefined,
-      marketplace: undefined,
-      plugin: undefined,
-      readme: undefined,
-    });
+    expect(loaded.constitution.documents.hooks).toBeUndefined();
   });
 });

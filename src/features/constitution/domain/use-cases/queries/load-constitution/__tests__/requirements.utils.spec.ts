@@ -4,77 +4,137 @@ import { parseRequirements } from '../requirements.utils';
 
 const FILE = 'blocks/implementations/lingui/lingui.md';
 
+const sourceOf = (
+  lines: readonly string[],
+): {
+  block: string;
+  file: string;
+  text: string;
+  with: string | null;
+} => ({
+  block: 'lingui',
+  file: FILE,
+  text: lines.join('\n'),
+  with: null,
+});
+
+const answer = (input: {
+  how: string;
+  requirement: string;
+  status: string;
+}): {
+  block: string;
+  file: string;
+  how: string;
+  requirement: string;
+  status: string;
+  with: null;
+} => ({
+  block: 'lingui',
+  file: FILE,
+  how: input.how,
+  requirement: input.requirement,
+  status: input.status,
+  with: null,
+});
+
 describe('parseRequirements', () => {
-  it('should read the rows of the Requirements section', () => {
+  it('should read every row of every Requirements section when the headings carry trailing spaces', () => {
     // Arrange
-    const text = [
+    const source = sourceOf([
       '# Lingui',
+      '| `outside` | a table elsewhere | met |',
+      '## Requirements  ',
       '',
-      '## Requirements',
-      '',
-      '| Requirement | How | Status |',
-      '|---|---|---|',
+      '| Requirement | How in lingui | Status |',
+      '|---|:---:|---|',
       '| `i18n-plurals-by-cldr` | ICU plural | met |',
-      '| i18n-lazy-locales | catalogs per locale | partial: loaded by hand |',
-      '',
-      '## lingui-macros-only · MUST',
-      '| `not-a-row` | x | met |',
-    ].join('\n');
-
-    // Act
-    const answers = parseRequirements({
-      block: 'lingui',
-      file: FILE,
-      text,
-      with: null,
-    });
-
-    // Assert
-    expect(answers).toStrictEqual([
-      {
-        block: 'lingui',
-        file: FILE,
-        how: 'ICU plural',
-        requirement: 'i18n-plurals-by-cldr',
-        status: 'met',
-        with: null,
-      },
-      {
-        block: 'lingui',
-        file: FILE,
-        how: 'catalogs per locale',
-        requirement: 'i18n-lazy-locales',
-        status: 'partial: loaded by hand',
-        with: null,
-      },
+      '| i18n-typed-keys | compiled catalogs | partial: keys are strings |',
+      '## Notes',
+      '| `not-an-answer` | x | met |',
+      '## Requirements',
+      '| `i18n-lazy-locales` |  | not met |',
     ]);
-  });
 
-  it('should read to the end of the file when no heading follows', () => {
     // Act
-    const answers = parseRequirements({
-      block: 'lingui',
-      file: FILE,
-      text: '## Requirements\n\n| `a` | b | met |\n',
-      with: null,
-    });
+    const parsed = parseRequirements(source);
 
     // Assert
-    expect(answers.map((answer) => answer.requirement)).toStrictEqual([
-      'a',
+    expect(parsed).toStrictEqual({
+      answers: [
+        answer({
+          how: 'ICU plural',
+          requirement: 'i18n-plurals-by-cldr',
+          status: 'met',
+        }),
+        answer({
+          how: 'compiled catalogs',
+          requirement: 'i18n-typed-keys',
+          status: 'partial: keys are strings',
+        }),
+        answer({
+          how: '',
+          requirement: 'i18n-lazy-locales',
+          status: 'not met',
+        }),
+      ],
+      findings: [],
+    });
+  });
+
+  it.each([
+    '| i18n plurals-by-cldr | ICU | not met |',
+    '| `i18n-plurals-by-cldr` | ICU |',
+    '| `i18n-plurals-by-cldr` (MUST) | ICU | met |',
+    '| [`i18n-plurals-by-cldr`](../../domains/i18n/i18n.md) | ICU | met |',
+    '`i18n-plurals-by-cldr` | ICU | met',
+  ])('should report the row %p when it is not a requirement answer', (row) => {
+    // Arrange
+    const source = sourceOf([
+      '## Requirements',
+      row,
     ]);
-  });
 
-  it('should find nothing without a Requirements section', () => {
     // Act
-    const answers = parseRequirements({
-      block: 'lingui',
-      file: FILE,
-      text: '# Lingui\n\n| `a` | b | met |\n',
-      with: null,
-    });
+    const parsed = parseRequirements(source);
 
     // Assert
-    expect(answers).toStrictEqual([]);
+    expect(parsed).toStrictEqual({
+      answers: [],
+      findings: [
+        {
+          message: `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <status> |"`,
+          path: FILE,
+        },
+      ],
+    });
   });
+
+  it.each([
+    '### Requirements',
+    '# requirements',
+  ])(
+    'should report the heading %p when it names the Requirements section in another form',
+    (heading) => {
+      // Arrange
+      const source = sourceOf([
+        heading,
+        '| `i18n-plurals-by-cldr` | ICU | met |',
+      ]);
+
+      // Act
+      const parsed = parseRequirements(source);
+
+      // Assert
+      expect(parsed).toStrictEqual({
+        answers: [],
+        findings: [
+          {
+            message: `has the heading "${heading}", which names the Requirements section; it is "## Requirements"`,
+            path: FILE,
+          },
+        ],
+      });
+    },
+  );
 });

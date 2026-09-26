@@ -2,117 +2,177 @@ import { describe, expect, it } from 'bun:test';
 
 import { parseRules } from '../rules.utils';
 
-const source = (text: string) => ({
-  block: 'ui',
-  file: 'blocks/domains/ui/ui.md',
-  text,
+const FILE = 'blocks/core/principles.md';
+
+const sourceOf = (
+  lines: readonly string[],
+): {
+  block: string;
+  file: string;
+  text: string;
+  with: string | null;
+} => ({
+  block: 'core',
+  file: FILE,
+  text: lines.join('\n'),
   with: null,
 });
 
 describe('parseRules', () => {
-  it('should read a rule with its statement and labels', () => {
+  it('should read the slug, level, statement and labels when a rule is complete', () => {
     // Arrange
-    const text = [
-      '# UI',
-      '',
-      '## four-data-states · MUST',
-      'Every data view shows four states:',
-      'loading, empty, error and content.',
-      '**Why:** an empty screen cannot be told from a slow one.',
-      '**Check:** test',
-      '**Tags:** ux, a11y',
-      '',
-    ].join('\n');
+    const source = {
+      ...sourceOf([
+        '# Principles',
+        '## four-data-states · MUST',
+        'Every data view shows',
+        'four states.',
+        '**Why:** an empty screen cannot be told from a slow one.',
+        '**Check:** test',
+        '**Tags:** ux, a11y',
+        '**Example:**',
+        '**Implements:** `rules-bind`',
+        'Prose after the labels.',
+      ]),
+      with: 'ui',
+    };
 
     // Act
-    const { rules, strayHeadings } = parseRules(source(text));
+    const parsed = parseRules(source);
 
     // Assert
-    expect(strayHeadings).toStrictEqual([]);
-    expect(rules).toStrictEqual([
-      {
-        block: 'ui',
-        file: 'blocks/domains/ui/ui.md',
-        labels: {
-          check: 'test',
-          tags: 'ux, a11y',
-          why: 'an empty screen cannot be told from a slow one.',
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [
+        {
+          block: 'core',
+          file: FILE,
+          labels: {
+            check: 'test',
+            example: '',
+            implements: '`rules-bind`',
+            tags: 'ux, a11y',
+            why: 'an empty screen cannot be told from a slow one.',
+          },
+          level: 'MUST',
+          slug: 'four-data-states',
+          statement: 'Every data view shows four states.',
+          with: 'ui',
         },
-        level: 'MUST',
-        slug: 'four-data-states',
-        statement:
-          'Every data view shows four states: loading, empty, error and content.',
-        with: null,
+      ],
+    });
+  });
+
+  it('should keep a rule intact when a heading of another level follows it', () => {
+    // Arrange
+    const source = sourceOf([
+      '## a · SHOULD',
+      'A.',
+      '**Check:** tool — architecture',
+      '### b · MUST',
+      '**Check:** test',
+      '## Requirements for implementation',
+      'Not a rule.',
+    ]);
+
+    // Act
+    const parsed = parseRules(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [
+        {
+          message:
+            'heading "### b · MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
+          path: FILE,
+        },
+      ],
+      rules: [
+        {
+          block: 'core',
+          file: FILE,
+          labels: {
+            check: 'tool — architecture',
+          },
+          level: 'SHOULD',
+          slug: 'a',
+          statement: 'A.',
+          with: null,
+        },
+      ],
+    });
+  });
+
+  it.each([
+    '## x - MUST',
+    '## x — MUST',
+    '## x • MUST',
+    '## x ·MUST',
+    '## x (MAY)',
+    '# x · SHOULD',
+  ])(
+    'should report %p as a stray heading when it misses the rule heading form',
+    (heading) => {
+      // Arrange
+      const source = sourceOf([
+        heading,
+        'Text.',
+      ]);
+
+      // Act
+      const parsed = parseRules(source);
+
+      // Assert
+      expect(parsed).toStrictEqual({
+        findings: [
+          {
+            message: `heading "${heading}" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"`,
+            path: FILE,
+          },
+        ],
+        rules: [],
+      });
+    },
+  );
+
+  it('should report a label when a rule gives it twice', () => {
+    // Arrange
+    const source = sourceOf([
+      '## a · MAY',
+      'A.',
+      '**Why:** one.',
+      '**Why:** two.',
+    ]);
+
+    // Act
+    const parsed = parseRules(source);
+
+    // Assert
+    expect(parsed.findings).toStrictEqual([
+      {
+        message: 'rule "a" has the label "Why" twice',
+        path: FILE,
       },
     ]);
   });
 
-  it('should end a rule at the next section heading', () => {
+  it('should report a label when it is none of the rule labels', () => {
     // Arrange
-    const text = [
-      '## a · SHOULD',
-      'A.',
-      '## Requirements for implementation',
-      'Not a rule.',
-    ].join('\n');
-
-    // Act
-    const { rules } = parseRules(source(text));
-
-    // Assert
-    expect(rules.map((rule) => rule.statement)).toStrictEqual([
-      'A.',
-    ]);
-  });
-
-  it('should ignore a heading inside a fenced block', () => {
-    // Arrange
-    const text = [
+    const source = sourceOf([
       '## a · MAY',
       'A.',
-      '**Example:**',
-      '```md',
-      '## b · MUST',
-      '```',
-    ].join('\n');
-
-    // Act
-    const { rules } = parseRules(source(text));
-
-    // Assert
-    expect(rules.map((rule) => rule.slug)).toStrictEqual([
-      'a',
+      '**Implement:** `b`',
     ]);
-    expect(rules[0]?.labels.example).toBe('');
-  });
-
-  it('should keep text after the labels out of the statement', () => {
-    // Arrange
-    const text = [
-      '## a · MUST',
-      'A.',
-      '**Why:** because.',
-      'More about why.',
-    ].join('\n');
 
     // Act
-    const { rules } = parseRules(source(text));
+    const parsed = parseRules(source);
 
     // Assert
-    expect(rules[0]?.statement).toBe('A.');
-  });
-
-  it('should report a heading that looks like a rule but is not one', () => {
-    // Act
-    const { rules, strayHeadings } = parseRules(source('## a · MUSTT\nA.\n'));
-
-    // Assert
-    expect(rules).toStrictEqual([]);
-    expect(strayHeadings).toStrictEqual([
+    expect(parsed.findings).toStrictEqual([
       {
-        block: 'ui',
-        file: 'blocks/domains/ui/ui.md',
-        heading: '## a · MUSTT',
+        message:
+          'rule "a" has the label "Implement", which is not one of Why, Check, Tags, Example, Implements',
+        path: FILE,
       },
     ]);
   });

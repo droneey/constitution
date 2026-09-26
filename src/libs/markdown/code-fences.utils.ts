@@ -1,39 +1,62 @@
-const FENCE = /^ {0,3}(?:```|~~~)/;
+const FENCE = /^\s*(`{3,}|~{3,})(.*)$/;
+const BACKTICK = '`';
 
-interface FenceState {
-  isInside: boolean;
-  lines: readonly string[];
+interface Fence {
+  character: string;
+  length: number;
 }
 
-const step = (state: FenceState, line: string): FenceState => {
-  if (FENCE.test(line)) {
-    return {
-      isInside: !state.isInside,
-      lines: [
-        ...state.lines,
-        '',
-      ],
-    };
+const openingOf = (line: string): Fence | undefined => {
+  const match = FENCE.exec(line);
+  const marker = match?.[1] ?? '';
+  const info = match?.[2] ?? '';
+
+  if (
+    marker === '' ||
+    (marker.startsWith(BACKTICK) && info.includes(BACKTICK))
+  ) {
+    return undefined;
   }
 
   return {
-    isInside: state.isInside,
-    lines: [
-      ...state.lines,
-      state.isInside ? '' : line,
-    ],
+    character: marker.charAt(0),
+    length: marker.length,
   };
 };
 
-const withoutCodeFences = (text: string): string =>
-  text
-    .split('\n')
-    .reduce(step, {
-      isInside: false,
-      lines: [],
-    })
-    .lines.join('\n');
+const closes = (input: { fence: Fence; line: string }): boolean => {
+  const match = FENCE.exec(input.line);
+  const marker = match?.[1] ?? '';
 
-const isFence = (line: string): boolean => FENCE.test(line);
+  return (
+    marker.startsWith(input.fence.character) &&
+    marker.length >= input.fence.length &&
+    (match?.[2] ?? '').trim() === ''
+  );
+};
 
-export { isFence, withoutCodeFences };
+// A fence closes only on its own character, at least as long, as CommonMark
+// says; a shorter or different fence inside it is part of the sample.
+const withoutCodeFences = (text: string): string => {
+  const lines: string[] = [];
+  let fence: Fence | undefined;
+
+  for (const line of text.split('\n')) {
+    if (fence === undefined) {
+      fence = openingOf(line);
+      lines.push(fence === undefined ? line : '');
+    } else {
+      fence = closes({
+        fence,
+        line,
+      })
+        ? undefined
+        : fence;
+      lines.push('');
+    }
+  }
+
+  return lines.join('\n');
+};
+
+export { withoutCodeFences };

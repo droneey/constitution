@@ -1,81 +1,104 @@
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { createNodeFileTree } from '../node-file-tree';
 
-const write = (input: { path: string; root: string; text: string }): void => {
-  mkdirSync(join(input.root, input.path, '..'), {
+let root = '';
+
+const write = (input: { path: string; text: string }): void => {
+  mkdirSync(dirname(join(root, input.path)), {
     recursive: true,
   });
-  writeFileSync(join(input.root, input.path), input.text);
+  writeFileSync(join(root, input.path), input.text);
 };
 
+const git = (args: readonly string[]): void => {
+  execFileSync('git', args, {
+    cwd: root,
+    stdio: 'ignore',
+  });
+};
+
+beforeEach(() => {
+  root = mkdtempSync(join(tmpdir(), 'node-file-tree-'));
+  git([
+    'init',
+    '--quiet',
+  ]);
+});
+
+afterEach(() => {
+  rmSync(root, {
+    force: true,
+    recursive: true,
+  });
+});
+
 describe('createNodeFileTree', () => {
-  let root = '';
-
-  beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'constitution-'));
-
-    for (const [path, text] of [
-      [
-        'README.md',
-        '# readme\n',
-      ],
-      [
-        'blocks/core/core.md',
-        '# Core\n',
-      ],
-      [
-        'blocks/core/.DS_Store',
-        '',
-      ],
-      [
-        'node_modules/pkg/index.js',
-        'ignored',
-      ],
-      [
-        '.git/HEAD',
-        'ignored',
-      ],
-    ] as const) {
-      write({
-        path,
-        root,
-        text,
-      });
-    }
-  });
-
-  afterEach(() => {
-    rmSync(root, {
-      force: true,
-      recursive: true,
+  it('should list tracked and untracked files but no ignored or deleted one when the root is a repository', () => {
+    // Arrange
+    write({
+      path: '.gitignore',
+      text: 'local/\n.DS_Store\n',
     });
-  });
-
-  it('should list files with posix paths, sorted, skipping git, dependencies and .DS_Store', () => {
-    // Act
-    const listed = createNodeFileTree({
+    write({
+      path: 'blocks/core/core.md',
+      text: '# Core\n',
+    });
+    write({
+      path: 'gone.md',
+      text: 'x\n',
+    });
+    git([
+      'add',
+      '.',
+    ]);
+    rmSync(join(root, 'gone.md'));
+    write({
+      path: 'blocks/domains/ui/ui.md',
+      text: '# UI\n',
+    });
+    write({
+      path: 'local/plan.md',
+      text: '# Plan\n',
+    });
+    write({
+      path: 'blocks/core/.DS_Store',
+      text: '',
+    });
+    const tree = createNodeFileTree({
       root,
-    }).list();
+    });
+
+    // Act
+    const paths = tree.list();
 
     // Assert
-    expect(listed).toStrictEqual([
-      'README.md',
+    expect(paths).toStrictEqual([
+      '.gitignore',
       'blocks/core/core.md',
+      'blocks/domains/ui/ui.md',
     ]);
   });
 
-  it('should read a file by its listed path', () => {
-    // Act
-    const text = createNodeFileTree({
+  it('should strip a byte-order mark and turn CRLF into LF when a file is read', () => {
+    // Arrange
+    write({
+      path: 'blocks/core/core.md',
+      text: '﻿---\r\nid: core\r\n---\r\n',
+    });
+    const tree = createNodeFileTree({
       root,
-    }).read('blocks/core/core.md');
+    });
+
+    // Act
+    const text = tree.read('blocks/core/core.md');
 
     // Assert
-    expect(text).toBe('# Core\n');
+    expect(text).toBe('---\nid: core\n---\n');
   });
 });

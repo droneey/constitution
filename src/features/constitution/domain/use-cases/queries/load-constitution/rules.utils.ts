@@ -1,11 +1,10 @@
-import { isFence } from '#/libs/markdown';
+import type { Finding, Level } from '#/kernel';
+import { LEVELS } from '#/kernel';
+import type { MarkdownSection } from '#/libs/markdown';
+import { sectionsOf } from '#/libs/markdown';
 
-import type { Rule, RuleLabel, StrayHeading } from '../../../entities';
-
-const RULE_HEADING = /^## (\S+) · (MUST|SHOULD|MAY)$/;
-const SECTION_HEADING = /^#{1,2} /;
-const LOOKS_LIKE_RULE = /^## .+ · /;
-const LABEL = /^\*\*(Why|Check|Tags|Example|Implements):\*\*\s*(.*)$/;
+import type { Rule, RuleLabel } from '../../../entities';
+import { RULE_LABELS } from '../../../entities';
 
 interface Source {
   block: string;
@@ -16,161 +15,184 @@ interface Source {
 
 interface Draft {
   labels: Readonly<Partial<Record<RuleLabel, string>>>;
-  level: string;
+  level: Level;
   slug: string;
   statement: readonly string[];
 }
 
-interface ParseState {
-  draft: Draft | undefined;
-  isInFence: boolean;
-  rules: readonly Rule[];
-  strayHeadings: readonly StrayHeading[];
+interface DraftRead {
+  draft: Draft;
+  findings: readonly Finding[];
+}
+
+interface SectionRead {
+  findings: readonly Finding[];
+  rule?: Rule;
 }
 
 interface RulesParsed {
+  findings: readonly Finding[];
   rules: readonly Rule[];
-  strayHeadings: readonly StrayHeading[];
 }
 
-const closed = (input: { source: Source; state: ParseState }): ParseState => {
-  const { draft } = input.state;
-
-  if (draft === undefined) {
-    return input.state;
-  }
-
-  return {
-    ...input.state,
-    draft: undefined,
-    rules: [
-      ...input.state.rules,
-      {
-        block: input.source.block,
-        file: input.source.file,
-        labels: draft.labels,
-        level: draft.level,
-        slug: draft.slug,
-        statement: draft.statement.join(' ').trim(),
-        with: input.source.with,
-      },
-    ],
-  };
+const LABEL_TEXT: Readonly<Record<RuleLabel, string>> = {
+  check: 'Check',
+  example: 'Example',
+  implements: 'Implements',
+  tags: 'Tags',
+  why: 'Why',
 };
+const RULE_HEADING = /^## (\S+) · (MUST|SHOULD|MAY)$/;
+const LOOKS_LIKE_RULE = /^#{1,6}\s.*\b(?:MUST|SHOULD|MAY)\W*$/;
+const LABEL_LINE = /^\*\*([A-Z][A-Za-z ]*):\*\*\s*(.*)$/;
+const LABEL_NAMES = RULE_LABELS.map((label) => LABEL_TEXT[label]).join(', ');
 
-const onHeading = (input: {
-  line: string;
-  source: Source;
-  state: ParseState;
-}): ParseState => {
-  const state = closed(input);
-  const heading = RULE_HEADING.exec(input.line);
+const draftOf = (heading: string): Draft | undefined => {
+  const match = RULE_HEADING.exec(heading);
+  const level = LEVELS.find((candidate) => candidate === match?.[2]);
 
-  if (heading !== null) {
-    return {
-      ...state,
-      draft: {
+  return match === null || level === undefined
+    ? undefined
+    : {
         labels: {},
-        level: heading[2] ?? '',
-        slug: heading[1] ?? '',
+        level,
+        slug: match[1] ?? '',
         statement: [],
-      },
-    };
-  }
-
-  if (!LOOKS_LIKE_RULE.test(input.line)) {
-    return state;
-  }
-
-  return {
-    ...state,
-    strayHeadings: [
-      ...state.strayHeadings,
-      {
-        block: input.source.block,
-        file: input.source.file,
-        heading: input.line,
-      },
-    ],
-  };
+      };
 };
 
-const onText = (input: { draft: Draft; line: string }): Draft => {
-  const label = LABEL.exec(input.line);
-
-  if (label !== null) {
-    return {
-      ...input.draft,
-      labels: {
-        ...input.draft.labels,
-        [(label[1] ?? '').toLowerCase() as RuleLabel]: (label[2] ?? '').trim(),
-      },
-    };
-  }
-
+const withText = (input: { draft: Draft; line: string }): Draft => {
+  const text = input.line.trim();
   const isStatement =
-    Object.keys(input.draft.labels).length === 0 && input.line.trim() !== '';
+    Object.keys(input.draft.labels).length === 0 && text !== '';
 
   return isStatement
     ? {
         ...input.draft,
         statement: [
           ...input.draft.statement,
-          input.line.trim(),
+          text,
         ],
       }
     : input.draft;
 };
 
-const step =
-  (source: Source) =>
-  (state: ParseState, line: string): ParseState => {
-    if (isFence(line)) {
-      return {
-        ...state,
-        isInFence: !state.isInFence,
-      };
-    }
+const withLine = (input: {
+  draft: Draft;
+  line: string;
+  source: Source;
+}): DraftRead => {
+  const match = LABEL_LINE.exec(input.line);
 
-    if (state.isInFence) {
-      return state;
-    }
-
-    if (SECTION_HEADING.test(line)) {
-      return onHeading({
-        line,
-        source,
-        state,
-      });
-    }
-
-    if (state.draft === undefined) {
-      return state;
-    }
-
+  if (match === null) {
     return {
-      ...state,
-      draft: onText({
-        draft: state.draft,
-        line,
-      }),
+      draft: withText(input),
+      findings: [],
     };
-  };
+  }
 
-const parseRules = (source: Source): RulesParsed => {
-  const state = closed({
-    source,
-    state: source.text.split('\n').reduce(step(source), {
-      draft: undefined,
-      isInFence: false,
-      rules: [],
-      strayHeadings: [],
-    }),
-  });
+  const name = match[1] ?? '';
+  const label = RULE_LABELS.find((candidate) => LABEL_TEXT[candidate] === name);
+  const problem =
+    label === undefined
+      ? `has the label "${name}", which is not one of ${LABEL_NAMES}`
+      : `has the label "${name}" twice`;
+
+  if (label === undefined || input.draft.labels[label] !== undefined) {
+    return {
+      draft: input.draft,
+      findings: [
+        {
+          message: `rule "${input.draft.slug}" ${problem}`,
+          path: input.source.file,
+        },
+      ],
+    };
+  }
 
   return {
-    rules: state.rules,
-    strayHeadings: state.strayHeadings,
+    draft: {
+      ...input.draft,
+      labels: {
+        ...input.draft.labels,
+        [label]: (match[2] ?? '').trim(),
+      },
+    },
+    findings: [],
+  };
+};
+
+const ruleOf = (input: { draft: Draft; source: Source }): Rule => ({
+  block: input.source.block,
+  file: input.source.file,
+  labels: input.draft.labels,
+  level: input.draft.level,
+  slug: input.draft.slug,
+  statement: input.draft.statement.join(' '),
+  with: input.source.with,
+});
+
+const readSection = (input: {
+  section: MarkdownSection;
+  source: Source;
+}): SectionRead => {
+  const first = draftOf(input.section.heading);
+
+  if (first === undefined) {
+    return {
+      findings: LOOKS_LIKE_RULE.test(input.section.heading)
+        ? [
+            {
+              message: `heading "${input.section.heading}" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"`,
+              path: input.source.file,
+            },
+          ]
+        : [],
+    };
+  }
+
+  const findings: Finding[] = [];
+  let draft = first;
+
+  for (const line of input.section.lines) {
+    const read = withLine({
+      draft,
+      line,
+      source: input.source,
+    });
+
+    draft = read.draft;
+    findings.push(...read.findings);
+  }
+
+  return {
+    findings,
+    rule: ruleOf({
+      draft,
+      source: input.source,
+    }),
+  };
+};
+
+// Every heading ends the rule before it, so a heading of another level can
+// never merge into a rule or overwrite its labels.
+const parseRules = (source: Source): RulesParsed => {
+  const read = sectionsOf(source.text).map((section) =>
+    readSection({
+      section,
+      source,
+    }),
+  );
+
+  return {
+    findings: read.flatMap((section) => section.findings),
+    rules: read.flatMap((section) =>
+      section.rule === undefined
+        ? []
+        : [
+            section.rule,
+          ],
+    ),
   };
 };
 

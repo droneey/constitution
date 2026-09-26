@@ -1,3 +1,5 @@
+import type { Level } from '#/kernel';
+
 const RULE_LABELS = [
   'why',
   'check',
@@ -12,17 +14,11 @@ interface Rule {
   block: string;
   file: string;
   labels: Readonly<Partial<Record<RuleLabel, string>>>;
-  level: string;
+  level: Level;
   slug: string;
   statement: string;
   with: string | null;
 }
 
-interface StrayHeading {
-  block: string;
-  file: string;
-  heading: string;
-}
-
-export type { Rule, RuleLabel, StrayHeading };
+export type { Rule, RuleLabel };
 export { RULE_LABELS };

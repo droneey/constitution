@@ -1,10 +1,12 @@
-import { validateConstitution } from '#/features/validation';
+import { validateConstitution } from '#/features/constitution';
 import { createWiring } from '#/root';
 
 const wiring = createWiring({
   root: process.cwd(),
 });
 const findings = validateConstitution({
+  frontMatterParser: wiring.frontMatterParser,
+  manifestParser: wiring.manifestParser,
   tree: wiring.fileTree,
 });
 
@@ -17,4 +19,5 @@ wiring.console.write(
     ? 'blocks: every block is sound\n'
     : `blocks: ${findings.length} finding(s)\n`,
 );
-process.exit(findings.length === 0 ? 0 : 1);
+// exitCode, not exit(): exit() drops output still buffered for a pipe.
+process.exitCode = findings.length === 0 ? 0 : 1;

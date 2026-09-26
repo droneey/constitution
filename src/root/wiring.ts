@@ -1,11 +1,21 @@
-import type { FileTree } from '#/features/constitution';
-import { createNodeFileTree } from '#/features/constitution';
+import type {
+  FileTree,
+  FrontMatterParser,
+  ManifestParser,
+} from '#/features/constitution';
+import {
+  createJsonManifestParser,
+  createNodeFileTree,
+  createYamlFrontMatterParser,
+} from '#/features/constitution';
 
 interface Wiring {
   console: {
     write: (text: string) => void;
   };
   fileTree: FileTree;
+  frontMatterParser: FrontMatterParser;
+  manifestParser: ManifestParser;
 }
 
 const createWiring = (input: { root: string }): Wiring => ({
@@ -17,6 +27,8 @@ const createWiring = (input: { root: string }): Wiring => ({
   fileTree: createNodeFileTree({
     root: input.root,
   }),
+  frontMatterParser: createYamlFrontMatterParser(),
+  manifestParser: createJsonManifestParser(),
 });
 
 export type { Wiring };

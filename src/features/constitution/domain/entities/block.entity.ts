@@ -17,18 +17,19 @@ interface FrontMatter {
 type BlockFileRole = 'main' | 'chapter' | 'with';
 
 interface BlockFile {
+  body: string;
+  lines: number;
   path: string;
   role: BlockFileRole;
-  text: string;
   with: string | null;
 }
 
 interface Block {
-  dir: string;
   files: readonly BlockFile[];
   frontMatter: FrontMatter;
   id: string;
   layer: Layer;
+  path: string;
 }
 
 export type { Block, BlockFile, BlockFileRole, FrontMatter };
