@@ -13,6 +13,9 @@ import { pluginCheck } from '../plugin.check';
 const PLUGIN = '.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';
 const HOOKS = 'hooks/hooks.json';
+const LISTING_SKILLS = '{"name":"constitution","skills":["./skills/"]}';
+const RATIFY =
+  '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n';
 const SESSION_START_HOOK =
   '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}';
 
@@ -98,7 +101,7 @@ describe('pluginCheck', () => {
         },
       ],
       files: withFiles({
-        'skills/ratify/SKILL.md': '---\nname: ratify\n---\n',
+        'skills/ratify/SKILL.md': RATIFY,
       }),
       name: 'a skill sits in an unlisted directory',
     },
@@ -112,15 +115,8 @@ describe('pluginCheck', () => {
     {
       expected: [],
       files: withFiles({
-        'skills/ratify/SKILL.md.orig': '---\nname: ratify\n---\n',
-      }),
-      name: 'a file only begins with SKILL.md',
-    },
-    {
-      expected: [],
-      files: withFiles({
         [PLUGIN]: '{"name":"constitution","skills":["./tools/skills/"]}',
-        'tools/skills/ratify/SKILL.md': '---\nname: ratify\n---\n',
+        'tools/skills/ratify/SKILL.md': RATIFY,
       }),
       name: 'a listed nested directory holds its skills',
     },
@@ -137,6 +133,154 @@ describe('pluginCheck', () => {
       expect(findings).toStrictEqual(expected);
     },
   );
+
+  it.each<ManifestCase>([
+    {
+      expected: [
+        {
+          message: 'holds no SKILL.md; a skill is a folder with SKILL.md in it',
+          path: 'skills/ratify',
+        },
+      ],
+      files: withFiles({
+        'skills/ratify/SKILL.md.orig': RATIFY,
+      }),
+      name: 'the default directory holds a folder whose file only begins with SKILL.md',
+    },
+    {
+      expected: [
+        {
+          message: 'holds no SKILL.md; a skill is a folder with SKILL.md in it',
+          path: 'tools/skills/check',
+        },
+      ],
+      files: withFiles({
+        [PLUGIN]: '{"name":"constitution","skills":["./tools/skills/"]}',
+        'tools/skills/check/references/roles.md': '# Roles\n',
+        'tools/skills/ratify/SKILL.md': RATIFY,
+      }),
+      name: 'a listed directory holds a folder of references only',
+    },
+    {
+      expected: [],
+      files: withFiles({
+        [PLUGIN]: LISTING_SKILLS,
+        'skills/.cache/state.json': '{}',
+        'skills/README.md': '# Skills\n',
+        'skills/ratify/SKILL.md': RATIFY,
+        'skills/ratify/references/questions.md': '# Questions\n',
+        'tools/skills-old/notes.md': '# Notes\n',
+      }),
+      name: 'the skills directory also holds a hidden folder, a loose file and references',
+    },
+  ])(
+    'should report a skill folder without SKILL.md when $name',
+    ({ expected, files }) => {
+      // Arrange
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = pluginCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual(expected);
+    },
+  );
+
+  it.each<{
+    messages: readonly string[];
+    name: string;
+    skill: string;
+  }>([
+    {
+      messages: [
+        'has no front matter; a skill names itself and says when to use it there',
+      ],
+      name: 'it has no front matter',
+      skill: '# Ratify\n',
+    },
+    {
+      messages: [
+        'front matter is not valid YAML: Flow sequence in block collection must be sufficiently indented and end with a ]',
+      ],
+      name: 'its front matter is not YAML',
+      skill: '---\nname: ratify\ndescription: [a\n---\n',
+    },
+    {
+      messages: [
+        'front matter lacks "name"; a skill declares its name and description',
+      ],
+      name: 'it has no name',
+      skill: '---\ndescription: Writes constitution.yaml.\n---\n',
+    },
+    {
+      messages: [
+        'front matter lacks "description"; a skill declares its name and description',
+      ],
+      name: 'its description is blank',
+      skill: '---\nname: ratify\ndescription: ""\n---\n',
+    },
+    {
+      messages: [
+        'front matter lacks "name"; a skill declares its name and description',
+        'front matter lacks "description"; a skill declares its name and description',
+      ],
+      name: 'its front matter is empty',
+      skill: '---\n---\n',
+    },
+    {
+      messages: [],
+      name: 'it has a name and a description',
+      skill: RATIFY,
+    },
+  ])(
+    'should check what a SKILL.md declares when $name',
+    ({ messages, skill }) => {
+      // Arrange
+      const input = checkInputOf(
+        withFiles({
+          [PLUGIN]: LISTING_SKILLS,
+          'skills/ratify/SKILL.md': skill,
+        }),
+      );
+
+      // Act
+      const findings = pluginCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual(
+        messages.map((message) => ({
+          message,
+          path: 'skills/ratify/SKILL.md',
+        })),
+      );
+    },
+  );
+
+  it.each([
+    'templates/PROJECT.md',
+    'templates/block.md',
+    'templates/constitution.yaml',
+  ])('should report the template %s when it is missing', (path) => {
+    // Arrange
+    const input = checkInputOf(
+      without({
+        files: validFiles(),
+        path,
+      }),
+    );
+
+    // Act
+    const findings = pluginCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'is missing; /ratify writes a project from the templates',
+        path,
+      },
+    ]);
+  });
 
   it.each<ManifestCase>([
     {

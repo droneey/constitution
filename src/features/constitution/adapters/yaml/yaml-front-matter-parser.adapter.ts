@@ -5,7 +5,8 @@ import type {
   FrontMatterParser,
   FrontMatterRead,
 } from '../../domain/contracts';
-import { frontMatterModel } from './models';
+import type { SkillFrontMatterRead } from '../../domain/entities';
+import { frontMatterModel, skillFrontMatterModel } from './models';
 
 const ALIAS_REASON =
   'an unquoted value starts with "*", which YAML reads as an alias; quote it';
@@ -81,8 +82,33 @@ const parse = (yaml: string): FrontMatterRead => {
       };
 };
 
+// A value that is not a mapping, an empty front matter included, has neither
+// field.
+const skill = (yaml: string): SkillFrontMatterRead => {
+  const document = parseDocument(yaml, {
+    prettyErrors: false,
+  });
+  const [error] = document.errors;
+
+  if (error !== undefined) {
+    return {
+      reason: error.message,
+      status: 'not-yaml',
+    };
+  }
+
+  const result = skillFrontMatterModel.safeParse(document.toJS());
+
+  return {
+    description: result.success ? result.data.description : undefined,
+    name: result.success ? result.data.name : undefined,
+    status: 'parsed',
+  };
+};
+
 const createYamlFrontMatterParser = (): FrontMatterParser => ({
   parse,
+  skill,
 });
 
 export { createYamlFrontMatterParser };

@@ -31,6 +31,9 @@ const pluginFiles = (): Files => ({
   'hooks/hooks.json': JSON.stringify({
     hooks: {},
   }),
+  'templates/PROJECT.md': '# Project Context\n',
+  'templates/block.md': '---\nid: <id>\n---\n',
+  'templates/constitution.yaml': 'version: <installed version>\n',
 });
 
 const upperFiles = (): Files => ({

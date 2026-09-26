@@ -1,0 +1,8 @@
+version: <installed version>
+domains: []
+platforms: []
+languages: []
+implementations: []
+apps: {}
+check: <check command>
+overrides: []

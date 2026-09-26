@@ -3,6 +3,7 @@ import {
   chmodSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   realpathSync,
   symlinkSync,
   writeFileSync,
@@ -12,7 +13,7 @@ import { dirname, join } from 'node:path';
 
 import type { Files } from './constitution.fixtures';
 import { syntheticId } from './constitution.fixtures';
-import { removeFolder } from './plugin-root.fixtures';
+import { INSTALLED, removeFolder } from './plugin-root.fixtures';
 
 const CONFIG_KEYS = [
   'version',
@@ -362,6 +363,71 @@ const LOCAL_PROJECT: ProjectLayout = {
   },
 };
 
+const TEMPLATES = join(import.meta.dir, '..', '..', '..', 'templates');
+
+const fromTemplate = (input: {
+  fills: ReadonlyArray<
+    readonly [
+      string,
+      string,
+    ]
+  >;
+  name: string;
+}): string =>
+  input.fills.reduce(
+    (text, [placeholder, value]) => text.replace(placeholder, value),
+    readFileSync(join(TEMPLATES, input.name), 'utf8'),
+  );
+
+// The files /ratify writes from the templates; the hook reads only a local
+// block's front matter, so only its placeholders are filled.
+const RATIFIED: ProjectLayout = {
+  config: fromTemplate({
+    fills: [
+      [
+        '<installed version>',
+        INSTALLED,
+      ],
+      [
+        'domains: []',
+        'domains: [i18n, version-control]',
+      ],
+      [
+        'languages: []',
+        'languages: [typescript]',
+      ],
+      [
+        'implementations: []',
+        `implementations: [git, gitleaks, ${PARAGLIDE}]`,
+      ],
+      [
+        '<check command>',
+        'bun run check',
+      ],
+    ],
+    name: 'constitution.yaml',
+  }),
+  files: {
+    'rules/implementations/paraglide.md': fromTemplate({
+      fills: [
+        [
+          '<id>',
+          'paraglide',
+        ],
+        [
+          '<One sentence of at most 70 characters.>',
+          'Paraglide messages, compiled per locale.',
+        ],
+        [
+          'requires: []',
+          'requires: [i18n, typescript]',
+        ],
+      ],
+      name: 'block.md',
+    }),
+  },
+};
+
 const syntheticProject = (blocks: number): ProjectLayout => ({
   config: configOf({
     domains: `[${Array.from(
@@ -386,6 +452,7 @@ export {
   localPath,
   PARAGLIDE,
   paraglideFiles,
+  RATIFIED,
   removeProjects,
   syntheticProject,
 };

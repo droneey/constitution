@@ -15,6 +15,8 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block, rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
+| `skills` | `/ratify` and `/amend`, which write a project's files |
+| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
@@ -34,6 +36,13 @@ A block refers only to the layers above it, through its front matter. The rules 
 ## 🧭 What a session receives
 
 The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary, its chapters and the `with/` files that apply — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
+
+## ✍️ Skills
+
+Both are run by the user, never by the model on its own:
+
+- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it, asks about applications when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write and writes only after the owner's yes, never over a file without asking.
+- **`/constitution:amend [rule-slug]`** adds, changes or removes an override: a rule the index holds, a level below its current one, a reason, an optional end date and a scope — the whole repository or one application. It shows the exact change to `constitution.yaml` and writes it only after the owner's yes for that override.
 
 ## 🔌 Install
 
@@ -70,7 +79,7 @@ The end-to-end spec in `src/testing/e2e` builds a plugin root from fixture block
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;
 - a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's main file and chapters;
 - a file over 500 lines, and a link to a missing file;
-- a broken plugin, marketplace or hooks manifest;
+- a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, skips or repeats a number, or has an entry without its date and status;
 - a `digests/` file that is missing or differs from its regeneration, a file there the generator does not write, and a core part of the digest over 3,500 bytes.
 

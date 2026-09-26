@@ -154,4 +154,85 @@ describe('createYamlFrontMatterParser', () => {
       });
     },
   );
+
+  it.each([
+    {
+      expected: {
+        description: 'Writes constitution.yaml and PROJECT.md.',
+        name: 'ratify',
+      },
+      name: 'both fields are text',
+      yaml: 'name: ratify\ndescription: Writes constitution.yaml and PROJECT.md.\ndisable-model-invocation: true',
+    },
+    {
+      expected: {
+        description: 'Adds an override.',
+        name: undefined,
+      },
+      name: 'the name is absent',
+      yaml: 'description: >\n  Adds an override.',
+    },
+    {
+      expected: {
+        description: undefined,
+        name: 'amend',
+      },
+      name: 'the description is blank',
+      yaml: 'name: amend\ndescription: "  "',
+    },
+    {
+      expected: {
+        description: undefined,
+        name: undefined,
+      },
+      name: 'the fields are not text',
+      yaml: 'name: [ratify]\ndescription: 7',
+    },
+    {
+      expected: {
+        description: undefined,
+        name: undefined,
+      },
+      name: 'the front matter is a list',
+      yaml: '- name\n- description',
+    },
+    {
+      expected: {
+        description: undefined,
+        name: undefined,
+      },
+      name: 'the front matter is empty',
+      yaml: '',
+    },
+  ])(
+    "should read a skill's name and description as text when $name",
+    ({ expected, yaml }) => {
+      // Arrange
+      const parser = createYamlFrontMatterParser();
+
+      // Act
+      const read = parser.skill(yaml);
+
+      // Assert
+      expect(read).toStrictEqual({
+        ...expected,
+        status: 'parsed',
+      });
+    },
+  );
+
+  it("should report the reason when a skill's front matter is not YAML", () => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
+
+    // Act
+    const read = parser.skill('name: ratify\ndescription: [a');
+
+    // Assert
+    expect(read).toStrictEqual({
+      reason:
+        'Flow sequence in block collection must be sufficiently indented and end with a ]',
+      status: 'not-yaml',
+    });
+  });
 });
