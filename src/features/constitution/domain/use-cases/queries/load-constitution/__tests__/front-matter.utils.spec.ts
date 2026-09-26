@@ -87,26 +87,52 @@ describe('readFrontMatter', () => {
 
   it.each([
     {
-      expected:
+      expected: [
         'front matter line 4 (summary) is not valid YAML: Nested mappings are not allowed in compact mappings',
+      ],
       name: 'an unquoted colon in the summary',
       text: uiFile({
         summary: 'Screens: states and tokens.',
       }),
     },
     {
-      expected:
+      expected: [
         'front matter line 12 (governs) is not valid YAML: an unquoted value starts with "*", which YAML reads as an alias; quote it',
+      ],
       name: 'an unquoted glob in a block list',
       text: uiFile({}).replace('governs: []', 'governs:\n  - *.tsx'),
     },
     {
-      expected: 'front matter is not a mapping of fields',
+      expected: [
+        'front matter is not a mapping of fields',
+      ],
       name: 'a list instead of a mapping',
       text: '---\n- id\n---\n',
     },
+    {
+      expected: [
+        'front matter lacks "status"; every block declares every field',
+        'front matter has "brands", which is not a field',
+      ],
+      name: 'a missing and an unknown field',
+      text: uiFile({}).replace('status: stable', 'brands: []'),
+    },
+    {
+      expected: [
+        'front matter lists its fields out of order; the order is id, kind, summary, chapters, requires, extends, abstract, checks, owns, governs, status',
+      ],
+      name: 'the fields out of order',
+      text: uiFile({}).replace('id: ui\nkind: domain', 'kind: domain\nid: ui'),
+    },
+    {
+      expected: [
+        'front matter: abstract: Invalid input: expected boolean, received string',
+      ],
+      name: 'a field of the wrong type',
+      text: uiFile({}).replace('abstract: false', 'abstract: "no"'),
+    },
   ])(
-    'should name the line and the field when the front matter holds $name',
+    'should report the messages when the front matter has $name',
     ({ expected, text }) => {
       // Arrange
       const input = text;
@@ -115,9 +141,7 @@ describe('readFrontMatter', () => {
       const messages = messagesOf(input);
 
       // Assert
-      expect(messages).toStrictEqual([
-        expected,
-      ]);
+      expect(messages).toStrictEqual(expected);
     },
   );
 
@@ -144,43 +168,6 @@ describe('readFrontMatter', () => {
       },
     ]);
   });
-
-  it.each([
-    {
-      expected: [
-        'front matter lacks "status"; every block declares every field',
-        'front matter has "brands", which is not a field',
-      ],
-      name: 'a missing and an unknown field',
-      text: uiFile({}).replace('status: stable', 'brands: []'),
-    },
-    {
-      expected: [
-        'front matter lists its fields out of order; the order is id, kind, summary, chapters, requires, extends, abstract, checks, owns, governs, status',
-      ],
-      name: 'the fields out of order',
-      text: uiFile({}).replace('id: ui\nkind: domain', 'kind: domain\nid: ui'),
-    },
-    {
-      expected: [
-        'front matter: abstract: Invalid input: expected boolean, received string',
-      ],
-      name: 'a field of the wrong type',
-      text: uiFile({}).replace('abstract: false', 'abstract: "no"'),
-    },
-  ])(
-    'should report the field list when the front matter has $name',
-    ({ expected, text }) => {
-      // Arrange
-      const input = text;
-
-      // Act
-      const messages = messagesOf(input);
-
-      // Assert
-      expect(messages).toStrictEqual(expected);
-    },
-  );
 
   it.each([
     {
@@ -260,6 +247,24 @@ describe('readFrontMatter', () => {
       fixture: {
         owns: [
           ' ',
+        ],
+      },
+    },
+    {
+      expected:
+        'front matter: governs lists "src/my ui/**", which holds whitespace; the index separates globs with spaces',
+      fixture: {
+        governs: [
+          'src/my ui/**',
+        ],
+      },
+    },
+    {
+      expected:
+        'front matter: governs lists "src/ui\\t**", which holds whitespace; the index separates globs with spaces',
+      fixture: {
+        governs: [
+          'src/ui\t**',
         ],
       },
     },

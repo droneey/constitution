@@ -4,10 +4,10 @@ import { createWiring } from '#/root';
 const wiring = createWiring({
   root: process.cwd(),
 });
-const findings = validateConstitution({
+const { advice, findings } = validateConstitution({
   frontMatterParser: wiring.frontMatterParser,
   manifestParser: wiring.manifestParser,
-  tree: wiring.fileTree,
+  tree: wiring.fileSystem,
 });
 
 for (const finding of findings) {
@@ -19,6 +19,10 @@ wiring.console.write(
     ? 'blocks: every block is sound\n'
     : `blocks: ${findings.length} finding(s)\n`,
 );
+
+for (const line of advice) {
+  wiring.console.write(`${line}\n`);
+}
 
 // exitCode, not exit(): exit() drops output still buffered for a pipe.
 process.exitCode = findings.length === 0 ? 0 : 1;

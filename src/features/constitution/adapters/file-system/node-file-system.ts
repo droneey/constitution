@@ -1,10 +1,10 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 import { compareText } from '#/kernel';
 
-import type { FileTree } from '../../domain/contracts';
+import type { DigestWriter, FileTree } from '../../domain/contracts';
 
 const BYTE_ORDER_MARK = '﻿';
 const GIT_FILES = [
@@ -26,9 +26,12 @@ const normalized = (text: string): string =>
     : text
   ).replaceAll('\r\n', '\n');
 
-// The constitution is what git holds: an ignored file is no part of it, and
-// CI, which sees only committed files, must agree with a local run.
-const createNodeFileTree = (input: { root: string }): FileTree => ({
+// One adapter for the one system: the tree reads what git holds — an ignored
+// file is no part of the constitution, and CI sees only committed files — and
+// the writer puts the digests back beside it.
+const createNodeFileSystem = (input: {
+  root: string;
+}): FileTree & DigestWriter => ({
   list: (): readonly string[] =>
     [
       ...new Set(
@@ -42,6 +45,14 @@ const createNodeFileTree = (input: { root: string }): FileTree => ({
       .toSorted(compareText),
   read: (path: string): string =>
     normalized(readFileSync(join(input.root, path), 'utf8')),
+  write: ({ path, text }: { path: string; text: string }): void => {
+    const target = join(input.root, path);
+
+    mkdirSync(dirname(target), {
+      recursive: true,
+    });
+    writeFileSync(target, text);
+  },
 });
 
-export { createNodeFileTree };
+export { createNodeFileSystem };

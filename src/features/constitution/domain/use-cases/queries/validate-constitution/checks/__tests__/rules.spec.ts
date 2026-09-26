@@ -64,6 +64,55 @@ describe('rulesCheck', () => {
     ]);
   });
 
+  it.each([
+    {
+      check: 'tool— lint',
+      expected:
+        'rule "dependencies-point-inward" has the check "tool— lint"; a check is test, review or tool — <role>',
+    },
+    {
+      check: 'tool - lint',
+      expected:
+        'rule "dependencies-point-inward" has the check "tool - lint"; a check is test, review or tool — <role>',
+    },
+    {
+      check: 'by eye',
+      expected:
+        'rule "dependencies-point-inward" has the check "by eye"; a check is test, review or tool — <role>',
+    },
+    {
+      check: 'tool — linting',
+      expected:
+        'rule "dependencies-point-inward" names the role "linting", which is not a role',
+    },
+    {
+      check: '',
+      expected: 'rule "dependencies-point-inward" has no Check',
+    },
+  ])(
+    'should report "$expected" when a rule has the Check "$check"',
+    ({ check, expected }) => {
+      // Arrange
+      const files = validFiles();
+      files[PRINCIPLES] = `# Principles\n\n${rule({
+        check,
+        slug: 'dependencies-point-inward',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: expected,
+          path: PRINCIPLES,
+        },
+      ]);
+    },
+  );
+
   it('should report a rule when its slug is already defined in another file', () => {
     // Arrange
     const files = validFiles();

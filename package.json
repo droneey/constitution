@@ -25,6 +25,7 @@
     "type:check": "tsc --noEmit",
     "test:unit": "bun test",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
+    "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
     "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run blocks:check"
   },
   "devDependencies": {

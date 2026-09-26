@@ -1,9 +1,9 @@
 import type { Finding } from '#/kernel';
 
 import type { Block } from '../../../../entities';
+import type { BlocksById } from '../../../../utils';
+import { linksOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import type { BlocksById } from '../closure.utils';
-import { linksOf } from '../closure.utils';
 
 interface Search {
   block: Block;

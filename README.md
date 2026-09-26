@@ -13,6 +13,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli`, `server` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
+| `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block, rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | The plugin's hook manifest; the session-start hook that puts the rules into context arrives with #54 |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
@@ -50,6 +51,7 @@ claude plugin install constitution@droneey
 mise trust && mise install   # bun
 bun install                  # installs the git hooks
 bun run check                # lint, package manifests, types, tests with the coverage gate, then the blocks check
+bun run digests:write        # regenerate digests/ after a change to a block
 ```
 
 `blocks:check` loads every block and fails on:
@@ -60,12 +62,15 @@ bun run check                # lint, package manifests, types, tests with the co
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;
-- a malformed Requirements row, or an answer to a rule its block may not answer;
+- a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's main file and chapters;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest;
-- a decision log that is missing, skips or repeats a number, or has an entry without its date and status.
+- a decision log that is missing, skips or repeats a number, or has an entry without its date and status;
+- a `digests/` file that is missing or differs from its regeneration, a file there the generator does not write, and a core part of the digest over 3,500 bytes.
 
 It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.
+
+After the findings it prints advice that does not fail the check: the roles of tool-checked MUST rules that no tool checks for a language, and rules of sibling blocks similar enough to lift one layer up.
 
 ## ⚙️ Workflows
 

@@ -3,8 +3,8 @@ import { posix } from 'node:path';
 import type { Finding } from '#/kernel';
 
 import type { Block } from '../../../../entities';
+import type { BlocksById } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import type { BlocksById } from '../closure.utils';
 import { pairableBy } from '../direction.utils';
 import { aBlock, blocksOf } from '../wording.utils';
 

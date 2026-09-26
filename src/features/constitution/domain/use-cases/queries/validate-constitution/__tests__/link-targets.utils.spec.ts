@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { foldersOf, linkTargetsOf, resolveLink } from '../link-targets.utils';
+import { foldersOf, linkTargetsOf } from '../link-targets.utils';
 
 describe('linkTargetsOf', () => {
   it('should skip the links inside fenced and inline code when the text holds both', () => {
@@ -21,46 +21,6 @@ describe('linkTargetsOf', () => {
       'a.md',
     ]);
   });
-});
-
-describe('resolveLink', () => {
-  it.each([
-    [
-      'principles.md',
-      'blocks/core/principles.md',
-    ],
-    [
-      '../domains/ui/ui.md',
-      'blocks/domains/ui/ui.md',
-    ],
-    [
-      '/README.md',
-      'README.md',
-    ],
-    [
-      '../core/',
-      'blocks/core',
-    ],
-    [
-      '../../',
-      '.',
-    ],
-  ])(
-    'should resolve %p to %p when blocks/core/core.md links it',
-    (target, expected) => {
-      // Arrange
-      const link = {
-        path: 'blocks/core/core.md',
-        target,
-      };
-
-      // Act
-      const resolved = resolveLink(link);
-
-      // Assert
-      expect(resolved).toBe(expected);
-    },
-  );
 });
 
 describe('foldersOf', () => {

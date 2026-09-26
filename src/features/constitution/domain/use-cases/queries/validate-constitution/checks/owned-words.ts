@@ -2,8 +2,8 @@ import type { Finding } from '#/kernel';
 import { withoutCodeFences } from '#/libs/markdown';
 
 import type { Block, BlockFile } from '../../../../entities';
+import { reachableFrom } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import { reachableFrom } from '../closure.utils';
 import { collapseWhitespace, ownedWordMatcher } from '../tokens.utils';
 
 interface Owner {

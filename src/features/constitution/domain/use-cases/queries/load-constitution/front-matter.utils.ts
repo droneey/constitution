@@ -38,6 +38,7 @@ const BLOCK_ID = /^_?[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const CHAPTER = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
+const WHITESPACE = /\s/;
 const SUMMARY_LENGTH = 70;
 // The front matter starts on the line after the opening "---".
 const OPENING_LINES = 1;
@@ -179,6 +180,12 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
   ]
     .filter((entry) => entry.trim() === '')
     .map(() => 'front matter: owns and governs hold no empty entry'),
+  ...fields.governs
+    .filter((glob) => WHITESPACE.test(glob))
+    .map(
+      (glob) =>
+        `front matter: governs lists ${JSON.stringify(glob)}, which holds whitespace; the index separates globs with spaces`,
+    ),
   ...LIST_FIELDS.flatMap((field) =>
     repeatsOf(fields[field]).map(
       (value) => `front matter: ${field} lists "${value}" twice`,

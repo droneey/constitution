@@ -1,6 +1,6 @@
 import { LAYER_RANK } from '#/kernel';
 
-import type { Block } from '../../../entities';
+import type { Block } from '../entities';
 
 type BlocksById = ReadonlyMap<string, Block>;
 

@@ -1,5 +1,5 @@
 import type { Finding } from '#/kernel';
-import { compareText, LAYER_RANK } from '#/kernel';
+import { compareText, LAYERS } from '#/kernel';
 import { withoutCodeFences } from '#/libs/markdown';
 
 import { DOCUMENT_PATHS } from '../../../constants';
@@ -38,8 +38,10 @@ const OUTSIDE =
 const STRAY =
   'is not a block file; a block holds its main file, its chapters and with/<block>.md';
 
+// Five layers, not four ranks: the index groups platforms, then languages, and
+// the hook never sorts.
 const byLayerThenId = (left: Block, right: Block): number =>
-  LAYER_RANK[left.layer] - LAYER_RANK[right.layer] ||
+  LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) ||
   compareText(left.id, right.id) ||
   compareText(left.path, right.path);
 
@@ -108,6 +110,10 @@ const documentsOf = (input: {
 
   return {
     decisions: textOf(DOCUMENT_PATHS.decisions),
+    digests: {
+      core: textOf(DOCUMENT_PATHS.digestCore),
+      index: textOf(DOCUMENT_PATHS.digestIndex),
+    },
     hooks: hooks === undefined ? undefined : input.parser.hooks(hooks),
     marketplace:
       marketplace === undefined

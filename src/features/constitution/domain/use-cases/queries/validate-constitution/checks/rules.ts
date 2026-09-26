@@ -2,12 +2,11 @@ import type { Finding } from '#/kernel';
 import { ROLES, TAGS } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
+import type { BlocksById } from '../../../../utils';
+import { checkOf, mayReferTo, tagsOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import type { BlocksById } from '../closure.utils';
-import { mayReferTo } from '../closure.utils';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const CHECK = /^(?:test|review|tool — (\S+))$/;
 const REFERENCE = /^`?([^`\s]+)`?$/;
 
 const roles: readonly string[] = ROLES;
@@ -18,26 +17,21 @@ const at = (input: { message: string; rule: Rule }): Finding => ({
   path: input.rule.file,
 });
 
-const tagsOf = (rule: Rule): readonly string[] =>
-  (rule.labels.tags ?? '')
-    .split(',')
-    .map((tag) => tag.trim())
-    .filter((tag) => tag !== '');
-
-const checkMessage = (check: string): string | undefined => {
-  const role = CHECK.exec(check)?.[1];
+const checkMessage = (rule: Rule): string | undefined => {
+  const check = rule.labels.check ?? '';
+  const read = checkOf(rule);
 
   if (check === '') {
     return 'has no Check';
   }
 
-  if (!CHECK.test(check)) {
+  if (read.kind === 'unknown') {
     return `has the check "${check}"; a check is test, review or tool — <role>`;
   }
 
-  return role === undefined || roles.includes(role)
+  return read.kind !== 'tool' || roles.includes(read.role)
     ? undefined
-    : `names the role "${role}", which is not a role`;
+    : `names the role "${read.role}", which is not a role`;
 };
 
 const labelFindings = (rule: Rule): readonly Finding[] => {
@@ -46,7 +40,7 @@ const labelFindings = (rule: Rule): readonly Finding[] => {
     SLUG.test(rule.slug) ? undefined : 'is not a kebab-case slug',
     rule.statement === '' ? 'has no statement' : undefined,
     (rule.labels.why ?? '') === '' ? 'has no Why' : undefined,
-    checkMessage(rule.labels.check ?? ''),
+    checkMessage(rule),
     ruleTags.length === 0 ? 'has no Tags' : undefined,
     ...ruleTags
       .filter((tag) => !tags.includes(tag))

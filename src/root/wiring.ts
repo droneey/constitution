@@ -1,11 +1,12 @@
 import type {
+  DigestWriter,
   FileTree,
   FrontMatterParser,
   ManifestParser,
 } from '#/features/constitution';
 import {
   createJsonManifestParser,
-  createNodeFileTree,
+  createNodeFileSystem,
   createYamlFrontMatterParser,
 } from '#/features/constitution';
 
@@ -13,7 +14,7 @@ interface Wiring {
   console: {
     write: (text: string) => void;
   };
-  fileTree: FileTree;
+  fileSystem: FileTree & DigestWriter;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
 }
@@ -24,7 +25,7 @@ const createWiring = (input: { root: string }): Wiring => ({
       process.stdout.write(text);
     },
   },
-  fileTree: createNodeFileTree({
+  fileSystem: createNodeFileSystem({
     root: input.root,
   }),
   frontMatterParser: createYamlFrontMatterParser(),

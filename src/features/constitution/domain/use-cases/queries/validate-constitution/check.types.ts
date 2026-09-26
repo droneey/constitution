@@ -1,7 +1,7 @@
 import type { Finding } from '#/kernel';
 
 import type { Constitution } from '../../../entities';
-import type { BlocksById } from './closure.utils';
+import type { BlocksById } from '../../../utils';
 
 interface CheckInput {
   byId: BlocksById;

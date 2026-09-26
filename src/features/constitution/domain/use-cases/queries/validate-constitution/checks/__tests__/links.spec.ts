@@ -90,6 +90,25 @@ describe('linksCheck', () => {
     ]);
   });
 
+  it('should report a link to a missing file when it follows a lone backtick', () => {
+    // Arrange
+    const files = validFiles();
+    files['blocks/core/principles.md'] =
+      '# Principles\n\nA slug never holds a backtick (`), a space or a capital.\n\nSee [p](missing.md), then run `check`.\n';
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = linksCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'links to a missing file "missing.md"',
+        path: 'blocks/core/principles.md',
+      },
+    ]);
+  });
+
   it('should check the blocks alone when the README is missing', () => {
     // Arrange
     const files = without({
