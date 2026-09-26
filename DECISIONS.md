@@ -19,6 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
+| Blocks | ADR-0064 – |
 
 ---
 
@@ -395,3 +396,10 @@
 - **Decision.** Only a person decides what is committed. The main agent commits only when a person asks it to; a sub-agent never commits and only does the work it is given. No agent merges or pushes to the main line.
 - **Rejected.** Letting a sub-agent commit on the working branch.
 - **Why.** A commit records a decision under a person's name, so the person makes it.
+
+## ADR-0064 — The release automation's commit is the one change that skips review
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** Every change reaches the main line through a reviewed pull request, except the release automation's version commit and its tag, which it pushes after a merge.
+- **Rejected.** A pull request for every version bump, which a person would approve without reading.
+- **Why.** The version commit holds only what the merged, reviewed changes already decided.
