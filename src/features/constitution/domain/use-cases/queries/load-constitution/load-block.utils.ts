@@ -29,7 +29,7 @@ interface BlockLoaded {
 }
 
 const lineCount = (text: string): number =>
-  (text.endsWith('\n') ? text.slice(0, -1) : text).split('\n').length;
+  text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
 
 const groupByFolder = (located: readonly Located[]): readonly BlockFolder[] => {
   const folders = new Map<

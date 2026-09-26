@@ -24,7 +24,9 @@ const targetsIn = (text: string): readonly LinkTarget[] =>
     ...text.matchAll(LINK_DEFINITION),
   ].map((match) => ({
     start:
+      // Stryker disable next-line StringLiteral: group 1 always takes part
       match.index + (match[1] ?? '').length + (match[2] === undefined ? 0 : 1),
+    // Stryker disable next-line StringLiteral: group 2 or group 3 always takes part
     target: match[2] ?? match[3] ?? '',
   }));
 
@@ -32,7 +34,10 @@ const localLinkTargets = (text: string): readonly string[] =>
   targetsIn(text)
     .map((link) => link.target)
     .filter(isLocal)
-    .map((target) => target.split(ANCHOR)[0] ?? '');
+    .map(
+      // Stryker disable next-line StringLiteral: split always yields a first part
+      (target) => target.split(ANCHOR)[0] ?? '',
+    );
 
 // Fences and code spans blanked to spaces, as the links check strips them: an
 // offset in the prose is an offset in the text.

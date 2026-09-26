@@ -27,12 +27,12 @@ const parseJson = (json: string): JsonParsed => {
       value: JSON.parse(json),
     };
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
     return {
       isParsed: false,
-      reason:
-        (error instanceof Error ? error.message : String(error)).split(
-          '\n',
-        )[0] ?? '',
+      // Stryker disable next-line StringLiteral: split always yields a first part
+      reason: message.split('\n')[0] ?? '',
     };
   }
 };

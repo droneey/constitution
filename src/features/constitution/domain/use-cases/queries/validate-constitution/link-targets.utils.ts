@@ -16,6 +16,7 @@ const foldersOf = (paths: ReadonlySet<string>): ReadonlySet<string> =>
     ...[
       ...paths,
     ].flatMap((path) =>
+      // Stryker disable next-line MethodExpression: a file is a known path before a folder
       path
         .split(ROOT)
         .slice(0, -1)

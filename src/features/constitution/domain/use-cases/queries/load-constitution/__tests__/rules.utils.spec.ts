@@ -201,22 +201,28 @@ describe('parseRules', () => {
     },
   );
 
-  it('should neither read nor report a heading when a level word sits inside it', () => {
-    // Arrange
-    const source = sourceOf([
-      '## MUST, SHOULD and MAY in practice',
-      'Text.',
-    ]);
+  it.each([
+    '## MUST, SHOULD and MAY in practice',
+    '## levels · MUST in practice',
+  ])(
+    'should neither read nor report the heading %p when a level word sits inside it',
+    (heading) => {
+      // Arrange
+      const source = sourceOf([
+        heading,
+        'Text.',
+      ]);
 
-    // Act
-    const parsed = parseRules(source);
+      // Act
+      const parsed = parseRules(source);
 
-    // Assert
-    expect(parsed).toStrictEqual({
-      findings: [],
-      rules: [],
-    });
-  });
+      // Assert
+      expect(parsed).toStrictEqual({
+        findings: [],
+        rules: [],
+      });
+    },
+  );
 
   it.each<{
     labels: Rule['labels'];

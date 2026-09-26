@@ -42,21 +42,28 @@ const LABEL_TEXT: Readonly<Record<RuleLabel, string>> = {
   tags: 'Tags',
   why: 'Why',
 };
-const RULE_HEADING = /^## (\S+) · (MUST|SHOULD|MAY)$/;
-const LOOKS_LIKE_RULE = /^#{1,6}\s.*\b(?:MUST|SHOULD|MAY)\W*$/;
-const LABEL_LINE = /^\*\*([A-Z][A-Za-z ]*):\*\*\s*(.*)$/;
+const RULE_HEADING = /^## (\S+) · (\S+)$/;
+const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$/;
+const LABEL_LINE = /^\*\*([A-Z][A-Za-z ]*):\*\*(.*)/;
 const LABEL_NAMES = RULE_LABELS.map((label) => LABEL_TEXT[label]).join(', ');
 
 const draftOf = (heading: string): Draft | undefined => {
   const match = RULE_HEADING.exec(heading);
-  const level = LEVELS.find((candidate) => candidate === match?.[2]);
 
-  return match === null || level === undefined
+  if (match === null) {
+    return undefined;
+  }
+
+  // Stryker disable next-line StringLiteral: the pattern always captures the slug
+  const [, slug = '', word] = match;
+  const level = LEVELS.find((candidate) => candidate === word);
+
+  return level === undefined
     ? undefined
     : {
         labels: {},
         level,
-        slug: match[1] ?? '',
+        slug,
         statement: [],
       };
 };
@@ -91,7 +98,8 @@ const withLine = (input: {
     };
   }
 
-  const name = match[1] ?? '';
+  // Stryker disable next-line StringLiteral: the pattern always captures both
+  const [, name = '', value = ''] = match;
   const label = RULE_LABELS.find((candidate) => LABEL_TEXT[candidate] === name);
   const problem =
     label === undefined
@@ -115,7 +123,7 @@ const withLine = (input: {
       ...input.draft,
       labels: {
         ...input.draft.labels,
-        [label]: (match[2] ?? '').trim(),
+        [label]: value.trim(),
       },
     },
     findings: [],

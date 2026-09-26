@@ -11,14 +11,13 @@ const resolveLink = (input: { path: string; target: string }): string => {
     : posix.join(posix.dirname(input.path), input.target);
   const resolved = posix.normalize(joined);
 
-  return resolved.length > 1 && resolved.endsWith(ROOT)
-    ? resolved.slice(0, -ROOT.length)
-    : resolved;
+  return resolved.endsWith(ROOT) ? resolved.slice(0, -ROOT.length) : resolved;
 };
 
 // A link target from the root, for text that leaves its file: the digests have
 // no folder of their own. The anchor is no path and stays as written.
 const targetFromRoot = (input: { path: string; target: string }): string => {
+  // Stryker disable next-line StringLiteral: split always yields a first part
   const [path = '', ...anchor] = input.target.split(ANCHOR);
 
   return [

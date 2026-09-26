@@ -51,6 +51,11 @@ describe('headlineOf', () => {
       statement: 'Keep lines under 80. Wrap the rest.',
     },
     {
+      expected: "Count the v's.",
+      name: 'a quote mark inside a word comes before the full stop',
+      statement: "Count the v's. Then pick one.",
+    },
+    {
       expected: 'Target one runtime: 3.12.',
       name: 'a version number follows a colon',
       statement: 'Target one runtime: 3.12. Then build.',

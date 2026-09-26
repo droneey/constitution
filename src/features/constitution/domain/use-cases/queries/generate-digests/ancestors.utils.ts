@@ -9,6 +9,7 @@ const ancestorsOf = (input: {
   const chain: string[] = [];
 
   for (
+    // Stryker disable next-line OptionalChaining: the digest asks only for known blocks
     let base: string | undefined = input.byId.get(input.blockId)?.frontMatter
       .extends;
     base !== undefined && base !== input.blockId && !chain.includes(base);

@@ -38,11 +38,12 @@ const requireMessage = (
 
 const extendsMessage = (subject: Subject): string | undefined => {
   const base = subject.block.frontMatter.extends;
-  const target = base === undefined ? undefined : subject.byId.get(base);
 
   if (base === undefined) {
     return undefined;
   }
+
+  const target = subject.byId.get(base);
 
   if (target === undefined) {
     return `extends ${base}, which is not a block`;

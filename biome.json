@@ -5,12 +5,6 @@
     "@droneey/devkit-ts-biome/node",
     "@droneey/devkit-ts-biome/test"
   ],
-  "files": {
-    "includes": [
-      "**",
-      "!**/coverage"
-    ]
-  },
   "linter": {
     "rules": {
       "suspicious": {

@@ -8,7 +8,10 @@ const BLANK = ' ';
 const inlineCodeSpans = (text: string): readonly string[] =>
   [
     ...text.matchAll(CODE_SPAN),
-  ].map((match) => (match[2] ?? '').trim());
+  ].map(
+    // Stryker disable next-line StringLiteral: group 2 always takes part
+    (match) => (match[2] ?? '').trim(),
+  );
 
 const withoutInlineCode = (text: string): string =>
   text.replaceAll(CODE_SPAN, ' ');

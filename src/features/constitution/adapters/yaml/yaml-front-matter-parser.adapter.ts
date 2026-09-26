@@ -1,4 +1,4 @@
-import type { Document, YAMLError } from 'yaml';
+import type { Document } from 'yaml';
 import { isAlias, LineCounter, parseDocument, visit } from 'yaml';
 
 import type {
@@ -7,7 +7,6 @@ import type {
 } from '../../domain/contracts';
 import { frontMatterModel } from './models';
 
-const POSITION = / at line \d+, column \d+:?$/;
 const ALIAS_REASON =
   'an unquoted value starts with "*", which YAML reads as an alias; quote it';
 
@@ -22,6 +21,7 @@ const aliasOffset = (document: Document): number | undefined => {
       return;
     }
 
+    // Stryker disable next-line OptionalChaining: a parsed alias always has a range
     offset = node.range?.[0];
 
     return visit.BREAK;
@@ -29,12 +29,6 @@ const aliasOffset = (document: Document): number | undefined => {
 
   return offset;
 };
-
-const notYaml = (error: YAMLError): FrontMatterRead => ({
-  line: error.linePos?.[0].line,
-  reason: (error.message.split('\n')[0] ?? '').replace(POSITION, ''),
-  status: 'not-yaml',
-});
 
 const mappingOf = (value: Record<string, unknown>): FrontMatterRead => {
   const result = frontMatterModel.safeParse(value);
@@ -56,11 +50,16 @@ const parse = (yaml: string): FrontMatterRead => {
   const lineCounter = new LineCounter();
   const document = parseDocument(yaml, {
     lineCounter,
+    prettyErrors: false,
   });
   const [error] = document.errors;
 
   if (error !== undefined) {
-    return notYaml(error);
+    return {
+      line: lineCounter.linePos(error.pos[0]).line,
+      reason: error.message,
+      status: 'not-yaml',
+    };
   }
 
   const offset = aliasOffset(document);

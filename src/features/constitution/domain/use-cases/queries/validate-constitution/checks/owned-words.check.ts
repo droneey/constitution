@@ -49,17 +49,15 @@ const ownersOf = (blocks: readonly Block[]): Owners => {
 };
 
 // The summary is prose too: it is the block's line in every digest.
-const proseOf = (input: { block: Block; file: BlockFile }): string =>
-  collapseWhitespace(
-    [
-      ...(input.file.role === 'main'
-        ? [
-            input.block.frontMatter.summary,
-          ]
-        : []),
-      withoutCodeFences(input.file.body),
-    ].join('\n'),
+const proseOf = (input: { block: Block; file: BlockFile }): string => {
+  const body = withoutCodeFences(input.file.body);
+
+  return collapseWhitespace(
+    input.file.role === 'main'
+      ? `${input.block.frontMatter.summary}\n${body}`
+      : body,
   );
+};
 
 const ownedWordsCheck: Check = ({
   byId,

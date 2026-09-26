@@ -198,6 +198,15 @@ describe('mayReferTo', () => {
       name: 'a block that does not exist',
       to: 'nowhere',
     },
+    {
+      expected: false,
+      from: {
+        block: 'nowhere',
+        with: undefined,
+      },
+      name: 'a block of a layer above from a block that does not exist',
+      to: 'core',
+    },
   ])(
     'should answer $expected when a file refers to $name',
     ({ expected, from, to }) => {

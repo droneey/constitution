@@ -38,6 +38,7 @@ const corePartOf = (constitution: Constitution): CorePart => {
         path: core.path,
         target,
       }),
+    // Stryker disable next-line OptionalChaining,ConditionalExpression,StringLiteral: a block's first file is its main one
     text: core.files.find((file) => file.role === 'main')?.body ?? '',
   });
   const text = `${[
