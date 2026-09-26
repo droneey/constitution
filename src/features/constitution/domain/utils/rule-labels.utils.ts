@@ -17,8 +17,6 @@ type RuleCheck =
 
 const CHECK = /^(?:(test|review)|tool — (\S+))$/;
 
-// A check reads "test", "review" or "tool — <role>"; anything else is unknown
-// and the rules check reports it.
 const checkOf = (rule: Rule): RuleCheck => {
   const match = CHECK.exec(rule.labels.check ?? '');
   const plain = match?.[1];

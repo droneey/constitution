@@ -40,7 +40,6 @@ const CSS_FILE = mainFile({
   kind: 'context',
 });
 
-// A tool that spans two languages, typescript and css.
 const prettierFile = (checks: readonly string[]): string =>
   mainFile({
     body: '# Prettier\n',
@@ -54,7 +53,6 @@ const prettierFile = (checks: readonly string[]): string =>
   });
 
 interface Scenario {
-  // Whole files added to the valid ones or put in their place.
   files?: Readonly<Files>;
   // Rules added at the end of a file; a with/ file not there yet starts as a
   // bare seam.
@@ -86,7 +84,6 @@ const inputOf = (scenario: Scenario) => {
   });
 };
 
-// Two rules, one in each file, with the statements given.
 const pairOf = (input: {
   first: string;
   left: string;

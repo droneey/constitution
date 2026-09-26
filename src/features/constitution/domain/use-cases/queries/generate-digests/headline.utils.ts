@@ -29,7 +29,6 @@ const endsSentence = (input: { index: number; masked: string }): boolean => {
   );
 };
 
-// A headline is the statement's first sentence, as one line.
 const headlineOf = (statement: string): string => {
   const text = statement.replaceAll(WHITESPACE, ' ').trim();
   const masked = blankInlineCode(text);

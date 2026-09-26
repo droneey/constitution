@@ -6,7 +6,6 @@ const frontMatterModel: z.ZodType<FrontMatterFields> = z.looseObject({
   abstract: z.boolean(),
   chapters: z.array(z.string()),
   checks: z.array(z.string()),
-  // The wire says null; the domain knows only undefined.
   extends: z
     .string()
     .nullable()
