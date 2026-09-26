@@ -116,7 +116,7 @@ describe('reachableFrom', () => {
       name: 'a main file, which reaches its block and its closure',
       place: {
         block: 'browser',
-        with: null,
+        with: undefined,
       },
     },
     {
@@ -157,7 +157,7 @@ describe('mayReferTo', () => {
       expected: true,
       from: {
         block: 'ui',
-        with: null,
+        with: undefined,
       },
       name: 'a block of a layer above',
       to: 'core',
@@ -175,7 +175,7 @@ describe('mayReferTo', () => {
       expected: false,
       from: {
         block: 'ui',
-        with: null,
+        with: undefined,
       },
       name: 'a block of its own layer outside its closure',
       to: 'i18n',
@@ -184,7 +184,7 @@ describe('mayReferTo', () => {
       expected: false,
       from: {
         block: 'ui',
-        with: null,
+        with: undefined,
       },
       name: 'a block of a layer below',
       to: 'react-dom',
@@ -193,7 +193,7 @@ describe('mayReferTo', () => {
       expected: false,
       from: {
         block: 'ui',
-        with: null,
+        with: undefined,
       },
       name: 'a block that does not exist',
       to: 'nowhere',

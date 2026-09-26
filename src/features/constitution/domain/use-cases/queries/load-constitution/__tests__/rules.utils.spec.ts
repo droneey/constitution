@@ -11,12 +11,12 @@ const sourceOf = (
   block: string;
   file: string;
   text: string;
-  with: string | null;
+  with: string | undefined;
 } => ({
   block: 'core',
   file: FILE,
   text: lines.join('\n'),
-  with: null,
+  with: undefined,
 });
 
 describe('parseRules', () => {
@@ -90,7 +90,7 @@ describe('parseRules', () => {
           level: 'MUST',
           slug: 'four-data-states',
           statement: 'Every data view shows four states.',
-          with: null,
+          with: undefined,
         },
       ],
     });
@@ -117,7 +117,7 @@ describe('parseRules', () => {
           level: 'SHOULD',
           slug: 'reasons-are-given',
           statement: 'A rule names its reason after **Why:** in one sentence.',
-          with: null,
+          with: undefined,
         },
       ],
     });
@@ -157,7 +157,7 @@ describe('parseRules', () => {
           level: 'SHOULD',
           slug: 'a',
           statement: 'A.',
-          with: null,
+          with: undefined,
         },
         {
           block: 'core',
@@ -166,7 +166,7 @@ describe('parseRules', () => {
           level: 'MAY',
           slug: 'c',
           statement: 'C.',
-          with: null,
+          with: undefined,
         },
       ],
     });
@@ -270,7 +270,7 @@ describe('parseRules', () => {
             level: 'MAY',
             slug: 'a',
             statement: 'A.',
-            with: null,
+            with: undefined,
           },
         ],
       });

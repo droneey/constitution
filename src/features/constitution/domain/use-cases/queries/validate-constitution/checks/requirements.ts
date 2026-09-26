@@ -119,7 +119,7 @@ const requirementsCheck: Check = ({
     // The index gives an answer no seam, so a with/ file holds no answer.
     ...fileFindings({
       isMisplaced: (answer: RequirementAnswer): boolean =>
-        isInImplementation(answer) && answer.with !== null,
+        isInImplementation(answer) && answer.with !== undefined,
       message:
         'answers requirements in a with/ file; a block answers them in its main file or a chapter',
     }),

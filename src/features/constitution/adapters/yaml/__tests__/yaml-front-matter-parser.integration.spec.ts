@@ -44,7 +44,7 @@ describe('createYamlFrontMatterParser', () => {
         abstract: false,
         chapters: [],
         checks: [],
-        extends: null,
+        extends: undefined,
         governs: [
           '**/ui/**',
         ],

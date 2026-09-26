@@ -6,7 +6,7 @@ type BlocksById = ReadonlyMap<string, Block>;
 
 interface Place {
   block: string;
-  with: string | null;
+  with: string | undefined;
 }
 
 const byIdOf = (blocks: readonly Block[]): BlocksById =>
@@ -19,7 +19,7 @@ const byIdOf = (blocks: readonly Block[]): BlocksById =>
 
 const linksOf = (block: Block): readonly string[] => [
   ...block.frontMatter.requires,
-  ...(block.frontMatter.extends === null
+  ...(block.frontMatter.extends === undefined
     ? []
     : [
         block.frontMatter.extends,
@@ -62,7 +62,7 @@ const reachableFrom = (input: {
       blockId: input.place.block,
       byId: input.byId,
     }),
-    ...(seam === null
+    ...(seam === undefined
       ? []
       : [
           seam,

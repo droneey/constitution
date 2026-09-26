@@ -9,10 +9,10 @@ const ancestorsOf = (input: {
   const chain: string[] = [];
 
   for (
-    let base: string | null =
-      input.byId.get(input.blockId)?.frontMatter.extends ?? null;
-    base !== null && base !== input.blockId && !chain.includes(base);
-    base = input.byId.get(base)?.frontMatter.extends ?? null
+    let base: string | undefined = input.byId.get(input.blockId)?.frontMatter
+      .extends;
+    base !== undefined && base !== input.blockId && !chain.includes(base);
+    base = input.byId.get(base)?.frontMatter.extends
   ) {
     chain.push(base);
   }

@@ -11,12 +11,12 @@ const sourceOf = (
   block: string;
   file: string;
   text: string;
-  with: string | null;
+  with: string | undefined;
 } => ({
   block: 'lingui',
   file: FILE,
   text: lines.join('\n'),
-  with: null,
+  with: undefined,
 });
 
 const answer = (input: {
@@ -30,7 +30,7 @@ const answer = (input: {
   how: input.how,
   requirement: input.requirement,
   status: input.status,
-  with: input.with ?? null,
+  with: input.with,
 });
 
 describe('parseRequirements', () => {

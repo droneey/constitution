@@ -4,7 +4,7 @@ interface FrontMatter {
   abstract: boolean;
   chapters: readonly string[];
   checks: readonly Role[];
-  extends: string | null;
+  extends: string | undefined;
   governs: readonly string[];
   id: string;
   kind: Kind;
@@ -21,7 +21,7 @@ interface BlockFile {
   lines: number;
   path: string;
   role: BlockFileRole;
-  with: string | null;
+  with: string | undefined;
 }
 
 interface Block {

@@ -11,7 +11,7 @@ const FIELDS: FrontMatterFields = {
   abstract: false,
   chapters: [],
   checks: [],
-  extends: null,
+  extends: undefined,
   governs: [],
   id: 'ui',
   kind: 'domain',
@@ -35,8 +35,8 @@ const KEYS = [
 ];
 
 const mappingOf = (input: {
-  fields?: Partial<FrontMatterFields>;
-  keys?: readonly string[];
+  fields?: Partial<FrontMatterFields> | undefined;
+  keys?: readonly string[] | undefined;
 }): FrontMatterRead => ({
   fields: {
     ...FIELDS,
@@ -92,7 +92,7 @@ describe('readFrontMatter', () => {
         checks: [
           'lint',
         ],
-        extends: null,
+        extends: undefined,
         governs: [
           '**/ui/**',
         ],

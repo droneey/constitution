@@ -17,7 +17,7 @@ const ruleWith = (labels: Rule['labels']): Rule => ({
   level: 'MUST',
   slug: 'a',
   statement: 'A.',
-  with: null,
+  with: undefined,
 });
 
 describe('checkOf', () => {

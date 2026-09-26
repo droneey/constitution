@@ -8,7 +8,7 @@ interface BlockPath {
   id: string;
   layer: Layer;
   name: string;
-  with: string | null;
+  with: string | undefined;
 }
 
 interface Folder {
@@ -115,7 +115,7 @@ const fileOf = (folder: Folder): Pick<BlockPath, 'file' | 'name' | 'with'> => {
     return {
       file: first === `${folder.id}${MARKDOWN_EXTENSION}` ? 'main' : 'chapter',
       name: first,
-      with: null,
+      with: undefined,
     };
   }
 
@@ -135,7 +135,7 @@ const fileOf = (folder: Folder): Pick<BlockPath, 'file' | 'name' | 'with'> => {
   return {
     file: 'stray',
     name: folder.rest.join('/'),
-    with: null,
+    with: undefined,
   };
 };
 

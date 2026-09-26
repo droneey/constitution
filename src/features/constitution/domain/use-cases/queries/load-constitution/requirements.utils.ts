@@ -8,7 +8,7 @@ interface Source {
   block: string;
   file: string;
   text: string;
-  with: string | null;
+  with: string | undefined;
 }
 
 interface RequirementsParsed {
