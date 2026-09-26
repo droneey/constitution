@@ -12,7 +12,7 @@ role	mutation	false
 role	secrets	true
 role	audit	false
 role	commits	true
-block	core	core	What holds for any program, in any language, of any kind.	principles.md				false					
+block	core	core	What holds for any program, in any language, of any kind.	principles.md architecture.md code.md				false					
 rule	dependencies-point-inward-without-cycles	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Imports point inward, toward stability, and form no cycle, direct or through a chain of modules.
 rule	inner-layers-declare-their-contracts	core	blocks/core/principles.md		MUST	review			architecture	The inner layer declares, in its own words, the contracts it needs; the outer layer implements them.
 rule	domain-imports-only-itself-and-kernel	core	blocks/core/principles.md		MUST	tool	architecture		architecture	The domain imports only itself and the shared kernel: no framework, no input or output, no vendor library, however pure.
@@ -34,3 +34,82 @@ rule	extension-by-addition	core	blocks/core/principles.md		MUST	review			archite
 rule	duplication-across-contexts-by-default	core	blocks/core/principles.md		SHOULD	review			architecture	Across bounded contexts, duplication is the default and sharing the exception.
 rule	value-objects-guard-their-invariant	core	blocks/core/principles.md		SHOULD	review			types	A value object is built only through the function that checks its invariant, so a value that exists is valid.
 rule	entities-guarded-where-the-program-owns-them	core	blocks/core/principles.md		SHOULD	review			architecture data	Where the program owns the data it changes, every change goes through its aggregate's root, which keeps the aggregate consistent; an aggregate stays small, and a child with a life of its own becomes an aggregate referenced by identifier.
+rule	anatomy-top-level-by-concern	core	blocks/core/architecture.md		SHOULD	tool	names		architecture naming	A program's source is laid out by concern in the folders of the top-level tree, and in no other top-level folder.
+rule	root-imported-only-by-entry-and-delivery-wiring	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	`root/` is imported only by entry files and by the delivery layer's own wiring.
+rule	nothing-imports-an-entrypoint	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	No code imports an entrypoint.
+rule	kernel-imports-only-itself	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	`kernel/` imports only itself.
+rule	libs-import-no-application-code	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	`libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/` or `root/` — and knows nothing of the repository that uses it.
+rule	shared-imports-no-feature-or-root	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	`shared/` imports no feature and not `root/`.
+rule	kernel-or-shared-by-meaning	core	blocks/core/architecture.md		SHOULD	review			architecture	A shared piece with business meaning goes to `kernel/`; one without goes to `shared/`; one that would make sense in any program goes to `libs/`.
+rule	composition-on-the-second-consumer	core	blocks/core/architecture.md		SHOULD	review			architecture	Composition across features lives in the delivery unit that needs it, which assembles features through their surfaces.
+rule	protocol-between-artifacts-in-shared	core	blocks/core/architecture.md		SHOULD	review			architecture	A protocol two artifacts of one repository speak — the messages an embedded frame and its host exchange — lives in `shared/<protocol>/`, imported by both.
+rule	generated-files-marked-never-edited	core	blocks/core/architecture.md		MUST	review			architecture workflow	A file a tool produces carries `.gen` in its name or sits in a folder named `*.gen/`, and is never edited by hand; a change goes to its source, and the file is regenerated.
+rule	feature-anatomy	core	blocks/core/architecture.md		SHOULD	tool	names		architecture naming	A feature is laid out as `domain/`, `adapters/<system>/` and `app/` with the role folders of the tree, and a surface at its root.
+rule	data-ports-split-by-reads-and-writes	core	blocks/core/architecture.md		SHOULD	tool	names		architecture	A data port is a repository per aggregate, one file per side: `repositories/queries/<aggregate>.repository` for reads and `repositories/commands/<aggregate>.repository` for writes, each declaring its operations' parameters and results.
+rule	domain-use-case-only-with-business-logic	core	blocks/core/architecture.md		SHOULD	review			architecture	A domain use-case exists only when its operation carries business logic.
+rule	contracts-know-no-vendor-or-other-contract	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	A contract — a port, its parameters and results — imports no vendor, no adapter, no feature other than its own, and no other contract's internals.
+rule	adapters-never-import-each-other-or-callers	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	An adapter imports its contracts, `kernel/` and `libs/`, and never a feature's application layer, the delivery layer or another adapter.
+rule	feature-speaks-in-its-own-contracts	core	blocks/core/architecture.md		SHOULD	review			architecture	A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature's surface.
+rule	import-only-through-surface	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	Outside a folder, a caller imports only its surface.
+rule	layer-folder-has-no-surface	core	blocks/core/architecture.md		MUST	tool	architecture		architecture	A layer folder — `domain/`, `app/`, `adapters/`, `src/`, `features/`, `libs/` — has no surface and is never an import target.
+rule	surface-only-re-exports	core	blocks/core/architecture.md		MUST	tool	lint		architecture	A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
+rule	surface-offers-operations-not-mechanisms	core	blocks/core/architecture.md		SHOULD	review			architecture	A feature's surface offers its operations and its presentation — use-cases, binding units, entities, widgets — and never its mechanisms: repositories, mappers, wire types, cache keys.
+rule	contract-lifts-on-the-second-feature	core	blocks/core/architecture.md		SHOULD	review			architecture	A contract belongs to the feature that needs it.
+rule	one-adapter-per-system	core	blocks/core/architecture.md		SHOULD	review			architecture	An adapter implements, over one external system, every contract of its owner that system serves; it lives beside its contracts' owner.
+rule	adapter-built-by-factory-or-module-object	core	blocks/core/architecture.md		SHOULD	review			architecture	An adapter with injected dependencies is built by a factory function; a stateless adapter may be a module object.
+rule	real-effects-chosen-at-composition-root	core	blocks/core/architecture.md		SHOULD	review			architecture testing	A port for an effect — clock, file system, processes, network — is a contract placed like any other, its real implementation is an adapter, and only a composition root chooses the real one.
+rule	vendor-clients-in-libs	core	blocks/core/architecture.md		SHOULD	review			architecture	A vendor client without application knowledge, and any pure project-agnostic helper, lives in `libs/<system>/`.
+rule	delivery-unit-beside-what-it-serves	core	blocks/core/architecture.md		SHOULD	review			architecture	A delivery unit that serves one feature lives in that feature's `app/`, where the entry surface allows it; one that composes several lives in the delivery layer or in `composition/`.
+rule	delivery-units-stay-thin	core	blocks/core/architecture.md		SHOULD	review			architecture	A delivery unit — a screen, a command, a handler, a tool function — parses its input, calls a use-case or a binding unit, and presents the result.
+rule	folder-named-for-purpose-or-role	core	blocks/core/architecture.md		SHOULD	tool	names		naming architecture	A folder is named for its purpose, or by a role of the vocabulary of the project's active blocks.
+rule	one-purpose-per-folder	core	blocks/core/architecture.md		SHOULD	review			naming architecture	A folder holds one purpose, said in one phrase without "and".
+rule	set-folder-holds-only-members	core	blocks/core/architecture.md		SHOULD	review			naming architecture	Files of one kind that arrive one at a time — one per vendor, command, rule or section — live in a folder named for the member in the plural, and nothing else lives there.
+rule	file-carries-its-role-suffix	core	blocks/core/architecture.md		MUST	tool	names		naming	A file carries its role's suffix, whatever its folder: `entities/chat.entity`.
+rule	yaml-files-end-in-yaml	core	blocks/core/architecture.md		SHOULD	tool	names		naming	A YAML file ends in `.yaml`, never `.yml`.
+rule	intention-revealing-names	core	blocks/core/code.md		SHOULD	review			naming	A name says what a thing is for: intention-revealing, pronounceable, searchable, with no abbreviation that is not already a term of the domain and no noise word.
+rule	names-from-the-glossary	core	blocks/core/code.md		SHOULD	review			naming	Names follow the business's own words, from the glossary of `PROJECT.md`: `cancelOrder`, not `updateRecord`.
+rule	one-word-per-concept	core	blocks/core/code.md		SHOULD	review			naming	One concept has one word across the program, and one word names one concept: not `fetch`, `load` and `get` for the same act.
+rule	no-empty-names	core	blocks/core/code.md		SHOULD	tool	lint		naming	No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff`, `thing` — as a variable, a parameter or a destructured field.
+rule	no-empty-verbs	core	blocks/core/code.md		SHOULD	tool	lint		naming	A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`.
+rule	collections-plural-items-singular	core	blocks/core/code.md		SHOULD	review			naming	A collection is named in the plural and one of its items in the singular, destructured names included.
+rule	events-named-in-past-tense	core	blocks/core/code.md		SHOULD	review			naming	An event is named for what happened, in the past tense: `OrderPlaced`, not `PlaceOrder`.
+rule	domain-names-free-of-vendor-and-storage	core	blocks/core/code.md		SHOULD	review			naming	A domain name names the concept, never the vendor or the storage behind it: `UserRecord`, not `UserMongoDocument`.
+rule	file-is-one-semantic-unit	core	blocks/core/code.md		SHOULD	review			naming architecture	A file holds one semantic unit and is named after it; unrelated exports go to their own files.
+rule	booleans-read-as-predicates	core	blocks/core/code.md		SHOULD	tool	lint		naming	A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `should` or `did`.
+rule	named-arguments-past-the-first	core	blocks/core/code.md		SHOULD	tool	lint		naming	Every argument past the first is named: the language's options record or keyword-only parameters.
+rule	function-does-one-thing	core	blocks/core/code.md		SHOULD	review			architecture	A function does one thing, at one level of abstraction.
+rule	function-file-and-complexity-limits	core	blocks/core/code.md		MUST	tool	lint		architecture	A function holds at most 100 lines, a file at most 500, and a function's cognitive complexity is at most 10.
+rule	guard-clauses-first	core	blocks/core/code.md		SHOULD	review			architecture	Failure paths leave first, through guard clauses, so the main path stays at the top level of indentation.
+rule	deep-modules-no-pass-through	core	blocks/core/code.md		SHOULD	review			architecture	A module hides much behind a small interface.
+rule	pure-by-default	core	blocks/core/code.md		SHOULD	review			architecture	A function's output depends only on its input.
+rule	readability-over-cleverness	core	blocks/core/code.md		SHOULD	review			naming	A longer, obvious form beats a terse, obscure one.
+rule	comments-explain-why	core	blocks/core/code.md		SHOULD	review			naming	A comment states a constraint, a workaround or a decision the code cannot show.
+rule	interface-docs-only-for-non-obvious-public-api	core	blocks/core/code.md		SHOULD	review			naming	Interface documentation is written only for a public interface whose use is not obvious from its names and types.
+rule	todo-names-its-issue	core	blocks/core/code.md		SHOULD	tool	lint		workflow	A to-do comment names its issue: `TODO(#<issue>)`.
+rule	no-commented-out-code	core	blocks/core/code.md		MUST	review			workflow	Code is never commented out; it is deleted.
+rule	no-dead-code	core	blocks/core/code.md		MUST	tool	unused		architecture	No unused file, dependency, export, parameter, variable or branch.
+rule	no-debug-output-in-shipped-code	core	blocks/core/code.md		SHOULD	tool	lint		workflow security	Shipped code writes no debug output and stops at no breakpoint; diagnostics go through the logging port.
+rule	suppression-states-its-reason	core	blocks/core/code.md		MUST	tool	lint		workflow	Silencing a check — a lint rule, a type error, a mutant, a deliberately ignored error — carries its reason beside it.
+rule	absence-has-one-value-normalised-at-boundary	core	blocks/core/code.md		MUST	tool	lint		types data	Internal code spells absence with one value, which the language block names.
+rule	expected-failures-typed-with-codes	core	blocks/core/code.md		SHOULD	review			errors	An expected failure is typed, carries a stable code `<MODULE>_<ENTITY>_<KIND>` and details that say what to do, and belongs to the contract that can fail.
+rule	error-cause-preserved-logged-once	core	blocks/core/code.md		SHOULD	review			errors	A mapped error keeps its cause.
+rule	one-error-handler-per-transport	core	blocks/core/code.md		SHOULD	review			errors security ux	Defects travel to the boundary.
+rule	retry-only-transient-failures	core	blocks/core/code.md		SHOULD	review			errors	Only a transient failure — a timeout, a dropped connection, a rate limit — is retried, with backoff and a limit.
+rule	error-kit-carries-code-cause-and-details	core	blocks/core/code.md		MUST	review			errors	An error library gives every error a stable code, its cause and structured details, and a guard that recognises its errors by code.
+rule	schema-derives-from-domain-types	core	blocks/core/code.md		MUST	tool	types		types	A schema over a domain type or enum derives its values from it and is checked by type against what it produces.
+rule	guard-proves-every-property-it-claims	core	blocks/core/code.md		MUST	review			types	A type guard checks every property of the type it claims.
+rule	identifiers-branded-by-entity	core	blocks/core/code.md		SHOULD	tool	types		types	An entity's identifier is a type of its own, branded by its entity, so an order's identifier cannot be passed where a user's is expected.
+rule	types-live-with-their-consumer	core	blocks/core/code.md		SHOULD	review			types architecture	A type lives beside the unit whose signature introduces it, and every other unit imports it from there.
+rule	immutable-by-default	core	blocks/core/code.md		SHOULD	review			types	Values are immutable by default; a change makes a new value.
+rule	effects-reached-through-ports	core	blocks/core/code.md		SHOULD	review			architecture testing	Clock, randomness, identifiers and the environment are reached through ports, never called directly from the logic.
+rule	environment-read-once-at-boot	core	blocks/core/code.md		SHOULD	review			security architecture	One place reads the environment: `root/`, or the configuration provider a lower block names.
+rule	async-work-awaited-or-deliberately-detached	core	blocks/core/code.md		MUST	tool	lint		errors	Asynchronous work is awaited, or detached on purpose with its failure handled.
+rule	io-has-timeout-and-cancellation	core	blocks/core/code.md		SHOULD	review			errors performance	Every call across a process boundary has a timeout and can be cancelled.
+rule	structured-concurrency	core	blocks/core/code.md		SHOULD	review			errors	Concurrent work is started within a scope that waits for it, cancels it, and receives its failures; no task outlives the operation that started it.
+rule	fast-source-updates-once-per-frame	core	blocks/core/code.md		SHOULD	review			performance	A fast source — a resize, a scroll, a stream — updates state at most once per frame, folding its events in batches.
+rule	operations-idempotent-by-design	core	blocks/core/code.md		SHOULD	test			data	An operation that may be repeated is idempotent: a key is minted once per intent and sent with every attempt, child identifiers are derived deterministically, and a transition to the current state does nothing.
+rule	canonical-patterns-by-need	core	blocks/core/code.md		SHOULD	review			architecture	A pattern answers a present problem, and then the canonical one: strategy plus registry for vendors and kinds, factory or module object for adapters, decorator at the composition root, reducer for transitions, transition table for state machines, builder for test data.
+rule	inheritance-only-for-errors-and-framework-points	core	blocks/core/code.md		SHOULD	review			architecture	Behaviour is composed from small units.
+rule	dry-applies-to-knowledge	core	blocks/core/code.md		SHOULD	review			architecture	Don't-repeat-yourself applies to knowledge, not to text that merely looks alike.
+rule	function-answers-or-changes-state	core	blocks/core/code.md		SHOULD	review			architecture	A function either answers a question or changes state, never both.
+rule	talk-only-to-neighbours	core	blocks/core/code.md		SHOULD	review			architecture	A unit calls its own collaborators, never the collaborators of their collaborators: no chain that walks into another object's internals.
