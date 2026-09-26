@@ -24,7 +24,6 @@
     "allowColor": false,
     "logTests": false
   },
-  "concurrency": 8,
   "timeoutMS": 30000,
   "tempDirName": ".stryker-tmp",
   "incremental": true,
