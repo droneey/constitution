@@ -72,6 +72,13 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 **Check:** review
 **Tags:** security
 
+## deprecated-packages-replaced · SHOULD
+A dependency deprecated as a whole is replaced — by its successor, another package, or the project's own code.
+**Why:** a deprecated package gets no more fixes, so its next vulnerability stays open.
+**Check:** review
+**Tags:** security
+**Implements:** `new-dependency-vetted`
+
 ## install-scripts-only-for-listed-dependencies · MUST
 A dependency's install scripts run only when the dependency is listed by name as allowed to run them.
 **Why:** an install script runs with the developer's rights before anyone reviews what it does.

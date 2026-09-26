@@ -403,3 +403,10 @@
 - **Decision.** Every change reaches the main line through a reviewed pull request, except the release automation's version commit and its tag, which it pushes after a merge.
 - **Rejected.** A pull request for every version bump, which a person would approve without reading.
 - **Why.** The version commit holds only what the merged, reviewed changes already decided.
+
+## ADR-0065 — Three rules of the review plugin hold in any language
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A value with a unit carries it in its name; code and dependencies that only tests reach are unused; a dependency deprecated as a whole is replaced. They are core rules, not rules of one language.
+- **Rejected.** Keeping them in the language block until a second language repeats them.
+- **Why.** What must disappear for them to lose their meaning is nothing, so by the placement question they belong to core.
