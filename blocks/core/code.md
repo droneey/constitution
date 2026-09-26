@@ -54,6 +54,12 @@ A domain name names the concept, never the vendor or the storage behind it: `Use
 **Check:** review
 **Tags:** naming
 
+## values-carry-their-unit · SHOULD
+A value with a unit carries the unit in its name: `timeoutMs`, `DEFAULT_TIMEOUT_MS`, `sizeBytes`.
+**Why:** a number without its unit is read in the wrong one sooner or later, and the bug looks like correct code.
+**Check:** review
+**Tags:** naming
+
 ## file-is-one-semantic-unit · SHOULD
 A file holds one semantic unit and is named after it; unrelated exports go to their own files.
 **Why:** a file's name then tells what is inside, and a change to one unit touches one file.
@@ -139,7 +145,7 @@ Code is never commented out; it is deleted. History keeps it.
 **Tags:** workflow
 
 ## no-dead-code · MUST
-No unused file, dependency, export, parameter, variable or branch. An export a surface offers is not dead code.
+No unused file, dependency, export, parameter, variable or branch. Code and dependencies that only tests reach are unused too. An export a surface offers is not dead code.
 **Why:** dead code is read, maintained and feared by people who cannot know it does nothing.
 **Check:** tool — unused
 **Tags:** architecture
