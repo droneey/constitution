@@ -5,5 +5,8 @@
     "name": "droneey",
     "url": "https://github.com/droneey"
   },
-  "repository": "https://github.com/droneey/constitution"
+  "repository": "https://github.com/droneey/constitution",
+  "skills": [
+    "./skills/"
+  ]
 }

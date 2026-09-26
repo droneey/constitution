@@ -9,6 +9,7 @@ import {
   rule,
   textOf,
 } from '../../../../../__tests__/constitution.fixtures';
+import { paraglideFromTemplate } from '../../../../../__tests__/templates.fixtures';
 import {
   GOLDEN_CORE,
   GOLDEN_INDEX,
@@ -52,6 +53,7 @@ describe('loadConstitution', () => {
           marketplace: undefined,
           plugin: undefined,
           readme: undefined,
+          skills: [],
         },
         paths: new Set([
           'LICENSE.md',
@@ -105,6 +107,85 @@ describe('loadConstitution', () => {
         },
       },
       readme: '# constitution\n\nStart with [core](blocks/core/core.md).\n',
+      skills: [],
+    });
+  });
+
+  it("should read each skill's front matter when SKILL.md files sit in skill folders, hidden folders and loose files aside", () => {
+    // Arrange
+    const files = {
+      '.claude/skills/local/SKILL.md': '---\nname: local\n---\n',
+      'SKILL.md': '---\nname: root\n---\n',
+      'skills/SKILL.md': '---\nname: loose\n---\n',
+      'skills/amend/SKILL.md': '# Amend\n',
+      'skills/ratify/SKILL.md':
+        '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n\n# Ratify\n',
+      'tools/skills/check/SKILL.md': '---\nname: [check\n---\n',
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.constitution.documents.skills).toStrictEqual([
+      {
+        directory: 'skills/',
+        frontMatter: undefined,
+        path: 'skills/amend/SKILL.md',
+      },
+      {
+        directory: 'skills/',
+        frontMatter: {
+          description: 'Writes constitution.yaml.',
+          name: 'ratify',
+          status: 'parsed',
+        },
+        path: 'skills/ratify/SKILL.md',
+      },
+      {
+        directory: 'tools/skills/',
+        frontMatter: {
+          reason:
+            'Flow sequence in block collection must be sufficiently indented and end with a ]',
+          status: 'not-yaml',
+        },
+        path: 'tools/skills/check/SKILL.md',
+      },
+    ]);
+  });
+
+  it('should load a block written from templates/block.md without a finding when its placeholders are filled', () => {
+    // Arrange
+    const files = {
+      'blocks/implementations/paraglide/paraglide.md': paraglideFromTemplate(),
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect({
+      answers: loaded.constitution.requirementAnswers.map(
+        (answer) => `${answer.requirement} ${answer.status}`,
+      ),
+      blocks: loaded.constitution.blocks.map(
+        (block) => `${block.id} ${block.frontMatter.status}`,
+      ),
+      findings: loaded.findings,
+      rules: loaded.constitution.rules.map(
+        (parsed) => `${parsed.slug} ${parsed.level}`,
+      ),
+    }).toStrictEqual({
+      answers: [
+        'i18n-plurals-by-cldr met',
+      ],
+      blocks: [
+        'paraglide draft',
+      ],
+      findings: [],
+      rules: [
+        'paraglide-messages-by-function MUST',
+      ],
     });
   });
 

@@ -17,3 +17,4 @@ export type {
 export type { RequirementAnswer } from './requirement-answer.entity';
 export type { Rule, RuleLabel } from './rule.entity';
 export { RULE_LABELS } from './rule.entity';
+export type { Skill, SkillFrontMatterRead } from './skill.entity';

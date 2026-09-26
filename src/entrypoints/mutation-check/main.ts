@@ -7,22 +7,31 @@ const SPEC = /^(.+)\/__tests__\/([^/]+?)(?:\.integration)?\.spec\.ts$/;
 const TESTS = '/__tests__/';
 const BUN_NODE = /bun-node-/;
 
-const changed: readonly string[] = spawnSync(
-  'git',
-  [
+const gitPaths = (args: readonly string[]): readonly string[] =>
+  spawnSync('git', args, {
+    encoding: 'utf8',
+  })
+    .stdout.split('\n')
+    .filter((path) => path !== '');
+
+// New files git does not track yet are changes too.
+const changed: readonly string[] = [
+  ...gitPaths([
     'diff',
     '--name-only',
     '--diff-filter=ACMR',
     BASE,
     '--',
     'src',
-  ],
-  {
-    encoding: 'utf8',
-  },
-)
-  .stdout.split('\n')
-  .filter((path) => path !== '');
+  ]),
+  ...gitPaths([
+    'ls-files',
+    '--others',
+    '--exclude-standard',
+    '--',
+    'src',
+  ]),
+];
 
 // A spec is named after the file it proves, so a changed spec mutates that
 // file again: a weakened test must not pass unseen.

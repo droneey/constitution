@@ -6,6 +6,7 @@ import type {
   HooksManifest,
   ManifestRead,
   MarketplaceManifest,
+  Skill,
 } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 
@@ -16,9 +17,21 @@ type Unread = Exclude<
   }
 >;
 
-const SKILL = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 const PLUGIN_FILE = /\$\{CLAUDE_PLUGIN_ROOT\}\/([^"'\s]+)/g;
 const RELATIVE_PREFIX = './';
+// Claude Code scans it whether or not the manifest lists it.
+const DEFAULT_SKILLS = 'skills/';
+const SKILL_FILE = 'SKILL.md';
+const SKILL_FOLDER = /^([^./][^/]*)\//;
+const SKILL_FIELDS = [
+  'name',
+  'description',
+] as const;
+const TEMPLATES = [
+  'templates/PROJECT.md',
+  'templates/block.md',
+  'templates/constitution.yaml',
+] as const;
 
 const missing = (input: { path: string; role: string }): Finding => ({
   message: `is missing; the constitution ships as a plugin and needs its ${input.role}`,
@@ -44,26 +57,11 @@ const readFindings = (input: {
   }));
 };
 
-const skillDirectories = (paths: ReadonlySet<string>): ReadonlySet<string> =>
-  new Set(
-    [
-      ...paths,
-    ].flatMap((path) => {
-      const directory = SKILL.exec(path)?.[1];
-
-      return directory === undefined
-        ? []
-        : [
-            directory,
-          ];
-    }),
-  );
-
-const skillFindings = (input: {
+const listingFindings = (input: {
   declared: readonly string[];
-  paths: ReadonlySet<string>;
+  skills: readonly Skill[];
 }): readonly Finding[] => {
-  const present = skillDirectories(input.paths);
+  const present = new Set(input.skills.map((skill) => skill.directory));
 
   return [
     ...input.declared
@@ -82,6 +80,88 @@ const skillFindings = (input: {
       })),
   ];
 };
+
+// A folder directly inside a skills directory is a skill, a hidden one aside.
+const folderFindings = (input: {
+  declared: readonly string[];
+  paths: ReadonlySet<string>;
+}): readonly Finding[] => {
+  const folders = new Set(
+    [
+      DEFAULT_SKILLS,
+      ...input.declared,
+    ].flatMap((directory) =>
+      [
+        ...input.paths,
+      ]
+        .filter((path) => path.startsWith(directory))
+        .flatMap((path) => {
+          const folder = SKILL_FOLDER.exec(path.slice(directory.length))?.[1];
+
+          return folder === undefined
+            ? []
+            : [
+                `${directory}${folder}`,
+              ];
+        }),
+    ),
+  );
+
+  return [
+    ...folders,
+  ]
+    .filter((folder) => !input.paths.has(`${folder}/${SKILL_FILE}`))
+    .map((folder) => ({
+      message: `holds no ${SKILL_FILE}; a skill is a folder with ${SKILL_FILE} in it`,
+      path: folder,
+    }));
+};
+
+const frontMatterFindings = (skill: Skill): readonly Finding[] => {
+  const { frontMatter, path } = skill;
+
+  if (frontMatter === undefined) {
+    return [
+      {
+        message:
+          'has no front matter; a skill names itself and says when to use it there',
+        path,
+      },
+    ];
+  }
+
+  if (frontMatter.status === 'not-yaml') {
+    return [
+      {
+        message: `front matter is not valid YAML: ${frontMatter.reason}`,
+        path,
+      },
+    ];
+  }
+
+  return SKILL_FIELDS.filter((field) => frontMatter[field] === undefined).map(
+    (field) => ({
+      message: `front matter lacks "${field}"; a skill declares its name and description`,
+      path,
+    }),
+  );
+};
+
+const skillFindings = (input: {
+  declared: readonly string[];
+  paths: ReadonlySet<string>;
+  skills: readonly Skill[];
+}): readonly Finding[] => [
+  ...listingFindings(input),
+  ...folderFindings(input),
+  ...input.skills.flatMap(frontMatterFindings),
+];
+
+const templateFindings = (paths: ReadonlySet<string>): readonly Finding[] =>
+  TEMPLATES.filter((path) => !paths.has(path)).map((path) => ({
+    message: 'is missing; /ratify writes a project from the templates',
+    path,
+  }));
 
 const checkPlugin = (
   constitution: Constitution,
@@ -110,6 +190,7 @@ const checkPlugin = (
             directory.slice(RELATIVE_PREFIX.length),
           ),
           paths: constitution.paths,
+          skills: constitution.documents.skills,
         }),
         name: read.value.name,
       }
@@ -198,6 +279,7 @@ const pluginCheck: Check = ({
       paths: constitution.paths,
       read: constitution.documents.hooks,
     }),
+    ...templateFindings(constitution.paths),
   ];
 };
 

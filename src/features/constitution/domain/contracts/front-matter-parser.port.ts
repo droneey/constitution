@@ -1,4 +1,4 @@
-import type { FieldIssue } from '../entities';
+import type { FieldIssue, SkillFrontMatterRead } from '../entities';
 
 interface FrontMatterFields {
   abstract: boolean;
@@ -32,6 +32,7 @@ type FrontMatterRead =
 
 interface FrontMatterParser {
   parse: (yaml: string) => FrontMatterRead;
+  skill: (yaml: string) => SkillFrontMatterRead;
 }
 
 export type { FrontMatterFields, FrontMatterParser, FrontMatterRead };

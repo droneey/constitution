@@ -41,6 +41,7 @@ import {
   localPath,
   PARAGLIDE,
   paraglideFiles,
+  RATIFIED,
   removeProjects,
   syntheticProject,
 } from './project.fixtures';
@@ -631,6 +632,35 @@ describe('session-start hook', () => {
     expect(facts).toStrictEqual([
       'constitution.yaml pins 1.0.0; 2 blocks are active.',
     ]);
+  });
+
+  it('should read the files written from the templates without a warning', () => {
+    // Arrange
+    const project = createProject(RATIFIED);
+
+    // Act
+    const context = contextOf(
+      runHook({
+        event: 'startup',
+        project,
+        root,
+      }),
+    );
+
+    // Assert
+    expect({
+      facts: factsOf(context),
+      local: blockListOf(context).filter((line) => line.includes('(local')),
+      warnings: warningsOf(context),
+    }).toStrictEqual({
+      facts: [
+        'constitution.yaml pins 1.0.0; 7 blocks are active.',
+      ],
+      local: [
+        '- paraglide (local, draft, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
+      ],
+      warnings: [],
+    });
   });
 
   it.each<FactsCase>([

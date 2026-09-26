@@ -7,6 +7,7 @@ import type {
 } from './manifest.entity';
 import type { RequirementAnswer } from './requirement-answer.entity';
 import type { Rule } from './rule.entity';
+import type { Skill } from './skill.entity';
 
 interface Documents {
   decisions: string | undefined;
@@ -18,6 +19,7 @@ interface Documents {
   marketplace: ManifestRead<MarketplaceManifest> | undefined;
   plugin: ManifestRead<PluginManifest> | undefined;
   readme: string | undefined;
+  skills: readonly Skill[];
 }
 
 interface Constitution {

@@ -1,6 +1,6 @@
 import type { Finding } from '#/kernel';
 import { compareText, LAYERS } from '#/kernel';
-import { withoutCodeFences } from '#/libs/markdown';
+import { splitFrontMatter, withoutCodeFences } from '#/libs/markdown';
 
 import { DOCUMENT_PATHS } from '../../../constants';
 import type {
@@ -14,6 +14,7 @@ import type {
   Documents,
   RequirementAnswer,
   Rule,
+  Skill,
 } from '../../../entities';
 import { classifyBlockPath } from './block-path.utils';
 import type { Located } from './load-block.utils';
@@ -37,6 +38,8 @@ const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
   'is not a block file; a block holds its main file, its chapters and with/<block>.md';
+// <directory>/<skill>/SKILL.md, where no folder is hidden
+const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 
 // Five layers, not four ranks: the index groups platforms, then languages, and
 // the hook never sorts.
@@ -96,7 +99,35 @@ const duplicateIdFindings = (blocks: readonly Block[]): readonly Finding[] =>
         ];
   });
 
+const skillsOf = (input: {
+  listed: readonly string[];
+  parser: FrontMatterParser;
+  tree: FileTree;
+}): readonly Skill[] =>
+  input.listed.flatMap((path) => {
+    const directory = SKILL_FILE.exec(path)?.[1];
+
+    if (directory === undefined) {
+      return [];
+    }
+
+    const { frontMatter } = splitFrontMatter(input.tree.read(path));
+
+    return [
+      {
+        directory,
+        frontMatter:
+          frontMatter === undefined
+            ? undefined
+            : input.parser.skill(frontMatter),
+        path,
+      },
+    ];
+  });
+
 const documentsOf = (input: {
+  frontMatterParser: FrontMatterParser;
+  listed: readonly string[];
   parser: ManifestParser;
   paths: ReadonlySet<string>;
   tree: FileTree;
@@ -120,6 +151,11 @@ const documentsOf = (input: {
         : input.parser.marketplace(marketplace),
     plugin: plugin === undefined ? undefined : input.parser.plugin(plugin),
     readme: textOf(DOCUMENT_PATHS.readme),
+    skills: skillsOf({
+      listed: input.listed,
+      parser: input.frontMatterParser,
+      tree: input.tree,
+    }),
   };
 };
 
@@ -156,6 +192,8 @@ const loadConstitution = (input: {
     constitution: {
       blocks,
       documents: documentsOf({
+        frontMatterParser: input.frontMatterParser,
+        listed,
         parser: input.manifestParser,
         paths,
         tree: input.tree,
