@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { FieldIssue } from '../../../domain/entities';
-import { createJsonManifestParser } from '../json-manifest-parser';
+import { createJsonManifestParser } from '../json-manifest-parser.adapter';
 
 interface MismatchCase {
   issues: readonly FieldIssue[];

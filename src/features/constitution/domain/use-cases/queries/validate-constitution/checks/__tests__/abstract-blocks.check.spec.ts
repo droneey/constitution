@@ -6,7 +6,7 @@ import {
   mainFile,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { abstractBlocksCheck } from '../abstract-blocks';
+import { abstractBlocksCheck } from '../abstract-blocks.check';
 
 const REACT = 'blocks/implementations/_react/_react.md';
 

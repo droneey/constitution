@@ -5,7 +5,7 @@ import {
   mainFile,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { referencesCheck } from '../references';
+import { referencesCheck } from '../references.check';
 
 const PRINCIPLES = 'blocks/core/principles.md';
 const UI = 'blocks/domains/ui/ui.md';

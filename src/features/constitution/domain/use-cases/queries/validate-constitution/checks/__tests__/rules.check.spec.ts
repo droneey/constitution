@@ -6,7 +6,7 @@ import {
   textOf,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { rulesCheck } from '../rules';
+import { rulesCheck } from '../rules.check';
 
 const PRINCIPLES = 'blocks/core/principles.md';
 const I18N = 'blocks/domains/i18n/i18n.md';

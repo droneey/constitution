@@ -41,7 +41,7 @@ const createNodeFileSystem = (input: {
         }).split('\0'),
       ),
     ]
-      .filter((path) => path !== '' && isFile(join(input.root, path)))
+      .filter((path) => isFile(join(input.root, path)))
       .toSorted(compareText),
   read: (path: string): string =>
     normalized(readFileSync(join(input.root, path), 'utf8')),

@@ -5,7 +5,7 @@ import {
   without,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { decisionsCheck } from '../decisions';
+import { decisionsCheck } from '../decisions.check';
 
 const LOG = 'DECISIONS.md';
 const ACCEPTED = '**Date:** 2026-09-25 · **Status:** Accepted';

@@ -42,8 +42,7 @@ const STRAY =
 // the hook never sorts.
 const byLayerThenId = (left: Block, right: Block): number =>
   LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) ||
-  compareText(left.id, right.id) ||
-  compareText(left.path, right.path);
+  compareText(left.id, right.id);
 
 const locate = (paths: readonly string[]): readonly Located[] =>
   paths.flatMap((path) => {

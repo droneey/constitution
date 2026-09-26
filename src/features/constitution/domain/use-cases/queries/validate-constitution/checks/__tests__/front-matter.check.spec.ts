@@ -6,7 +6,7 @@ import {
   mainFile,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { frontMatterCheck } from '../front-matter';
+import { frontMatterCheck } from '../front-matter.check';
 
 const UI = 'blocks/domains/ui/ui.md';
 const BROWSER = 'blocks/contexts/platforms/browser/browser.md';

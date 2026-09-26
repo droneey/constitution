@@ -4,7 +4,7 @@ import type { Finding } from '#/kernel';
 
 import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { budgetCheck } from '../budget';
+import { budgetCheck } from '../budget.check';
 
 const PRINCIPLES = 'blocks/core/principles.md';
 

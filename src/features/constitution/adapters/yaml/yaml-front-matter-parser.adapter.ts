@@ -5,7 +5,7 @@ import type {
   FrontMatterParser,
   FrontMatterRead,
 } from '../../domain/contracts';
-import { frontMatterModel } from './models/front-matter.model';
+import { frontMatterModel } from './models';
 
 const POSITION = / at line \d+, column \d+:?$/;
 const ALIAS_REASON =

@@ -8,7 +8,7 @@ import {
   textOf,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { ownedWordsCheck } from '../owned-words';
+import { ownedWordsCheck } from '../owned-words.check';
 
 const UI = 'blocks/domains/ui/ui.md';
 const PRINCIPLES = 'blocks/core/principles.md';
