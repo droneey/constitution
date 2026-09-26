@@ -66,7 +66,8 @@ jobs:
           bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12 "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/actionlint" -color
 
-  hook-on-macos:
+  check-on-macos:
+    needs: check
     runs-on: macos-latest
     timeout-minutes: 15
     permissions:
