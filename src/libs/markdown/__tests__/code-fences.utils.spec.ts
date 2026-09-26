@@ -6,13 +6,13 @@ describe('withoutCodeFences', () => {
   it.each([
     {
       expected: 'a\n\n\n\nb',
-      name: 'a backtick fence',
-      text: 'a\n```ts\nconst x = 1;\n```\nb',
-    },
-    {
-      expected: 'a\n\n\n\nb',
       name: 'a tilde fence',
       text: 'a\n~~~\n## x · MUST\n~~~\nb',
+    },
+    {
+      expected: '\n\n\n\nb',
+      name: 'a backtick fence holding a tilde line',
+      text: '```text\n~~~\nsample\n```\nb',
     },
     {
       expected: '\n\n\n\n\nb',
@@ -21,13 +21,13 @@ describe('withoutCodeFences', () => {
     },
     {
       expected: '\n\n\n\nb',
-      name: 'a backtick fence holding a tilde line',
-      text: '```text\n~~~\nsample\n```\nb',
+      name: 'a fence line with an info string inside an open fence',
+      text: '```\n```ts\ncode\n```\nb',
     },
     {
-      expected: 'a\n\n\n',
-      name: 'a fence that never closes',
-      text: 'a\n```\nb\nc',
+      expected: '\n\n\nb',
+      name: 'a closing fence followed by spaces',
+      text: '```\ncode\n```  \nb',
     },
     {
       expected: '- item\n\n\n\nb',
@@ -35,9 +35,9 @@ describe('withoutCodeFences', () => {
       text: '- item\n    ```ts\n    const x = React;\n    ```\nb',
     },
     {
-      expected: 'a ```b` c\nd',
-      name: 'a backtick run followed by a backtick, which opens no fence',
-      text: 'a ```b` c\nd',
+      expected: 'a\n\n\n',
+      name: 'a fence that never closes',
+      text: 'a\n```\nb\nc',
     },
   ])(
     'should blank every line of the fence and keep the line count when the text holds $name',
@@ -53,14 +53,23 @@ describe('withoutCodeFences', () => {
     },
   );
 
-  it('should keep a fence open when a shorter fence of the same character appears inside it', () => {
+  it.each([
+    {
+      name: 'the info string after a backtick run holds a backtick',
+      text: '``` aa ```\nfoo',
+    },
+    {
+      name: 'a backtick run stands inside a line',
+      text: 'Wrap a sample in ``` fences.\nfoo',
+    },
+  ])('should keep the text as written when $name', ({ text }) => {
     // Arrange
-    const text = '````\n```\n## inside\n````\n## outside';
+    const input = text;
 
     // Act
-    const stripped = withoutCodeFences(text);
+    const stripped = withoutCodeFences(input);
 
     // Assert
-    expect(stripped).toBe('\n\n\n\n## outside');
+    expect(stripped).toBe(text);
   });
 });

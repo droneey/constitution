@@ -4,44 +4,20 @@ import {
   checkInputOf,
   mainFile,
   rule,
-  textOf,
   without,
-} from '#/features/constitution/__tests__/fixtures';
-import {
-  GOLDEN_CORE,
-  GOLDEN_INDEX,
-} from '#/features/constitution/__tests__/valid-digests';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { GOLDEN_INDEX } from '../../../../../../__tests__/valid-digests.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { digestsCheck } from '../digests';
 
 const INDEX = 'digests/index.tsv';
 const CORE = 'digests/core.md';
-const CORE_MAIN = 'blocks/core/core.md';
-const STALE = 'differs from its regeneration; run bun run digests:write';
 
 describe('digestsCheck', () => {
-  it('should find nothing when the committed digests equal their regeneration', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = digestsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it('should report the index when a rule changed since it was written', () => {
+  it('should report the index as stale when it differs from its regeneration only by its last newline', () => {
     // Arrange
     const files = validFiles();
-    const i18n = 'blocks/domains/i18n/i18n.md';
-    files[i18n] = `${textOf({
-      files,
-      path: i18n,
-    })}\n${rule({
-      slug: 'i18n-typed-keys',
-    })}`;
+    files[INDEX] = GOLDEN_INDEX.slice(0, -1);
     const input = checkInputOf(files);
 
     // Act
@@ -50,42 +26,8 @@ describe('digestsCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message: STALE,
+        message: 'differs from its regeneration; run bun run digests:write',
         path: INDEX,
-      },
-    ]);
-  });
-
-  it.each([
-    {
-      name: 'it is edited by hand',
-      path: CORE,
-      text: GOLDEN_CORE.replace('Read [principles]', 'See [principles]'),
-    },
-    {
-      name: 'it ends in one more newline',
-      path: CORE,
-      text: `${GOLDEN_CORE}\n`,
-    },
-    {
-      name: 'it lacks its last newline',
-      path: INDEX,
-      text: GOLDEN_INDEX.slice(0, -1),
-    },
-  ])('should report $path as stale when $name', ({ path, text }) => {
-    // Arrange
-    const files = validFiles();
-    files[path] = text;
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = digestsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: STALE,
-        path,
       },
     ]);
   });
@@ -117,15 +59,9 @@ describe('digestsCheck', () => {
     ]);
   });
 
-  it.each([
-    {
-      path: 'digests/old.tsv',
-    },
-    {
-      path: 'digests/archive/index.tsv',
-    },
-  ])('should report $path when the generator does not write it', ({ path }) => {
+  it('should report a file under digests/ when the generator does not write it, even one named like a digest', () => {
     // Arrange
+    const path = 'digests/archive/index.tsv';
     const files = validFiles();
     files[path] = GOLDEN_INDEX;
     const input = checkInputOf(files);
@@ -143,13 +79,9 @@ describe('digestsCheck', () => {
   });
 
   it.each([
-    {
-      path: 'digests-howto.md',
-    },
-    {
-      path: 'docs/digests/overview.md',
-    },
-  ])('should find nothing when $path sits outside digests/', ({ path }) => {
+    'digests-howto.md',
+    'docs/digests/overview.md',
+  ])('should find nothing when %p sits outside digests/', (path) => {
     // Arrange
     const files = validFiles();
     files[path] = '# A note\n';
@@ -165,7 +97,7 @@ describe('digestsCheck', () => {
   it('should pass the core budget finding through when core passes 3,500 bytes', () => {
     // Arrange
     const files = validFiles();
-    files[CORE_MAIN] = mainFile({
+    files['blocks/core/core.md'] = mainFile({
       body: `# Core\n\n${'Ω'.repeat(1750)}\n\n${rule({
         slug: 'rules-bind',
       })}`,
@@ -185,10 +117,10 @@ describe('digestsCheck', () => {
       {
         message:
           'makes a core part of 3669 bytes; the digest holds at most 3500 of core',
-        path: CORE_MAIN,
+        path: 'blocks/core/core.md',
       },
       {
-        message: STALE,
+        message: 'differs from its regeneration; run bun run digests:write',
         path: CORE,
       },
     ]);

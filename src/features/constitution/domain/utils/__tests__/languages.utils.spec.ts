@@ -1,14 +1,35 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf } from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+import type { Files } from '../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  mainFile,
+} from '../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../__tests__/valid-files.fixtures';
 import type { Rule } from '../../entities';
 import { languagesOf, ruleLanguagesOf } from '../languages.utils';
 
-const ruleOf = (input: { block: string; with: string | null }): Rule => ({
+// A second language beside typescript, so that an order can show.
+const PYTHON_BLOCK: Files = {
+  'blocks/contexts/languages/python/python.md': mainFile({
+    body: '# Python\n',
+    id: 'python',
+    kind: 'context',
+  }),
+};
+
+const biomeRequiring = (requires: readonly string[]): Files => ({
+  'blocks/implementations/biome/biome.md': mainFile({
+    body: '# Biome\n',
+    id: 'biome',
+    kind: 'implementation',
+    requires,
+  }),
+});
+
+const ruleOf = (input: { block: string; with: string }): Rule => ({
   block: input.block,
-  file: `blocks/implementations/${input.block}/${input.block}.md`,
+  file: `blocks/${input.block}/with/${input.with}.md`,
   labels: {},
   level: 'MUST',
   slug: 'a-rule',
@@ -23,26 +44,43 @@ describe('languagesOf', () => {
       expected: [
         'typescript',
       ],
+      files: {},
+      name: 'the block is a language itself',
+    },
+    {
+      blockId: 'biome',
+      expected: [
+        'python',
+        'typescript',
+      ],
+      files: {
+        ...PYTHON_BLOCK,
+        ...biomeRequiring([
+          'typescript',
+          'python',
+        ]),
+      },
+      name: 'the block requires two languages out of order',
     },
     {
       blockId: 'biome',
       expected: [
         'typescript',
       ],
-    },
-    {
-      blockId: 'react-dom',
-      expected: [],
-    },
-    {
-      blockId: 'core',
-      expected: [],
+      files: biomeRequiring([
+        'nowhere',
+        'typescript',
+      ]),
+      name: 'the block also requires a block that does not exist',
     },
   ])(
-    'should return $expected when the block is $blockId',
-    ({ blockId, expected }) => {
+    'should return the sorted languages of the block and its closure when $name',
+    ({ blockId, expected, files }) => {
       // Arrange
-      const { byId } = checkInputOf(validFiles());
+      const { byId } = checkInputOf({
+        ...validFiles(),
+        ...files,
+      });
 
       // Act
       const languages = languagesOf({
@@ -63,36 +101,28 @@ describe('ruleLanguagesOf', () => {
       expected: [
         'typescript',
       ],
-      name: 'the rule block has a language',
-      with: null,
-    },
-    {
-      block: 'react-dom',
-      expected: [
-        'typescript',
-      ],
-      name: 'only the with-block has a language',
-      with: 'typescript',
-    },
-    {
-      block: 'biome',
-      expected: [
-        'typescript',
-      ],
+      files: {},
       name: 'both blocks have the same language',
       with: 'lingui',
     },
     {
-      block: 'ui',
-      expected: [],
-      name: 'neither block has a language',
-      with: 'remote-data',
+      block: 'typescript',
+      expected: [
+        'python',
+        'typescript',
+      ],
+      files: PYTHON_BLOCK,
+      name: 'the blocks have different languages',
+      with: 'python',
     },
   ])(
-    'should return $expected when $name',
-    ({ block, expected, with: withId }) => {
+    'should return the sorted languages of both blocks, each once, when $name',
+    ({ block, expected, files, with: withId }) => {
       // Arrange
-      const { byId } = checkInputOf(validFiles());
+      const { byId } = checkInputOf({
+        ...validFiles(),
+        ...files,
+      });
       const rule = ruleOf({
         block,
         with: withId,

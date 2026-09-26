@@ -7,6 +7,7 @@ import { checkOf, tagsOf } from '../rule-labels.utils';
 interface CheckCase {
   check: string;
   expected: RuleCheck;
+  name: string;
 }
 
 const ruleWith = (labels: Rule['labels']): Rule => ({
@@ -26,12 +27,14 @@ describe('checkOf', () => {
       expected: {
         kind: 'test',
       },
+      name: '"test"',
     },
     {
       check: 'review',
       expected: {
         kind: 'review',
       },
+      name: '"review"',
     },
     {
       check: 'tool — lint',
@@ -39,63 +42,31 @@ describe('checkOf', () => {
         kind: 'tool',
         role: 'lint',
       },
-    },
-    {
-      check: 'tool',
-      expected: {
-        kind: 'unknown',
-      },
-    },
-    {
-      check: 'test — lint',
-      expected: {
-        kind: 'unknown',
-      },
+      name: '"tool — lint"',
     },
     {
       check: 'tool— lint',
       expected: {
         kind: 'unknown',
       },
-    },
-    {
-      check: 'tool  — lint',
-      expected: {
-        kind: 'unknown',
-      },
-    },
-    {
-      check: 'tool — lint types',
-      expected: {
-        kind: 'unknown',
-      },
-    },
-    {
-      check: 'by eye',
-      expected: {
-        kind: 'unknown',
-      },
-    },
-    {
-      check: '',
-      expected: {
-        kind: 'unknown',
-      },
+      name: 'a tool without the space before its dash',
     },
     {
       check: 'unit test',
       expected: {
         kind: 'unknown',
       },
+      name: 'a check with words before it',
     },
     {
-      check: 'a tool — lint',
+      check: 'tool — lint types',
       expected: {
         kind: 'unknown',
       },
+      name: 'a tool naming two roles',
     },
   ])(
-    'should read $expected.kind when the check is "$check"',
+    'should read $expected.kind when the check is $name',
     ({ check, expected }) => {
       // Arrange
       const rule = ruleWith({
@@ -109,37 +80,38 @@ describe('checkOf', () => {
       expect(read).toStrictEqual(expected);
     },
   );
-
-  it('should read unknown when the rule has no check label', () => {
-    // Arrange
-    const rule = ruleWith({
-      why: 'w.',
-    });
-
-    // Act
-    const read = checkOf(rule);
-
-    // Assert
-    expect(read).toStrictEqual({
-      kind: 'unknown',
-    });
-  });
 });
 
 describe('tagsOf', () => {
-  it('should split and trim the tags when they are listed with commas', () => {
-    // Arrange
-    const rule = ruleWith({
-      tags: ' ux,  a11y , ',
-    });
+  it.each([
+    {
+      expected: [
+        'ux',
+        'a11y',
+      ],
+      labels: {
+        tags: ' ux,  a11y , ',
+      },
+      name: 'lists them with commas and spaces',
+    },
+    {
+      expected: [],
+      labels: {
+        why: 'w.',
+      },
+      name: 'has no tags label',
+    },
+  ])(
+    'should return the trimmed tags when the rule $name',
+    ({ expected, labels }) => {
+      // Arrange
+      const rule = ruleWith(labels);
 
-    // Act
-    const tags = tagsOf(rule);
+      // Act
+      const tags = tagsOf(rule);
 
-    // Assert
-    expect(tags).toStrictEqual([
-      'ux',
-      'a11y',
-    ]);
-  });
+      // Assert
+      expect(tags).toStrictEqual(expected);
+    },
+  );
 });

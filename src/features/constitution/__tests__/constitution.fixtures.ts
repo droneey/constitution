@@ -5,13 +5,11 @@ import type {
   FrontMatterParser,
   ManifestParser,
 } from '../domain/contracts';
-import type { Block, Constitution } from '../domain/entities';
 import type { ConstitutionLoaded } from '../domain/use-cases/queries/load-constitution';
 import { loadConstitution } from '../domain/use-cases/queries/load-constitution';
 import type { CheckInput } from '../domain/use-cases/queries/validate-constitution/check.types';
-import type { BlocksById } from '../domain/utils';
 import { byIdOf } from '../domain/utils';
-import { createFakeFileTree } from './fake-file-tree';
+import { createFakeFileTree } from './file-tree.fake';
 
 type Files = Record<string, string>;
 
@@ -92,9 +90,6 @@ const sourceOf = (files: Readonly<Files>): Source => ({
 const loadedOf = (files: Readonly<Files>): ConstitutionLoaded =>
   loadConstitution(sourceOf(files));
 
-const loadFiles = (files: Readonly<Files>): Constitution =>
-  loadedOf(files).constitution;
-
 const checkInputOf = (files: Readonly<Files>): CheckInput => {
   const { constitution, findings } = loadedOf(files);
 
@@ -108,16 +103,6 @@ const checkInputOf = (files: Readonly<Files>): CheckInput => {
     byId: byIdOf(constitution.blocks),
     constitution,
   };
-};
-
-const blockOf = (input: { byId: BlocksById; id: string }): Block => {
-  const block = input.byId.get(input.id);
-
-  if (block === undefined) {
-    throw new Error(`The fixture has no block ${input.id}`);
-  }
-
-  return block;
 };
 
 const textOf = (input: { files: Readonly<Files>; path: string }): string => {
@@ -137,15 +122,5 @@ const without = (input: { files: Readonly<Files>; path: string }): Files =>
     ),
   );
 
-export type { BlockFixture, Files, RuleFixture, Source };
-export {
-  blockOf,
-  checkInputOf,
-  loadedOf,
-  loadFiles,
-  mainFile,
-  rule,
-  sourceOf,
-  textOf,
-  without,
-};
+export type { BlockFixture, Files, RuleFixture };
+export { checkInputOf, loadedOf, mainFile, rule, sourceOf, textOf, without };

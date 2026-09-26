@@ -3,28 +3,16 @@ import { describe, expect, it } from 'bun:test';
 import {
   checkInputOf,
   mainFile,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { seamsCheck } from '../seams';
 
 describe('seamsCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = seamsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
   it.each([
     {
       expected:
-        'is named after react-dom, an implementation block; a domain block pairs only with domain blocks',
-      path: 'blocks/domains/ui/with/react-dom.md',
+        'is named after biome, an implementation block; a platform block pairs only with domain blocks, platform blocks or language blocks',
+      path: 'blocks/contexts/platforms/browser/with/biome.md',
     },
     {
       expected: 'is named after its own block',
@@ -65,11 +53,9 @@ describe('seamsCheck', () => {
 
   it.each([
     'blocks/contexts/platforms/browser/with/typescript.md',
-    'blocks/contexts/languages/typescript/with/browser.md',
     'blocks/contexts/platforms/browser/with/ui.md',
-    'blocks/implementations/biome/with/lingui.md',
   ])(
-    'should accept %p when it pairs with a block of its own layer or above',
+    'should accept %p when it pairs with a block of its own rank or above',
     (path) => {
       // Arrange
       const files = validFiles();

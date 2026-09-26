@@ -1,35 +1,23 @@
 import { describe, expect, it } from 'bun:test';
 
-import type {
-  BlockFixture,
-  Files,
-} from '#/features/constitution/__tests__/fixtures';
+import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
 import {
   checkInputOf,
   mainFile,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
-
+} from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { frontMatterCheck } from '../front-matter';
 
-const withBlock = (input: { block: BlockFixture; path: string }): Files => ({
-  ...validFiles(),
-  [input.path]: mainFile(input.block),
-});
+const UI = 'blocks/domains/ui/ui.md';
+const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
+const BIOME = 'blocks/implementations/biome/biome.md';
 
 describe('frontMatterCheck', () => {
-  it('should find nothing when the constitution is valid', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = frontMatterCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it.each([
+  it.each<{
+    block: BlockFixture;
+    expected: string;
+    path: string;
+  }>([
     {
       block: {
         body: '# UI\n',
@@ -37,32 +25,17 @@ describe('frontMatterCheck', () => {
         kind: 'domain',
       },
       expected: 'declares the id "ux"; its folder names it "ui"',
-      path: 'blocks/domains/ui/ui.md',
+      path: UI,
     },
     {
       block: {
         body: '# Browser\n',
         id: 'browser',
         kind: 'domain',
-        requires: [
-          'untrusted-client',
-        ],
       },
       expected:
         'declares the kind "domain"; its folder makes it a platform block, of the kind "context"',
-      path: 'blocks/contexts/platforms/browser/browser.md',
-    },
-    {
-      block: {
-        body: '# UI\n',
-        id: 'ui',
-        kind: 'domain',
-        owns: [
-          'Screen',
-        ],
-      },
-      expected: 'sets "owns", which a domain block leaves empty',
-      path: 'blocks/domains/ui/ui.md',
+      path: BROWSER,
     },
     {
       block: {
@@ -74,7 +47,27 @@ describe('frontMatterCheck', () => {
         ],
       },
       expected: 'sets "requires", which a domain block leaves empty',
-      path: 'blocks/domains/ui/ui.md',
+      path: UI,
+    },
+    {
+      block: {
+        body: '# UI\n',
+        extends: 'i18n',
+        id: 'ui',
+        kind: 'domain',
+      },
+      expected: 'sets "extends", which a domain block leaves empty',
+      path: UI,
+    },
+    {
+      block: {
+        abstract: true,
+        body: '# UI base\n',
+        id: '_ui',
+        kind: 'domain',
+      },
+      expected: 'sets "abstract", which a domain block leaves empty',
+      path: 'blocks/domains/_ui/_ui.md',
     },
     {
       block: {
@@ -84,60 +77,28 @@ describe('frontMatterCheck', () => {
         ],
         id: 'browser',
         kind: 'context',
-        requires: [
-          'untrusted-client',
-        ],
       },
       expected: 'sets "checks", which a platform block leaves empty',
-      path: 'blocks/contexts/platforms/browser/browser.md',
+      path: BROWSER,
     },
     {
       block: {
-        body: '# Biome\n',
-        id: 'biome',
-        kind: 'implementation',
-        requires: [
-          'typescript',
+        body: '# UI\n',
+        id: 'ui',
+        kind: 'domain',
+        owns: [
+          'Screen',
         ],
-        status: 'draft',
       },
-      expected: 'is draft; a block of the constitution is stable',
-      path: 'blocks/implementations/biome/biome.md',
+      expected: 'sets "owns", which a domain block leaves empty',
+      path: UI,
     },
-  ])(
-    'should report "$expected" when a block breaks the rule of its layer',
-    ({ block, expected, path }) => {
-      // Arrange
-      const input = checkInputOf(
-        withBlock({
-          block,
-          path,
-        }),
-      );
-
-      // Act
-      const findings = frontMatterCheck(input);
-
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path,
-        },
-      ]);
-    },
-  );
-
-  it.each([
     {
       block: {
         abstract: false,
         body: '# React\n',
         id: '_react',
         kind: 'implementation',
-        requires: [
-          'ui',
-        ],
       },
       expected: 'has an id starting with "_", so it is abstract',
       path: 'blocks/implementations/_react/_react.md',
@@ -148,23 +109,28 @@ describe('frontMatterCheck', () => {
         body: '# Biome\n',
         id: 'biome',
         kind: 'implementation',
-        requires: [
-          'typescript',
-        ],
       },
       expected: 'is abstract, so its id starts with "_"',
-      path: 'blocks/implementations/biome/biome.md',
+      path: BIOME,
+    },
+    {
+      block: {
+        body: '# Biome\n',
+        id: 'biome',
+        kind: 'implementation',
+        status: 'draft',
+      },
+      expected: 'is draft; a block of the constitution is stable',
+      path: BIOME,
     },
   ])(
-    'should report "$expected" when the id and the abstract flag disagree',
+    'should report "$expected" when a block breaks a rule of its front matter',
     ({ block, expected, path }) => {
       // Arrange
-      const input = checkInputOf(
-        withBlock({
-          block,
-          path,
-        }),
-      );
+      const input = checkInputOf({
+        ...validFiles(),
+        [path]: mainFile(block),
+      });
 
       // Act
       const findings = frontMatterCheck(input);

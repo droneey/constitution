@@ -16,6 +16,7 @@
 | Delivery | ADR-0023 – ADR-0029 |
 | The anatomy | ADR-0030 – ADR-0038 |
 | The rest | ADR-0039 – ADR-0047 |
+| Testing | ADR-0048 – ADR-0051 |
 
 ---
 
@@ -219,7 +220,7 @@
 - **Decision.** Dead code means unused files, dependencies and internal code. An unused export of a surface is not dead code: a surface offers what its consumers may use.
 
 ## ADR-0035 — Coverage is 100 percent on every gated layer
-**Date:** 2026-09-24 · **Status:** Accepted
+**Date:** 2026-09-24 · **Status:** Superseded by ADR-0050
 
 - **Decision.** Every gated layer is held at 100 percent. UI code, and a project that adopts the gate late, reach it through a ratchet floor that only rises.
 
@@ -286,3 +287,31 @@
 **Date:** 2026-09-24 · **Status:** Accepted
 
 - **Decision.** oxlint is not adopted now; the current linter keeps holding the lint rules.
+
+## ADR-0048 — A spec proves the behaviour of a boundary
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** A spec proves one boundary — a use case, a command, an adapter, a screen, a reusable component, a library primitive, a module of pure rules — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own, and is then a module of pure rules. A case checks what a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call is the behaviour. Types, constants, schemas, composition, entry files, generated files and third-party code get no spec; a constant does only when a reader outside the code relies on it, as one table. Unit tests prove the domain with fakes; integration tests prove each adapter against the real engine in a sandbox, in `<name>.integration.spec`, one case for each port operation and each failure it maps; end-to-end tests prove each critical scenario the project names, through the delivery layer. A file in `__tests__/` is a spec named after the file it proves (`<name>.spec`, `<name>.integration.spec`), a fake (`<port>.fake`) or fixtures (`<name>.fixtures`), and nothing else: a spec named otherwise would not run. The linter holds the names.
+- **Rejected.** One spec per source file; checking the calls of mocks; the `fake-<port>` prefix.
+- **Why.** A spec per file mirrors the layout, not the behaviour: it breaks when a helper moves and the behaviour stays, and its cases repeat what the boundary's spec already proves (#49).
+
+## ADR-0049 — A case earns its place, and mutation measures the tests
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** A case earns its place by failing for a plausible bug no other case catches; a case that cannot — a restated constant, a check of the library or the framework, a duplicate — is deleted. Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment. A bug fix begins with the test that reproduces the bug. When a behaviour is described before it is built, in an issue or a plan, an agent writes its tests from the description first; a person may write the code first. Mutation testing measures the tests, and every mutant of the logic is killed: a mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the run. It runs over the changed files on every change and over all the logic on a schedule. A mutant in code no test runs survives, so the rule also holds every line of logic to a test.
+- **Rejected.** Test-first as a mandate for every change; coverage as the measure of how good the tests are; a mutation score below 100 percent as a floor.
+- **Why.** A test never seen failing may test nothing, and a suite that lets mutants live is weaker than its coverage says.
+
+## ADR-0050 — Coverage is a tripwire at 100 percent of the logic
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** All logic — the domain, the adapters, the libraries, the UI — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. A line no behaviour reaches is a behaviour without its test, or code nothing needs, which is deleted; it is never a reason for a test of its own. Excluded: the entry, an entrypoint's entry file, the wiring file, generated files, declarations and vendored code. There is no ratchet: a project below 100 percent breaks the rule like any other, the hook and the check say so, and a project that skips it on purpose records an override with its reason.
+- **Rejected.** A floor that only rises; a percentage per layer; a gate on the domain alone.
+- **Why.** Tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test.
+
+## ADR-0051 — UI is tested the way a user uses it
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** A screen is a boundary: its spec renders it with fakes of its use cases and proves each data state — loading, empty, error, content — each interaction that changes something, each message the user sees and each navigation. A reusable component's spec proves the variants that change behaviour or meaning, keyboard, focus and ARIA. Elements are found by role, label and text, never by class or internal state, so a test changes only when behaviour does, and a change of behaviour updates its spec in the same change. Every screen and component spec runs an accessibility scan with zero violations. Appearance is compared by screenshot only where the look is the contract, in a design system.
+- **Rejected.** A coverage floor for UI; snapshots of the DOM.
+- **Why.** A test written against what the user sees survives refactoring and fails when the user's experience changes.

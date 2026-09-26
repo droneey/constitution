@@ -1,6 +1,6 @@
-import type { Files } from './fixtures';
-import { mainFile, rule } from './fixtures';
-import { digestFiles } from './valid-digests';
+import type { Files } from './constitution.fixtures';
+import { mainFile, rule } from './constitution.fixtures';
+import { digestFiles } from './valid-digests.fixtures';
 
 const pluginFiles = (): Files => ({
   '.claude-plugin/marketplace.json': JSON.stringify({

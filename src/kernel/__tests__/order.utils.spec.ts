@@ -4,42 +4,37 @@ import { compareFindings, compareText } from '../order.utils';
 
 describe('compareText', () => {
   it.each([
-    [
-      'a',
-      'b',
-      -1,
-    ],
-    [
-      'b',
-      'a',
-      1,
-    ],
-    [
-      'a',
-      'a',
-      0,
-    ],
-    [
-      'Z',
-      'a',
-      -1,
-    ],
-  ])(
-    'should order %p before or after %p by code point when compared',
-    (left, right, expected) => {
-      // Arrange
-      const pair = {
-        left,
-        right,
-      };
-
-      // Act
-      const order = compareText(pair.left, pair.right);
-
-      // Assert
-      expect(order).toBe(expected);
+    {
+      expected: -1,
+      left: 'Z',
+      name: 'an upper-case letter meets a lower-case one, which code points order first',
+      right: 'a',
     },
-  );
+    {
+      expected: 1,
+      left: 'b',
+      name: 'the left text sorts after the right one',
+      right: 'a',
+    },
+    {
+      expected: 0,
+      left: 'a',
+      name: 'the texts are equal',
+      right: 'a',
+    },
+  ])('should return $expected when $name', ({ expected, left, right }) => {
+    // Arrange
+    const pair = {
+      left,
+      right,
+    };
+
+    // Act
+    const order = compareText(pair.left, pair.right);
+
+    // Assert
+    expect(order).toBe(expected);
+  });
 });
 
 describe('compareFindings', () => {

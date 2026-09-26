@@ -17,26 +17,21 @@ describe('splitFrontMatter', () => {
     });
   });
 
-  it('should return the whole text as the body when the opening delimiter never closes', () => {
+  it.each([
+    {
+      name: 'the opening delimiter never closes',
+      text: '---\nid: ui\n# UI\n',
+    },
+    {
+      name: 'the text does not open with a delimiter',
+      text: '# UI\n---\n',
+    },
+  ])('should return the whole text as the body when $name', ({ text }) => {
     // Arrange
-    const text = '---\nid: ui\n# UI\n';
+    const input = text;
 
     // Act
-    const document = splitFrontMatter(text);
-
-    // Assert
-    expect(document).toStrictEqual({
-      body: text,
-      frontMatter: undefined,
-    });
-  });
-
-  it('should return the whole text as the body when the text does not open with a delimiter', () => {
-    // Arrange
-    const text = '# UI\n---\n';
-
-    // Act
-    const document = splitFrontMatter(text);
+    const document = splitFrontMatter(input);
 
     // Assert
     expect(document).toStrictEqual({

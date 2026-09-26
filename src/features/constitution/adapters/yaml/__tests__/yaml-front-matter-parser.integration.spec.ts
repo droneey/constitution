@@ -61,10 +61,13 @@ describe('createYamlFrontMatterParser', () => {
     });
   });
 
-  it('should return the wire issues without fields when a field has the wrong type', () => {
+  it('should return every wire issue at its dotted field and no fields when values have the wrong type', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
-    const yaml = FIELDS.replace('abstract: false', 'abstract: "no"');
+    const yaml = FIELDS.replace('abstract: false', 'abstract: "no"').replace(
+      'owns: []',
+      'owns: [React, 19]',
+    );
 
     // Act
     const read = parser.parse(yaml);
@@ -77,6 +80,10 @@ describe('createYamlFrontMatterParser', () => {
           field: 'abstract',
           message: 'Invalid input: expected boolean, received string',
         },
+        {
+          field: 'owns.1',
+          message: 'Invalid input: expected string, received number',
+        },
       ],
       keys: KEYS,
       status: 'mapping',
@@ -86,15 +93,18 @@ describe('createYamlFrontMatterParser', () => {
   it('should report the line and the reason without its position when the text is not YAML', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
-    const yaml = 'id: ui\nkind: domain\nsummary: Screens: states.';
+    const yaml = FIELDS.replace(
+      'governs: ["**/ui/**"]',
+      'governs: ["**/ui/**" "**/web/**"]',
+    );
 
     // Act
     const read = parser.parse(yaml);
 
     // Assert
     expect(read).toStrictEqual({
-      line: 3,
-      reason: 'Nested mappings are not allowed in compact mappings',
+      line: 10,
+      reason: 'Missing , or : between flow sequence items',
       status: 'not-yaml',
     });
   });
@@ -116,17 +126,32 @@ describe('createYamlFrontMatterParser', () => {
     });
   });
 
-  it('should say it is not a mapping when the front matter is a list', () => {
-    // Arrange
-    const parser = createYamlFrontMatterParser();
-    const yaml = '- id\n- kind';
+  it.each([
+    {
+      name: 'a list',
+      yaml: '- id\n- kind',
+    },
+    {
+      name: 'a plain text',
+      yaml: 'A block of screens.',
+    },
+    {
+      name: 'empty',
+      yaml: '',
+    },
+  ])(
+    'should say it is not a mapping when the front matter is $name',
+    ({ yaml }) => {
+      // Arrange
+      const parser = createYamlFrontMatterParser();
 
-    // Act
-    const read = parser.parse(yaml);
+      // Act
+      const read = parser.parse(yaml);
 
-    // Assert
-    expect(read).toStrictEqual({
-      status: 'not-a-mapping',
-    });
-  });
+      // Assert
+      expect(read).toStrictEqual({
+        status: 'not-a-mapping',
+      });
+    },
+  );
 });

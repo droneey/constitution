@@ -1,100 +1,154 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { Files } from '../../../__tests__/constitution.fixtures';
 import {
-  blockOf,
   checkInputOf,
-} from '#/features/constitution/__tests__/fixtures';
-import { validFiles } from '#/features/constitution/__tests__/valid-files';
+  mainFile,
+} from '../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../__tests__/valid-files.fixtures';
+import type { Place } from '../closure.utils';
+import { closureOf, mayReferTo, reachableFrom } from '../closure.utils';
 
-import {
-  byIdOf,
-  closureOf,
-  linksOf,
-  mayReferTo,
-  reachableFrom,
-} from '../closure.utils';
+interface ClosureCase {
+  blockId: string;
+  expected: string[];
+  files: Files;
+  name: string;
+}
 
-describe('byIdOf', () => {
-  it('should index every block by its id when the blocks load', () => {
-    // Arrange
-    const { constitution } = checkInputOf(validFiles());
+interface ReachCase {
+  expected: string[];
+  name: string;
+  place: Place;
+}
 
-    // Act
-    const byId = byIdOf(constitution.blocks);
-
-    // Assert
-    expect(byId.get('react-dom')?.path).toBe(
-      'blocks/implementations/react-dom/react-dom.md',
-    );
-  });
-});
-
-describe('linksOf', () => {
-  it('should list the required blocks, then the base, when a block both requires and extends', () => {
-    // Arrange
-    const { byId } = checkInputOf(validFiles());
-    const block = blockOf({
-      byId,
-      id: 'react-dom',
-    });
-
-    // Act
-    const links = linksOf(block);
-
-    // Assert
-    expect(links).toStrictEqual([
-      'browser',
-      '_react',
-    ]);
-  });
+const implementationRequiring = (input: {
+  id: string;
+  requires: readonly string[];
+}): Files => ({
+  [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
+    body: `# ${input.id}\n`,
+    id: input.id,
+    kind: 'implementation',
+    requires: input.requires,
+  }),
 });
 
 describe('closureOf', () => {
-  it('should follow requires and extends transitively when the chain crosses layers', () => {
-    // Arrange
-    const { byId } = checkInputOf(validFiles());
-
-    // Act
-    const closure = closureOf({
+  it.each<ClosureCase>([
+    {
       blockId: 'react-dom',
-      byId,
-    });
+      expected: [
+        'browser',
+        '_react',
+        'untrusted-client',
+        'ui',
+      ],
+      files: {},
+      name: 'the links cross layers through requires and extends',
+    },
+    {
+      blockId: 'biome',
+      expected: [
+        'lingui',
+      ],
+      files: {
+        ...implementationRequiring({
+          id: 'biome',
+          requires: [
+            'lingui',
+          ],
+        }),
+        ...implementationRequiring({
+          id: 'lingui',
+          requires: [
+            'biome',
+          ],
+        }),
+      },
+      name: 'two blocks require each other',
+    },
+    {
+      blockId: 'biome',
+      expected: [
+        'nowhere',
+        'typescript',
+      ],
+      files: implementationRequiring({
+        id: 'biome',
+        requires: [
+          'nowhere',
+          'typescript',
+        ],
+      }),
+      name: 'a link names no block, which has no links to follow',
+    },
+  ])(
+    'should hold every id the links reach, but not the block itself, when $name',
+    ({ blockId, expected, files }) => {
+      // Arrange
+      const { byId } = checkInputOf({
+        ...validFiles(),
+        ...files,
+      });
 
-    // Assert
-    expect([
-      ...closure,
-    ]).toStrictEqual([
-      'browser',
-      '_react',
-      'untrusted-client',
-      'ui',
-    ]);
-  });
+      // Act
+      const closure = closureOf({
+        blockId,
+        byId,
+      });
+
+      // Assert
+      expect([
+        ...closure,
+      ]).toStrictEqual(expected);
+    },
+  );
 });
 
 describe('reachableFrom', () => {
-  it('should hold the block, its closure, the seam and the seam closure when the place is a with/ file', () => {
-    // Arrange
-    const { byId } = checkInputOf(validFiles());
-
-    // Act
-    const reachable = reachableFrom({
-      byId,
+  it.each<ReachCase>([
+    {
+      expected: [
+        'browser',
+        'untrusted-client',
+      ],
+      name: 'a main file, which reaches its block and its closure',
       place: {
         block: 'browser',
-        with: 'ui',
+        with: null,
       },
-    });
+    },
+    {
+      expected: [
+        'ui',
+        'browser',
+        'untrusted-client',
+      ],
+      name: 'a with/ file, which also reaches the block it is named after and its closure',
+      place: {
+        block: 'ui',
+        with: 'browser',
+      },
+    },
+  ])(
+    'should hold every block the place reaches when the place is $name',
+    ({ expected, place }) => {
+      // Arrange
+      const { byId } = checkInputOf(validFiles());
 
-    // Assert
-    expect([
-      ...reachable,
-    ]).toStrictEqual([
-      'browser',
-      'untrusted-client',
-      'ui',
-    ]);
-  });
+      // Act
+      const reachable = reachableFrom({
+        byId,
+        place,
+      });
+
+      // Assert
+      expect([
+        ...reachable,
+      ]).toStrictEqual(expected);
+    },
+  );
 });
 
 describe('mayReferTo', () => {
@@ -112,24 +166,6 @@ describe('mayReferTo', () => {
       expected: true,
       from: {
         block: 'ui',
-        with: null,
-      },
-      name: 'its own block',
-      to: 'ui',
-    },
-    {
-      expected: true,
-      from: {
-        block: 'react-dom',
-        with: null,
-      },
-      name: 'a peer implementation in its closure',
-      to: '_react',
-    },
-    {
-      expected: true,
-      from: {
-        block: 'ui',
         with: 'remote-data',
       },
       name: 'the block its with/ file is named after',
@@ -141,7 +177,7 @@ describe('mayReferTo', () => {
         block: 'ui',
         with: null,
       },
-      name: 'a sibling outside its closure',
+      name: 'a block of its own layer outside its closure',
       to: 'i18n',
     },
     {
@@ -159,7 +195,7 @@ describe('mayReferTo', () => {
         block: 'ui',
         with: null,
       },
-      name: 'an unknown block',
+      name: 'a block that does not exist',
       to: 'nowhere',
     },
   ])(
