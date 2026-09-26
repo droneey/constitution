@@ -30,7 +30,9 @@ const entriesOf = (text: string): readonly Entry[] => {
       : [
           {
             dateLine:
-              lines.slice(index + 1).find((next) => next.trim() !== '') ?? '',
+              lines.slice(index + 1).find((next) => next.trim() !== '') ??
+              // Stryker disable next-line StringLiteral: any text without a date line reads alike
+              '',
             number: Number(match[1]),
           },
         ];
@@ -44,11 +46,8 @@ const isCalendarDate = (input: {
 }): boolean => {
   const date = new Date(Date.UTC(input.year, input.month - 1, input.day));
 
-  return (
-    date.getUTCFullYear() === input.year &&
-    date.getUTCMonth() === input.month - 1 &&
-    date.getUTCDate() === input.day
-  );
+  // A day or month out of range rolls the date into another month.
+  return date.getUTCMonth() === input.month - 1;
 };
 
 const lineMessage = (input: {

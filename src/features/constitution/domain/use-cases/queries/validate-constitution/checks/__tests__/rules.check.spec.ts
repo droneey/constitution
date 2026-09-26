@@ -116,6 +116,11 @@ describe('rulesCheck', () => {
         'rule "i18n-plurals-by-cldr" implements "`rules-bind` in core", which is not a rule',
       implementsText: '`rules-bind` in core',
     },
+    {
+      expected:
+        'rule "i18n-plurals-by-cldr" implements "see `rules-bind`", which is not a rule',
+      implementsText: 'see `rules-bind`',
+    },
   ])(
     'should report "$expected" when a rule implements $implementsText',
     ({ expected, implementsText }) => {

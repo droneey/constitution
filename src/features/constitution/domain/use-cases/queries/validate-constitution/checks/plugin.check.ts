@@ -9,7 +9,12 @@ import type {
 } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 
-type Read = ManifestRead<unknown>;
+type Unread = Exclude<
+  ManifestRead<unknown>,
+  {
+    status: 'parsed';
+  }
+>;
 
 const SKILL = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 const PLUGIN_FILE = /\$\{CLAUDE_PLUGIN_ROOT\}\/([^"'\s]+)/g;
@@ -22,7 +27,7 @@ const missing = (input: { path: string; role: string }): Finding => ({
 
 const readFindings = (input: {
   path: string;
-  read: Read;
+  read: Unread;
 }): readonly Finding[] => {
   if (input.read.status === 'not-json') {
     return [
@@ -33,12 +38,10 @@ const readFindings = (input: {
     ];
   }
 
-  return input.read.status === 'mismatched'
-    ? input.read.issues.map((issue) => ({
-        message: `does not match its schema: ${issue.field === '' ? '<root>' : issue.field}: ${issue.message}`,
-        path: input.path,
-      }))
-    : [];
+  return input.read.issues.map((issue) => ({
+    message: `does not match its schema: ${issue.field === '' ? '<root>' : issue.field}: ${issue.message}`,
+    path: input.path,
+  }));
 };
 
 const skillDirectories = (paths: ReadonlySet<string>): ReadonlySet<string> =>
@@ -164,7 +167,11 @@ const checkHooks = (input: {
         .flatMap((command) => [
           ...command.matchAll(PLUGIN_FILE),
         ])
-        .map((match) => match[1] ?? '')
+        .map(
+          (match) =>
+            // Stryker disable next-line StringLiteral: the group captures on every match
+            match[1] ?? '',
+        )
         .filter((file) => !input.paths.has(file))
         .map((file) => ({
           message: `runs "${file}", which is missing`,

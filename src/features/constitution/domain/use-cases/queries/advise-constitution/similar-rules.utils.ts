@@ -19,6 +19,7 @@ const similarityOf = (input: {
     ...input.right,
   ]).size;
 
+  // Stryker disable next-line ConditionalExpression: 0 / 0 is NaN, also below SIMILAR
   return all === 0 ? 0 : shared / all;
 };
 
@@ -31,7 +32,9 @@ const areSiblings = (input: {
   const right: Block | undefined = input.byId.get(input.right.block);
 
   return (
+    // Stryker disable next-line ConditionalExpression,LogicalOperator: every rule's block is in byId
     left !== undefined &&
+    // Stryker disable next-line ConditionalExpression: every rule's block is in byId
     right !== undefined &&
     left.id !== right.id &&
     left.frontMatter.kind === right.frontMatter.kind

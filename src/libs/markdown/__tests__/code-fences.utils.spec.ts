@@ -35,6 +35,16 @@ describe('withoutCodeFences', () => {
       text: '- item\n    ```ts\n    const x = React;\n    ```\nb',
     },
     {
+      expected: '\n\n\nb',
+      name: 'an indented fence closed by an unindented one',
+      text: '  ```\ncode\n```\nb',
+    },
+    {
+      expected: 'a\r\n\n\n\nb',
+      name: 'a fence in text with Windows line endings',
+      text: 'a\r\n```ts\r\ncode\r\n```\r\nb',
+    },
+    {
       expected: 'a\n\n\n',
       name: 'a fence that never closes',
       text: 'a\n```\nb\nc',
@@ -61,6 +71,10 @@ describe('withoutCodeFences', () => {
     {
       name: 'a backtick run stands inside a line',
       text: 'Wrap a sample in ``` fences.\nfoo',
+    },
+    {
+      name: 'a tilde run stands inside a line',
+      text: 'Wrap a sample in ~~~ fences.\nfoo',
     },
   ])('should keep the text as written when $name', ({ text }) => {
     // Arrange

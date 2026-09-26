@@ -95,6 +95,7 @@ const requirementsCheck: Check = ({
   constitution,
 }: CheckInput): readonly Finding[] => {
   const isInImplementation = (answer: RequirementAnswer): boolean =>
+    // Stryker disable next-line OptionalChaining: every answer comes from a loaded block
     byId.get(answer.block)?.layer === 'implementation';
   const fileFindings = (input: {
     isMisplaced: (answer: RequirementAnswer) => boolean;

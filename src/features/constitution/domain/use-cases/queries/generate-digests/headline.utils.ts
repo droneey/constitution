@@ -1,7 +1,7 @@
 import { blankInlineCode } from '#/libs/markdown';
 
 const WHITESPACE = /\s+/g;
-const SENTENCE_END = /[.!?]["'”’)\]*_~]*(?=\s|$)/g;
+const SENTENCE_END = /[.!?]["'”’)\]*_~]*(?=\s)/g;
 const OPENING = /^["'“‘([*_~]+/;
 const ORDINAL = /^\d+\.$/;
 const LIST_OPENING = /(?:^|[(,:;])[\s*_~]*$/;

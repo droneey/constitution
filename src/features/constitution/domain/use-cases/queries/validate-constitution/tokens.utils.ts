@@ -7,7 +7,7 @@ const collapseWhitespace = (text: string): string =>
   text.replaceAll(WHITESPACE, ' ');
 
 const containsId = (input: { id: string; text: string }): boolean =>
-  new RegExp(`(?<![\\w.-])${RegExp.escape(input.id)}(?![\\w-])`, 'u').test(
+  new RegExp(`(?<![\\w.-])${RegExp.escape(input.id)}(?![\\w-])`).test(
     input.text,
   );
 
@@ -17,7 +17,6 @@ const ownedWordMatcher = (word: string): ((text: string) => boolean) => {
   const normalized = collapseWhitespace(word);
   const pattern = new RegExp(
     `${normalized.startsWith(DOT) ? '' : WORD_START}${RegExp.escape(normalized)}${WORD_END}`,
-    'u',
   );
 
   return (text: string): boolean =>

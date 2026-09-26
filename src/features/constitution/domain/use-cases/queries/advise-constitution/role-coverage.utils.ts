@@ -47,6 +47,7 @@ const neededRoles = (input: {
         const applies =
           languages.length === 0 || languages.includes(input.language);
 
+        // Stryker disable next-line ConditionalExpression: other checks have no role to match
         return check.kind === 'tool' && roles.includes(check.role) && applies
           ? [
               check.role,

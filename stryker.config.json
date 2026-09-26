@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "bun --config=./bunfig.mutation.toml test --bail"
+  },
+  "mutate": [
+    "src/**/*.ts",
+    "!src/**/__tests__/**",
+    "!src/entrypoints/**",
+    "!src/root/**"
+  ],
+  "coverageAnalysis": "off",
+  "tsconfigFile": "stryker-has-no-tsconfig.json",
+  "thresholds": {
+    "high": 100,
+    "low": 100,
+    "break": 100
+  },
+  "reporters": [
+    "clear-text"
+  ],
+  "clearTextReporter": {
+    "allowColor": false,
+    "logTests": false
+  },
+  "concurrency": 8,
+  "timeoutMS": 30000,
+  "tempDirName": ".stryker-tmp",
+  "incremental": true,
+  "incrementalFile": "reports/stryker-incremental.json"
+}

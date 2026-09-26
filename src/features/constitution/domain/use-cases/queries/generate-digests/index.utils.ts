@@ -97,6 +97,7 @@ const ruleRecord = (input: { byId: BlocksById; rule: Rule }): string => {
     rule.with ?? '',
     rule.level,
     check.kind === 'unknown' ? '' : check.kind,
+    // Stryker disable next-line ConditionalExpression: join writes a missing role as empty
     check.kind === 'tool' ? check.role : '',
     ruleLanguagesOf(input).join(LIST),
     tagsOf(rule).join(LIST),

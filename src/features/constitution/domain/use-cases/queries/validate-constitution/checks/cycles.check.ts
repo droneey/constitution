@@ -65,36 +65,34 @@ const cyclesCheck: Check = ({
 }: CheckInput): readonly Finding[] => {
   const reported = new Set<string>();
 
-  return constitution.blocks
-    .filter((block) => block.layer === 'implementation')
-    .flatMap((block) => {
-      const cycle = reported.has(block.id)
-        ? undefined
-        : cycleFrom({
-            block,
-            byId,
-            explored: new Set(),
-            path: [
-              block.id,
-            ],
-            start: block.id,
-          });
+  return constitution.blocks.flatMap((block) => {
+    const cycle = reported.has(block.id)
+      ? undefined
+      : cycleFrom({
+          block,
+          byId,
+          explored: new Set(),
+          path: [
+            block.id,
+          ],
+          start: block.id,
+        });
 
-      if (cycle === undefined) {
-        return [];
-      }
+    if (cycle === undefined) {
+      return [];
+    }
 
-      for (const id of cycle) {
-        reported.add(id);
-      }
+    for (const id of cycle) {
+      reported.add(id);
+    }
 
-      return [
-        {
-          message: `is part of a dependency cycle: ${cycle.join(' → ')}`,
-          path: block.path,
-        },
-      ];
-    });
+    return [
+      {
+        message: `is part of a dependency cycle: ${cycle.join(' → ')}`,
+        path: block.path,
+      },
+    ];
+  });
 };
 
 export { cyclesCheck };

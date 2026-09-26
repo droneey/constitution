@@ -175,7 +175,9 @@ describe('loadConstitution', () => {
     'blocks/domains/ui/.draft.md',
     'blocks/domains/ui/parts.mdx',
     'blocks/domains/ui/parts/a.md',
+    'blocks/domains/ui/old.md/a.md',
     'blocks/domains/ui/with/notes.txt',
+    'blocks/domains/ui/with/old.md/a.md',
   ])(
     'should report %p as a stray file when it is hidden, nested or not markdown',
     (path) => {

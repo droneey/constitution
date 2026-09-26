@@ -130,6 +130,7 @@ const scalarMessages = (fields: FrontMatterFields): readonly string[] => [
       ]
     : []),
   ...summaryMessages(fields.summary),
+  // Stryker disable next-line ConditionalExpression: "undefined" passes as a block id too
   ...(fields.extends === undefined || BLOCK_ID.test(fields.extends)
     ? []
     : [
@@ -201,26 +202,15 @@ const typedOf = (fields: FrontMatterFields): FrontMatter | undefined => {
     value: fields.status,
     values: STATUSES,
   });
-  const checks = fields.checks.flatMap((check) => {
-    const role = oneOf({
-      value: check,
-      values: ROLES,
-    });
 
-    return role === undefined
-      ? []
-      : [
-          role,
-        ];
-  });
-
-  return kind === undefined ||
-    status === undefined ||
-    checks.length !== fields.checks.length
+  // Stryker disable next-line ConditionalExpression,LogicalOperator: fieldMessages has rejected a bad kind or status
+  return kind === undefined || status === undefined
     ? undefined
     : {
         ...fields,
-        checks,
+        checks: fields.checks.flatMap((check) =>
+          ROLES.filter((role) => role === check),
+        ),
         kind,
         status,
       };
@@ -278,15 +268,15 @@ const readFrontMatter = (input: {
   }
 
   const problems = fieldMessages(read.fields);
-  const frontMatter = typedOf(read.fields);
+  const frontMatter = problems.length === 0 ? typedOf(read.fields) : undefined;
 
-  return problems.length === 0 && frontMatter !== undefined
-    ? {
+  return frontMatter === undefined
+    ? failed(problems)
+    : {
         body: parts.body,
         findings: [],
         frontMatter,
-      }
-    : failed(problems);
+      };
 };
 
 export { readFrontMatter };

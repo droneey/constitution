@@ -1,37 +1,43 @@
-const FENCE = /^\s*(`{3,}|~{3,})(.*)$/;
+const FENCE = /^\s*(?:`{3,}|~{3,})/;
 const BACKTICK = '`';
 
 interface Fence {
   character: string;
+  info: string;
   length: number;
 }
 
-const openingOf = (line: string): Fence | undefined => {
+const fenceOf = (line: string): Fence | undefined => {
   const match = FENCE.exec(line);
-  const marker = match?.[1] ?? '';
-  const info = match?.[2] ?? '';
 
-  if (
-    marker === '' ||
-    (marker.startsWith(BACKTICK) && info.includes(BACKTICK))
-  ) {
+  if (match === null) {
     return undefined;
   }
 
+  const marker = match[0].trim();
+
   return {
     character: marker.charAt(0),
+    info: line.slice(match[0].length),
     length: marker.length,
   };
 };
 
+const openingOf = (line: string): Fence | undefined => {
+  const fence = fenceOf(line);
+
+  return fence?.character === BACKTICK && fence.info.includes(BACKTICK)
+    ? undefined
+    : fence;
+};
+
 const closes = (input: { fence: Fence; line: string }): boolean => {
-  const match = FENCE.exec(input.line);
-  const marker = match?.[1] ?? '';
+  const closing = fenceOf(input.line);
 
   return (
-    marker.startsWith(input.fence.character) &&
-    marker.length >= input.fence.length &&
-    (match?.[2] ?? '').trim() === ''
+    closing?.character === input.fence.character &&
+    closing.length >= input.fence.length &&
+    closing.info.trim() === ''
   );
 };
 

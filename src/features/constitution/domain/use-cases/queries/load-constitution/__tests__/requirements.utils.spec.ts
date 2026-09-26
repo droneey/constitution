@@ -104,22 +104,28 @@ describe('parseRequirements', () => {
     });
   });
 
-  it('should neither read nor report a section when its heading only begins with Requirements', () => {
-    // Arrange
-    const source = sourceOf([
-      '## Requirements for implementations',
-      '| `i18n-plurals-by-cldr` | ICU plural | met |',
-    ]);
+  it.each([
+    '## Requirements for implementations',
+    '## C# requirements',
+  ])(
+    'should neither read nor report a section when its heading %p holds more than Requirements',
+    (heading) => {
+      // Arrange
+      const source = sourceOf([
+        heading,
+        '| `i18n-plurals-by-cldr` | ICU plural | met |',
+      ]);
 
-    // Act
-    const parsed = parseRequirements(source);
+      // Act
+      const parsed = parseRequirements(source);
 
-    // Assert
-    expect(parsed).toStrictEqual({
-      answers: [],
-      findings: [],
-    });
-  });
+      // Assert
+      expect(parsed).toStrictEqual({
+        answers: [],
+        findings: [],
+      });
+    },
+  );
 
   it.each([
     '|i18n-typed-keys|compiled catalogs|partial: keys are strings|',

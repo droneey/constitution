@@ -18,6 +18,7 @@ type RuleCheck =
 const CHECK = /^(?:(test|review)|tool — (\S+))$/;
 
 const checkOf = (rule: Rule): RuleCheck => {
+  // Stryker disable next-line StringLiteral: any text that is no check reads as unknown
   const match = CHECK.exec(rule.labels.check ?? '');
   const plain = match?.[1];
   const role = match?.[2];

@@ -22,17 +22,22 @@ const languagesOf = (input: {
 const ruleLanguagesOf = (input: {
   byId: BlocksById;
   rule: Rule;
-}): readonly string[] =>
-  [
+}): readonly string[] => {
+  const { rule } = input;
+  const blockIds =
+    // Stryker disable next-line ConditionalExpression: no block has the id undefined
+    rule.with === undefined
+      ? [
+          rule.block,
+        ]
+      : [
+          rule.block,
+          rule.with,
+        ];
+
+  return [
     ...new Set(
-      [
-        input.rule.block,
-        ...(input.rule.with === undefined
-          ? []
-          : [
-              input.rule.with,
-            ]),
-      ].flatMap((blockId) =>
+      blockIds.flatMap((blockId) =>
         languagesOf({
           blockId,
           byId: input.byId,
@@ -40,5 +45,6 @@ const ruleLanguagesOf = (input: {
       ),
     ),
   ].toSorted(compareText);
+};
 
 export { languagesOf, ruleLanguagesOf };

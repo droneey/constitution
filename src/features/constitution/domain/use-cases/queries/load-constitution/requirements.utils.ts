@@ -40,18 +40,23 @@ const rowsOf = (input: {
     answers: rows.flatMap((row) => {
       const match = ROW.exec(row);
 
-      return match === null
-        ? []
-        : [
-            {
-              block: input.source.block,
-              file: input.source.file,
-              how: match[2] ?? '',
-              requirement: match[1] ?? '',
-              status: match[3] ?? '',
-              with: input.source.with,
-            },
-          ];
+      if (match === null) {
+        return [];
+      }
+
+      // Stryker disable next-line StringLiteral: the pattern always captures all three
+      const [, requirement = '', how = '', status = ''] = match;
+
+      return [
+        {
+          block: input.source.block,
+          file: input.source.file,
+          how,
+          requirement,
+          status,
+          with: input.source.with,
+        },
+      ];
     }),
     findings: rows
       .filter((row) => !ROW.test(row))

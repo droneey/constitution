@@ -148,6 +148,19 @@ describe('readFrontMatter', () => {
     {
       lines: [
         'id: ui',
+        'kind : domain',
+      ],
+      message: 'front matter line 3 (kind) is not valid YAML: broken',
+      name: 'a YAML error on the line of a field with a space before its colon',
+      read: {
+        line: 2,
+        reason: 'broken',
+        status: 'not-yaml',
+      },
+    },
+    {
+      lines: [
+        'id: ui',
         'governs:',
         '  - pattern: *.tsx',
       ],
@@ -206,6 +219,24 @@ describe('readFrontMatter', () => {
           {
             field: 'abstract',
             message: 'expected a boolean',
+          },
+        ],
+        keys: KEYS,
+        status: 'mapping',
+      },
+    },
+    {
+      lines: [
+        'id: ui',
+      ],
+      message: 'front matter: <root>: expected an object',
+      name: 'an issue at the root',
+      read: {
+        fields: undefined,
+        issues: [
+          {
+            field: '',
+            message: 'expected an object',
           },
         ],
         keys: KEYS,

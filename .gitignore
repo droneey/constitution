@@ -8,3 +8,7 @@
 **/node_modules/
 **/coverage/
 *.tsbuildinfo
+
+# Stryker
+.stryker-tmp/
+reports/

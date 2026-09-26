@@ -7,7 +7,7 @@ import { checkOf, mayReferTo, tagsOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const REFERENCE = /^`?([^`\s]+)`?$/;
+const REFERENCE = /^`([^`\s]+)`$/;
 
 const roles: readonly string[] = ROLES;
 const tags: readonly string[] = TAGS;
@@ -108,7 +108,7 @@ const rulesCheck: Check = ({
   const slugs = firstBySlug(constitution.rules);
 
   return constitution.rules.flatMap((rule) => {
-    const first = slugs.get(rule.slug);
+    const first = slugs.get(rule.slug) ?? rule;
     const reference = implementsMessage({
       byId,
       rule,
@@ -117,7 +117,7 @@ const rulesCheck: Check = ({
 
     return [
       ...labelFindings(rule),
-      ...(first === undefined || first === rule
+      ...(first === rule
         ? []
         : [
             at({

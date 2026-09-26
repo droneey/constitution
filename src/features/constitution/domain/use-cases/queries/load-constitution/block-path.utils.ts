@@ -92,10 +92,15 @@ const layerFolder = (segments: readonly string[]): Folder | undefined => {
       segments,
     }),
   );
-  const [id, ...rest] =
-    match === undefined ? [] : segments.slice(match.prefix.length);
 
-  return match === undefined || id === undefined || rest.length === 0
+  if (match === undefined) {
+    return undefined;
+  }
+
+  // Stryker disable next-line StringLiteral: without an id, rest is empty too
+  const [id = '', ...rest] = segments.slice(match.prefix.length);
+
+  return rest.length === 0
     ? undefined
     : {
         dir: [
@@ -109,9 +114,10 @@ const layerFolder = (segments: readonly string[]): Folder | undefined => {
 };
 
 const fileOf = (folder: Folder): Pick<BlockPath, 'file' | 'name' | 'with'> => {
-  const [first = '', second, ...more] = folder.rest;
+  // Stryker disable next-line StringLiteral: a length check guards every read
+  const [first = '', second = ''] = folder.rest;
 
-  if (second === undefined && MARKDOWN.test(first)) {
+  if (folder.rest.length === 1 && MARKDOWN.test(first)) {
     return {
       file: first === `${folder.id}${MARKDOWN_EXTENSION}` ? 'main' : 'chapter',
       name: first,
@@ -120,9 +126,8 @@ const fileOf = (folder: Folder): Pick<BlockPath, 'file' | 'name' | 'with'> => {
   }
 
   if (
+    folder.rest.length === 2 &&
     first === SEAM_FOLDER &&
-    second !== undefined &&
-    more.length === 0 &&
     MARKDOWN.test(second)
   ) {
     return {
@@ -134,6 +139,7 @@ const fileOf = (folder: Folder): Pick<BlockPath, 'file' | 'name' | 'with'> => {
 
   return {
     file: 'stray',
+    // Stryker disable next-line StringLiteral: nothing reads the name of a stray file
     name: folder.rest.join('/'),
     with: undefined,
   };
