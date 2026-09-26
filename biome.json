@@ -41,7 +41,8 @@
     },
     {
       "includes": [
-        "**/__tests__/**"
+        "**/__tests__/**",
+        "src/testing/**"
       ],
       "linter": {
         "rules": {
@@ -56,7 +57,7 @@
                 "filenameCases": [
                   "kebab-case"
                 ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.])?(?:spec|fake|fixtures)[.]ts)"
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:spec|fake|fixtures)[.]ts)"
               }
             }
           },

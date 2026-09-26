@@ -1,6 +1,8 @@
 [test]
 root = "./src"
 coverage = false
+# Every mutant reruns the tests; the end-to-end specs prove the hook, not the logic.
+pathIgnorePatterns = ["**/testing/**"]
 
 [run]
 bun = true

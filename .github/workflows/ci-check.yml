@@ -40,11 +40,52 @@ jobs:
             mutation-${{ github.head_ref }}-
             mutation-
 
+      # Ubuntu's awk is mawk unless gawk is installed; the hook must run under mawk.
+      - name: Put mawk first as awk
+        run: |
+          mkdir -p "${RUNNER_TEMP}/mawk"
+          ln -s "$(command -v mawk)" "${RUNNER_TEMP}/mawk/awk"
+          echo "${RUNNER_TEMP}/mawk" >> "${GITHUB_PATH}"
+
       - name: Check
         run: bun run check
+
+      # The spec, again with gawk as awk: under the hook's LC_ALL=C its length()
+      # counts bytes, as mawk's and BSD awk's do.
+      - name: Run the hook under gawk
+        run: |
+          sudo apt-get update --quiet
+          sudo apt-get install --yes gawk
+          mkdir -p "${RUNNER_TEMP}/gawk"
+          ln -s "$(command -v gawk)" "${RUNNER_TEMP}/gawk/awk"
+          PATH="${RUNNER_TEMP}/gawk:${PATH}" bun test
 
       - name: Lint the workflows
         run: |
           set -euo pipefail
           bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12 "${RUNNER_TEMP}"
           "${RUNNER_TEMP}/actionlint" -color
+
+  hook-on-macos:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: 1.4.2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # The whole suite, since the coverage gate fails a run of one folder; the
+      # end-to-end spec runs the hook under /bin/bash 3.2 and the system awk.
+      - name: Run the hook under bash 3.2 and the system awk
+        env:
+          HOOK_SHELL: /bin/bash
+        run: bun test

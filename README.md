@@ -14,7 +14,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block, rule and requirement answer, and `core.md`, core's part of the digest |
-| `hooks` | The plugin's hook manifest; the session-start hook that puts the rules into context arrives with #54 |
+| `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
@@ -30,6 +30,10 @@ Every data view shows four states: loading, empty, error and content.
 ```
 
 A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `with/<other>.md`. A brand, a language or a file form belongs to the block that `owns` it, and only that block and the blocks that depend on it may name it.
+
+## 🧭 What a session receives
+
+The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary, its chapters and the `with/` files that apply — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
 
 ## 🔌 Install
 
@@ -50,9 +54,11 @@ claude plugin install constitution@droneey
 ```bash
 mise trust && mise install   # bun
 bun install                  # installs the git hooks
-bun run check                # lint, package manifests, types, tests with the coverage gate, then the blocks check
+bun run check                # lint, package manifests, types, tests with the coverage gate, mutation, then the blocks check
 bun run digests:write        # regenerate digests/ after a change to a block
 ```
+
+The end-to-end spec in `src/testing/e2e` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
@@ -76,7 +82,7 @@ After the findings it prints advice that does not fail the check: the roles of t
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yml` | pull request into `main` | Lint, types, tests, the blocks check, the workflow lint |
+| `ci-check.yml` | pull request into `main` | Lint, types, tests with the hook under mawk and again under gawk, the blocks check, the workflow lint; on macOS, the hook under `/bin/bash` 3.2 and the system awk |
 | `cd-version.yml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
 | `cd-pre-release.yml` | tag `v*` | Calls `droneey/.github`: opens the pre-release with its changelog |
 
