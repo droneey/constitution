@@ -18,7 +18,7 @@
 | The rest | ADR-0037 – ADR-0045 |
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
-| Core | ADR-0053 – ADR-0061 |
+| Core | ADR-0053 – ADR-0063 |
 
 ---
 
@@ -171,7 +171,7 @@
 - **Rejected.** An emoji on every line.
 
 ## ADR-0026 — Generated files are committed only here, in digests/
-**Date:** 2026-09-25 · **Status:** Accepted
+**Date:** 2026-09-25 · **Status:** Superseded by ADR-0062
 
 - **Decision.** The pieces the hook reads are generated into `digests/`, committed, and verified by regeneration. This is the one repository that commits generated files; the `workflow` rules keep forbidding them in projects.
 
@@ -381,3 +381,17 @@
 - **Decision.** Core's `testing` counts a screen and a reusable component among the boundaries and holds the UI to the coverage gate. How a screen and a component are proven — the data states, finding elements by role, label and text, screenshots only where the look is the contract — is stated by `ui`, and the accessibility scan with zero violations by `a11y`.
 - **Rejected.** Stating them in core, which would give a program with no interface rules about screens.
 - **Why.** A rule that loses its meaning without an interface belongs to the block of the interface.
+
+## ADR-0062 — Generated files are not committed by default, and the check only checks
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A project does not commit generated files by default; an application that commits some of them chooses which. The check verifies and never changes a tracked file: it generates, formats and rewrites nothing. This repository commits `digests/`, and its check compares them with their regeneration without writing them.
+- **Rejected.** Forbidding every committed generated file in projects; a check that regenerates what it checks.
+- **Why.** Which generated file is worth committing depends on the application, and a check that writes can pass by changing what it checks.
+
+## ADR-0063 — Only a person commits
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** Only a person decides what is committed. The main agent commits only when a person asks it to; a sub-agent never commits and only does the work it is given. No agent merges or pushes to the main line.
+- **Rejected.** Letting a sub-agent commit on the working branch.
+- **Why.** A commit records a decision under a person's name, so the person makes it.

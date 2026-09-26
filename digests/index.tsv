@@ -12,7 +12,7 @@ role	mutation	false
 role	secrets	true
 role	audit	false
 role	commits	true
-block	core	core	What holds for any program, in any language, of any kind.	principles.md architecture.md code.md testing.md security.md				false					
+block	core	core	What holds for any program, in any language, of any kind.	principles.md architecture.md code.md testing.md security.md workflow.md collaboration.md				false					
 rule	dependencies-point-inward-without-cycles	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Imports point inward, toward stability, and form no cycle, direct or through a chain of modules.
 rule	inner-layers-declare-their-contracts	core	blocks/core/principles.md		MUST	review			architecture	The inner layer declares, in its own words, the contracts it needs; the outer layer implements them.
 rule	domain-imports-only-itself-and-kernel	core	blocks/core/principles.md		MUST	tool	architecture		architecture	The domain imports only itself and the shared kernel: no framework, no input or output, no vendor library, however pure.
@@ -158,3 +158,29 @@ rule	licences-from-an-allowlist	core	blocks/core/security.md		MUST	tool	audit		s
 rule	shared-tooling-from-pinned-packages	core	blocks/core/security.md		SHOULD	review			security workflow	Commit hooks, linter configurations and release automation come from shared, pinned packages, not from copies in each repository.
 rule	irreversible-operations-behind-flag-and-human	core	blocks/core/security.md		MUST	review			security ux	An operation that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
 rule	access-denied-unless-granted	core	blocks/core/security.md		MUST	test			security	Access is denied unless a rule grants it.
+rule	read-governing-rules-first	core	blocks/core/workflow.md		SHOULD	review			workflow	Before a change, read the rules that govern it: core's chapters and the files of the active blocks whose concern the change touches.
+rule	scope-limited-to-the-task	core	blocks/core/workflow.md		SHOULD	review			workflow	A change does what the task asks and nothing else: no unrelated refactor, reformat or rename.
+rule	move-files-never-recreate	core	blocks/core/workflow.md		MUST	review			workflow	A file that moves is moved, never deleted and written anew, and a moved file is not rewritten in the same step.
+rule	one-check-command	core	blocks/core/workflow.md		MUST	review			workflow	One command runs every check of the repository — format, lint, types, tests, coverage, mutation, the rest of the project's tools — and `constitution.yaml` names it.
+rule	check-only-checks	core	blocks/core/workflow.md		MUST	review			workflow	The check verifies and never changes a tracked file: it generates nothing, formats nothing and rewrites nothing.
+rule	check-passes-before-hand-back	core	blocks/core/workflow.md		MUST	review			workflow testing	The check passes, with no error and no warning, before a change is reported done.
+rule	review-against-active-rules-before-hand-back	core	blocks/core/workflow.md		SHOULD	review			workflow	Before a change is handed back, it is reviewed against every active rule that no tool holds, not only those the task seemed to touch.
+rule	project-files-at-root	core	blocks/core/workflow.md		SHOULD	review			workflow	A repository keeps at its root `constitution.yaml`, the blocks it follows and their overrides, and `PROJECT.md`, the product's context.
+rule	readme-is-the-front-door	core	blocks/core/workflow.md		SHOULD	review			workflow	`README.md` says what the repository is, how to install and run it, and how to change it — for a reader who knows nothing else.
+rule	docs-for-readers-outside-the-code	core	blocks/core/workflow.md		SHOULD	review			workflow	`docs/` is for readers outside the code: users, integrators, operators.
+rule	working-notes-stay-out-of-history	core	blocks/core/workflow.md		SHOULD	review			workflow	Specs, plans and working notes live in a `local/` folder that version control ignores.
+rule	generated-files-not-committed	core	blocks/core/workflow.md		SHOULD	review			workflow	Generated files are not committed; the build produces them.
+rule	kebab-case-file-names	core	blocks/core/workflow.md		MUST	tool	names		naming	Files and folders are named in kebab-case.
+rule	public-repository-carries-a-licence	core	blocks/core/workflow.md		SHOULD	review			workflow	A public repository carries a licence file that names its author.
+rule	no-silent-departure	core	blocks/core/collaboration.md		MUST	review			workflow	A rule is never broken silently.
+rule	consent-before-consequential-actions	core	blocks/core/collaboration.md		MUST	review			workflow security	An agent asks before: adding a dependency, a pattern or an abstraction; changing a public surface, a schema or a format; an operation that destroys, costs money, touches a live system or sends something outward; a call to a real external service; pushing to a shared branch.
+rule	design-settled-in-chat-first	core	blocks/core/collaboration.md		SHOULD	review			workflow	A design question is settled in the chat before code is written for it.
+rule	ask-when-readings-diverge	core	blocks/core/collaboration.md		SHOULD	review			workflow	When a request can be read in two ways that lead to different work, the agent asks.
+rule	report-outcomes-faithfully	core	blocks/core/collaboration.md		MUST	review			workflow	Outcomes are reported as they are: a failing test with its output, a skipped step as skipped, a claim about the code checked against the code.
+rule	agent-commits-only-when-asked	core	blocks/core/collaboration.md		MUST	review			workflow	Only a person decides what is committed.
+rule	agent-never-merges-or-pushes-to-main	core	blocks/core/collaboration.md		MUST	review			workflow	An agent never merges, never pushes to the main line, never force-pushes and never rewrites shared history.
+rule	no-tool-attribution	core	blocks/core/collaboration.md		MUST	review			workflow	Commits, pull requests and documents carry no attribution to the tool or model that helped write them.
+rule	delegating-agent-keeps-responsibility	core	blocks/core/collaboration.md		SHOULD	review			workflow	An agent that delegates keeps the responsibility: it names the rules and files that govern the task, and checks what comes back before it relies on it.
+rule	sub-agent-only-does-the-work	core	blocks/core/collaboration.md		MUST	review			workflow security	A sub-agent does the work it is given and nothing more: it never commits, never pushes or merges, never runs a live system and never calls a real external service.
+rule	no-agent-file-in-project	core	blocks/core/collaboration.md		SHOULD	review			workflow	A project keeps no agent instruction file of its own that restates a rule; the constitution delivers the rules, and `PROJECT.md` the context.
+rule	project-knowledge-in-project-files	core	blocks/core/collaboration.md		SHOULD	review			workflow	What an agent learns about the product goes into `PROJECT.md` through a change a person reviews; an agent's private memory is never the project's fact.
