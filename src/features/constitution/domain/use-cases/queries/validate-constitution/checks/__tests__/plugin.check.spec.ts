@@ -8,7 +8,7 @@ import {
   without,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { pluginCheck } from '../plugin';
+import { pluginCheck } from '../plugin.check';
 
 const PLUGIN = '.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';

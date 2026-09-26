@@ -1,1 +1,1 @@
-export { createJsonManifestParser } from './json-manifest-parser';
+export { createJsonManifestParser } from './json-manifest-parser.adapter';

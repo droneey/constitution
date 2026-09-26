@@ -5,7 +5,7 @@ import {
   without,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { linksCheck } from '../links';
+import { linksCheck } from '../links.check';
 
 const PRINCIPLES = 'blocks/core/principles.md';
 const README = 'README.md';

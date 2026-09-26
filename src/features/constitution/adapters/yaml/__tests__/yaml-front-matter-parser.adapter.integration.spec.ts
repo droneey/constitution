@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createYamlFrontMatterParser } from '../yaml-front-matter-parser';
+import { createYamlFrontMatterParser } from '../yaml-front-matter-parser.adapter';
 
 const FIELDS = [
   'id: ui',

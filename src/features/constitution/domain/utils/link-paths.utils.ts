@@ -1,7 +1,6 @@
 import { posix } from 'node:path';
 
 const ROOT = '/';
-const HERE = '.';
 const ANCHOR = '#';
 
 // A link that starts with "/" is resolved from the repository root, as GitHub
@@ -10,7 +9,7 @@ const resolveLink = (input: { path: string; target: string }): string => {
   const joined = input.target.startsWith(ROOT)
     ? input.target.slice(ROOT.length)
     : posix.join(posix.dirname(input.path), input.target);
-  const resolved = posix.normalize(joined === '' ? HERE : joined);
+  const resolved = posix.normalize(joined);
 
   return resolved.length > 1 && resolved.endsWith(ROOT)
     ? resolved.slice(0, -ROOT.length)

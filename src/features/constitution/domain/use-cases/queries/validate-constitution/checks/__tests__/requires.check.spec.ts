@@ -6,7 +6,7 @@ import {
   mainFile,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { requiresCheck } from '../requires';
+import { requiresCheck } from '../requires.check';
 
 const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
 const BIOME = 'blocks/implementations/biome/biome.md';

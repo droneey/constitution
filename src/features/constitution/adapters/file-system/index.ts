@@ -1,1 +1,1 @@
-export { createNodeFileSystem } from './node-file-system';
+export { createNodeFileSystem } from './node-file-system.adapter';

@@ -1,1 +1,1 @@
-export { createYamlFrontMatterParser } from './yaml-front-matter-parser';
+export { createYamlFrontMatterParser } from './yaml-front-matter-parser.adapter';

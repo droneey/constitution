@@ -5,7 +5,7 @@ import {
   mainFile,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { seamsCheck } from '../seams';
+import { seamsCheck } from '../seams.check';
 
 describe('seamsCheck', () => {
   it.each([

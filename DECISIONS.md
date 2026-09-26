@@ -17,7 +17,7 @@
 | The anatomy | ADR-0030 – ADR-0038 |
 | The rest | ADR-0039 – ADR-0047 |
 | Testing | ADR-0048 – ADR-0051 |
-| Code | ADR-0052 |
+| Code | ADR-0052 – ADR-0054 |
 
 ---
 
@@ -322,4 +322,17 @@
 
 - **Decision.** Internal code spells absence as `undefined`. `null` lives only in wire types and in the adapters, which map it to `undefined`, and where a platform API returns it, which the code compares and never passes on. The compiler runs with `exactOptionalPropertyTypes`; the linter forbids `==` with `null` and, through a GritQL rule, any `null` outside the adapters but a comparison. devkit's presets carry the three, so every project gets them.
 - **Rejected.** Holding the rule by review alone; banning every `null`, comparisons included.
-- **Why.** Two spellings of absence make every check ask twice. Held only by review, the rule slipped even here: the domain spelled an absent base and an absent seam as `null`.
+- **Why.** Two spellings of absence make every check ask twice, and a rule held only by review slips.
+
+## ADR-0053 — A file carries its role's suffix
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** A file carries its role's suffix, whatever its folder: `.entity`, `.error`, `.repository`, `.port`, `.adapter` for a port's implementation that is not a repository, `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`, the suffixes a block adds, and those a project adds for its own roles. A surface, the entry, a name a framework or tool fixes, a component file named after its component, a member of a set whose role has no suffix and a registry carry none. In `__tests__/` a spec is named after the file it proves plus `.spec`, the one place a double suffix appears, beside `<port>.fake` and `<name>.fixtures`.
+- **Why.** The name tells the role before the file is opened, and a tool can check it.
+
+## ADR-0054 — A layer folder is a container without a surface
+**Date:** 2026-09-26 · **Status:** Accepted
+
+- **Decision.** Outside a folder, a caller imports only its surface; inside, files import each other directly and never their own folder's surface. A folder of one role — `entities`, `contracts`, `use-cases`, `queries`, `commands`, `repositories`, `components`, `utils`, `models` — and each module inside it has a surface. A layer folder (`domain/`, `app/`, `infra/`, `adapters/`, `ui/`) and an area folder (`src/`, `features/`, `libs/`) is never an import target and has none: a caller imports the role folder inside it.
+- **Rejected.** A surface that aggregates a layer; Biome's `noPrivateImports`, which demands a surface at every level.
+- **Why.** An import names the role it couples to, and no aggregate hides an edge the layer rules forbid.

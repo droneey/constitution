@@ -8,7 +8,7 @@ import {
 } from '../../../../../../__tests__/constitution.fixtures';
 import { GOLDEN_INDEX } from '../../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { digestsCheck } from '../digests';
+import { digestsCheck } from '../digests.check';
 
 const INDEX = 'digests/index.tsv';
 const CORE = 'digests/core.md';

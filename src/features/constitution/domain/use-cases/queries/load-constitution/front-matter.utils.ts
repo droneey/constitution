@@ -40,7 +40,6 @@ const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
 const WHITESPACE = /\s/;
 const SUMMARY_LENGTH = 70;
-// The front matter starts on the line after the opening "---".
 const OPENING_LINES = 1;
 
 const oneOf = <T extends string>(input: {

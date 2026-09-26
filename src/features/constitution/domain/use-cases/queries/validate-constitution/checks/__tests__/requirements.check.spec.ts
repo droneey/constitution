@@ -7,7 +7,7 @@ import {
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import type { CheckInput } from '../../check.types';
-import { requirementsCheck } from '../requirements';
+import { requirementsCheck } from '../requirements.check';
 
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
 const ANSWER = '| `i18n-plurals-by-cldr` | ICU plural | met |';
