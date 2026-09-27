@@ -639,7 +639,7 @@ describe('session-start hook', () => {
     ]);
   });
 
-  it('should read the files written from the templates without a warning', () => {
+  it('should read the files without a warning when they are written from the templates', () => {
     // Arrange
     const project = createProject(RATIFIED);
 
@@ -1790,7 +1790,7 @@ describe('session-start hook', () => {
       shape: 'the reference command-line tool',
     },
   ])(
-    'should give $shape a digest of the real blocks within 9,400 bytes and without a warning',
+    'should keep the digest within 9,400 bytes and without a warning when $shape follows the real blocks',
     ({ layout }) => {
       // Arrange
       const project = createProject(layout);
@@ -1900,7 +1900,7 @@ describe('session-start hook', () => {
     expect(run.stdout).toContain('pins 1.0\\u007f0;');
   });
 
-  it('should give a headline every override of its rule, in the order of the file', () => {
+  it('should give every override the headline of its rule, in the order of the file, when a project overrides rules', () => {
     // Arrange
     const project = createProject({
       config: configOf({

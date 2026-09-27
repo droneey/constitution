@@ -55,8 +55,10 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
-const section = (title: string, rules: readonly RuleFixture[]): string =>
-  `# ${title}\n\n${rules.map(rule).join('\n')}`;
+const section = (input: {
+  rules: readonly RuleFixture[];
+  title: string;
+}): string => `# ${input.title}\n\n${input.rules.map(rule).join('\n')}`;
 
 // Core's part runs close to its 3,500 bytes, as the real one may.
 const CORE_BODY = [
@@ -85,13 +87,16 @@ const CORE_BODY = [
 const CORE_PART = `${CORE_BODY.trim()}\n\nLaws: dependencies-point-inward, names-reveal-intent.\n`;
 
 const coreFiles = (): Files => ({
-  'blocks/core/code.md': section('Code', [
-    {
-      check: 'tool — secrets',
-      slug: 'no-secret-in-code',
-      statement: 'No secret is written into the code.',
-    },
-  ]),
+  'blocks/core/code.md': section({
+    rules: [
+      {
+        check: 'tool — secrets',
+        slug: 'no-secret-in-code',
+        statement: 'No secret is written into the code.',
+      },
+    ],
+    title: 'Code',
+  }),
   'blocks/core/core.md': mainFile({
     body: CORE_BODY,
     chapters: [
@@ -102,16 +107,19 @@ const coreFiles = (): Files => ({
     kind: 'core',
     summary: 'The laws for any program.',
   }),
-  'blocks/core/principles.md': section('Principles', [
-    {
-      slug: 'dependencies-point-inward',
-      statement: 'Dependencies point inward.',
-    },
-    {
-      slug: 'names-reveal-intent',
-      statement: 'A name says what a thing is for.',
-    },
-  ]),
+  'blocks/core/principles.md': section({
+    rules: [
+      {
+        slug: 'dependencies-point-inward',
+        statement: 'Dependencies point inward.',
+      },
+      {
+        slug: 'names-reveal-intent',
+        statement: 'A name says what a thing is for.',
+      },
+    ],
+    title: 'Principles',
+  }),
 });
 
 const domain = (input: {
@@ -121,7 +129,10 @@ const domain = (input: {
   summary: string;
 }): Files => ({
   [`blocks/domains/${input.id}/${input.id}.md`]: mainFile({
-    body: section(input.id, input.rules),
+    body: section({
+      rules: input.rules,
+      title: input.id,
+    }),
     chapters: input.chapters ?? [],
     id: input.id,
     kind: 'domain',
@@ -144,18 +155,24 @@ const domainFiles = (): Files => ({
     ],
     summary: 'Screens and what a user sees on them.',
   }),
-  'blocks/domains/ui/forms.md': section('Forms', [
-    {
-      slug: 'labels-on-fields',
-      statement: 'Every field has a visible label.',
-    },
-  ]),
-  'blocks/domains/ui/with/remote-data.md': section('UI with remote data', [
-    {
-      slug: 'optimistic-writes-roll-back',
-      statement: 'An optimistic write rolls back when the server refuses it.',
-    },
-  ]),
+  'blocks/domains/ui/forms.md': section({
+    rules: [
+      {
+        slug: 'labels-on-fields',
+        statement: 'Every field has a visible label.',
+      },
+    ],
+    title: 'Forms',
+  }),
+  'blocks/domains/ui/with/remote-data.md': section({
+    rules: [
+      {
+        slug: 'optimistic-writes-roll-back',
+        statement: 'An optimistic write rolls back when the server refuses it.',
+      },
+    ],
+    title: 'UI with remote data',
+  }),
   ...domain({
     id: 'remote-data',
     rules: [
@@ -225,13 +242,16 @@ const domainFiles = (): Files => ({
 
 const contextFiles = (): Files => ({
   'blocks/contexts/languages/typescript/typescript.md': mainFile({
-    body: section('TypeScript', [
-      {
-        check: 'tool — types',
-        slug: 'no-any',
-        statement: 'A value is never typed `any`.',
-      },
-    ]),
+    body: section({
+      rules: [
+        {
+          check: 'tool — types',
+          slug: 'no-any',
+          statement: 'A value is never typed `any`.',
+        },
+      ],
+      title: 'TypeScript',
+    }),
     checks: [
       'types',
     ],
@@ -240,24 +260,30 @@ const contextFiles = (): Files => ({
     summary: 'Code written in TypeScript.',
   }),
   'blocks/contexts/languages/python/python.md': mainFile({
-    body: section('Python', [
-      {
-        check: 'tool — lint',
-        slug: 'no-bare-except',
-        statement: 'An except clause names what it catches.',
-      },
-    ]),
+    body: section({
+      rules: [
+        {
+          check: 'tool — lint',
+          slug: 'no-bare-except',
+          statement: 'An except clause names what it catches.',
+        },
+      ],
+      title: 'Python',
+    }),
     id: 'python',
     kind: 'context',
     summary: 'Code written in Python.',
   }),
   'blocks/contexts/platforms/browser/browser.md': mainFile({
-    body: section('Browser', [
-      {
-        slug: 'no-window-during-render',
-        statement: 'Rendering never reads the window.',
-      },
-    ]),
+    body: section({
+      rules: [
+        {
+          slug: 'no-window-during-render',
+          statement: 'Rendering never reads the window.',
+        },
+      ],
+      title: 'Browser',
+    }),
     id: 'browser',
     kind: 'context',
     requires: [
@@ -267,12 +293,15 @@ const contextFiles = (): Files => ({
     summary: 'Code that runs in a browser tab.',
   }),
   'blocks/contexts/platforms/cli/cli.md': mainFile({
-    body: section('CLI', [
-      {
-        slug: 'exit-codes-are-documented',
-        statement: 'Every exit code is documented.',
-      },
-    ]),
+    body: section({
+      rules: [
+        {
+          slug: 'exit-codes-are-documented',
+          statement: 'Every exit code is documented.',
+        },
+      ],
+      title: 'CLI',
+    }),
     id: 'cli',
     kind: 'context',
     requires: [
@@ -294,7 +323,10 @@ const implementation = (input: {
 }): Files => ({
   [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
     ...input,
-    body: `${section(input.id, input.rules ?? [])}${input.body ?? ''}`,
+    body: `${section({
+      rules: input.rules ?? [],
+      title: input.id,
+    })}${input.body ?? ''}`,
     kind: 'implementation',
   }),
 });

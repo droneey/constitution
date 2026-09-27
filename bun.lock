@@ -6,10 +6,11 @@
       "name": "@droneey/constitution",
       "devDependencies": {
         "@biomejs/biome": "^2.5.12",
-        "@droneey/devkit-ts-biome": "^1.10.2",
-        "@droneey/devkit-ts-lefthook": "^1.10.2",
-        "@droneey/devkit-ts-syncpack": "^1.10.2",
-        "@droneey/devkit-ts-tsconfig": "^1.10.2",
+        "@droneey/constitution": "file:.",
+        "@droneey/devkit-ts-biome": "^1.17.1",
+        "@droneey/devkit-ts-lefthook": "^1.17.1",
+        "@droneey/devkit-ts-syncpack": "^1.17.1",
+        "@droneey/devkit-ts-tsconfig": "^1.17.1",
         "@stryker-mutator/core": "^9.6.1",
         "@types/bun": "^1.4.1",
         "@types/node": "^26",
@@ -104,13 +105,15 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.12", "", { "os": "win32", "cpu": "x64" }, "sha512-B1R/l+CwEpKFSuqiwePzPNRk1EiJN8kc0UhdafNz6MZN9v5OFP9HYP1irptvWzHrwVI4blVNGMbxc5zt70m3IA=="],
 
-    "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.10.2", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-W3omlDOtZo/vaUls7n3VhbFx4w7s+5NpJ5/GxP5tcc75nfxfVaYgQWdEhwggkKmbP72ceITq8EgqFRdtZUXBYQ=="],
+    "@droneey/constitution": ["@droneey/constitution@root:", {}],
 
-    "@droneey/devkit-ts-lefthook": ["@droneey/devkit-ts-lefthook@1.10.2", "", { "peerDependencies": { "lefthook": ">=1.0.0" } }, "sha512-rMdEZhwXhBowt/2ERBAX70MaEIn5F67TurzJUlY4UzA9QNv3vju97d5joKaps5FUEURJJQMlE3t8fyEqA76TwQ=="],
+    "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.17.1", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-/IVPLXZUZwKxUbS1Lwt6dDxO602KJVJ6aygQ2fCkuIfaciO1+oB7rjdhb67S7xS+C5WQyC5ykdng79YyPZtCFQ=="],
 
-    "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.10.2", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-iuA5fwnZIxAC03VgY7kshqFrpMhaGO6hgXyxzMAWW1O79uEAutVqEzPD3Y38+fEMGQ/aUf6pjtHa0UH/kHGq/g=="],
+    "@droneey/devkit-ts-lefthook": ["@droneey/devkit-ts-lefthook@1.17.1", "", { "peerDependencies": { "lefthook": ">=1.0.0" } }, "sha512-ip+FkJZBfv8VvGTIIskCtXNRgvuSxrF2SezyIe4ZRqgDmnDN+HjCaFQPZoydEt/IveXVy/f8scBlr7LpkXqjmw=="],
 
-    "@droneey/devkit-ts-tsconfig": ["@droneey/devkit-ts-tsconfig@1.10.2", "", { "peerDependencies": { "typescript": "^5 || ^7" } }, "sha512-EbuTcdNUJw+XgD8D5WJHPsoOIR2dt+BPl7JHj96ezOcJZIz5MP8xRFWBKGfg1OkUL/rrdQWuFJzC6r+ZUDm9kA=="],
+    "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.17.1", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-GTiV4p2BZOma8B7y44TsnSsQ2Xya5NumqZf3B6lukR6e8GeQJ5zJ6NpOt/DzT3wxfhsP5sFOGnjxnJ6dIRVtuA=="],
+
+    "@droneey/devkit-ts-tsconfig": ["@droneey/devkit-ts-tsconfig@1.17.1", "", { "peerDependencies": { "typescript": "^5 || ^7" } }, "sha512-qjzH3JKU8OxgY1wuA7lnfHv64HUa60I8pVRhZHULJxM13ayPsxJbLBrH6Sq6oq/xal47R0BsOmOdNqAG2y/Gmw=="],
 
     "@inquirer/ansi": ["@inquirer/ansi@2.0.8", "", {}, "sha512-WpQM+Ti6Z40EFwwt+uL2p4UabT+W179zHp6HhLVOzfbwnVn05IPO/eXIZXGNqcT1jbQ15SujNLzQ39k4QPPxBQ=="],
 

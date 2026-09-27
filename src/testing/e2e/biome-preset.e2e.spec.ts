@@ -61,6 +61,14 @@ describe('the Biome preset', () => {
       message: 'Fake an effect through its port',
     },
     {
+      condition: 'a function takes a second positional argument',
+      files: {
+        'src/main.ts':
+          'export const join = (head: string, tail: string): string => head + tail;\n',
+      },
+      message: 'Name every argument past the first',
+    },
+    {
       condition: 'a component memoises a value by hand',
       files: {
         'src/Panel.tsx':
@@ -120,6 +128,13 @@ describe('the Biome preset', () => {
       },
     },
     {
+      condition: 'a callback takes the index an array method passes',
+      files: {
+        'src/main.ts':
+          "export const numbered = ['a'].map((line, index) => `${String(index)}${line}`);\n",
+      },
+    },
+    {
       condition: 'a hooks file calls an effect through an effect event',
       files: {
         'src/room.hooks.ts': ROOM_HOOK,
@@ -136,22 +151,6 @@ describe('the Biome preset', () => {
 
     // Assert
     expect(plugins).toStrictEqual([]);
-  });
-
-  it('should report useMaxParams when a function takes a second positional argument', () => {
-    // Arrange
-    const project = {
-      files: {
-        'src/main.ts':
-          'export const join = (head: string, tail: string): string => head + tail;\n',
-      },
-    };
-
-    // Act
-    const { rules } = lintFindings(project);
-
-    // Assert
-    expect(rules).toContain('useMaxParams');
   });
 
   it('should name only folders, files and suffixes the blocks write when the preset scopes its rules', () => {

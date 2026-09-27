@@ -32,13 +32,13 @@ const aliasOffset = (document: Document): number | undefined => {
 };
 
 const mappingOf = (value: Record<string, unknown>): FrontMatterRead => {
-  const result = frontMatterModel.safeParse(value);
+  const parsing = frontMatterModel.safeParse(value);
 
   return {
-    fields: result.success ? result.data : undefined,
-    issues: result.success
+    fields: parsing.success ? parsing.data : undefined,
+    issues: parsing.success
       ? []
-      : result.error.issues.map((issue) => ({
+      : parsing.error.issues.map((issue) => ({
           field: issue.path.map(String).join('.'),
           message: issue.message,
         })),
@@ -97,11 +97,11 @@ const skill = (yaml: string): SkillFrontMatterRead => {
     };
   }
 
-  const result = skillFrontMatterModel.safeParse(document.toJS());
+  const parsing = skillFrontMatterModel.safeParse(document.toJS());
 
   return {
-    description: result.success ? result.data.description : undefined,
-    name: result.success ? result.data.name : undefined,
+    description: parsing.success ? parsing.data.description : undefined,
+    name: parsing.success ? parsing.data.name : undefined,
     status: 'parsed',
   };
 };

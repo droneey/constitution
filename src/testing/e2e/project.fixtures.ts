@@ -64,9 +64,11 @@ const created: string[] = [];
 const configOf = (config: Config): string =>
   CONFIG_KEYS.filter((key) => key !== config.omit)
     .map((key) => {
-      const value = config[key] ?? DEFAULTS[key];
+      const setting = config[key] ?? DEFAULTS[key];
 
-      return value.startsWith('\n') ? `${key}:${value}` : `${key}: ${value}`;
+      return setting.startsWith('\n')
+        ? `${key}:${setting}`
+        : `${key}: ${setting}`;
     })
     .join('\n')
     .concat('\n');
