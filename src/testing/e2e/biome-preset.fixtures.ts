@@ -29,6 +29,7 @@ interface Preset {
 
 interface Project {
   files: Readonly<Record<string, string>>;
+  parts?: readonly string[];
 }
 
 interface Findings {
@@ -38,13 +39,18 @@ interface Findings {
 
 const REPOSITORY = join(import.meta.dir, '..', '..', '..');
 const BIOME = join(REPOSITORY, 'node_modules', '.bin', 'biome');
-const PRESET = join(REPOSITORY, 'presets', 'biome', 'constitution.jsonc');
+const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'biome');
 const BLOCKS = join(REPOSITORY, 'blocks');
 
-const PRESETS = [
+const DEVKIT_PRESETS = [
   '@droneey/devkit-ts-biome/base',
   '@droneey/devkit-ts-biome/test',
-  '@droneey/constitution/biome',
+];
+
+const PARTS = [
+  'base',
+  'bun-test',
+  'react',
 ];
 
 const linkPackage = (input: { folder: string; name: string }): void => {
@@ -76,7 +82,12 @@ const lintFindings = (project: Project): Findings => {
   writeFileSync(
     join(folder, 'biome.json'),
     JSON.stringify({
-      extends: PRESETS,
+      extends: [
+        ...DEVKIT_PRESETS,
+        ...(project.parts ?? PARTS).map(
+          (part) => `@droneey/constitution/biome/${part}`,
+        ),
+      ],
       vcs: {
         enabled: false,
       },
@@ -123,8 +134,16 @@ const lintFindings = (project: Project): Findings => {
 // Each folder, file and suffix the preset's plugins are scoped by:
 // `!**/src/libs/**` names `src` and `libs`, `**/*.hooks.ts` names `.hooks.ts`.
 const presetWords = (): readonly string[] => {
-  const preset = Bun.JSONC.parse(readFileSync(PRESET, 'utf8')) as Preset;
-  const segments = preset.plugins
+  const presets = readdirSync(PRESETS_FOLDER)
+    .filter((name) => name.endsWith('.jsonc'))
+    .map(
+      (name) =>
+        Bun.JSONC.parse(
+          readFileSync(join(PRESETS_FOLDER, name), 'utf8'),
+        ) as Preset,
+    );
+  const segments = presets
+    .flatMap(({ plugins }) => plugins)
     .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
     .flatMap((glob) => glob.replace(/^!/, '').split('/'))
     .filter((segment) => segment !== '**')

@@ -30,27 +30,5 @@
         "**/*.spec.tsx",
       ],
     },
-    {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/module-mocks.grit",
-      "includes": [
-        "**/__tests__/**",
-        "**/*.spec.ts",
-        "**/*.spec.tsx",
-      ],
-    },
-    {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/manual-memo.grit",
-      "includes": [
-        "**/*.tsx",
-        "**/*.hooks.ts",
-        "**/*.context.ts",
-      ],
-    },
-    {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/component-effects.grit",
-      "includes": [
-        "**/*.tsx",
-      ],
-    },
   ],
 }
