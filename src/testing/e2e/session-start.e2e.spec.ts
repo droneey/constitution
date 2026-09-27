@@ -15,9 +15,9 @@ import {
   bytesAfterHeader,
   contextOf,
   factsOf,
+  HOOK_TODAY,
   headlineOf,
   lastLinesOf,
-  localToday,
   outputOf,
   runHook,
   warningsOf,
@@ -137,7 +137,6 @@ interface BlockListCase {
 }
 
 const WARNINGS = '⚠️ Warnings';
-const TODAY = localToday();
 const LEFT_OUT_ONE =
   'The MUST headlines of 1 block were left out; the block files hold them.';
 const BUDGET = 9400;
@@ -1430,7 +1429,7 @@ describe('session-start hook', () => {
           domains: '[version-control]',
           implementations: '[git]',
           languages: '[typescript]',
-          overrides: `\n  - rule: no-secret-in-code\n    level: MAY\n    reason: "none yet"\n    until: ${TODAY}`,
+          overrides: `\n  - rule: no-secret-in-code\n    level: MAY\n    reason: "none yet"\n    until: ${HOOK_TODAY}`,
         }),
       },
       warnings: [],
