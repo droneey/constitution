@@ -1,8 +1,15 @@
 {
+  "files": {
+    "includes": [
+      "**",
+      "!**/.devkit",
+      "!**/.constitution",
+    ],
+  },
   "plugins": [
-    "./node_modules/@droneey/constitution/presets/biome/plugins/named-arguments.grit",
+    "./.constitution/presets/biome/plugins/named-arguments.grit",
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/no-null.grit",
+      "path": "./.constitution/presets/biome/plugins/no-null.grit",
       "includes": [
         "**",
         "!**/adapters/**",
@@ -10,20 +17,20 @@
       ],
     },
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/surface.grit",
+      "path": "./.constitution/presets/biome/plugins/surface.grit",
       "includes": [
         "**/index.ts",
       ],
     },
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/empty-names.grit",
+      "path": "./.constitution/presets/biome/plugins/empty-names.grit",
       "includes": [
         "**",
         "!**/src/libs/**",
       ],
     },
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/case-names.grit",
+      "path": "./.constitution/presets/biome/plugins/case-names.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.spec.ts",

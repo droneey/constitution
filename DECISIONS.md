@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0075 |
+| Blocks | ADR-0064 – ADR-0076 |
 
 ---
 
@@ -461,7 +461,7 @@
 - **Why.** The block's text is the one place the constitution and the tool meet; a second mapping in every configuration is a detail nobody keeps.
 
 ## ADR-0073 — The constitution carries the presets that name its folders
-**Date:** 2026-09-27 · **Status:** Accepted
+**Date:** 2026-09-27 · **Status:** Superseded by ADR-0076
 
 - **Decision.** A tool preset whose rules name the constitution's folders, files or suffixes — Biome's plugins scoped to `adapters/` or `.hooks.ts`, dependency-cruiser's layer sets — ships in the constitution's own package as `@droneey/constitution/<tool>`, in the version of its blocks. devkit's presets hold only what any team can take. A spec fails when the constitution's preset names a folder or suffix its blocks do not write.
 - **Rejected.** Keeping that preset in devkit, where the folders are written a second time and a rename switches a rule off unnoticed; generating devkit's preset from the blocks, a build between two repositories.
@@ -480,3 +480,10 @@
 - **Decision.** The configuration of a tool that is not JavaScript — lefthook, betterleaks — comes from devkit's release archive, which mise installs pinned by version and checksum and links as the ignored `.devkit`; mise's `postinstall` hook also installs the git hooks. npm carries only the configuration of JavaScript and TypeScript tools.
 - **Rejected.** npm packages for those tools, which a repository of another language cannot take; a git submodule, which every clone and every CI checkout must fetch; lefthook's remotes, which put the version into every path and hide the files in `.git`; a branch of built files, which grows the history with each release.
 - **Why.** The configuration then arrives like the tools themselves — pinned, verified against its checksum, the same in every language — and a release can carry built files as well as sources.
+
+## ADR-0076 — The constitution ships the presets that name its folders in its release archive
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A tool preset whose rules name the constitution's folders, files or suffixes ships with the constitution, in the version of its blocks, as `presets/` in its release archive `constitution.tar.gz`. A project installs the archive with mise and links it as `.constitution`, as it links devkit's archive as `.devkit`; the constitution links itself there. A spec fails when a preset names a folder or suffix the blocks do not write.
+- **Rejected.** Keeping the preset in devkit, where the folders are written a second time; exporting it from the constitution's package and taking it from git by tag, a second way beside devkit's archive; generating devkit's preset from the blocks.
+- **Why.** A folder renamed in a block and in its preset changes in one pull request and ships in one version, and the preset arrives like devkit's configuration — pinned, verified against its checksum, at one path.

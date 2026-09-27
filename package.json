@@ -13,11 +13,6 @@
     "url": "https://github.com/droneey/constitution.git"
   },
   "type": "module",
-  "exports": {
-    "./biome/base": "./presets/biome/base.jsonc",
-    "./biome/bun-test": "./presets/biome/bun-test.jsonc",
-    "./biome/react": "./presets/biome/react.jsonc"
-  },
   "imports": {
     "#/*": "./src/*"
   },
@@ -37,7 +32,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.12",
-    "@droneey/constitution": "file:.",
     "@droneey/devkit-ts-biome": "^1.22.1",
     "@droneey/devkit-ts-syncpack": "^1.22.1",
     "@droneey/devkit-ts-tsconfig": "^1.22.1",

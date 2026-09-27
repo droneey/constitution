@@ -6,8 +6,10 @@ on:
 
 jobs:
   pre-release:
-    uses: droneey/.github/.github/workflows/cd-release.yml@v2.0.0
+    uses: droneey/.github/.github/workflows/cd-release.yml@v2.5.0
     permissions:
       contents: write
     with:
       prerelease: true
+      assets-command: tar -czf constitution.tar.gz presets && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
+      assets: constitution.tar.gz constitution.tar.gz.sha256

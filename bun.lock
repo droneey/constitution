@@ -6,7 +6,6 @@
       "name": "@droneey/constitution",
       "devDependencies": {
         "@biomejs/biome": "^2.5.12",
-        "@droneey/constitution": "file:.",
         "@droneey/devkit-ts-biome": "^1.22.1",
         "@droneey/devkit-ts-syncpack": "^1.22.1",
         "@droneey/devkit-ts-tsconfig": "^1.22.1",
@@ -102,8 +101,6 @@
     "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.5.12", "", { "os": "win32", "cpu": "arm64" }, "sha512-b9vtoZFsuZt1pdjNwJvXl0f+BpayRzV008uS2+JpmwIKdSE2qdu4A/l04FESwLoou5g2E/Qlec0xwJydZplH+A=="],
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.12", "", { "os": "win32", "cpu": "x64" }, "sha512-B1R/l+CwEpKFSuqiwePzPNRk1EiJN8kc0UhdafNz6MZN9v5OFP9HYP1irptvWzHrwVI4blVNGMbxc5zt70m3IA=="],
-
-    "@droneey/constitution": ["@droneey/constitution@root:", {}],
 
     "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.22.1", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-veVZ/a2BDJDYjAXphOxVOsi3JKw/5R3FvBxgtfimGlJ8xQrHvBGM+x84HkeupZeW3Z+t7e1pBiyE4kWXf4xG3Q=="],
 

@@ -53,39 +53,32 @@ const PARTS = [
   'react',
 ];
 
-const linkPackage = (input: { folder: string; name: string }): void => {
+const linkDevkit = (folder: string): void => {
   symlinkSync(
-    input.name === 'constitution'
-      ? REPOSITORY
-      : join(REPOSITORY, 'node_modules', '@droneey', input.name),
-    join(input.folder, 'node_modules', '@droneey', input.name),
+    join(REPOSITORY, 'node_modules', '@droneey', 'devkit-ts-biome'),
+    join(folder, 'node_modules', '@droneey', 'devkit-ts-biome'),
   );
 };
 
 // What the real Biome reports over a small project that installs devkit's
-// general presets and this repository's preset and extends them by name, as a
-// consumer does: each lint rule by its name, each GritQL plugin by its message.
+// general presets from npm and links this repository as .constitution, where
+// mise unpacks its release archive, as a consumer does: each lint rule by its
+// name, each GritQL plugin by its message.
 const lintFindings = (project: Project): Findings => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
 
   mkdirSync(join(folder, 'node_modules', '@droneey'), {
     recursive: true,
   });
-  linkPackage({
-    folder,
-    name: 'constitution',
-  });
-  linkPackage({
-    folder,
-    name: 'devkit-ts-biome',
-  });
+  linkDevkit(folder);
+  symlinkSync(REPOSITORY, join(folder, '.constitution'));
   writeFileSync(
     join(folder, 'biome.json'),
     JSON.stringify({
       extends: [
         ...DEVKIT_PRESETS,
         ...(project.parts ?? PARTS).map(
-          (part) => `@droneey/constitution/biome/${part}`,
+          (part) => `./.constitution/presets/biome/${part}.jsonc`,
         ),
       ],
       vcs: {
