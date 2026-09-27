@@ -32,21 +32,17 @@ interface Cruise {
 const REPOSITORY = join(import.meta.dir, '..', '..', '..');
 const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
 
-// The options devkit's hygiene preset gives a repository; this spec takes the
-// layer set alone, so it states them itself.
 const CONFIG = `export default {
-  extends: './.constitution/presets/dependency-cruiser/base.mjs',
-  options: {
-    parser: 'swc',
-    builtInModules: { add: ['bun', 'bun:test'] },
-    doNotFollow: { path: ['node_modules'] },
-  },
+  extends: [
+    '@droneey/devkit-ts-dependency-cruiser/configs/hygiene.mjs',
+    './.constitution/presets/dependency-cruiser/base.mjs',
+  ],
 };
 `;
 
-// What the real dependency-cruiser reports over a small project that links
-// this repository as .constitution, where mise unpacks its release archive,
-// and extends the layer set by path, as a consumer does.
+// What the real dependency-cruiser reports over a small project that installs
+// devkit's hygiene preset and links this repository as .constitution, where mise
+// unpacks its release archive, and extends both, as a consumer does.
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
   const files = {
@@ -63,6 +59,18 @@ const cruise = (project: Project): Cruise => {
   }
 
   symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, 'node_modules', '@droneey'), {
+    recursive: true,
+  });
+  symlinkSync(
+    join(
+      REPOSITORY,
+      'node_modules',
+      '@droneey',
+      'devkit-ts-dependency-cruiser',
+    ),
+    join(folder, 'node_modules', '@droneey', 'devkit-ts-dependency-cruiser'),
+  );
 
   const cruising = spawnSync(
     DEPCRUISE,

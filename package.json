@@ -33,6 +33,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.12",
     "@droneey/devkit-ts-biome": "^1.22.1",
+    "@droneey/devkit-ts-dependency-cruiser": "^1.23.0",
     "@droneey/devkit-ts-syncpack": "^1.22.1",
     "@droneey/devkit-ts-tsconfig": "^1.22.1",
     "@stryker-mutator/core": "^9.6.1",
