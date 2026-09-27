@@ -1,3 +1,5 @@
+import { join } from 'node:path';
+
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import {
@@ -42,6 +44,8 @@ import {
   PARAGLIDE,
   paraglideFiles,
   RATIFIED,
+  REAL_CLI,
+  REAL_WEB_APP,
   removeProjects,
   syntheticProject,
 } from './project.fixtures';
@@ -140,6 +144,8 @@ const WARNINGS = '⚠️ Warnings';
 const LEFT_OUT_ONE =
   'The MUST headlines of 1 block were left out; the block files hold them.';
 const BUDGET = 9400;
+// The real blocks and digests of this repository, read and never written.
+const REPOSITORY = join(import.meta.dir, '..', '..', '..');
 const FOUND = configOf({
   domains: '[version-control]',
   implementations: '[git]',
@@ -1771,6 +1777,41 @@ describe('session-start hook', () => {
 
       // Assert
       expect(bytes).toBeLessThanOrEqual(BUDGET);
+    },
+  );
+
+  it.each([
+    {
+      layout: REAL_WEB_APP,
+      shape: 'the reference web application',
+    },
+    {
+      layout: REAL_CLI,
+      shape: 'the reference command-line tool',
+    },
+  ])(
+    'should give $shape a digest of the real blocks within 9,400 bytes and without a warning',
+    ({ layout }) => {
+      // Arrange
+      const project = createProject(layout);
+
+      // Act
+      const context = contextOf(
+        runHook({
+          project,
+          event: 'subagent',
+          root: REPOSITORY,
+        }),
+      );
+
+      // Assert
+      expect({
+        isWithinBudget: bytesAfterHeader(context) <= BUDGET,
+        warnings: warningsOf(context),
+      }).toStrictEqual({
+        isWithinBudget: true,
+        warnings: [],
+      });
     },
   );
 

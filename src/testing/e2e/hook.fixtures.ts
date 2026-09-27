@@ -1,5 +1,11 @@
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  existsSync,
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -41,7 +47,6 @@ const NOT_UTF8 = 0xe9;
 const TIMEOUT_MS = 20_000;
 // The day the hook's `date` prints: the spec never reads the real clock.
 const HOOK_TODAY = '2026-06-15';
-const CLOCK_FOLDER = 'test-clock';
 const EXECUTABLE = 0o755;
 
 // Claude Code names the event's fields in snake case.
@@ -103,18 +108,14 @@ const inputOf = (input: {
   return bytes;
 };
 
-// A `date` of the test's own, first on the hook's PATH.
-const fakeClockIn = (root: string): string => {
-  const folder = join(root, CLOCK_FOLDER);
+// A `date` of the test's own, first on the hook's PATH, in a folder of its own:
+// the plugin root may be this repository, which a spec never writes to.
+const createFakeClock = (): string => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-clock-'));
   const date = join(folder, 'date');
 
-  if (!existsSync(date)) {
-    mkdirSync(folder, {
-      recursive: true,
-    });
-    writeFileSync(date, `#!/bin/sh\necho ${HOOK_TODAY}\n`);
-    chmodSync(date, EXECUTABLE);
-  }
+  writeFileSync(date, `#!/bin/sh\necho ${HOOK_TODAY}\n`);
+  chmodSync(date, EXECUTABLE);
 
   return folder;
 };
@@ -123,7 +124,7 @@ const fakeClockIn = (root: string): string => {
 // and CLAUDE_PLUGIN_ROOT of its own.
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
-  const clock = fakeClockIn(call.root);
+  const clock = createFakeClock();
   const result = spawnSync(
     SHELL,
     [
@@ -170,6 +171,11 @@ const runHook = (call: HookCall): HookRun => {
       }),
     },
   );
+
+  rmSync(clock, {
+    force: true,
+    recursive: true,
+  });
 
   return {
     exitCode: result.status ?? undefined,

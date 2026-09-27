@@ -27,20 +27,37 @@ block	browser	platform	Code that runs in a browser tab.		a11y ui	untrusted-clien
 block	cli	platform	A program run from a command line, one command per invocation.					false					**/cli/**
 block	mobile	platform	Code that runs as an application on a phone or tablet.		a11y ui	untrusted-client unreliable-network		false					
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.		package			false		types	typescript		**/*.ts **/*.tsx package.json tsconfig.json
+block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.		remote-data	ui typescript		true	react-dom react-native		typescript		**/*.tsx **/*.hooks.ts **/*.context.ts
 block	biome	implementation	Formats and lints TypeScript, with GritQL rules of our own.			typescript		false		format lint names	typescript		biome.json **/*.grit
 block	bun	implementation	Bun as runtime, package manager and script runner.		package	typescript		false	bun-test	audit	typescript		bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.				bun	false		tests coverage	typescript	bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.			bun cli		false			typescript		**/cli/**
 block	dependency-cruiser	implementation	Holds the import rules between layers, features and packages.			typescript		false		architecture	typescript		.dependency-cruiser.mjs
+block	expo	implementation	Expo on React Native — app config, native builds, secure storage.				react-native	false			typescript	react-native _react	app.config.ts eas.json
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.			version-control		false	lefthook				.gitignore .gitattributes
 block	gitleaks	implementation	Scans changes and history for committed secrets.			git		false		secrets			.gitleaks.toml .gitleaksignore
 block	knip	implementation	Finds unused files, dependencies and exports.			typescript		false		unused	typescript		knip.json
+block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.			typescript remote-data		false			typescript		**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.		gitleaks		git	false		commits		git	lefthook.yaml
+block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.		bun	i18n typescript		false			typescript		lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.					false		names			.ls-lint.yaml
+block	matomo	implementation	Matomo as an analytics sink behind the analytics port.			analytics typescript		false			typescript		**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.		convergence			false					mise.toml mise.lock
+block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.			browser	_react	false			typescript	_react	**/*.tsx
+block	react-native	implementation	React on a device — host components, virtualised lists, modules.			mobile	_react	false	expo		typescript	_react	**/*.tsx
 block	renovate	implementation	Dependency updates as scheduled pull requests from a bot.		mise	git		false					renovate.json
+block	shadcn	implementation	UI kit from shadcn source on Radix primitives, adapted on arrival.			react-dom tailwind		false			typescript		components.json **/libs/ui/components/**
+block	storybook	implementation	Storybook — a story for every state of a UI kit component.			_react		false			typescript		**/*.stories.tsx .storybook/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test	typescript		false		mutation	typescript		stryker.config.json
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.			typescript		false		versions format	typescript		.syncpackrc.mjs
+block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.		a11y	ui browser typescript		false			typescript		**/*.css **/*.variants.ts
+block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.			_react		false			typescript		**/*.tsx
+block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, bindings, mutations.			_react remote-data		false			typescript		**/*.hooks.ts **/root/providers/** **/cache.utils.ts
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.		tanstack-query	react-dom		false	tanstack-start		typescript		src/routes/** src/router.tsx
+block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.				tanstack-router	false			typescript	tanstack-router	src/routes/__root.tsx src/router.tsx
+block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.		a11y	_react		false			typescript		**/__tests__/**/*.spec.tsx
+block	vite	implementation	Vite builds and serves the bundle; the build is not the type gate.			typescript		false	vitest		typescript		vite.config.ts vite.*.config.ts
+block	vitest	implementation	Vitest runs the specs and measures their coverage.				vite	false		tests coverage	typescript	vite	vitest.config.ts **/__tests__/**
 block	yaml	implementation	The yaml package reads and writes YAML at the edge.		convergence	typescript		false			typescript		
 block	yamllint	implementation	yamllint holds the style of YAML files.					false					.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types at the edge.			typescript		false			typescript		
@@ -478,6 +495,23 @@ rule	shared-state-packages-once-in-lockfile	typescript	blocks/contexts/languages
 rule	manifest-fields-in-shared-order	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	tool	format	typescript	workflow	The fields of `package.json` follow the shared order.
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/with/package.md	package	SHOULD	review		typescript	architecture	`exports` in `package.json` maps each entry to its file, with a `types` condition beside `default` wherever a consumer imports code; `files` lists exactly what ships.
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/with/package.md	package	SHOULD	review		typescript	architecture	The tool a package configures is a `peerDependencies` entry with a `>=` floor.
+rule	react-compiler-on	_react	blocks/implementations/_react/_react.md		MUST	review		typescript	performance	The build runs the React Compiler over every component and hook.
+rule	no-manual-memoisation	_react	blocks/implementations/_react/_react.md		MUST	tool	lint	typescript	performance	No `useMemo`, `useCallback` or `memo`: the Compiler memoises.
+rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST	tool	lint	typescript	architecture	Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup, actions.
+rule	function-components-only	_react	blocks/implementations/_react/_react.md		MUST	tool	lint	typescript	architecture	Components are functions, composed, never inherited; a class only for an error boundary.
+rule	hooks-at-top-level	_react	blocks/implementations/_react/_react.md		MUST	tool	lint	typescript	errors	Hooks are called only at the top level of a component or a hook, never in a condition, a loop or a callback.
+rule	no-component-defined-inside-component	_react	blocks/implementations/_react/_react.md		MUST	tool	lint	typescript	errors performance	No component is defined inside another component.
+rule	list-keys-from-identity	_react	blocks/implementations/_react/_react.md		SHOULD	tool	lint	typescript	errors	A list's key comes from the item's identity, never its index.
+rule	derived-state-computed-in-render	_react	blocks/implementations/_react/_react.md		MUST	review		typescript	data performance	A value that can be derived is computed during render, never stored in state and synchronised by an effect.
+rule	effects-only-for-external-systems	_react	blocks/implementations/_react/_react.md		MUST	review		typescript	architecture	An effect synchronises with a system outside React — never state from state, never the response to an event.
+rule	effect-cleans-up-and-cancels	_react	blocks/implementations/_react/_react.md		MUST	review		typescript	errors performance	Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
+rule	component-effects-in-its-hooks-file	_react	blocks/implementations/_react/_react.md		MUST	tool	lint	typescript	architecture	A component file calls no effect hook: its effects live in hooks in `<name>.hooks.ts` beside it, and input or output goes only through binding units.
+rule	async-ui-state-through-actions	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	ux	Pending, optimistic and transition state go through `useActionState`, `useTransition` and `useOptimistic`; optimism local to a component is `useOptimistic`, optimism over cached data is the data library's.
+rule	fast-source-batched-in-its-hook	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	performance	A hook that folds a fast source schedules its state once per animation frame; an expensive render driven by input reads `useDeferredValue`.
+rule	compound-parts-share-the-root-context	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	architecture	A compound's parts are attached to its root with a typed `Object.assign`, and the root shares its state — the choreography of animated regions included — through `<name>.context.ts`.
+rule	slot-and-container-children-typed	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	types	A slot that keeps control of its element takes a `ReactElement`; a container takes `ReactNode`; a render-prop slot is `(children, …data) => ReactElement`.
+rule	error-boundary-catches-render-errors	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	errors ux	A screen's error boundary catches the render errors below it, reports once, and shows the screen's error state.
+rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/with/remote-data.md	remote-data	SHOULD	review		typescript	architecture	An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its adapter from the providers' context and calls the use-case, or the port when there is none.
 rule	biome-suppression-names-rule-and-reason	biome	blocks/implementations/biome/biome.md		MUST	tool	lint	typescript	workflow	A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`: one rule and its reason; never a range or a whole file without one.
 rule	biome-warnings-fail-the-check	biome	blocks/implementations/biome/biome.md		MUST	review		typescript	workflow	Warnings fail the check: every rule is an error, or the check passes `--error-on-warnings`.
 rule	biome-check-never-writes	biome	blocks/implementations/biome/biome.md		MUST	review		typescript	workflow	The check runs `biome check` without `--write`; `lint:fix` writes.
@@ -503,6 +537,11 @@ rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/bunli.md	
 rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/bunli.md		SHOULD	review		typescript	errors	Every handler runs its work through the program's one error handler, which maps a failure to the exit map.
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/bunli.md		SHOULD	test		typescript	testing	A command's spec builds the program with a fake terminal and prompt session — `createCLI(meta, terminal)` — and runs it on an argument list.
 rule	architecture-rules-named-by-slug	dependency-cruiser	blocks/implementations/dependency-cruiser/dependency-cruiser.md		SHOULD	review		typescript	architecture	Each `forbidden` entry is named after the slug of the rule it holds.
+rule	native-projects-generated-by-prebuild	expo	blocks/implementations/expo/expo.md		SHOULD	review		typescript	workflow	The native projects are generated from `app.config.ts` and config plugins, never committed or edited by hand.
+rule	expo-public-env-holds-no-secret	expo	blocks/implementations/expo/expo.md		MUST	review		typescript	security	Variables with the public prefix are built into the bundle, so none holds a secret.
+rule	device-secrets-in-secure-store	expo	blocks/implementations/expo/expo.md		MUST	review		typescript	security	Tokens and secrets on the device live in the system keychain through secure storage, never in plain asynchronous storage.
+rule	expo-router-root-is-routes	expo	blocks/implementations/expo/expo.md		SHOULD	tool	names	typescript	naming architecture	Expo Router's root is `src/routes/`, so `app` keeps its meaning as a feature's layer.
+rule	native-modules-at-sdk-versions	expo	blocks/implementations/expo/expo.md		SHOULD	review		typescript	workflow	Native modules are installed at the versions the SDK supports, and the check verifies them with `expo install --check`.
 rule	commit-header-type-and-subject	git	blocks/implementations/git/git.md		MUST	tool	commits		workflow naming	A commit's header is `type: Subject`: no scope, at most 100 characters, the subject in sentence case and the imperative.
 rule	commit-body-empty-reason-in-pull-request	git	blocks/implementations/git/git.md		MUST	tool	commits		workflow	A commit's body and footer are empty.
 rule	commit-type-matches-the-diff	git	blocks/implementations/git/git.md		SHOULD	review			workflow	The type matches the diff: `feat` adds behaviour; `refactor` and `style` change none.
@@ -526,25 +565,108 @@ rule	history-scanned-once-on-adoption	gitleaks	blocks/implementations/gitleaks/g
 rule	scanner-reports-redacted	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	review			security	A report shows a finding by its fingerprint and path, never by its value.
 rule	allowlisted-finding-states-its-reason	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	review			security	A false positive is allowed by its fingerprint or an inline `gitleaks:allow` marker, with its reason, never by disabling a rule.
 rule	unused-check-in-production-mode	knip	blocks/implementations/knip/knip.md		MUST	tool	unused	typescript	architecture	The check runs knip twice: over everything, and in production mode (`--production`), so code and dependencies that only specs reach count as unused.
+rule	one-ky-instance-per-system	ky	blocks/implementations/ky/ky.md		SHOULD	review		typescript	architecture	One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter imports it or uses ky's default export.
+rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/ky.md		MUST	tool	lint	typescript	types security	A response body is read as `unknown` and parsed by the adapter's model schema; `.json<T>()` is a cast and is forbidden.
+rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/ky.md		MUST	review		typescript	errors	`HTTPError`, `TimeoutError` and network failures are mapped to domain errors in the adapter, through the shared mapper; nothing of ky crosses the adapter.
+rule	ky-timeout-retry-and-signal-kept	ky	blocks/implementations/ky/ky.md		SHOULD	review		typescript	errors performance	ky's timeout stays on, its retries stay on idempotent methods and transient statuses, and the caller's abort signal is passed through.
 rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow security	The hooks come from the shared preset, pinned, never from scripts copied into the repository.
 rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow	Installing the repository's dependencies installs the hooks, so no clone commits without them.
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/lefthook.md		MUST	review			workflow	No commit skips the hooks — no `--no-verify`, no `LEFTHOOK=0` — except the release automation's version commit.
 rule	hook-rewrites-only-staged-files	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow	A hook that formats rewrites only the staged files and stages them again; the check itself never writes.
 rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/lefthook/with/gitleaks.md	gitleaks	MUST	tool	secrets		security	`pre-commit` scans the staged changes for secrets.
+rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/lingui.md		MUST	review		typescript	ux	Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as ICU messages; never concatenation or an id built by hand.
+rule	catalogs-compiled-strictly-in-check	lingui	blocks/implementations/lingui/lingui.md		MUST	review		typescript	workflow	The check compiles the catalogs in strict mode, failing on a missing translation, and writes no tracked file.
+rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/with/bun.md	bun	SHOULD	review		typescript	workflow	Lingui's command line extracts and compiles the catalogs under Bun; a step that fails there runs under Node from its package script, with the reason written beside it.
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/ls-lint.md		SHOULD	tool	names		naming	The configuration is `.ls-lint.yaml`, passed with `--config`.
+rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/matomo.md		MUST	tool	architecture	typescript	architecture	Only the Matomo sink knows Matomo — its data layer, and the container's address taken from configuration.
+rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/matomo.md		MUST	review		typescript	security	`requireConsent` is set before the first push, and tracking starts only on the consent the user gave.
+rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/matomo.md		MUST	review		typescript	security	Tracked URLs carry no identifiers or query values, custom dimensions carry no personal data, and the instance anonymises addresses.
 rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/mise.md		MUST	review			security workflow	Every tool outside the package manager — the runtime, the package manager itself, other languages' linters — is pinned exactly in `mise.toml`, with `mise.lock` committed and `locked = true`.
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/mise.md		SHOULD	review			workflow	CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/with/convergence.md	convergence	SHOULD	review			workflow	`[env] _.path` in `mise.toml` puts the program's engine directory on the PATH for developers and CI; engine versions live in the program, not in `mise.toml`.
+rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	review		typescript	ux	`<title>`, `<meta>` and `<link>` are rendered by the component or route that owns them; no head library, and no effect writing to the document head.
+rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	review		typescript	performance	A third-party script is rendered as `<script async src>` where it is needed; no script tag is inserted by hand.
+rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	tool	lint	typescript	a11y	ARIA attributes are written hyphenated, as the DOM spells them; the camelCase form is forbidden.
+rule	labels-bound-with-use-id	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	tool	lint	typescript	a11y	A label names its control with `htmlFor`, and the id comes from `useId`, never typed by hand or random.
+rule	overlays-rendered-through-portal	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	review		typescript	a11y ux	An overlay — a dialog, a popover, a toast — renders through a portal.
+rule	browser-apis-read-outside-render	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	review		typescript	errors	Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with a server snapshot, never during render.
+rule	no-raw-html-injection	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	tool	lint	typescript	security	No raw HTML is injected; untrusted markup goes through a sanitising renderer.
+rule	long-lists-virtualised	react-native	blocks/implementations/react-native/react-native.md		SHOULD	review		typescript	performance	A list that can grow renders through a virtualised list, never `map` inside a scroll view.
+rule	react-native-entry-imports-only	react-native	blocks/implementations/react-native/react-native.md		MUST	tool	lint	typescript	architecture	React Native is imported only from its package entry, never from its internal paths.
 rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			security workflow	`renovate.json` extends the fleet's preset, pinned to a release.
 rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovate/renovate.md		MUST	review			workflow	Update commits and titles follow the commit format: `chore: Update …`, no scope, sentence case.
 rule	updates-grouped-and-scheduled	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			security workflow	Minor and patch updates are grouped in one pull request, one per major update, on a schedule, with lockfile maintenance.
 rule	update-cooldown-configured	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			security	A minimum release age of some days holds back every update except a fix for a vulnerability.
 rule	peer-ranges-widened-others-bumped	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			workflow	Dependency ranges are bumped; a peer range is widened, so its floor stays.
 rule	toolchain-pins-updated-by-bot	renovate	blocks/implementations/renovate/with/mise.md	mise	SHOULD	review			security	The bot updates the pinned toolchain in `mise.toml` like any dependency.
+rule	complex-widgets-on-radix	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	review		typescript	a11y	A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Radix, directly or through shadcn source.
+rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	review		typescript	ux architecture	shadcn source is added with its CLI into the UI kit, after the kit is searched for an equivalent — never imported from a package — and adapted before review: placed and named, restyled to tokens, stripped of unused props, its props conformed, its imports rewritten to the project's alias.
+rule	slot-behind-as-child	shadcn	blocks/implementations/shadcn/shadcn.md		SHOULD	review		typescript	architecture	A polymorphic render is Radix's `Slot` behind `asChild`, the only `as` prop.
+rule	story-for-every-kit-state	storybook	blocks/implementations/storybook/storybook.md		SHOULD	review		typescript	ux testing	Every UI-kit component has `<name>.stories.tsx` beside it, with a story per variant and state — disabled, loading, error, empty, long text, both themes.
+rule	stories-render-from-fixtures	storybook	blocks/implementations/storybook/storybook.md		SHOULD	review		typescript	testing	Stories render from fixtures and fakes; no request leaves a story.
+rule	stories-unreachable-from-production	storybook	blocks/implementations/storybook/storybook.md		MUST	tool	architecture	typescript	architecture testing	Production code never imports a story, and stories are outside coverage.
+rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storybook/storybook.md		SHOULD	review		typescript	testing	Screenshots are compared over the UI kit's stories, where the look is the contract, and nowhere else.
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/stryker.md		MUST	review		typescript	testing	An equivalent mutant is marked on its line — `// Stryker disable next-line <mutator>: <reason>` — one mutator and its reason; never `all`, and never a disable for a whole file.
 rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/with/bun-test.md	bun-test	SHOULD	review		typescript	testing	Stryker drives the specs through its command runner — `bun --config=./bunfig.mutation.toml test --bail` — with coverage off, the end-to-end specs left out, and `coverageAnalysis: "off"`.
 rule	stryker-runs-on-node	stryker	blocks/implementations/stryker/with/bun-test.md	bun-test	SHOULD	review		typescript	workflow	Stryker itself runs on Node — its code generator fails under Bun — so the script removes Bun's `node` shim from the PATH.
 rule	versions-checked-and-manifests-formatted	syncpack	blocks/implementations/syncpack/syncpack.md		SHOULD	tool	versions	typescript	workflow	The check runs `syncpack lint` and `syncpack format --check`.
+rule	utilities-only-from-tokens	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	review		typescript	ux	`@theme` defines only the design system's tokens and resets Tailwind's default scales, so a utility exists only for a token.
+rule	bare-utility-only-without-a-token	tailwind	blocks/implementations/tailwind/tailwind.md		SHOULD	review		typescript	ux	A utility with no token behind it — `flex`, `items-center`, `truncate` — is used only where a token would make no sense.
+rule	variants-in-one-cva-map	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	review		typescript	types architecture	A component's own variants are one `cva` map in `<name>.variants.ts`, which types the props through `VariantProps`.
+rule	cascading-variants-in-utilities	tailwind	blocks/implementations/tailwind/tailwind.md		SHOULD	review		typescript	architecture	A cascading variant is a `data-*` attribute on the root, resolved by an `@utility` rule, and never passed down as a prop.
+rule	mobile-first-breakpoints	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	tool	lint	typescript	ux	Base classes serve small screens and are widened by `md:`, `lg:` and `xl:`; `max-*:` is forbidden.
+rule	dynamic-viewport-classes	tailwind	blocks/implementations/tailwind/tailwind.md		SHOULD	tool	lint	typescript	ux	Viewport heights use the dynamic units (`h-dvh`), never `h-screen`.
+rule	dark-theme-redefines-tokens	tailwind	blocks/implementations/tailwind/tailwind.md		SHOULD	review		typescript	ux	Dark mode redefines the semantic tokens under one selector; a component writes `dark:` only where no token can say it.
+rule	focus-shown-by-focusable-utility	tailwind	blocks/implementations/tailwind/with/a11y.md	a11y	MUST	review		typescript	a11y	Focus is shown by the design system's `focusable` utility, and only it removes an outline.
+rule	motion-tokens-honour-reduced-motion	tailwind	blocks/implementations/tailwind/with/a11y.md	a11y	SHOULD	review		typescript	a11y	The motion tokens collapse under reduced motion, in the theme.
+rule	type-tokens-in-rem	tailwind	blocks/implementations/tailwind/with/a11y.md	a11y	SHOULD	review		typescript	a11y	Font-size and line-height tokens are in `rem`.
+rule	form-state-in-the-form-instance	tanstack-form	blocks/implementations/tanstack-form/tanstack-form.md		SHOULD	review		typescript	data	Values, errors, touched and submitting state live in the form instance, with no state per field beside it.
+rule	form-validated-by-its-own-schema	tanstack-form	blocks/implementations/tanstack-form/tanstack-form.md		SHOULD	review		typescript	types ux	The form validates by a schema beside it, composed from the value objects' predicates, and maps the server's typed error onto its fields.
+rule	form-submits-through-a-binding-unit	tanstack-form	blocks/implementations/tanstack-form/tanstack-form.md		SHOULD	review		typescript	architecture ux	Submission calls the command's binding unit or an `on<Event>` callback; the form does no input or output, and its submit is disabled while it submits.
+rule	idempotency-key-per-intent	tanstack-form	blocks/implementations/tanstack-form/tanstack-form.md		SHOULD	review		typescript	data	A submission that must not repeat creates its idempotency key once, with the form, and reuses it on every retry — never a new key per click.
+rule	bindings-wrap-query-and-mutation	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	architecture	A read's binding unit wraps `useQuery`, a write's `useMutation`; `queryFn` and `mutationFn` call the adapter the providers hand to the binding unit.
+rule	query-result-returned-as-status-union	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	review		typescript	types data	The binding unit returns a union by `status` — pending; error, with its typed error; success, with its data.
+rule	keys-only-from-the-feature-factory	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	tool	lint	typescript	data	Every key comes from the feature's key factory in `app/utils/cache.utils.ts`, built from the port's parameters; no key array is written inline.
+rule	cache-is-the-only-home-of-server-data	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	review		typescript	data	Server data lives only in the cache: never copied into state, a context or a store.
+rule	invalidation-in-on-settled	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	data architecture	A write invalidates its own feature's keys, in `onSettled`; a refresh across features is composed above, or left to staleness.
+rule	optimism-in-the-mutation-lifecycle	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	review		typescript	data ux	Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes with domain factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write.
+rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	errors security	`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, turns an unauthorized error into session state through the auth feature's surface, once.
+rule	query-retry-only-transient	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	errors	The client's `retry` is a predicate on the error's transience, with a limit — never the default three retries on every error; a mutation retries only when it is idempotent.
+rule	query-signal-reaches-the-port	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	performance	`queryFn` passes Query's abort signal to the port, so a screen that is left cancels its read.
+rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	performance data	A stream is folded into the cache with the domain's reducer, in batches of at most one per frame.
+rule	input-query-keyed-on-debounced-value	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	performance ux	A query driven by typing is keyed on the debounced or deferred value, and keeps the previous result as its placeholder.
+rule	query-client-built-once-fresh-per-spec	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	review		typescript	testing architecture	One `QueryClient` is built where the providers build the rest; each spec builds a fresh client with retries off, inside the providers, with the transport replaced by captured responses.
+rule	screens-are-file-routes	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	tool	names	typescript	architecture naming	Screens are file routes under `routes/`; `routeTree.gen.ts` is generated and never edited; `router.tsx` creates the router.
+rule	route-owns-its-url	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	review		typescript	architecture	A route owns its URL: it reads and validates its search, runs its loader, and composes the page.
+rule	router-primitives-only-in-screens-and-widgets	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		MUST	tool	architecture	typescript	architecture	Router primitives — `Link`, `useNavigate`, `useSearch`, `useParams` — are imported only by route files, their private hooks and widgets.
+rule	search-params-validated-by-schema	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		MUST	review		typescript	security types	Every route with search parameters validates them by a schema in `validateSearch`.
+rule	search-params-merged-on-write	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	review		typescript	ux	A write to the search merges with the current parameters, never replaces them.
+rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	tool	names	typescript	architecture naming	A screen's private pieces live beside its route in `-components/`, and its private binding units in `-hooks/`.
+rule	layout-lives-in-route-file	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		MUST	review		typescript	architecture	A layout is a pathless `_name/route.tsx` that renders `<Outlet/>`, never an `index.tsx`.
+rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	review		typescript	security	Access control sits in `beforeLoad`, through a feature's composition outside React, and ends in `redirect`.
+rule	error-component-per-route	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	review		typescript	errors ux	Each route that loads data declares its error component; the root declares the not-found one.
+rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	review		typescript	ux	A route declares its document metadata in `head`, and the root renders `<HeadContent/>`.
+rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript	data	Loaders and guards read through the query cache — `ensureQueryData` with the feature's key factory — and the router's own cache is off (`defaultPreloadStaleTime: 0`).
+rule	query-client-through-router-context	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	SHOULD	tool	architecture	typescript	architecture	The query client reaches loaders and guards through the router's context, never by importing `root/`.
+rule	spa-mode-without-server-logic	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		MUST	review		typescript	architecture security	The application runs in SPA mode: the root route renders on the client, and there is no server function, server route or data access, except the one configuration function below.
+rule	runtime-config-from-one-server-function	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	review		typescript	security architecture	One server function reads the environment, parses it by a schema and serves it; the root route loads it once, before anything reads configuration.
+rule	root-route-is-the-delivery-wiring	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	review		typescript	architecture	The root route is the delivery layer's wiring: it builds the shell — `<HeadContent/>`, `<Scripts/>`, the document's language — and mounts the providers of `root/`.
+rule	hashed-assets-immutable-html-revalidated	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	review		typescript	performance	Hashed assets are served as immutable; the HTML, the runtime configuration and the embed entries are revalidated.
+rule	queries-by-role-label-text	testing-library	blocks/implementations/testing-library/testing-library.md		MUST	tool	lint	typescript	testing a11y	Elements are queried by role first, then by label and text; `getByTestId`, `container.querySelector` and class selectors are forbidden.
+rule	interactions-through-user-event	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	review		typescript	testing	Interactions go through `userEvent`, never `fireEvent`.
+rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	review		typescript	testing	What appears asynchronously is awaited with `findBy…` or `waitFor`, never a fixed sleep.
+rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	review		typescript	testing	A binding unit is proven through the screen or widget that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
+rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	review		typescript	testing	One render helper in `__tests__/<name>.fixtures` mounts the providers a spec needs, fresh for each spec, with the transport replaced by captured responses.
+rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/with/a11y.md	a11y	MUST	test		typescript	a11y testing	Every screen and component spec runs the axe scan over what it rendered, and passes with zero violations.
+rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/vite.md		SHOULD	review		typescript	types workflow	The build does not check types: the check runs the compiler before the build.
+rule	vite-public-env-holds-no-secret	vite	blocks/implementations/vite/vite.md		MUST	review		typescript	security	Only variables with the public prefix reach the bundle, and each of them is public: none holds a secret.
+rule	one-build-for-every-environment	vite	blocks/implementations/vite/vite.md		SHOULD	review		typescript	architecture	One build serves every environment: settings per environment are read at run time, never built in through `import.meta.env`; build values only carry facts of the build itself.
+rule	bundle-measured-against-budget	vite	blocks/implementations/vite/vite.md		SHOULD	review		typescript	performance	The build's output is measured against the bundle's size budget in the check, entry by entry.
+rule	runner-picks-only-named-specs	vitest	blocks/implementations/vitest/vitest.md		MUST	tool	tests	typescript	testing	The runner picks up exactly `__tests__/**/<name>.spec.*`; integration specs run as a step of their own, and a run that finds no spec fails.
+rule	coverage-counts-every-source-file	vitest	blocks/implementations/vitest/vitest.md		MUST	tool	coverage	typescript	testing	Coverage counts every source file, tested or not, at 100 percent of lines, functions and branches, excluding exactly core's list and the stories.
+rule	ui-specs-in-a-simulated-dom	vitest	blocks/implementations/vitest/vitest.md		SHOULD	review		typescript	testing	Interface specs run in a simulated DOM, which is their sandbox; a request no captured response answers fails the case, and time is faked where it matters.
+rule	no-module-mocking-of-own-code	vitest	blocks/implementations/vitest/vitest.md		SHOULD	tool	lint	typescript	testing	No `vi.mock` of the project's own modules: effects are faked through their ports, and a spy is asserted only when the call is the behaviour.
+rule	cases-isolated-by-configuration	vitest	blocks/implementations/vitest/vitest.md		SHOULD	tool	tests	typescript	testing	Mocks, stubbed globals and the environment are restored after every case, and cases pass in any order.
 rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/yaml.md		MUST	tool	architecture	typescript	architecture	The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses, and its result is `unknown` until a schema parses it.
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/yaml.md		SHOULD	test		typescript	errors	Every failure of `parse` — a syntax error, and an alias without its anchor, which throws a `ReferenceError` — becomes one coded error with its cause.
 rule	yaml-written-without-folding	yaml	blocks/implementations/yaml/yaml.md		SHOULD	test		typescript	data	YAML is written with `lineWidth: 0`, so no value is folded across lines.
@@ -560,6 +682,34 @@ answer	bun	publishing-with-provenance-supported	partial
 answer	bunli	command-framework-parses-flags-by-schema	met
 answer	bunli	command-framework-leaves-exits-to-the-handler	partial
 answer	bunli	command-framework-runs-in-a-test-sandbox	partial
+answer	ky	remote-data-transport-timeout-and-cancel	met
+answer	ky	remote-data-transport-typed-failures	met
+answer	ky	remote-data-transport-retries-only-transient	met
+answer	ky	remote-data-transport-built-by-the-root	met
+answer	lingui	i18n-plurals-by-cldr	met
+answer	lingui	i18n-parameters-without-concatenation	met
+answer	lingui	i18n-typed-keys	partial
+answer	lingui	i18n-lazy-locales	met
+answer	matomo	analytics-consent-first	met
+answer	matomo	analytics-anonymous-by-default	met
+answer	matomo	analytics-loads-without-blocking	met
+answer	matomo	analytics-context-dimensions	met
+answer	shadcn	ui-primitives-keyboard-and-focus	met
+answer	shadcn	ui-primitives-unstyled	met
+answer	shadcn	ui-primitives-text-by-props	partial
+answer	shadcn	ui-primitives-slot	met
+answer	tailwind	ui-styling-restricted-to-tokens	met
+answer	tailwind	ui-styling-one-set-for-themes	met
+answer	tailwind	ui-styling-container-queries	met
+answer	tailwind	ui-styling-cascading-variants	met
+answer	tailwind	ui-variant-map-types-props	met
+answer	tanstack-query	remote-data-cache-dedupes-by-key	met
+answer	tanstack-query	remote-data-cache-invalidates-by-prefix	met
+answer	tanstack-query	remote-data-cache-cancels-reads	met
+answer	tanstack-query	remote-data-cache-mutation-lifecycle	met
+answer	tanstack-query	remote-data-cache-global-error-hook	met
+answer	tanstack-query	remote-data-cache-staleness-policy	met
+answer	testing-library	a11y-scan-inside-component-specs	met
 answer	zod	schema-rejects-unknown-keys	met
 answer	zod	schema-discriminated-unions	met
 answer	zod	schema-exports-json-schema	met

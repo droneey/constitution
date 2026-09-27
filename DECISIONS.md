@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0069 |
+| Blocks | ADR-0064 – ADR-0070 |
 
 ---
 
@@ -438,3 +438,10 @@
 - **Decision.** The `#/` alias is declared in `imports` of `package.json`, and `paths` in `tsconfig.json` repeats it word for word. No bundler alias.
 - **Rejected.** `imports` alone, which the compiler cannot use to resolve a folder's surface (`#/kernel`); importing every surface by its file (`#/kernel/index.ts`); fallback targets in `imports`, which the runtime does not follow.
 - **Why.** The runtime and the compiler resolve differently today; one source and one mirror, identical on sight, is the least that works for both.
+
+## ADR-0070 — The Compiler memoises; an effect's callback is an effect event
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** React code writes no `useMemo`, `useCallback` or `memo`: the React Compiler memoises. The linter's exhaustive-dependencies rule stays on; a function an effect calls but must not re-run on is wrapped in `useEffectEvent`, and a suppression with its reason is the last resort.
+- **Rejected.** Turning the rule's stability check off because the Compiler memoises, which would also stop it catching a missing dependency.
+- **Why.** The ban on manual memoisation and the exhaustive-dependencies rule then both hold, with no function wrapped only to quiet the linter.
