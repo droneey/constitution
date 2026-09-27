@@ -31,7 +31,7 @@ interface Cruise {
   violations: readonly string[];
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..', '..');
+const REPOSITORY = join(import.meta.dir, '..');
 const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
 
 const INSTALLED = [

@@ -34,7 +34,7 @@ interface PluginRootOptions {
 }
 
 const INSTALLED = '1.0.0';
-const REPOSITORY = join(import.meta.dir, '..', '..', '..');
+const REPOSITORY = join(import.meta.dir, '..');
 const HOOK = 'hooks/session-start.sh';
 const LIBRARY = 'hooks/lib';
 

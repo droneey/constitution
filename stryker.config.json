@@ -7,7 +7,6 @@
   "mutate": [
     "src/**/*.ts",
     "!src/**/__tests__/**",
-    "!src/testing/**",
     "!src/entrypoints/**",
     "!src/root/**"
   ],
