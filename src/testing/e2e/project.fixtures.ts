@@ -428,6 +428,43 @@ const RATIFIED: ProjectLayout = {
   },
 };
 
+// The reference web application and command-line tool, as the real blocks of
+// this repository would serve them.
+const REAL_WEB_APP: ProjectLayout = {
+  config: [
+    'version: 1.0.0',
+    '',
+    'domains: [ui, a11y, remote-data, i18n, analytics, version-control,',
+    '          untrusted-client, unreliable-network]',
+    'platforms: [browser]',
+    'languages: [typescript]',
+    'implementations: [react-dom, tanstack-start, tanstack-query, tanstack-form, tailwind,',
+    '                  shadcn, storybook, ky, zod, vite, vitest, testing-library, matomo,',
+    '                  lingui, bun, biome, dependency-cruiser, ls-lint, knip, syncpack,',
+    '                  stryker, git, lefthook, gitleaks, renovate, mise]',
+    'apps: {}',
+    'check: bun run check',
+    'overrides: []',
+    '',
+  ].join('\n'),
+};
+
+const REAL_CLI: ProjectLayout = {
+  config: [
+    'version: 1.0.0',
+    '',
+    'domains: [convergence, remote-data, version-control]',
+    'platforms: [cli]',
+    'languages: [typescript]',
+    'implementations: [bun, bun-test, bunli, zod, yaml, yamllint, biome, dependency-cruiser,',
+    '                  ls-lint, knip, syncpack, stryker, mise, git, lefthook, gitleaks, renovate]',
+    'apps: {}',
+    'check: bun run check',
+    'overrides: []',
+    '',
+  ].join('\n'),
+};
+
 const syntheticProject = (blocks: number): ProjectLayout => ({
   config: configOf({
     domains: `[${Array.from(
@@ -453,6 +490,8 @@ export {
   PARAGLIDE,
   paraglideFiles,
   RATIFIED,
+  REAL_CLI,
+  REAL_WEB_APP,
   removeProjects,
   syntheticProject,
 };
