@@ -1,0 +1,15 @@
+language js
+
+or {
+  `import $_ from $_`,
+  `const $_ = $_`,
+  `let $_ = $_`,
+  `function $_($_) { $_ }`,
+  `class $_ { $_ }`,
+  `interface $_ { $_ }`,
+  `type $_ = $_`,
+  `enum $_ { $_ }`,
+  `export default $_`
+} as $statement where {
+  register_diagnostic(span=$statement, message="A surface only re-exports by name: move this into a file of its own", severity="error")
+}

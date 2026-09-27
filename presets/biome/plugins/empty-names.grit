@@ -1,0 +1,20 @@
+language js
+
+or {
+  `const $name = $_`,
+  `let $name = $_`
+} where {
+  $name <: or {
+    `data`,
+    `result`,
+    `temp`,
+    `info`,
+    `item`,
+    `value`,
+    `obj`,
+    `arr`,
+    `stuff`,
+    `thing`
+  },
+  register_diagnostic(span=$name, message="Name what it holds: an empty word says nothing", severity="error")
+}

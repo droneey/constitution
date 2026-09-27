@@ -1,0 +1,12 @@
+language js
+
+or {
+  `useEffect($...)`,
+  `useLayoutEffect($...)`,
+  `useInsertionEffect($...)`,
+  `React.useEffect($...)`,
+  `React.useLayoutEffect($...)`,
+  `React.useInsertionEffect($...)`
+} as $call where {
+  register_diagnostic(span=$call, message="Call an effect from a hook in the component's .hooks.ts file", severity="error")
+}

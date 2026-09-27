@@ -13,6 +13,9 @@
     "url": "https://github.com/droneey/constitution.git"
   },
   "type": "module",
+  "exports": {
+    "./biome": "./presets/biome/constitution.jsonc"
+  },
   "imports": {
     "#/*": "./src/*"
   },
