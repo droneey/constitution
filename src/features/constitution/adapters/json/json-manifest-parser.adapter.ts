@@ -51,15 +51,15 @@ const readManifest = <TWire, TManifest>(input: {
     };
   }
 
-  const result = input.model.safeParse(parsed.value);
+  const parsing = input.model.safeParse(parsed.value);
 
-  return result.success
+  return parsing.success
     ? {
         status: 'parsed',
-        value: input.map(result.data),
+        value: input.map(parsing.data),
       }
     : {
-        issues: result.error.issues.map((issue) => ({
+        issues: parsing.error.issues.map((issue) => ({
           field: issue.path.map(String).join('.'),
           message: issue.message,
         })),

@@ -19,9 +19,12 @@ interface Report {
 }
 
 interface Preset {
-  plugins: readonly {
-    includes: readonly string[];
-  }[];
+  plugins: readonly (
+    | string
+    | {
+        includes: readonly string[];
+      }
+  )[];
 }
 
 interface Project {
@@ -122,7 +125,7 @@ const lintFindings = (project: Project): Findings => {
 const presetWords = (): readonly string[] => {
   const preset = Bun.JSONC.parse(readFileSync(PRESET, 'utf8')) as Preset;
   const segments = preset.plugins
-    .flatMap(({ includes }) => includes)
+    .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
     .flatMap((glob) => glob.replace(/^!/, '').split('/'))
     .filter((segment) => segment !== '**')
     .map((segment) => segment.replace(/^\*/, ''));

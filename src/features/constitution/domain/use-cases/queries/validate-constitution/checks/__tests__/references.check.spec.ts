@@ -86,7 +86,7 @@ describe('referencesCheck', () => {
     ]);
   });
 
-  it('should report each decision a block cites by number', () => {
+  it('should report each decision when a block cites it by number', () => {
     // Arrange
     const files = validFiles();
     files[UI] = uiWith(

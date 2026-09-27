@@ -3,30 +3,10 @@
   "extends": [
     "@droneey/devkit-ts-biome/base",
     "@droneey/devkit-ts-biome/node",
-    "@droneey/devkit-ts-biome/test"
+    "@droneey/devkit-ts-biome/test",
+    "@droneey/constitution/biome"
   ],
-  "linter": {
-    "rules": {
-      "suspicious": {
-        "noDoubleEquals": {
-          "level": "error",
-          "options": {
-            "ignoreNull": false
-          }
-        }
-      }
-    }
-  },
   "overrides": [
-    {
-      "includes": [
-        "src/**",
-        "!src/**/adapters/**"
-      ],
-      "plugins": [
-        "./biome/no-null.grit"
-      ]
-    },
     {
       "includes": [
         ".syncpackrc.mjs"

@@ -19,7 +19,7 @@ status: stable
 > - `noDoubleEquals` without its `null` exception, and a GritQL rule against `null` outside adapters;
 > - `noExplicitAny` everywhere, tests included; `noNonNullAssertion`, `noTsIgnore`; `noFloatingPromises`, `noMisusedPromises`; `noEmptyBlockStatements`;
 > - `noSkippedTests`, `noFocusedTests`, `useExpect`; `noConsole`, `noDebugger`, `noAlert`, with `noConsole` off only in the logger adapter and the command-line delivery layer;
-> - `noReExportAll` and a GritQL rule that a surface only re-exports by name; `useExhaustiveSwitchCases`; `useMaxParams` at 1; `useNamingConvention`;
+> - `noReExportAll` and a GritQL rule that a surface only re-exports by name; `useExhaustiveSwitchCases`; a GritQL rule that a declared function takes one positional parameter — a callback keeps the signature its library gives it, and a comparator or reducer carries a suppression; `useNamingConvention`;
 > - GritQL rules for empty names, empty verbs, `TODO(#<issue>)`, `should … when …` case names, casts of a response body, `toEqual` and `mock.module`.
 >
 > A rule it cannot hold is reported, and needs another tool, a review or an override.

@@ -43,6 +43,7 @@ const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 
 // Five layers, not four ranks: the index groups platforms, then languages, and
 // the hook never sorts.
+// biome-ignore lint/plugin/named-arguments: a comparator takes its two sides in order
 const byLayerThenId = (left: Block, right: Block): number =>
   LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) ||
   compareText(left.id, right.id);

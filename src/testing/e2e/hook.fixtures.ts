@@ -125,7 +125,7 @@ const createFakeClock = (): string => {
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
   const clock = createFakeClock();
-  const result = spawnSync(
+  const hookRun = spawnSync(
     SHELL,
     [
       join(call.root, 'hooks', 'session-start.sh'),
@@ -178,9 +178,9 @@ const runHook = (call: HookCall): HookRun => {
   });
 
   return {
-    exitCode: result.status ?? undefined,
-    stderr: result.stderr,
-    stdout: result.stdout,
+    exitCode: hookRun.status ?? undefined,
+    stderr: hookRun.stderr,
+    stdout: hookRun.stdout,
   };
 };
 
