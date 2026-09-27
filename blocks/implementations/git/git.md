@@ -19,8 +19,8 @@ status: stable
 ## Commits and branches
 
 ## commit-header-type-and-subject · MUST
-A commit's header is `type: Subject`: no scope, at most 100 characters, the subject in sentence case and the imperative. The types are `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `docs`, `build`, `ci`, `chore` and `revert`; `type!:` marks a breaking change.
-**Why:** one format lets the release automation read the history, and lets a person scan it.
+A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with one of four types: `feat` adds a feature; `fix` fixes a bug; `refactor` changes structure without changing behaviour; `chore` is everything else that changes no behaviour — dependencies, tooling, documentation, releases. A breaking change is marked by `!` right before the colon: `feat!: Split the settings`. No scope; at most 100 characters; the subject starts with a capital letter and is in the imperative.
+**Why:** four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong.
 **Check:** tool — commits
 **Tags:** workflow, naming
 
@@ -32,7 +32,7 @@ A commit's body and footer are empty. The reason for the change, the migration o
 **Implements:** `reason-for-change-recorded`
 
 ## commit-type-matches-the-diff · SHOULD
-The type matches the diff: `feat` adds behaviour; `refactor` and `style` change none.
+The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` and `chore` change none; `!` marks every change a consumer must adapt to.
 **Why:** the type sets the version bump and the changelog, so a wrong type ships a wrong version.
 **Check:** review
 **Tags:** workflow
