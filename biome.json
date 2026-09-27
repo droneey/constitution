@@ -4,8 +4,8 @@
     "@droneey/devkit-ts-biome/base",
     "@droneey/devkit-ts-biome/node",
     "@droneey/devkit-ts-biome/test",
-    "@droneey/constitution/biome/base",
-    "@droneey/constitution/biome/bun-test"
+    "./.constitution/presets/biome/base.jsonc",
+    "./.constitution/presets/biome/bun-test.jsonc"
   ],
   "overrides": [
     {

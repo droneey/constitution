@@ -14,7 +14,7 @@ status: stable
 
 # Biome
 
-> Formats and lints. `biome.json` extends devkit's general presets and the constitution's own, which hold the rules that name the constitution's folders and suffixes: `@droneey/constitution/biome/base` for core and TypeScript, and a part named after each other active block that has rules of its own, such as `biome/react`. Together they hold every active rule whose check is `format` or `lint`, and, with `useFilenamingConvention`, the names of source files and of `__tests__/`:
+> Formats and lints. `biome.json` extends devkit's general presets and the constitution's own, which hold the rules that name the constitution's folders and suffixes: `presets/biome/base.jsonc` of the constitution's release archive for core and TypeScript, and a part named after each other active block that has rules of its own, such as `react.jsonc`. Together they hold every active rule whose check is `format` or `lint`, and, with `useFilenamingConvention`, the names of source files and of `__tests__/`:
 > - the limits as errors — `noExcessiveLinesPerFunction` 100, `noExcessiveLinesPerFile` 500, `noExcessiveCognitiveComplexity` 10 — with both line limits off under `**/__tests__/**`;
 > - `noDoubleEquals` without its `null` exception, and a GritQL rule against `null` outside adapters;
 > - `noExplicitAny` everywhere, tests included; `noNonNullAssertion`, `noTsIgnore`; `noFloatingPromises`, `noMisusedPromises`; `noEmptyBlockStatements`;

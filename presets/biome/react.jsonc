@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/manual-memo.grit",
+      "path": "./.constitution/presets/biome/plugins/manual-memo.grit",
       "includes": [
         "**/*.tsx",
         "**/*.hooks.ts",
@@ -9,7 +9,7 @@
       ],
     },
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/component-effects.grit",
+      "path": "./.constitution/presets/biome/plugins/component-effects.grit",
       "includes": [
         "**/*.tsx",
       ],

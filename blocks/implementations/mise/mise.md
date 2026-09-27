@@ -7,7 +7,7 @@ requires: []
 extends: null
 abstract: false
 checks: []
-owns: [mise, mise.toml, mise.lock, mise.local.toml, mise-action, .devkit]
+owns: [mise, mise.toml, mise.lock, mise.local.toml, mise-action, .devkit, .constitution]
 governs: ["mise.toml", "mise.lock"]
 status: stable
 ---
@@ -31,7 +31,7 @@ CI installs the toolchain from `mise.toml`, so the check runs on the pinned vers
 **Implements:** `one-check-command`
 
 ## tool-configuration-from-the-kit-archive · SHOULD
-A tool outside the package manager takes its shared configuration from devkit's release archive: mise installs `devkit.tar.gz` through its `http` backend, pinned by version and by `checksum`, with `strip_components = 0` so the archive keeps its folders, and a `postinstall` hook links it as `.devkit`, which version control ignores. The same hook installs the commit hooks, never a package manager's install script.
+Shared configuration that is not an npm package comes from the release archive of its source: devkit's `devkit.tar.gz` for the tools outside the package manager, the constitution's `constitution.tar.gz` for its presets. mise installs each through its `http` backend, pinned by version and by `checksum`, with `strip_components = 0` so the archive keeps its folders, and a `postinstall` hook links it as `.devkit` or `.constitution`, which version control ignores. The same hook installs the commit hooks, never a package manager's install script.
 **Why:** the configuration then arrives pinned and verified like the tool itself, in a repository of any language, at one path in every repository.
 **Check:** review
 **Tags:** security, workflow

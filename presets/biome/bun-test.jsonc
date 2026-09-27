@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/module-mocks.grit",
+      "path": "./.constitution/presets/biome/plugins/module-mocks.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.spec.ts",

@@ -16,3 +16,4 @@ reports/
 # mise
 mise.local.toml
 /.devkit
+/.constitution

@@ -8,6 +8,7 @@ lefthook = "2.1.14"
 [hooks]
 postinstall = [
   "ln -sfn \"$(mise where http:devkit)\" .devkit",
+  "ln -sfn . .constitution",
   "lefthook install",
 ]
 
