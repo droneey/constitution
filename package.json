@@ -32,8 +32,8 @@
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
     "mutation:check": "bun run ./src/entrypoints/mutation-check/main.ts",
     "mutation:all": "bun run ./src/entrypoints/mutation-check/main.ts all",
-    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check",
-    "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner"
+    "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
+    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.12",
