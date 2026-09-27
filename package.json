@@ -22,7 +22,6 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "prepare": "lefthook install",
     "lint:check": "biome check",
     "lint:fix": "biome check --write",
     "packages:check": "syncpack lint && syncpack format --check",
@@ -33,19 +32,18 @@
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
     "mutation:check": "bun run ./src/entrypoints/mutation-check/main.ts",
     "mutation:all": "bun run ./src/entrypoints/mutation-check/main.ts all",
-    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run mutation:check && bun run blocks:check"
+    "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
+    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.12",
     "@droneey/constitution": "file:.",
-    "@droneey/devkit-ts-biome": "^1.18.0",
-    "@droneey/devkit-ts-lefthook": "^1.18.0",
-    "@droneey/devkit-ts-syncpack": "^1.18.0",
-    "@droneey/devkit-ts-tsconfig": "^1.18.0",
+    "@droneey/devkit-ts-biome": "^1.22.1",
+    "@droneey/devkit-ts-syncpack": "^1.22.1",
+    "@droneey/devkit-ts-tsconfig": "^1.22.1",
     "@stryker-mutator/core": "^9.6.1",
     "@types/bun": "^1.4.1",
     "@types/node": "^26",
-    "lefthook": "^2.1.4",
     "syncpack": "^15.3.3",
     "typescript": "^7.0.2",
     "yaml": "^2.8.1",
