@@ -343,4 +343,338 @@ describe('the dependency-cruiser layer set', () => {
     // Assert
     expect(violations).toContain(rule);
   });
+
+  it.each([
+    {
+      condition: 'a component imports an input and output package',
+      files: {
+        'src/features/orders/ui/components/order-card.tsx': importing({
+          from: 'ky',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'ui',
+      ],
+      rule: 'components-take-data-and-callbacks',
+    },
+    {
+      condition: 'a widget imports an adapter',
+      files: {
+        'src/features/orders/adapters/api/order.adapter.ts':
+          exported('fetchOrders'),
+        'src/features/orders/ui/widgets/orders.tsx': importing({
+          from: '../../adapters/api/order.adapter',
+          name: 'fetchOrders',
+        }),
+      },
+      parts: [
+        'base',
+        'ui',
+      ],
+      rule: 'ui-reaches-no-mechanism',
+    },
+    {
+      condition: 'a widget imports an entity as a value',
+      files: {
+        'src/features/orders/domain/entities/index.ts': exported('order'),
+        'src/features/orders/ui/widgets/orders.tsx': importing({
+          from: '../../domain/entities',
+          name: 'order',
+        }),
+      },
+      parts: [
+        'base',
+        'ui',
+      ],
+      rule: 'ui-takes-entities-as-types',
+    },
+    {
+      condition: 'a primitive imports the message library',
+      files: {
+        'src/libs/ui/button.tsx': importing({
+          from: '@lingui/core',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'ui',
+      ],
+      rule: 'primitives-hold-no-text',
+    },
+    {
+      condition: 'a component imports a router primitive',
+      files: {
+        'src/features/orders/ui/components/order-card.tsx': importing({
+          from: '@tanstack/react-router',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'tanstack-router',
+      ],
+      rule: 'router-primitives-only-in-screens-and-widgets',
+    },
+    {
+      condition: 'a screen’s piece imports a router primitive',
+      files: {
+        'src/routes/orders/-components/order-list.tsx': importing({
+          from: '@tanstack/react-router',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'tanstack-router',
+      ],
+      rule: 'screen-pieces-never-navigate',
+    },
+    {
+      condition: 'a feature imports the analytics contract',
+      files: {
+        'src/contracts/analytics/index.ts': exported('track'),
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '../../../contracts/analytics',
+          name: 'track',
+        }),
+      },
+      parts: [
+        'base',
+        'analytics',
+      ],
+      rule: 'features-never-track',
+    },
+    {
+      condition: 'the application layer imports the message library',
+      files: {
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '@lingui/core',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'i18n',
+      ],
+      rule: 'application-returns-codes-not-text',
+    },
+    {
+      condition: 'production code imports a story',
+      files: {
+        'src/libs/ui/button.stories.tsx': exported('primary'),
+        'src/libs/ui/button.tsx': importing({
+          from: './button.stories',
+          name: 'primary',
+        }),
+      },
+      parts: [
+        'base',
+        'storybook',
+      ],
+      rule: 'stories-unreachable-from-production',
+    },
+    {
+      condition: 'the application layer imports yaml',
+      files: {
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: 'yaml',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'yaml',
+      ],
+      rule: 'yaml-only-at-the-edge',
+    },
+    {
+      condition: 'the application layer imports zod',
+      files: {
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: 'zod',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'zod',
+      ],
+      rule: 'zod-only-at-the-edge',
+    },
+  ])(
+    'should report $rule when $condition and a project extends that part',
+    ({ files, parts, rule }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { violations } = cruise(project);
+
+      // Assert
+      expect(violations).toContain(rule);
+    },
+  );
+
+  it('should report no violation when an application follows the rules of every part', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/adapters/api/models/order.model.ts': importing({
+          from: 'zod',
+          name: 'value',
+        }),
+        'src/features/orders/adapters/yaml/order.adapter.ts': importing({
+          from: 'yaml',
+          name: 'value',
+        }),
+        'src/features/orders/domain/entities/index.ts':
+          'export type Order = { id: string };\n',
+        'src/features/orders/ui/widgets/orders.tsx':
+          "import type { Order } from '../../domain/entities';\nimport { value } from '@tanstack/react-router';\nexport const orders: Order[] = [];\nexport const link = value;\n",
+        'src/libs/ui/button.stories.tsx': importing({
+          from: './button',
+          name: 'button',
+        }),
+        'src/libs/ui/button.tsx': exported('button'),
+        'src/root/wiring.ts': exported('wiring'),
+        'src/routes/__root.tsx': importing({
+          from: '../root/wiring',
+          name: 'wiring',
+        }),
+        'src/routes/orders/index.tsx': importing({
+          from: '@tanstack/react-router',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'base',
+        'ui',
+        'tanstack-router',
+        'analytics',
+        'i18n',
+        'storybook',
+        'yaml',
+        'zod',
+      ],
+    };
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'a package imports another package’s file',
+      files: {
+        'packages/typescript/libs/biome/build.ts': importing({
+          from: '../tsconfig/configs',
+          name: 'configs',
+        }),
+        'packages/typescript/libs/tsconfig/configs.ts': exported('configs'),
+      },
+      roots: [
+        'packages',
+      ],
+      rule: 'packages-blind-to-each-other',
+    },
+    {
+      condition: 'the common area imports a package',
+      files: {
+        'packages/common/hooks.ts': importing({
+          from: '../typescript/libs/biome/build',
+          name: 'build',
+        }),
+        'packages/typescript/libs/biome/build.ts': exported('build'),
+      },
+      roots: [
+        'packages',
+      ],
+      rule: 'common-imports-nothing',
+    },
+    {
+      condition: 'a package imports a file of the repository that holds it',
+      files: {
+        'packages/typescript/libs/biome/build.ts': importing({
+          from: '../../../../scripts/release',
+          name: 'release',
+        }),
+        'scripts/release.ts': exported('release'),
+      },
+      roots: [
+        'packages',
+        'scripts',
+      ],
+      rule: 'package-knows-no-consumer',
+    },
+    {
+      condition: 'the root imports a package by its path',
+      files: {
+        'packages/typescript/libs/biome/build.ts': exported('build'),
+        'scripts/release.ts': importing({
+          from: '../packages/typescript/libs/biome/build',
+          name: 'build',
+        }),
+      },
+      roots: [
+        'packages',
+        'scripts',
+      ],
+      rule: 'root-takes-packages-by-name',
+    },
+  ])(
+    'should report $rule when $condition and a repository of packages extends the package part',
+    ({ files, roots, rule }) => {
+      // Arrange
+      const project = {
+        files,
+        parts: [
+          'package',
+        ],
+        roots,
+      };
+
+      // Act
+      const { violations } = cruise(project);
+
+      // Assert
+      expect(violations).toContain(rule);
+    },
+  );
+
+  it('should report no violation when a package imports its own files and the runtime', () => {
+    // Arrange
+    const project = {
+      files: {
+        'packages/typescript/libs/biome/build.ts':
+          "import { readFileSync } from 'node:fs';\nimport { plugins } from './plugins';\nexport const build = [readFileSync, plugins];\n",
+        'packages/typescript/libs/biome/plugins.ts': exported('plugins'),
+        'scripts/release.ts': importing({
+          from: 'yaml',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'package',
+      ],
+      roots: [
+        'packages',
+        'scripts',
+      ],
+    };
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toStrictEqual([]);
+  });
 });

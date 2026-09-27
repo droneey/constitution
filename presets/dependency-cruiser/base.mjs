@@ -68,6 +68,8 @@ export default {
           ENTRY,
           '^src/entrypoints/[^/]+/main\\.[^/]+$',
           '^src/root/',
+          '^src/router\\.[^/]+$',
+          '^src/routes/__root\\.[^/]+$',
           SPECS,
         ],
       },
