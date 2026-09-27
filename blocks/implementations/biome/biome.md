@@ -22,7 +22,7 @@ status: stable
 > - `noReExportAll` and a GritQL rule that a surface only re-exports by name; `useExhaustiveSwitchCases`; `useMaxParams` at 1; `useNamingConvention`;
 > - GritQL rules for empty names, empty verbs, `TODO(#<issue>)`, `should … when …` case names, casts of a response body, `toEqual` and `mock.module`.
 >
-> The preset names in comments the slug each setting holds. A rule it cannot hold is reported, and needs another tool, a review or an override.
+> A rule it cannot hold is reported, and needs another tool, a review or an override.
 
 ## biome-suppression-names-rule-and-reason · MUST
 A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`: one rule and its reason; never a range or a whole file without one.

@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0071 |
+| Blocks | ADR-0064 – ADR-0072 |
 
 ---
 
@@ -452,3 +452,10 @@
 - **Decision.** Commits follow Conventional Commits 1.0.0 with the types `feat`, `fix`, `refactor` and `chore`; a breaking change is marked by `!` before the colon. No scope. The subject starts with a capital letter. The branch prefixes and the release pipelines stay as they are until the git strategy is chosen.
 - **Rejected.** The eleven types of the common convention (`perf`, `docs`, `ci`, `build`, `test`, `style`, `revert`…), which the changelog ignores and the history barely uses; scopes, which a single changelog does not read; a `BREAKING CHANGE` footer, since commit bodies stay empty.
 - **Why.** `feat` and `fix` are what the specification and the changelog read; `chore` carries the automation's own commits; `refactor` promises what a reviewer can check — no change of behaviour.
+
+## ADR-0072 — A tool's configuration does not name the rules it holds
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** A tool block says which roles it checks and what its configuration holds. The configuration — a devkit preset, a project's own file — carries no link to the slugs of the rules it holds: no comment per setting, no rule named after its slug.
+- **Rejected.** Naming each setting's slug in a comment, or each dependency-cruiser rule after its slug: nothing would check the names, and they would drift.
+- **Why.** The block's text is the one place the constitution and the tool meet; a second mapping in every configuration is a detail nobody keeps.
