@@ -4,7 +4,8 @@
     "@droneey/devkit-ts-biome/base",
     "@droneey/devkit-ts-biome/node",
     "@droneey/devkit-ts-biome/test",
-    "@droneey/constitution/biome"
+    "@droneey/constitution/biome/base",
+    "@droneey/constitution/biome/bun-test"
   ],
   "overrides": [
     {

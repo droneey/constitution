@@ -14,7 +14,9 @@
   },
   "type": "module",
   "exports": {
-    "./biome": "./presets/biome/constitution.jsonc"
+    "./biome/base": "./presets/biome/base.jsonc",
+    "./biome/bun-test": "./presets/biome/bun-test.jsonc",
+    "./biome/react": "./presets/biome/react.jsonc"
   },
   "imports": {
     "#/*": "./src/*"

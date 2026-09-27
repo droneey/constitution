@@ -107,6 +107,47 @@ describe('the Biome preset', () => {
 
   it.each([
     {
+      condition: 'a spec replaces a module',
+      files: {
+        'src/__tests__/order.spec.ts':
+          "import { mock } from 'bun:test';\n\nmock.module('./order', () => ({}));\n",
+      },
+    },
+    {
+      condition: 'a component memoises a value by hand',
+      files: {
+        'src/Panel.tsx':
+          "import { useMemo } from 'react';\n\nexport function Panel({ label }: { label: string }): string {\n  return useMemo(() => label.trim(), [label]);\n}\n",
+      },
+    },
+    {
+      condition: 'a component calls an effect',
+      files: {
+        'src/Panel.tsx':
+          "import { useEffect } from 'react';\n\nexport function Panel(): string {\n  useEffect(() => {\n    globalThis.focus();\n  }, []);\n  return 'panel';\n}\n",
+      },
+    },
+  ])(
+    'should report no plugin finding when $condition and a project extends only the base part',
+    ({ files }) => {
+      // Arrange
+      const project = {
+        files,
+        parts: [
+          'base',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins).toStrictEqual([]);
+    },
+  );
+
+  it.each([
+    {
       condition: 'an adapter maps null from the wire',
       files: {
         'src/features/orders/adapters/api/order.adapter.ts':
