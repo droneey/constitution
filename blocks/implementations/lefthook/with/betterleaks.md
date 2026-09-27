@@ -1,6 +1,6 @@
-# Lefthook with Gitleaks
+# Lefthook with Betterleaks
 
-> The secret scan in the commit hook.
+> The secret scan in the commit hook: devkit's `betterleaks` hook runs `betterleaks git --pre-commit --staged --redact`.
 
 ## staged-changes-scanned-before-commit · MUST
 `pre-commit` scans the staged changes for secrets.

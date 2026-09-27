@@ -40,7 +40,7 @@ Tell the owner the installed version and the blocks above, grouped by layer, in 
 
 ### 3. Look at the repository and propose the blocks
 
-Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.gitleaks.toml`…), the top-level folders, the CI workflows, and the README.
+Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
 
 Propose, for each of the four keys, the blocks from the list above that the repository matches, each with the evidence that made you pick it:
 
