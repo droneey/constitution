@@ -1,4 +1,4 @@
-import { posix } from 'node:path';
+import { directoryOf, joinPaths, normalizePath } from './paths.utils';
 
 const ROOT = '/';
 const ANCHOR = '#';
@@ -8,8 +8,11 @@ const ANCHOR = '#';
 const resolveLink = (input: { path: string; target: string }): string => {
   const joined = input.target.startsWith(ROOT)
     ? input.target.slice(ROOT.length)
-    : posix.join(posix.dirname(input.path), input.target);
-  const resolved = posix.normalize(joined);
+    : joinPaths([
+        directoryOf(input.path),
+        input.target,
+      ]);
+  const resolved = normalizePath(joined);
 
   return resolved.endsWith(ROOT) ? resolved.slice(0, -ROOT.length) : resolved;
 };

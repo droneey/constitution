@@ -1,10 +1,12 @@
-import { posix } from 'node:path';
-
 import type { Finding } from '#/kernel';
-import { rewriteLocalLinks } from '#/libs/markdown';
 
 import type { Constitution } from '../../../entities';
-import { targetFromRoot } from '../../../utils';
+import {
+  directoryOf,
+  joinPaths,
+  rewriteLocalLinks,
+  targetFromRoot,
+} from '../../../utils';
 
 interface CorePart {
   findings: readonly Finding[];
@@ -27,8 +29,11 @@ const corePartOf = (constitution: Constitution): CorePart => {
     };
   }
 
-  const folder = posix.dirname(core.path);
-  const principles = posix.join(folder, PRINCIPLES);
+  const folder = directoryOf(core.path);
+  const principles = joinPaths([
+    folder,
+    PRINCIPLES,
+  ]);
   const laws = constitution.rules
     .filter((rule) => rule.file === principles && rule.level === 'MUST')
     .map((rule) => rule.slug);

@@ -1,8 +1,8 @@
 import type { Finding, Layer } from '#/kernel';
-import { splitFrontMatter } from '#/libs/markdown';
 
 import type { FileTree, FrontMatterParser } from '../../../contracts';
 import type { Block, BlockFile } from '../../../entities';
+import { splitFrontMatter } from '../../../utils';
 import type { BlockPath } from './block-path.utils';
 import { readFrontMatter } from './front-matter.utils';
 

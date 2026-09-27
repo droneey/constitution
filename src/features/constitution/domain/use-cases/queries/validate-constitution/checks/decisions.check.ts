@@ -1,7 +1,7 @@
 import type { Finding } from '#/kernel';
-import { withoutCodeFences } from '#/libs/markdown';
 
 import { DOCUMENT_PATHS } from '../../../../constants';
+import { withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 interface Entry {

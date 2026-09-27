@@ -1,8 +1,7 @@
 import type { Finding } from '#/kernel';
-import { withoutCodeFences } from '#/libs/markdown';
 
 import type { Block, BlockFile } from '../../../../entities';
-import { reachableFrom } from '../../../../utils';
+import { reachableFrom, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { collapseWhitespace, ownedWordMatcher } from '../tokens.utils';
 

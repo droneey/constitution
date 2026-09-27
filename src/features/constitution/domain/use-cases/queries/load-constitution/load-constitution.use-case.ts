@@ -1,6 +1,5 @@
 import type { Finding } from '#/kernel';
 import { compareText, LAYERS } from '#/kernel';
-import { splitFrontMatter, withoutCodeFences } from '#/libs/markdown';
 
 import { DOCUMENT_PATHS } from '../../../constants';
 import type {
@@ -16,6 +15,7 @@ import type {
   Rule,
   Skill,
 } from '../../../entities';
+import { splitFrontMatter, withoutCodeFences } from '../../../utils';
 import { classifyBlockPath } from './block-path.utils';
 import type { Located } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';

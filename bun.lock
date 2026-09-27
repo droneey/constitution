@@ -4,6 +4,10 @@
   "workspaces": {
     "": {
       "name": "@droneey/constitution",
+      "dependencies": {
+        "yaml": "^2.8.1",
+        "zod": "^4.1.13",
+      },
       "devDependencies": {
         "@biomejs/biome": "^2.5.12",
         "@droneey/devkit-ts-biome": "^1.22.1",
@@ -17,8 +21,6 @@
         "dependency-cruiser": "^18.4.0",
         "syncpack": "^15.3.3",
         "typescript": "^7.0.2",
-        "yaml": "^2.8.1",
-        "zod": "^4.1.13",
       },
     },
   },
