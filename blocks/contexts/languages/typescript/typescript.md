@@ -26,8 +26,8 @@ An import that leaves its module uses `#/`; files inside one module import each 
 **Implements:** `import-only-through-surface`
 
 ## hash-alias-from-package-imports · MUST
-`#/` resolves only through `imports` in `package.json` (`"#/*": "./src/*"`). No `paths` in `tsconfig.json` and no alias in a bundler.
-**Why:** `imports` is the runtime's standard, read by the runtime, the compiler and every bundler alike; a second alias in another file drifts from it.
+`#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's surface through `imports`. No alias in a bundler.
+**Why:** one declaration is the source and the mirror is checked against it on sight; a third alias elsewhere drifts unseen.
 **Check:** review
 **Tags:** architecture
 

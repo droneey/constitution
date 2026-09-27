@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0067 |
+| Blocks | ADR-0064 – ADR-0069 |
 
 ---
 
@@ -424,3 +424,17 @@
 - **Decision.** A screen is a boundary: its spec renders it inside its providers, with the transport replaced by captured responses, and proves each data state — loading, empty, error, content — each interaction that changes something, each message the user sees and each navigation. Fakes of use-cases serve only a screen that shows no remote data. A reusable component's spec proves the variants that change behaviour or meaning, keyboard, focus and accessible name, role and state. Elements are found by role, label and text, never by class or internal state. Every screen and component spec runs an accessibility scan with zero violations. Appearance is compared by screenshot only where the look is the contract, in a design system.
 - **Rejected.** Faking a screen's use-cases, which never sees a response the mapping gets wrong; a coverage floor for UI; snapshots of the DOM.
 - **Why.** A spec written against what the user sees, over the real binding units and adapters, fails when the user's experience or the data they receive changes.
+
+## ADR-0068 — The commit hooks check commits; no separate message tool
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** The commit hooks' shared preset checks commit messages and branch names, so `lefthook` checks the `commits` role. No separate message tool is adopted, and the pull request title typed on the forge is checked by a way still to be chosen.
+- **Rejected.** A separate commit-message tool beside the hooks.
+- **Why.** The hooks already hold the formats in every repository; a second tool would hold the same rules twice.
+
+## ADR-0069 — `#/` is declared in package.json and mirrored in tsconfig
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** The `#/` alias is declared in `imports` of `package.json`, and `paths` in `tsconfig.json` repeats it word for word. No bundler alias.
+- **Rejected.** `imports` alone, which the compiler cannot use to resolve a folder's surface (`#/kernel`); importing every surface by its file (`#/kernel/index.ts`); fallback targets in `imports`, which the runtime does not follow.
+- **Why.** The runtime and the compiler resolve differently today; one source and one mirror, identical on sight, is the least that works for both.

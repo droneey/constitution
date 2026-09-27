@@ -27,6 +27,23 @@ block	browser	platform	Code that runs in a browser tab.		a11y ui	untrusted-clien
 block	cli	platform	A program run from a command line, one command per invocation.					false					**/cli/**
 block	mobile	platform	Code that runs as an application on a phone or tablet.		a11y ui	untrusted-client unreliable-network		false					
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.		package			false		types	typescript		**/*.ts **/*.tsx package.json tsconfig.json
+block	biome	implementation	Formats and lints TypeScript, with GritQL rules of our own.			typescript		false		format lint names	typescript		biome.json **/*.grit
+block	bun	implementation	Bun as runtime, package manager and script runner.		package	typescript		false	bun-test	audit	typescript		bunfig.toml package.json
+block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.				bun	false		tests coverage	typescript	bun	**/__tests__/**
+block	bunli	implementation	bunli declares each command, its flags and its handler.			bun cli		false			typescript		**/cli/**
+block	dependency-cruiser	implementation	Holds the import rules between layers, features and packages.			typescript		false		architecture	typescript		.dependency-cruiser.mjs
+block	git	implementation	Git's commits, branches, tags, ignores and worktrees.			version-control		false	lefthook				.gitignore .gitattributes
+block	gitleaks	implementation	Scans changes and history for committed secrets.			git		false		secrets			.gitleaks.toml .gitleaksignore
+block	knip	implementation	Finds unused files, dependencies and exports.			typescript		false		unused	typescript		knip.json
+block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.		gitleaks		git	false		commits		git	lefthook.yaml
+block	ls-lint	implementation	Holds the names of files and folders in every language.					false		names			.ls-lint.yaml
+block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.		convergence			false					mise.toml mise.lock
+block	renovate	implementation	Dependency updates as scheduled pull requests from a bot.		mise	git		false					renovate.json
+block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test	typescript		false		mutation	typescript		stryker.config.json
+block	syncpack	implementation	Holds dependency versions and the shape of every manifest.			typescript		false		versions format	typescript		.syncpackrc.mjs
+block	yaml	implementation	The yaml package reads and writes YAML at the edge.		convergence	typescript		false			typescript		
+block	yamllint	implementation	yamllint holds the style of YAML files.					false					.yamllint.yaml
+block	zod	implementation	zod parses untrusted input into the program's types at the edge.			typescript		false			typescript		
 rule	dependencies-point-inward-without-cycles	core	blocks/core/principles.md		MUST	tool	architecture		architecture	Imports point inward, toward stability, and form no cycle, direct or through a chain of modules.
 rule	inner-layers-declare-their-contracts	core	blocks/core/principles.md		MUST	review			architecture	The inner layer declares, in its own words, the contracts it needs; the outer layer implements them.
 rule	domain-imports-only-itself-and-kernel	core	blocks/core/principles.md		MUST	tool	architecture		architecture	The domain imports only itself and the shared kernel: no framework, no input or output, no vendor library, however pure.
@@ -434,7 +451,7 @@ rule	safe-areas-respected	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	
 rule	keyboard-never-hides-the-field	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	SHOULD	review			ux	The focused field and its action stay above the on-screen keyboard.
 rule	system-back-honoured	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	SHOULD	review			ux	The system's back gesture goes back, and the app's own gestures never fight the navigator's.
 rule	hash-imports-leave-the-module	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	tool	lint	typescript	architecture	An import that leaves its module uses `#/`; files inside one module import each other by relative path.
-rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	review		typescript	architecture	`#/` resolves only through `imports` in `package.json` (`"#/*": "./src/*"`).
+rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	review		typescript	architecture	`#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads.
 rule	typescript-file-forms	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	tool	names	typescript	naming	Source files are kebab-case `.ts`, and `.tsx` only where markup is written.
 rule	file-named-after-its-export	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	review		typescript	naming	A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
 rule	identifier-case-by-kind	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	tool	lint	typescript	naming	PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function.
@@ -461,3 +478,88 @@ rule	shared-state-packages-once-in-lockfile	typescript	blocks/contexts/languages
 rule	manifest-fields-in-shared-order	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	tool	format	typescript	workflow	The fields of `package.json` follow the shared order.
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/with/package.md	package	SHOULD	review		typescript	architecture	`exports` in `package.json` maps each entry to its file, with a `types` condition beside `default` wherever a consumer imports code; `files` lists exactly what ships.
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/with/package.md	package	SHOULD	review		typescript	architecture	The tool a package configures is a `peerDependencies` entry with a `>=` floor.
+rule	biome-suppression-names-rule-and-reason	biome	blocks/implementations/biome/biome.md		MUST	tool	lint	typescript	workflow	A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`: one rule and its reason; never a range or a whole file without one.
+rule	biome-warnings-fail-the-check	biome	blocks/implementations/biome/biome.md		MUST	review		typescript	workflow	Warnings fail the check: every rule is an error, or the check passes `--error-on-warnings`.
+rule	biome-check-never-writes	biome	blocks/implementations/biome/biome.md		MUST	review		typescript	workflow	The check runs `biome check` without `--write`; `lint:fix` writes.
+rule	project-grit-rules-scoped	biome	blocks/implementations/biome/biome.md		SHOULD	review		typescript	workflow	A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the devkit preset carries it.
+rule	bun-is-the-only-package-manager	bun	blocks/implementations/bun/bun.md		MUST	review		typescript	security workflow	Bun installs (`bun install`), runs scripts (`bun run`) and runs binaries (`bunx`); never npm, yarn, pnpm or npx, except `npm publish` in the release workflow.
+rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/bun.md		MUST	review		typescript	security	CI and every script install with `bun install --frozen-lockfile`.
+rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/bun.md		MUST	review		typescript	security	Bun runs no dependency's install script unless `trustedDependencies` in `package.json` lists that package by name.
+rule	release-age-set-for-installs	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	security	`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases.
+rule	audit-in-the-check	bun	blocks/implementations/bun/bun.md		MUST	tool	audit	typescript	security	The check runs `bun audit --audit-level=high`, development dependencies included.
+rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	workflow	`bunfig.toml` sets `[run] bun = true`, so every tool, one with a Node shebang included, runs on the pinned Bun.
+rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	workflow	Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.
+rule	no-automatic-env-file	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	security	Bun's automatic loading of the local environment file is off — `--no-env-file` in the entry's shebang and in the scripts — so the program reads its environment only where the configuration is parsed.
+rule	check-chains-tool-scripts	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	workflow	Each tool has an `<area>:check` script that only checks, and an `<area>:fix` beside it where the tool can write; `check` chains the check scripts.
+rule	bun-build-after-the-check	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	workflow	A program is built by `bun build`, in CI after the check.
+rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/with/package.md	package	SHOULD	review		typescript	architecture	The root `package.json` is `private` and declares `"workspaces": ["packages/<language>/libs/*"]`.
+rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/with/package.md	package	SHOULD	tool	versions	typescript	architecture	The root installs the repository's own packages as `workspace:*` development dependencies.
+rule	version-written-to-every-manifest	bun	blocks/implementations/bun/with/package.md	package	SHOULD	review		typescript	workflow	The version command writes the version into the root's and every package's manifest.
+rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	tool	lint	typescript	testing	A case compares with `toStrictEqual`, never `toEqual`.
+rule	no-module-mocks	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	tool	lint	typescript	testing	No `mock.module` and no `spyOn` over a real module: effects are faked through their ports.
+rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	review		typescript	testing	The unit run leaves out `*.integration.spec.ts`; integration specs run as their own script of the check.
+rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/bunli.md		SHOULD	review		typescript	architecture	Each command file exports `create<Name>Command(context)`, which returns `defineCommand({ name, description, options, handler })`; the root builds the context, and `createCLI` registers the commands.
+rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/bunli.md		SHOULD	review		typescript	types	Every flag is `option(schema, { short, description })`, its schema a standard schema, and the handler receives the parsed flags.
+rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/bunli.md		SHOULD	review		typescript	errors	Every handler runs its work through the program's one error handler, which maps a failure to the exit map.
+rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/bunli.md		SHOULD	test		typescript	testing	A command's spec builds the program with a fake terminal and prompt session — `createCLI(meta, terminal)` — and runs it on an argument list.
+rule	architecture-rules-named-by-slug	dependency-cruiser	blocks/implementations/dependency-cruiser/dependency-cruiser.md		SHOULD	review		typescript	architecture	Each `forbidden` entry is named after the slug of the rule it holds.
+rule	commit-header-type-and-subject	git	blocks/implementations/git/git.md		MUST	tool	commits		workflow naming	A commit's header is `type: Subject`: no scope, at most 100 characters, the subject in sentence case and the imperative.
+rule	commit-body-empty-reason-in-pull-request	git	blocks/implementations/git/git.md		MUST	tool	commits		workflow	A commit's body and footer are empty.
+rule	commit-type-matches-the-diff	git	blocks/implementations/git/git.md		SHOULD	review			workflow	The type matches the diff: `feat` adds behaviour; `refactor` and `style` change none.
+rule	commit-subject-states-what-changed	git	blocks/implementations/git/git.md		SHOULD	review			workflow	The subject states what changed, not which files were touched.
+rule	no-placeholder-commit-subjects	git	blocks/implementations/git/git.md		MUST	tool	commits		workflow	Placeholder subjects are rejected: "update", "fix stuff", "wip", "changes", "misc".
+rule	branch-named-type-issue-name	git	blocks/implementations/git/git.md		MUST	tool	commits		workflow naming	A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<kebab-name>`.
+rule	branch-type-sets-version-bump	git	blocks/implementations/git/git.md		SHOULD	review			workflow	The type of the merged branch sets the version bump: `feature` a minor one; `fix`, `hotfix` and dependency updates a patch.
+rule	squash-merge-titled-in-commit-format	git	blocks/implementations/git/git.md		MUST	review			workflow	Pull requests are squash-merged; the title becomes the commit's subject and follows the commit format.
+rule	pull-request-title-checked-in-ci	git	blocks/implementations/git/git.md		SHOULD	review			workflow	CI checks the pull request's title and branch name against the formats, since a local hook can be skipped and the title is typed on the forge.
+rule	move-with-git-mv	git	blocks/implementations/git/git.md		SHOULD	review			workflow	With staged changes, a file is moved with `git mv`, so the index records a rename.
+rule	stage-by-name-and-read-staged-diff	git	blocks/implementations/git/git.md		MUST	review			workflow security	Files are staged by name or by hunk, never with `git add .` or `-A`, and the staged diff and status are read before the commit.
+rule	worktree-one-branch-own-dependencies	git	blocks/implementations/git/git.md		MUST	review			workflow	A worktree holds one branch, and its dependencies are installed in it, never linked from another checkout.
+rule	force-push-with-lease-to-own-branch-only	git	blocks/implementations/git/git.md		SHOULD	review			workflow	A force push goes only to one's own branch that nobody else has, and always with `--force-with-lease`.
+rule	clean-tree-with-safe-cleanup	git	blocks/implementations/git/git.md		SHOULD	review			workflow	A stash carries a message, and `git clean -n` precedes `git clean -fd`.
+rule	gitignore-covers-dependencies-output-and-caches	git	blocks/implementations/git/git.md		SHOULD	review			workflow	`.gitignore` covers dependencies, build output, coverage, logs, caches, temporary and backup files, the files of the operating system and of personal editors, and `/local/`.
+rule	gitignore-covers-keys-and-environment-files	git	blocks/implementations/git/git.md		MUST	review			security	`.gitignore` covers key and credential files and every local environment file except its example — `.env*` but `.env.example`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets`, `.htpasswd` — in nested ignore files too.
+rule	release-tags-annotated-semver	git	blocks/implementations/git/git.md		MUST	review			workflow	A release tag is annotated and named `v<major>.<minor>.<patch>`.
+rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/git.md		SHOULD	review			performance	A file over 1 MB goes to Git LFS, or out of the repository.
+rule	secrets-scanned-on-every-change	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	tool	secrets		security	The check scans the branch's commits and the working tree, and CI runs it on every pull request.
+rule	history-scanned-once-on-adoption	gitleaks	blocks/implementations/gitleaks/gitleaks.md		SHOULD	review			security	The whole history, every ref, is scanned once when the scanner is adopted, and before a first public release.
+rule	scanner-reports-redacted	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	review			security	A report shows a finding by its fingerprint and path, never by its value.
+rule	allowlisted-finding-states-its-reason	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	review			security	A false positive is allowed by its fingerprint or an inline `gitleaks:allow` marker, with its reason, never by disabling a rule.
+rule	unused-check-in-production-mode	knip	blocks/implementations/knip/knip.md		MUST	tool	unused	typescript	architecture	The check runs knip twice: over everything, and in production mode (`--production`), so code and dependencies that only specs reach count as unused.
+rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow security	The hooks come from the shared preset, pinned, never from scripts copied into the repository.
+rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow	Installing the repository's dependencies installs the hooks, so no clone commits without them.
+rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/lefthook.md		MUST	review			workflow	No commit skips the hooks — no `--no-verify`, no `LEFTHOOK=0` — except the release automation's version commit.
+rule	hook-rewrites-only-staged-files	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow	A hook that formats rewrites only the staged files and stages them again; the check itself never writes.
+rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/lefthook/with/gitleaks.md	gitleaks	MUST	tool	secrets		security	`pre-commit` scans the staged changes for secrets.
+rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/ls-lint.md		SHOULD	tool	names		naming	The configuration is `.ls-lint.yaml`, passed with `--config`.
+rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/mise.md		MUST	review			security workflow	Every tool outside the package manager — the runtime, the package manager itself, other languages' linters — is pinned exactly in `mise.toml`, with `mise.lock` committed and `locked = true`.
+rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/mise.md		SHOULD	review			workflow	CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
+rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/with/convergence.md	convergence	SHOULD	review			workflow	`[env] _.path` in `mise.toml` puts the program's engine directory on the PATH for developers and CI; engine versions live in the program, not in `mise.toml`.
+rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			security workflow	`renovate.json` extends the fleet's preset, pinned to a release.
+rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovate/renovate.md		MUST	review			workflow	Update commits and titles follow the commit format: `chore: Update …`, no scope, sentence case.
+rule	updates-grouped-and-scheduled	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			security workflow	Minor and patch updates are grouped in one pull request, one per major update, on a schedule, with lockfile maintenance.
+rule	update-cooldown-configured	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			security	A minimum release age of some days holds back every update except a fix for a vulnerability.
+rule	peer-ranges-widened-others-bumped	renovate	blocks/implementations/renovate/renovate.md		SHOULD	review			workflow	Dependency ranges are bumped; a peer range is widened, so its floor stays.
+rule	toolchain-pins-updated-by-bot	renovate	blocks/implementations/renovate/with/mise.md	mise	SHOULD	review			security	The bot updates the pinned toolchain in `mise.toml` like any dependency.
+rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/stryker.md		MUST	review		typescript	testing	An equivalent mutant is marked on its line — `// Stryker disable next-line <mutator>: <reason>` — one mutator and its reason; never `all`, and never a disable for a whole file.
+rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/with/bun-test.md	bun-test	SHOULD	review		typescript	testing	Stryker drives the specs through its command runner — `bun --config=./bunfig.mutation.toml test --bail` — with coverage off, the end-to-end specs left out, and `coverageAnalysis: "off"`.
+rule	stryker-runs-on-node	stryker	blocks/implementations/stryker/with/bun-test.md	bun-test	SHOULD	review		typescript	workflow	Stryker itself runs on Node — its code generator fails under Bun — so the script removes Bun's `node` shim from the PATH.
+rule	versions-checked-and-manifests-formatted	syncpack	blocks/implementations/syncpack/syncpack.md		SHOULD	tool	versions	typescript	workflow	The check runs `syncpack lint` and `syncpack format --check`.
+rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/yaml.md		MUST	tool	architecture	typescript	architecture	The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses, and its result is `unknown` until a schema parses it.
+rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/yaml.md		SHOULD	test		typescript	errors	Every failure of `parse` — a syntax error, and an alias without its anchor, which throws a `ReferenceError` — becomes one coded error with its cause.
+rule	yaml-written-without-folding	yaml	blocks/implementations/yaml/yaml.md		SHOULD	test		typescript	data	YAML is written with `lineWidth: 0`, so no value is folded across lines.
+rule	document-header-names-its-schema	yaml	blocks/implementations/yaml/with/convergence.md	convergence	SHOULD	review		typescript	ux	The document's first line is `# yaml-language-server: $schema=<published schema URL>`.
+rule	yamllint-strict-over-every-file	yamllint	blocks/implementations/yamllint/yamllint.md		SHOULD	review			workflow	The check runs `yamllint --strict .` over every YAML file; the configuration is `.yamllint.yaml`, extending devkit's template.
+rule	zod-only-at-the-edge	zod	blocks/implementations/zod/zod.md		MUST	tool	architecture	typescript	architecture	zod is imported only at the edge — adapters and their `models/`, the delivery layer's flags, the root's configuration, the document in `composition/` — never under `domain/`.
+rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/zod.md		MUST	tool	types	typescript	types	A schema over a domain type is held to it exactly — `conformingTo<Model>()(schema)`, or `z.ZodType<Model>` where assignability is enough — and an enum's schema is `z.enum(TheEnum)`.
+rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/zod.md		SHOULD	test		typescript	data	A document the program owns is parsed with `z.strictObject`; a vendor's response with `z.object`, so a new field from the vendor is ignored, not fatal.
+rule	zod-issues-become-error-details	zod	blocks/implementations/zod/zod.md		SHOULD	test		typescript	errors	`safeParse` runs at the edge, and each issue becomes a detail of one coded error, with its path.
+rule	json-schema-from-zod	zod	blocks/implementations/zod/zod.md		SHOULD	test		typescript	data	The published JSON Schema is built by `z.toJSONSchema` from the document's schema.
+answer	bun	workspace-packages-linked-locally	met
+answer	bun	publishing-with-provenance-supported	partial
+answer	bunli	command-framework-parses-flags-by-schema	met
+answer	bunli	command-framework-leaves-exits-to-the-handler	partial
+answer	bunli	command-framework-runs-in-a-test-sandbox	partial
+answer	zod	schema-rejects-unknown-keys	met
+answer	zod	schema-discriminated-unions	met
+answer	zod	schema-exports-json-schema	met

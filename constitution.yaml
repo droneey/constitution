@@ -1,0 +1,12 @@
+version: 0.24.0
+
+domains: [version-control]
+platforms: []
+languages: [typescript]
+implementations: [bun, bun-test, biome, syncpack, stryker, zod, yaml, git, lefthook, mise]
+apps: {}
+check: bun run check
+overrides:
+  - rule: no-agent-file-in-project
+    level: MAY
+    reason: "The constitution's authors read the working-tree blocks they edit, not the installed ones"
