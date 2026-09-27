@@ -23,7 +23,7 @@
     {
       "includes": [
         "**/__tests__/**",
-        "e2e/**"
+        "tests/**"
       ],
       "linter": {
         "rules": {

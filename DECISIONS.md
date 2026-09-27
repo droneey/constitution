@@ -488,9 +488,9 @@
 - **Rejected.** Keeping the preset in devkit, where the folders are written a second time; exporting it from the constitution's package and taking it from git by tag, a second way beside devkit's archive; generating devkit's preset from the blocks.
 - **Why.** A folder renamed in a block and in its preset changes in one pull request and ships in one version, and the preset arrives like devkit's configuration — pinned, verified against its checksum, at one path.
 
-## ADR-0077 — End-to-end specs live in `e2e/` beside `src/`
+## ADR-0077 — Tests that drive the built program live in `tests/` beside `src/`
 **Date:** 2026-09-28 · **Status:** Accepted
 
-- **Decision.** The testing chapter names the folder of end-to-end specs: `e2e/`, beside `src/`, holding the specs and their fixtures. `src/` holds only the program.
-- **Rejected.** A `testing/` folder in `src/`, a top-level folder with no layer that the names check would have to excuse; each spec in the `__tests__/` of the entrypoint it drives, which scatters the fixtures the specs share; `tests/`, which does not tell end-to-end specs from the unit specs of `__tests__/`.
+- **Decision.** The testing chapter names the folder of end-to-end specs: `tests/e2e/`, beside `src/`, holding the specs and their fixtures. `tests/` takes one folder per kind of test that drives the built program rather than one of its files, so a later load or performance suite sits beside `e2e/`. `src/` holds only the program; unit and integration specs stay in the `__tests__/` beside what they prove.
+- **Rejected.** A `testing/` folder in `src/`, a top-level folder with no layer that the names check would have to excuse; each spec in the `__tests__/` of the entrypoint it drives, which scatters the fixtures the specs share; `e2e/` alone at the root, which leaves every later kind of suite another folder at the root.
 - **Why.** An end-to-end spec drives the built program and belongs to no layer of it, as the end-to-end suites of Playwright, Cypress and Detox stand outside the source; with the folder named, the names check holds `src/` to its tree without an exception for tests.

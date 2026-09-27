@@ -89,7 +89,7 @@ bun run check                # lint, package manifests, types, tests with the co
 bun run digests:write        # regenerate digests/ after a change to a block
 ```
 
-The end-to-end spec in `e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
+The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
