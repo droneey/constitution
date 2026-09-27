@@ -22,6 +22,8 @@ interface Report {
 
 interface Project {
   files: Readonly<Record<string, string>>;
+  parts?: readonly string[];
+  roots?: readonly string[];
 }
 
 interface Cruise {
@@ -32,13 +34,42 @@ interface Cruise {
 const REPOSITORY = join(import.meta.dir, '..', '..', '..');
 const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
 
-const CONFIG = `export default {
-  extends: [
+const INSTALLED = [
+  '@lingui/core',
+  '@tanstack/react-query',
+  '@tanstack/react-router',
+  'ky',
+  'yaml',
+  'zod',
+];
+
+// The packages the blocks' rules name, installed and declared, so hygiene
+// stays silent about them.
+const installedFiles = (): Readonly<Record<string, string>> =>
+  Object.fromEntries(
+    INSTALLED.flatMap((name) => [
+      [
+        `node_modules/${name}/index.js`,
+        'export const value = 1;\n',
+      ],
+      [
+        `node_modules/${name}/package.json`,
+        JSON.stringify({
+          main: 'index.js',
+          name,
+          version: '1.0.0',
+        }),
+      ],
+    ]),
+  );
+
+const configOf = (parts: readonly string[]): string =>
+  `export default {\n  extends: ${JSON.stringify([
     '@droneey/devkit-ts-dependency-cruiser/configs/hygiene.mjs',
-    './.constitution/presets/dependency-cruiser/base.mjs',
-  ],
-};
-`;
+    ...parts.map(
+      (part) => `./.constitution/presets/dependency-cruiser/${part}.mjs`,
+    ),
+  ])},\n};\n`;
 
 // What the real dependency-cruiser reports over a small project that installs
 // devkit's hygiene preset and links this repository as .constitution, where mise
@@ -46,9 +77,23 @@ const CONFIG = `export default {
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
   const files = {
+    ...installedFiles(),
     ...project.files,
-    '.dependency-cruiser.mjs': CONFIG,
-    'package.json': '{"name":"fixture","type":"module"}',
+    '.dependency-cruiser.mjs': configOf(
+      project.parts ?? [
+        'base',
+      ],
+    ),
+    'package.json': JSON.stringify({
+      dependencies: Object.fromEntries(
+        INSTALLED.map((name) => [
+          name,
+          '1.0.0',
+        ]),
+      ),
+      name: 'fixture',
+      type: 'module',
+    }),
   };
 
   for (const [path, text] of Object.entries(files)) {
@@ -75,7 +120,9 @@ const cruise = (project: Project): Cruise => {
   const cruising = spawnSync(
     DEPCRUISE,
     [
-      'src',
+      ...(project.roots ?? [
+        'src',
+      ]),
       '--config',
       '.dependency-cruiser.mjs',
       '--output-type',
