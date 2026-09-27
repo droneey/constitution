@@ -1028,7 +1028,7 @@ describe('session-start hook', () => {
         config: configOf({
           domains:
             '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: `[react-dom, git, gitleaks, ${localPath('lint-tool')}, ${localPath('ts-base')}]`,
+          implementations: `[react-dom, git, betterleaks, ${localPath('lint-tool')}, ${localPath('ts-base')}]`,
           languages: '[typescript]',
           platforms: '[browser]',
         }),
@@ -1133,7 +1133,7 @@ describe('session-start hook', () => {
         '- config: constitution.yaml has no apps key — add apps: {}',
         `- local-block: ${PARAGLIDE} does not exist — create it or remove it from implementations`,
         '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as gitleaks, or override them',
+        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
         '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
         '- override: four-data-states expired on 2020-01-01 — renew or remove it',
       ],
@@ -1360,7 +1360,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for elixir — add one, such as gitleaks, or override them',
+        '- no-tool: rules checked by secrets have no tool for elixir — add one, such as betterleaks, or override them',
       ],
     },
     {
@@ -1368,7 +1368,7 @@ describe('session-start hook', () => {
       layout: {
         config: configOf({
           domains: '[version-control]',
-          implementations: '[git, gitleaks, markdownlint]',
+          implementations: '[git, betterleaks, markdownlint]',
           languages: '[python]',
         }),
       },
@@ -1383,7 +1383,7 @@ describe('session-start hook', () => {
       layout: {
         config: configOf({
           domains: '[version-control]',
-          implementations: '[git, gitleaks]',
+          implementations: '[git, betterleaks]',
           languages: '[typescript, python]',
         }),
       },
@@ -1398,7 +1398,7 @@ describe('session-start hook', () => {
         config: configOf({
           domains:
             '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: '[react-dom, git, gitleaks]',
+          implementations: '[react-dom, git, betterleaks]',
           languages: '[typescript]',
           platforms: '[browser]',
         }),
@@ -1415,7 +1415,7 @@ describe('session-start hook', () => {
         config: configOf({
           apps: '\n  web:\n    domains: [ui, untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
           domains: '[version-control]',
-          implementations: `[git, gitleaks, ${localPath('lint-kit')}]`,
+          implementations: `[git, betterleaks, ${localPath('lint-kit')}]`,
           languages: '[typescript]',
         }),
         files: localBlockFiles({
@@ -1473,7 +1473,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as gitleaks, or override them',
+        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
       ],
     },
     {
@@ -1488,7 +1488,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript in web — add one, such as gitleaks, or override them',
+        '- no-tool: rules checked by secrets have no tool for typescript in web — add one, such as betterleaks, or override them',
       ],
     },
     {
@@ -1503,7 +1503,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as gitleaks, or override them',
+        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
       ],
     },
     {

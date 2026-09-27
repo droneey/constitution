@@ -28,6 +28,7 @@ block	cli	platform	A program run from a command line, one command per invocation
 block	mobile	platform	Code that runs as an application on a phone or tablet.		a11y ui	untrusted-client unreliable-network		false					
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.		package			false		types	typescript		**/*.ts **/*.tsx package.json tsconfig.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.		remote-data	ui typescript		true	react-dom react-native		typescript		**/*.tsx **/*.hooks.ts **/*.context.ts
+block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false		secrets			.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript, with GritQL rules of our own.			typescript		false		format lint names	typescript		biome.json **/*.grit
 block	bun	implementation	Bun as runtime, package manager and script runner.		package	typescript		false	bun-test	audit	typescript		bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.				bun	false		tests coverage	typescript	bun	**/__tests__/**
@@ -35,10 +36,9 @@ block	bunli	implementation	bunli declares each command, its flags and its handle
 block	dependency-cruiser	implementation	Holds the import rules between layers, features and packages.			typescript		false		architecture	typescript		.dependency-cruiser.mjs
 block	expo	implementation	Expo on React Native — app config, native builds, secure storage.				react-native	false			typescript	react-native _react	app.config.ts eas.json
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.			version-control		false	lefthook				.gitignore .gitattributes
-block	gitleaks	implementation	Scans changes and history for committed secrets.			git		false		secrets			.gitleaks.toml .gitleaksignore
 block	knip	implementation	Finds unused files, dependencies and exports.			typescript		false		unused	typescript		knip.json
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.			typescript remote-data		false			typescript		**/providers/** **/adapters/**
-block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.		gitleaks		git	false		commits		git	lefthook.yaml
+block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.		betterleaks		git	false		commits		git	lefthook.yaml
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.		bun	i18n typescript		false			typescript		lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.					false		names			.ls-lint.yaml
 block	matomo	implementation	Matomo as an analytics sink behind the analytics port.			analytics typescript		false			typescript		**/matomo.sink.ts
@@ -512,6 +512,10 @@ rule	compound-parts-share-the-root-context	_react	blocks/implementations/_react/
 rule	slot-and-container-children-typed	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	types	A slot that keeps control of its element takes a `ReactElement`; a container takes `ReactNode`; a render-prop slot is `(children, …data) => ReactElement`.
 rule	error-boundary-catches-render-errors	_react	blocks/implementations/_react/_react.md		SHOULD	review		typescript	errors ux	A screen's error boundary catches the render errors below it, reports once, and shows the screen's error state.
 rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/with/remote-data.md	remote-data	SHOULD	review		typescript	architecture	An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its adapter from the providers' context and calls the use-case, or the port when there is none.
+rule	secrets-scanned-on-every-change	betterleaks	blocks/implementations/betterleaks/betterleaks.md		MUST	tool	secrets		security	The check scans the history the clone holds and the uncommitted changes, staged or not, and CI runs it on every pull request.
+rule	history-scanned-once-on-adoption	betterleaks	blocks/implementations/betterleaks/betterleaks.md		SHOULD	review			security	The whole history, every ref, is scanned once when the scanner is adopted, and before a first public release.
+rule	scanner-reports-redacted	betterleaks	blocks/implementations/betterleaks/betterleaks.md		MUST	review			security	Every scan passes `--redact`: a report shows a finding by its rule, file and line, never by its value.
+rule	allowlisted-finding-states-its-reason	betterleaks	blocks/implementations/betterleaks/betterleaks.md		MUST	review			security	A false positive is allowed on its line by `betterleaks:allow` followed by its reason, or by its fingerprint in `.betterleaksignore` under a `#` line that states the reason; never by disabling a rule.
 rule	biome-suppression-names-rule-and-reason	biome	blocks/implementations/biome/biome.md		MUST	tool	lint	typescript	workflow	A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`: one rule and its reason; never a range or a whole file without one.
 rule	biome-warnings-fail-the-check	biome	blocks/implementations/biome/biome.md		MUST	review		typescript	workflow	Warnings fail the check: every rule is an error, or the check passes `--error-on-warnings`.
 rule	biome-check-never-writes	biome	blocks/implementations/biome/biome.md		MUST	review		typescript	workflow	The check runs `biome check` without `--write`; `lint:fix` writes.
@@ -559,10 +563,6 @@ rule	gitignore-covers-dependencies-output-and-caches	git	blocks/implementations/
 rule	gitignore-covers-keys-and-environment-files	git	blocks/implementations/git/git.md		MUST	review			security	`.gitignore` covers key and credential files and every local environment file except its example — `.env*` but `.env.example`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets`, `.htpasswd` — in nested ignore files too.
 rule	release-tags-annotated-semver	git	blocks/implementations/git/git.md		MUST	review			workflow	A release tag is annotated and named `v<major>.<minor>.<patch>`.
 rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/git.md		SHOULD	review			performance	A file over 1 MB goes to Git LFS, or out of the repository.
-rule	secrets-scanned-on-every-change	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	tool	secrets		security	The check scans the branch's commits and the working tree, and CI runs it on every pull request.
-rule	history-scanned-once-on-adoption	gitleaks	blocks/implementations/gitleaks/gitleaks.md		SHOULD	review			security	The whole history, every ref, is scanned once when the scanner is adopted, and before a first public release.
-rule	scanner-reports-redacted	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	review			security	A report shows a finding by its fingerprint and path, never by its value.
-rule	allowlisted-finding-states-its-reason	gitleaks	blocks/implementations/gitleaks/gitleaks.md		MUST	review			security	A false positive is allowed by its fingerprint or an inline `gitleaks:allow` marker, with its reason, never by disabling a rule.
 rule	unused-check-in-production-mode	knip	blocks/implementations/knip/knip.md		MUST	tool	unused	typescript	architecture	The check runs knip twice: over everything, and in production mode (`--production`), so code and dependencies that only specs reach count as unused.
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/ky.md		SHOULD	review		typescript	architecture	One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter imports it or uses ky's default export.
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/ky.md		MUST	tool	lint	typescript	types security	A response body is read as `unknown` and parsed by the adapter's model schema; `.json<T>()` is a cast and is forbidden.
@@ -572,7 +572,7 @@ rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/lefth
 rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow	Installing the repository's dependencies installs the hooks, so no clone commits without them.
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/lefthook.md		MUST	review			workflow	No commit skips the hooks — no `--no-verify`, no `LEFTHOOK=0` — except the release automation's version commit.
 rule	hook-rewrites-only-staged-files	lefthook	blocks/implementations/lefthook/lefthook.md		SHOULD	review			workflow	A hook that formats rewrites only the staged files and stages them again; the check itself never writes.
-rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/lefthook/with/gitleaks.md	gitleaks	MUST	tool	secrets		security	`pre-commit` scans the staged changes for secrets.
+rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/lefthook/with/betterleaks.md	betterleaks	MUST	tool	secrets		security	`pre-commit` scans the staged changes for secrets.
 rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/lingui.md		MUST	review		typescript	ux	Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as ICU messages; never concatenation or an id built by hand.
 rule	catalogs-compiled-strictly-in-check	lingui	blocks/implementations/lingui/lingui.md		MUST	review		typescript	workflow	The check compiles the catalogs in strict mode, failing on a missing translation, and writes no tracked file.
 rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/with/bun.md	bun	SHOULD	review		typescript	workflow	Lingui's command line extracts and compiles the catalogs under Bun; a step that fails there runs under Node from its package script, with the reason written beside it.

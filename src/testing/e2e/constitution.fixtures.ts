@@ -457,7 +457,7 @@ const implementationFiles = (): Files => ({
     checks: [
       'secrets',
     ],
-    id: 'gitleaks',
+    id: 'betterleaks',
     requires: [
       'version-control',
     ],
