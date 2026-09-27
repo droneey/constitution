@@ -7,7 +7,7 @@ const ANCHOR = '#';
 // renders it; any other link from the folder of the file that holds it.
 const resolveLink = (input: { path: string; target: string }): string => {
   const joined = input.target.startsWith(ROOT)
-    ? input.target.slice(ROOT.length)
+    ? input.target
     : joinPaths([
         directoryOf(input.path),
         input.target,

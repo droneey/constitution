@@ -105,6 +105,11 @@ describe('paths', () => {
       path: '../../blocks',
     },
     {
+      condition: 'the path starts at the repository root',
+      expected: 'blocks/core',
+      path: '/blocks/core',
+    },
+    {
       condition: 'the path is a folder',
       expected: 'blocks/core/',
       path: 'blocks/core/',
