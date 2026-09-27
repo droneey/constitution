@@ -1,8 +1,8 @@
 import type { Finding } from '#/kernel';
-import type { MarkdownSection } from '#/libs/markdown';
-import { sectionsOf } from '#/libs/markdown';
 
 import type { RequirementAnswer } from '../../../entities';
+import type { MarkdownSection } from '../../../utils';
+import { sectionsOf } from '../../../utils';
 
 interface Source {
   block: string;

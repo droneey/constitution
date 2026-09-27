@@ -1,9 +1,9 @@
 import type { Finding } from '#/kernel';
 import { KINDS, ROLES, STATUSES } from '#/kernel';
-import { splitFrontMatter } from '#/libs/markdown';
 
 import type { FrontMatterFields, FrontMatterParser } from '../../../contracts';
 import type { FieldIssue, FrontMatter } from '../../../entities';
+import { splitFrontMatter } from '../../../utils';
 
 interface FrontMatterLoaded {
   body: string;

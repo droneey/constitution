@@ -7,7 +7,7 @@ import type {
 } from '../domain/contracts';
 import type { ConstitutionLoaded } from '../domain/use-cases/queries/load-constitution';
 import { loadConstitution } from '../domain/use-cases/queries/load-constitution';
-import type { CheckInput } from '../domain/use-cases/queries/validate-constitution/check.types';
+import type { CheckInput } from '../domain/use-cases/queries/validate-constitution';
 import { byIdOf } from '../domain/utils';
 import { createFakeFileTree } from './file-tree.fake';
 

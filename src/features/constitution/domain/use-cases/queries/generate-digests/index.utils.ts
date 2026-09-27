@@ -1,7 +1,4 @@
-import { posix } from 'node:path';
-
 import { LANGUAGE_FREE_ROLES, ROLES } from '#/kernel';
-import { rewriteLocalLinks } from '#/libs/markdown';
 
 import type {
   Block,
@@ -12,7 +9,9 @@ import type {
 import type { BlocksById } from '../../../utils';
 import {
   checkOf,
+  fileNameOf,
   languagesOf,
+  rewriteLocalLinks,
   ruleLanguagesOf,
   tagsOf,
   targetFromRoot,
@@ -54,7 +53,7 @@ const blockRecord = (input: {
     block.frontMatter.summary,
     block.files
       .filter((file) => file.role === 'chapter')
-      .map((file) => posix.basename(file.path))
+      .map((file) => fileNameOf(file.path))
       .join(LIST),
     block.files
       .flatMap((file) =>

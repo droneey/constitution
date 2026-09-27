@@ -1,9 +1,8 @@
-import { posix } from 'node:path';
-
 import type { Finding } from '#/kernel';
 
 import type { Block } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
+import { stemOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { pairableBy } from '../direction.utils';
 import { aBlock, blocksOf } from '../wording.utils';
@@ -64,7 +63,10 @@ const chapterFindings = (subject: Subject): readonly Finding[] =>
   subject.block.files
     .filter((file) => file.role === 'chapter')
     .flatMap((file) => {
-      const name = posix.basename(file.path, MARKDOWN_EXTENSION);
+      const name = stemOf({
+        extension: MARKDOWN_EXTENSION,
+        path: file.path,
+      });
 
       return subject.byId.has(name)
         ? [

@@ -11,6 +11,10 @@
     "!src/entrypoints/**",
     "!src/root/**"
   ],
+  "ignorePatterns": [
+    "/.constitution",
+    "/.devkit"
+  ],
   "coverageAnalysis": "off",
   "tsconfigFile": "stryker-has-no-tsconfig.json",
   "thresholds": {

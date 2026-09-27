@@ -1,10 +1,12 @@
-import { posix } from 'node:path';
-
 import type { Finding } from '#/kernel';
-import { inlineCodeSpans, withoutCodeFences } from '#/libs/markdown';
 
 import type { Block, BlockFile, Rule } from '../../../../entities';
-import { resolveLink } from '../../../../utils';
+import {
+  directoryOf,
+  inlineCodeSpans,
+  resolveLink,
+  withoutCodeFences,
+} from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { linkTargetsOf } from '../link-targets.utils';
 
@@ -18,7 +20,7 @@ const ownerOf = (input: {
   target: string;
 }): Block | undefined =>
   input.blocks.find((block) => {
-    const folder = posix.dirname(block.path);
+    const folder = directoryOf(block.path);
 
     return (
       input.target === folder ||

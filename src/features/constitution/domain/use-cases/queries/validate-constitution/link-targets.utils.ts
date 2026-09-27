@@ -2,7 +2,7 @@ import {
   localLinkTargets,
   withoutCodeFences,
   withoutInlineCode,
-} from '#/libs/markdown';
+} from '../../../utils';
 
 const ROOT = '/';
 const HERE = '.';

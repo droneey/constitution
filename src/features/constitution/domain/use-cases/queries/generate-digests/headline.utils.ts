@@ -1,4 +1,4 @@
-import { blankInlineCode } from '#/libs/markdown';
+import { blankInlineCode } from '../../../utils';
 
 const WHITESPACE = /\s+/g;
 const SENTENCE_END = /[.!?]["'”’)\]*_~]*(?=\s)/g;
