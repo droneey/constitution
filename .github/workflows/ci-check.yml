@@ -23,10 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
+      - name: Setup the toolchain
+        uses: jdx/mise-action@v4.3.0
         with:
-          bun-version: 1.4.2
+          version: 2026.9.10
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -61,10 +61,7 @@ jobs:
           PATH="${RUNNER_TEMP}/gawk:${PATH}" bun test
 
       - name: Lint the workflows
-        run: |
-          set -euo pipefail
-          bash <(curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12 "${RUNNER_TEMP}"
-          "${RUNNER_TEMP}/actionlint" -color
+        run: actionlint -color
 
   check-on-macos:
     needs: check
@@ -76,10 +73,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
+      - name: Setup the toolchain
+        uses: jdx/mise-action@v4.3.0
         with:
-          bun-version: 1.4.2
+          version: 2026.9.10
 
       - name: Install dependencies
         run: bun install --frozen-lockfile

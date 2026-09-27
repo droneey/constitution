@@ -12,3 +12,6 @@
 # Stryker
 .stryker-tmp/
 reports/
+
+# mise
+mise.local.toml
