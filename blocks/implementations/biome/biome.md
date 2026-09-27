@@ -14,7 +14,7 @@ status: stable
 
 # Biome
 
-> Formats and lints. `biome.json` extends devkit's presets and holds every active rule whose check is `format` or `lint`, and, with `useFilenamingConvention`, the names of source files and of `__tests__/`:
+> Formats and lints. `biome.json` extends devkit's general presets and the constitution's own, `@droneey/constitution/biome`, which holds the rules that name the constitution's folders and suffixes. Together they hold every active rule whose check is `format` or `lint`, and, with `useFilenamingConvention`, the names of source files and of `__tests__/`:
 > - the limits as errors — `noExcessiveLinesPerFunction` 100, `noExcessiveLinesPerFile` 500, `noExcessiveCognitiveComplexity` 10 — with both line limits off under `**/__tests__/**`;
 > - `noDoubleEquals` without its `null` exception, and a GritQL rule against `null` outside adapters;
 > - `noExplicitAny` everywhere, tests included; `noNonNullAssertion`, `noTsIgnore`; `noFloatingPromises`, `noMisusedPromises`; `noEmptyBlockStatements`;
@@ -46,7 +46,7 @@ The check runs `biome check` without `--write`; `lint:fix` writes.
 **Implements:** `check-only-checks`
 
 ## project-grit-rules-scoped · SHOULD
-A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the devkit preset carries it.
+A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until a shared preset carries it: devkit's, or the constitution's when the rule names the constitution's folders.
 **Why:** a rule of the project's own is found in one place and moves to the preset as one file.
 **Check:** review
 **Tags:** workflow

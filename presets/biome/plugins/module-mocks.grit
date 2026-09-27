@@ -1,0 +1,5 @@
+language js
+
+`mock.module($_, $_)` as $call where {
+  register_diagnostic(span=$call, message="Fake an effect through its port, not by replacing a module", severity="error")
+}

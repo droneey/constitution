@@ -1,0 +1,12 @@
+language js
+
+or {
+  `test($title, $_)`,
+  `it($title, $_)`,
+  `test.each($_)($title, $_)`,
+  `it.each($_)($title, $_)`
+} where {
+  $title <: string(),
+  not $title <: r"[\x27\x22`]should .+ when .+[\x27\x22`]",
+  register_diagnostic(span=$title, message="A case reads 'should <behaviour> when <condition>'", severity="error")
+}

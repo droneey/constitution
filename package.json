@@ -1,7 +1,6 @@
 {
   "name": "@droneey/constitution",
   "version": "0.26.1",
-  "private": true,
   "description": "The engineering constitution of droneey: blocks of rules a project declares in constitution.yaml.",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
@@ -13,9 +12,15 @@
     "url": "https://github.com/droneey/constitution.git"
   },
   "type": "module",
+  "exports": {
+    "./biome": "./presets/biome/constitution.jsonc"
+  },
   "imports": {
     "#/*": "./src/*"
   },
+  "files": [
+    "presets"
+  ],
   "scripts": {
     "prepare": "lefthook install",
     "lint:check": "biome check",

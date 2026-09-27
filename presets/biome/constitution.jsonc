@@ -1,0 +1,67 @@
+{
+  "linter": {
+    "rules": {
+      "complexity": {
+        "useMaxParams": {
+          "level": "error",
+          "options": {
+            "max": 1
+          }
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/no-null.grit",
+      "includes": [
+        "**",
+        "!**/adapters/**",
+        "!**/models/**"
+      ]
+    },
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/surface.grit",
+      "includes": [
+        "**/index.ts"
+      ]
+    },
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/empty-names.grit",
+      "includes": [
+        "**",
+        "!**/src/libs/**"
+      ]
+    },
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/case-names.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+      ]
+    },
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/module-mocks.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
+      ]
+    },
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/manual-memo.grit",
+      "includes": [
+        "**/*.tsx",
+        "**/*.hooks.ts",
+        "**/*.context.ts"
+      ]
+    },
+    {
+      "path": "./node_modules/@droneey/constitution/presets/biome/plugins/component-effects.grit",
+      "includes": [
+        "**/*.tsx"
+      ]
+    }
+  ]
+}
