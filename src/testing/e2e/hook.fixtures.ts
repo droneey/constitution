@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -39,6 +39,10 @@ const PLACEHOLDER = '@';
 const NOT_UTF8 = 0xe9;
 // A hook that blocks, on a named pipe say, fails its case instead of the run.
 const TIMEOUT_MS = 20_000;
+// The day the hook's `date` prints: the spec never reads the real clock.
+const HOOK_TODAY = '2026-06-15';
+const CLOCK_FOLDER = 'test-clock';
+const EXECUTABLE = 0o755;
 
 // Claude Code names the event's fields in snake case.
 const eventOf = (input: {
@@ -99,12 +103,27 @@ const inputOf = (input: {
   return bytes;
 };
 
+// A `date` of the test's own, first on the hook's PATH.
+const fakeClockIn = (root: string): string => {
+  const folder = join(root, CLOCK_FOLDER);
+  const date = join(folder, 'date');
+
+  if (!existsSync(date)) {
+    mkdirSync(folder, {
+      recursive: true,
+    });
+    writeFileSync(date, `#!/bin/sh\necho ${HOOK_TODAY}\n`);
+    chmodSync(date, EXECUTABLE);
+  }
+
+  return folder;
+};
+
 // A clean environment: the session that runs the tests sets CLAUDE_PROJECT_DIR
-// and CLAUDE_PLUGIN_ROOT of its own. Bun's test runner keeps its dates in UTC,
-// so the hook reads its date in UTC too, or the two disagree on "today" for
-// the hours around midnight.
+// and CLAUDE_PLUGIN_ROOT of its own.
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
+  const clock = fakeClockIn(call.root);
   const result = spawnSync(
     SHELL,
     [
@@ -117,7 +136,7 @@ const runHook = (call: HookCall): HookRun => {
       env: Object.fromEntries([
         [
           'PATH',
-          process.env['PATH'] ?? '',
+          `${clock}:${process.env['PATH'] ?? ''}`,
         ],
         [
           'LANG',
@@ -126,10 +145,6 @@ const runHook = (call: HookCall): HookRun => {
         [
           'LC_ALL',
           LOCALE,
-        ],
-        [
-          'TZ',
-          'UTC',
         ],
         ...(call.pluginRootUnset === true
           ? []
@@ -212,17 +227,6 @@ const headlineOf = (input: { context: string; slug: string }): string =>
   linesOf(input.context).find((line) => line.startsWith(`- ${input.slug} `)) ??
   '';
 
-// The hook dates an override by the local calendar, as `date` prints it.
-const localToday = (): string => {
-  const now = new Date();
-
-  return [
-    String(now.getFullYear()),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0'),
-  ].join('-');
-};
-
 const warningsOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
   const start = lines.findIndex((line) => line.startsWith(WARNINGS));
@@ -250,9 +254,9 @@ export {
   bytesAfterHeader,
   contextOf,
   factsOf,
+  HOOK_TODAY,
   headlineOf,
   lastLinesOf,
-  localToday,
   outputOf,
   runHook,
   warningsOf,
