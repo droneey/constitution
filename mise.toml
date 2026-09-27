@@ -1,6 +1,15 @@
 [tools]
 actionlint = "1.7.12"
+betterleaks = "1.8.1"
 bun = "1.4.2"
+lefthook = "2.1.14"
+"http:devkit" = { version = "1.22.1", url = "https://github.com/droneey/devkit/releases/download/v{{ version }}/devkit.tar.gz", strip_components = 0, checksum = "sha256:e43917b6a8dab899c4a35974c55a46fa79f6788c095c7e904821d8c1dfb2b1b3" }
+
+[hooks]
+postinstall = [
+  "ln -sfn \"$(mise where http:devkit)\" .devkit",
+  "lefthook install",
+]
 
 [settings]
 lockfile = true

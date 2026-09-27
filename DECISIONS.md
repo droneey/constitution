@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0074 |
+| Blocks | ADR-0064 – ADR-0075 |
 
 ---
 
@@ -473,3 +473,10 @@
 - **Decision.** The secrets role is held by betterleaks: the `betterleaks` block replaces `gitleaks`. The check scans the history the clone holds and the uncommitted changes, every report is redacted, and a false positive is allowed by `betterleaks:allow` or by its fingerprint in `.betterleaksignore`, each with its reason.
 - **Rejected.** gitleaks, which is feature-frozen; scanning `origin/main..HEAD`, which a clone of one commit cannot resolve; `betterleaks dir`, which reads ignored files such as a local `.env`.
 - **Why.** betterleaks is maintained by gitleaks' author, reads the same configuration and finds more; the scan the rules name then works on a laptop and on a shallow CI clone alike.
+
+## ADR-0075 — A tool outside the package manager takes its configuration from devkit's archive
+**Date:** 2026-09-27 · **Status:** Accepted
+
+- **Decision.** The configuration of a tool that is not JavaScript — lefthook, betterleaks — comes from devkit's release archive, which mise installs pinned by version and checksum and links as the ignored `.devkit`; mise's `postinstall` hook also installs the git hooks. npm carries only the configuration of JavaScript and TypeScript tools.
+- **Rejected.** npm packages for those tools, which a repository of another language cannot take; a git submodule, which every clone and every CI checkout must fetch; lefthook's remotes, which put the version into every path and hide the files in `.git`; a branch of built files, which grows the history with each release.
+- **Why.** The configuration then arrives like the tools themselves — pinned, verified against its checksum, the same in every language — and a release can carry built files as well as sources.

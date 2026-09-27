@@ -1,0 +1,2 @@
+[extend]
+path = ".devkit/common/betterleaks/betterleaks.toml"
