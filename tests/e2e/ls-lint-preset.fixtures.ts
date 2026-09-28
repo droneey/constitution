@@ -172,5 +172,4 @@ const presetWords = (): readonly string[] => {
   ];
 };
 
-export type { Project };
 export { failedPaths, presetWords };

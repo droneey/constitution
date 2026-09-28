@@ -154,5 +154,4 @@ const blockCode = (): readonly string[] =>
     ])
     .map(([, code, quoted]) => code ?? quoted ?? '');
 
-export type { Findings, Project };
 export { blockCode, lintFindings, presetWords };
