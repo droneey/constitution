@@ -18,7 +18,7 @@ const WELL_FORMED = {
   'src/contracts/mail/index.ts': "export type { Mail } from './mail.port';\n",
   'src/contracts/mail/mail.port.ts':
     "import type { Money } from '../../kernel';\nexport interface Mail { cost: Money }\n",
-  'src/features/orders/domain/entities/__tests__/order.entity.spec.ts':
+  'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
     "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
   'src/features/orders/adapters/api/order.adapter.ts': importing({
     from: '../../domain/entities',

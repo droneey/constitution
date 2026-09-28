@@ -17,7 +17,7 @@ status: stable
 > Runs the specs of a Vite project and holds the coverage gate. Its configuration starts from devkit's preset and holds every active rule whose check is `tool — tests` or `tool — coverage`; the setup file registers the axe matcher. A rule it cannot hold is reported.
 
 ## runner-picks-only-named-specs · MUST
-The runner picks up exactly `__tests__/**/<name>.spec.*`; integration specs run as a step of their own, and a run that finds no spec fails.
+The runner picks up exactly `__tests__/**/<name>.test.*`; integration specs run as a step of their own, and a run that finds no spec fails.
 **Why:** a spec named otherwise never runs, and a run that finds nothing passes silently.
 **Check:** tool — tests
 **Tags:** testing

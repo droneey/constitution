@@ -2,8 +2,8 @@ import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 
 const BASE = 'origin/main';
-const LOGIC = /^src\/(?!entrypoints\/|root\/|testing\/).+\.ts$/;
-const SPEC = /^(.+)\/__tests__\/([^/]+?)(?:\.integration)?\.spec\.ts$/;
+const LOGIC = /^src\/(?!entrypoints\/|root\/).+\.ts$/;
+const SPEC = /^(.+)\/__tests__\/([^/]+?)(?:\.integration)?\.test\.ts$/;
 const TESTS = '/__tests__/';
 const BUN_NODE = /bun-node-/;
 

@@ -32,7 +32,7 @@ An import that leaves its module uses `#/`; files inside one module import each 
 **Tags:** architecture
 
 ## typescript-file-forms · MUST
-Source files are kebab-case `.ts`, and `.tsx` only where markup is written. A role file is `<name>.<role>.ts`, a surface `index.ts`. In `__tests__/`, a spec is `<file name>.spec.ts`, `<name>.integration.spec.ts` or `<name>.e2e.spec.ts`, a fake `<port>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts`, and `.tsx` only where markup is written. A role file is `<name>.<role>.ts`, a surface `index.ts`. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<port>.fake.ts`, fixtures `<name>.fixtures.ts`.
 **Why:** one spelling of every role lets the tools and the reader find a file by its name.
 **Check:** tool — names
 **Tags:** naming

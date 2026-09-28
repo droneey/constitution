@@ -8,7 +8,7 @@ extends: null
 abstract: false
 checks: []
 owns: [Testing Library, userEvent]
-governs: ["**/__tests__/**/*.spec.tsx"]
+governs: ["**/__tests__/**/*.test.tsx"]
 status: stable
 ---
 
