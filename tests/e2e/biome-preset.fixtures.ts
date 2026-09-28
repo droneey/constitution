@@ -37,7 +37,7 @@ interface Findings {
   rules: readonly string[];
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..', '..');
+const REPOSITORY = join(import.meta.dir, '..', '..');
 const BIOME = join(REPOSITORY, 'node_modules', '.bin', 'biome');
 const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'biome');
 const BLOCKS = join(REPOSITORY, 'blocks');

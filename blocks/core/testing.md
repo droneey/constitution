@@ -130,7 +130,7 @@ Each adapter is proven against its real engine inside the sandbox, in `<name>.in
 **Tags:** testing
 
 ## end-to-end-per-critical-scenario · SHOULD
-Each critical scenario `PROJECT.md` names has one end-to-end test through the delivery layer, in `<name>.e2e.spec`.
+Each critical scenario `PROJECT.md` names has one end-to-end test through the delivery layer, in `tests/e2e/<name>.e2e.spec` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
 **Why:** the scenarios that must never break are proven the way users meet them, and no more end-to-end tests are paid for than that.
 **Check:** review
 **Tags:** testing
@@ -138,13 +138,13 @@ Each critical scenario `PROJECT.md` names has one end-to-end test through the de
 ## Files and names
 
 ## test-files-named-by-role · MUST
-A file in `__tests__/`, or in the folder of end-to-end specs, is a spec named after the file or scenario it proves — `<name>.spec`, `<name>.integration.spec`, `<name>.e2e.spec` — a fake `<port>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec carries its file's role suffix, so a double suffix appears only in tests.
+A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.spec`, `<name>.integration.spec`, `<name>.e2e.spec` — a fake `<port>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec carries its file's role suffix, so a double suffix appears only in tests.
 **Why:** a spec named otherwise would not run, and a helper named like a spec would.
 **Check:** tool — names
 **Tags:** testing, naming
 
 ## test-code-unreachable-from-production · MUST
-Production code never imports a file of `__tests__/` or of the end-to-end folder.
+Production code never imports a file of `__tests__/` or of `tests/`.
 **Why:** a fake or a fixture in production code ships test behaviour to users.
 **Check:** tool — architecture
 **Tags:** testing, architecture

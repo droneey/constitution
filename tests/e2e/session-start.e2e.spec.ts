@@ -145,7 +145,7 @@ const LEFT_OUT_ONE =
   'The MUST headlines of 1 block were left out; the block files hold them.';
 const BUDGET = 9400;
 // The real blocks and digests of this repository, read and never written.
-const REPOSITORY = join(import.meta.dir, '..', '..', '..');
+const REPOSITORY = join(import.meta.dir, '..', '..');
 const FOUND = configOf({
   domains: '[version-control]',
   implementations: '[git]',

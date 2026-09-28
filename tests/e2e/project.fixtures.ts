@@ -365,7 +365,7 @@ const LOCAL_PROJECT: ProjectLayout = {
   },
 };
 
-const TEMPLATES = join(import.meta.dir, '..', '..', '..', 'templates');
+const TEMPLATES = join(import.meta.dir, '..', '..', 'templates');
 
 const fromTemplate = (input: {
   fills: ReadonlyArray<
