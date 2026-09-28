@@ -15,8 +15,8 @@ governs: []
 
 ## Requirements
 
-| Requirement | How in zod | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `schema-rejects-unknown-keys` | `z.strictObject` | met |
-| `schema-discriminated-unions` | `z.discriminatedUnion` | met |
-| `schema-exports-json-schema` | `z.toJSONSchema` | met |
+| `schema-rejects-unknown-keys` | `z.strictObject` | yes |
+| `schema-discriminated-unions` | `z.discriminatedUnion` | yes |
+| `schema-exports-json-schema` | `z.toJSONSchema` | yes |

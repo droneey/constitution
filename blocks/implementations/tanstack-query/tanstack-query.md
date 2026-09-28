@@ -15,11 +15,11 @@ governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 
 ## Requirements
 
-| Requirement | How in TanStack Query | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `remote-data-cache-dedupes-by-key` | reads with one key share one query and one request | met |
-| `remote-data-cache-invalidates-by-prefix` | `invalidateQueries` by a key prefix, with or without a refetch | met |
-| `remote-data-cache-cancels-reads` | an abort signal per query, cancelled on unmount and by `cancelQueries` | met |
-| `remote-data-cache-mutation-lifecycle` | `onMutate`, `onError`, `onSettled` with a context; `useMutationState` reads pending variables | met |
-| `remote-data-cache-global-error-hook` | `onError` of `QueryCache` and `MutationCache` | met |
-| `remote-data-cache-staleness-policy` | `staleTime` and refetch options per query | met |
+| `remote-data-cache-dedupes-by-key` | reads with one key share one query and one request | yes |
+| `remote-data-cache-invalidates-by-prefix` | `invalidateQueries` by a key prefix, with or without a refetch | yes |
+| `remote-data-cache-cancels-reads` | an abort signal per query, cancelled on unmount and by `cancelQueries` | yes |
+| `remote-data-cache-mutation-lifecycle` | `onMutate`, `onError`, `onSettled` with a context; `useMutationState` reads pending variables | yes |
+| `remote-data-cache-global-error-hook` | `onError` of `QueryCache` and `MutationCache` | yes |
+| `remote-data-cache-staleness-policy` | `staleTime` and refetch options per query | yes |

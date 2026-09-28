@@ -138,7 +138,7 @@ describe('referencesCheck', () => {
     {
       name: 'an indented table row names the rule',
       path: PRINCIPLES,
-      text: '# Principles\n\n- Answer it in a row:\n\n  | `portals-for-overlays` | how | met |\n',
+      text: '# Principles\n\n- Answer it in a row:\n\n  | `portals-for-overlays` | how | yes |\n',
     },
     {
       name: 'a link leads into a folder whose name only begins with the folder of a block',

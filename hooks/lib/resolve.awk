@@ -74,7 +74,7 @@ function read_index(path,   line, f, r) {
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
-      ASTATUS[nanswers] = f[4]
+      AMET[nanswers] = f[4]
     }
   }
   if (r < 0) {
@@ -294,7 +294,7 @@ function tools_of(s,   j, k) {
 
 function answers_of(s,   i, k) {
   for (i = 1; i <= nanswers; i++) {
-    if (ASTATUS[i] != "not met" || !IN[s, ALIB[i]] || !(AREQ[i] in RULE)) continue
+    if (AMET[i] != "no" || !IN[s, ALIB[i]] || !(AREQ[i] in RULE)) continue
     k = RULE[AREQ[i]]
     if (RLEVEL[k] != "MUST" || !active_rule(s, k) || lowered(s, AREQ[i])) continue
     UNMET[s, i] = 1

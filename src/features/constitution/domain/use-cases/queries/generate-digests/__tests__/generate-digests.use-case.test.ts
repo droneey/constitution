@@ -188,16 +188,16 @@ describe('generateDigests', () => {
       what: 'each chapter and seam with its axis, in axis order and the named chapter first',
     },
     {
-      condition: 'a Requirements row is partial with a note',
+      condition: 'a Requirements row is partly met',
       files: {
         [LINGUI]: textOf({
           files: validFiles(),
           path: LINGUI,
-        }).replace('| met |', '| partial: no ordinals |'),
+        }).replace('| yes |', '| partly |'),
       },
       key: 'answer\tlingui',
-      record: 'answer\tlingui\ti18n-plurals-by-cldr\tpartial',
-      what: 'the status partial',
+      record: 'answer\tlingui\ti18n-plurals-by-cldr\tpartly',
+      what: 'the Met value partly',
     },
   ])(
     'should write $what in the record when $condition',

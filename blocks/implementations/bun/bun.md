@@ -15,7 +15,7 @@ governs: ["bunfig.toml", "package.json"]
 
 ## Requirements
 
-| Requirement | How in bun | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `workspace-packages-linked-locally` | `workspace:*` resolves a package from the working tree | met |
-| `publishing-with-provenance-supported` | Bun does not publish; the release workflow runs `npm publish` through trusted publishing | partial: publishing goes through npm |
+| `workspace-packages-linked-locally` | `workspace:*` resolves a package from the working tree | yes |
+| `publishing-with-provenance-supported` | Bun does not publish; the release workflow runs `npm publish` through trusted publishing; publishing goes through npm | partly |

@@ -15,9 +15,9 @@ governs: []
 
 ## Requirements
 
-| Requirement | How in <Name> | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `<requirement>` | <how the library meets it> | <met, partial: the workaround, or not met> |
+| `<requirement>` | <how the library meets it, and the workaround where it falls short> | <yes, partly or no> |
 
 ## <rule-slug> · MUST
 <The rule, in one or two sentences.>

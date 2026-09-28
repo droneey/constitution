@@ -2,7 +2,6 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import {} from './constitution.fixtures';
 import {
   browserAppContext,
   cliContext,

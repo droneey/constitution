@@ -15,8 +15,8 @@ governs: ["**/providers/**", "**/adapters/**"]
 
 ## Requirements
 
-| Requirement | How in ky | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `remote-data-transport-timeout-and-cancel` | `timeout` per request, `signal` for cancellation | met |
-| `remote-data-transport-typed-failures` | `HTTPError`, `TimeoutError`, and a `TypeError` for a network failure | met |
-| `remote-data-transport-retries-only-transient` | `retry` by method, status and limit, with backoff | met |
+| `remote-data-transport-timeout-and-cancel` | `timeout` per request, `signal` for cancellation | yes |
+| `remote-data-transport-typed-failures` | `HTTPError`, `TimeoutError`, and a `TypeError` for a network failure | yes |
+| `remote-data-transport-retries-only-transient` | `retry` by method, status and limit, with backoff | yes |

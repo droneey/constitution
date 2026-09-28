@@ -239,7 +239,7 @@ rule	environment-names-declared-in-one-place	core	blocks/core/architecture/secur
 rule	entry-point-declares-its-access	core	blocks/core/architecture/security.md		MUST	review			security	architecture	access-denied-unless-granted	false	Every entry point declares its access where it is defined, at the boundary.
 rule	effects-faked-through-ports	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture		true	In a test, network, time, randomness, processes and credentials are faked through their ports.
 rule	test-code-unreachable-from-production	core	blocks/core/architecture/testing.md		MUST	tool	architecture		testing	architecture		true	Production code never imports a file of `__tests__/` or of `tests/`.
-rule	consent-before-consequential-actions	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false	An agent asks before adding a dependency, a pattern or an abstraction; before changing a public surface, a schema or a format; and before pushing to a shared branch.
+rule	consent-before-consequential-actions	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false	An agent asks before adding a dependency, a pattern or an abstraction; before changing a public interface, a schema or a format; and before pushing to a shared branch.
 rule	design-settled-in-chat-first	core	blocks/core/workflow/collaboration.md		SHOULD	review				workflow		true	A design question is settled in the chat before code is written for it.
 rule	agent-commits-only-when-asked	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true	Only a person decides what is committed.
 rule	agent-never-merges-or-pushes-to-main	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true	An agent never merges.
@@ -331,7 +331,7 @@ rule	language-free-file-lives-once-in-common	package	blocks/domains/package/arch
 rule	one-version-for-all-packages	package	blocks/domains/package/workflow/package.md		MUST	tool	versions			workflow		true	All packages of a repository share one version; two packages at different versions are an error.
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false	Versions follow semantic versioning: major for a breaking change of an entry, minor for an addition, patch for a fix.
 rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true	One tag publishes every public package.
-rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true	The changelog of a release is the commit subjects since the previous tag, features and fixes first.
+rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true	The changelog of a release is the commit subjects since the previous tag, `feat` and `fix` subjects first.
 rule	stream-ends-with-terminal-event	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false	A stream that ends without its terminal event fails with a typed error.
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false	Every read can be cancelled; a read superseded for the same key is cancelled, and only the latest answer reaches the cache.
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true	Reads with one key share one request and one entry.
@@ -435,7 +435,7 @@ rule	working-copy-clean-at-hand-back	version-control	blocks/domains/version-cont
 rule	shared-history-never-rewritten	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true	History others have is never rewritten.
 rule	release-marked-by-immutable-tag	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true	A release is marked by a tag of its version on the commit it was built from, and a tag never moves.
 rule	large-files-outside-history	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			performance	foundation		true	Large binary files live outside the history, stored by reference.
-rule	commit-header-type-and-subject	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow		true	A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with one of four types: `feat` adds a feature; `fix` fixes a bug; `refactor` changes structure without changing behaviour; `chore` is everything else that changes no behaviour — dependencies, tooling, documentation, releases.
+rule	commit-header-type-and-subject	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow		true	A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with one of four types: `feat` adds behaviour; `fix` fixes a bug; `refactor` changes structure without changing behaviour; `chore` is everything else that changes no behaviour — dependencies, tooling, documentation, releases.
 rule	commit-body-empty-reason-in-pull-request	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	reason-for-change-recorded	true	A commit's body and footer are empty.
 rule	commit-type-matches-the-diff	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow	refactor-apart-from-behaviour-change	false	The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` and `chore` change none; `!` marks every change a consumer must adapt to.
 rule	branch-named-type-issue-name	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow		true	A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<kebab-name>`.
@@ -702,38 +702,38 @@ rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/foundatio
 rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	published-schema-generated-from-code	false	The published JSON Schema is built by `z.toJSONSchema` from the document's schema.
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/foundation/zod.md		SHOULD	test		typescript	errors	foundation	expected-failures-typed-with-codes	false	Input is parsed with `safeParse`, and each issue becomes a detail of one coded error, with its path.
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	types	typescript		architecture	schema-derives-from-domain-types	false	A schema over a domain type is held to it exactly — `conformingTo<Model>()(schema)`, or `z.ZodType<Model>` where assignability is enough — and an enum's schema is `z.enum(TheEnum)`.
-answer	bun	workspace-packages-linked-locally	met
-answer	bun	publishing-with-provenance-supported	partial
-answer	bunli	command-framework-parses-flags-by-schema	met
-answer	bunli	command-framework-leaves-exits-to-the-handler	partial
-answer	bunli	command-framework-runs-in-a-test-sandbox	partial
-answer	ky	remote-data-transport-timeout-and-cancel	met
-answer	ky	remote-data-transport-typed-failures	met
-answer	ky	remote-data-transport-retries-only-transient	met
-answer	lingui	plural-forms-by-locale-rules	met
-answer	lingui	messages-take-named-parameters	met
-answer	lingui	i18n-typed-keys	partial
-answer	lingui	i18n-lazy-locales	met
-answer	matomo	analytics-consent-first	met
-answer	matomo	analytics-anonymous-by-default	met
-answer	matomo	analytics-loads-without-blocking	met
-answer	matomo	analytics-context-dimensions	met
-answer	shadcn	ui-primitives-keyboard-and-focus	met
-answer	shadcn	ui-primitives-unstyled	met
-answer	shadcn	primitives-take-text-by-props	partial
-answer	shadcn	ui-primitives-slot	met
-answer	tailwind	ui-styling-restricted-to-tokens	met
-answer	tailwind	ui-styling-one-set-for-themes	met
-answer	tailwind	ui-styling-container-queries	met
-answer	tailwind	ui-styling-cascading-variants	met
-answer	tailwind	ui-variant-map-types-props	met
-answer	tanstack-query	remote-data-cache-dedupes-by-key	met
-answer	tanstack-query	remote-data-cache-invalidates-by-prefix	met
-answer	tanstack-query	remote-data-cache-cancels-reads	met
-answer	tanstack-query	remote-data-cache-mutation-lifecycle	met
-answer	tanstack-query	remote-data-cache-global-error-hook	met
-answer	tanstack-query	remote-data-cache-staleness-policy	met
-answer	testing-library	a11y-scan-inside-component-specs	met
-answer	zod	schema-rejects-unknown-keys	met
-answer	zod	schema-discriminated-unions	met
-answer	zod	schema-exports-json-schema	met
+answer	bun	workspace-packages-linked-locally	yes
+answer	bun	publishing-with-provenance-supported	partly
+answer	bunli	command-framework-parses-flags-by-schema	yes
+answer	bunli	command-framework-leaves-exits-to-the-handler	partly
+answer	bunli	command-framework-runs-in-a-test-sandbox	partly
+answer	ky	remote-data-transport-timeout-and-cancel	yes
+answer	ky	remote-data-transport-typed-failures	yes
+answer	ky	remote-data-transport-retries-only-transient	yes
+answer	lingui	plural-forms-by-locale-rules	yes
+answer	lingui	messages-take-named-parameters	yes
+answer	lingui	i18n-typed-keys	partly
+answer	lingui	i18n-lazy-locales	yes
+answer	matomo	analytics-consent-first	yes
+answer	matomo	analytics-anonymous-by-default	yes
+answer	matomo	analytics-loads-without-blocking	yes
+answer	matomo	analytics-context-dimensions	yes
+answer	shadcn	ui-primitives-keyboard-and-focus	yes
+answer	shadcn	ui-primitives-unstyled	yes
+answer	shadcn	primitives-take-text-by-props	partly
+answer	shadcn	ui-primitives-slot	yes
+answer	tailwind	ui-styling-restricted-to-tokens	yes
+answer	tailwind	ui-styling-one-set-for-themes	yes
+answer	tailwind	ui-styling-container-queries	yes
+answer	tailwind	ui-styling-cascading-variants	yes
+answer	tailwind	ui-variant-map-types-props	yes
+answer	tanstack-query	remote-data-cache-dedupes-by-key	yes
+answer	tanstack-query	remote-data-cache-invalidates-by-prefix	yes
+answer	tanstack-query	remote-data-cache-cancels-reads	yes
+answer	tanstack-query	remote-data-cache-mutation-lifecycle	yes
+answer	tanstack-query	remote-data-cache-global-error-hook	yes
+answer	tanstack-query	remote-data-cache-staleness-policy	yes
+answer	testing-library	a11y-scan-inside-component-specs	yes
+answer	zod	schema-rejects-unknown-keys	yes
+answer	zod	schema-discriminated-unions	yes
+answer	zod	schema-exports-json-schema	yes

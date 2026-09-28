@@ -3,7 +3,7 @@
 ## Deciding
 
 ## consent-before-consequential-actions → consent-before-irreversible-actions
-An agent asks before adding a dependency, a pattern or an abstraction; before changing a public surface, a schema or a format; and before pushing to a shared branch. Consent is given as for an irreversible action: in the chat, for that action alone.
+An agent asks before adding a dependency, a pattern or an abstraction; before changing a public interface, a schema or a format; and before pushing to a shared branch. Consent is given as for an irreversible action: in the chat, for that action alone.
 
 | Why | Check | Tags |
 |---|---|---|

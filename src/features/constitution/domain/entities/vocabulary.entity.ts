@@ -1,11 +1,14 @@
 import type { FieldIssue } from './manifest.entity';
 
+interface VocabularySection {
+  concepts: readonly string[];
+  folders: readonly string[];
+  suffixes: readonly string[];
+}
+
 interface Vocabulary {
-  architecture: {
-    concepts: readonly string[];
-    folders: readonly string[];
-    suffixes: readonly string[];
-  };
+  architecture: VocabularySection;
+  workflow: VocabularySection;
 }
 
 type VocabularyRead =
@@ -22,4 +25,4 @@ type VocabularyRead =
       status: 'mismatched';
     };
 
-export type { Vocabulary, VocabularyRead };
+export type { Vocabulary, VocabularyRead, VocabularySection };

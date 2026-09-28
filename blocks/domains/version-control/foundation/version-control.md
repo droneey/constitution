@@ -40,7 +40,7 @@ Placeholder subjects are rejected: "update", "fix stuff", "wip", "changes", "mis
 ## Integration
 
 ## changes-reach-main-line-through-review · MUST
-Every change reaches the main line through a reviewed pull request. The one exception is the release automation's version commit and tag.
+Every change reaches the main line through a reviewed pull request. The one exception is a release's own version commit and tag.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -15,9 +15,9 @@ governs: ["lingui.config.ts", "**/locales/**"]
 
 ## Requirements
 
-| Requirement | How in Lingui | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | met |
-| `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | met |
-| `i18n-typed-keys` | a message's id is its source text, checked by extraction; no compile-time key type | partial: the strict compile fails on a missing message |
-| `i18n-lazy-locales` | a dynamic import per locale through the build plugin | met |
+| `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | yes |
+| `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | yes |
+| `i18n-typed-keys` | a message's id is its source text, checked by extraction; no compile-time key type; the strict compile fails on a missing message | partly |
+| `i18n-lazy-locales` | a dynamic import per locale through the build plugin | yes |

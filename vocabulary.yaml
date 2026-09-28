@@ -10,7 +10,6 @@ architecture:
     - domain error
     - domain event
     - entrypoint
-    - feature
     - kernel
     - layer folder
     - layer matrix
@@ -65,3 +64,21 @@ architecture:
     - .sink
     - .use-case
     - .variants
+workflow:
+  concepts:
+    - chore
+    - conventional commit
+    - dependency bot
+    - feat
+    - pre-release
+    - release automation
+    - semantic versioning
+    - semver
+    - squash
+    - update bot
+  folders:
+    - feature/
+    - fix/
+    - hotfix/
+    - local/
+  suffixes: []

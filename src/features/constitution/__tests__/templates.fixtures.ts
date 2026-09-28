@@ -42,12 +42,12 @@ const PARAGLIDE: ReadonlyArray<
     'i18n-plurals-by-cldr',
   ],
   [
-    '<how the library meets it>',
+    '<how the library meets it, and the workaround where it falls short>',
     'a variant per CLDR plural category',
   ],
   [
-    '<met, partial: the workaround, or not met>',
-    'met',
+    '<yes, partly or no>',
+    'yes',
   ],
   [
     '<rule-slug>',

@@ -15,9 +15,9 @@ governs: ["**/matomo.sink.ts"]
 
 ## Requirements
 
-| Requirement | How in Matomo | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `analytics-consent-first` | `requireConsent`, `requireCookieConsent`, cookieless mode | met |
-| `analytics-anonymous-by-default` | address anonymisation on the instance; no user id unless `setUserId` is called | met |
-| `analytics-loads-without-blocking` | the container script loads asynchronously; a push onto the data layer never waits | met |
-| `analytics-context-dimensions` | a custom dimension set once applies to later hits | met |
+| `analytics-consent-first` | `requireConsent`, `requireCookieConsent`, cookieless mode | yes |
+| `analytics-anonymous-by-default` | address anonymisation on the instance; no user id unless `setUserId` is called | yes |
+| `analytics-loads-without-blocking` | the container script loads asynchronously; a push onto the data layer never waits | yes |
+| `analytics-context-dimensions` | a custom dimension set once applies to later hits | yes |

@@ -9,7 +9,7 @@ describe('createYamlVocabularyParser', () => {
 
     // Act
     const read = parser.parse(
-      'architecture:\n  concepts: [port, binding unit]\n  folders: [adapters/]\n  suffixes: [.port]\n',
+      'architecture:\n  concepts: [port, binding unit]\n  folders: [adapters/]\n  suffixes: [.port]\nworkflow:\n  concepts: [squash merge]\n  folders: [feature/]\n  suffixes: []\n',
     );
 
     // Assert
@@ -28,6 +28,15 @@ describe('createYamlVocabularyParser', () => {
             '.port',
           ],
         },
+        workflow: {
+          concepts: [
+            'squash merge',
+          ],
+          folders: [
+            'feature/',
+          ],
+          suffixes: [],
+        },
       },
     });
   });
@@ -41,7 +50,7 @@ describe('createYamlVocabularyParser', () => {
         },
       ],
       name: 'the root holds an unknown key',
-      yaml: 'architecture:\n  concepts: []\n  folders: []\n  suffixes: []\ndomain: {}\n',
+      yaml: 'architecture:\n  concepts: []\n  folders: []\n  suffixes: []\nworkflow:\n  concepts: []\n  folders: []\n  suffixes: []\ndomain: {}\n',
     },
     {
       issues: [
@@ -51,7 +60,7 @@ describe('createYamlVocabularyParser', () => {
         },
       ],
       name: 'the architecture holds an unknown key',
-      yaml: 'architecture:\n  concepts: []\n  folders: []\n  suffixes: []\n  layers: []\n',
+      yaml: 'architecture:\n  concepts: []\n  folders: []\n  suffixes: []\n  layers: []\nworkflow:\n  concepts: []\n  folders: []\n  suffixes: []\n',
     },
     {
       issues: [
@@ -63,9 +72,23 @@ describe('createYamlVocabularyParser', () => {
           field: 'architecture.suffixes',
           message: 'Invalid input: expected array, received undefined',
         },
+        {
+          field: 'workflow',
+          message: 'Invalid input: expected object, received undefined',
+        },
       ],
-      name: 'a list is text or missing',
+      name: 'a list is text or missing, and so is the workflow',
       yaml: 'architecture:\n  concepts: port\n  folders: []\n',
+    },
+    {
+      issues: [
+        {
+          field: 'workflow',
+          message: 'Unrecognized key: "branches"',
+        },
+      ],
+      name: 'the workflow holds an unknown key',
+      yaml: 'architecture:\n  concepts: []\n  folders: []\n  suffixes: []\nworkflow:\n  concepts: []\n  folders: []\n  suffixes: []\n  branches: []\n',
     },
     {
       issues: [
