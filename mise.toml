@@ -5,7 +5,7 @@ bun = "1.4.2"
 lefthook = "2.1.14"
 ls-lint = "2.3.1"
 osv-scanner = "2.6.0"
-"github:droneey/devkit" = { version = "1.31.0", asset_pattern = "devkit.tar.gz", strip_components = 0 }
+"github:droneey/devkit" = { version = "1.32.0", asset_pattern = "devkit.tar.gz", strip_components = 0 }
 
 [hooks]
 postinstall = [

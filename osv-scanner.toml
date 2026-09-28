@@ -18,3 +18,10 @@ name = "is-core-module"
 ecosystem = "npm"
 license.override = ["MIT"]
 reason = "deps.dev reports no licence for is-core-module; its package.json declares MIT"
+
+[[PackageOverrides]]
+name = "@droneey/devkit-ts-.*"
+nameIsRegex = true
+ecosystem = "npm"
+license.override = ["MIT"]
+reason = "devkit's packages are MIT; deps.dev names the licence of a new version only hours after its release"

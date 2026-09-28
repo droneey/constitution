@@ -10,11 +10,11 @@
       },
       "devDependencies": {
         "@biomejs/biome": "^2.5.12",
-        "@droneey/devkit-ts-biome": "^1.29.1",
-        "@droneey/devkit-ts-dependency-cruiser": "^1.29.1",
-        "@droneey/devkit-ts-stryker": "^1.29.1",
-        "@droneey/devkit-ts-syncpack": "^1.29.1",
-        "@droneey/devkit-ts-tsconfig": "^1.29.1",
+        "@droneey/devkit-ts-biome": "^1.32.0",
+        "@droneey/devkit-ts-dependency-cruiser": "^1.32.0",
+        "@droneey/devkit-ts-stryker": "^1.32.0",
+        "@droneey/devkit-ts-syncpack": "^1.32.0",
+        "@droneey/devkit-ts-tsconfig": "^1.32.0",
         "@stryker-mutator/core": "^10.0.0",
         "@swc/core": "^1.16.2",
         "@types/bun": "^1.4.1",
@@ -119,15 +119,15 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.12", "", { "os": "win32", "cpu": "x64" }, "sha512-B1R/l+CwEpKFSuqiwePzPNRk1EiJN8kc0UhdafNz6MZN9v5OFP9HYP1irptvWzHrwVI4blVNGMbxc5zt70m3IA=="],
 
-    "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.29.1", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-zzOtS8AOI+QMvqhssmhkjh5/tVp4cwTWJGIKLnMdY44g0W7490O+5MRh7szjLJz9BYtfGzUN7VUTg2a/viKdqQ=="],
+    "@droneey/devkit-ts-biome": ["@droneey/devkit-ts-biome@1.32.0", "", { "peerDependencies": { "@biomejs/biome": ">=2.5.0" } }, "sha512-tMp4ULwxnwsC4eYyXS7p4J30tMWDR3WZvQBSoZKScjxzqnCIWYipKzxyylCD+yOVXujAH8I5wVVdEF1eCfmtWw=="],
 
-    "@droneey/devkit-ts-dependency-cruiser": ["@droneey/devkit-ts-dependency-cruiser@1.29.1", "", { "peerDependencies": { "@swc/core": ">=1.0.0", "dependency-cruiser": ">=17.0.0" } }, "sha512-zm0RCxwN4cFtC/WS+qOy/wQpMma9fsutP+vnOqx9OP5ALmrV/Y1P+eESXEVbJdUAqfobnmTW8B9HiSsMAZNRzA=="],
+    "@droneey/devkit-ts-dependency-cruiser": ["@droneey/devkit-ts-dependency-cruiser@1.32.0", "", { "peerDependencies": { "@swc/core": ">=1.0.0", "dependency-cruiser": ">=17.0.0" } }, "sha512-h5SisIKXGgJsFzu05nMW77LFbmGXkoNy2UaF3nVBwvzT4T62i0z8YP9mh6bcKQtWzrv0gDnYL0K1meM0Hr690Q=="],
 
-    "@droneey/devkit-ts-stryker": ["@droneey/devkit-ts-stryker@1.29.1", "", { "peerDependencies": { "@stryker-mutator/core": ">=10.0.0" }, "bin": { "mutation-check": "dist/main.js" } }, "sha512-y97yP4rCY/Zip0mUQhxF/lDG3cQa1GGJ5WkT6Vxx6WgF0txacvk9GB94I6HgI98GlhJ9FtqcE2haybPjBaPohQ=="],
+    "@droneey/devkit-ts-stryker": ["@droneey/devkit-ts-stryker@1.32.0", "", { "peerDependencies": { "@stryker-mutator/core": ">=10.0.0" }, "bin": { "mutation-check": "dist/main.js" } }, "sha512-928M5x8lG3jWegAQS9HiYU/oij6xBfZyRaXNsWJzvdziTWqsOHbdnRCEmzIxVo84Viqq5uOjwlnF3MD0nRfOeA=="],
 
-    "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.29.1", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-9idoKeb7i4fGDn1zF8WOv7dCh4pWVb4lVA7PmVQKFeDWi313ZPbE9EBNxaWQdCOOkHy9peb593k7wqTtUTJSmQ=="],
+    "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.32.0", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-jGPYG6rKRqkGJ+asSgjOkiKueCdl4/gfuD66iN+en+XlWAdvO6cs5xfbeRzfQSI8vozLW6ykaIQKRmTgE5eyLQ=="],
 
-    "@droneey/devkit-ts-tsconfig": ["@droneey/devkit-ts-tsconfig@1.29.1", "", { "peerDependencies": { "typescript": "^5 || ^7" } }, "sha512-/J6guc6HwADgVYgp0m0XlrJv1oaJvWWwZ4I24/v99DD8YfueqaXB4y/Nhk1gjKtxqRU6fGmo3KJ6Sak61lbBkA=="],
+    "@droneey/devkit-ts-tsconfig": ["@droneey/devkit-ts-tsconfig@1.32.0", "", { "peerDependencies": { "typescript": "^5 || ^7" } }, "sha512-w3COQXXfUghlHLUwDxN+Uwz048mhZ+mBvAEATQMqsvbC9KIOXLuZ/TvsZXe01UuRQne37ry4gFtzWrvTAYOLSQ=="],
 
     "@emnapi/core": ["@emnapi/core@1.11.2", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.2", "tslib": "^2.4.0" } }, "sha512-TC8MkTuZUtcTSiFeuC0ksCh9QIJ5+F21MvZ4Wn4ORfYaFJ/0dsiudv5tVkejgwZlwQ39jL9WWDe2lz8x0WglOA=="],
 

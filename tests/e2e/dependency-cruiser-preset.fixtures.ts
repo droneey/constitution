@@ -43,7 +43,7 @@ const INSTALLED = [
   'zod',
 ];
 
-// The packages the blocks' rules name, installed and declared, so hygiene
+// The packages the blocks' rules name, installed and declared, so devkit's base
 // stays silent about them.
 const installedFiles = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
@@ -65,7 +65,7 @@ const installedFiles = (): Readonly<Record<string, string>> =>
 
 const configOf = (parts: readonly string[]): string =>
   `export default {\n  extends: ${JSON.stringify([
-    '@droneey/devkit-ts-dependency-cruiser/configs/hygiene.mjs',
+    '@droneey/devkit-ts-dependency-cruiser/configs/base.mjs',
     ...parts.map(
       (part) => `./.constitution/presets/dependency-cruiser/${part}.mjs`,
     ),
