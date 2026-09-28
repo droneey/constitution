@@ -1,0 +1,30 @@
+ls:
+  src/*/**/components:
+    <<: &holder
+      .dir: regex:^components$
+      .*: exists:0
+      .ts: regex:^index$
+      .tsx: exists:0
+      .*.ts: exists:0
+      .*.tsx: exists:0
+  src/*/**/widgets:
+    <<: *holder
+    .dir: regex:^widgets$
+
+  src/*/**/components/*:
+    <<: &component
+      .dir: kebab-case | regex:^__tests__$
+      .*: regex:^${0}$
+      .*.*: regex:^${0}$
+      .ts: regex:^index$
+      .tsx: regex:^${0}$
+      .*.ts: regex:^${0}$
+      .*.tsx: regex:^${0}$
+  src/*/**/widgets/*:
+    <<: *component
+    .dir: regex:^[a-z0-9]+(-[a-z0-9]+)*-widget$ | regex:^__tests__$
+
+  src/*/**/assets:
+    .dir: kebab-case
+    .*: kebab-case
+    .*.*: kebab-case
