@@ -1,28 +1,28 @@
 # TanStack Query
 
-## bindings-wrap-query-and-mutation · SHOULD
-A read's binding unit wraps `useQuery`, and a write's wraps `useMutation`.
+## query-for-reads-mutation-for-writes · SHOULD
+A read goes through `useQuery`, and a write through `useMutation`.
 
 | Why | Check | Tags |
 |---|---|---|
 | the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. | review | [data] |
 
-## keys-only-from-the-feature-factory · MUST
-No key array is written inline; every key comes from the key factory, built from the port's parameters.
+## keys-only-from-the-key-factory · MUST
+No key array is written inline; every key comes from the key factory, built from the parameters of the operation it caches.
 
 | Why | Check | Tags |
 |---|---|---|
 | an inline key drifts from the factory's, and an invalidation misses it. | tool — lint | [data] |
 
-## query-result-returned-as-status-union → binding-unit-result-is-union-by-status
-The binding unit returns a union by `status` — pending; error, with its typed error; success, with its data. Query's flags are converted here, and no default is invented.
+## query-result-returned-as-status-union → data-result-is-union-by-status
+What wraps a query or a mutation returns a union by `status` — pending; error, with its typed error; success, with its data. Query's flags are converted there, and no default is invented.
 
 | Why | Check | Tags |
 |---|---|---|
 | consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". | review | [data] |
 
 ## optimism-in-the-mutation-lifecycle → optimistic-lifecycle-safe-under-concurrency
-Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes with domain factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
+Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes values built by the program's own factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -42,8 +42,8 @@ The client's `retry` is a predicate on the error's transience, with a limit — 
 |---|---|---|
 | retrying a failure that will not change delays the error the user needs to see. | review | [] |
 
-## query-signal-reaches-the-port → reads-cancellable-latest-wins
-`queryFn` passes Query's abort signal to the port, so a screen that is left cancels its read.
+## query-signal-reaches-the-request → reads-cancellable-latest-wins
+`queryFn` passes Query's abort signal to the operation it calls, down to the request, so a screen that is left cancels its read.
 
 | Why | Check | Tags |
 |---|---|---|

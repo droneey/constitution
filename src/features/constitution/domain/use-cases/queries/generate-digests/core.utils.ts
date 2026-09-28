@@ -1,14 +1,9 @@
 import type { Finding } from '#/kernel';
-import { AXES, Layer, Level } from '#/kernel';
+import { Layer } from '#/kernel';
 
 import type { Constitution } from '../../../entities';
 import { BlockFileRole } from '../../../entities';
-import {
-  directoryOf,
-  joinPaths,
-  rewriteLocalLinks,
-  targetFromRoot,
-} from '../../../utils';
+import { rewriteLocalLinks, targetFromRoot } from '../../../utils';
 
 interface CorePart {
   findings: readonly Finding[];
@@ -16,7 +11,6 @@ interface CorePart {
 }
 
 const CORE_BUDGET = 3500;
-const PRINCIPLES = 'principles.md';
 const encoder = new TextEncoder();
 
 const corePartOf = (constitution: Constitution): CorePart => {
@@ -29,23 +23,6 @@ const corePartOf = (constitution: Constitution): CorePart => {
     };
   }
 
-  const folder = directoryOf(core.path);
-  const laws = AXES.flatMap((axis) => {
-    const principles = joinPaths([
-      folder,
-      axis,
-      PRINCIPLES,
-    ]);
-    const slugs = constitution.rules
-      .filter((rule) => rule.file === principles && rule.level === Level.Must)
-      .map((rule) => rule.slug);
-
-    return slugs.length === 0
-      ? []
-      : [
-          `Laws of ${axis}: ${slugs.join(', ')}.`,
-        ];
-  });
   const body = rewriteLocalLinks({
     rewrite: (target: string): string =>
       targetFromRoot({
@@ -56,12 +33,7 @@ const corePartOf = (constitution: Constitution): CorePart => {
       // Stryker disable next-line OptionalChaining,ConditionalExpression,StringLiteral: a block's first file is its card
       core.files.find((file) => file.role === BlockFileRole.Main)?.body ?? '',
   });
-  const text = `${[
-    body.trim(),
-    laws.join('\n'),
-  ]
-    .filter((part) => part !== '')
-    .join('\n\n')}\n`;
+  const text = `${body.trim()}\n`;
   const bytes = encoder.encode(text).length;
 
   return {

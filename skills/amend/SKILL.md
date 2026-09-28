@@ -25,13 +25,13 @@ Handle one override at a time. When the owner asks for several, go through these
 
 ### 1. The rule
 
-Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, check, role, languages, tags, headline:
+Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, check, role, languages, tags, axis, parent, whether its level is stated, headline:
 
 ```bash
 grep "^rule$(printf '\t')<slug>$(printf '\t')" "${CLAUDE_PLUGIN_ROOT}/digests/index.tsv"
 ```
 
-- Found: show the owner its block, its current level and its headline.
+- Found: show the owner its block, its current level and its headline. Then find the rules that carry it out and state no level of their own — lines whose parent is this slug and whose stated field is `false`, and theirs in turn: an override lowers them too, so name them to the owner.
 - Not found: say so. When the owner describes the rule instead of naming it, search the rule lines for their words (`grep '^rule' … | grep -i '<word>'`) and offer the matches. Only a slug the index holds can be overridden; a rule of a local block is changed in the block's own file instead.
 
 ### 2. Add, change or remove

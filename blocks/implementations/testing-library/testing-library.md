@@ -11,10 +11,10 @@ governs: ["**/__tests__/**/*.test.tsx"]
 
 # Testing Library
 
-> Specs that render the interface and use it as a person does.
+> Specs that render the user interface and use it as a person does.
 
 ## Requirements
 
-| Requirement | How in Testing Library | Status |
+| Requirement | How | Met |
 |---|---|---|
-| `a11y-scan-inside-component-specs` | axe runs over the rendered container through a matcher registered in the test setup, reporting each violation with its element | met |
+| `a11y-scan-inside-component-specs` | axe runs over the rendered container through a matcher registered in the test setup, reporting each violation with its element | yes |

@@ -8,6 +8,7 @@ import type {
 import type { RequirementAnswer } from './requirement-answer.entity';
 import type { Rule } from './rule.entity';
 import type { Skill } from './skill.entity';
+import type { VocabularyRead } from './vocabulary.entity';
 
 interface Documents {
   decisions: string | undefined;
@@ -20,6 +21,7 @@ interface Documents {
   plugin: ManifestRead<PluginManifest> | undefined;
   readme: string | undefined;
   skills: readonly Skill[];
+  vocabulary: VocabularyRead | undefined;
 }
 
 interface Constitution {

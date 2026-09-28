@@ -11,4 +11,4 @@ governs: ["**/cli/**"]
 
 # Command line
 
-> A program a person or a script runs from a terminal. Its delivery layer is `cli/`; each command is a file `<name>.cli` there. The word "command" alone stays core's write side of a use-case.
+> A program a person or a script runs from a terminal.

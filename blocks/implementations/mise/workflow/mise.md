@@ -6,3 +6,10 @@ Shared configuration that is not an npm package comes from the release archive o
 | Why | Check | Tags |
 |---|---|---|
 | the configuration then arrives pinned and verified like the tool itself, in a repository of any language, at one path in every repository, and a dependency bot bumps it like any other tool. | review | [] |
+
+## ci-runs-the-pinned-toolchain → one-check-command
+CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
+
+| Why | Check | Tags |
+|---|---|---|
+| a check on another version of a tool checks another thing than the developer ran. | review | [] |

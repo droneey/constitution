@@ -1,5 +1,7 @@
 # Matomo
 
+> Reached through one sink, behind the analytics port.
+
 ## matomo-only-in-its-sink → sinks-behind-one-contract · MUST
 Only the Matomo sink knows Matomo — its data layer, and the container's address, taken from configuration.
 

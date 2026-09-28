@@ -10,7 +10,7 @@ import type { CheckInput } from '../../check.types';
 import { requirementsCheck } from '../requirements.check';
 
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
-const ANSWER = '| `i18n-plurals-by-cldr` | ICU plural | met |';
+const ANSWER = '| `i18n-plurals-by-cldr` | ICU plural | yes |';
 
 const answering = (rows: readonly string[]): CheckInput => {
   const files = validFiles();
@@ -33,8 +33,8 @@ describe('requirementsCheck', () => {
         path,
       }),
       '## Requirements',
-      '| `four-data-states` | tests | met |',
-      '| `reads-are-cancellable` | tests | met |',
+      '| `four-data-states` | tests | yes |',
+      '| `reads-are-cancellable` | tests | yes |',
     ].join('\n');
     const input = checkInputOf(files);
 
@@ -59,10 +59,10 @@ describe('requirementsCheck', () => {
       '',
       '## Requirements',
       '',
-      '| Requirement | How | Status |',
+      '| Requirement | How | Met |',
       '|---|---|---|',
-      '| `no-any` | the noExplicitAny rule | met |',
-      '| `dependencies-point-inward` | review | met |',
+      '| `no-any` | the noExplicitAny rule | yes |',
+      '| `dependencies-point-inward` | review | yes |',
       '',
     ].join('\n');
     const input = checkInputOf(files);
@@ -83,26 +83,26 @@ describe('requirementsCheck', () => {
   it.each([
     {
       expected: 'answers "no-such-rule", which is not a rule',
-      row: '| `no-such-rule` | x | met |',
+      row: '| `no-such-rule` | x | yes |',
     },
     {
       expected:
         'answers "portals-for-overlays" of react-dom, which its block may not refer to',
-      row: '| `portals-for-overlays` | x | met |',
+      row: '| `portals-for-overlays` | x | yes |',
     },
     {
       expected:
-        'answers "i18n-plurals-by-cldr" with the status "unmet"; a status is met, partial: <workaround> or not met',
-      row: '| `i18n-plurals-by-cldr` | ICU plural | unmet |',
+        'answers "i18n-plurals-by-cldr" with Met "met"; Met is yes, partly or no',
+      row: '| `i18n-plurals-by-cldr` | ICU plural | met |',
     },
     {
       expected:
-        'answers "i18n-plurals-by-cldr" with the status "met in part"; a status is met, partial: <workaround> or not met',
-      row: '| `i18n-plurals-by-cldr` | ICU plural | met in part |',
+        'answers "i18n-plurals-by-cldr" with Met "partial: no ordinals"; Met is yes, partly or no',
+      row: '| `i18n-plurals-by-cldr` | ICU plural | partial: no ordinals |',
     },
     {
       expected: 'answers "i18n-plurals-by-cldr" without saying how',
-      row: '| `i18n-plurals-by-cldr` |  | met |',
+      row: '| `i18n-plurals-by-cldr` |  | yes |',
     },
   ])(
     'should report "$expected" when a row breaks its rule',
@@ -129,7 +129,7 @@ describe('requirementsCheck', () => {
     // Arrange
     const input = answering([
       ANSWER,
-      '| `i18n-plurals-by-cldr` | again | partial: plural only |',
+      '| `i18n-plurals-by-cldr` | again, plurals only | partly |',
     ]);
 
     // Act
@@ -152,7 +152,7 @@ describe('requirementsCheck', () => {
       path: LINGUI,
     })
       .replace('chapters: []', 'chapters: ["workflow/catalogs.md"]')
-      .replace(ANSWER, `${ANSWER}\n| \`catalogs-compile\` | the CLI | met |`);
+      .replace(ANSWER, `${ANSWER}\n| \`catalogs-compile\` | the CLI | yes |`);
     files['blocks/implementations/lingui/workflow/catalogs.md'] =
       `# Catalogs\n\n${rule({
         slug: 'catalogs-compile',

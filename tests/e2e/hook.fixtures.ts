@@ -250,9 +250,7 @@ const headlinesOf = (context: string): readonly string[] => {
 };
 
 const coreLinesOf = (context: string): readonly string[] =>
-  linesOf(context).filter(
-    (line) => line.startsWith('Laws of ') || line.startsWith("Core's files"),
-  );
+  linesOf(context).filter((line) => line.startsWith("Core's files"));
 
 const headlineOf = (input: { context: string; slug: string }): string =>
   linesOf(input.context).find((line) => line.startsWith(`- ${input.slug} `)) ??

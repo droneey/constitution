@@ -3,11 +3,13 @@ import type {
   FileTree,
   FrontMatterParser,
   ManifestParser,
+  VocabularyParser,
 } from '#/features/constitution';
 import {
   createJsonManifestParser,
   createNodeFileSystem,
   createYamlFrontMatterParser,
+  createYamlVocabularyParser,
 } from '#/features/constitution';
 
 interface Wiring {
@@ -17,6 +19,7 @@ interface Wiring {
   fileSystem: FileTree & DigestWriter;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
+  vocabularyParser: VocabularyParser;
 }
 
 const createWiring = (input: { root: string }): Wiring => ({
@@ -30,6 +33,7 @@ const createWiring = (input: { root: string }): Wiring => ({
   }),
   frontMatterParser: createYamlFrontMatterParser(),
   manifestParser: createJsonManifestParser(),
+  vocabularyParser: createYamlVocabularyParser(),
 });
 
 export type { Wiring };

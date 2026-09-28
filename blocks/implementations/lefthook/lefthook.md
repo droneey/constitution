@@ -5,7 +5,7 @@ requires: []
 extends: git
 abstract: false
 checks: [commits]
-dictionary: [Lefthook, lefthook, lefthook.yaml, lefthook-local.yaml, LEFTHOOK]
+dictionary: [Lefthook, lefthook, lefthook.yaml, lefthook-local.yaml, LEFTHOOK, commit-msg, pre-commit]
 governs: ["lefthook.yaml"]
 ---
 

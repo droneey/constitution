@@ -2,11 +2,12 @@ import type { Finding } from '#/kernel';
 import { Layer } from '#/kernel';
 
 import type { RequirementAnswer, Rule } from '../../../../entities';
+import { Met } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
 import { mayReferTo } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
-const STATUS = /^(?:met|not met|partial: \S.*)$/;
+const METS: readonly string[] = Object.values(Met);
 
 const at = (input: {
   answer: RequirementAnswer;
@@ -42,9 +43,9 @@ const formMessages = (input: {
   answer: RequirementAnswer;
   isRepeated: boolean;
 }): readonly (string | undefined)[] => [
-  STATUS.test(input.answer.status)
+  METS.includes(input.answer.met)
     ? undefined
-    : ` with the status "${input.answer.status}"; a status is met, partial: <workaround> or not met`,
+    : ` with Met "${input.answer.met}"; Met is ${Met.Yes}, ${Met.Partly} or ${Met.No}`,
   input.answer.how === '' ? ' without saying how' : undefined,
   input.isRepeated ? ' twice' : undefined,
 ];

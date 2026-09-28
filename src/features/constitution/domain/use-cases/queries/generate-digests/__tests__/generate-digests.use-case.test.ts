@@ -19,7 +19,6 @@ const CORE = 'blocks/core/core.md';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
-const LAWS = 'Laws of foundation: dependencies-point-inward.';
 
 const coreFile = (body: string): string =>
   mainFile({
@@ -189,16 +188,16 @@ describe('generateDigests', () => {
       what: 'each chapter and seam with its axis, in axis order and the named chapter first',
     },
     {
-      condition: 'a Requirements row is partial with a note',
+      condition: 'a Requirements row is partly met',
       files: {
         [LINGUI]: textOf({
           files: validFiles(),
           path: LINGUI,
-        }).replace('| met |', '| partial: no ordinals |'),
+        }).replace('| yes |', '| partly |'),
       },
       key: 'answer\tlingui',
-      record: 'answer\tlingui\ti18n-plurals-by-cldr\tpartial',
-      what: 'the status partial',
+      record: 'answer\tlingui\ti18n-plurals-by-cldr\tpartly',
+      what: 'the Met value partly',
     },
   ])(
     'should write $what in the record when $condition',
@@ -259,52 +258,21 @@ describe('generateDigests', () => {
         ...validFiles(),
         [CORE]: coreFile(''),
       },
-      text: `${LAWS}\n`,
-    },
-    {
-      condition: 'principles holds two MUST rules',
-      files: {
-        ...validFiles(),
-        [CORE]: coreFile('# Core\n'),
-        [PRINCIPLES]: `# Principles\n\n${rule({
-          slug: 'names-say-what',
-        })}\n${rule({
-          slug: 'dependencies-point-inward',
-        })}`,
-      },
-      text: '# Core\n\nLaws of foundation: names-say-what, dependencies-point-inward.\n',
+      text: '\n',
     },
     {
       condition: 'the principles of two axes hold MUST rules',
       files: {
         ...validFiles(),
-        [CORE]: mainFile({
-          body: '# Core\n',
-          id: 'core',
-        }),
+        [CORE]: coreFile('# Core\n'),
         'blocks/core/architecture/principles.md': `# Principles\n\n${rule({
           slug: 'layers-point-inward',
-        })}`,
-      },
-      text: '# Core\n\nLaws of foundation: dependencies-point-inward.\nLaws of architecture: layers-point-inward.\n',
-    },
-    {
-      condition: 'principles holds only SHOULD and MAY rules',
-      files: {
-        ...validFiles(),
-        [CORE]: coreFile('# Core\n'),
-        [PRINCIPLES]: `# Principles\n\n${rule({
-          level: 'SHOULD',
-          slug: 'names-say-what',
-        })}\n${rule({
-          level: 'MAY',
-          slug: 'comments-say-why',
         })}`,
       },
       text: '# Core\n',
     },
   ])(
-    'should write the card core.md and the MUST rules of each principles chapter as laws in the core part when $condition',
+    'should write only the card core.md in the core part when $condition',
     ({ files, text }) => {
       // Arrange
       const input = checkInputOf(files);
@@ -323,16 +291,16 @@ describe('generateDigests', () => {
     },
   );
 
-  // Beside the filler the part holds 57 bytes: "# Core", two paragraph breaks,
-  // the laws line and the closing newline; Ω takes two bytes of UTF-8.
+  // Beside the filler the part holds 9 bytes: "# Core", a paragraph break and
+  // the closing newline; Ω takes two bytes of UTF-8.
   it.each([
     {
-      filler: 'a'.repeat(3443),
+      filler: 'a'.repeat(3491),
       findings: [],
       name: '3,500 bytes',
     },
     {
-      filler: 'Ω'.repeat(1722),
+      filler: 'Ω'.repeat(1746),
       findings: [
         {
           message:
@@ -340,7 +308,7 @@ describe('generateDigests', () => {
           path: CORE,
         },
       ],
-      name: '3,501 bytes in 1,779 characters',
+      name: '3,501 bytes in 1,755 characters',
     },
   ])(
     'should report core only past 3,500 UTF-8 bytes when its part holds $name',
@@ -359,7 +327,7 @@ describe('generateDigests', () => {
         core: digests.core,
         findings: digests.findings,
       }).toStrictEqual({
-        core: `# Core\n\n${filler}\n\n${LAWS}\n`,
+        core: `# Core\n\n${filler}\n`,
         findings,
       });
     },

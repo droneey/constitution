@@ -11,4 +11,4 @@ governs: ["**/*.ts", "**/*.tsx", "package.json", "tsconfig.json"]
 
 # TypeScript
 
-> The form core's rules take in TypeScript. The source root is `src/` of the unit, a folder's surface is `index.ts`, a role file is `<name>.<role>.ts`, the entry is `main.ts`, and the wiring file is `root/wiring.ts`. The compiler checks the `types` role.
+> The form core's rules take in TypeScript. The source root is the `src/` of each package or application, and its entry is `main.ts`. The compiler checks the `types` role.

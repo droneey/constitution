@@ -20,6 +20,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
+| `vocabulary.yaml` | The words the `architecture` and `workflow` axes own — concepts, folders of the tree, role suffixes, branch prefixes |
 
 A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
 
@@ -101,11 +102,13 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or the arrow of a rule heading;
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
-- a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;
+- a rule without a Why, a Check or a known tag, a slug used twice, and a heading or table that misses the rule format;
+- a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits, a cycle and a missing rule;
+- a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
 - a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
-- a decision log that is missing, skips or repeats a number, or has an entry without its date and status;
+- a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
 - a `digests/` file that is missing or differs from its regeneration, a file there the generator does not write, and a core part of the digest over 3,500 bytes.
 
 It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.

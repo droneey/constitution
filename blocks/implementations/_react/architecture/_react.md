@@ -1,5 +1,7 @@
 # React
 
+> **Vocabulary:** folder `hooks`, a set of reusable hooks; suffixes `.hooks`, a file of hooks beside its component or operation, and `.context`, a compound's or provider's context.
+
 ## State and effects
 
 ## derived-state-computed-in-render → one-home-per-datum

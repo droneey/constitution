@@ -74,7 +74,7 @@ function read_index(path,   line, f, r) {
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
-      ASTATUS[nanswers] = f[4]
+      AMET[nanswers] = f[4]
     }
   }
   if (r < 0) {
@@ -228,9 +228,7 @@ function all_axes(   n, a, k) {
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
 
-function print_core(   n, a, k) {
-  n = split(AXES, a, " ")
-  for (k = 1; k <= n; k++) if (ON[0, a[k]]) print "axis" T a[k]
+function print_core() {
   if ("core" in KNOWN) print "core" T "Core's files, under blocks/core/: " join(trim("core.md " chapters(0, "core")), ", ") "."
 }
 
@@ -296,7 +294,7 @@ function tools_of(s,   j, k) {
 
 function answers_of(s,   i, k) {
   for (i = 1; i <= nanswers; i++) {
-    if (ASTATUS[i] != "not met" || !IN[s, ALIB[i]] || !(AREQ[i] in RULE)) continue
+    if (AMET[i] != "no" || !IN[s, ALIB[i]] || !(AREQ[i] in RULE)) continue
     k = RULE[AREQ[i]]
     if (RLEVEL[k] != "MUST" || !active_rule(s, k) || lowered(s, AREQ[i])) continue
     UNMET[s, i] = 1
@@ -403,8 +401,8 @@ function app_only_files(s, id,   out, n, a, k, b) {
   return out
 }
 
-# Core's laws are in core's part; the headlines are of domains, contexts and
-# implementations, in the index's order of layers.
+# The headlines are of domains, contexts and implementations, in the index's
+# order of layers.
 function print_headlines(   i, s) {
   for (i = 1; i <= nr; i++) {
     if (RLEVEL[i] != "MUST" || LAYER[RBLOCK[i]] == "core") continue

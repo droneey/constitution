@@ -53,6 +53,7 @@ describe('loadConstitution', () => {
           plugin: undefined,
           readme: undefined,
           skills: [],
+          vocabulary: undefined,
         },
         paths: new Set([
           'LICENSE.md',
@@ -64,7 +65,7 @@ describe('loadConstitution', () => {
     });
   });
 
-  it('should parse the plugin documents and keep the README, the log and the digests as text when every document exists', () => {
+  it('should parse the plugin documents and the vocabulary and keep the README, the log and the digests as text when every document exists', () => {
     // Arrange
     const files = validFiles();
 
@@ -107,6 +108,32 @@ describe('loadConstitution', () => {
       },
       readme: '# constitution\n\nStart with [core](blocks/core/core.md).\n',
       skills: [],
+      vocabulary: {
+        status: 'parsed',
+        vocabulary: {
+          architecture: {
+            concepts: [
+              'port',
+              'binding unit',
+            ],
+            folders: [
+              'adapters/',
+            ],
+            suffixes: [
+              '.port',
+            ],
+          },
+          workflow: {
+            concepts: [
+              'squash merge',
+            ],
+            folders: [
+              'feature/',
+            ],
+            suffixes: [],
+          },
+        },
+      },
     });
   });
 
@@ -163,7 +190,7 @@ describe('loadConstitution', () => {
     // Assert
     expect({
       answers: loaded.constitution.requirementAnswers.map(
-        (answer) => `${answer.requirement} ${answer.status}`,
+        (answer) => `${answer.requirement} ${answer.met}`,
       ),
       blocks: loaded.constitution.blocks.map(
         (block) => `${block.layer} ${block.id}`,
@@ -174,7 +201,7 @@ describe('loadConstitution', () => {
       ),
     }).toStrictEqual({
       answers: [
-        'i18n-plurals-by-cldr met',
+        'i18n-plurals-by-cldr yes',
       ],
       blocks: [
         'implementation paraglide',
@@ -531,8 +558,8 @@ describe('loadConstitution', () => {
           '',
           '## Requirements',
           '',
-          '| `i18n-plurals-by-cldr` | ICU plural | met |',
-          '| i18n typed keys | catalogs | met |',
+          '| `i18n-plurals-by-cldr` | ICU plural | yes |',
+          '| i18n typed keys | catalogs | yes |',
           '',
         ].join('\n'),
         id: 'lingui',
@@ -559,8 +586,8 @@ describe('loadConstitution', () => {
           block: 'lingui',
           file: 'blocks/implementations/lingui/lingui.md',
           how: 'ICU plural',
+          met: 'yes',
           requirement: 'i18n-plurals-by-cldr',
-          status: 'met',
           with: undefined,
         },
       ],
@@ -572,7 +599,7 @@ describe('loadConstitution', () => {
         },
         {
           message:
-            'has the row "| i18n typed keys | catalogs | met |" in its Requirements, which is not "| `<requirement>` | <how> | <status> |"',
+            'has the row "| i18n typed keys | catalogs | yes |" in its Requirements, which is not "| `<requirement>` | <how> | <met> |"',
           path: 'blocks/implementations/lingui/lingui.md',
         },
       ],
@@ -644,7 +671,7 @@ describe('loadConstitution', () => {
             slug: 'sample-rule',
           }),
           '## Requirements',
-          '| `sample-rule` | sample | met |',
+          '| `sample-rule` | sample | yes |',
           '```',
           '',
         ].join('\n'),

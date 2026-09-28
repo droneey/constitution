@@ -5,6 +5,7 @@ import type {
   FileTree,
   FrontMatterParser,
   ManifestParser,
+  VocabularyParser,
 } from '../../../contracts';
 import { byIdOf } from '../../../utils';
 import { adviseConstitution } from '../advise-constitution';
@@ -25,6 +26,7 @@ import {
   requiresCheck,
   rulesCheck,
   seamsCheck,
+  vocabularyCheck,
 } from './checks';
 
 const CHECKS: readonly Check[] = [
@@ -34,6 +36,7 @@ const CHECKS: readonly Check[] = [
   cyclesCheck,
   abstractBlocksCheck,
   ownedWordsCheck,
+  vocabularyCheck,
   rulesCheck,
   requirementsCheck,
   referencesCheck,
@@ -55,6 +58,7 @@ const validateConstitution = (input: {
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;
+  vocabularyParser: VocabularyParser;
 }): Validation => {
   const { constitution, findings } = loadConstitution(input);
   const byId = byIdOf(constitution.blocks);

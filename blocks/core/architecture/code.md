@@ -13,7 +13,7 @@ A domain name names the concept, never the vendor or the storage behind it: `Use
 
 ## Units
 
-## deep-modules-no-pass-through → module-hides-much-behind-small-interface
+## deep-modules-no-pass-through → module-hides-much-behind-small-public-entry
 A layer that only passes a call through to the next one is removed. A domain use-case exists only when its operation carries business logic; without any, its binding unit calls the port directly.
 
 | Why | Check | Tags |
@@ -31,7 +31,7 @@ Diagnostics a program keeps on purpose go through the logging port, never straig
 
 ## Absence
 
-## wire-absence-mapped-at-boundary → absence-has-one-value-normalised-at-boundary
+## wire-absence-mapped-at-boundary → absence-has-one-value
 Other spellings of absence live only in wire types and in the adapters that read them, which map them to the one internal value at the boundary.
 
 | Why | Check | Tags |

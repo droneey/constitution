@@ -21,15 +21,15 @@ const sourceOf = (
 
 const answer = (input: {
   how: string;
+  met: string;
   requirement: string;
-  status: string;
   with?: string;
 }): RequirementAnswer => ({
   block: 'lingui',
   file: FILE,
   how: input.how,
+  met: input.met,
   requirement: input.requirement,
-  status: input.status,
   with: input.with,
 });
 
@@ -40,14 +40,14 @@ describe('parseRequirements', () => {
       ...sourceOf([
         '## Requirements',
         '',
-        '| Requirement | How in lingui | Status |',
+        '| Requirement | How | Met |',
         '|---|---|---|',
-        '| `i18n-plurals-by-cldr` | ICU plural | met |',
-        '| `i18n-typed-keys` | compiled catalogs | partial: keys are strings |',
+        '| `i18n-plurals-by-cldr` | ICU plural | yes |',
+        '| `i18n-typed-keys` | compiled catalogs, and keys are strings | partly |',
         '## Notes',
-        '| `not-an-answer` | x | met |',
+        '| `not-an-answer` | x | yes |',
         '## Requirements',
-        '| `i18n-lazy-locales` |  | not met |',
+        '| `i18n-lazy-locales` |  | no |',
       ]),
       with: 'react-dom',
     };
@@ -60,20 +60,20 @@ describe('parseRequirements', () => {
       answers: [
         answer({
           how: 'ICU plural',
+          met: 'yes',
           requirement: 'i18n-plurals-by-cldr',
-          status: 'met',
           with: 'react-dom',
         }),
         answer({
-          how: 'compiled catalogs',
+          how: 'compiled catalogs, and keys are strings',
+          met: 'partly',
           requirement: 'i18n-typed-keys',
-          status: 'partial: keys are strings',
           with: 'react-dom',
         }),
         answer({
           how: '',
+          met: 'no',
           requirement: 'i18n-lazy-locales',
-          status: 'not met',
           with: 'react-dom',
         }),
       ],
@@ -85,7 +85,7 @@ describe('parseRequirements', () => {
     // Arrange
     const source = sourceOf([
       '## Requirements  ',
-      '| `i18n-plurals-by-cldr` | ICU plural | met |',
+      '| `i18n-plurals-by-cldr` | ICU plural | yes |',
     ]);
 
     // Act
@@ -96,8 +96,8 @@ describe('parseRequirements', () => {
       answers: [
         answer({
           how: 'ICU plural',
+          met: 'yes',
           requirement: 'i18n-plurals-by-cldr',
-          status: 'met',
         }),
       ],
       findings: [],
@@ -113,7 +113,7 @@ describe('parseRequirements', () => {
       // Arrange
       const source = sourceOf([
         heading,
-        '| `i18n-plurals-by-cldr` | ICU plural | met |',
+        '| `i18n-plurals-by-cldr` | ICU plural | yes |',
       ]);
 
       // Act
@@ -128,8 +128,8 @@ describe('parseRequirements', () => {
   );
 
   it.each([
-    '|i18n-typed-keys|compiled catalogs|partial: keys are strings|',
-    '  | `i18n-typed-keys` | compiled catalogs | partial: keys are strings |',
+    '|i18n-typed-keys|compiled catalogs|partly|',
+    '  | `i18n-typed-keys` | compiled catalogs | partly |',
   ])(
     'should read the row %p when it is written without padding or indented',
     (row) => {
@@ -147,8 +147,8 @@ describe('parseRequirements', () => {
         answers: [
           answer({
             how: 'compiled catalogs',
+            met: 'partly',
             requirement: 'i18n-typed-keys',
-            status: 'partial: keys are strings',
           }),
         ],
         findings: [],
@@ -157,7 +157,7 @@ describe('parseRequirements', () => {
   );
 
   it.each([
-    '|Requirement|How|Status|',
+    '|Requirement|How|Met|',
     '| --- | :---: | --- |',
     '---|---|---',
   ])(
@@ -181,8 +181,9 @@ describe('parseRequirements', () => {
   );
 
   it.each([
-    '| i18n | `i18n-plurals-by-cldr` | ICU | met |',
-    '| Block | Requirement | Status |',
+    '| i18n | `i18n-plurals-by-cldr` | ICU | yes |',
+    '| Block | Requirement | Met |',
+    'Note | Requirement | How | Met |',
   ])('should report the row %p when it is not a requirement answer', (row) => {
     // Arrange
     const source = sourceOf([
@@ -198,12 +199,41 @@ describe('parseRequirements', () => {
       answers: [],
       findings: [
         {
-          message: `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <status> |"`,
+          message: `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <met> |"`,
           path: FILE,
         },
       ],
     });
   });
+
+  it.each([
+    '| Requirement | How in lingui | Status |',
+    '|Requirement|How|Status|',
+    '| Requirement | How | Met | Notes |',
+  ])(
+    'should report the header %p when it is not the Requirements header',
+    (header) => {
+      // Arrange
+      const source = sourceOf([
+        '## Requirements',
+        header,
+      ]);
+
+      // Act
+      const parsed = parseRequirements(source);
+
+      // Assert
+      expect(parsed).toStrictEqual({
+        answers: [],
+        findings: [
+          {
+            message: `has the header "${header}" in its Requirements; it is "| Requirement | How | Met |"`,
+            path: FILE,
+          },
+        ],
+      });
+    },
+  );
 
   it.each([
     '# requirements',
@@ -214,7 +244,7 @@ describe('parseRequirements', () => {
       // Arrange
       const source = sourceOf([
         heading,
-        '| `i18n-plurals-by-cldr` | ICU | met |',
+        '| `i18n-plurals-by-cldr` | ICU | yes |',
       ]);
 
       // Act

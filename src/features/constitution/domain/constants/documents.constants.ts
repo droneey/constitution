@@ -6,6 +6,7 @@ enum DocumentPath {
   Marketplace = '.claude-plugin/marketplace.json',
   Plugin = '.claude-plugin/plugin.json',
   Readme = 'README.md',
+  Vocabulary = 'vocabulary.yaml',
 }
 
 export { DocumentPath };

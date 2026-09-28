@@ -11,4 +11,4 @@ governs: ["src/routes/**", "src/router.tsx"]
 
 # TanStack Router
 
-> The project's only router. **Vocabulary:** folder `routes`, the delivery layer of a browser application. `router.tsx` is a name the framework fixes.
+> The project's only router. `router.tsx` is a name the framework fixes.

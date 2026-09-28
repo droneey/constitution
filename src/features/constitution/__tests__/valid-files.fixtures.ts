@@ -34,6 +34,17 @@ const pluginFiles = (): Files => ({
   'templates/PROJECT.md': '# Project Context\n',
   'templates/block.md': '---\nid: <id>\n---\n',
   'templates/constitution.yaml': 'version: <installed version>\n',
+  'vocabulary.yaml': [
+    'architecture:',
+    '  concepts: [port, binding unit]',
+    '  folders: [adapters/]',
+    '  suffixes: [.port]',
+    'workflow:',
+    '  concepts: [squash merge]',
+    '  folders: [feature/]',
+    '  suffixes: []',
+    '',
+  ].join('\n'),
 });
 
 const upperFiles = (): Files => ({
@@ -183,9 +194,9 @@ const implementationFiles = (): Files => ({
       '',
       '## Requirements',
       '',
-      '| Requirement | How | Status |',
+      '| Requirement | How | Met |',
       '|---|---|---|',
-      '| `i18n-plurals-by-cldr` | ICU plural | met |',
+      '| `i18n-plurals-by-cldr` | ICU plural | yes |',
       '',
     ].join('\n'),
     id: 'lingui',

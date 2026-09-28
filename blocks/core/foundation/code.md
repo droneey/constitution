@@ -7,7 +7,7 @@
 The case of source file names belongs to the language block; every other file is kebab-case.
 
 ## intention-revealing-names · SHOULD
-A name says what a thing is for: intention-revealing, pronounceable, searchable, with no abbreviation that is not already a term of the domain and no noise word.
+A name says what a thing is for: intention-revealing, pronounceable, searchable, with no abbreviation that is not already a term of the business and no noise word.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -28,7 +28,7 @@ One concept has one word across the program, and one word names one concept: not
 | a reader who sees two words assumes two things, and searches miss the other one. | review | [] |
 
 ## no-empty-names · SHOULD
-No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff`, `thing` — as a variable, a parameter or a destructured field. Generic code in `libs/` may use them for what is truly generic.
+No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff`, `thing` — as a variable, a parameter or a destructured field. Generic code that knows nothing of the program may use them for what is truly generic.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -70,7 +70,7 @@ A file holds one semantic unit and is named after it; unrelated exports go to th
 | a file's name then tells what is inside, and a change to one unit touches one file. | review | [] |
 
 ## booleans-read-as-predicates · SHOULD
-A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `should` or `did`. A domain may set the prefixes for booleans of its own kind, such as the properties of a presentational component.
+A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `should` or `did`. A domain block may set the prefixes for booleans of its own kind, such as the properties of a presentational component.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -115,12 +115,12 @@ A longer, obvious form beats a terse, obscure one.
 |---|---|---|
 | clever code saves its author a minute and costs every reader more. | review | [] |
 
-## module-hides-much-behind-small-interface · SHOULD
-A module hides much behind a small interface: few operations, each doing a lot a caller need not know.
+## module-hides-much-behind-small-public-entry · SHOULD
+A module hides much behind a small public entry: few operations, each doing a lot a caller need not know.
 
 | Why | Check | Tags |
 |---|---|---|
-| a deep module spares its callers the details it hides; a shallow one makes them learn an interface nearly as large as the work behind it. | review | [] |
+| a deep module spares its callers the details it hides; a shallow one makes them learn a public entry nearly as large as the work behind it. | review | [] |
 
 ## pure-by-default · SHOULD
 A function's output depends only on its input, and an effect never hides inside an otherwise pure helper.
@@ -138,8 +138,8 @@ A comment states a constraint, a workaround or a decision the code cannot show. 
 |---|---|---|
 | the code already says what it does; a narrating comment only repeats it and drifts from it. | review | [] |
 
-## interface-docs-only-for-non-obvious-public-api · SHOULD
-Interface documentation is written only for a public interface whose use is not obvious from its names and types.
+## docs-only-for-non-obvious-public-entry · SHOULD
+Documentation of a public entry is written only where its use is not obvious from its names and types.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -160,7 +160,7 @@ Code is never commented out; it is deleted. History keeps it.
 | commented-out code rots unseen, misleads readers, and version control already remembers it. | review | [] |
 
 ## no-dead-code · MUST
-No unused file, dependency, export, parameter, variable or branch. Code and dependencies that only tests reach are unused too. An export a surface offers is not dead code.
+No unused file, dependency, export, parameter, variable or branch. Code and dependencies that only tests reach are unused too. An export a module offers through its public entry is not dead code.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -174,7 +174,7 @@ Silencing a check — a lint rule, a type error, a mutant, a deliberately ignore
 | the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | tool — lint | [] |
 
 ## no-debug-output-in-shipped-code · SHOULD
-Shipped code writes no debug output and stops at no breakpoint. The output of a command-line program is its interface, not debug.
+Shipped code writes no debug output and stops at no breakpoint. What a command-line program writes for its user — its results, prompts and messages — is its output, not debug.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -182,8 +182,8 @@ Shipped code writes no debug output and stops at no breakpoint. The output of a 
 
 ## Absence
 
-## absence-has-one-value-normalised-at-boundary · MUST
-Internal code spells absence with one value, which the language block names.
+## absence-has-one-value · MUST
+Code spells absence with one value, which the language block names; another spelling appears only where an external format imposes it.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -257,11 +257,11 @@ An entity's identifier is a type of its own, branded by its entity, so an order'
 | two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | tool — types | [] |
 
 ## domain-values-never-typed-again · MUST
-A set of values the domain declares is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over a domain type is checked by type against the value it produces.
+A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces.
 
 | Why | Check | Tags |
 |---|---|---|
-| a restated set drifts from the domain, and a schema that is stricter or looser than its type locks out, or lets in, what the domain does not mean. | tool — types | [] |
+| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | tool — types | [] |
 
 ## types-live-with-their-consumer · SHOULD
 A type lives beside the unit whose signature introduces it, and every other unit imports it from there. It moves to its own file when a second consumer appears, and never gets a second home through a re-export.
@@ -333,7 +333,7 @@ Don't-repeat-yourself applies to knowledge, not to text that merely looks alike.
 | two copies of one fact drift, but two similar pieces with different reasons to change are coupled wrongly by one abstraction. | review | [] |
 
 ## function-answers-or-changes-state · SHOULD
-A function either answers a question or changes state, never both. A query has no side effect; a command takes its data as input and never calls a query of its own.
+A function either answers a question or changes state, never both. One that answers has no side effect; one that changes state takes its data as input and never calls one that answers.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -14,6 +14,7 @@ import {
   createJsonManifestParser,
   createNodeFileSystem,
   createYamlFrontMatterParser,
+  createYamlVocabularyParser,
   prepareDigests,
   writeDigests,
 } from '#/features/constitution';
@@ -84,6 +85,7 @@ const writeDigestsOf = (input: {
     frontMatterParser: createYamlFrontMatterParser(),
     manifestParser: createJsonManifestParser(),
     tree: createFileTree(input.files),
+    vocabularyParser: createYamlVocabularyParser(),
   });
 
   if (prepared.status === 'refused' || prepared.digests.findings.length > 0) {

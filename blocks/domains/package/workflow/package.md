@@ -24,7 +24,7 @@ One tag publishes every public package.
 | a release is then one act that ships the packages together, never a set of packages published one at a time. | review | [] |
 
 ## changelog-from-commit-subjects · SHOULD
-The changelog of a release is the commit subjects since the previous tag, features and fixes first.
+The changelog of a release is the commit subjects since the previous tag, `feat` and `fix` subjects first.
 
 | Why | Check | Tags |
 |---|---|---|

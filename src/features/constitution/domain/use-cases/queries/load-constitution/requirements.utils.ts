@@ -21,9 +21,11 @@ const NEAR_SECTION = /^#{1,6}\s*requirements$/i;
 const ROW =
   /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|$/;
 const SEPARATOR = /^\|?[\s:|-]+\|?$/;
-const HEADER = /^\|\s*Requirement\s*\|/;
+const HEADER = /^\|\s*Requirement\s*\|\s*How\s*\|\s*Met\s*\|$/;
+const NEAR_HEADER = /^\|\s*Requirement\s*\|/;
+const HEADER_FORM = '| Requirement | How | Met |';
 const PIPE = '|';
-const ROW_FORM = '| `<requirement>` | <how> | <status> |';
+const ROW_FORM = '| `<requirement>` | <how> | <met> |';
 
 const rowsOf = (input: {
   section: MarkdownSection;
@@ -45,15 +47,15 @@ const rowsOf = (input: {
       }
 
       // Stryker disable next-line StringLiteral: the pattern always captures all three
-      const [, requirement = '', how = '', status = ''] = match;
+      const [, requirement = '', how = '', met = ''] = match;
 
       return [
         {
           block: input.source.block,
           file: input.source.file,
           how,
+          met,
           requirement,
-          status,
           with: input.source.with,
         },
       ];
@@ -61,7 +63,9 @@ const rowsOf = (input: {
     findings: rows
       .filter((row) => !ROW.test(row))
       .map((row) => ({
-        message: `has the row "${row}" in its Requirements, which is not "${ROW_FORM}"`,
+        message: NEAR_HEADER.test(row)
+          ? `has the header "${row}" in its Requirements; it is "${HEADER_FORM}"`
+          : `has the row "${row}" in its Requirements, which is not "${ROW_FORM}"`,
         path: input.source.file,
       })),
   };

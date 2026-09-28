@@ -109,7 +109,7 @@ describe('digestsCheck', () => {
     expect(findings).toStrictEqual([
       {
         message:
-          'makes a core part of 3557 bytes; the digest holds at most 3500 of core',
+          'makes a core part of 3509 bytes; the digest holds at most 3500 of core',
         path: 'blocks/core/core.md',
       },
       {

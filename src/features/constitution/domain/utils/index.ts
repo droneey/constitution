@@ -27,4 +27,4 @@ export {
 export type { RuleCheck } from './rule-labels.utils';
 export { checkOf } from './rule-labels.utils';
 export type { MarkdownSection } from './sections.utils';
-export { sectionsOf } from './sections.utils';
+export { isHeading, sectionsOf } from './sections.utils';

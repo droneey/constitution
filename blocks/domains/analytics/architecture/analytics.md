@@ -1,5 +1,7 @@
 # Analytics
 
+> **Vocabulary:** folder `sinks`, suffix `.sink`.
+
 ## sinks-behind-one-contract → set-folder-holds-only-members
 Each analytics service is one sink, one `.sink` file in `sinks/`, under one contract beside the folder; a registry chooses the active sinks.
 

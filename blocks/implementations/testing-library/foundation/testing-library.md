@@ -22,7 +22,7 @@ What appears asynchronously is awaited with `findBy…` or `waitFor`, never a fi
 | a sleep is too short on a slow machine and wasted on a fast one. | review | [testing] |
 
 ## hooks-proven-through-their-screen → spec-per-boundary
-A binding unit is proven through the screen or widget that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
+A hook that loads or writes data is proven through the screen or component that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -37,15 +37,13 @@ const GOLDEN_INDEX = `${[
   'rule\tno-any\ttypescript\tblocks/contexts/languages/typescript/foundation/typescript.md\t\tMUST\ttool\ttypes\ttypescript\t\tfoundation\t\ttrue\tA TypeScript value is never typed `any`.',
   'rule\thooks-at-top-level\t_react\tblocks/implementations/_react/foundation/hooks.md\t\tMUST\ttool\tlint\t\t\tfoundation\t\ttrue\tA React hook is called only at the top level.',
   'rule\tportals-for-overlays\treact-dom\tblocks/implementations/react-dom/workflow/portals.md\t\tMUST\treview\t\t\t\tworkflow\t\ttrue\tReact DOM renders an overlay through a portal.',
-  'answer\tlingui\ti18n-plurals-by-cldr\tmet',
+  'answer\tlingui\ti18n-plurals-by-cldr\tyes',
 ].join('\n')}\n`;
 
 const GOLDEN_CORE = [
   '# Core',
   '',
   'Read [principles](blocks/core/foundation/principles.md).',
-  '',
-  'Laws of foundation: dependencies-point-inward.',
   '',
 ].join('\n');
 

@@ -1,11 +1,11 @@
 # Betterleaks
 
 ## secrets-scanned-on-every-change → no-secret-in-repository
-The check scans the history the clone holds and the uncommitted changes, staged or not, and CI runs it on every pull request.
+The check scans the history the clone holds and the uncommitted changes, staged or not.
 
 | Why | Check | Tags |
 |---|---|---|
-| a secret a hook missed, or a hook someone skipped, is still caught before it merges. | tool — secrets | [] |
+| a secret is caught wherever it waits — already committed, staged or only written — by the same run that checks the rest. | tool — secrets | [] |
 
 ## history-scanned-once-on-adoption → leaked-secret-rotated-at-once
 The whole history, every ref, is scanned once when the scanner is adopted, and before a first public release.

@@ -16,7 +16,7 @@ A caught error is handled, rethrown, or mapped to a typed error. Code branches o
 
 | Why | Check | Tags |
 |---|---|---|
-| a swallowed error turns a failure into wrong data that surfaces far from its cause, and a message is text a person may reword. | tool — lint | [errors] |
+| a swallowed error turns a failure into wrong data that shows up far from its cause, and a message is text a person may reword. | tool — lint | [errors] |
 
 ## rules-held-by-tools · MUST
 Every rule whose Check names a role is held by a tool of that role in the project's check, configured to fail on a violation. A rule no configured tool holds is reviewed, or lowered by an override.
@@ -39,16 +39,8 @@ A number shown in a text — a count, a total, a limit — is read from the data
 |---|---|---|
 | a number typed twice drifts from its source, and the text then states something the program no longer does. | review | [data] |
 
-## The modelling vocabulary
-
-- **Ubiquitous language.** Names match the business: `cancelOrder`, not `updateRecord`. The terms come from the people who own the domain and are mirrored, not translated; `PROJECT.md` keeps them in its glossary.
-- **A feature is a bounded context.** One word may mean different things in two features.
-- **Ports and adapters.** A port names what the domain needs, in the domain's words. An adapter implements it over one external system.
-- **Entities, value objects, use-cases.** Business types with identity; small values that guard an invariant; the operations that carry business rules. Their form is the language's.
-- **Aggregates and domain events** where the program owns the data it changes: an aggregate is the unit a change keeps consistent, reached through its root; a domain event records, in the past tense, what the domain decided.
-
-## value-objects-guard-their-invariant · SHOULD
-A value object is built only through the function that checks its invariant, so a value that exists is valid.
+## invariant-checked-at-construction · SHOULD
+A value that must keep an invariant is built only through the function that checks it, so a value that exists is valid.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -5,7 +5,7 @@
 ## Secrets
 
 ## no-secret-in-repository · MUST
-No secret is committed — not in code, documents, tests, fixtures or history. A secret scanner runs in the commit hooks and on every change, through the check.
+No secret is committed — not in code, documents, tests, fixtures or history. A secret scanner runs on every change, through the check.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -107,11 +107,11 @@ Every dependency's licence is on the project's allowlist.
 ## Operations and access
 
 ## access-denied-unless-granted · MUST
-Access is denied unless a rule grants it, and a test proves the access of each entry point.
+Access is denied unless a rule grants it, and a test proves the access of each operation a caller outside the program can reach: a route, an endpoint, a command.
 
 | Why | Check | Tags |
 |---|---|---|
-| access open by default is open wherever someone forgot a rule, and only a test notices the entry point that forgot. | test | [security] |
+| access open by default is open wherever someone forgot a rule, and only a test notices the operation that forgot. | test | [security] |
 
 ## irreversible-operations-behind-flag-and-human · MUST
 An operation that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.

@@ -72,14 +72,14 @@ Pending, optimistic and transition state go through `useActionState`, `useTransi
 
 | Why | Check | Tags |
 |---|---|---|
-| React then knows what is pending, and keeps the interface responsive while it is. | review | [ux] |
+| React then knows what is pending, and keeps the user interface responsive while it is. | review | [ux] |
 
 ## fast-source-batched-in-its-hook → fast-source-updates-once-per-frame
 A hook that folds a fast source schedules its state once per animation frame; an expensive render driven by input reads `useDeferredValue`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a render per event starves the frame; batched or deferred, the interface stays responsive. | review | [] |
+| a render per event starves the frame; batched or deferred, the screen stays responsive. | review | [] |
 
 ## Composition
 
@@ -91,7 +91,7 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
 
 ## error-boundary-catches-render-errors · SHOULD
-A screen's error boundary catches the render errors below it, reports once, and shows the screen's error state. A failure a binding unit returns as a state is rendered, not thrown.
+A screen's error boundary catches the render errors below it, reports once, and shows the screen's error state. A failure a data hook returns as a state is rendered, not thrown.
 
 | Why | Check | Tags |
 |---|---|---|

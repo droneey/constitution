@@ -1,5 +1,7 @@
 # User interface
 
+**Vocabulary.** Folders: `ui` — a feature's presentation layer, and also `root/ui`, `shared/ui`, `libs/ui`; `components` — presentational; `widgets` — smart; `assets` — icons, images and fonts. Suffix: `.variants`. A feature adds `ui/{components,widgets}/`. The screens are the delivery layer; the router's block names their folder.
+
 ## Screens
 
 ## screen-composes-the-page → delivery-units-stay-thin
@@ -31,7 +33,7 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | tool — architecture | [] |
 
 ## screen-guards-through-auth-surface → access-denied-unless-granted
-Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; feature interfaces adapt to permissions passed down by composition.
+Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -51,7 +53,7 @@ Each kind of state has one home: remote data in its cache; view state a link or 
 |---|---|---|
 | state kept in the wrong home is lost on reload, shared by accident, or copied until the copies disagree. | review | [] |
 
-## form-reuses-domain-predicates → value-objects-guard-their-invariant
+## form-reuses-domain-predicates → invariant-checked-at-construction
 A form's schema composes the predicates of the value objects and sits with the form; it never restates an invariant.
 
 | Why | Check | Tags |
@@ -86,7 +88,7 @@ A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its ent
 
 | Why | Check | Tags |
 |---|---|---|
-| the interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool — architecture | [] |
+| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool — architecture | [] |
 
 ## component-in-its-own-folder → file-carries-its-role-suffix
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.

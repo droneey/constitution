@@ -6,6 +6,7 @@ import type {
   FileTree,
   FrontMatterParser,
   ManifestParser,
+  VocabularyParser,
 } from '../../../contracts';
 import type {
   Block,
@@ -133,12 +134,14 @@ const documentsOf = (input: {
   parser: ManifestParser;
   paths: ReadonlySet<string>;
   tree: FileTree;
+  vocabularyParser: VocabularyParser;
 }): Documents => {
   const textOf = (path: string): string | undefined =>
     input.paths.has(path) ? input.tree.read(path) : undefined;
   const hooks = textOf(DocumentPath.Hooks);
   const marketplace = textOf(DocumentPath.Marketplace);
   const plugin = textOf(DocumentPath.Plugin);
+  const vocabulary = textOf(DocumentPath.Vocabulary);
 
   return {
     decisions: textOf(DocumentPath.Decisions),
@@ -158,6 +161,10 @@ const documentsOf = (input: {
       parser: input.frontMatterParser,
       tree: input.tree,
     }),
+    vocabulary:
+      vocabulary === undefined
+        ? undefined
+        : input.vocabularyParser.parse(vocabulary),
   };
 };
 
@@ -165,6 +172,7 @@ const loadConstitution = (input: {
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;
+  vocabularyParser: VocabularyParser;
 }): ConstitutionLoaded => {
   const listed = input.tree.list();
   const paths: ReadonlySet<string> = new Set(listed);
@@ -199,6 +207,7 @@ const loadConstitution = (input: {
         parser: input.manifestParser,
         paths,
         tree: input.tree,
+        vocabularyParser: input.vocabularyParser,
       }),
       paths,
       requirementAnswers: parsed.answers,

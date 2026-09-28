@@ -1,0 +1,86 @@
+architecture:
+  concepts:
+    - adapter
+    - aggregate
+    - binding unit
+    - bounded context
+    - composition root
+    - delivery layer
+    - delivery unit
+    - domain error
+    - domain event
+    - entrypoint
+    - kernel
+    - layer folder
+    - layer matrix
+    - port
+    - read side
+    - role file
+    - role folder
+    - role suffix
+    - sink
+    - surface
+    - ubiquitous language
+    - use-case
+    - value object
+    - widget
+    - wire model
+    - wiring file
+    - write side
+  folders:
+    - adapters/
+    - app/
+    - cli/
+    - commands/
+    - components/
+    - composition/
+    - contracts/
+    - domain/
+    - entities/
+    - entrypoints/
+    - features/
+    - kernel/
+    - libs/
+    - models/
+    - providers/
+    - queries/
+    - repositories/
+    - root/
+    - shared/
+    - sinks/
+    - steps/
+    - ui/
+    - use-cases/
+    - value-objects/
+    - widgets/
+  suffixes:
+    - .adapter
+    - .cli
+    - .entity
+    - .hooks
+    - .model
+    - .port
+    - .repository
+    - .sink
+    - .use-case
+    - .variants
+workflow:
+  concepts:
+    - chore
+    - commit hook
+    - conventional commit
+    - dependency bot
+    - feat
+    - pre-release
+    - pull request
+    - release automation
+    - semantic versioning
+    - semver
+    - squash
+    - update bot
+  folders:
+    - feature/
+    - fix/
+    - hotfix/
+    - local/
+  suffixes: []

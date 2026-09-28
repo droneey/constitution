@@ -6,3 +6,4 @@ export type {
   FrontMatterRead,
 } from './front-matter-parser.port';
 export type { ManifestParser } from './manifest-parser.port';
+export type { VocabularyParser } from './vocabulary-parser.port';

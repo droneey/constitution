@@ -9,6 +9,7 @@ const prepared = prepareDigests({
   frontMatterParser: wiring.frontMatterParser,
   manifestParser: wiring.manifestParser,
   tree: wiring.fileSystem,
+  vocabularyParser: wiring.vocabularyParser,
 });
 
 if (prepared.status === 'prepared') {
