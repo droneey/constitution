@@ -1,6 +1,5 @@
 import type { Finding } from './finding.types';
 
-// biome-ignore lint/plugin/named-arguments: a comparator takes its two sides in order
 const compareText = (left: string, right: string): number => {
   if (left === right) {
     return 0;
@@ -10,7 +9,6 @@ const compareText = (left: string, right: string): number => {
   return left < right ? -1 : 1;
 };
 
-// biome-ignore lint/plugin/named-arguments: a comparator takes its two sides in order
 const compareFindings = (left: Finding, right: Finding): number =>
   compareText(left.path, right.path) ||
   compareText(left.message, right.message);

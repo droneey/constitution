@@ -57,8 +57,7 @@ block	tanstack-query	implementation	Server data in the TanStack Query cache — 
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.		tanstack-query	react-dom		false	tanstack-start		typescript		src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.				tanstack-router	false			typescript	tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.		a11y	_react		false			typescript		**/__tests__/**/*.test.tsx
-block	vite	implementation	Vite builds and serves the bundle; the build is not the type gate.			typescript		false	vitest		typescript		vite.config.ts vite.*.config.ts
-block	vitest	implementation	Vitest runs the specs and measures their coverage.				vite	false		tests coverage	typescript	vite	vitest.config.ts **/__tests__/**
+block	vite	implementation	Vite builds and serves the bundle; the build is not the type gate.			typescript		false			typescript		vite.config.ts vite.*.config.ts
 block	yaml	implementation	The yaml package reads and writes YAML at the edge.		convergence	typescript		false			typescript		
 block	yamllint	implementation	yamllint holds the style of YAML files.					false					.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types at the edge.			typescript		false			typescript		
@@ -126,7 +125,7 @@ rule	domain-names-free-of-vendor-and-storage	core	blocks/core/code.md		SHOULD	re
 rule	values-carry-their-unit	core	blocks/core/code.md		SHOULD	review			naming	A value with a unit carries the unit in its name: `timeoutMs`, `DEFAULT_TIMEOUT_MS`, `sizeBytes`.
 rule	file-is-one-semantic-unit	core	blocks/core/code.md		SHOULD	review			naming architecture	A file holds one semantic unit and is named after it; unrelated exports go to their own files.
 rule	booleans-read-as-predicates	core	blocks/core/code.md		SHOULD	tool	lint		naming	A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `should` or `did`.
-rule	named-arguments-past-the-first	core	blocks/core/code.md		SHOULD	tool	lint		naming	Every argument past the first is named: the language's options record or keyword-only parameters.
+rule	at-most-three-positional-arguments	core	blocks/core/code.md		SHOULD	tool	lint		naming	A function takes at most three positional parameters.
 rule	function-does-one-thing	core	blocks/core/code.md		SHOULD	review			architecture	A function does one thing, at one level of abstraction.
 rule	function-file-and-complexity-limits	core	blocks/core/code.md		MUST	tool	lint		architecture	A function holds at most 100 lines, a file at most 500, and a function's cognitive complexity is at most 10.
 rule	guard-clauses-first	core	blocks/core/code.md		SHOULD	review			architecture	Failure paths leave first, through guard clauses, so the main path stays at the top level of indentation.
@@ -135,7 +134,7 @@ rule	pure-by-default	core	blocks/core/code.md		SHOULD	review			architecture	A fu
 rule	readability-over-cleverness	core	blocks/core/code.md		SHOULD	review			naming	A longer, obvious form beats a terse, obscure one.
 rule	comments-explain-why	core	blocks/core/code.md		SHOULD	review			naming	A comment states a constraint, a workaround or a decision the code cannot show.
 rule	interface-docs-only-for-non-obvious-public-api	core	blocks/core/code.md		SHOULD	review			naming	Interface documentation is written only for a public interface whose use is not obvious from its names and types.
-rule	todo-names-its-issue	core	blocks/core/code.md		SHOULD	tool	lint		workflow	A to-do comment names its issue: `TODO(#<issue>)`.
+rule	todo-names-its-issue	core	blocks/core/code.md		SHOULD	review			workflow	A to-do comment names its issue: `TODO(#<issue>)`.
 rule	no-commented-out-code	core	blocks/core/code.md		MUST	review			workflow	Code is never commented out; it is deleted.
 rule	no-dead-code	core	blocks/core/code.md		MUST	tool	unused		architecture	No unused file, dependency, export, parameter, variable or branch.
 rule	no-debug-output-in-shipped-code	core	blocks/core/code.md		SHOULD	tool	lint		workflow security	Shipped code writes no debug output and stops at no breakpoint; diagnostics go through the logging port.
@@ -486,7 +485,7 @@ rule	satisfies-to-check-conformance	typescript	blocks/contexts/languages/typescr
 rule	brands-set-at-the-boundary	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	tool	types	typescript	types	An identifier's brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol, set only in the mapper at the boundary.
 rule	ambient-aliases-are-project-vocabulary	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	review		typescript	types naming	A project may declare semantic aliases — `type Email = string` — in one ambient `types.d.ts` at its source root: only aliases it uses, each for a meaning found in two or more places, never for a string that is just a string.
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	review		typescript	types	A type derivable from an exported parent in one or two indexed accesses is derived where it is used, not exported under a name of its own.
-rule	options-object-for-named-arguments	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	tool	lint	typescript	naming	Arguments past the first travel in one options object, typed by an interface named `<Function>Input`.
+rule	options-object-typed-as-function-input	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	review		typescript	naming	An object of values that travel together is typed by an interface named `<Function>Input`.
 rule	jsdoc-only-for-non-obvious-api	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	review		typescript	naming	JSDoc documents only a public API whose use is not obvious, never a self-describing property or parameter.
 rule	compiler-is-the-type-gate	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	tool	types	typescript	types	The compiler, not a bundler or the runtime, is the type gate: `tsc --noEmit` runs in the check with the strict options — `strict`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `noImplicitOverride`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `verbatimModuleSyntax`.
 rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	tool	architecture	typescript	security architecture	Build, test and lint tools are development dependencies, and production code imports none of them.
@@ -666,11 +665,6 @@ rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/vite.md		SHOULD
 rule	vite-public-env-holds-no-secret	vite	blocks/implementations/vite/vite.md		MUST	review		typescript	security	Only variables with the public prefix reach the bundle, and each of them is public: none holds a secret.
 rule	one-build-for-every-environment	vite	blocks/implementations/vite/vite.md		SHOULD	review		typescript	architecture	One build serves every environment: settings per environment are read at run time, never built in through `import.meta.env`; build values only carry facts of the build itself.
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/vite.md		SHOULD	review		typescript	performance	The build's output is measured against the bundle's size budget in the check, entry by entry.
-rule	runner-picks-only-named-specs	vitest	blocks/implementations/vitest/vitest.md		MUST	tool	tests	typescript	testing	The runner picks up exactly `__tests__/**/<name>.test.*`; integration specs run as a step of their own, and a run that finds no spec fails.
-rule	coverage-counts-every-source-file	vitest	blocks/implementations/vitest/vitest.md		MUST	tool	coverage	typescript	testing	Coverage counts every source file, tested or not, at 100 percent of lines, functions and branches, excluding exactly core's list and the stories.
-rule	ui-specs-in-a-simulated-dom	vitest	blocks/implementations/vitest/vitest.md		SHOULD	review		typescript	testing	Interface specs run in a simulated DOM, which is their sandbox; a request no captured response answers fails the case, and time is faked where it matters.
-rule	no-module-mocking-of-own-code	vitest	blocks/implementations/vitest/vitest.md		SHOULD	tool	lint	typescript	testing	No `vi.mock` of the project's own modules: effects are faked through their ports, and a spy is asserted only when the call is the behaviour.
-rule	cases-isolated-by-configuration	vitest	blocks/implementations/vitest/vitest.md		SHOULD	tool	tests	typescript	testing	Mocks, stubbed globals and the environment are restored after every case, and cases pass in any order.
 rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/yaml.md		MUST	tool	architecture	typescript	architecture	The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses, and its result is `unknown` until a schema parses it.
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/yaml.md		SHOULD	test		typescript	errors	Every failure of `parse` — a syntax error, and an alias without its anchor, which throws a `ReferenceError` — becomes one coded error with its cause.
 rule	yaml-written-without-folding	yaml	blocks/implementations/yaml/yaml.md		SHOULD	test		typescript	data	YAML is written with `lineWidth: 0`, so no value is folded across lines.

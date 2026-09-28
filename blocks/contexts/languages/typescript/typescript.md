@@ -154,12 +154,12 @@ A type derivable from an exported parent in one or two indexed accesses is deriv
 **Check:** review
 **Tags:** types
 
-## options-object-for-named-arguments · SHOULD
-Arguments past the first travel in one options object, typed by an interface named `<Function>Input`.
-**Why:** the object names every argument at the call site, and a field is added without touching callers.
-**Check:** tool — lint
+## options-object-typed-as-function-input · SHOULD
+An object of values that travel together is typed by an interface named `<Function>Input`.
+**Why:** the interface names the whole the values make, and the call site reads each of them by name.
+**Check:** review
 **Tags:** naming
-**Implements:** `named-arguments-past-the-first`
+**Implements:** `at-most-three-positional-arguments`
 
 ## jsdoc-only-for-non-obvious-api · SHOULD
 JSDoc documents only a public API whose use is not obvious, never a self-describing property or parameter.
