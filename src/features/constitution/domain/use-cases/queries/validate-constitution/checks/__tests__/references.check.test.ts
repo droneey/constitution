@@ -55,8 +55,8 @@ describe('referencesCheck', () => {
 
   it.each([
     {
-      name: 'a sentence that mentions the Implements label names it',
-      text: '# Principles\n\nName `portals-for-overlays` on its **Implements:** line.\n',
+      name: 'a sentence that mentions the parent in a heading names it',
+      text: '# Principles\n\nName `portals-for-overlays` after the arrow of a heading.\n',
     },
     {
       name: 'a sentence that holds a pipe names it',
@@ -79,7 +79,7 @@ describe('referencesCheck', () => {
     expect(findings).toStrictEqual([
       {
         message:
-          'names the rule portals-for-overlays of react-dom; a rule refers to another only through its Implements line',
+          'names the rule portals-for-overlays of react-dom; a rule refers to another only as the parent in its heading',
         path: PRINCIPLES,
       },
     ]);

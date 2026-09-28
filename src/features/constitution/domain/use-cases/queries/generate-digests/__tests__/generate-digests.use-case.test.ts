@@ -85,7 +85,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tdependencies-point-inward',
       record:
-        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\tdesign\tfoundation\tThe dependencies-point-inward rule holds.',
+        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\t\tfoundation\t\ttrue\tThe dependencies-point-inward rule holds.',
       what: 'an empty check kind and role',
     },
     {
@@ -130,14 +130,49 @@ describe('generateDigests', () => {
             slug: 'seam-rule',
             statement:
               'A write rolls back to [the ui block](../../ui.md). It keeps the error.',
-            tags: 'data',
+            tags: '[data]',
           },
         )}`,
       },
       key: 'rule\tseam-rule',
       record:
-        'rule\tseam-rule\tui\tblocks/domains/ui/architecture/with/remote-data.md\tremote-data\tMUST\treview\t\t\tdata\tarchitecture\tA write rolls back to [the ui block](blocks/domains/ui/ui.md).',
+        'rule\tseam-rule\tui\tblocks/domains/ui/architecture/with/remote-data.md\tremote-data\tMUST\treview\t\t\tdata\tarchitecture\t\ttrue\tA write rolls back to [the ui block](blocks/domains/ui/ui.md).',
       what: 'the first sentence with its link read from the root',
+    },
+    {
+      condition: 'a rule carries out a SHOULD rule and states no level',
+      files: {
+        [PRINCIPLES]: `# Principles\n\n${rule({
+          level: 'SHOULD',
+          slug: 'dependencies-point-inward',
+          tags: '[data]',
+        })}\n${rule({
+          parent: 'dependencies-point-inward',
+          slug: 'layers-point-inward',
+          tags: '[errors, data]',
+        })}`,
+      },
+      key: 'rule\tlayers-point-inward',
+      record:
+        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tSHOULD\treview\t\t\terrors data\tfoundation\tdependencies-point-inward\tfalse\tThe layers-point-inward rule holds.',
+      what: 'the inherited level, the united tags, the parent and a level not stated',
+    },
+    {
+      condition: 'a rule carries out a SHOULD rule and states MUST',
+      files: {
+        [PRINCIPLES]: `# Principles\n\n${rule({
+          level: 'SHOULD',
+          slug: 'dependencies-point-inward',
+        })}\n${rule({
+          level: 'MUST',
+          parent: 'dependencies-point-inward',
+          slug: 'layers-point-inward',
+        })}`,
+      },
+      key: 'rule\tlayers-point-inward',
+      record:
+        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\treview\t\t\t\tfoundation\tdependencies-point-inward\ttrue\tThe layers-point-inward rule holds.',
+      what: 'the stricter level it states and the parent',
     },
     {
       condition:

@@ -567,7 +567,7 @@ describe('loadConstitution', () => {
       findings: [
         {
           message:
-            'heading "### loose · MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
+            'heading "### loose · MUST" looks like a rule but is not "## <slug> · <LEVEL>", "## <slug> → <parent>" or "## <slug> → <parent> · <LEVEL>"',
           path: 'blocks/implementations/lingui/workflow/catalogs.md',
         },
         {

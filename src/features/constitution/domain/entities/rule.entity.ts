@@ -1,31 +1,22 @@
 import type { Axis, Level } from '#/kernel';
 
-enum RuleLabel {
-  Why = 'why',
-  Check = 'check',
-  Tags = 'tags',
-  Example = 'example',
-  Implements = 'implements',
-}
-
-const RULE_LABELS: readonly RuleLabel[] = [
-  RuleLabel.Why,
-  RuleLabel.Check,
-  RuleLabel.Tags,
-  RuleLabel.Example,
-  RuleLabel.Implements,
-];
-
-interface Rule {
+interface StatedRule {
   axis: Axis;
   block: string;
+  check: string;
   file: string;
-  labels: Readonly<Partial<Record<RuleLabel, string>>>;
-  level: Level;
+  ownTags: readonly string[];
+  parent: string | undefined;
   slug: string;
+  statedLevel: Level | undefined;
   statement: string;
+  why: string;
   with: string | undefined;
 }
 
-export type { Rule };
-export { RULE_LABELS, RuleLabel };
+interface Rule extends StatedRule {
+  level: Level;
+  tags: readonly string[];
+}
+
+export type { Rule, StatedRule };

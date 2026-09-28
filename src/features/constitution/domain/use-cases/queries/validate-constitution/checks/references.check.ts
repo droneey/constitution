@@ -10,7 +10,6 @@ import {
 import type { Check, CheckInput } from '../check.types';
 import { linkTargetsOf } from '../link-targets.utils';
 
-const IMPLEMENTS_LINE = /^\*\*Implements:\*\*/;
 const TABLE_ROW = /^\s*\|/;
 const FOLDER_SEPARATOR = '/';
 const DECISION = /\bADR-\d{4}\b/g;
@@ -52,8 +51,6 @@ const linkFindings = (input: {
         ];
   });
 
-// The Implements line and the rows of a Requirements table are the two places
-// that name a rule of another block; everywhere else a slug is a reference.
 const slugFindings = (input: {
   block: Block;
   file: BlockFile;
@@ -61,7 +58,7 @@ const slugFindings = (input: {
 }): readonly Finding[] => {
   const prose = withoutCodeFences(input.file.body)
     .split('\n')
-    .filter((line) => !(IMPLEMENTS_LINE.test(line) || TABLE_ROW.test(line)))
+    .filter((line) => !TABLE_ROW.test(line))
     .join('\n');
 
   return [
@@ -73,7 +70,7 @@ const slugFindings = (input: {
       ? []
       : [
           {
-            message: `names the rule ${span} of ${rule.block}; a rule refers to another only through its Implements line`,
+            message: `names the rule ${span} of ${rule.block}; a rule refers to another only as the parent in its heading`,
             path: input.file.path,
           },
         ];

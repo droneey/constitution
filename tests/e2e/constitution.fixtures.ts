@@ -15,6 +15,7 @@ interface BlockFixture {
 interface RuleFixture {
   check?: string;
   level?: string;
+  parent?: string;
   slug: string;
   statement: string;
 }
@@ -42,13 +43,19 @@ const mainFile = (block: BlockFixture): string =>
     block.body,
   ].join('\n');
 
+const headingOf = (input: RuleFixture): string =>
+  input.parent === undefined
+    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
+    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+
 const rule = (input: RuleFixture): string =>
   [
-    `## ${input.slug} · ${input.level ?? 'MUST'}`,
+    headingOf(input),
     input.statement,
-    '**Why:** it keeps the fixture honest.',
-    `**Check:** ${input.check ?? 'review'}`,
-    '**Tags:** design',
+    '',
+    '| Why | Check | Tags |',
+    '|---|---|---|',
+    `| it keeps the fixture honest. | ${input.check ?? 'review'} | [] |`,
     '',
   ].join('\n');
 
@@ -210,6 +217,22 @@ const domainFiles = (): Files => ({
         check: 'test',
         slug: 'four-data-states',
         statement: 'Every data view shows loading, empty, error and content.',
+      },
+      {
+        parent: 'four-data-states',
+        slug: 'loading-state-shown',
+        statement: 'A view shows that it loads.',
+      },
+      {
+        parent: 'loading-state-shown',
+        slug: 'skeleton-matches-content',
+        statement: 'A skeleton has the shape of its content.',
+      },
+      {
+        level: 'MUST',
+        parent: 'four-data-states',
+        slug: 'error-state-offers-retry',
+        statement: 'An error state offers a retry.',
       },
     ],
     summary: 'Screens and what a user sees on them.',

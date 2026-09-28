@@ -1,12 +1,21 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { Finding } from '#/kernel';
 import { Axis, Level } from '#/kernel';
 
-import type { Rule } from '../../../../entities';
+import type { StatedRule } from '../../../../entities';
 import { parseRules } from '../rules.utils';
 
 const FILE = 'blocks/core/foundation/principles.md';
 const CARD = 'blocks/core/core.md';
+const HEADING_FORMS =
+  '"## <slug> · <LEVEL>", "## <slug> → <parent>" or "## <slug> → <parent> · <LEVEL>"';
+const TABLE = [
+  '',
+  '| Why | Check | Tags |',
+  '|---|---|---|',
+  '| it keeps the code honest. | review | [] |',
+];
 
 const sourceOf = (
   lines: readonly string[],
@@ -24,21 +33,42 @@ const sourceOf = (
   with: undefined,
 });
 
+const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
+  axis: Axis.Foundation,
+  block: 'core',
+  check: 'review',
+  file: FILE,
+  ownTags: [],
+  parent: undefined,
+  slug: 'a',
+  statedLevel: Level.Must,
+  statement: 'A.',
+  why: 'it keeps the code honest.',
+  with: undefined,
+  ...fields,
+});
+
+const found = (message: string): Finding => ({
+  message,
+  path: FILE,
+});
+
 describe('parseRules', () => {
-  it('should read the slug, the level, the statement and the labels when a rule is complete', () => {
+  it('should read the heading, the statement and the table when a root rule is complete', () => {
     // Arrange
     const source = {
       ...sourceOf([
         '# Principles',
         '## four-data-states · MUST',
         'Every data view shows',
-        'four states.',
-        '**Why:** an empty screen cannot be told from a slow one.',
-        '**Check:** test',
-        '**Tags:** ux, a11y',
+        '  four states.  ',
+        '',
+        '| Why | Check | Tags |',
+        '| --- | :-: | --- |',
+        '|  an empty screen cannot be told from a slow one. | test |  [ux,  a11y ] |',
+        '',
         '**Example:**',
-        '**Implements:** `rules-bind`',
-        'Prose after the labels.',
+        'Prose after the example.',
       ]),
       axis: Axis.Architecture,
       file: 'blocks/core/architecture/with/ui.md',
@@ -52,34 +82,75 @@ describe('parseRules', () => {
     expect(parsed).toStrictEqual({
       findings: [],
       rules: [
-        {
+        ruleOf({
           axis: Axis.Architecture,
-          block: 'core',
+          check: 'test',
           file: 'blocks/core/architecture/with/ui.md',
-          labels: {
-            check: 'test',
-            example: '',
-            implements: '`rules-bind`',
-            tags: 'ux, a11y',
-            why: 'an empty screen cannot be told from a slow one.',
-          },
-          level: Level.Must,
+          ownTags: [
+            'ux',
+            'a11y',
+          ],
           slug: 'four-data-states',
           statement: 'Every data view shows four states.',
+          why: 'an empty screen cannot be told from a slow one.',
           with: 'ui',
-        },
+        }),
       ],
     });
   });
 
-  it('should trim the statement and the labels when their lines are blank, indented or padded', () => {
+  it.each<{
+    heading: string;
+    level: Level | undefined;
+    parent: string | undefined;
+  }>([
+    {
+      heading: '## a · SHOULD',
+      level: Level.Should,
+      parent: undefined,
+    },
+    {
+      heading: '## a → b',
+      level: undefined,
+      parent: 'b',
+    },
+    {
+      heading: '## a → b · MAY',
+      level: Level.May,
+      parent: 'b',
+    },
+  ])(
+    'should read the parent and the stated level when the heading is $heading',
+    ({ heading, level, parent }) => {
+      // Arrange
+      const source = sourceOf([
+        heading,
+        'A.',
+        ...TABLE,
+      ]);
+
+      // Act
+      const parsed = parseRules(source);
+
+      // Assert
+      expect(parsed).toStrictEqual({
+        findings: [],
+        rules: [
+          ruleOf({
+            parent,
+            statedLevel: level,
+          }),
+        ],
+      });
+    },
+  );
+
+  it('should keep a pipe and a bold label in the statement when they sit inside a line', () => {
     // Arrange
     const source = sourceOf([
-      '## four-data-states · MUST',
-      '',
-      '  Every data view shows',
-      '  four states.  ',
-      '**Why:** an empty screen cannot be told from a slow one.  ',
+      '## a · MUST',
+      'A rule names its reason after **Why:** and splits a | b.',
+      ...TABLE,
     ]);
 
     // Act
@@ -89,46 +160,9 @@ describe('parseRules', () => {
     expect(parsed).toStrictEqual({
       findings: [],
       rules: [
-        {
-          axis: Axis.Foundation,
-          block: 'core',
-          file: FILE,
-          labels: {
-            why: 'an empty screen cannot be told from a slow one.',
-          },
-          level: Level.Must,
-          slug: 'four-data-states',
-          statement: 'Every data view shows four states.',
-          with: undefined,
-        },
-      ],
-    });
-  });
-
-  it('should keep a bold label in the statement when it sits inside a line', () => {
-    // Arrange
-    const source = sourceOf([
-      '## reasons-are-given · SHOULD',
-      'A rule names its reason after **Why:** in one sentence.',
-    ]);
-
-    // Act
-    const parsed = parseRules(source);
-
-    // Assert
-    expect(parsed).toStrictEqual({
-      findings: [],
-      rules: [
-        {
-          axis: Axis.Foundation,
-          block: 'core',
-          file: FILE,
-          labels: {},
-          level: Level.Should,
-          slug: 'reasons-are-given',
-          statement: 'A rule names its reason after **Why:** in one sentence.',
-          with: undefined,
-        },
+        ruleOf({
+          statement: 'A rule names its reason after **Why:** and splits a | b.',
+        }),
       ],
     });
   });
@@ -138,11 +172,12 @@ describe('parseRules', () => {
     const source = sourceOf([
       '## a · SHOULD',
       'A.',
-      '**Check:** tool — architecture',
-      '### b · MUST',
-      '**Check:** test',
+      ...TABLE,
+      '### Notes',
+      'Text.',
       '## c · MAY',
       'C.',
+      ...TABLE,
     ]);
 
     // Act
@@ -150,36 +185,16 @@ describe('parseRules', () => {
 
     // Assert
     expect(parsed).toStrictEqual({
-      findings: [
-        {
-          message:
-            'heading "### b · MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
-          path: FILE,
-        },
-      ],
+      findings: [],
       rules: [
-        {
-          axis: Axis.Foundation,
-          block: 'core',
-          file: FILE,
-          labels: {
-            check: 'tool — architecture',
-          },
-          level: Level.Should,
-          slug: 'a',
-          statement: 'A.',
-          with: undefined,
-        },
-        {
-          axis: Axis.Foundation,
-          block: 'core',
-          file: FILE,
-          labels: {},
-          level: Level.May,
+        ruleOf({
+          statedLevel: Level.Should,
+        }),
+        ruleOf({
           slug: 'c',
+          statedLevel: Level.May,
           statement: 'C.',
-          with: undefined,
-        },
+        }),
       ],
     });
   });
@@ -188,8 +203,11 @@ describe('parseRules', () => {
     '## x - MUST',
     '## x · MUST.',
     '# x · SHOULD',
+    '## x → y → z',
+    '## x → y · MOST',
+    '## x → ',
   ])(
-    'should report %p as a stray heading when it misses the rule heading form',
+    'should report %p as a stray heading when it misses the rule heading forms',
     (heading) => {
       // Arrange
       const source = sourceOf([
@@ -203,10 +221,9 @@ describe('parseRules', () => {
       // Assert
       expect(parsed).toStrictEqual({
         findings: [
-          {
-            message: `heading "${heading}" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"`,
-            path: FILE,
-          },
+          found(
+            `heading "${heading}" looks like a rule but is not ${HEADING_FORMS}`,
+          ),
         ],
         rules: [],
       });
@@ -216,8 +233,9 @@ describe('parseRules', () => {
   it.each([
     '## MUST, SHOULD and MAY in practice',
     '## levels · MUST in practice',
+    '## Components',
   ])(
-    'should neither read nor report the heading %p when a level word sits inside it',
+    'should neither read nor report the heading %p when it is no rule',
     (heading) => {
       // Arrange
       const source = sourceOf([
@@ -237,34 +255,178 @@ describe('parseRules', () => {
   );
 
   it.each<{
-    labels: Rule['labels'];
     lines: readonly string[];
-    message: string;
+    messages: readonly string[];
+    name: string;
+    rule: Partial<StatedRule>;
   }>([
     {
-      labels: {
-        why: 'one.',
-      },
-      lines: [
-        '**Why:** one.',
-        '**Why:** two.',
+      lines: [],
+      messages: [
+        'has no table "| Why | Check | Tags |"',
       ],
-      message: 'rule "a" has the label "Why" twice',
+      name: 'no table',
+      rule: {
+        check: '',
+        why: '',
+      },
     },
     {
-      labels: {},
       lines: [
-        '**Implement:** `b`',
+        ...TABLE,
+        '',
+        ...TABLE,
       ],
-      message:
-        'rule "a" has the label "Implement", which is not one of Why, Check, Tags, Example, Implements',
+      messages: [
+        'has 2 tables; a rule has one',
+      ],
+      name: 'two tables',
+      rule: {
+        check: '',
+        why: '',
+      },
+    },
+    {
+      lines: [
+        '| Why | Check | Lens |',
+        '|---|---|---|',
+        '| it keeps the code honest. | review | [] |',
+      ],
+      messages: [
+        'has a table whose header is not "| Why | Check | Tags |"',
+      ],
+      name: 'a wrong header',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '| it keeps the code honest. | review | [] |',
+      ],
+      messages: [
+        'has a table whose header is not "| Why | Check | Tags |"',
+        "has 0 rows in its table; a rule's table has one",
+      ],
+      name: 'no delimiter row',
+      rule: {
+        check: '',
+        why: '',
+      },
+    },
+    {
+      lines: [
+        ...TABLE,
+        '| it keeps the tests honest. | test | [] |',
+      ],
+      messages: [
+        "has 2 rows in its table; a rule's table has one",
+      ],
+      name: 'two rows',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '|---|---|---|',
+        '| it keeps the code honest. | review |',
+      ],
+      messages: [
+        "has a row of 2 cells; a rule's table has 3",
+      ],
+      name: 'a row of two cells',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '|---|---|---|',
+        '|  | review | [] |',
+      ],
+      messages: [],
+      name: 'an empty Why, which the rules check reports',
+      rule: {
+        why: '',
+      },
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '|---|---|---|',
+        '| it keeps the code honest. | review | ux, data |',
+      ],
+      messages: [
+        'has the Tags "ux, data"; Tags is a list, such as [security, ux] or []',
+      ],
+      name: 'Tags that are no list',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '| x- | --- | --- |',
+        '| it keeps the code honest. | review | [] |',
+      ],
+      messages: [
+        'has a table whose header is not "| Why | Check | Tags |"',
+      ],
+      name: 'a delimiter cell with a word before its dashes',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '| --- | -x | --- |',
+        '| it keeps the code honest. | review | [] |',
+      ],
+      messages: [
+        'has a table whose header is not "| Why | Check | Tags |"',
+      ],
+      name: 'a delimiter cell with a word after its dashes',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '|---|---|---|',
+        '| it keeps the code honest. | review | see [ux] |',
+      ],
+      messages: [
+        'has the Tags "see [ux]"; Tags is a list, such as [security, ux] or []',
+      ],
+      name: 'Tags with a word before the list',
+      rule: {},
+    },
+    {
+      lines: [
+        '| Why | Check | Tags |',
+        '|---|---|---|',
+        '| it keeps the code honest. | review | [ux] too |',
+      ],
+      messages: [
+        'has the Tags "[ux] too"; Tags is a list, such as [security, ux] or []',
+      ],
+      name: 'Tags with a word after the list',
+      rule: {},
+    },
+    {
+      lines: [
+        '**Why:** it keeps the code honest.',
+        ...TABLE,
+        '**Implements:** `b`',
+      ],
+      messages: [
+        'has the label "Why"; a rule states Why, Check and Tags in its table and holds no label but Example',
+        'has the label "Implements"; a rule states Why, Check and Tags in its table and holds no label but Example',
+      ],
+      name: 'labels of the old form',
+      rule: {},
     },
   ])(
-    'should report that $message and read the rest of the rule when a label line is not one the rule takes',
-    ({ labels, lines, message }) => {
+    'should report the table and read what it can when a rule has $name',
+    ({ lines, messages, rule }) => {
       // Arrange
       const source = sourceOf([
-        '## a · MAY',
+        '## a · MUST',
         'A.',
         ...lines,
       ]);
@@ -274,23 +436,9 @@ describe('parseRules', () => {
 
       // Assert
       expect(parsed).toStrictEqual({
-        findings: [
-          {
-            message,
-            path: FILE,
-          },
-        ],
+        findings: messages.map((message) => found(`rule "a" ${message}`)),
         rules: [
-          {
-            axis: Axis.Foundation,
-            block: 'core',
-            file: FILE,
-            labels,
-            level: Level.May,
-            slug: 'a',
-            statement: 'A.',
-            with: undefined,
-          },
+          ruleOf(rule),
         ],
       });
     },
@@ -303,9 +451,11 @@ describe('parseRules', () => {
         '# Core',
         '## rules-bind · MUST',
         'The rules bind.',
+        ...TABLE,
         '## x - MUST',
-        '## reasons-are-given · SHOULD',
+        '## reasons-are-given → rules-bind',
         'A rule names its reason.',
+        ...TABLE,
       ]),
       axis: undefined,
       file: CARD,
@@ -318,8 +468,7 @@ describe('parseRules', () => {
     expect(parsed).toStrictEqual({
       findings: [
         {
-          message:
-            'heading "## x - MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
+          message: `heading "## x - MUST" looks like a rule but is not ${HEADING_FORMS}`,
           path: CARD,
         },
         {

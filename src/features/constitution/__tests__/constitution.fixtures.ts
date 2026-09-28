@@ -36,8 +36,8 @@ interface BlockFilesFixture extends CardFixture {
 
 interface RuleFixture {
   check?: string;
-  implementsSlug?: string;
   level?: string;
+  parent?: string;
   slug: string;
   statement?: string;
   tags?: string;
@@ -80,18 +80,19 @@ const blockFiles = (input: BlockFilesFixture): Files => {
   };
 };
 
+const headingOf = (input: RuleFixture): string =>
+  input.parent === undefined
+    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
+    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+
 const rule = (input: RuleFixture): string =>
   [
-    `## ${input.slug} · ${input.level ?? 'MUST'}`,
+    headingOf(input),
     input.statement ?? `The ${input.slug} rule holds.`,
-    `**Why:** ${input.why ?? 'it keeps the code honest.'}`,
-    `**Check:** ${input.check ?? 'review'}`,
-    `**Tags:** ${input.tags ?? 'design'}`,
-    ...(input.implementsSlug === undefined
-      ? []
-      : [
-          `**Implements:** \`${input.implementsSlug}\``,
-        ]),
+    '',
+    '| Why | Check | Tags |',
+    '|---|---|---|',
+    `| ${input.why ?? 'it keeps the code honest.'} | ${input.check ?? 'review'} | ${input.tags ?? '[]'} |`,
     '',
   ].join('\n');
 
