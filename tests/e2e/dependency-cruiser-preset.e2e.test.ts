@@ -7,8 +7,6 @@ const exported = (name: string): string => `export const ${name} = 1;\n`;
 const importing = (input: { from: string; name: string }): string =>
   `import { ${input.name} } from '${input.from}';\nexport const uses = ${input.name};\n`;
 
-// An application laid out as the architecture chapter draws it, every import
-// allowed.
 const WELL_FORMED = {
   'src/adapters/mail/index.ts': "export { sendMail } from './mail.adapter';\n",
   'src/adapters/mail/mail.adapter.ts': importing({

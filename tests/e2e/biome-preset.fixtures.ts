@@ -60,10 +60,6 @@ const linkDevkit = (folder: string): void => {
   );
 };
 
-// What the real Biome reports over a small project that installs devkit's
-// general presets from npm and links this repository as .constitution, where
-// mise unpacks its release archive, as a consumer does: each lint rule by its
-// name, each GritQL plugin by its message.
 const lintFindings = (project: Project): Findings => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
 
@@ -124,8 +120,6 @@ const lintFindings = (project: Project): Findings => {
   };
 };
 
-// Each folder, file and suffix the preset's plugins are scoped by:
-// `!**/src/libs/**` names `src` and `libs`, `**/*.hooks.ts` names `.hooks.ts`.
 const presetWords = (): readonly string[] => {
   const presets = readdirSync(PRESETS_FOLDER)
     .filter((name) => name.endsWith('.jsonc'))
