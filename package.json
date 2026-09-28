@@ -30,8 +30,9 @@
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
     "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --production --no-config-hints",
+    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .devkit/common/osv-scanner/licenses.txt)\" .",
     "names:check": "ls-lint --config .devkit/common/ls-lint/base.yaml --config .devkit/common/ls-lint/markdown.yaml --config .devkit/common/ls-lint/typescript.yaml --config .constitution/presets/ls-lint/base.yaml --config .ls-lint.yaml",
-    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check"
+    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run audit:check"
   },
   "dependencies": {
     "yaml": "^2.8.1",

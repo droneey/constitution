@@ -62,6 +62,7 @@ type Role = (typeof ROLES)[number];
 const LANGUAGE_FREE_ROLES: readonly Role[] = [
   'names',
   'secrets',
+  'audit',
   'commits',
 ];
 
