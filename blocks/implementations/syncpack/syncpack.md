@@ -14,7 +14,7 @@ status: stable
 
 # Syncpack
 
-> Holds the manifests. `.syncpackrc.mjs` re-exports devkit's configuration — caret ranges for production and development dependencies, one version of each dependency across manifests, the order of fields — and in a repository of packages adds the workspace groups: the root's own packages as `workspace:*`, peers and root-only tools ignored. What is in the lockfile is out of its reach.
+> Holds the manifests. `.syncpackrc.mjs` re-exports devkit's configuration — caret ranges for production and development dependencies, one version of each dependency across manifests, the order of fields — and a repository of packages re-exports devkit's `packages` configuration instead, which adds one version for every package, the repository's own packages as `workspace:*` and peer ranges left alone. What is in the lockfile is out of its reach.
 
 ## versions-checked-and-manifests-formatted · SHOULD
 The check runs `syncpack lint` and `syncpack format --check`.

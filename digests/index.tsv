@@ -48,7 +48,7 @@ block	react-native	implementation	React on a device — host components, virtual
 block	renovate	implementation	Dependency updates as scheduled pull requests from a bot.		mise	git		false					renovate.json
 block	shadcn	implementation	UI kit from shadcn source on Radix primitives, adapted on arrival.			react-dom tailwind		false			typescript		components.json **/libs/ui/components/**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.			_react		false			typescript		**/*.stories.tsx .storybook/**
-block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test	typescript		false		mutation	typescript		stryker.config.json
+block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test	typescript		false		mutation	typescript		stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.			typescript		false		versions format	typescript		.syncpackrc.mjs
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.		a11y	ui browser typescript		false			typescript		**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.			_react		false			typescript		**/*.tsx
