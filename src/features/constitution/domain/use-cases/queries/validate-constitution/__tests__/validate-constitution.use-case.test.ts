@@ -9,7 +9,8 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
-const UI = 'blocks/domains/ui/ui.md';
+const UI = 'blocks/domains/ui/foundation/ui.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
 // A MUST rule whose role, architecture, no tool of typescript checks: the
 // advice names it whenever the checks run.
@@ -25,7 +26,7 @@ describe('validateConstitution', () => {
     files[REMOTE_DATA] = textOf({
       files,
       path: REMOTE_DATA,
-    }).replace('status: stable', 'status: stabel');
+    }).replace('extends: null', 'extends: Bad');
     files[UI] = `${textOf({
       files,
       path: UI,
@@ -41,12 +42,12 @@ describe('validateConstitution', () => {
       advice: [],
       findings: [
         {
-          message: 'front matter: status "stabel" is not one of stable, draft',
+          message: 'front matter: extends "Bad", which is not a block id',
           path: REMOTE_DATA,
         },
         {
           message:
-            'is not a block file; a block holds its main file, its chapters and with/<block>.md',
+            'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md',
           path: 'blocks/domains/ui/notes.txt',
         },
       ],
@@ -56,7 +57,7 @@ describe('validateConstitution', () => {
   it('should order the findings of one file by message when the checks emit them in another order', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/core/principles.md'] = [
+    files[PRINCIPLES] = [
       '# Principles',
       '',
       rule({
@@ -82,11 +83,11 @@ describe('validateConstitution', () => {
         {
           message:
             'has 508 lines; a file holds at most 500, and a longer block splits into chapters',
-          path: 'blocks/core/principles.md',
+          path: PRINCIPLES,
         },
         {
           message: 'rule "dependencies-point-inward" has no Why',
-          path: 'blocks/core/principles.md',
+          path: PRINCIPLES,
         },
       ],
     });

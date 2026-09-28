@@ -1,9 +1,5 @@
-export type {
-  Block,
-  BlockFile,
-  BlockFileRole,
-  FrontMatter,
-} from './block.entity';
+export type { Block, BlockFile, FrontMatter } from './block.entity';
+export { BlockFileRole } from './block.entity';
 export type { Constitution, Documents } from './constitution.entity';
 export type { Digests } from './digests.entity';
 export type {
@@ -15,6 +11,6 @@ export type {
   PluginManifest,
 } from './manifest.entity';
 export type { RequirementAnswer } from './requirement-answer.entity';
-export type { Rule, RuleLabel } from './rule.entity';
-export { RULE_LABELS } from './rule.entity';
+export type { Rule } from './rule.entity';
+export { RULE_LABELS, RuleLabel } from './rule.entity';
 export type { Skill, SkillFrontMatterRead } from './skill.entity';

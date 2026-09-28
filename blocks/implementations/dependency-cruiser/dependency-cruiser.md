@@ -1,15 +1,12 @@
 ---
 id: dependency-cruiser
-kind: implementation
 summary: Holds the import rules between layers, features and packages.
-chapters: []
 requires: [typescript]
 extends: null
 abstract: false
 checks: [architecture]
-owns: [dependency-cruiser, depcruise, .dependency-cruiser.mjs]
+dictionary: [dependency-cruiser, depcruise, .dependency-cruiser.mjs]
 governs: [".dependency-cruiser.mjs"]
-status: stable
 ---
 
 # dependency-cruiser

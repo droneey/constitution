@@ -1,5 +1,5 @@
 import type { Finding } from '#/kernel';
-import { ROLES, TAGS } from '#/kernel';
+import { ROLES, Tag } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -10,7 +10,7 @@ const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const REFERENCE = /^`([^`\s]+)`$/;
 
 const roles: readonly string[] = ROLES;
-const tags: readonly string[] = TAGS;
+const tags: readonly string[] = Object.values(Tag);
 
 const at = (input: { message: string; rule: Rule }): Finding => ({
   message: `rule "${input.rule.slug}" ${input.message}`,

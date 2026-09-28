@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Axis, Level } from '#/kernel';
+
 import type { Rule } from '../../../../entities';
 import { parseRules } from '../rules.utils';
 
-const FILE = 'blocks/core/principles.md';
+const FILE = 'blocks/core/foundation/principles.md';
+const CARD = 'blocks/core/core.md';
 
 const sourceOf = (
   lines: readonly string[],
 ): {
+  axis: Axis | undefined;
   block: string;
   file: string;
   text: string;
   with: string | undefined;
 } => ({
+  axis: Axis.Foundation,
   block: 'core',
   file: FILE,
   text: lines.join('\n'),
@@ -35,6 +40,8 @@ describe('parseRules', () => {
         '**Implements:** `rules-bind`',
         'Prose after the labels.',
       ]),
+      axis: Axis.Architecture,
+      file: 'blocks/core/architecture/with/ui.md',
       with: 'ui',
     };
 
@@ -46,8 +53,9 @@ describe('parseRules', () => {
       findings: [],
       rules: [
         {
+          axis: Axis.Architecture,
           block: 'core',
-          file: FILE,
+          file: 'blocks/core/architecture/with/ui.md',
           labels: {
             check: 'test',
             example: '',
@@ -55,7 +63,7 @@ describe('parseRules', () => {
             tags: 'ux, a11y',
             why: 'an empty screen cannot be told from a slow one.',
           },
-          level: 'MUST',
+          level: Level.Must,
           slug: 'four-data-states',
           statement: 'Every data view shows four states.',
           with: 'ui',
@@ -82,12 +90,13 @@ describe('parseRules', () => {
       findings: [],
       rules: [
         {
+          axis: Axis.Foundation,
           block: 'core',
           file: FILE,
           labels: {
             why: 'an empty screen cannot be told from a slow one.',
           },
-          level: 'MUST',
+          level: Level.Must,
           slug: 'four-data-states',
           statement: 'Every data view shows four states.',
           with: undefined,
@@ -111,10 +120,11 @@ describe('parseRules', () => {
       findings: [],
       rules: [
         {
+          axis: Axis.Foundation,
           block: 'core',
           file: FILE,
           labels: {},
-          level: 'SHOULD',
+          level: Level.Should,
           slug: 'reasons-are-given',
           statement: 'A rule names its reason after **Why:** in one sentence.',
           with: undefined,
@@ -149,21 +159,23 @@ describe('parseRules', () => {
       ],
       rules: [
         {
+          axis: Axis.Foundation,
           block: 'core',
           file: FILE,
           labels: {
             check: 'tool — architecture',
           },
-          level: 'SHOULD',
+          level: Level.Should,
           slug: 'a',
           statement: 'A.',
           with: undefined,
         },
         {
+          axis: Axis.Foundation,
           block: 'core',
           file: FILE,
           labels: {},
-          level: 'MAY',
+          level: Level.May,
           slug: 'c',
           statement: 'C.',
           with: undefined,
@@ -270,10 +282,11 @@ describe('parseRules', () => {
         ],
         rules: [
           {
+            axis: Axis.Foundation,
             block: 'core',
             file: FILE,
             labels,
-            level: 'MAY',
+            level: Level.May,
             slug: 'a',
             statement: 'A.',
             with: undefined,
@@ -282,4 +295,66 @@ describe('parseRules', () => {
       });
     },
   );
+
+  it('should report every rule and return none when the rules sit in the card', () => {
+    // Arrange
+    const source = {
+      ...sourceOf([
+        '# Core',
+        '## rules-bind · MUST',
+        'The rules bind.',
+        '## x - MUST',
+        '## reasons-are-given · SHOULD',
+        'A rule names its reason.',
+      ]),
+      axis: undefined,
+      file: CARD,
+    };
+
+    // Act
+    const parsed = parseRules(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [
+        {
+          message:
+            'heading "## x - MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
+          path: CARD,
+        },
+        {
+          message:
+            'rule "rules-bind" sits in the card; a block\'s rules live in foundation/, architecture/ or workflow/',
+          path: CARD,
+        },
+        {
+          message:
+            'rule "reasons-are-given" sits in the card; a block\'s rules live in foundation/, architecture/ or workflow/',
+          path: CARD,
+        },
+      ],
+      rules: [],
+    });
+  });
+
+  it('should report nothing when the card holds prose and no rule', () => {
+    // Arrange
+    const source = {
+      ...sourceOf([
+        '# Core',
+        'What holds for any program.',
+      ]),
+      axis: undefined,
+      file: CARD,
+    };
+
+    // Act
+    const parsed = parseRules(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [],
+    });
+  });
 });

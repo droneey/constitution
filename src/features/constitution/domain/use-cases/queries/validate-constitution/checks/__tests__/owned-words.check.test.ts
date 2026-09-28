@@ -11,7 +11,7 @@ import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { ownedWordsCheck } from '../owned-words.check';
 
 const UI = 'blocks/domains/ui/ui.md';
-const PRINCIPLES = 'blocks/core/principles.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
 const named = (input: {
   owner: string;
@@ -29,7 +29,7 @@ describe('ownedWordsCheck', () => {
     files['blocks/implementations/lingui/lingui.md'] = textOf({
       files,
       path: 'blocks/implementations/lingui/lingui.md',
-    }).replace('owns: ["Lingui"]', 'owns: ["Lingui","Biome"]');
+    }).replace('dictionary: ["Lingui"]', 'dictionary: ["Lingui","Biome"]');
     const input = checkInputOf(files);
 
     // Act
@@ -73,7 +73,6 @@ describe('ownedWordsCheck', () => {
       text: mainFile({
         body: '# UI\n\nEach screen is one `index.ts` in TypeScript.\n',
         id: 'ui',
-        kind: 'domain',
       }),
     },
     {
@@ -89,7 +88,6 @@ describe('ownedWordsCheck', () => {
       text: mainFile({
         body: '# UI\n',
         id: 'ui',
-        kind: 'domain',
         summary: 'Screens written in React.',
       }),
     },
@@ -154,12 +152,11 @@ describe('ownedWordsCheck', () => {
       text: mainFile({
         body: '# UI\n\n```tsx\nconst Screen = (): React.ReactNode => null;\n```\n',
         id: 'ui',
-        kind: 'domain',
       }),
     },
     {
       name: 'a with/ file named after the owner holds one',
-      path: 'blocks/contexts/platforms/browser/with/typescript.md',
+      path: 'blocks/contexts/platforms/browser/foundation/with/typescript.md',
       text: '# Browser with TypeScript\n\nEach `index.ts` runs in the tab.\n',
     },
     {

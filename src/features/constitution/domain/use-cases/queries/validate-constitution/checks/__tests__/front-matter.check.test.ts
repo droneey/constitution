@@ -22,26 +22,14 @@ describe('frontMatterCheck', () => {
       block: {
         body: '# UI\n',
         id: 'ux',
-        kind: 'domain',
       },
       expected: 'declares the id "ux"; its folder names it "ui"',
       path: UI,
     },
     {
       block: {
-        body: '# Browser\n',
-        id: 'browser',
-        kind: 'domain',
-      },
-      expected:
-        'declares the kind "domain"; its folder makes it a platform block, of the kind "context"',
-      path: BROWSER,
-    },
-    {
-      block: {
         body: '# UI\n',
         id: 'ui',
-        kind: 'domain',
         requires: [
           'i18n',
         ],
@@ -54,7 +42,6 @@ describe('frontMatterCheck', () => {
         body: '# UI\n',
         extends: 'i18n',
         id: 'ui',
-        kind: 'domain',
       },
       expected: 'sets "extends", which a domain block leaves empty',
       path: UI,
@@ -64,7 +51,6 @@ describe('frontMatterCheck', () => {
         abstract: true,
         body: '# UI base\n',
         id: '_ui',
-        kind: 'domain',
       },
       expected: 'sets "abstract", which a domain block leaves empty',
       path: 'blocks/domains/_ui/_ui.md',
@@ -76,7 +62,6 @@ describe('frontMatterCheck', () => {
           'lint',
         ],
         id: 'browser',
-        kind: 'context',
       },
       expected: 'sets "checks", which a platform block leaves empty',
       path: BROWSER,
@@ -85,12 +70,11 @@ describe('frontMatterCheck', () => {
       block: {
         body: '# UI\n',
         id: 'ui',
-        kind: 'domain',
-        owns: [
+        dictionary: [
           'Screen',
         ],
       },
-      expected: 'sets "owns", which a domain block leaves empty',
+      expected: 'sets "dictionary", which a domain block leaves empty',
       path: UI,
     },
     {
@@ -98,7 +82,6 @@ describe('frontMatterCheck', () => {
         abstract: false,
         body: '# React\n',
         id: '_react',
-        kind: 'implementation',
       },
       expected: 'has an id starting with "_", so it is abstract',
       path: 'blocks/implementations/_react/_react.md',
@@ -108,19 +91,8 @@ describe('frontMatterCheck', () => {
         abstract: true,
         body: '# Biome\n',
         id: 'biome',
-        kind: 'implementation',
       },
       expected: 'is abstract, so its id starts with "_"',
-      path: BIOME,
-    },
-    {
-      block: {
-        body: '# Biome\n',
-        id: 'biome',
-        kind: 'implementation',
-        status: 'draft',
-      },
-      expected: 'is draft; a block of the constitution is stable',
       path: BIOME,
     },
   ])(

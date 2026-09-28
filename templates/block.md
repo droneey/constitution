@@ -1,15 +1,12 @@
 ---
 id: <id>
-kind: implementation
 summary: <One sentence of at most 70 characters.>
-chapters: []
 requires: []
 extends: null
 abstract: false
 checks: []
-owns: []
+dictionary: []
 governs: []
-status: draft
 ---
 
 # <Name>

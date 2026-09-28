@@ -1,6 +1,6 @@
 import type { Finding } from '#/kernel';
 
-import { DOCUMENT_PATHS } from '../../../../constants';
+import { DocumentPath } from '../../../../constants';
 import type {
   Constitution,
   HooksManifest,
@@ -23,15 +23,16 @@ const RELATIVE_PREFIX = './';
 const DEFAULT_SKILLS = 'skills/';
 const SKILL_FILE = 'SKILL.md';
 const SKILL_FOLDER = /^([^./][^/]*)\//;
-const SKILL_FIELDS = [
-  'name',
-  'description',
-] as const;
-const TEMPLATES = [
-  'templates/PROJECT.md',
-  'templates/block.md',
-  'templates/constitution.yaml',
-] as const;
+enum SkillField {
+  Name = 'name',
+  Description = 'description',
+}
+
+enum Template {
+  Project = 'templates/PROJECT.md',
+  Block = 'templates/block.md',
+  Config = 'templates/constitution.yaml',
+}
 
 const missing = (input: { path: string; role: string }): Finding => ({
   message: `is missing; the constitution ships as a plugin and needs its ${input.role}`,
@@ -68,7 +69,7 @@ const listingFindings = (input: {
       .filter((directory) => !present.has(directory))
       .map((directory) => ({
         message: `lists the skills directory "${RELATIVE_PREFIX}${directory}", which holds no <skill>/SKILL.md`,
-        path: DOCUMENT_PATHS.plugin,
+        path: DocumentPath.Plugin,
       })),
     ...[
       ...present,
@@ -76,7 +77,7 @@ const listingFindings = (input: {
       .filter((directory) => !input.declared.includes(directory))
       .map((directory) => ({
         message: `does not list "${RELATIVE_PREFIX}${directory}", which holds skills`,
-        path: DOCUMENT_PATHS.plugin,
+        path: DocumentPath.Plugin,
       })),
   ];
 };
@@ -139,12 +140,12 @@ const frontMatterFindings = (skill: Skill): readonly Finding[] => {
     ];
   }
 
-  return SKILL_FIELDS.filter((field) => frontMatter[field] === undefined).map(
-    (field) => ({
+  return Object.values(SkillField)
+    .filter((field) => frontMatter[field] === undefined)
+    .map((field) => ({
       message: `front matter lacks "${field}"; a skill declares its name and description`,
       path,
-    }),
-  );
+    }));
 };
 
 const skillFindings = (input: {
@@ -158,10 +159,12 @@ const skillFindings = (input: {
 ];
 
 const templateFindings = (paths: ReadonlySet<string>): readonly Finding[] =>
-  TEMPLATES.filter((path) => !paths.has(path)).map((path) => ({
-    message: 'is missing; /ratify writes a project from the templates',
-    path,
-  }));
+  Object.values(Template)
+    .filter((path) => !paths.has(path))
+    .map((path) => ({
+      message: 'is missing; /ratify writes a project from the templates',
+      path,
+    }));
 
 const checkPlugin = (
   constitution: Constitution,
@@ -175,7 +178,7 @@ const checkPlugin = (
     return {
       findings: [
         missing({
-          path: DOCUMENT_PATHS.plugin,
+          path: DocumentPath.Plugin,
           role: 'manifest',
         }),
       ],
@@ -196,7 +199,7 @@ const checkPlugin = (
       }
     : {
         findings: readFindings({
-          path: DOCUMENT_PATHS.plugin,
+          path: DocumentPath.Plugin,
           read,
         }),
         name: undefined,
@@ -210,7 +213,7 @@ const checkMarketplace = (input: {
   if (input.read === undefined) {
     return [
       missing({
-        path: DOCUMENT_PATHS.marketplace,
+        path: DocumentPath.Marketplace,
         role: 'marketplace',
       }),
     ];
@@ -218,7 +221,7 @@ const checkMarketplace = (input: {
 
   if (input.read.status !== 'parsed') {
     return readFindings({
-      path: DOCUMENT_PATHS.marketplace,
+      path: DocumentPath.Marketplace,
       read: input.read,
     });
   }
@@ -230,7 +233,7 @@ const checkMarketplace = (input: {
     : [
         {
           message: `does not list the plugin "${input.pluginName ?? ''}" with source "./"`,
-          path: DOCUMENT_PATHS.marketplace,
+          path: DocumentPath.Marketplace,
         },
       ];
 };
@@ -256,10 +259,10 @@ const checkHooks = (input: {
         .filter((file) => !input.paths.has(file))
         .map((file) => ({
           message: `runs "${file}", which is missing`,
-          path: DOCUMENT_PATHS.hooks,
+          path: DocumentPath.Hooks,
         }))
     : readFindings({
-        path: DOCUMENT_PATHS.hooks,
+        path: DocumentPath.Hooks,
         read: input.read,
       });
 };

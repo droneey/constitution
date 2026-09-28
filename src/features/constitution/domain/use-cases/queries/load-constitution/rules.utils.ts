@@ -1,4 +1,4 @@
-import type { Finding, Level } from '#/kernel';
+import type { Axis, Finding, Level } from '#/kernel';
 import { LEVELS } from '#/kernel';
 
 import type { Rule, RuleLabel } from '../../../entities';
@@ -7,6 +7,7 @@ import type { MarkdownSection } from '../../../utils';
 import { sectionsOf } from '../../../utils';
 
 interface Source {
+  axis: Axis | undefined;
   block: string;
   file: string;
   text: string;
@@ -26,8 +27,8 @@ interface DraftRead {
 }
 
 interface SectionRead {
+  draft?: Draft;
   findings: readonly Finding[];
-  rule?: Rule;
 }
 
 interface RulesParsed {
@@ -130,7 +131,8 @@ const withLine = (input: {
   };
 };
 
-const ruleOf = (input: { draft: Draft; source: Source }): Rule => ({
+const ruleOf = (input: { axis: Axis; draft: Draft; source: Source }): Rule => ({
+  axis: input.axis,
   block: input.source.block,
   file: input.source.file,
   labels: input.draft.labels,
@@ -174,11 +176,8 @@ const readSection = (input: {
   }
 
   return {
+    draft,
     findings,
-    rule: ruleOf({
-      draft,
-      source: input.source,
-    }),
   };
 };
 
@@ -191,16 +190,35 @@ const parseRules = (source: Source): RulesParsed => {
       source,
     }),
   );
+  const drafts = read.flatMap((section) =>
+    section.draft === undefined
+      ? []
+      : [
+          section.draft,
+        ],
+  );
+  const { axis } = source;
 
   return {
-    findings: read.flatMap((section) => section.findings),
-    rules: read.flatMap((section) =>
-      section.rule === undefined
+    findings: [
+      ...read.flatMap((section) => section.findings),
+      ...(axis === undefined
+        ? drafts.map((draft) => ({
+            message: `rule "${draft.slug}" sits in the card; a block's rules live in foundation/, architecture/ or workflow/`,
+            path: source.file,
+          }))
+        : []),
+    ],
+    rules:
+      axis === undefined
         ? []
-        : [
-            section.rule,
-          ],
-    ),
+        : drafts.map((draft) =>
+            ruleOf({
+              axis,
+              draft,
+              source,
+            }),
+          ),
   };
 };
 

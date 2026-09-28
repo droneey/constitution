@@ -3,10 +3,16 @@ import { describe, expect, it } from 'bun:test';
 import type { FieldIssue } from '../../../domain/entities';
 import { createJsonManifestParser } from '../json-manifest-parser.adapter';
 
+enum Manifest {
+  Hooks = 'hooks',
+  Marketplace = 'marketplace',
+  Plugin = 'plugin',
+}
+
 interface MismatchCase {
   issues: readonly FieldIssue[];
   json: string;
-  manifest: 'hooks' | 'marketplace' | 'plugin';
+  manifest: Manifest;
 }
 
 describe('createJsonManifestParser', () => {
@@ -126,7 +132,7 @@ describe('createJsonManifestParser', () => {
         },
       ],
       json: '{"name":"Not A Slug","skills":"skills"}',
-      manifest: 'plugin',
+      manifest: Manifest.Plugin,
     },
     {
       issues: [
@@ -136,7 +142,7 @@ describe('createJsonManifestParser', () => {
         },
       ],
       json: '{"name":"droneey","plugins":[{"name":"constitution"}]}',
-      manifest: 'marketplace',
+      manifest: Manifest.Marketplace,
     },
     {
       issues: [
@@ -146,7 +152,7 @@ describe('createJsonManifestParser', () => {
         },
       ],
       json: '{"hooks":{"Stop":[{"hooks":[{"type":"command","command":42}]}]}}',
-      manifest: 'hooks',
+      manifest: Manifest.Hooks,
     },
   ])(
     'should report every issue at its dotted field when the $manifest manifest does not match its schema',

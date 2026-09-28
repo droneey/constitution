@@ -36,7 +36,7 @@ describe('prepareDigests', () => {
         findings: [
           {
             message:
-              'makes a core part of 3716 bytes; the digest holds at most 3500 of core',
+              'makes a core part of 3615 bytes; the digest holds at most 3500 of core',
             path: CORE,
           },
         ],
@@ -52,7 +52,7 @@ describe('prepareDigests', () => {
     files[REMOTE_DATA] = textOf({
       files,
       path: REMOTE_DATA,
-    }).replace('status: stable', 'status: stabel');
+    }).replace('extends: null', 'extends: Bad');
     files['blocks/domains/ui/notes.txt'] = 'notes\n';
     const source = sourceOf(files);
 
@@ -63,12 +63,12 @@ describe('prepareDigests', () => {
     expect(prepared).toStrictEqual({
       findings: [
         {
-          message: 'front matter: status "stabel" is not one of stable, draft',
+          message: 'front matter: extends "Bad", which is not a block id',
           path: REMOTE_DATA,
         },
         {
           message:
-            'is not a block file; a block holds its main file, its chapters and with/<block>.md',
+            'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md',
           path: 'blocks/domains/ui/notes.txt',
         },
       ],

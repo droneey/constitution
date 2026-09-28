@@ -12,23 +12,23 @@ describe('seamsCheck', () => {
     {
       expected:
         'is named after biome, an implementation block; a platform block pairs only with domain blocks, platform blocks or language blocks',
-      path: 'blocks/contexts/platforms/browser/with/biome.md',
+      path: 'blocks/contexts/platforms/browser/architecture/with/biome.md',
     },
     {
       expected: 'is named after its own block',
-      path: 'blocks/domains/ui/with/ui.md',
+      path: 'blocks/domains/ui/foundation/with/ui.md',
     },
     {
       expected: 'is named after core, which is not a block it may pair with',
-      path: 'blocks/domains/ui/with/core.md',
+      path: 'blocks/domains/ui/workflow/with/core.md',
     },
     {
       expected: 'is named after nowhere, which is not a block it may pair with',
-      path: 'blocks/domains/ui/with/nowhere.md',
+      path: 'blocks/domains/ui/architecture/with/nowhere.md',
     },
     {
       expected: 'is a with/ file of core, which pairs with no block',
-      path: 'blocks/core/with/ui.md',
+      path: 'blocks/core/foundation/with/ui.md',
     },
   ])(
     'should report "$expected" when $path pairs with a block it may not',
@@ -52,8 +52,8 @@ describe('seamsCheck', () => {
   );
 
   it.each([
-    'blocks/contexts/platforms/browser/with/typescript.md',
-    'blocks/contexts/platforms/browser/with/ui.md',
+    'blocks/contexts/platforms/browser/foundation/with/typescript.md',
+    'blocks/contexts/platforms/browser/workflow/with/ui.md',
   ])(
     'should accept %p when it pairs with a block of its own rank or above',
     (path) => {
@@ -75,14 +75,9 @@ describe('seamsCheck', () => {
     const files = validFiles();
     files['blocks/core/core.md'] = mainFile({
       body: '# Core\n',
-      chapters: [
-        'principles.md',
-        'ui.md',
-      ],
       id: 'core',
-      kind: 'core',
     });
-    files['blocks/core/ui.md'] = '# UI in core\n';
+    files['blocks/core/architecture/ui.md'] = '# UI in core\n';
     const input = checkInputOf(files);
 
     // Act
@@ -93,8 +88,19 @@ describe('seamsCheck', () => {
       {
         message:
           'takes the id of the block ui; a file named after a block belongs in with/',
-        path: 'blocks/core/ui.md',
+        path: 'blocks/core/architecture/ui.md',
       },
     ]);
+  });
+
+  it('should report nothing when each chapter takes the name of its own block', () => {
+    // Arrange
+    const input = checkInputOf(validFiles());
+
+    // Act
+    const findings = seamsCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
   });
 });

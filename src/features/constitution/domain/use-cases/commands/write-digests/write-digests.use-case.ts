@@ -1,4 +1,4 @@
-import { DOCUMENT_PATHS } from '../../../constants';
+import { DocumentPath } from '../../../constants';
 import type { DigestWriter } from '../../../contracts';
 import type { Digests } from '../../../entities';
 
@@ -7,11 +7,11 @@ const writeDigests = (input: {
   writer: DigestWriter;
 }): void => {
   input.writer.write({
-    path: DOCUMENT_PATHS.digestIndex,
+    path: DocumentPath.DigestIndex,
     text: input.digests.index,
   });
   input.writer.write({
-    path: DOCUMENT_PATHS.digestCore,
+    path: DocumentPath.DigestCore,
     text: input.digests.core,
   });
 };

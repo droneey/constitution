@@ -15,18 +15,23 @@ import type { Files } from './constitution.fixtures';
 import { syntheticId } from './constitution.fixtures';
 import { INSTALLED, removeFolder } from './plugin-root.fixtures';
 
-const CONFIG_KEYS = [
-  'version',
-  'domains',
-  'platforms',
-  'languages',
-  'implementations',
-  'apps',
-  'check',
-  'overrides',
-] as const;
+enum ConfigKey {
+  Version = 'version',
+  Axes = 'axes',
+  Domains = 'domains',
+  Platforms = 'platforms',
+  Languages = 'languages',
+  Implementations = 'implementations',
+  Apps = 'apps',
+  Check = 'check',
+  Overrides = 'overrides',
+}
 
-type ConfigKey = (typeof CONFIG_KEYS)[number];
+enum Repository {
+  Folder = 'folder',
+  Worktree = 'worktree',
+  None = 'none',
+}
 
 type Config = Partial<Record<ConfigKey, string>> & {
   omit?: ConfigKey;
@@ -41,7 +46,7 @@ interface ProjectLayout {
   links?: Readonly<Record<string, string>>;
   namedPipes?: readonly string[];
   // a worktree's root holds .git as a file
-  repository?: 'folder' | 'worktree' | 'none';
+  repository?: Repository;
   unreadable?: readonly string[];
 }
 
@@ -49,6 +54,7 @@ const CONFIG = 'constitution.yaml';
 
 const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
   apps: '{}',
+  axes: '[foundation, architecture, workflow]',
   check: 'bun run check',
   domains: '[]',
   implementations: '[]',
@@ -62,7 +68,8 @@ const created: string[] = [];
 
 // A value that opens with a line break is a block below its key.
 const configOf = (config: Config): string =>
-  CONFIG_KEYS.filter((key) => key !== config.omit)
+  Object.values(ConfigKey)
+    .filter((key) => key !== config.omit)
     .map((key) => {
       const setting = config[key] ?? DEFAULTS[key];
 
@@ -86,14 +93,14 @@ const initRepository = (input: {
   repository: ProjectLayout['repository'];
   root: string;
 }): void => {
-  if (input.repository === 'worktree') {
+  if (input.repository === Repository.Worktree) {
     write({
       path: join(input.root, '.git'),
       text: 'gitdir: /elsewhere/.git/worktrees/project\n',
     });
   }
 
-  if ((input.repository ?? 'folder') === 'folder') {
+  if ((input.repository ?? Repository.Folder) === Repository.Folder) {
     execFileSync(
       'git',
       [
@@ -193,32 +200,37 @@ const localBlock = (fields: Readonly<Record<string, string>>): string =>
     '',
   ].join('\n');
 
+const IMPLEMENTATIONS = 'implementations';
+
+const rulesFolder = (folder: string): string =>
+  folder === '' ? 'rules' : `rules/${folder}`;
+
 const localBlockFiles = (input: {
   fields?: Readonly<Record<string, string>>;
+  folder?: string;
   id: string;
   omit?: string;
 }): Files => ({
-  [`rules/implementations/${input.id}.md`]: localBlock(
-    Object.fromEntries(
-      Object.entries({
-        id: input.id,
-        kind: 'implementation',
-        summary: `The local ${input.id} block.`,
-        chapters: '[]',
-        requires: '[]',
-        extends: 'null',
-        abstract: 'false',
-        checks: '[]',
-        owns: '[]',
-        governs: '[]',
-        status: 'draft',
-        ...input.fields,
-      }).filter(([key]) => key !== input.omit),
+  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]:
+    localBlock(
+      Object.fromEntries(
+        Object.entries({
+          id: input.id,
+          summary: `The local ${input.id} block.`,
+          requires: '[]',
+          extends: 'null',
+          abstract: 'false',
+          checks: '[]',
+          dictionary: '[]',
+          governs: '[]',
+          ...input.fields,
+        }).filter(([key]) => key !== input.omit),
+      ),
     ),
-  ),
 });
 
-const localPath = (id: string): string => `./rules/implementations/${id}.md`;
+const localPath = (id: string, folder: string = IMPLEMENTATIONS): string =>
+  `./${rulesFolder(folder)}/${id}.md`;
 
 const PARAGLIDE = localPath('paraglide');
 
@@ -227,7 +239,7 @@ const paraglideFiles = (input: { omit?: string; requires?: string }): Files =>
     fields: {
       requires: input.requires ?? '[i18n, typescript]',
       summary: 'Paraglide messages, compiled per locale.',
-      owns: '[Paraglide]',
+      dictionary: '[Paraglide]',
     },
     id: 'paraglide',
     ...(input.omit === undefined
@@ -241,6 +253,7 @@ const paraglideFiles = (input: { omit?: string; requires?: string }): Files =>
 const BROWSER_APP: ProjectLayout = {
   config: [
     'version: 1.0.0                    # the constitution release the project follows',
+    'axes: [foundation, architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
@@ -263,6 +276,7 @@ const BROWSER_APP: ProjectLayout = {
 const CLI: ProjectLayout = {
   config: [
     'version: 1.0.0',
+    'axes: [foundation, architecture, workflow]',
     'domains:',
     '  - version-control',
     '  - untrusted-client',
@@ -281,6 +295,7 @@ const CLI: ProjectLayout = {
 const LIBRARY: ProjectLayout = {
   config: [
     'version: 1.0.0',
+    'axes: [foundation, architecture, workflow]',
     'domains: [version-control]',
     'platforms: []',
     'languages: [typescript]',
@@ -314,6 +329,7 @@ const HTML_SITE: ProjectLayout = {
 const LOCAL_PROJECT: ProjectLayout = {
   config: [
     'version: 1.0.0',
+    'axes: [foundation, architecture, workflow]',
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
@@ -331,34 +347,28 @@ const LOCAL_PROJECT: ProjectLayout = {
     'rules/implementations/git-flow.md': [
       '---',
       'id: git-flow',
-      'kind: implementation',
       'summary: "Git flow: a branch per change, a tag per release."',
-      'chapters: []',
       'requires:',
       '  - version-control',
       'extends: git',
       'abstract: false',
       'checks: []',
-      'owns: []',
+      'dictionary: []',
       'governs: []',
-      'status: draft',
       '---',
       '',
     ].join('\r\n'),
     'rules/implementations/lint-kit.md': [
       '---',
       'id: lint-kit',
-      'kind: implementation',
       "summary: 'Lints TypeScript the way this team likes.'",
-      'chapters: []',
       'requires:',
       '  - typescript',
       'extends: null',
       'abstract: false',
       'checks: [lint]',
-      'owns: []',
+      'dictionary: []',
       'governs: []',
-      'status: stable',
       '---',
       '',
     ].join('\n'),
@@ -435,6 +445,7 @@ const RATIFIED: ProjectLayout = {
 const REAL_WEB_APP: ProjectLayout = {
   config: [
     'version: 1.0.0',
+    'axes: [foundation, architecture, workflow]',
     '',
     'domains: [ui, a11y, remote-data, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
@@ -454,6 +465,7 @@ const REAL_WEB_APP: ProjectLayout = {
 const REAL_CLI: ProjectLayout = {
   config: [
     'version: 1.0.0',
+    'axes: [foundation, architecture, workflow]',
     '',
     'domains: [convergence, remote-data, version-control]',
     'platforms: [cli]',
@@ -483,6 +495,7 @@ export type { ProjectLayout };
 export {
   BROWSER_APP,
   CLI,
+  ConfigKey,
   configOf,
   createProject,
   HTML_SITE,
@@ -495,6 +508,7 @@ export {
   RATIFIED,
   REAL_CLI,
   REAL_WEB_APP,
+  Repository,
   removeProjects,
   syntheticProject,
 };

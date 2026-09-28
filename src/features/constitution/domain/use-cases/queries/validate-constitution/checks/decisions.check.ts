@@ -1,6 +1,6 @@
 import type { Finding } from '#/kernel';
 
-import { DOCUMENT_PATHS } from '../../../../constants';
+import { DocumentPath } from '../../../../constants';
 import { withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
@@ -83,7 +83,7 @@ const entryFindings = (entries: readonly Entry[]): readonly Finding[] =>
           ]),
     ].map((problem) => ({
       message: `entry ${nameOf(entry.number)} ${problem}`,
-      path: DOCUMENT_PATHS.decisions,
+      path: DocumentPath.Decisions,
     }));
   });
 
@@ -97,7 +97,7 @@ const decisionsCheck: Check = ({
         {
           message:
             'is missing; the constitution keeps its decision log at the root',
-          path: DOCUMENT_PATHS.decisions,
+          path: DocumentPath.Decisions,
         },
       ]
     : entryFindings(entriesOf(log));

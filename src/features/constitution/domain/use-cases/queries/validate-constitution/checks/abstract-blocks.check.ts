@@ -1,11 +1,12 @@
 import type { Finding } from '#/kernel';
 
 import type { Block, BlockFile } from '../../../../entities';
+import { BlockFileRole } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { containsId } from '../tokens.utils';
 
 const textOf = (input: { base: Block; file: BlockFile }): string =>
-  input.file.role === 'main'
+  input.file.role === BlockFileRole.Main
     ? `${input.base.frontMatter.summary}\n${input.file.body}`
     : input.file.body;
 

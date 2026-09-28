@@ -9,7 +9,12 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-type HookEvent = 'startup' | 'clear' | 'compact' | 'subagent';
+enum HookEvent {
+  Startup = 'startup',
+  Clear = 'clear',
+  Compact = 'compact',
+  Subagent = 'subagent',
+}
 
 // Folders are relative to the project root.
 interface HookCall {
@@ -67,7 +72,7 @@ const eventOf = (input: {
       'cwd',
       input.cwd,
     ],
-    ...(input.event === 'subagent'
+    ...(input.event === HookEvent.Subagent
       ? [
           [
             'hook_event_name',
@@ -229,6 +234,26 @@ const blockListOf = (context: string): readonly string[] => {
   return lines.slice(start, lines.indexOf('', start));
 };
 
+const HEADLINES = '## MUST headlines';
+
+const headlinesOf = (context: string): readonly string[] => {
+  const lines = linesOf(context);
+  const start = lines.indexOf(HEADLINES);
+
+  if (start === -1) {
+    return [];
+  }
+
+  const end = lines.indexOf('', start);
+
+  return lines.slice(start + 1, end === -1 ? undefined : end);
+};
+
+const coreLinesOf = (context: string): readonly string[] =>
+  linesOf(context).filter(
+    (line) => line.startsWith('Laws of ') || line.startsWith("Core's files"),
+  );
+
 const headlineOf = (input: { context: string; slug: string }): string =>
   linesOf(input.context).find((line) => line.startsWith(`- ${input.slug} `)) ??
   '';
@@ -254,14 +279,17 @@ const lastLinesOf = (input: {
   count: number;
 }): readonly string[] => linesOf(input.context).slice(-input.count);
 
-export type { HookEvent, HookRun };
+export type { HookRun };
 export {
   blockListOf,
   bytesAfterHeader,
   contextOf,
+  coreLinesOf,
   factsOf,
   HOOK_TODAY,
+  HookEvent,
   headlineOf,
+  headlinesOf,
   lastLinesOf,
   outputOf,
   runHook,
