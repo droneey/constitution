@@ -3,9 +3,12 @@ export default {
   mutate: [
     'src/**/*.{ts,tsx}',
     '!src/**/__tests__/**',
-    '!src/entrypoints/**',
-    '!src/root/**',
     '!src/main.{ts,tsx}',
+    '!src/entrypoints/*/main.{ts,tsx}',
+    '!src/root/wiring.{ts,tsx}',
+    '!src/**/*.gen.*',
+    '!src/**/*.d.ts',
+    '!src/**/*.stories.*',
   ],
   ignorePatterns: [
     '/.constitution',

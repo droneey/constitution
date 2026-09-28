@@ -1,8 +1,24 @@
+import { ROOT_CALLERS } from './base.mjs';
+
 const ROUTER = 'node_modules/@tanstack/react-router/';
 
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
   forbidden: [
+    {
+      name: 'root-reached-only-from-entries',
+      severity: 'error',
+      from: {
+        pathNot: [
+          ...ROOT_CALLERS,
+          '^src/router\\.[^/]+$',
+          '^src/routes/__root\\.[^/]+$',
+        ],
+      },
+      to: {
+        path: '^src/root/',
+      },
+    },
     {
       name: 'router-primitives-only-in-screens-and-widgets',
       severity: 'error',

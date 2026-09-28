@@ -2,16 +2,13 @@
 export default {
   forbidden: [
     {
-      name: 'application-returns-codes-not-text',
+      name: 'components-never-fetch',
       severity: 'error',
       from: {
-        path: '^src/features/[^/]+/(domain|app)/',
+        path: '/ui/components/',
       },
       to: {
-        path: [
-          'node_modules/(@lingui|@inlang)/',
-          '^src/paraglide/',
-        ],
+        path: 'node_modules/ky/',
       },
     },
   ],

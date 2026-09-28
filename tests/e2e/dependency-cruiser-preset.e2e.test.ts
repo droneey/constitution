@@ -146,6 +146,17 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'root-reached-only-from-entries',
     },
     {
+      condition: 'a router file imports the composition root',
+      files: {
+        'src/root/wiring.ts': exported('wiring'),
+        'src/router.tsx': importing({
+          from: './root/wiring',
+          name: 'wiring',
+        }),
+      },
+      rule: 'root-reached-only-from-entries',
+    },
+    {
       condition: 'code imports the entry',
       files: {
         'src/main.ts': exported('main'),
@@ -344,7 +355,22 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'a component imports an input and output package',
+      condition: 'a component imports an adapter',
+      files: {
+        'src/adapters/api/index.ts': exported('fetchOrders'),
+        'src/features/orders/ui/components/order-card.tsx': importing({
+          from: '../../../../adapters/api',
+          name: 'fetchOrders',
+        }),
+      },
+      parts: [
+        'ui',
+        'base',
+      ],
+      rule: 'components-take-data-and-callbacks',
+    },
+    {
+      condition: 'a component imports the HTTP client',
       files: {
         'src/features/orders/ui/components/order-card.tsx': importing({
           from: 'ky',
@@ -352,10 +378,24 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
+        'ky',
         'base',
-        'ui',
       ],
-      rule: 'components-take-data-and-callbacks',
+      rule: 'components-never-fetch',
+    },
+    {
+      condition: 'a component imports the query library',
+      files: {
+        'src/features/orders/ui/components/order-card.tsx': importing({
+          from: '@tanstack/react-query',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'tanstack-query',
+        'base',
+      ],
+      rule: 'components-never-query',
     },
     {
       condition: 'a widget imports an adapter',
@@ -368,8 +408,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'ui',
+        'base',
       ],
       rule: 'ui-reaches-no-mechanism',
     },
@@ -383,8 +423,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'ui',
+        'base',
       ],
       rule: 'ui-takes-entities-as-types',
     },
@@ -397,8 +437,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
+        'lingui',
         'base',
-        'ui',
       ],
       rule: 'primitives-hold-no-text',
     },
@@ -411,8 +451,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'tanstack-router',
+        'base',
       ],
       rule: 'router-primitives-only-in-screens-and-widgets',
     },
@@ -425,8 +465,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'tanstack-router',
+        'base',
       ],
       rule: 'screen-pieces-never-navigate',
     },
@@ -440,8 +480,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'analytics',
+        'base',
       ],
       rule: 'features-never-track',
     },
@@ -454,8 +494,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
+        'lingui',
         'base',
-        'i18n',
       ],
       rule: 'application-returns-codes-not-text',
     },
@@ -469,8 +509,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'storybook',
+        'base',
       ],
       rule: 'stories-unreachable-from-production',
     },
@@ -483,8 +523,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'yaml',
+        'base',
       ],
       rule: 'yaml-only-at-the-edge',
     },
@@ -497,8 +537,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'zod',
+        'base',
       ],
       rule: 'zod-only-at-the-edge',
     },
@@ -551,14 +591,16 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'base',
         'ui',
         'tanstack-router',
         'analytics',
-        'i18n',
+        'lingui',
+        'tanstack-query',
+        'ky',
         'storybook',
         'yaml',
         'zod',
+        'base',
       ],
     };
 

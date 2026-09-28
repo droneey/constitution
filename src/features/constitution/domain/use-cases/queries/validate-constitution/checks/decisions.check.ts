@@ -11,9 +11,8 @@ interface Entry {
 
 const ENTRY = /^## ADR-(\d{4})\b/;
 const DATE_LINE =
-  /^\*\*Date:\*\* (\d{4})-(\d{2})-(\d{2}) · \*\*Status:\*\* (?:Accepted|Proposed|Superseded by ADR-(\d{4}))$/;
-const DATE_FORM =
-  '"**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN"';
+  /^\*\*Date:\*\* (\d{4})-(\d{2})-(\d{2}) · \*\*Status:\*\* (?:Accepted|Proposed)$/;
+const DATE_FORM = '"**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed"';
 const NUMBER_WIDTH = 4;
 
 const nameOf = (number: number): string =>
@@ -50,47 +49,32 @@ const isCalendarDate = (input: {
   return date.getUTCMonth() === input.month - 1;
 };
 
-const lineMessage = (input: {
-  entry: Entry;
-  numbers: ReadonlySet<number>;
-}): string | undefined => {
-  const match = DATE_LINE.exec(input.entry.dateLine);
-  const successor = match?.[4];
+const lineMessage = (entry: Entry): string | undefined => {
+  const match = DATE_LINE.exec(entry.dateLine);
 
   if (match === null) {
     return `has no line ${DATE_FORM} under its heading`;
   }
 
-  if (
-    !isCalendarDate({
-      day: Number(match[3]),
-      month: Number(match[2]),
-      year: Number(match[1]),
-    })
-  ) {
-    return `is dated ${match[1]}-${match[2]}-${match[3]}, which is not a calendar date`;
-  }
-
-  return successor === undefined || input.numbers.has(Number(successor))
+  return isCalendarDate({
+    day: Number(match[3]),
+    month: Number(match[2]),
+    year: Number(match[1]),
+  })
     ? undefined
-    : `is superseded by ADR-${successor}, which is not an entry`;
+    : `is dated ${match[1]}-${match[2]}-${match[3]}, which is not a calendar date`;
 };
 
-const entryFindings = (entries: readonly Entry[]): readonly Finding[] => {
-  const numbers = new Set(entries.map((entry) => entry.number));
-
-  return entries.flatMap((entry, index) => {
-    const expected = index + 1;
-    const message = lineMessage({
-      entry,
-      numbers,
-    });
+const entryFindings = (entries: readonly Entry[]): readonly Finding[] =>
+  entries.flatMap((entry, index) => {
+    const previous = entries[index - 1];
+    const message = lineMessage(entry);
 
     return [
-      ...(entry.number === expected
+      ...(previous === undefined || entry.number > previous.number
         ? []
         : [
-            `sits where ${nameOf(expected)} is expected; the log is contiguous and append-only`,
+            `follows ${nameOf(previous.number)}; the numbers of the log only rise`,
           ]),
       ...(message === undefined
         ? []
@@ -102,7 +86,6 @@ const entryFindings = (entries: readonly Entry[]): readonly Finding[] => {
       path: DOCUMENT_PATHS.decisions,
     }));
   });
-};
 
 const decisionsCheck: Check = ({
   constitution,

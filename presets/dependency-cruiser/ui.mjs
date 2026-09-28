@@ -11,7 +11,6 @@ export default {
         path: [
           '^src/features/[^/]+/(app|adapters)/',
           '^src/(contracts|adapters)/',
-          'node_modules/(ky|@tanstack/react-query)/',
         ],
       },
     },
@@ -38,20 +37,6 @@ export default {
         path: '^src/features/$1/domain/entities/',
         dependencyTypesNot: [
           'type-only',
-        ],
-      },
-    },
-    {
-      name: 'primitives-hold-no-text',
-      severity: 'error',
-      from: {
-        path: '^src/libs/ui/',
-      },
-      to: {
-        path: [
-          'node_modules/(@lingui|@inlang)/',
-          '^src/paraglide/',
-          '/locales/',
         ],
       },
     },
