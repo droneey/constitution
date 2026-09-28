@@ -71,9 +71,6 @@ const configOf = (parts: readonly string[]): string =>
     ),
   ])},\n};\n`;
 
-// What the real dependency-cruiser reports over a small project that installs
-// devkit's hygiene preset and links this repository as .constitution, where mise
-// unpacks its release archive, and extends both, as a consumer does.
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
   const files = {
