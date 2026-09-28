@@ -114,7 +114,7 @@ rule	folder-named-for-purpose-or-role	core	blocks/core/architecture.md		SHOULD	t
 rule	one-purpose-per-folder	core	blocks/core/architecture.md		SHOULD	review			naming architecture	A folder holds one purpose, said in one phrase without "and".
 rule	set-folder-holds-only-members	core	blocks/core/architecture.md		SHOULD	review			naming architecture	Files of one kind that arrive one at a time — one per vendor, command, rule or section — live in a folder named for the member in the plural, and nothing else lives there.
 rule	file-carries-its-role-suffix	core	blocks/core/architecture.md		MUST	tool	names		naming	A file carries its role's suffix, whatever its folder: `entities/chat.entity`.
-rule	yaml-files-end-in-yaml	core	blocks/core/architecture.md		SHOULD	tool	names		naming	A YAML file ends in `.yaml`, never `.yml`.
+rule	yaml-files-end-in-yaml	core	blocks/core/architecture.md		SHOULD	tool	names		naming	A YAML file ends in `.yaml`, never `.yml`, unless a tool reads it only by a fixed name, as GitHub reads the issue forms of `.github/ISSUE_TEMPLATE/` and their `config.yml`.
 rule	intention-revealing-names	core	blocks/core/code.md		SHOULD	review			naming	A name says what a thing is for: intention-revealing, pronounceable, searchable, with no abbreviation that is not already a term of the domain and no noise word.
 rule	names-from-the-glossary	core	blocks/core/code.md		SHOULD	review			naming	Names follow the business's own words, from the glossary of `PROJECT.md`: `cancelOrder`, not `updateRecord`.
 rule	one-word-per-concept	core	blocks/core/code.md		SHOULD	review			naming	One concept has one word across the program, and one word names one concept: not `fetch`, `load` and `get` for the same act.

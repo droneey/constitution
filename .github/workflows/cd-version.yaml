@@ -11,7 +11,7 @@ concurrency:
 jobs:
   version:
     if: "!startsWith(github.event.head_commit.message, 'chore: Release v')"
-    uses: droneey/.github/.github/workflows/cd-version.yml@v2.0.0
+    uses: droneey/.github/.github/workflows/cd-version.yaml@v2.6.0
     permissions:
       contents: write
       pull-requests: read

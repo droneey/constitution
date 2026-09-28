@@ -1,4 +1,4 @@
 extends:
-  - .devkit/common/lefthook/base.yml
-  - .devkit/common/lefthook/biome.yml
-  - .devkit/common/lefthook/betterleaks.yml
+  - .devkit/common/lefthook/base.yaml
+  - .devkit/common/lefthook/biome.yaml
+  - .devkit/common/lefthook/betterleaks.yaml

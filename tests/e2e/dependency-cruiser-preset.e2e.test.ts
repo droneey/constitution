@@ -303,7 +303,7 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'reads-never-reach-writes',
     },
     {
-      condition: 'two modules import each other, a rule of devkit’s hygiene',
+      condition: 'two modules import each other, a rule of devkit’s base',
       files: {
         'src/shared/format/format.ts': importing({
           from: './parse',

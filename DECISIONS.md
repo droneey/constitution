@@ -522,3 +522,10 @@
 - **Decision.** The `audit` role is held by osv-scanner: the `osv-scanner` block replaces `bun`'s `audit-in-the-check`. It checks the lockfiles of any language for known vulnerabilities and every licence against devkit's allowlist, in one run. `known-vulnerabilities-fail-the-check` now fails on a known vulnerability of any severity, not only a high or critical one; an accepted one is an `[[IgnoredVulns]]` entry with its reason and expiry. `audit` becomes a language-free role, as `names`, `secrets` and `commits` are: a block with no language, such as osv-scanner, holds it for every language.
 - **Rejected.** `bun audit --audit-level=high`, which checks no licence, reads only Bun's lockfile and keeps an accepted advisory as a bare `--ignore` flag with no reason or expiry; running both tools, since osv-scanner fails on a medium vulnerability all the same and each one would be recorded twice.
 - **Why.** One tool and one configuration hold vulnerabilities and licences in every language, and every exception carries its reason and date. osv-scanner has no severity floor, so the rule takes the stricter line rather than a second tool.
+
+## ADR-0082 — A YAML name a tool fixes keeps its extension
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** `yaml-files-end-in-yaml` excepts a file a tool reads only by a fixed name: GitHub reads issue forms and their `config.yml` in `.github/ISSUE_TEMPLATE/` only with `.yml`. The ls-lint base leaves that folder out.
+- **Rejected.** Renaming them, which switches the forms off; leaving the rule without the exception, which every repository with issue forms would break.
+- **Why.** A name the reading tool fixes is not the project's to choose, as `file-carries-its-role-suffix` already says of other fixed names.

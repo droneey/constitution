@@ -104,3 +104,4 @@ ls:
   tests/*: *tests
 ignore:
   - .constitution
+  - .github/ISSUE_TEMPLATE

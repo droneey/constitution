@@ -194,77 +194,77 @@ checksum = "sha256:78c221c2376f79731ccf4e4af0b3bb46d81fefa3296c5abee09ad8a1b21e6
 url = "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64-baseline.zip"
 
 [[tools."github:droneey/devkit"]]
-version = "1.30.0"
+version = "1.32.0"
 backend = "github:droneey/devkit"
-specifiers = ["1.30.0"]
+specifiers = ["1.32.0"]
 
 [tools."github:droneey/devkit".options]
 asset_pattern = "devkit.tar.gz"
 
 [tools."github:droneey/devkit"."platforms.linux-arm64"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.linux-arm64-musl"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.linux-x64"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.linux-x64-baseline"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.linux-x64-musl"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.linux-x64-musl-baseline"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.macos-arm64"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.macos-x64"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.macos-x64-baseline"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.windows-x64"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [tools."github:droneey/devkit"."platforms.windows-x64-baseline"]
-checksum = "sha256:6ee3e976c39a682ff01a1a3194187e0740783c9e92cdc9b59552a35bfcee4fc2"
-url = "https://github.com/droneey/devkit/releases/download/v1.30.0/devkit.tar.gz"
-url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594277769"
+checksum = "sha256:146c2917c1018e646f59a032d81250944341f3586c3ae967146cb17ba7917476"
+url = "https://github.com/droneey/devkit/releases/download/v1.32.0/devkit.tar.gz"
+url_api = "https://api.github.com/repos/droneey/devkit/releases/assets/594346587"
 provenance = "github-attestations"
 
 [[tools.lefthook]]

@@ -4,6 +4,8 @@ import { blockCode } from './biome-preset.fixtures';
 import { failedPaths, presetWords } from './ls-lint-preset.fixtures';
 
 const WELL_FORMED = [
+  '.github/ISSUE_TEMPLATE/bug_report.yml',
+  '.github/ISSUE_TEMPLATE/config.yml',
   '.github/workflows/check.yaml',
   'README.md',
   'lefthook.yaml',
