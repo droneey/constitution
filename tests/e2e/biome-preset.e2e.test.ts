@@ -61,14 +61,6 @@ describe('the Biome preset', () => {
       message: 'Fake an effect through its port',
     },
     {
-      condition: 'a function takes a second positional argument',
-      files: {
-        'src/main.ts':
-          'export const join = (head: string, tail: string): string => head + tail;\n',
-      },
-      message: 'Name every argument past the first',
-    },
-    {
       condition: 'a component memoises a value by hand',
       files: {
         'src/Panel.tsx':

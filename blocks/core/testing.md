@@ -182,7 +182,7 @@ All logic — the domain, the adapters, the libraries, the UI — is held at 100
 **Tags:** testing
 
 ## mutants-all-killed · MUST
-Mutation testing measures the tests, and every mutant of the logic is killed. A mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the check. It runs in the check over the files a change touches and the files whose specs it touches, reusing earlier results.
+Mutation testing measures the tests, and every mutant of the logic is killed. A mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the check. It runs in the check over the lines a change touches, every new file and every file whose spec a change touches.
 **Why:** a suite that lets mutants live is weaker than its coverage says, and a mutant in code no test runs also holds every line to a test.
 **Check:** tool — mutation
 **Tags:** testing

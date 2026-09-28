@@ -529,3 +529,24 @@
 - **Decision.** `yaml-files-end-in-yaml` excepts a file a tool reads only by a fixed name: GitHub reads issue forms and their `config.yml` in `.github/ISSUE_TEMPLATE/` only with `.yml`. The ls-lint base leaves that folder out.
 - **Rejected.** Renaming them, which switches the forms off; leaving the rule without the exception, which every repository with issue forms would break.
 - **Why.** A name the reading tool fixes is not the project's to choose, as `file-carries-its-role-suffix` already says of other fixed names.
+
+## ADR-0083 — At most three positional arguments; a whole travels as one object
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** `named-arguments-past-the-first` becomes `at-most-three-positional-arguments`: a function takes at most three positional parameters, and values that make one whole travel as one named object, whatever their number. `useMaxParams` at three holds the count; whether values make one whole is reviewed. The typescript block's `options-object-for-named-arguments` becomes `options-object-typed-as-function-input`, reviewed. The constitution's `named-arguments.grit`, which refused any second parameter, goes.
+- **Rejected.** One positional parameter everywhere, which turns `(subject, options)` and a comparator's two sides into objects or suppressions; the first argument positional and every other named, which the plugin contradicted and a tool cannot tell from a whole.
+- **Why.** Clean Code counts two arguments as natural, a third as needing a reason, and a group of values as an object of its own; a position is an order to remember, and a whole is one concept.
+
+## ADR-0084 — Mutation testing keeps no earlier results
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** `mutants-all-killed` runs over the lines a change touches, every new file and every file whose spec a change touches, and no longer reuses earlier results.
+- **Rejected.** Stryker's incremental report: with the command runner Stryker cannot tell which tests meet a mutant, so a cached result hid a survivor in one run and kept a killed mutant as surviving in another.
+- **Why.** A result is trusted only when it was run; mutating the changed lines keeps the run short without a cache.
+
+## ADR-0085 — No Vitest block until a project needs one
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** The `vitest` block is removed. Every droneey project runs its specs with `bun test`; a Vitest block and devkit's Vitest preset come back together when a project needs them.
+- **Rejected.** Keeping the block while its preset does not exist, which states checks no tool performs.
+- **Why.** A block that names a preset nobody ships describes a check that never runs.

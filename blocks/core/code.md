@@ -74,9 +74,9 @@ A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `shou
 
 ## Arguments
 
-## named-arguments-past-the-first · SHOULD
-Every argument past the first is named: the language's options record or keyword-only parameters. Exceptions: a signature a framework or library imposes, a symmetric binary operation whose order is its convention — a reducer, a comparator, a combiner — and a single-value transform.
-**Why:** every call site describes itself, and a parameter can be added without touching callers.
+## at-most-three-positional-arguments · SHOULD
+A function takes at most three positional parameters. Values that make one whole — the fields of an order, the options of a call — travel as one named object, whatever their number. A signature a framework or library imposes is exempt.
+**Why:** each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers.
 **Check:** tool — lint
 **Tags:** naming
 
@@ -135,7 +135,7 @@ Interface documentation is written only for a public interface whose use is not 
 ## todo-names-its-issue · SHOULD
 A to-do comment names its issue: `TODO(#<issue>)`. A to-do without one is done, filed, or removed.
 **Why:** an issue has an owner and a place in the plan; a bare to-do is forgotten where it stands.
-**Check:** tool — lint
+**Check:** review
 **Tags:** workflow
 
 ## no-commented-out-code · MUST

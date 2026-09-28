@@ -7,7 +7,6 @@
     ],
   },
   "plugins": [
-    "./.constitution/presets/biome/plugins/named-arguments.grit",
     {
       "path": "./.constitution/presets/biome/plugins/no-null.grit",
       "includes": [

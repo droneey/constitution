@@ -441,7 +441,7 @@ const REAL_WEB_APP: ProjectLayout = {
     'platforms: [browser]',
     'languages: [typescript]',
     'implementations: [react-dom, tanstack-start, tanstack-query, tanstack-form, tailwind,',
-    '                  shadcn, storybook, ky, zod, vite, vitest, testing-library, matomo,',
+    '                  shadcn, storybook, ky, zod, vite, bun-test, testing-library, matomo,',
     '                  lingui, bun, biome, dependency-cruiser, ls-lint, knip, syncpack,',
     '                  stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
     'apps: {}',
