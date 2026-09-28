@@ -146,5 +146,4 @@ const cruise = (project: Project): Cruise => {
   };
 };
 
-export type { Cruise, Project };
 export { cruise };

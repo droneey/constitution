@@ -247,7 +247,6 @@ export {
   browserAppContext,
   cliContext,
   coreOnlyContext,
-  firstLine,
   htmlSiteContext,
   libraryContext,
   localBlocksContext,

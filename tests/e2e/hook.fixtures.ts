@@ -254,7 +254,7 @@ const lastLinesOf = (input: {
   count: number;
 }): readonly string[] => linesOf(input.context).slice(-input.count);
 
-export type { HookEvent, HookOutput, HookRun };
+export type { HookEvent, HookRun };
 export {
   blockListOf,
   bytesAfterHeader,

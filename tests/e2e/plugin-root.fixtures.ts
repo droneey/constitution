@@ -166,7 +166,7 @@ const removePluginRoots = (): void => {
   }
 };
 
-export type { Breakage, PluginRootOptions };
+export type { Breakage };
 export {
   corePartOfBytes,
   createPluginRoot,

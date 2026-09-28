@@ -161,5 +161,5 @@ const classifyBlockPath = (path: string): BlockPath | undefined => {
   };
 };
 
-export type { BlockPath, BlockPathFile };
+export type { BlockPath };
 export { classifyBlockPath };

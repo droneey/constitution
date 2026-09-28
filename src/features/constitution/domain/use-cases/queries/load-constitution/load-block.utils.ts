@@ -186,5 +186,5 @@ const loadBlock = (input: {
   };
 };
 
-export type { BlockFolder, Located };
+export type { Located };
 export { groupByFolder, loadBlock };

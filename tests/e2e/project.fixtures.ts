@@ -478,7 +478,7 @@ const syntheticProject = (blocks: number): ProjectLayout => ({
   }),
 });
 
-export type { Config, ProjectLayout };
+export type { ProjectLayout };
 export {
   BROWSER_APP,
   CLI,

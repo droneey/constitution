@@ -36,7 +36,7 @@ block	bunli	implementation	bunli declares each command, its flags and its handle
 block	dependency-cruiser	implementation	Holds the import rules between layers, features and packages.			typescript		false		architecture	typescript		.dependency-cruiser.mjs
 block	expo	implementation	Expo on React Native — app config, native builds, secure storage.				react-native	false			typescript	react-native _react	app.config.ts eas.json
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.			version-control		false	lefthook				.gitignore .gitattributes
-block	knip	implementation	Finds unused files, dependencies and exports.			typescript		false		unused	typescript		knip.json
+block	knip	implementation	Finds unused files, dependencies and exports.			typescript		false		unused	typescript		knip.config.ts
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.			typescript remote-data		false			typescript		**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.		betterleaks		git	false		commits		git	lefthook.yaml
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.		bun	i18n typescript		false			typescript		lingui.config.ts **/locales/**
