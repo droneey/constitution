@@ -10,7 +10,7 @@ role	tests	false
 role	coverage	false
 role	mutation	false
 role	secrets	true
-role	audit	false
+role	audit	true
 role	commits	true
 block	core	core	What holds for any program, in any language, of any kind.	principles.md architecture.md code.md testing.md security.md workflow.md collaboration.md				false					
 block	a11y	domain	Accessibility outcomes, to WCAG 2.2 AA, for any interface.					false					
@@ -30,7 +30,7 @@ block	typescript	language	How TypeScript is written, resolved, typed and package
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.		remote-data	ui typescript		true	react-dom react-native		typescript		**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false		secrets			.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript, with GritQL rules of our own.			typescript		false		format lint names	typescript		biome.json **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.		package	typescript		false	bun-test	audit	typescript		bunfig.toml package.json
+block	bun	implementation	Bun as runtime, package manager and script runner.		package	typescript		false	bun-test		typescript		bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.				bun	false		tests coverage	typescript	bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.			bun cli		false			typescript		**/cli/**
 block	dependency-cruiser	implementation	Holds the import rules between layers, features and packages.			typescript		false		architecture	typescript		.dependency-cruiser.mjs
@@ -43,6 +43,7 @@ block	lingui	implementation	Lingui for messages — ICU catalogs compiled per lo
 block	ls-lint	implementation	Holds the names of files and folders in every language.					false		names			.ls-lint.yaml
 block	matomo	implementation	Matomo as an analytics sink behind the analytics port.			analytics typescript		false			typescript		**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.		convergence			false					mise.toml mise.lock
+block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.					false		audit			osv-scanner.toml
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.			browser	_react	false			typescript	_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.			mobile	_react	false	expo		typescript	_react	**/*.tsx
 block	renovate	implementation	Dependency updates as scheduled pull requests from a bot.		mise	git		false					renovate.json
@@ -203,7 +204,7 @@ rule	dependency-release-cooldown	core	blocks/core/security.md		SHOULD	review			s
 rule	new-dependency-vetted	core	blocks/core/security.md		SHOULD	review			security	A new dependency is a decision: it needs a reason it cannot be a few lines of the project's own, and it is checked against the risk signs of a new package — a name one typo from a popular one, younger than thirty days, under a hundred weekly downloads, a recent change of owner, no source repository, obfuscated code.
 rule	deprecated-packages-replaced	core	blocks/core/security.md		SHOULD	review			security	A dependency deprecated as a whole is replaced — by its successor, another package, or the project's own code.
 rule	install-scripts-only-for-listed-dependencies	core	blocks/core/security.md		MUST	review			security	A dependency's install scripts run only when the dependency is listed by name as allowed to run them.
-rule	known-vulnerabilities-fail-the-check	core	blocks/core/security.md		MUST	tool	audit		security	A high or critical known vulnerability in any dependency, development dependencies included, fails the check.
+rule	known-vulnerabilities-fail-the-check	core	blocks/core/security.md		MUST	tool	audit		security	A known vulnerability of any severity in any dependency, development dependencies included, fails the check.
 rule	licences-from-an-allowlist	core	blocks/core/security.md		MUST	tool	audit		security	Every dependency's licence is on the project's allowlist.
 rule	shared-tooling-from-pinned-packages	core	blocks/core/security.md		SHOULD	review			security workflow	Commit hooks, linter configurations and release automation come from shared, pinned packages, not from copies in each repository.
 rule	irreversible-operations-behind-flag-and-human	core	blocks/core/security.md		MUST	review			security ux	An operation that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
@@ -524,7 +525,6 @@ rule	bun-is-the-only-package-manager	bun	blocks/implementations/bun/bun.md		MUST
 rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/bun.md		MUST	review		typescript	security	CI and every script install with `bun install --frozen-lockfile`.
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/bun.md		MUST	review		typescript	security	Bun runs no dependency's install script unless `trustedDependencies` in `package.json` lists that package by name.
 rule	release-age-set-for-installs	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	security	`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases.
-rule	audit-in-the-check	bun	blocks/implementations/bun/bun.md		MUST	tool	audit	typescript	security	The check runs `bun audit --audit-level=high`, development dependencies included.
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	workflow	`bunfig.toml` sets `[run] bun = true`, so every tool, one with a Node shebang included, runs on the pinned Bun.
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	workflow	Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.
 rule	no-automatic-env-file	bun	blocks/implementations/bun/bun.md		SHOULD	review		typescript	security	Bun's automatic loading of the local environment file is off — `--no-env-file` in the entry's shebang and in the scripts — so the program reads its environment only where the configuration is parsed.
@@ -584,6 +584,10 @@ rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/mise.md		MUST	
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/mise.md		SHOULD	review			workflow	CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
 rule	tool-configuration-from-the-kit-archive	mise	blocks/implementations/mise/mise.md		SHOULD	review			security workflow	Shared configuration that is not an npm package comes from the release archive of its source: devkit's `devkit.tar.gz` for the tools outside the package manager, the constitution's `constitution.tar.gz` for its presets.
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/with/convergence.md	convergence	SHOULD	review			workflow	`[env] _.path` in `mise.toml` puts the program's engine directory on the PATH for developers and CI; engine versions live in the program, not in `mise.toml`.
+rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/osv-scanner.md		MUST	tool	audit		security	The check runs `osv-scanner scan source` over the repository, development dependencies included.
+rule	licences-checked-against-devkit-allowlist	osv-scanner	blocks/implementations/osv-scanner/osv-scanner.md		MUST	tool	audit		security	The same run passes devkit's allowlist as `--licenses`, so a licence that is not on it fails the check.
+rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/osv-scanner.md		MUST	review			security	An accepted vulnerability is an `[[IgnoredVulns]]` entry in `osv-scanner.toml` with its `reason` and an `ignoreUntil` date.
+rule	licence-override-states-its-reason	osv-scanner	blocks/implementations/osv-scanner/osv-scanner.md		MUST	review			security	A package whose licence the registry names wrongly is a `[[PackageOverrides]]` entry with `license.override` and its `reason`.
 rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	review		typescript	ux	`<title>`, `<meta>` and `<link>` are rendered by the component or route that owns them; no head library, and no effect writing to the document head.
 rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	review		typescript	performance	A third-party script is rendered as `<script async src>` where it is needed; no script tag is inserted by hand.
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	tool	lint	typescript	a11y	ARIA attributes are written hyphenated, as the DOM spells them; the camelCase form is forbidden.

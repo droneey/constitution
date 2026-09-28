@@ -1,0 +1,20 @@
+[[IgnoredVulns]]
+id = "GHSA-4mjr-xmp4-gh2g"
+ignoreUntil = 2026-12-28
+reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
+
+[[IgnoredVulns]]
+id = "GHSA-q8mj-m7cp-5q26"
+ignoreUntil = 2026-12-28
+reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
+
+[[IgnoredVulns]]
+id = "GHSA-x5fp-wj9c-mxmx"
+ignoreUntil = 2026-12-28
+reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
+
+[[PackageOverrides]]
+name = "is-core-module"
+ecosystem = "npm"
+license.override = ["MIT"]
+reason = "deps.dev reports no licence for is-core-module; its package.json declares MIT"

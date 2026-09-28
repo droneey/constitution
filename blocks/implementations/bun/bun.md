@@ -6,7 +6,7 @@ chapters: []
 requires: [typescript]
 extends: null
 abstract: false
-checks: [audit]
+checks: []
 owns: [Bun, bun, bunx, bun.lock, bunfig.toml, trustedDependencies]
 governs: ["bunfig.toml", "package.json"]
 status: stable
@@ -14,7 +14,7 @@ status: stable
 
 # Bun
 
-> Runs the program, installs its dependencies and runs its scripts. Its `bun audit` holds the `audit` role for vulnerabilities; licences need a tool of their own, and until one is configured the licence rule is reviewed.
+> Runs the program, installs its dependencies and runs its scripts.
 
 ## Packages and installs
 
@@ -45,13 +45,6 @@ Bun runs no dependency's install script unless `trustedDependencies` in `package
 **Check:** review
 **Tags:** security
 **Implements:** `dependency-release-cooldown`
-
-## audit-in-the-check · MUST
-The check runs `bun audit --audit-level=high`, development dependencies included. An accepted advisory is an `--ignore=<id>` with its reason and expiry written beside it.
-**Why:** a vulnerability found by the check is fixed before release, and an accepted one without an expiry stays accepted forever.
-**Check:** tool — audit
-**Tags:** security
-**Implements:** `known-vulnerabilities-fail-the-check`
 
 ## Running
 

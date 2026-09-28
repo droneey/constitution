@@ -15,5 +15,6 @@ export default {
     'lefthook',
     'ls-lint',
     'mise',
+    'osv-scanner',
   ],
 };

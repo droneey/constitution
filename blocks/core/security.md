@@ -86,7 +86,7 @@ A dependency's install scripts run only when the dependency is listed by name as
 **Tags:** security
 
 ## known-vulnerabilities-fail-the-check · MUST
-A high or critical known vulnerability in any dependency, development dependencies included, fails the check. An accepted one is recorded in the audit configuration with its reason and an expiry.
+A known vulnerability of any severity in any dependency, development dependencies included, fails the check. An accepted one is recorded in the audit configuration with its reason and an expiry.
 **Why:** a vulnerability found by the check is fixed before release; one accepted without an expiry is accepted forever.
 **Check:** tool — audit
 **Tags:** security
