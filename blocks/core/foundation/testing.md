@@ -12,7 +12,7 @@
 ## What a spec proves
 
 ## spec-per-boundary · SHOULD
-A spec proves one boundary and is named after it. A boundary is what a caller outside its folder reaches: a business operation, a command, the implementation of an interface over an external system, a screen, a reusable component, a library primitive, a module of pure rules. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, composition, entry files, generated files and third-party code get no spec. Every boundary has a spec; a reviewer checks it, since the coverage gate cannot. How a screen and a component are proven is stated by the blocks of an interface.
+A spec proves one boundary and is named after it. A boundary is a unit a caller relies on, reached through its public entry. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get no spec. Every boundary has a spec; a reviewer checks it, since the coverage gate cannot.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -88,7 +88,7 @@ A lifecycle test takes an object made by its factory through every transition to
 |---|---|---|
 | each transition may pass alone while their sequence breaks; only the whole path proves the object's life. | review | [testing] |
 
-## one-contract-suite-per-port · SHOULD
+## one-contract-suite-per-faked-interface · SHOULD
 Each interface with a fake has one contract suite, run against the fake and against its real implementation.
 
 | Why | Check | Tags |
@@ -111,13 +111,6 @@ Every test has been seen failing for the right reason: written before the code, 
 |---|---|---|
 | a test never seen failing may test nothing. | review | [testing] |
 
-## bug-fix-starts-with-failing-test · SHOULD
-A bug fix begins with the test that reproduces the bug, seen failing before the fix.
-
-| Why | Check | Tags |
-|---|---|---|
-| the test proves the fix fixes this bug, and keeps it from coming back. | review | [testing] |
-
 ## The sandbox
 
 ## tests-run-in-a-sandbox · MUST
@@ -127,14 +120,14 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 |---|---|---|
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
-## one-fake-per-port · SHOULD
+## one-fake-per-interface · SHOULD
 Each faked interface has one fake, `<interface>.fake`, shared by every spec that needs it.
 
 | Why | Check | Tags |
 |---|---|---|
 | one fake per interface is kept in step with its real implementation once, not once per spec that writes its own. | review | [testing] |
 
-## adapter-integration-tested-in-sandbox · SHOULD
+## integration-tested-against-the-real-engine · SHOULD
 Each implementation of an interface over an external system is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each operation of the interface and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
 
 | Why | Check | Tags |
@@ -151,7 +144,7 @@ Each critical scenario `PROJECT.md` names has one end-to-end test through the bu
 ## Files and names
 
 ## test-files-named-by-role · MUST
-A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<interface>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec keeps the suffix of the file it proves, so a double suffix appears only in tests.
+A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<interface>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling.
 
 | Why | Check | Tags |
 |---|---|---|

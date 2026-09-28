@@ -17,7 +17,7 @@ A refactor and a change of behaviour are never one commit.
 | a rollback of the behaviour then leaves the structure alone, and a reviewer sees which lines change what the program does. | review | [] |
 
 ## every-commit-passes-the-check · MUST
-Every commit passes the repository's check: the commit hooks run its fast part, CI runs all of it.
+Every commit passes the repository's check.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -39,47 +39,12 @@ Placeholder subjects are rejected: "update", "fix stuff", "wip", "changes", "mis
 
 ## Integration
 
-## changes-reach-main-line-through-review · MUST
-Every change reaches the main line through a reviewed pull request. The one exception is a release's own version commit and tag.
-
-| Why | Check | Tags |
-|---|---|---|
-| review is the last point where a person sees the change before it ships; a change that skips it ships unseen. | review | [] |
-
 ## main-line-protected · MUST
-The main line is protected: no direct push, no force push, no deletion.
+The main line is protected: no force push, no deletion.
 
 | Why | Check | Tags |
 |---|---|---|
 | the main line is what every release is cut from; one careless push rewrites it for everyone. | review | [security] |
-
-## required-check-blocks-integration → one-check-command
-The check runs in CI on every pull request, and a red check blocks the merge.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check that can be merged past protects nothing. | review | [testing] |
-
-## one-integration-strategy-no-work-in-progress · MUST
-A repository integrates by one strategy, which the protection enforces, and no work-in-progress or fix-up commit reaches the main line.
-
-| Why | Check | Tags |
-|---|---|---|
-| one strategy keeps the history readable the same way everywhere, and work in progress on the main line is a state nobody meant to ship. | review | [] |
-
-## small-reviewable-change-requests → scope-limited-to-the-task
-A pull request is small enough to review in one sitting; one that mixes concerns is split.
-
-| Why | Check | Tags |
-|---|---|---|
-| a reviewer reads a small change closely and skims a large one. | review | [] |
-
-## merged-branch-deleted · SHOULD
-A branch is deleted once it is merged.
-
-| Why | Check | Tags |
-|---|---|---|
-| a list of live branches then shows the work in progress, not its history. | review | [] |
 
 ## working-copy-clean-at-hand-back · SHOULD
 When work is handed back, the working copy holds no stray change and no scratch file outside ignored folders.

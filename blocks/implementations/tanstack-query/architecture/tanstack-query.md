@@ -1,5 +1,12 @@
 # TanStack Query
 
+## query-hooks-only-in-binding-units → binding-unit-composes-its-operation
+A read's binding unit wraps `useQuery`, and a write's wraps `useMutation`. No screen, widget or component calls either directly.
+
+| Why | Check | Tags |
+|---|---|---|
+| each operation is then bound once, with its keys, its adapter and its union by status, and no component can reach the cache around them. | review | [data] |
+
 ## query-functions-call-the-handed-adapter → binding-unit-composes-its-operation
 `queryFn` and `mutationFn` call the operation with the adapter the providers hand to the binding unit.
 

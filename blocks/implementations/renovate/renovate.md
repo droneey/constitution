@@ -1,6 +1,6 @@
 ---
 id: renovate
-summary: Dependency updates as scheduled pull requests from a bot.
+summary: Dependency updates proposed by a bot on a schedule.
 requires: [git]
 extends: null
 abstract: false
@@ -11,4 +11,4 @@ governs: ["renovate.json"]
 
 # Renovate
 
-> The bot that opens dependency updates as pull requests.
+> The bot that proposes dependency updates.

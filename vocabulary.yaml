@@ -67,10 +67,12 @@ architecture:
 workflow:
   concepts:
     - chore
+    - commit hook
     - conventional commit
     - dependency bot
     - feat
     - pre-release
+    - pull request
     - release automation
     - semantic versioning
     - semver

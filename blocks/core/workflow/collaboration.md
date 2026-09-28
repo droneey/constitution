@@ -26,7 +26,7 @@ Only a person decides what is committed. The main agent commits only when a pers
 | a commit records a decision under the person's name; the person makes it. | review | [] |
 
 ## agent-never-merges-or-pushes-to-main · MUST
-An agent never merges. It pushes its branch and opens the pull request only when a person asks.
+An agent never merges and never pushes to the main line. It pushes its branch and opens the pull request only when a person asks.
 
 | Why | Check | Tags |
 |---|---|---|

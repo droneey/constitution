@@ -5,7 +5,7 @@
 ## Secrets
 
 ## no-secret-in-repository · MUST
-No secret is committed — not in code, documents, tests, fixtures or history. A secret scanner runs in the commit hooks and on every change, through the check.
+No secret is committed — not in code, documents, tests, fixtures or history. A secret scanner runs on every change, through the check.
 
 | Why | Check | Tags |
 |---|---|---|

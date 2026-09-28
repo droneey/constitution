@@ -1,5 +1,14 @@
 # Security
 
+## Secrets
+
+## secrets-scanned-before-each-commit → no-secret-in-repository
+The commit hooks scan the staged changes for secrets before each commit.
+
+| Why | Check | Tags |
+|---|---|---|
+| a secret stopped before the commit never reaches history, where it is compromised for good. | review | [] |
+
 ## Dependencies
 
 ## dependencies-updated-by-bot · SHOULD

@@ -39,7 +39,7 @@ A number shown in a text — a count, a total, a limit — is read from the data
 |---|---|---|
 | a number typed twice drifts from its source, and the text then states something the program no longer does. | review | [data] |
 
-## value-objects-guard-their-invariant · SHOULD
+## invariant-checked-at-construction · SHOULD
 A value that must keep an invariant is built only through the function that checks it, so a value that exists is valid.
 
 | Why | Check | Tags |

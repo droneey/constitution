@@ -23,6 +23,13 @@ The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` 
 |---|---|---|
 | the type sets the version bump and the changelog, so a wrong type ships a wrong version. | review | [] |
 
+## check-run-by-hooks-and-ci → every-commit-passes-the-check
+The commit hooks run the check's fast part before each commit, and CI runs all of it.
+
+| Why | Check | Tags |
+|---|---|---|
+| the hooks stop most failures before they are committed, and CI runs what is too slow for a hook, on a machine nobody set up by hand. | review | [] |
+
 ## Branches
 
 ## branch-named-type-issue-name · MUST
@@ -39,7 +46,49 @@ The type of the merged branch sets the version bump: `feature` a minor one; `fix
 |---|---|---|
 | the bump is decided when the branch is named, by the person who knows what it holds, not guessed at release time. | review | [] |
 
+## merged-branch-deleted · SHOULD
+A branch is deleted once it is merged.
+
+| Why | Check | Tags |
+|---|---|---|
+| a list of live branches then shows the work in progress, not its history. | review | [] |
+
 ## Integration
+
+## changes-reach-main-line-through-review · MUST
+Every change reaches the main line through a reviewed pull request. The one exception is the release automation's version commit and tag.
+
+| Why | Check | Tags |
+|---|---|---|
+| review is the last point where a person sees the change before it ships; a change that skips it ships unseen. | review | [] |
+
+## main-line-takes-no-direct-push → main-line-protected
+The protection also refuses a direct push to the main line; only the release automation pushes its version commit and tag.
+
+| Why | Check | Tags |
+|---|---|---|
+| a direct push skips the review and the required check that every other change passes through. | review | [] |
+
+## required-check-blocks-integration → one-check-command
+The check runs in CI on every pull request, and a red check blocks the merge.
+
+| Why | Check | Tags |
+|---|---|---|
+| a check that can be merged past protects nothing. | review | [testing] |
+
+## one-integration-strategy-no-work-in-progress · MUST
+A repository integrates by one strategy, which the protection enforces, and no work-in-progress or fix-up commit reaches the main line.
+
+| Why | Check | Tags |
+|---|---|---|
+| one strategy keeps the history readable the same way everywhere, and work in progress on the main line is a state nobody meant to ship. | review | [] |
+
+## small-reviewable-change-requests → scope-limited-to-the-task
+A pull request is small enough to review in one sitting; one that mixes concerns is split.
+
+| Why | Check | Tags |
+|---|---|---|
+| a reviewer reads a small change closely and skims a large one. | review | [] |
 
 ## squash-merge-titled-in-commit-format → one-integration-strategy-no-work-in-progress
 Pull requests are squash-merged; the title becomes the commit's subject and follows the commit format.

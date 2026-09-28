@@ -35,7 +35,7 @@ Outcomes are reported as they are: a failing test with its output, a skipped ste
 ## Acting
 
 ## agent-never-rewrites-shared-history · MUST
-An agent never pushes to the main line, never force-pushes and never rewrites history others have.
+An agent never force-pushes and never rewrites history others have.
 
 | Why | Check | Tags |
 |---|---|---|

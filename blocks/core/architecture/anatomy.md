@@ -202,6 +202,13 @@ An adapter implements, over one external system, every contract of its owner tha
 |---|---|---|
 | one system's knowledge — its client, its errors, its wire shapes — is then in one place. | review | [] |
 
+## adapter-built-by-factory-or-module-object · SHOULD
+An adapter is written as a factory function that takes its dependencies and returns the adapter. An adapter with no dependency may be a module object.
+
+| Why | Check | Tags |
+|---|---|---|
+| a factory shows every dependency in its signature, and a module object is the smallest form of an adapter that needs none. | review | [] |
+
 ## adapter-receives-its-dependencies → adapter-built-by-factory-or-module-object
 An adapter receives its dependencies — the transport, the clients it speaks through — from the composition root, and never imports a shared instance of them.
 
@@ -267,7 +274,7 @@ Files of one kind that arrive one at a time — one per vendor, command, rule or
 | adding a member is then adding a file, and no one has to tell members from machinery by their names. | review | [] |
 
 ## file-carries-its-role-suffix · MUST
-A file carries its role's suffix, whatever its folder: `entities/chat.entity`. No suffix on a surface or an entry, a file whose name a tool fixes, a component file named after its component in its own folder, a member of a set whose role has no suffix, and a registry.
+A file carries its role's suffix, whatever its folder: `entities/chat.entity`. No suffix on a surface or an entry, a file whose name a tool fixes, a component file named after its component in its own folder, a member of a set whose role has no suffix, and a registry. A spec keeps the role suffix of the file it proves — `chat.entity.test` — so a double suffix appears only in tests.
 
 | Why | Check | Tags |
 |---|---|---|

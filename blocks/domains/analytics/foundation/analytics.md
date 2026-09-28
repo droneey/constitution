@@ -15,7 +15,7 @@ Every event belongs to one closed vocabulary, each with its typed parameters; no
 | a mistyped event name is a report that silently reads zero. | review | [data] |
 
 ## analytics-fault-isolated → errors-surfaced-never-swallowed
-A failing analytics service neither breaks the user's action nor silences the other services; its fault is reported out of band.
+A failing analytics destination, or a failure of the code that sends to it, neither breaks the user's action nor silences the other destinations; the fault is reported out of band.
 
 | Why | Check | Tags |
 |---|---|---|
