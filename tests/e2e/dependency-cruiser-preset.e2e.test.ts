@@ -528,20 +528,6 @@ describe('the dependency-cruiser layer set', () => {
       ],
       rule: 'yaml-only-at-the-edge',
     },
-    {
-      condition: 'the application layer imports zod',
-      files: {
-        'src/features/orders/app/order.use-case.ts': importing({
-          from: 'zod',
-          name: 'value',
-        }),
-      },
-      parts: [
-        'zod',
-        'base',
-      ],
-      rule: 'zod-only-at-the-edge',
-    },
   ])(
     'should report $rule when $condition and a project extends that part',
     ({ files, parts, rule }) => {
@@ -599,7 +585,6 @@ describe('the dependency-cruiser layer set', () => {
         'ky',
         'storybook',
         'yaml',
-        'zod',
         'base',
       ],
     };

@@ -20,7 +20,7 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0076 |
-| Tools and tests | ADR-0077 – ADR-0085 |
+| Tools and tests | ADR-0077 – ADR-0086 |
 
 ---
 
@@ -510,3 +510,10 @@
 - **Decision.** The `vitest` block is removed. Every droneey project runs its specs with `bun test`; a Vitest block and devkit's Vitest preset come back together when a project needs them.
 - **Rejected.** Keeping the block while its preset does not exist, which states checks no tool performs.
 - **Why.** A block that names a preset nobody ships describes a check that never runs.
+
+## ADR-0086 — zod is kept out of the domain by the domain law alone
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** `zod-only-at-the-edge` and its dependency-cruiser part are deleted. A schema is written wherever input crosses a boundary — an adapter's models, a route's search parameters, a form — and `domain-imports-only-itself-and-kernel` keeps zod, like every vendor, out of `domain/`.
+- **Rejected.** Widening the rule's list of edges to routes and forms, which names the router's and the form library's folders in zod's block.
+- **Why.** The rule forbade the schemas `search-params-validated-by-schema` and the form rules require, while what it protected — a domain free of the schema library — the law already holds. Router and form libraries take any Standard Schema validator, so a schema at the delivery layer is the boundary, not a leak.

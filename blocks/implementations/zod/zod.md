@@ -16,13 +16,6 @@ status: stable
 
 > Parses untrusted input at the edge.
 
-## zod-only-at-the-edge · MUST
-zod is imported only at the edge — adapters and their `models/`, the delivery layer's flags, the root's configuration, the document in `composition/` — never under `domain/`.
-**Why:** a schema library in the domain ties the business rules to a vendor, and the domain declares types, not parsers.
-**Check:** tool — architecture
-**Tags:** architecture
-**Implements:** `domain-imports-only-itself-and-kernel`
-
 ## schema-held-exactly-to-its-model · MUST
 A schema over a domain type is held to it exactly — `conformingTo<Model>()(schema)`, or `z.ZodType<Model>` where assignability is enough — and an enum's schema is `z.enum(TheEnum)`.
 **Why:** exact conformance fails both a stricter and a looser schema, so the schema can never say something the domain does not.
