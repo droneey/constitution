@@ -337,3 +337,63 @@ checksum = "sha256:61a0f47c75c741fa2788aff55f85dfa0a34307257b176cb6b20fd821ae030
 url = "https://github.com/evilmartians/lefthook/releases/download/v2.1.14/lefthook_2.1.14_Windows_x86_64.gz"
 url_api = "https://api.github.com/repos/evilmartians/lefthook/releases/assets/563149872"
 provenance = "github-attestations"
+
+[[tools.ls-lint]]
+version = "2.3.1"
+backend = "aqua:loeffel-io/ls-lint"
+specifiers = ["2.3.1"]
+
+[tools.ls-lint."platforms.linux-arm64"]
+checksum = "sha256:2abdb71243c619f0bb29587be5c228bec84c107985f2c066139ef0ec35fd3a99"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-linux-arm64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857550"
+
+[tools.ls-lint."platforms.linux-arm64-musl"]
+checksum = "sha256:2abdb71243c619f0bb29587be5c228bec84c107985f2c066139ef0ec35fd3a99"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-linux-arm64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857550"
+
+[tools.ls-lint."platforms.linux-x64"]
+checksum = "sha256:b5a0d2e4427ad039fbc574551f17679f38f142b25d15e0e538769f8cf15af397"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-linux-amd64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857547"
+
+[tools.ls-lint."platforms.linux-x64-baseline"]
+checksum = "sha256:b5a0d2e4427ad039fbc574551f17679f38f142b25d15e0e538769f8cf15af397"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-linux-amd64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857547"
+
+[tools.ls-lint."platforms.linux-x64-musl"]
+checksum = "sha256:b5a0d2e4427ad039fbc574551f17679f38f142b25d15e0e538769f8cf15af397"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-linux-amd64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857547"
+
+[tools.ls-lint."platforms.linux-x64-musl-baseline"]
+checksum = "sha256:b5a0d2e4427ad039fbc574551f17679f38f142b25d15e0e538769f8cf15af397"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-linux-amd64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857547"
+
+[tools.ls-lint."platforms.macos-arm64"]
+checksum = "sha256:e4ed2ce2b7b61d6685769e34c6375ccecb14a3f00ee59438cf82d01d6236a3c4"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-darwin-arm64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857541"
+
+[tools.ls-lint."platforms.macos-x64"]
+checksum = "sha256:fc17fc642e95fd8bf7030ed661e86758bee654f6e11f1e31a5f21887f47f73ae"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-darwin-amd64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857543"
+
+[tools.ls-lint."platforms.macos-x64-baseline"]
+checksum = "sha256:fc17fc642e95fd8bf7030ed661e86758bee654f6e11f1e31a5f21887f47f73ae"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-darwin-amd64"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857543"
+
+[tools.ls-lint."platforms.windows-x64"]
+checksum = "sha256:94e5cfb9468e597cb513fb7a8bf26499c9315ebd505d960c74e2d4849167bd31"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-windows-amd64.exe"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857557"
+
+[tools.ls-lint."platforms.windows-x64-baseline"]
+checksum = "sha256:94e5cfb9468e597cb513fb7a8bf26499c9315ebd505d960c74e2d4849167bd31"
+url = "https://github.com/loeffel-io/ls-lint/releases/download/v2.3.1/ls-lint-windows-amd64.exe"
+url_api = "https://api.github.com/repos/loeffel-io/ls-lint/releases/assets/260857557"

@@ -29,7 +29,8 @@
     "mutation:all": "bun run ./src/entrypoints/mutation-check/main.ts all",
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
     "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
-    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check"
+    "names:check": "ls-lint --config .devkit/common/ls-lint/base.yaml --config .devkit/common/ls-lint/markdown.yaml --config .devkit/common/ls-lint/typescript.yaml --config .constitution/presets/ls-lint/base.yaml --config .ls-lint.yaml",
+    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check"
   },
   "dependencies": {
     "yaml": "^2.8.1",

@@ -1,0 +1,106 @@
+ls:
+  # exists:0 counts only the key's own folder; a pattern no name matches refuses .yml in every folder.
+  .yml: regex:^$
+
+  src:
+    <<: &source
+      .dir: kebab-case | regex:^__tests__$
+      .*: kebab-case
+      .*.*: kebab-case
+      .ts: kebab-case
+      .tsx: kebab-case
+      .*.ts: kebab-case
+      .*.tsx: kebab-case
+      .*.*.ts: kebab-case
+      .*.*.tsx: kebab-case
+      .yml: regex:^$
+    .dir: regex:^(src|root|features|composition|contracts|adapters|kernel|shared|libs|entrypoints)$
+  src/root: *source
+  src/features: *source
+  src/composition: *source
+  src/adapters: *source
+  src/kernel: *source
+  src/shared: *source
+  src/libs: *source
+  src/entrypoints: *source
+
+  src/features/*/domain:
+    <<: *source
+    .dir: regex:^(domain|entities|value-objects|contracts|use-cases|errors|constants|types|utils)$
+    .ts: exists:0
+    .tsx: exists:0
+    .*.ts: exists:0
+    .*.tsx: exists:0
+
+  src/*/**/entities:
+    <<: &role
+      .dir: kebab-case | regex:^__tests__$
+      .*: kebab-case
+      .*.*: kebab-case
+      .ts: regex:^index$
+      .tsx: exists:0
+      .*.ts: exists:0
+      .*.tsx: exists:0
+      .*.*.ts: exists:0
+      .*.*.tsx: exists:0
+      .yml: regex:^$
+    .entity.ts: kebab-case
+  src/*/**/errors:
+    <<: *role
+    .error.ts: kebab-case
+  src/*/**/constants:
+    <<: *role
+    .constants.ts: kebab-case
+  src/*/**/types:
+    <<: *role
+    .types.ts: kebab-case
+    .d.ts: kebab-case
+  src/*/**/utils:
+    <<: *role
+    .utils.ts: kebab-case
+  src/*/**/models:
+    <<: *role
+    .model.ts: kebab-case
+  src/contracts: &contracts
+    <<: *role
+    .port.ts: kebab-case
+  src/*/**/contracts: *contracts
+  src/*/**/repositories:
+    <<: *role
+    .dir: regex:^repositories$
+  "src/*/**/repositories/{queries,commands}":
+    <<: *role
+    .repository.ts: kebab-case
+  src/*/**/use-cases:
+    <<: *role
+    .dir: regex:^use-cases$
+  "src/*/**/use-cases/{queries,commands}":
+    <<: *role
+    .dir: kebab-case | regex:^__tests__$
+    .*.ts: kebab-case
+    .*.*.ts: kebab-case
+
+  src/*/**/__tests__: &tests
+    .dir: kebab-case | regex:^__tests__$
+    .*: kebab-case
+    .*.*: kebab-case
+    .ts: exists:0
+    .tsx: exists:0
+    .*.ts: exists:0
+    .*.tsx: exists:0
+    .*.*.ts: exists:0
+    .*.*.tsx: exists:0
+    .test.ts: kebab-case
+    .test.tsx: kebab-case
+    .*.test.ts: kebab-case
+    .*.test.tsx: kebab-case
+    .*.*.test.ts: kebab-case
+    .*.*.test.tsx: kebab-case
+    .fake.ts: kebab-case
+    .fixtures.ts: kebab-case
+    .fixtures.tsx: kebab-case
+    .yml: regex:^$
+  tests: *tests
+  tests/*: *tests
+ignore:
+  - .constitution

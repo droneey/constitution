@@ -113,9 +113,9 @@ After the findings it prints advice that does not fail the check: the roles of t
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yml` | pull request into `main` | Lint, types, tests with the hook under mawk and again under gawk, the blocks check, the workflow lint; on macOS, the hook under `/bin/bash` 3.2 and the system awk |
-| `cd-version.yml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yml` | tag `v*` | Calls `droneey/.github`: opens the pre-release with its changelog |
+| `ci-check.yaml` | pull request into `main` | Lint, types, tests with the hook under mawk and again under gawk, the blocks check, the workflow lint; on macOS, the hook under `/bin/bash` 3.2 and the system awk |
+| `cd-version.yaml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: opens the pre-release with its changelog |
 
 ## 🛠️ Changing it
 

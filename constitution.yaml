@@ -3,7 +3,7 @@ version: 0.24.0
 domains: [version-control]
 platforms: []
 languages: [typescript]
-implementations: [bun, bun-test, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise]
+implementations: [bun, bun-test, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint]
 apps: {}
 check: bun run check
 overrides:
