@@ -1,0 +1,7 @@
+ls:
+  src/cli:
+    .dir: kebab-case | regex:^__tests__$
+    .*: kebab-case
+    .ts: kebab-case
+    .*.ts: kebab-case
+    .cli.ts: kebab-case

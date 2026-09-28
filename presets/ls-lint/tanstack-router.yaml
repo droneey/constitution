@@ -1,0 +1,9 @@
+ls:
+  src/routes:
+    .dir: kebab-case | regex:^-(components|hooks)$ | regex:^\([a-z0-9-]+\)$ | regex:^_[a-z0-9-]+$ | regex:^\$[a-zA-Z0-9]+$
+    .ts: kebab-case | regex:^\$[a-zA-Z0-9]*$
+    .tsx: kebab-case | regex:^(__root|_[a-z0-9-]+|[a-z0-9-]+_|\$[a-zA-Z0-9]*)$
+    .*.ts: kebab-case | regex:^\$[a-zA-Z0-9]*$
+    .*.tsx: kebab-case | regex:^(_[a-z0-9-]+|[a-z0-9-]+_|\$[a-zA-Z0-9]*)$
+ignore:
+  - src/routeTree.gen.ts

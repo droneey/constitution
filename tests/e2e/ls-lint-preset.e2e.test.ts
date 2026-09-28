@@ -44,6 +44,41 @@ const WELL_FORMED = [
   'tests/e2e/shop.fixtures.ts',
 ];
 
+const PARTS = [
+  'base',
+  'analytics',
+  'cli',
+  'tanstack-router',
+  'ui',
+];
+
+const WELL_FORMED_WITH_PARTS = [
+  'src/router.tsx',
+  'src/routeTree.gen.ts',
+  'src/routes/__root.tsx',
+  'src/routes/index.tsx',
+  'src/routes/_auth.tsx',
+  'src/routes/about.lazy.tsx',
+  'src/routes/(shop)/orders/$orderId.tsx',
+  'src/routes/(shop)/orders/-components/order-summary.tsx',
+  'src/routes/(shop)/orders/-hooks/order.hooks.ts',
+  'src/cli/commands.ts',
+  'src/cli/init.cli.ts',
+  'src/shared/analytics/sinks/index.ts',
+  'src/shared/analytics/sinks/matomo.sink.ts',
+  'src/shared/ui/assets/logo.svg',
+  'src/shared/ui/components/index.ts',
+  'src/shared/ui/components/app-banner/index.ts',
+  'src/shared/ui/components/app-banner/app-banner.tsx',
+  'src/shared/ui/components/app-banner/app-banner.types.ts',
+  'src/shared/ui/components/app-banner/app-banner.variants.ts',
+  'src/shared/ui/components/app-banner/app-banner.stories.tsx',
+  'src/shared/ui/components/app-banner/__tests__/app-banner.test.tsx',
+  'src/shared/ui/components/app-banner/components/app-banner-title/app-banner-title.tsx',
+  'src/features/orders/ui/widgets/order-list-widget/index.ts',
+  'src/features/orders/ui/widgets/order-list-widget/order-list-widget.tsx',
+];
+
 describe('the ls-lint preset', () => {
   it.each([
     {
@@ -130,6 +165,88 @@ describe('the ls-lint preset', () => {
 
     // Assert
     expect(failed).toContain(reported);
+  });
+
+  it.each([
+    {
+      condition: 'a component file is not named after its folder',
+      path: 'src/shared/ui/components/app-banner/banner.tsx',
+      reported: 'src/shared/ui/components/app-banner/banner.tsx',
+    },
+    {
+      condition: "a component's types are not named after it",
+      path: 'src/shared/ui/components/app-banner/props.types.ts',
+      reported: 'src/shared/ui/components/app-banner/props.types.ts',
+    },
+    {
+      condition: 'a component sits loose among the component folders',
+      path: 'src/shared/ui/components/app-banner.tsx',
+      reported: 'src/shared/ui/components',
+    },
+    {
+      condition: 'a widget folder does not end in -widget',
+      path: 'src/features/orders/ui/widgets/order-list/order-list.tsx',
+      reported: 'src/features/orders/ui/widgets/order-list',
+    },
+    {
+      condition: 'a sink has no role suffix',
+      path: 'src/shared/analytics/sinks/matomo.ts',
+      reported: 'src/shared/analytics/sinks/matomo.ts',
+    },
+    {
+      condition: "a sinks folder holds another role's file",
+      path: 'src/shared/analytics/sinks/matomo.utils.ts',
+      reported: 'src/shared/analytics/sinks',
+    },
+    {
+      condition: 'a command file is not in kebab-case',
+      path: 'src/cli/initProject.cli.ts',
+      reported: 'src/cli/initProject.cli.ts',
+    },
+    {
+      condition: "a screen's private folder is not a dash folder",
+      path: 'src/routes/orders/Components/order-summary.tsx',
+      reported: 'src/routes/orders/Components',
+    },
+    {
+      condition: 'a route file is in PascalCase',
+      path: 'src/routes/OrderPage.tsx',
+      reported: 'src/routes/OrderPage.tsx',
+    },
+  ])(
+    'should report the name when $condition and the project takes the block parts',
+    ({ path, reported }) => {
+      // Arrange
+      const project = {
+        parts: PARTS,
+        paths: [
+          path,
+        ],
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed).toContain(reported);
+    },
+  );
+
+  it('should report nothing when every name follows the tree and the block parts', () => {
+    // Arrange
+    const project = {
+      parts: PARTS,
+      paths: [
+        ...WELL_FORMED,
+        ...WELL_FORMED_WITH_PARTS,
+      ],
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toStrictEqual([]);
   });
 
   it('should report nothing when every name follows the tree', () => {

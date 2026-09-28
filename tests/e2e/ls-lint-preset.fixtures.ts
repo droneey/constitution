@@ -167,7 +167,7 @@ const presetWords = (): readonly string[] => {
         ...suffixes,
         ...alternatives,
         ...ignored,
-      ].filter((word) => word !== '' && word !== '.' && !word.includes('*')),
+      ].filter((word) => /^\.?[\w-]+$/.test(word)),
     ),
   ];
 };
