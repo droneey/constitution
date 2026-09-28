@@ -4,8 +4,8 @@
       "path": "./.constitution/presets/biome/plugins/module-mocks.grit",
       "includes": [
         "**/__tests__/**",
-        "**/*.spec.ts",
-        "**/*.spec.tsx",
+        "**/*.test.ts",
+        "**/*.test.tsx",
       ],
     },
   ],

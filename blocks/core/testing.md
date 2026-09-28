@@ -124,13 +124,13 @@ Network, time, randomness, processes and credentials are faked through their por
 **Tags:** testing
 
 ## adapter-integration-tested-in-sandbox · SHOULD
-Each adapter is proven against its real engine inside the sandbox, in `<name>.integration.spec`, with a case for each port operation and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
+Each adapter is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each port operation and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
 **Why:** a fake proves the domain; only the real engine proves the mapping to it.
 **Check:** review
 **Tags:** testing
 
 ## end-to-end-per-critical-scenario · SHOULD
-Each critical scenario `PROJECT.md` names has one end-to-end test through the delivery layer, in `tests/e2e/<name>.e2e.spec` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
+Each critical scenario `PROJECT.md` names has one end-to-end test through the delivery layer, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
 **Why:** the scenarios that must never break are proven the way users meet them, and no more end-to-end tests are paid for than that.
 **Check:** review
 **Tags:** testing
@@ -138,7 +138,7 @@ Each critical scenario `PROJECT.md` names has one end-to-end test through the de
 ## Files and names
 
 ## test-files-named-by-role · MUST
-A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.spec`, `<name>.integration.spec`, `<name>.e2e.spec` — a fake `<port>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec carries its file's role suffix, so a double suffix appears only in tests.
+A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<port>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec carries its file's role suffix, so a double suffix appears only in tests.
 **Why:** a spec named otherwise would not run, and a helper named like a spec would.
 **Check:** tool — names
 **Tags:** testing, naming

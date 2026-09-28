@@ -31,7 +31,7 @@ No `mock.module` and no `spyOn` over a real module: effects are faked through th
 **Implements:** `effects-faked-through-ports`
 
 ## integration-specs-run-apart · SHOULD
-The unit run leaves out `*.integration.spec.ts`; integration specs run as their own script of the check.
+The unit run leaves out `*.integration.test.ts`; integration specs run as their own script of the check.
 **Why:** the fast run stays fast, and the slower integration run fails on its own.
 **Check:** review
 **Tags:** testing

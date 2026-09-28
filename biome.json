@@ -38,7 +38,7 @@
                 "filenameCases": [
                   "kebab-case"
                 ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:spec|fake|fixtures)[.]ts)"
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|fixtures)[.]ts)"
               }
             }
           },

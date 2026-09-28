@@ -47,7 +47,7 @@ describe('the Biome preset', () => {
     {
       condition: 'a case does not read should … when …',
       files: {
-        'src/__tests__/order.spec.ts':
+        'src/__tests__/order.test.ts':
           "import { expect, test } from 'bun:test';\n\ntest('adds totals', () => {\n  expect(1).toBe(1);\n});\n",
       },
       message: "A case reads 'should <behaviour> when <condition>'",
@@ -55,7 +55,7 @@ describe('the Biome preset', () => {
     {
       condition: 'a spec replaces a module',
       files: {
-        'src/__tests__/order.spec.ts':
+        'src/__tests__/order.test.ts':
           "import { mock } from 'bun:test';\n\nmock.module('./order', () => ({}));\n",
       },
       message: 'Fake an effect through its port',
@@ -109,7 +109,7 @@ describe('the Biome preset', () => {
     {
       condition: 'a spec replaces a module',
       files: {
-        'src/__tests__/order.spec.ts':
+        'src/__tests__/order.test.ts':
           "import { mock } from 'bun:test';\n\nmock.module('./order', () => ({}));\n",
       },
     },
