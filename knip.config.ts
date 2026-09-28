@@ -5,7 +5,6 @@ export default {
   ignoreBinaries: [
     ...base.ignoreBinaries,
     'mkfifo',
-    'stryker',
   ],
   ignoreDependencies: [
     '@droneey/devkit-ts-dependency-cruiser',
