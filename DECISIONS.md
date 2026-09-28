@@ -508,3 +508,10 @@
 - **Decision.** mise installs devkit's and the constitution's release archives through its `github` backend: `asset_pattern` names the archive, `strip_components = 0` keeps its folders, and `mise.lock` holds the checksum GitHub publishes for the asset. This replaces the `http` backend of ADR-0075 and ADR-0076; the archives, their paths and their links stay as they were.
 - **Rejected.** The `http` backend, whose URL template and hand-copied checksum no dependency bot reads, so every release was bumped by hand.
 - **Why.** The pin is then a version alone, verified against the checksum the release itself publishes, and the dependency bot bumps the archive like any other tool.
+
+## ADR-0080 — A screen's specs live in the `__tests__/` of its dash folders
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** With TanStack Router, a screen's specs live in the `__tests__/` of its `-components/` or `-hooks/`, beside the pieces they prove, never in a `__tests__/` of the route folder.
+- **Rejected.** A `__tests__/` beside the route file with `routeFileIgnorePattern` set in every project, a setting each router configuration must repeat.
+- **Why.** The route generator skips only names that start with a dash; a `__tests__/` elsewhere under `routes/` is read as route files and warned about on every generation.
