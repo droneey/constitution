@@ -52,8 +52,8 @@ A write to the search merges with the current parameters, never replaces them.
 **Implements:** `url-holds-shareable-view-state`
 
 ## screen-private-pieces-in-dash-folders · SHOULD
-A screen's private pieces live beside its route in `-components/`, and its private binding units in `-hooks/`.
-**Why:** the dash keeps them out of the route tree, and beside the screen they serve.
+A screen's private pieces live beside its route in `-components/`, its private binding units in `-hooks/`, and the specs of both in the `__tests__/` of those folders, never in a `__tests__/` of the route folder.
+**Why:** the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run.
 **Check:** tool — names
 **Tags:** architecture, naming
 **Implements:** `screen-private-pieces-beside-screen`
