@@ -20,7 +20,7 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0076 |
-| Tools and tests | ADR-0077 – ADR-0086 |
+| Tools and tests | ADR-0077 – ADR-0087 |
 
 ---
 
@@ -315,7 +315,7 @@
 ## ADR-0056 — version-control holds what is true of any version control
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line. Everything about git — commit messages, branch names, worktrees, its commands — belongs to the implementation `git`.
+- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line, the formats of commits, branches and release tags. Everything only git has — staging, ignores, annotated tags, LFS, worktrees, its commands — belongs to the implementation `git`.
 - **Why.** A rule that names a git concept loses its meaning without git, so it belongs to the git block.
 
 ## ADR-0057 — A block never cites the decision log
@@ -517,3 +517,9 @@
 - **Decision.** `zod-only-at-the-edge` and its dependency-cruiser part are deleted. A schema is written wherever input crosses a boundary — an adapter's models, a route's search parameters, a form — and `domain-imports-only-itself-and-kernel` keeps zod, like every vendor, out of `domain/`.
 - **Rejected.** Widening the rule's list of edges to routes and forms, which names the router's and the form library's folders in zod's block.
 - **Why.** The rule forbade the schemas `search-params-validated-by-schema` and the form rules require, while what it protected — a domain free of the schema library — the law already holds. Router and form libraries take any Standard Schema validator, so a schema at the delivery layer is the boundary, not a leak.
+
+## ADR-0087 — The formats of commits, branches and release tags belong to version-control
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** The rules on the commit header, the empty body, the commit type, the subject, placeholder subjects, the branch name, the version bump, the squash merge, the pull request's title and the release tag's name move from `git` to `version-control`. `git` keeps what only git has; `release-tags-annotated-semver` splits into `release-tags-named-by-semver` in the domain and `release-tags-annotated` in `git`.
+- **Why.** The formats hold for any version control: Jujutsu or Mercurial would take `feat: Subject`, `feature/12-name` and `v1.2.0` unchanged, so they do not lose their meaning without git.
