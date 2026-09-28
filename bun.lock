@@ -12,7 +12,7 @@
         "@biomejs/biome": "^2.5.12",
         "@droneey/devkit-ts-biome": "^1.29.1",
         "@droneey/devkit-ts-dependency-cruiser": "^1.29.1",
-        "@droneey/devkit-ts-stryker": "^1.29.0",
+        "@droneey/devkit-ts-stryker": "^1.29.1",
         "@droneey/devkit-ts-syncpack": "^1.29.1",
         "@droneey/devkit-ts-tsconfig": "^1.29.1",
         "@stryker-mutator/core": "^10.0.0",
@@ -123,7 +123,7 @@
 
     "@droneey/devkit-ts-dependency-cruiser": ["@droneey/devkit-ts-dependency-cruiser@1.29.1", "", { "peerDependencies": { "@swc/core": ">=1.0.0", "dependency-cruiser": ">=17.0.0" } }, "sha512-zm0RCxwN4cFtC/WS+qOy/wQpMma9fsutP+vnOqx9OP5ALmrV/Y1P+eESXEVbJdUAqfobnmTW8B9HiSsMAZNRzA=="],
 
-    "@droneey/devkit-ts-stryker": ["@droneey/devkit-ts-stryker@1.29.0", "", { "peerDependencies": { "@stryker-mutator/core": ">=10.0.0" }, "bin": { "mutation-check": "dist/main.js" } }, "sha512-2RhX6FVhsgBRubXn574/BRB7p+AeptSQ93dF52Q0pnLYR1QpwB8Kn6Dzs3NyIY7qfoVHfaKrAxShAna7at2Kqw=="],
+    "@droneey/devkit-ts-stryker": ["@droneey/devkit-ts-stryker@1.29.1", "", { "peerDependencies": { "@stryker-mutator/core": ">=10.0.0" }, "bin": { "mutation-check": "dist/main.js" } }, "sha512-y97yP4rCY/Zip0mUQhxF/lDG3cQa1GGJ5WkT6Vxx6WgF0txacvk9GB94I6HgI98GlhJ9FtqcE2haybPjBaPohQ=="],
 
     "@droneey/devkit-ts-syncpack": ["@droneey/devkit-ts-syncpack@1.29.1", "", { "peerDependencies": { "syncpack": ">=15.0.0" } }, "sha512-9idoKeb7i4fGDn1zF8WOv7dCh4pWVb4lVA7PmVQKFeDWi313ZPbE9EBNxaWQdCOOkHy9peb593k7wqTtUTJSmQ=="],
 
