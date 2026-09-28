@@ -14,7 +14,7 @@
 
 **A rule a tool can hold is held by the tool.** Prose carries only what no tool can express; a rule nobody checks is decoration.
 
-**Where a business rule lives:** would it still be true if the program had no user interface and no transport at all? Then it belongs to the domain. Otherwise it belongs to the layer that owns the interface or the transport.
+**Where a business rule lives:** would it still be true if the program had no user interface and no transport at all? Then it belongs to the domain. Otherwise it belongs to the layer that owns the user interface or the transport.
 
 ## The laws
 

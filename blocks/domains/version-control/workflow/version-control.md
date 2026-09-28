@@ -24,11 +24,11 @@ The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` 
 | the type sets the version bump and the changelog, so a wrong type ships a wrong version. | review | [] |
 
 ## check-run-by-hooks-and-ci → every-commit-passes-the-check
-The commit hooks run the check's fast part before each commit, and CI runs all of it.
+The commit hooks run the check's fast part before each commit, and CI runs the same command, all of it.
 
 | Why | Check | Tags |
 |---|---|---|
-| the hooks stop most failures before they are committed, and CI runs what is too slow for a hook, on a machine nobody set up by hand. | review | [] |
+| the hooks stop most failures before they are committed, and CI runs what is too slow for a hook, on a machine nobody set up by hand, so what passes locally passes in CI. | review | [] |
 
 ## Branches
 

@@ -1,6 +1,6 @@
 ---
 id: yaml
-summary: The yaml package reads and writes YAML at the edge.
+summary: The yaml package reads and writes YAML.
 requires: [typescript]
 extends: null
 abstract: false

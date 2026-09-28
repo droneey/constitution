@@ -4,7 +4,7 @@
 
 ## Levels
 
-- **Unit** — a boundary of the domain, with fakes of the interfaces it reaches the outside through. Run by the check.
+- **Unit** — one boundary, with fakes of the contracts through which it reaches the outside. Run by the check.
 - **Integration** — the code that talks to an external system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container. A step of the check of its own.
 - **End-to-end** — a critical scenario of `PROJECT.md`, through the built program, the way its users reach it.
 - **Evals** — the behaviour of a model, measured apart from the check.
@@ -88,8 +88,8 @@ A lifecycle test takes an object made by its factory through every transition to
 |---|---|---|
 | each transition may pass alone while their sequence breaks; only the whole path proves the object's life. | review | [testing] |
 
-## one-contract-suite-per-faked-interface · SHOULD
-Each interface with a fake has one contract suite, run against the fake and against its real implementation.
+## one-contract-suite-per-contract · SHOULD
+Each contract with a fake has one contract suite, run against the fake and against its real implementation.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -120,19 +120,19 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 |---|---|---|
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
-## one-fake-per-interface · SHOULD
-Each faked interface has one fake, `<interface>.fake`, shared by every spec that needs it.
+## one-fake-per-contract · SHOULD
+Each faked contract has one fake, `<contract>.fake`, shared by every spec that needs it.
 
 | Why | Check | Tags |
 |---|---|---|
-| one fake per interface is kept in step with its real implementation once, not once per spec that writes its own. | review | [testing] |
+| one fake per contract is kept in step with its real implementation once, not once per spec that writes its own. | review | [testing] |
 
 ## integration-tested-against-the-real-engine · SHOULD
-Each implementation of an interface over an external system is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each operation of the interface and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
+Each implementation of a contract over an external system is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each operation of the contract and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
 
 | Why | Check | Tags |
 |---|---|---|
-| a fake proves the domain; only the real engine proves the mapping to it. | review | [testing] |
+| a fake proves the code that relies on the contract; only the real engine proves that the implementation keeps it. | review | [testing] |
 
 ## end-to-end-per-critical-scenario · SHOULD
 Each critical scenario `PROJECT.md` names has one end-to-end test through the built program, the way its users reach it, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
@@ -144,7 +144,7 @@ Each critical scenario `PROJECT.md` names has one end-to-end test through the bu
 ## Files and names
 
 ## test-files-named-by-role · MUST
-A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<interface>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling.
+A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<contract>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -181,7 +181,7 @@ The project's check runs the tests, and fails when one fails.
 | a test that runs only when someone remembers protects nothing. | tool — tests | [testing] |
 
 ## coverage-holds-all-logic · MUST
-All logic — the domain, the code that talks to external systems, the libraries, the UI — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. Excluded: the entry file of each artifact, the file that wires the program together, generated files, declarations and vendored code. A line no behaviour reaches is a missing behaviour test, or code nothing needs, which is deleted; never a reason for a test of its own.
+All logic — the program's own rules, the code that talks to external systems, the libraries, the user interface — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. Excluded: the entry file of each artifact, the file that wires the program together, generated files, declarations and vendored code. A line no behaviour reaches is a missing behaviour test, or code nothing needs, which is deleted; never a reason for a test of its own.
 
 | Why | Check | Tags |
 |---|---|---|

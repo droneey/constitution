@@ -2,8 +2,15 @@
 
 ## Deciding
 
+## consent-given-in-the-chat-per-action → consent-before-irreversible-actions
+Consent is given in the chat, for that action alone, and never carries over to the next.
+
+| Why | Check | Tags |
+|---|---|---|
+| the chat is where the person who answers for an action sees it asked, and a go-ahead for one action says nothing of the next. | review | [] |
+
 ## consent-before-consequential-actions → consent-before-irreversible-actions
-An agent asks before adding a dependency, a pattern or an abstraction; before changing a public interface, a schema or a format; and before pushing to a shared branch. Consent is given as for an irreversible action: in the chat, for that action alone.
+An agent asks before adding a dependency, a pattern or an abstraction; before changing a public entry, a schema or a format; and before pushing to a shared branch. Consent is given as for an irreversible action.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -40,6 +47,13 @@ Commits, pull requests and documents carry no attribution to the tool or model t
 | the person who submits a change answers for it; an attribution line adds noise and no accountability. | review | [] |
 
 ## Delegating
+
+## sub-agent-never-touches-live-systems → consent-before-irreversible-actions
+A sub-agent never runs a live system and never calls a real external service.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sub-agent acts without the person watching and has no chat in which to ask for consent, so these actions stay with the agent the person talks to. | review | [] |
 
 ## sub-agent-only-does-the-work · MUST
 A sub-agent does the work it is given and nothing more: it never commits, never pushes and never merges.

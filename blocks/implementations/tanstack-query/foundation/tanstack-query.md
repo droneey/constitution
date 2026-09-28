@@ -22,7 +22,7 @@ What wraps a query or a mutation returns a union by `status` — pending; error,
 | consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". | review | [data] |
 
 ## optimism-in-the-mutation-lifecycle → optimistic-lifecycle-safe-under-concurrency
-Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes with domain factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
+Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes values built by the program's own factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
 
 | Why | Check | Tags |
 |---|---|---|

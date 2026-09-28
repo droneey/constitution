@@ -7,8 +7,8 @@ A case compares with `toStrictEqual`, never `toEqual`.
 |---|---|---|
 | `toEqual` ignores undefined fields and class types, so a case passes on an outcome that differs. | tool — lint | [] |
 
-## no-module-mocks → one-fake-per-interface
-No `mock.module` and no `spyOn` over a real module: an effect is replaced by the fake of its interface.
+## no-module-mocks → one-fake-per-contract
+No `mock.module` and no `spyOn` over a real module: an effect is replaced by the fake of its contract.
 
 | Why | Check | Tags |
 |---|---|---|

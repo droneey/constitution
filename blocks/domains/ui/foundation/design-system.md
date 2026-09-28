@@ -1,6 +1,6 @@
 # Design system
 
-> Where an interface's look comes from: tokens, their grammar and layers, the variants of each component, and motion.
+> Where a user interface's look comes from: tokens, their grammar and layers, the variants of each component, and motion.
 
 ## tokens-single-source-of-appearance · MUST
 Every visual value — colour, space, size, type, radius, shadow, motion, layer — comes from a token of the theme module, which also holds the theme's constants and modes. A layout utility that carries no visual value is allowed.

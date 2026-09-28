@@ -33,7 +33,7 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | tool — architecture | [] |
 
 ## screen-guards-through-auth-surface → access-denied-unless-granted
-Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; feature interfaces adapt to permissions passed down by composition.
+Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -88,7 +88,7 @@ A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its ent
 
 | Why | Check | Tags |
 |---|---|---|
-| the interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool — architecture | [] |
+| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool — architecture | [] |
 
 ## component-in-its-own-folder → file-carries-its-role-suffix
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.

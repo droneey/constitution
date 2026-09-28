@@ -6,10 +6,3 @@ Every tool outside the package manager — the runtime, the package manager itse
 | Why | Check | Tags |
 |---|---|---|
 | everyone, and CI, then runs the same tools, and a tool's download is verified against the lock. | review | [] |
-
-## ci-runs-the-pinned-toolchain → one-check-command
-CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check on another version of a tool checks another thing than the developer ran. | review | [] |

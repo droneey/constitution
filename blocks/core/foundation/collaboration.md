@@ -12,7 +12,7 @@ A rule is never broken silently. A request against a MUST is answered with the c
 | a silent departure is found only when it breaks something, and nobody knows it was meant. | review | [] |
 
 ## consent-before-irreversible-actions · MUST
-An agent asks before an operation that destroys, costs money, touches a live system or sends something outward, and before a call to a real external service. Consent is given in the chat, for that action, and does not carry over to the next.
+An agent takes no irreversible action — destroying, spending money, touching a live system, sending something outward, calling a real external service — without a person's go-ahead for that action.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -50,13 +50,6 @@ An agent that delegates keeps the responsibility: it names the rules and files t
 |---|---|---|
 | a sub-agent sees only what it is given, and its findings are claims until someone checks them. | review | [] |
 
-## sub-agent-never-touches-live-systems · MUST
-A sub-agent never runs a live system and never calls a real external service.
-
-| Why | Check | Tags |
-|---|---|---|
-| a sub-agent acts without the person watching and has no chat in which to ask for consent, so these actions stay with the agent the person talks to. | review | [security] |
-
 ## Knowledge
 
 ## no-agent-file-in-project · SHOULD
@@ -67,8 +60,8 @@ A project keeps no agent instruction file of its own that restates a rule; the c
 | a restated rule drifts from its source, and the agent then follows two versions of it. | review | [] |
 
 ## project-knowledge-in-project-files · SHOULD
-What an agent learns about the product goes into `PROJECT.md` through a change a person reviews; an agent's private memory is never the project's fact.
+What an agent learns about the product goes into `PROJECT.md`; an agent's private memory is never the project's fact.
 
 | Why | Check | Tags |
 |---|---|---|
-| knowledge in a reviewed file is shared with every person and agent; knowledge in one agent's memory is lost to all the others. | review | [] |
+| knowledge in a project file is shared with every person and agent; knowledge in one agent's memory is lost to all the others. | review | [] |

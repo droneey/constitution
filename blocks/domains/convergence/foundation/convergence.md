@@ -2,8 +2,8 @@
 
 ## The document
 
-## section-optional-fields-required → absence-has-one-value-normalised-at-boundary
-A section may be absent, and is then left untouched. Inside a declared section every managed field is stated: "there is none" is written, and mapped to absence at the edge; a switched-off option carries nothing else.
+## section-optional-fields-required → absence-has-one-value
+A section may be absent, and is then left untouched. Inside a declared section every managed field is stated: "there is none" is written, and mapped to absence when the document is read; a switched-off option carries nothing else.
 
 | Why | Check | Tags |
 |---|---|---|

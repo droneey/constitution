@@ -1,6 +1,6 @@
 # Command line
 
-> Its delivery layer is `cli/`; each command is a file `<name>.cli` there. The word "command" alone stays core's write side of a use-case.
+> Its delivery layer is `cli/`; each command of the command line is a file `<name>.cli` there. A command of the command line is not the write side of a use-case, which core keeps in `commands/`.
 
 ## Commands
 

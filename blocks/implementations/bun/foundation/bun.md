@@ -58,4 +58,4 @@ Each tool has an `<area>:check` script that only checks, and an `<area>:fix` bes
 
 | Why | Check | Tags |
 |---|---|---|
-| the script names are the stable interface: CI, the hooks and a person run the same ones. | review | [] |
+| CI, the hooks and a person run the same script names, so the names stay stable. | review | [] |

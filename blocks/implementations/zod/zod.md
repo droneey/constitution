@@ -1,6 +1,6 @@
 ---
 id: zod
-summary: zod parses untrusted input into the program's types at the edge.
+summary: zod parses untrusted input into the program's types.
 requires: [typescript]
 extends: null
 abstract: false
@@ -11,7 +11,7 @@ governs: []
 
 # zod
 
-> Parses untrusted input at the edge.
+> Parses untrusted input into the program's types.
 
 ## Requirements
 

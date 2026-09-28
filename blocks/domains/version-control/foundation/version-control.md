@@ -24,7 +24,7 @@ Every commit passes the repository's check.
 | a commit that fails the check breaks every bisect and every revert that lands on it. | review | [testing] |
 
 ## reason-for-change-recorded · SHOULD
-The reason for a change is written down where the flow puts it, beside the change, not only in a conversation.
+The reason for a change is written down beside the change, where the project's workflow puts it — a commit body, a change request — not only in a conversation.
 
 | Why | Check | Tags |
 |---|---|---|

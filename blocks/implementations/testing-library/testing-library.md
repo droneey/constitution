@@ -11,7 +11,7 @@ governs: ["**/__tests__/**/*.test.tsx"]
 
 # Testing Library
 
-> Specs that render the interface and use it as a person does.
+> Specs that render the user interface and use it as a person does.
 
 ## Requirements
 

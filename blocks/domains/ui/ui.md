@@ -11,4 +11,4 @@ governs: ["**/ui/**", "**/components/**", "**/widgets/**"]
 
 # User interface
 
-> Screens a person sees and uses: how they are composed, where their state lives, how components are built and named, and how an interface is proven. Its look — tokens and variants — is in the chapter `design-system`.
+> Screens a person sees and uses: how they are composed, where their state lives, how components are built and named, and how a user interface is proven. Its look — tokens and variants — is in the chapter `design-system`.

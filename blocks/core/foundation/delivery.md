@@ -28,11 +28,11 @@ A file that moves is moved, never deleted and written anew, and a moved file is 
 ## The check
 
 ## one-check-command · MUST
-One command runs every check of the repository — format, lint, types, tests, coverage, mutation, the rest of the project's tools — and `constitution.yaml` names it. CI runs the same command.
+One command runs every check of the repository — format, lint, types, tests, coverage, mutation, the rest of the project's tools — and `constitution.yaml` names it.
 
 | Why | Check | Tags |
 |---|---|---|
-| one command means nobody has to know which checks exist, and what passes locally passes in CI. | review | [] |
+| one command means nobody has to know which checks exist, and everyone who runs it runs the same checks. | review | [] |
 
 ## check-only-checks · MUST
 The check verifies and never changes a tracked file: it generates nothing, formats nothing and rewrites nothing. A tool's cache in an ignored folder is not a change.

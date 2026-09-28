@@ -17,7 +17,7 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 | a reader who knows the name of a thing knows the name of its file. | review | [] |
 
 ## typescript-file-forms → kebab-case-file-names
-Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<interface>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -41,8 +41,8 @@ A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` o
 
 ## Values and types
 
-## undefined-is-the-only-absence → absence-has-one-value-normalised-at-boundary
-Internal code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears in internal code only in a comparison with what a platform API returns. The compiler runs with `exactOptionalPropertyTypes`.
+## undefined-is-the-only-absence → absence-has-one-value
+Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears only in a comparison with what a platform API returns, and in the type of an external format that uses it. The compiler runs with `exactOptionalPropertyTypes`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -142,8 +142,8 @@ An object of values that travel together is typed by an interface named `<Functi
 |---|---|---|
 | the interface names the whole the values make, and the call site reads each of them by name. | review | [] |
 
-## jsdoc-only-for-non-obvious-api → interface-docs-only-for-non-obvious-public-api
-JSDoc documents only a public API whose use is not obvious, never a self-describing property or parameter.
+## jsdoc-only-for-non-obvious-public-entry → docs-only-for-non-obvious-public-entry
+JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -180,7 +180,7 @@ A manifest's ranges are caret ranges; the lockfile pins the exact versions.
 | the manifest says what is compatible, the lockfile what is installed; pinning in both makes every update touch two files. | tool — versions | [security] |
 
 ## shared-state-packages-once-in-lockfile · SHOULD
-A package that holds state or types across the program — the schema engine, the interface framework — resolves to one version in the lockfile.
+A package that holds state or types across the program — the schema engine, the user-interface framework — resolves to one version in the lockfile.
 
 | Why | Check | Tags |
 |---|---|---|

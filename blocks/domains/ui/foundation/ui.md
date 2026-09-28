@@ -82,7 +82,7 @@ An optional prop no call site uses is deleted, and its default inlined.
 | an unused option is a branch nobody tests and an API nobody needs. | review | [] |
 
 ## vendored-components-adapted-on-arrival · SHOULD
-A component installed as source is, before review, restyled to tokens, stripped of unused props and made to follow the prop rules. The existing primitives are searched first; the component is integrated or rejected, never kept as it came.
+A component installed as source is, in the change that installs it, restyled to tokens, stripped of unused props and made to follow the prop rules. The existing primitives are searched first; the component is integrated or rejected, never kept as it came.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -123,7 +123,7 @@ Every target meets the platform's minimum size, counting its padding.
 |---|---|---|
 | a target smaller than a finger or a tremor allows is missed, and the wrong action runs. | review | [a11y, ux] |
 
-## How an interface is proven
+## How a user interface is proven
 
 ## screen-spec-proves-states-and-interactions → spec-per-boundary
 A screen's spec proves each data state, each interaction that changes something, each message the user sees and each navigation.
@@ -155,7 +155,7 @@ Appearance is compared by screenshot only where the look is the contract: in the
 
 ## Requirements for implementation
 
-What any library of interface primitives must provide.
+What any library of user-interface primitives must provide.
 
 ## ui-primitives-keyboard-and-focus · MUST
 Complex patterns follow the platform's keyboard conventions; focus moves into a layer, stays in it and returns from it; Escape dismisses it.
