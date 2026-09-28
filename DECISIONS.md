@@ -21,7 +21,7 @@
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0076 |
 | Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 |
+| Axes | ADR-0088 – ADR-0089 |
 
 ---
 
@@ -532,3 +532,9 @@
 - **Rejected.** Two parallel trees `foundation/` and `architecture/` above the layers, which give a block two homes; a suffix `.architecture.md` beside a default axis; a mark on each rule, which a hook cannot drop as a whole and which drifts, as the `architecture` tag did; one architecture block that places every other block's rules, which would name every library from above; folder names as the test of architecture, which misses the dependency rule itself.
 - **Why.** A team adopts the foundation the way it adopts a tool's recommended preset, whatever its own architecture and workflow, and the axes make that choice one line. The literature separates the three the same way: style guides and Clean Code for the craft, Clean Architecture, hexagonal architecture and DDD for the structure, and engineering practices — Clean Coder, Accelerate, the code-review guides — for the process.
 
+## ADR-0089 — A rule sits on one axis, names the rule it carries out and takes its level from it
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** Every rule that bundled two axes is split into one rule per axis; the half on `architecture/` or `workflow/` may carry out the half on `foundation/`, and where one half repeated another rule it was dropped instead. A rule that carries out another names it in its heading, `## <slug> → <rule>`, instead of a level: it takes that rule's level and tags, may state a stricter level, `→ <rule> · MUST`, never a looser one, and carries out one rule at most. An override of a rule lowers every rule under it that states no level of its own. A rule on `foundation/` carries out only `foundation/`, and `architecture/` and `workflow/` never each other; `blocks:check` reports any other reference, a looser stated level, a cycle and a missing rule. A rule's Why, Check and Tags are one table under its statement, the same columns in every rule, and a list written as in the front matter, `[]` when empty. The tags are the lenses that cross every axis — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — optional, since a full review reads every rule. Twelve duplicates are merged into the rule that keeps their meaning, `fast-source-updates-once-per-frame` moves to ui, `pipeline-stages-under-steps` and `dependencies-imported-from-their-entries` to core, and an abstraction waits for its third occurrence in the principles as in ADR-0058.
+- **Rejected.** A level stated again on every rule that carries out another, which lets the two drift and keeps an override from reaching them; the Implements label beside the heading; labels on consecutive lines, which render as one run-on paragraph; lenses that name a chapter's topic — design, naming, types, process — or an axis.
+- **Why.** The force of a rule is set in one place and reaches every rule that carries it out, and a lens is worth filtering by only when it crosses the axes.

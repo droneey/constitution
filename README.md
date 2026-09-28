@@ -26,10 +26,13 @@ A block is a folder. Its card `<id>.md` opens with a front matter that declares 
 ```markdown
 ## four-data-states · MUST
 Every data view shows four states: loading, empty, error and content.
-**Why:** an empty screen cannot otherwise be told from a slow one.
-**Check:** test
-**Tags:** ux, a11y
+
+| Why | Check | Tags |
+|---|---|---|
+| an empty screen cannot otherwise be told from a slow one. | test | [ux, a11y] |
 ```
+
+A rule that carries out another names it with an arrow instead of a level, and takes its level and its tags from it: `## query-result-returned-as-status-union → four-data-states`. It may state a stricter level, `## x → y · MUST`, never a looser one, and an override of a rule lowers every rule under it that states none. A rule carries out one rule at most.
 
 The levels mean what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) give them, in capitals only. A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The digest prints MUST headlines, and only MUST rules raise the hook's warnings.
 
@@ -51,7 +54,7 @@ A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role 
 | `audit` | no known vulnerability, and only allowed licences |
 | `commits` | commit messages and branch names follow their format; any language |
 
-A rule's Tags are lenses, for reviewing a project across every layer at once: `a11y`, `architecture`, `data`, `errors`, `naming`, `performance`, `security`, `testing`, `types`, `ux`, `workflow`.
+A rule's Tags are lenses for the concerns that cross every axis and layer — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — so a review can take one concern across the whole project. They are optional: a full review reads every rule, and a rule inherits the tags of the rule it carries out.
 
 A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 
@@ -95,7 +98,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
 - a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty;
 - a `requires` or `extends` that points down, or sideways where the layer allows no peer, a `with/` file named after a block below its own layer, and a cycle between implementations;
-- a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or an Implements line;
+- a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or the arrow of a rule heading;
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;

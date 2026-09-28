@@ -21,6 +21,7 @@ governs: []
 
 ## <rule-slug> · MUST
 <The rule, in one or two sentences.>
-**Why:** <the reason>
-**Check:** <tool — role, test or review>
-**Tags:** <lens, lens>
+
+| Why | Check | Tags |
+|---|---|---|
+| <the reason> | <tool — role, test or review> | [<lens>, <lens>] |

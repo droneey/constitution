@@ -56,7 +56,7 @@ const upperFiles = (): Files => ({
     files: {
       'foundation/i18n.md': `# i18n\n\n${rule({
         slug: 'i18n-plurals-by-cldr',
-        tags: 'ux',
+        tags: '[ux]',
       })}`,
     },
     id: 'i18n',
@@ -67,7 +67,7 @@ const upperFiles = (): Files => ({
     files: {
       'architecture/remote-data.md': `# Remote data\n\n${rule({
         slug: 'reads-are-cancellable',
-        tags: 'data',
+        tags: '[data]',
       })}`,
     },
     id: 'remote-data',
@@ -77,14 +77,14 @@ const upperFiles = (): Files => ({
     dir: 'blocks/domains/ui',
     files: {
       'architecture/with/remote-data.md': `# UI with remote data\n\n${rule({
-        implementsSlug: 'reads-are-cancellable',
+        parent: 'reads-are-cancellable',
         slug: 'optimistic-writes-roll-back',
-        tags: 'ux, data',
+        tags: '[ux]',
       })}`,
       'foundation/ui.md': `# UI\n\n${rule({
         check: 'test',
         slug: 'four-data-states',
-        tags: 'ux, a11y',
+        tags: '[ux, a11y]',
       })}`,
     },
     governs: [
@@ -98,7 +98,7 @@ const upperFiles = (): Files => ({
     files: {
       'foundation/untrusted-client.md': `# Untrusted client\n\n${rule({
         slug: 'no-secret-in-the-client',
-        tags: 'security',
+        tags: '[security]',
       })}`,
     },
     id: 'untrusted-client',
@@ -117,7 +117,6 @@ const contextFiles = (): Files => ({
         check: 'tool — types',
         slug: 'no-any',
         statement: 'A TypeScript value is never typed `any`.',
-        tags: 'types',
       })}`,
     },
     id: 'typescript',

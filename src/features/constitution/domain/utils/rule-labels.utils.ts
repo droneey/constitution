@@ -1,4 +1,4 @@
-import type { Rule } from '../entities';
+import type { StatedRule } from '../entities';
 
 type RuleCheck =
   | {
@@ -17,9 +17,8 @@ type RuleCheck =
 
 const CHECK = /^(?:(test|review)|tool — (\S+))$/;
 
-const checkOf = (rule: Rule): RuleCheck => {
-  // Stryker disable next-line StringLiteral: any text that is no check reads as unknown
-  const match = CHECK.exec(rule.labels.check ?? '');
+const checkOf = (rule: StatedRule): RuleCheck => {
+  const match = CHECK.exec(rule.check);
   const plain = match?.[1];
   const role = match?.[2];
 
@@ -41,11 +40,5 @@ const checkOf = (rule: Rule): RuleCheck => {
   };
 };
 
-const tagsOf = (rule: Rule): readonly string[] =>
-  (rule.labels.tags ?? '')
-    .split(',')
-    .map((tag) => tag.trim())
-    .filter((tag) => tag !== '');
-
 export type { RuleCheck };
-export { checkOf, tagsOf };
+export { checkOf };

@@ -30,11 +30,16 @@ const biomeRequiring = (requires: readonly string[]): Files => ({
 const ruleOf = (input: { block: string; with: string }): Rule => ({
   axis: Axis.Architecture,
   block: input.block,
+  check: 'review',
   file: `blocks/${input.block}/architecture/with/${input.with}.md`,
-  labels: {},
   level: Level.Must,
+  ownTags: [],
+  parent: undefined,
   slug: 'a-rule',
+  statedLevel: Level.Must,
   statement: 'A rule holds.',
+  tags: [],
+  why: 'w.',
   with: input.with,
 });
 

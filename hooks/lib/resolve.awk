@@ -69,7 +69,8 @@ function read_index(path,   line, f, r) {
       RROLE[nr] = f[8]
       RLANGS[nr] = f[9]
       RAXIS[nr] = f[11]
-      RHEAD[nr] = f[12]
+      if (f[12] != "" && f[13] == "false") KIDS[f[12]] = KIDS[f[12]] " " f[2]
+      RHEAD[nr] = f[14]
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
@@ -180,7 +181,19 @@ function apply_overrides(   o, s, rule, missing) {
       LOWERED[s, rule] = 1
       NOTE[rule] = NOTE[rule] (NOTE[rule] == "" ? "" : "; ") OLEVEL[o] where(s)
       LIVE[++nlive] = o
+      lower_below(o, s, rule)
     }
+  }
+}
+
+function lower_below(o, s, parent,   n, a, k) {
+  n = split(KIDS[parent], a, " ")
+  for (k = 1; k <= n; k++) {
+    if ((o, a[k]) in CASCADED) continue
+    CASCADED[o, a[k]] = 1
+    LOWERED[s, a[k]] = 1
+    NOTE[a[k]] = NOTE[a[k]] (NOTE[a[k]] == "" ? "" : "; ") OLEVEL[o] where(s) " via " ORULE[o]
+    lower_below(o, s, a[k])
   }
 }
 

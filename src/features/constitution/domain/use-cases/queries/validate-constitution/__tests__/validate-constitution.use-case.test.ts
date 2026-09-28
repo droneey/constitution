@@ -82,7 +82,7 @@ describe('validateConstitution', () => {
       findings: [
         {
           message:
-            'has 508 lines; a file holds at most 500, and a longer block splits into chapters',
+            'has 509 lines; a file holds at most 500, and a longer block splits into chapters',
           path: PRINCIPLES,
         },
         {

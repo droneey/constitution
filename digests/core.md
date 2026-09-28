@@ -5,7 +5,7 @@ The rules a droneey repository is built by. The digest lists the active blocks a
 ## How to use it
 
 1. Before a change, read core's chapters and the files of the blocks that govern it, on the project's axes. Before handing it back, check it against every active rule, not only those it seemed to touch.
-2. A rule is a heading `<slug> · <level>` with its Why, Check and Tags. MUST binds. SHOULD is the default; not following it needs a stated reason. MAY is a permitted choice.
+2. A rule is `<slug> · <level>`, or `<slug> → <rule>` with that rule's level, then its Why, Check and Tags. MUST binds; SHOULD is left only with a reason; MAY is a choice.
 3. A request against a MUST gets the conflict and an alternative, never silent obedience.
 4. A case no rule covers follows the nearest principle; a real gap is amended or written as a local block, never kept as a silent habit.
 
@@ -33,5 +33,5 @@ Hold it to the rules of the project's domains and language and their requirement
 
 This file, then each axis's `principles`, then the chapters of the task: `anatomy` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `delivery` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.
 
-Laws of foundation: illegal-states-unrepresentable, errors-surfaced-never-swallowed, rules-held-by-tools.
+Laws of foundation: illegal-states-unrepresentable, errors-surfaced-never-swallowed, rules-held-by-tools, one-reason-per-unit, numbers-in-text-from-data.
 Laws of architecture: dependencies-point-inward-without-cycles, inner-layers-declare-their-contracts, domain-imports-only-itself-and-kernel, one-reason-to-change, one-home-per-datum, features-blind-to-each-other, access-only-through-curated-surface, external-shapes-mapped-at-boundary, side-effects-at-the-edges, one-explicit-composition-root, reads-and-writes-apart, code-lives-with-its-reason-to-change, contracts-shaped-by-role, untrusted-input-parsed-at-edge, extension-by-addition.

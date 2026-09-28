@@ -20,6 +20,7 @@ import { BlockPathFile, classifyBlockPath } from './block-path.utils';
 import type { Located } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';
 import { parseRequirements } from './requirements.utils';
+import { resolveRules } from './rule-chain.utils';
 import { parseRules } from './rules.utils';
 
 interface ConstitutionLoaded {
@@ -80,7 +81,7 @@ const parsedOf = (blocks: readonly Block[]): Parsed => {
       ...rules.flatMap((parsed) => parsed.findings),
       ...answers.flatMap((parsed) => parsed.findings),
     ],
-    rules: rules.flatMap((parsed) => parsed.rules),
+    rules: resolveRules(rules.flatMap((parsed) => parsed.rules)),
   };
 };
 

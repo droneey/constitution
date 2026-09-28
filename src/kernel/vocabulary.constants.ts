@@ -101,17 +101,13 @@ const LANGUAGE_FREE_ROLES: readonly Role[] = [
 ];
 
 enum Tag {
-  A11y = 'a11y',
-  Architecture = 'architecture',
-  Data = 'data',
-  Errors = 'errors',
-  Naming = 'naming',
-  Performance = 'performance',
   Security = 'security',
-  Testing = 'testing',
-  Types = 'types',
+  A11y = 'a11y',
+  Performance = 'performance',
+  Data = 'data',
   Ux = 'ux',
-  Workflow = 'workflow',
+  Testing = 'testing',
+  Errors = 'errors',
 }
 
 export {

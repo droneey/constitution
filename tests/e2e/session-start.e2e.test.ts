@@ -196,6 +196,11 @@ const READS_ARE_CANCELLABLE =
 const FOUR_DATA_STATES =
   '- four-data-states: Every data view shows loading, empty, error and content.';
 const LABELS_ON_FIELDS = '- labels-on-fields: Every field has a visible label.';
+const BELOW_FOUR_DATA_STATES = [
+  '- loading-state-shown: A view shows that it loads.',
+  '- skeleton-matches-content: A skeleton has the shape of its content.',
+  '- error-state-offers-retry: An error state offers a retry.',
+];
 const OPTIMISTIC_WRITES_ROLL_BACK =
   '- optimistic-writes-roll-back: An optimistic write rolls back when the server refuses it.';
 const COMMITS_ARE_ATOMIC = '- commits-are-atomic: A commit holds one change.';
@@ -208,6 +213,7 @@ const EVERY_AXIS: AxesView = {
   headlines: [
     READS_ARE_CANCELLABLE,
     FOUR_DATA_STATES,
+    ...BELOW_FOUR_DATA_STATES,
     LABELS_ON_FIELDS,
     OPTIMISTIC_WRITES_ROLL_BACK,
     COMMITS_ARE_ATOMIC,
@@ -227,6 +233,7 @@ const FOUNDATION_ONLY: AxesView = {
   ],
   headlines: [
     FOUR_DATA_STATES,
+    ...BELOW_FOUR_DATA_STATES,
   ],
   list: [
     DOMAINS,
@@ -2353,6 +2360,7 @@ describe('session-start hook', () => {
         headlines: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
           LABELS_ON_FIELDS,
           OPTIMISTIC_WRITES_ROLL_BACK,
         ],
@@ -2380,6 +2388,7 @@ describe('session-start hook', () => {
         headlines: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
           LABELS_ON_FIELDS,
           OPTIMISTIC_WRITES_ROLL_BACK,
         ],
@@ -2404,6 +2413,7 @@ describe('session-start hook', () => {
         core: FOUNDATION_ONLY.core,
         headlines: [
           FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
           COMMITS_ARE_ATOMIC,
         ],
         list: [
@@ -2444,6 +2454,68 @@ describe('session-start hook', () => {
         list: blockListOf(context),
         warnings: warningsOf(context),
       }).toStrictEqual<AxesView>(view);
+    },
+  );
+
+  it.each<{
+    condition: string;
+    headlines: readonly string[];
+    overrides: string;
+  }>([
+    {
+      condition: 'an override lowers a root rule',
+      headlines: [
+        '- four-data-states (SHOULD): Every data view shows loading, empty, error and content.',
+        '- loading-state-shown (SHOULD via four-data-states): A view shows that it loads.',
+        '- skeleton-matches-content (SHOULD via four-data-states): A skeleton has the shape of its content.',
+        '- error-state-offers-retry: An error state offers a retry.',
+      ],
+      overrides: fourDataStatesOverride(
+        '    level: SHOULD\n    reason: "Early screens"',
+      ),
+    },
+    {
+      condition: 'an override lowers a rule in the middle of a chain',
+      headlines: [
+        '- four-data-states: Every data view shows loading, empty, error and content.',
+        '- loading-state-shown (MAY): A view shows that it loads.',
+        '- skeleton-matches-content (MAY via loading-state-shown): A skeleton has the shape of its content.',
+        '- error-state-offers-retry: An error state offers a retry.',
+      ],
+      overrides:
+        '\n  - rule: loading-state-shown\n    level: MAY\n    reason: "No spinner yet"',
+    },
+  ])(
+    'should lower the rules below that state no level of their own when $condition',
+    ({ headlines, overrides }) => {
+      // Arrange
+      const project = createProject({
+        config: configOf({
+          domains: '[ui]',
+          overrides,
+        }),
+      });
+
+      // Act
+      const shown: readonly string[] = headlinesOf(
+        contextOf(
+          runHook({
+            event: HookEvent.Subagent,
+            project,
+            root,
+          }),
+        ),
+      ).filter((line) =>
+        [
+          'four-data-states',
+          'loading-state-shown',
+          'skeleton-matches-content',
+          'error-state-offers-retry',
+        ].includes(line.slice(2).split(/[ :]/)[0] ?? ''),
+      );
+
+      // Assert
+      expect(shown).toStrictEqual(headlines);
     },
   );
 });

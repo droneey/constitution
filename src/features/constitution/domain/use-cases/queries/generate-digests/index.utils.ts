@@ -14,7 +14,6 @@ import {
   languagesOf,
   rewriteLocalLinks,
   ruleLanguagesOf,
-  tagsOf,
   targetFromRoot,
 } from '../../../utils';
 import { ancestorsOf } from './ancestors.utils';
@@ -100,8 +99,10 @@ const ruleRecord = (input: { byId: BlocksById; rule: Rule }): string => {
     // Stryker disable next-line ConditionalExpression: join writes a missing role as empty
     check.kind === 'tool' ? check.role : '',
     ruleLanguagesOf(input).join(LIST),
-    tagsOf(rule).join(LIST),
+    rule.tags.join(LIST),
     rule.axis,
+    rule.parent ?? '',
+    String(rule.statedLevel !== undefined),
     // The digest has no folder, so a link in the headline is read from the root.
     rewriteLocalLinks({
       rewrite: (target: string): string =>

@@ -1,8 +1,22 @@
 # TanStack Form
 
-## idempotency-key-per-intent · SHOULD
+## idempotency-key-per-intent → operations-idempotent-by-design
 A submission that must not repeat creates its idempotency key once, with the form, and reuses it on every retry — never a new key per click.
-**Why:** a key per click turns every retry into a new order.
-**Check:** review
-**Tags:** data
-**Implements:** `operations-idempotent-by-design`
+
+| Why | Check | Tags |
+|---|---|---|
+| a key per click turns every retry into a new order. | review | [] |
+
+## form-validated-by-its-own-schema · SHOULD
+The form validates through its schema, and maps the server's typed error onto its fields.
+
+| Why | Check | Tags |
+|---|---|---|
+| the form refuses bad input before it is sent, and shows the server's refusal where the user can fix it. | review | [ux] |
+
+## submit-disabled-while-submitting · SHOULD
+A form's submit is disabled while it submits.
+
+| Why | Check | Tags |
+|---|---|---|
+| a double click never submits twice. | review | [ux] |

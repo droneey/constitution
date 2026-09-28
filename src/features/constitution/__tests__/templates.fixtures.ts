@@ -66,8 +66,8 @@ const PARAGLIDE: ReadonlyArray<
     'tool — types',
   ],
   [
-    '<lens, lens>',
-    'types',
+    '[<lens>, <lens>]',
+    '[errors]',
   ],
 ];
 

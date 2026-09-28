@@ -11,6 +11,5 @@ export type {
   PluginManifest,
 } from './manifest.entity';
 export type { RequirementAnswer } from './requirement-answer.entity';
-export type { Rule } from './rule.entity';
-export { RULE_LABELS, RuleLabel } from './rule.entity';
+export type { Rule, StatedRule } from './rule.entity';
 export type { Skill, SkillFrontMatterRead } from './skill.entity';
