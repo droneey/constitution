@@ -1,5 +1,7 @@
 # TanStack Router
 
+> **Vocabulary:** folder `routes`, the delivery layer of a browser application.
+
 ## screens-are-file-routes · SHOULD
 Screens are file routes under `routes/`, the delivery layer, from which the router generates `routeTree.gen.ts`; `router.tsx` creates the router.
 

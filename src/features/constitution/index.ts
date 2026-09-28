@@ -1,11 +1,15 @@
 export { createNodeFileSystem } from './adapters/file-system';
 export { createJsonManifestParser } from './adapters/json';
-export { createYamlFrontMatterParser } from './adapters/yaml';
+export {
+  createYamlFrontMatterParser,
+  createYamlVocabularyParser,
+} from './adapters/yaml';
 export type {
   DigestWriter,
   FileTree,
   FrontMatterParser,
   ManifestParser,
+  VocabularyParser,
 } from './domain/contracts';
 export type { Validation } from './domain/use-cases';
 export {

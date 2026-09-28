@@ -17,7 +17,7 @@ The rules a droneey repository is built by. The digest lists the active blocks a
 
 ## Where a rule goes
 
-Two questions place a rule. Its layer: what must disappear for it to lose its meaning? Nothing: core. An interface, an API, a network: that domain. A runtime or a language: that context. A library: its block. Its axis: would a team with another architecture still want it? If not, `architecture/` — layers, dependency direction, ports and adapters, homes of I/O and state, the composition root, the tree. With another workflow? If not, `workflow/` — branch, commit, review, release. Otherwise `foundation/`; a rule failing both is split, and one implementing a rule on an axis is on it. `architecture/` and `workflow/` refer to `foundation/`, never to each other; `foundation/` refers only to itself.
+Two questions place a rule. Its layer: what must disappear for it to lose its meaning? Nothing: core. An interface, an API, a network: that domain. A runtime or a language: that context. A library: its block. Its axis: would a team with another architecture still want it? If not, `architecture/` — layers, dependency direction, seams to other systems, homes of I/O and state, the program's wiring, the tree. With another workflow? If not, `workflow/` — branch, commit, review, release. Otherwise `foundation/`; a rule failing both is split, and one implementing a rule on an axis is on it. `architecture/` and `workflow/` refer to `foundation/`, never to each other; `foundation/` refers only to itself.
 
 ## A library with no block
 
@@ -32,6 +32,3 @@ Hold it to the rules of the project's domains and language and their requirement
 ## Reading order
 
 This file, then each axis's `principles`, then the chapters of the task: `anatomy` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `delivery` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.
-
-Laws of foundation: illegal-states-unrepresentable, errors-surfaced-never-swallowed, rules-held-by-tools, one-reason-per-unit, numbers-in-text-from-data.
-Laws of architecture: dependencies-point-inward-without-cycles, inner-layers-declare-their-contracts, domain-imports-only-itself-and-kernel, one-reason-to-change, one-home-per-datum, features-blind-to-each-other, access-only-through-curated-surface, external-shapes-mapped-at-boundary, side-effects-at-the-edges, one-explicit-composition-root, reads-and-writes-apart, code-lives-with-its-reason-to-change, contracts-shaped-by-role, untrusted-input-parsed-at-edge, extension-by-addition.

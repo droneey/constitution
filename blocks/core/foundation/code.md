@@ -28,7 +28,7 @@ One concept has one word across the program, and one word names one concept: not
 | a reader who sees two words assumes two things, and searches miss the other one. | review | [] |
 
 ## no-empty-names · SHOULD
-No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff`, `thing` — as a variable, a parameter or a destructured field. Generic code in `libs/` may use them for what is truly generic.
+No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff`, `thing` — as a variable, a parameter or a destructured field. Generic code that knows nothing of the program may use them for what is truly generic.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -160,7 +160,7 @@ Code is never commented out; it is deleted. History keeps it.
 | commented-out code rots unseen, misleads readers, and version control already remembers it. | review | [] |
 
 ## no-dead-code · MUST
-No unused file, dependency, export, parameter, variable or branch. Code and dependencies that only tests reach are unused too. An export a surface offers is not dead code.
+No unused file, dependency, export, parameter, variable or branch. Code and dependencies that only tests reach are unused too. An export a module offers through its public entry is not dead code.
 
 | Why | Check | Tags |
 |---|---|---|

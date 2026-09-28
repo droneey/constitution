@@ -34,6 +34,13 @@ const pluginFiles = (): Files => ({
   'templates/PROJECT.md': '# Project Context\n',
   'templates/block.md': '---\nid: <id>\n---\n',
   'templates/constitution.yaml': 'version: <installed version>\n',
+  'vocabulary.yaml': [
+    'architecture:',
+    '  concepts: [port, binding unit]',
+    '  folders: [adapters/]',
+    '  suffixes: [.port]',
+    '',
+  ].join('\n'),
 });
 
 const upperFiles = (): Files => ({

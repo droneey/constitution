@@ -5,6 +5,8 @@ interface MarkdownSection {
   lines: readonly string[];
 }
 
+const isHeading = (line: string): boolean => HEADING.test(line);
+
 // The text before the first heading belongs to no section and is dropped.
 const sectionsOf = (text: string): readonly MarkdownSection[] => {
   const sections: {
@@ -13,7 +15,7 @@ const sectionsOf = (text: string): readonly MarkdownSection[] => {
   }[] = [];
 
   for (const line of text.split('\n')) {
-    if (HEADING.test(line)) {
+    if (isHeading(line)) {
       sections.push({
         heading: line,
         lines: [],
@@ -27,4 +29,4 @@ const sectionsOf = (text: string): readonly MarkdownSection[] => {
 };
 
 export type { MarkdownSection };
-export { sectionsOf };
+export { isHeading, sectionsOf };

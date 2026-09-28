@@ -13,3 +13,4 @@ export type {
 export type { RequirementAnswer } from './requirement-answer.entity';
 export type { Rule, StatedRule } from './rule.entity';
 export type { Skill, SkillFrontMatterRead } from './skill.entity';
+export type { Vocabulary, VocabularyRead } from './vocabulary.entity';

@@ -1,6 +1,6 @@
 ---
 id: matomo
-summary: Matomo as an analytics sink behind the analytics port.
+summary: Matomo as one of the product's analytics services.
 requires: [analytics, typescript]
 extends: null
 abstract: false
@@ -11,7 +11,7 @@ governs: ["**/matomo.sink.ts"]
 
 # Matomo
 
-> An analytics service, reached through one sink.
+> An analytics service.
 
 ## Requirements
 

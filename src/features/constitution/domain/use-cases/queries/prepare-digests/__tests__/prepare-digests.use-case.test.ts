@@ -36,7 +36,7 @@ describe('prepareDigests', () => {
         findings: [
           {
             message:
-              'makes a core part of 3615 bytes; the digest holds at most 3500 of core',
+              'makes a core part of 3567 bytes; the digest holds at most 3500 of core',
             path: CORE,
           },
         ],

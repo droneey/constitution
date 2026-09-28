@@ -1,5 +1,7 @@
 # TypeScript
 
+> A folder's surface is `index.ts`, a role file is `<name>.<role>.ts`, and the wiring file is `root/wiring.ts`.
+
 ## Modules and files
 
 ## hash-imports-leave-the-module → import-only-through-surface

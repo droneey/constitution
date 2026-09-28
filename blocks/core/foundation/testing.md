@@ -4,15 +4,15 @@
 
 ## Levels
 
-- **Unit** — a boundary of the domain, with fakes of its ports. Run by the check.
-- **Integration** — an adapter against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container. A step of the check of its own.
-- **End-to-end** — a critical scenario of `PROJECT.md`, through the delivery layer.
+- **Unit** — a boundary of the domain, with fakes of the interfaces it reaches the outside through. Run by the check.
+- **Integration** — the code that talks to an external system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container. A step of the check of its own.
+- **End-to-end** — a critical scenario of `PROJECT.md`, through the built program, the way its users reach it.
 - **Evals** — the behaviour of a model, measured apart from the check.
 
 ## What a spec proves
 
 ## spec-per-boundary · SHOULD
-A spec proves one boundary and is named after it. A boundary is what a caller outside its folder reaches: a use-case, a command, an adapter, a screen, a reusable component, a library primitive, a module of pure rules. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, composition, entry files, generated files and third-party code get no spec. Every boundary has a spec; a reviewer checks it, since the coverage gate cannot. How a screen and a component are proven is stated by the blocks of an interface.
+A spec proves one boundary and is named after it. A boundary is what a caller outside its folder reaches: a business operation, a command, the implementation of an interface over an external system, a screen, a reusable component, a library primitive, a module of pure rules. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, composition, entry files, generated files and third-party code get no spec. Every boundary has a spec; a reviewer checks it, since the coverage gate cannot. How a screen and a component are proven is stated by the blocks of an interface.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -75,7 +75,7 @@ Edge cases are chosen by risk: empty input, limits, Unicode, invalid input, a co
 | bugs live at the edges, and choosing them by risk spends cases where a bug is likely. | review | [testing] |
 
 ## property-tests-where-they-pay · SHOULD
-An invariant is proven by a property test where one pays — a value object's guard, an invertible mapper, a reducer — with its cases in the spec of its unit.
+An invariant is proven by a property test where one pays — the guard of a value with an invariant, an invertible mapper, a reducer — with its cases in the spec of its unit.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -89,11 +89,11 @@ A lifecycle test takes an object made by its factory through every transition to
 | each transition may pass alone while their sequence breaks; only the whole path proves the object's life. | review | [testing] |
 
 ## one-contract-suite-per-port · SHOULD
-Each port has one contract suite, run against its fake and against its real adapter.
+Each interface with a fake has one contract suite, run against the fake and against its real implementation.
 
 | Why | Check | Tags |
 |---|---|---|
-| a fake that behaves unlike the real adapter makes every test that uses it prove the wrong thing. | review | [testing] |
+| a fake that behaves unlike the real implementation makes every test that uses it prove the wrong thing. | review | [testing] |
 
 ## Practices
 
@@ -128,21 +128,21 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
 ## one-fake-per-port · SHOULD
-Each port has one fake, `<port>.fake`, shared by every spec that needs it.
+Each faked interface has one fake, `<interface>.fake`, shared by every spec that needs it.
 
 | Why | Check | Tags |
 |---|---|---|
-| one fake per port is kept in step with its real adapter once, not once per spec that writes its own. | review | [testing] |
+| one fake per interface is kept in step with its real implementation once, not once per spec that writes its own. | review | [testing] |
 
 ## adapter-integration-tested-in-sandbox · SHOULD
-Each adapter is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each port operation and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
+Each implementation of an interface over an external system is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each operation of the interface and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
 
 | Why | Check | Tags |
 |---|---|---|
 | a fake proves the domain; only the real engine proves the mapping to it. | review | [testing] |
 
 ## end-to-end-per-critical-scenario · SHOULD
-Each critical scenario `PROJECT.md` names has one end-to-end test through the delivery layer, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
+Each critical scenario `PROJECT.md` names has one end-to-end test through the built program, the way its users reach it, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -151,7 +151,7 @@ Each critical scenario `PROJECT.md` names has one end-to-end test through the de
 ## Files and names
 
 ## test-files-named-by-role · MUST
-A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<port>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec carries its file's role suffix, so a double suffix appears only in tests.
+A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<interface>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling. A spec keeps the suffix of the file it proves, so a double suffix appears only in tests.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -188,7 +188,7 @@ The project's check runs the tests, and fails when one fails.
 | a test that runs only when someone remembers protects nothing. | tool — tests | [testing] |
 
 ## coverage-holds-all-logic · MUST
-All logic — the domain, the adapters, the libraries, the UI — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. Excluded: the entry, an entrypoint's entry file, the wiring file, generated files, declarations and vendored code. A line no behaviour reaches is a missing behaviour test, or code nothing needs, which is deleted; never a reason for a test of its own.
+All logic — the domain, the code that talks to external systems, the libraries, the UI — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. Excluded: the entry file of each artifact, the file that wires the program together, generated files, declarations and vendored code. A line no behaviour reaches is a missing behaviour test, or code nothing needs, which is deleted; never a reason for a test of its own.
 
 | Why | Check | Tags |
 |---|---|---|

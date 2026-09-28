@@ -40,7 +40,7 @@ A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their ki
 | these patterns carry keyboard, focus and announcement behaviour that hand-built versions almost always get wrong. | review | [a11y, ux] |
 
 ## compound-over-prop-regions · SHOULD
-A component with a second region, an optional part or a slot is a compound: a root with named parts, its content passed as children. A leaf stays a leaf; a recurring arrangement becomes a widget.
+A component with a second region, an optional part or a slot is a compound: a root with named parts, its content passed as children. A leaf stays a leaf; a recurring arrangement becomes a component of its own.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -89,7 +89,7 @@ A component installed as source is, before review, restyled to tokens, stripped 
 | code copied in as it came brings another project's names and looks, and stays foreign until someone changes it. | review | [ux] |
 
 ## props-drilled-at-most-two-levels → talk-only-to-neighbours
-A prop passed unchanged through more than two levels calls for composition or a nearer widget.
+A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself.
 
 | Why | Check | Tags |
 |---|---|---|

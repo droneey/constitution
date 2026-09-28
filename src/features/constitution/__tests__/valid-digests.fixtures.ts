@@ -45,8 +45,6 @@ const GOLDEN_CORE = [
   '',
   'Read [principles](blocks/core/foundation/principles.md).',
   '',
-  'Laws of foundation: dependencies-point-inward.',
-  '',
 ].join('\n');
 
 // The digests of the valid constitution, written out by hand: the digests check

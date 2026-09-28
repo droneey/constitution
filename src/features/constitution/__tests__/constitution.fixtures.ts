@@ -1,9 +1,13 @@
 import { createJsonManifestParser } from '../adapters/json';
-import { createYamlFrontMatterParser } from '../adapters/yaml';
+import {
+  createYamlFrontMatterParser,
+  createYamlVocabularyParser,
+} from '../adapters/yaml';
 import type {
   FileTree,
   FrontMatterParser,
   ManifestParser,
+  VocabularyParser,
 } from '../domain/contracts';
 import type { ConstitutionLoaded } from '../domain/use-cases/queries/load-constitution';
 import { loadConstitution } from '../domain/use-cases/queries/load-constitution';
@@ -100,12 +104,14 @@ interface Source {
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;
+  vocabularyParser: VocabularyParser;
 }
 
 const sourceOf = (files: Readonly<Files>): Source => ({
   frontMatterParser: createYamlFrontMatterParser(),
   manifestParser: createJsonManifestParser(),
   tree: createFakeFileTree(files),
+  vocabularyParser: createYamlVocabularyParser(),
 });
 
 const loadedOf = (files: Readonly<Files>): ConstitutionLoaded =>

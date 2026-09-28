@@ -228,9 +228,7 @@ function all_axes(   n, a, k) {
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
 
-function print_core(   n, a, k) {
-  n = split(AXES, a, " ")
-  for (k = 1; k <= n; k++) if (ON[0, a[k]]) print "axis" T a[k]
+function print_core() {
   if ("core" in KNOWN) print "core" T "Core's files, under blocks/core/: " join(trim("core.md " chapters(0, "core")), ", ") "."
 }
 
@@ -403,8 +401,8 @@ function app_only_files(s, id,   out, n, a, k, b) {
   return out
 }
 
-# Core's laws are in core's part; the headlines are of domains, contexts and
-# implementations, in the index's order of layers.
+# The headlines are of domains, contexts and implementations, in the index's
+# order of layers.
 function print_headlines(   i, s) {
   for (i = 1; i <= nr; i++) {
     if (RLEVEL[i] != "MUST" || LAYER[RBLOCK[i]] == "core") continue

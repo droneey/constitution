@@ -1,5 +1,7 @@
 # Remote data
 
+> The ports and adapters that reach the other system follow core.
+
 ## server-owns-remote-data → one-home-per-datum
 The remote system owns its data: it lives only in the cache of remote data, is never copied into a store, and the program never becomes a second source of it.
 

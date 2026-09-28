@@ -1,5 +1,7 @@
 # User interface
 
+**Vocabulary.** Folders: `ui` — a feature's presentation layer, and also `root/ui`, `shared/ui`, `libs/ui`; `components` — presentational; `widgets` — smart; `assets` — icons, images and fonts. Suffix: `.variants`. A feature adds `ui/{components,widgets}/`. The screens are the delivery layer; the router's block names their folder.
+
 ## Screens
 
 ## screen-composes-the-page → delivery-units-stay-thin

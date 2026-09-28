@@ -8,6 +8,7 @@ const { advice, findings } = validateConstitution({
   frontMatterParser: wiring.frontMatterParser,
   manifestParser: wiring.manifestParser,
   tree: wiring.fileSystem,
+  vocabularyParser: wiring.vocabularyParser,
 });
 
 for (const finding of findings) {

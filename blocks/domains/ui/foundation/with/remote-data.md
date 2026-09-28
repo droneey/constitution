@@ -1,7 +1,7 @@
 # User interface with remote data
 
 ## binding-unit-result-is-union-by-status → illegal-states-unrepresentable
-A binding unit that loads or writes returns a union keyed by `status`. The data exists only in the success state, and the error state carries a typed domain error; no default is invented — no empty list for "not loaded yet". The union has only the states its operation has, and every consumer handles every state.
+What the interface calls to load or write data returns a union keyed by `status`. The data exists only in the success state, and the error state carries a typed error; no default is invented — no empty list for "not loaded yet". The union has only the states its operation has, and every consumer handles every state.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -29,8 +29,8 @@ A request driven by typing is sent after a pause, or on the deferred value.
 | a request per keystroke floods the server and shows results for words the user has not finished. | review | [ux] |
 
 ## ui-specs-replace-the-transport → tests-run-in-a-sandbox
-A screen's spec and a binding unit's spec run inside their providers, with the transport replaced by captured responses. Fakes of use-cases serve only a screen that shows no remote data.
+A screen's spec, and the spec of what loads or writes its data, run inside their providers, with the transport replaced by captured responses. A fake of a business operation serves only a screen that shows no remote data.
 
 | Why | Check | Tags |
 |---|---|---|
-| the spec then runs the real binding units, adapters and mapping, and catches a response the mapping gets wrong, which a faked use-case never sees. | test | [] |
+| the spec then runs the real data bindings, the code that talks to the server and the mapping, and catches a response the mapping gets wrong, which a faked operation never sees. | test | [] |

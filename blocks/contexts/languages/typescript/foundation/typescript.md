@@ -3,7 +3,7 @@
 ## Modules and files
 
 ## hash-alias-from-package-imports · MUST
-`#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's surface through `imports`. No alias in a bundler.
+`#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's `index.ts` through `imports`. No alias in a bundler.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -17,7 +17,7 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 | a reader who knows the name of a thing knows the name of its file. | review | [] |
 
 ## typescript-file-forms → kebab-case-file-names
-Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<port>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<interface>.fake.ts`, fixtures `<name>.fixtures.ts`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -33,7 +33,7 @@ PascalCase for types, classes, enums and their members; camelCase for functions,
 | the case tells what kind of thing a name is before its declaration is read. | tool — lint | [] |
 
 ## type-names-undecorated · SHOULD
-A type is a noun, undecorated: no `I` prefix, on ports too, and no `Type` or `Interface` suffix.
+A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` or `Interface` suffix.
 
 | Why | Check | Tags |
 |---|---|---|

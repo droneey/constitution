@@ -2,10 +2,7 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import {
-  LAWS_OF_ARCHITECTURE,
-  LAWS_OF_FOUNDATION,
-} from './constitution.fixtures';
+import {} from './constitution.fixtures';
 import {
   browserAppContext,
   cliContext,
@@ -206,8 +203,6 @@ const OPTIMISTIC_WRITES_ROLL_BACK =
 const COMMITS_ARE_ATOMIC = '- commits-are-atomic: A commit holds one change.';
 const EVERY_AXIS: AxesView = {
   core: [
-    LAWS_OF_FOUNDATION,
-    LAWS_OF_ARCHITECTURE,
     `${CORE_FILES}, foundation/code.md, foundation/principles.md, architecture/principles.md, workflow/delivery.md.`,
   ],
   headlines: [
@@ -228,7 +223,6 @@ const EVERY_AXIS: AxesView = {
 };
 const FOUNDATION_ONLY: AxesView = {
   core: [
-    LAWS_OF_FOUNDATION,
     `${CORE_FILES}, foundation/code.md, foundation/principles.md.`,
   ],
   headlines: [
@@ -1836,7 +1830,7 @@ describe('session-start hook', () => {
     {
       blocks: 120,
       tail: [
-        '73 more lines of the block list did not fit; constitution.yaml names every block.',
+        '72 more lines of the block list did not fit; constitution.yaml names every block.',
         '',
         'The MUST headlines of 120 blocks were left out; the block files hold them.',
       ],
@@ -2353,8 +2347,6 @@ describe('session-start hook', () => {
       }),
       view: {
         core: [
-          LAWS_OF_FOUNDATION,
-          LAWS_OF_ARCHITECTURE,
           `${CORE_FILES}, foundation/code.md, foundation/principles.md, architecture/principles.md.`,
         ],
         headlines: [
@@ -2431,7 +2423,7 @@ describe('session-start hook', () => {
       },
     },
   ])(
-    'should give the laws, files and headlines of the axes followed when $condition',
+    'should give the files and headlines of the axes followed when $condition',
     ({ config, view }) => {
       // Arrange
       const project = createProject({

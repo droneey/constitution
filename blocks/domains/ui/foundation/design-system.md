@@ -31,7 +31,7 @@ Light and dark are one set of semantic tokens. Their values are derived by rule 
 | one set means a component is written once for both themes, and derived values keep contrast right when a colour changes. | review | [ux] |
 
 ## variant-axis-declared-once-in-map · MUST
-A component's variants are one declarative map from variant to style, in its `.variants` file, which also types the variant props. No style is decided outside it, and no second declaration — such as a parallel enum — repeats an axis.
+A component's variants are one declarative map from variant to style, in a file of its own beside the component, which also types the variant props. No style is decided outside it, and no second declaration — such as a parallel enum — repeats an axis.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -1,5 +1,7 @@
 # Command line
 
+> Its delivery layer is `cli/`; each command is a file `<name>.cli` there. The word "command" alone stays core's write side of a use-case.
+
 ## Commands
 
 ## commands-in-the-cli-folder → anatomy-top-level-by-concern

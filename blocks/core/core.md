@@ -28,7 +28,7 @@ The rules a droneey repository is built by. The digest lists the active blocks a
 
 ## Where a rule goes
 
-Two questions place a rule. Its layer: what must disappear for it to lose its meaning? Nothing: core. An interface, an API, a network: that domain. A runtime or a language: that context. A library: its block. Its axis: would a team with another architecture still want it? If not, `architecture/` — layers, dependency direction, ports and adapters, homes of I/O and state, the composition root, the tree. With another workflow? If not, `workflow/` — branch, commit, review, release. Otherwise `foundation/`; a rule failing both is split, and one implementing a rule on an axis is on it. `architecture/` and `workflow/` refer to `foundation/`, never to each other; `foundation/` refers only to itself.
+Two questions place a rule. Its layer: what must disappear for it to lose its meaning? Nothing: core. An interface, an API, a network: that domain. A runtime or a language: that context. A library: its block. Its axis: would a team with another architecture still want it? If not, `architecture/` — layers, dependency direction, seams to other systems, homes of I/O and state, the program's wiring, the tree. With another workflow? If not, `workflow/` — branch, commit, review, release. Otherwise `foundation/`; a rule failing both is split, and one implementing a rule on an axis is on it. `architecture/` and `workflow/` refer to `foundation/`, never to each other; `foundation/` refers only to itself.
 
 ## A library with no block
 

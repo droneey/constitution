@@ -1,21 +1,21 @@
 # TanStack Query
 
 ## bindings-wrap-query-and-mutation · SHOULD
-A read's binding unit wraps `useQuery`, and a write's wraps `useMutation`.
+A read goes through `useQuery`, and a write through `useMutation`.
 
 | Why | Check | Tags |
 |---|---|---|
 | the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. | review | [data] |
 
 ## keys-only-from-the-feature-factory · MUST
-No key array is written inline; every key comes from the key factory, built from the port's parameters.
+No key array is written inline; every key comes from the key factory, built from the parameters of the operation it caches.
 
 | Why | Check | Tags |
 |---|---|---|
 | an inline key drifts from the factory's, and an invalidation misses it. | tool — lint | [data] |
 
 ## query-result-returned-as-status-union → binding-unit-result-is-union-by-status
-The binding unit returns a union by `status` — pending; error, with its typed error; success, with its data. Query's flags are converted here, and no default is invented.
+What wraps a query or a mutation returns a union by `status` — pending; error, with its typed error; success, with its data. Query's flags are converted there, and no default is invented.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -43,7 +43,7 @@ The client's `retry` is a predicate on the error's transience, with a limit — 
 | retrying a failure that will not change delays the error the user needs to see. | review | [] |
 
 ## query-signal-reaches-the-port → reads-cancellable-latest-wins
-`queryFn` passes Query's abort signal to the port, so a screen that is left cancels its read.
+`queryFn` passes Query's abort signal to the operation it calls, down to the request, so a screen that is left cancels its read.
 
 | Why | Check | Tags |
 |---|---|---|

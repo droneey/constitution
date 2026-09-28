@@ -1,7 +1,7 @@
 # Remote data
 
 ## stream-ends-with-terminal-event → errors-surfaced-never-swallowed
-A stream that ends without its terminal event fails with a domain error.
+A stream that ends without its terminal event fails with a typed error.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -30,7 +30,7 @@ The cache invalidates by a prefix of the key, with or without a refetch.
 
 | Why | Check | Tags |
 |---|---|---|
-| a feature's key factory builds keys by prefix, and a write must be able to refresh all of them. | review | [data] |
+| a key factory builds keys by prefix, and a write must be able to refresh all of them. | review | [data] |
 
 ## remote-data-cache-cancels-reads · MUST
 Reads in flight for a key can be cancelled.
@@ -72,7 +72,7 @@ The transport tells a status failure, a network failure and a timeout apart, for
 
 | Why | Check | Tags |
 |---|---|---|
-| each is a different domain error, with a different next step for the user. | review | [errors] |
+| each maps to a different typed error, with a different next step for the user. | review | [errors] |
 
 ## remote-data-transport-retries-only-transient · SHOULD
 Retries are configurable by method and status, with backoff, and off for writes that are not idempotent.

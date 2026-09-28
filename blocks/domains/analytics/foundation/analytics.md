@@ -15,7 +15,7 @@ Every event belongs to one closed vocabulary, each with its typed parameters; no
 | a mistyped event name is a report that silently reads zero. | review | [data] |
 
 ## analytics-fault-isolated → errors-surfaced-never-swallowed
-A failing sink neither breaks the user's action nor silences the other sinks; its fault is reported out of band.
+A failing analytics service neither breaks the user's action nor silences the other services; its fault is reported out of band.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -36,7 +36,7 @@ The project keeps a written list of what is never tracked, and why.
 | the list stops the same question being answered differently each time, and shows users what is left out. | review | [data] |
 
 ## product-outcomes-tracked · SHOULD
-Key product outcomes — a conversion, a reason something was blocked, the use of a feature — have events, so business measures come from analytics.
+Key product outcomes — a conversion, a reason something was blocked, the use of a product capability — have events, so business measures come from analytics.
 
 | Why | Check | Tags |
 |---|---|---|

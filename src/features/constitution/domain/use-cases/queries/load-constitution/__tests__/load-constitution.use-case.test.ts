@@ -53,6 +53,7 @@ describe('loadConstitution', () => {
           plugin: undefined,
           readme: undefined,
           skills: [],
+          vocabulary: undefined,
         },
         paths: new Set([
           'LICENSE.md',
@@ -64,7 +65,7 @@ describe('loadConstitution', () => {
     });
   });
 
-  it('should parse the plugin documents and keep the README, the log and the digests as text when every document exists', () => {
+  it('should parse the plugin documents and the vocabulary and keep the README, the log and the digests as text when every document exists', () => {
     // Arrange
     const files = validFiles();
 
@@ -107,6 +108,23 @@ describe('loadConstitution', () => {
       },
       readme: '# constitution\n\nStart with [core](blocks/core/core.md).\n',
       skills: [],
+      vocabulary: {
+        status: 'parsed',
+        vocabulary: {
+          architecture: {
+            concepts: [
+              'port',
+              'binding unit',
+            ],
+            folders: [
+              'adapters/',
+            ],
+            suffixes: [
+              '.port',
+            ],
+          },
+        },
+      },
     });
   });
 

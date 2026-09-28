@@ -5,6 +5,7 @@ import type {
   FileTree,
   FrontMatterParser,
   ManifestParser,
+  VocabularyParser,
 } from '../../../contracts';
 import type { Digests } from '../../../entities';
 import { byIdOf } from '../../../utils';
@@ -27,6 +28,7 @@ const prepareDigests = (input: {
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;
+  vocabularyParser: VocabularyParser;
 }): DigestsPrepared => {
   const { constitution, findings } = loadConstitution(input);
 

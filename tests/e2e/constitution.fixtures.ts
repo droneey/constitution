@@ -103,9 +103,7 @@ const CORE_BODY = [
   ]),
 ].join('\n');
 
-const LAWS_OF_FOUNDATION = 'Laws of foundation: names-reveal-intent.';
-const LAWS_OF_ARCHITECTURE = 'Laws of architecture: dependencies-point-inward.';
-const CORE_PART = `${CORE_BODY.trim()}\n\n${LAWS_OF_FOUNDATION}\n${LAWS_OF_ARCHITECTURE}\n`;
+const CORE_PART = `${CORE_BODY.trim()}\n`;
 
 const coreFiles = (): Files =>
   blockFiles({
@@ -636,10 +634,4 @@ const constitutionFiles = (): Files => ({
 });
 
 export type { Files };
-export {
-  CORE_PART,
-  constitutionFiles,
-  LAWS_OF_ARCHITECTURE,
-  LAWS_OF_FOUNDATION,
-  syntheticId,
-};
+export { CORE_PART, constitutionFiles, syntheticId };
