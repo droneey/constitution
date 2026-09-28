@@ -8,7 +8,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | What holds for any program, always active: `core.md`, how to use the constitution, and the chapters it lists, `principles` first |
+| `blocks/core` | What holds for any program, always active: `core.md`, how to use the constitution, and its chapters on each axis, `principles` first |
 | `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `api`, `version-control` |
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli`, `server` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
@@ -21,7 +21,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
 
-A block is a folder. Its main file `<id>.md` opens with a front matter that declares every field — `id`, `kind`, `summary`, `chapters`, `requires`, `extends`, `abstract`, `checks`, `owns`, `governs`, `status` — and then states its rules:
+A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
 
 ```markdown
 ## four-data-states · MUST
@@ -31,7 +31,7 @@ Every data view shows four states: loading, empty, error and content.
 **Tags:** ux, a11y
 ```
 
-A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The digest prints MUST headlines, and only MUST rules raise the hook's warnings.
+The levels mean what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) give them, in capitals only. A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The digest prints MUST headlines, and only MUST rules raise the hook's warnings.
 
 A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role of the tool that holds it, never the tool; a tool's block lists the roles it checks:
 
@@ -53,11 +53,11 @@ A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role 
 
 A rule's Tags are lenses, for reviewing a project across every layer at once: `a11y`, `architecture`, `data`, `errors`, `naming`, `performance`, `security`, `testing`, `types`, `ux`, `workflow`.
 
-A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `with/<other>.md`. A brand, a language or a file form belongs to the block that `owns` it, and only that block and the blocks that depend on it may name it.
+A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 
 ## 🧭 What a session receives
 
-The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary, its chapters and the `with/` files that apply — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
+The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
 
 ## ✍️ Skills
 
@@ -99,7 +99,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or label that misses the rule format;
-- a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's main file and chapters;
+- a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, skips or repeats a number, or has an entry without its date and status;

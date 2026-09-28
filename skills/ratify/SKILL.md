@@ -38,7 +38,10 @@ If `constitution.yaml` or `PROJECT.md` is already at the root, say so and ask wh
 
 Tell the owner the installed version and the blocks above, grouped by layer, in a few lines. If the list is empty, the plugin offers no blocks yet: every layer key stays `[]`, and only local blocks can be listed.
 
-### 3. Look at the repository and propose the blocks
+### 3. Ask for the axes, then look at the repository and propose the blocks
+
+Every block's rules sit on three axes: `foundation` — what holds for any team; `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which the repository follows. `foundation` is always followed; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`.
+
 
 Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
 
@@ -58,18 +61,18 @@ The owner confirms or corrects each key. A block the owner drops is dropped; a b
 
 **A library with no block.** When the repository relies on a framework, library or tool the list does not offer, ask the owner which they want:
 
-- **a local block** — you write `./rules/implementations/<id>.md` from `${CLAUDE_PLUGIN_ROOT}/templates/block.md` with `status: draft`, and list its path under `implementations`;
+- **a local block** — you write `./rules/implementations/<id>.md` from `${CLAUDE_PLUGIN_ROOT}/templates/block.md`, and list its path under `implementations`;
 - **nothing** — it is left out. Using a tool the constitution has no block for is not a departure.
 
 For a local block, fill the template's placeholders from the repository and the owner:
-- `id` is the file name without `.md`, and must not be an id from the list above; `kind` stays `implementation`;
+- `id` is the file name without `.md`, and must not be an id from the list above;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names a constitution block it builds on, or stays `null`;
-- `checks` lists the roles the tool checks, if it is a checking tool — the `role` lines of `${CLAUDE_PLUGIN_ROOT}/digests/index.tsv` hold them; `owns` its brand and file names; `governs` the file globs its rules govern;
+- `checks` lists the roles the tool checks, if it is a checking tool — the `role` lines of `${CLAUDE_PLUGIN_ROOT}/digests/index.tsv` hold them; `dictionary` its brand and file names; `governs` the file globs its rules govern;
 - the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `${CLAUDE_PLUGIN_ROOT}/blocks/` to find them. One row per requirement: its slug, how the library meets it, and `met`, `partial: <the workaround>` or `not met`. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the template's format, with a slug no `rule` line of the index holds. Drop the placeholder rule when there is none.
 
-The block stays `draft` until a person reviews it; say so.
+A local block is a draft until a person reviews it; say so.
 
 ### 4. Find the check command
 
@@ -87,7 +90,7 @@ apps:
     implementations: [react-dom]
 ```
 
-A path is relative to the root, two spaces in; its keys are `domains`, `platforms`, `languages` and `implementations`, four spaces in, each a flow list. Write `apps: {}` when there is one application, or when they all follow the same blocks.
+A path is relative to the root, two spaces in; its keys are `axes`, `domains`, `platforms`, `languages` and `implementations`, four spaces in, each a flow list. An application's `axes` replace the repository's. Write `apps: {}` when there is one application, or when they all follow the same blocks.
 
 ### 6. Interview for PROJECT.md
 

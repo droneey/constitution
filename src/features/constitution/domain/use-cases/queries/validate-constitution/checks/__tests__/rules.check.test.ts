@@ -8,8 +8,9 @@ import {
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { rulesCheck } from '../rules.check';
 
-const PRINCIPLES = 'blocks/core/principles.md';
-const I18N = 'blocks/domains/i18n/i18n.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const WORKFLOW = 'blocks/core/workflow/workflow.md';
+const I18N = 'blocks/domains/i18n/foundation/i18n.md';
 
 describe('rulesCheck', () => {
   it('should report every missing or malformed label when rules break the rule format', () => {
@@ -84,8 +85,8 @@ describe('rulesCheck', () => {
   it('should report a rule when its slug is already defined in another file', () => {
     // Arrange
     const files = validFiles();
-    files[PRINCIPLES] = `# Principles\n\n${rule({
-      slug: 'rules-bind',
+    files[WORKFLOW] = `# Workflow\n\n${rule({
+      slug: 'dependencies-point-inward',
     })}`;
     const input = checkInputOf(files);
 
@@ -95,8 +96,8 @@ describe('rulesCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message: 'rule "rules-bind" is also defined in blocks/core/core.md',
-        path: PRINCIPLES,
+        message: `rule "dependencies-point-inward" is also defined in ${PRINCIPLES}`,
+        path: WORKFLOW,
       },
     ]);
   });

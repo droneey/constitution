@@ -25,7 +25,7 @@ const answering = (rows: readonly string[]): CheckInput => {
 describe('requirementsCheck', () => {
   it('should report a Requirements table once per file when a with/ file of a block that is no implementation holds one', () => {
     // Arrange
-    const path = 'blocks/domains/ui/with/remote-data.md';
+    const path = 'blocks/domains/ui/architecture/with/remote-data.md';
     const files = validFiles();
     files[path] = [
       textOf({
@@ -52,7 +52,7 @@ describe('requirementsCheck', () => {
 
   it('should report a with/ file once when an implementation answers two requirements in it', () => {
     // Arrange
-    const path = 'blocks/implementations/biome/with/lingui.md';
+    const path = 'blocks/implementations/biome/foundation/with/lingui.md';
     const files = validFiles();
     files[path] = [
       '# Biome with Lingui',
@@ -150,12 +150,13 @@ describe('requirementsCheck', () => {
     files[LINGUI] = textOf({
       files,
       path: LINGUI,
-    }).replace(
-      ANSWER,
-      `${ANSWER}\n| \`catalogs-compile\` | the CLI | met |\n\n${rule({
+    })
+      .replace('chapters: []', 'chapters: ["workflow/catalogs.md"]')
+      .replace(ANSWER, `${ANSWER}\n| \`catalogs-compile\` | the CLI | met |`);
+    files['blocks/implementations/lingui/workflow/catalogs.md'] =
+      `# Catalogs\n\n${rule({
         slug: 'catalogs-compile',
-      })}`,
-    );
+      })}`;
     const input = checkInputOf(files);
 
     // Act

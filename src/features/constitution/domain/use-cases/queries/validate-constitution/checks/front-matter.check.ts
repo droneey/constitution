@@ -1,37 +1,45 @@
-import type { Finding, Layer } from '#/kernel';
-import { KIND_OF_LAYER, LAYERS } from '#/kernel';
+import type { Finding } from '#/kernel';
+import { LAYERS, Layer } from '#/kernel';
 
 import type { Block, FrontMatter } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../direction.utils';
 import { aBlock } from '../wording.utils';
 
-type LayerField = 'requires' | 'extends' | 'abstract' | 'checks' | 'owns';
+enum LayerField {
+  Requires = 'requires',
+  Extends = 'extends',
+  Abstract = 'abstract',
+  Checks = 'checks',
+  Dictionary = 'dictionary',
+}
 
 const LAYER_FIELDS: readonly LayerField[] = [
-  'requires',
-  'extends',
-  'abstract',
-  'checks',
-  'owns',
+  LayerField.Requires,
+  LayerField.Extends,
+  LayerField.Abstract,
+  LayerField.Checks,
+  LayerField.Dictionary,
 ];
 
 const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {
-  abstract: [
-    'implementation',
+  [LayerField.Abstract]: [
+    Layer.Implementation,
   ],
-  checks: [
-    'language',
-    'implementation',
+  [LayerField.Checks]: [
+    Layer.Language,
+    Layer.Implementation,
   ],
-  extends: [
-    'implementation',
+  [LayerField.Dictionary]: [
+    Layer.Language,
+    Layer.Implementation,
   ],
-  owns: [
-    'language',
-    'implementation',
+  [LayerField.Extends]: [
+    Layer.Implementation,
   ],
-  requires: LAYERS.filter((layer) => requirableBy(layer).length > 0),
+  [LayerField.Requires]: LAYERS.filter(
+    (layer) => requirableBy(layer).length > 0,
+  ),
 };
 
 const isEmpty = (value: FrontMatter[LayerField]): boolean =>
@@ -39,28 +47,15 @@ const isEmpty = (value: FrontMatter[LayerField]): boolean =>
   value === false ||
   (Array.isArray(value) && value.length === 0);
 
-const identityFindings = (block: Block): readonly Finding[] => {
-  const expectedKind = KIND_OF_LAYER[block.layer];
-
-  return [
-    ...(block.frontMatter.id === block.id
-      ? []
-      : [
-          {
-            message: `declares the id "${block.frontMatter.id}"; its folder names it "${block.id}"`,
-            path: block.path,
-          },
-        ]),
-    ...(block.frontMatter.kind === expectedKind
-      ? []
-      : [
-          {
-            message: `declares the kind "${block.frontMatter.kind}"; its folder makes it ${aBlock(block.layer)}, of the kind "${expectedKind}"`,
-            path: block.path,
-          },
-        ]),
-  ];
-};
+const identityFindings = (block: Block): readonly Finding[] =>
+  block.frontMatter.id === block.id
+    ? []
+    : [
+        {
+          message: `declares the id "${block.frontMatter.id}"; its folder names it "${block.id}"`,
+          path: block.path,
+        },
+      ];
 
 const layerFindings = (block: Block): readonly Finding[] =>
   LAYER_FIELDS.filter(
@@ -77,26 +72,16 @@ const layerFindings = (block: Block): readonly Finding[] =>
 const flagFindings = (block: Block): readonly Finding[] => {
   const isAbstract = block.frontMatter.abstract;
 
-  return [
-    ...(isAbstract === block.id.startsWith('_')
-      ? []
-      : [
-          {
-            message: isAbstract
-              ? 'is abstract, so its id starts with "_"'
-              : 'has an id starting with "_", so it is abstract',
-            path: block.path,
-          },
-        ]),
-    ...(block.frontMatter.status === 'stable'
-      ? []
-      : [
-          {
-            message: 'is draft; a block of the constitution is stable',
-            path: block.path,
-          },
-        ]),
-  ];
+  return isAbstract === block.id.startsWith('_')
+    ? []
+    : [
+        {
+          message: isAbstract
+            ? 'is abstract, so its id starts with "_"'
+            : 'has an id starting with "_", so it is abstract',
+          path: block.path,
+        },
+      ];
 };
 
 const frontMatterCheck: Check = ({

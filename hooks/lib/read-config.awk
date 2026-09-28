@@ -3,7 +3,7 @@
 
 BEGIN {
   T = "\t"
-  LISTS = " domains platforms languages implementations "
+  LISTS = " axes domains platforms languages implementations "
   FIELDS = " rule level reason until "
 }
 

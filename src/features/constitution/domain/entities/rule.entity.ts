@@ -1,16 +1,23 @@
-import type { Level } from '#/kernel';
+import type { Axis, Level } from '#/kernel';
 
-const RULE_LABELS = [
-  'why',
-  'check',
-  'tags',
-  'example',
-  'implements',
-] as const;
+enum RuleLabel {
+  Why = 'why',
+  Check = 'check',
+  Tags = 'tags',
+  Example = 'example',
+  Implements = 'implements',
+}
 
-type RuleLabel = (typeof RULE_LABELS)[number];
+const RULE_LABELS: readonly RuleLabel[] = [
+  RuleLabel.Why,
+  RuleLabel.Check,
+  RuleLabel.Tags,
+  RuleLabel.Example,
+  RuleLabel.Implements,
+];
 
 interface Rule {
+  axis: Axis;
   block: string;
   file: string;
   labels: Readonly<Partial<Record<RuleLabel, string>>>;
@@ -20,5 +27,5 @@ interface Rule {
   with: string | undefined;
 }
 
-export type { Rule, RuleLabel };
-export { RULE_LABELS };
+export type { Rule };
+export { RULE_LABELS, RuleLabel };

@@ -1,7 +1,7 @@
 import type { Finding } from '#/kernel';
 import { compareText, LAYERS } from '#/kernel';
 
-import { DOCUMENT_PATHS } from '../../../constants';
+import { DocumentPath } from '../../../constants';
 import type {
   FileTree,
   FrontMatterParser,
@@ -16,7 +16,7 @@ import type {
   Skill,
 } from '../../../entities';
 import { splitFrontMatter, withoutCodeFences } from '../../../utils';
-import { classifyBlockPath } from './block-path.utils';
+import { BlockPathFile, classifyBlockPath } from './block-path.utils';
 import type { Located } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';
 import { parseRequirements } from './requirements.utils';
@@ -37,7 +37,7 @@ const BLOCKS = 'blocks/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
-  'is not a block file; a block holds its main file, its chapters and with/<block>.md';
+  'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md';
 // <directory>/<skill>/SKILL.md, where no folder is hidden
 const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 
@@ -64,6 +64,7 @@ const locate = (paths: readonly string[]): readonly Located[] =>
 const parsedOf = (blocks: readonly Block[]): Parsed => {
   const sources = blocks.flatMap((block) =>
     block.files.map((file) => ({
+      axis: file.axis,
       block: block.id,
       file: file.path,
       text: withoutCodeFences(file.body),
@@ -134,15 +135,15 @@ const documentsOf = (input: {
 }): Documents => {
   const textOf = (path: string): string | undefined =>
     input.paths.has(path) ? input.tree.read(path) : undefined;
-  const hooks = textOf(DOCUMENT_PATHS.hooks);
-  const marketplace = textOf(DOCUMENT_PATHS.marketplace);
-  const plugin = textOf(DOCUMENT_PATHS.plugin);
+  const hooks = textOf(DocumentPath.Hooks);
+  const marketplace = textOf(DocumentPath.Marketplace);
+  const plugin = textOf(DocumentPath.Plugin);
 
   return {
-    decisions: textOf(DOCUMENT_PATHS.decisions),
+    decisions: textOf(DocumentPath.Decisions),
     digests: {
-      core: textOf(DOCUMENT_PATHS.digestCore),
-      index: textOf(DOCUMENT_PATHS.digestIndex),
+      core: textOf(DocumentPath.DigestCore),
+      index: textOf(DocumentPath.DigestIndex),
     },
     hooks: hooks === undefined ? undefined : input.parser.hooks(hooks),
     marketplace:
@@ -150,7 +151,7 @@ const documentsOf = (input: {
         ? undefined
         : input.parser.marketplace(marketplace),
     plugin: plugin === undefined ? undefined : input.parser.plugin(plugin),
-    readme: textOf(DOCUMENT_PATHS.readme),
+    readme: textOf(DocumentPath.Readme),
     skills: skillsOf({
       listed: input.listed,
       parser: input.frontMatterParser,
@@ -169,7 +170,7 @@ const loadConstitution = (input: {
   const underBlocks = listed.filter((path) => path.startsWith(BLOCKS));
   const located = locate(underBlocks);
   const loaded = groupByFolder(
-    located.filter((entry) => entry.block.file !== 'stray'),
+    located.filter((entry) => entry.block.file !== BlockPathFile.Stray),
   ).map((folder) =>
     loadBlock({
       folder,
@@ -210,7 +211,7 @@ const loadConstitution = (input: {
           path,
         })),
       ...located
-        .filter((entry) => entry.block.file === 'stray')
+        .filter((entry) => entry.block.file === BlockPathFile.Stray)
         .map((entry) => ({
           message: STRAY,
           path: entry.path,

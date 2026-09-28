@@ -1,0 +1,52 @@
+# Bun
+
+## Packages and installs
+
+## bun-is-the-only-package-manager · MUST
+Bun installs (`bun install`), runs scripts (`bun run`) and runs binaries (`bunx`); never npm, yarn, pnpm or npx, except `npm publish` in the release workflow. `bun.lock` is the only lockfile, and no other is committed.
+**Why:** two package managers resolve differently, and a second lockfile is a second truth about what is installed.
+**Check:** review
+**Tags:** security, workflow
+**Implements:** `dependencies-pinned-by-lockfile`
+
+## installs-follow-the-lockfile · MUST
+CI and every script install with `bun install --frozen-lockfile`.
+**Why:** an install that may update the lockfile runs code nobody reviewed.
+**Check:** review
+**Tags:** security
+**Implements:** `dependencies-pinned-by-lockfile`
+
+## trusted-dependencies-listed-by-name · MUST
+Bun runs no dependency's install script unless `trustedDependencies` in `package.json` lists that package by name.
+**Why:** an install script runs with the developer's rights; listing each package keeps that a decision, not a default.
+**Check:** review
+**Tags:** security
+**Implements:** `install-scripts-only-for-listed-dependencies`
+
+## release-age-set-for-installs · SHOULD
+`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases.
+**Why:** the package manager then holds the cooldown on every install, not only the bot.
+**Check:** review
+**Tags:** security
+**Implements:** `dependency-release-cooldown`
+
+## Running
+
+## every-tool-runs-on-bun · SHOULD
+`bunfig.toml` sets `[run] bun = true`, so every tool, one with a Node shebang included, runs on the pinned Bun.
+**Why:** one runtime for the program and its tools means one version to pin and one behaviour to trust.
+**Check:** review
+**Tags:** workflow
+
+## other-runtime-only-where-bun-cannot · SHOULD
+Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.
+**Why:** each exception is a second runtime to pin and keep; its reason says when it can go.
+**Check:** review
+**Tags:** workflow
+
+## check-chains-tool-scripts · SHOULD
+Each tool has an `<area>:check` script that only checks, and an `<area>:fix` beside it where the tool can write; `check` chains the check scripts.
+**Why:** the script names are the stable interface: CI, the hooks and a person run the same ones.
+**Check:** review
+**Tags:** workflow
+**Implements:** `one-check-command`

@@ -1,5 +1,6 @@
 version: 0.24.0
 
+axes: [foundation, architecture, workflow]
 domains: [version-control]
 platforms: []
 languages: [typescript]

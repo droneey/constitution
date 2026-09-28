@@ -1,6 +1,7 @@
 import type { Finding } from '#/kernel';
 
 import type { Block, BlockFile } from '../../../../entities';
+import { BlockFileRole } from '../../../../entities';
 import { reachableFrom, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { collapseWhitespace, ownedWordMatcher } from '../tokens.utils';
@@ -21,7 +22,7 @@ const ownersOf = (blocks: readonly Block[]): Owners => {
   const duplicates: Finding[] = [];
 
   for (const block of blocks) {
-    for (const word of block.frontMatter.owns) {
+    for (const word of block.frontMatter.dictionary) {
       const owner = owners.get(word);
 
       if (owner === undefined) {
@@ -52,7 +53,7 @@ const proseOf = (input: { block: Block; file: BlockFile }): string => {
   const body = withoutCodeFences(input.file.body);
 
   return collapseWhitespace(
-    input.file.role === 'main'
+    input.file.role === BlockFileRole.Main
       ? `${input.block.frontMatter.summary}\n${body}`
       : body,
   );

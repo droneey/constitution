@@ -1,6 +1,6 @@
 import type { Finding } from '#/kernel';
 
-import { DOCUMENT_PATHS } from '../../../../constants';
+import { DocumentPath } from '../../../../constants';
 import { resolveLink } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { foldersOf, linkTargetsOf } from '../link-targets.utils';
@@ -24,11 +24,11 @@ const linksCheck: Check = ({
     ),
     ...[
       {
-        path: DOCUMENT_PATHS.readme,
+        path: DocumentPath.Readme,
         text: readme,
       },
       {
-        path: DOCUMENT_PATHS.decisions,
+        path: DocumentPath.Decisions,
         text: decisions,
       },
     ].flatMap(({ path, text }) =>

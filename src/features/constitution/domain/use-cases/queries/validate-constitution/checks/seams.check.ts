@@ -1,6 +1,8 @@
 import type { Finding } from '#/kernel';
+import { Layer } from '#/kernel';
 
 import type { Block } from '../../../../entities';
+import { BlockFileRole } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
 import { stemOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
@@ -30,7 +32,7 @@ const pairingMessage = (
     return `is a with/ file of ${input.block.id}, which pairs with no block`;
   }
 
-  if (target === undefined || target.layer === 'core') {
+  if (target === undefined || target.layer === Layer.Core) {
     return `is named after ${input.other}, which is not a block it may pair with`;
   }
 
@@ -61,14 +63,14 @@ const pairingFindings = (subject: Subject): readonly Finding[] =>
 
 const chapterFindings = (subject: Subject): readonly Finding[] =>
   subject.block.files
-    .filter((file) => file.role === 'chapter')
+    .filter((file) => file.role === BlockFileRole.Chapter)
     .flatMap((file) => {
       const name = stemOf({
         extension: MARKDOWN_EXTENSION,
         path: file.path,
       });
 
-      return subject.byId.has(name)
+      return name !== subject.block.id && subject.byId.has(name)
         ? [
             {
               message: `takes the id of the block ${name}; a file named after a block belongs in with/`,

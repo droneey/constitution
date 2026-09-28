@@ -1,5 +1,5 @@
 import type { Finding } from '#/kernel';
-import { KINDS, ROLES, STATUSES } from '#/kernel';
+import { ROLES } from '#/kernel';
 
 import type { FrontMatterFields, FrontMatterParser } from '../../../contracts';
 import type { FieldIssue, FrontMatter } from '../../../entities';
@@ -11,31 +11,31 @@ interface FrontMatterLoaded {
   frontMatter?: FrontMatter;
 }
 
-type ListField = 'chapters' | 'requires' | 'checks' | 'owns' | 'governs';
+enum ListField {
+  Requires = 'requires',
+  Checks = 'checks',
+  Dictionary = 'dictionary',
+  Governs = 'governs',
+}
 
 const FIELDS: readonly string[] = [
   'id',
-  'kind',
   'summary',
-  'chapters',
   'requires',
   'extends',
   'abstract',
   'checks',
-  'owns',
+  'dictionary',
   'governs',
-  'status',
 ];
 const LIST_FIELDS: readonly ListField[] = [
-  'chapters',
-  'requires',
-  'checks',
-  'owns',
-  'governs',
+  ListField.Requires,
+  ListField.Checks,
+  ListField.Dictionary,
+  ListField.Governs,
 ];
 const FIELD_ORDER = FIELDS.join(', ');
 const BLOCK_ID = /^_?[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const CHAPTER = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
 const WHITESPACE = /\s/;
@@ -121,14 +121,6 @@ const scalarMessages = (fields: FrontMatterFields): readonly string[] => [
     : [
         `front matter: id "${fields.id}" is not a kebab-case block id`,
       ]),
-  ...(oneOf({
-    value: fields.kind,
-    values: KINDS,
-  }) === undefined
-    ? [
-        `front matter: kind "${fields.kind}" is not one of ${KINDS.join(', ')}`,
-      ]
-    : []),
   ...summaryMessages(fields.summary),
   // Stryker disable next-line ConditionalExpression: "undefined" passes as a block id too
   ...(fields.extends === undefined || BLOCK_ID.test(fields.extends)
@@ -136,14 +128,6 @@ const scalarMessages = (fields: FrontMatterFields): readonly string[] => [
     : [
         `front matter: extends "${fields.extends}", which is not a block id`,
       ]),
-  ...(oneOf({
-    value: fields.status,
-    values: STATUSES,
-  }) === undefined
-    ? [
-        `front matter: status "${fields.status}" is not one of ${STATUSES.join(', ')}`,
-      ]
-    : []),
 ];
 
 const repeatsOf = (values: readonly string[]): readonly string[] => [
@@ -151,17 +135,6 @@ const repeatsOf = (values: readonly string[]): readonly string[] => [
 ];
 
 const entryMessages = (fields: FrontMatterFields): readonly string[] => [
-  ...fields.chapters
-    .filter((name) => !CHAPTER.test(name))
-    .map(
-      (name) =>
-        `front matter: chapters lists "${name}", which is not a kebab-case .md file name`,
-    ),
-  ...(fields.chapters.includes(`${fields.id}.md`)
-    ? [
-        `front matter: chapters lists the main file ${fields.id}.md; chapters are the files after it`,
-      ]
-    : []),
   ...fields.requires
     .filter((id) => !BLOCK_ID.test(id))
     .map((id) => `front matter: requires "${id}", which is not a block id`),
@@ -175,11 +148,11 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
     )
     .map((role) => `front matter: checks "${role}", which is not a role`),
   ...[
-    ...fields.owns,
+    ...fields.dictionary,
     ...fields.governs,
   ]
     .filter((entry) => entry.trim() === '')
-    .map(() => 'front matter: owns and governs hold no empty entry'),
+    .map(() => 'front matter: dictionary and governs hold no empty entry'),
   ...fields.governs
     .filter((glob) => WHITESPACE.test(glob))
     .map(
@@ -193,28 +166,12 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
   ),
 ];
 
-const typedOf = (fields: FrontMatterFields): FrontMatter | undefined => {
-  const kind = oneOf({
-    value: fields.kind,
-    values: KINDS,
-  });
-  const status = oneOf({
-    value: fields.status,
-    values: STATUSES,
-  });
-
-  // Stryker disable next-line ConditionalExpression,LogicalOperator: fieldMessages has rejected a bad kind or status
-  return kind === undefined || status === undefined
-    ? undefined
-    : {
-        ...fields,
-        checks: fields.checks.flatMap((check) =>
-          ROLES.filter((role) => role === check),
-        ),
-        kind,
-        status,
-      };
-};
+const typedOf = (fields: FrontMatterFields): FrontMatter => ({
+  ...fields,
+  checks: fields.checks.flatMap((check) =>
+    ROLES.filter((role) => role === check),
+  ),
+});
 
 const fieldMessages = (fields: FrontMatterFields): readonly string[] => [
   ...scalarMessages(fields),
@@ -268,14 +225,13 @@ const readFrontMatter = (input: {
   }
 
   const problems = fieldMessages(read.fields);
-  const frontMatter = problems.length === 0 ? typedOf(read.fields) : undefined;
 
-  return frontMatter === undefined
+  return problems.length > 0
     ? failed(problems)
     : {
         body: parts.body,
         findings: [],
-        frontMatter,
+        frontMatter: typedOf(read.fields),
       };
 };
 

@@ -1,14 +1,24 @@
-import type { Layer } from '#/kernel';
+import type { Axis } from '#/kernel';
+import { AXES, Layer } from '#/kernel';
 
-type BlockPathFile = 'main' | 'chapter' | 'with' | 'stray';
+enum BlockPathFile {
+  Main = 'main',
+  Chapter = 'chapter',
+  With = 'with',
+  Stray = 'stray',
+}
 
-interface BlockPath {
-  dir: string;
+interface PathInBlock {
+  axis: Axis | undefined;
   file: BlockPathFile;
-  id: string;
-  layer: Layer;
   name: string;
   with: string | undefined;
+}
+
+interface BlockPath extends PathInBlock {
+  dir: string;
+  id: string;
+  layer: Layer;
 }
 
 interface Folder {
@@ -29,14 +39,14 @@ const CORE_PREFIX: readonly string[] = [
 ];
 const LAYER_FOLDERS: readonly LayerFolder[] = [
   {
-    layer: 'domain',
+    layer: Layer.Domain,
     prefix: [
       'blocks',
       'domains',
     ],
   },
   {
-    layer: 'platform',
+    layer: Layer.Platform,
     prefix: [
       'blocks',
       'contexts',
@@ -44,7 +54,7 @@ const LAYER_FOLDERS: readonly LayerFolder[] = [
     ],
   },
   {
-    layer: 'language',
+    layer: Layer.Language,
     prefix: [
       'blocks',
       'contexts',
@@ -52,7 +62,7 @@ const LAYER_FOLDERS: readonly LayerFolder[] = [
     ],
   },
   {
-    layer: 'implementation',
+    layer: Layer.Implementation,
     prefix: [
       'blocks',
       'implementations',
@@ -62,6 +72,8 @@ const LAYER_FOLDERS: readonly LayerFolder[] = [
 const MARKDOWN = /^[^.].*\.md$/;
 const MARKDOWN_EXTENSION = '.md';
 const SEAM_FOLDER = 'with';
+const CHAPTER_DEPTH = 2;
+const SEAM_DEPTH = 3;
 
 const startsWith = (input: {
   prefix: readonly string[];
@@ -79,7 +91,7 @@ const coreFolder = (segments: readonly string[]): Folder | undefined => {
     ? {
         dir: CORE_PREFIX.join('/'),
         id: 'core',
-        layer: 'core',
+        layer: Layer.Core,
         rest,
       }
     : undefined;
@@ -113,32 +125,56 @@ const layerFolder = (segments: readonly string[]): Folder | undefined => {
       };
 };
 
-const fileOf = (folder: Folder): Pick<BlockPath, 'file' | 'name' | 'with'> => {
-  // Stryker disable next-line StringLiteral: a length check guards every read
-  const [first = '', second = ''] = folder.rest;
+const axisOf = (segment: string): Axis | undefined =>
+  AXES.find((axis) => axis === segment);
 
-  if (folder.rest.length === 1 && MARKDOWN.test(first)) {
+const fileOf = (folder: Folder): PathInBlock => {
+  // Stryker disable next-line StringLiteral: a length check guards every read
+  const [first = '', second = '', third = ''] = folder.rest;
+  const axis = axisOf(first);
+
+  if (
+    folder.rest.length === 1 &&
+    first === `${folder.id}${MARKDOWN_EXTENSION}`
+  ) {
     return {
-      file: first === `${folder.id}${MARKDOWN_EXTENSION}` ? 'main' : 'chapter',
+      axis: undefined,
+      file: BlockPathFile.Main,
       name: first,
       with: undefined,
     };
   }
 
   if (
-    folder.rest.length === 2 &&
-    first === SEAM_FOLDER &&
+    axis !== undefined &&
+    folder.rest.length === CHAPTER_DEPTH &&
     MARKDOWN.test(second)
   ) {
     return {
-      file: 'with',
-      name: second,
-      with: second.slice(0, -MARKDOWN_EXTENSION.length),
+      axis,
+      file: BlockPathFile.Chapter,
+      name: `${first}/${second}`,
+      with: undefined,
+    };
+  }
+
+  if (
+    axis !== undefined &&
+    folder.rest.length === SEAM_DEPTH &&
+    second === SEAM_FOLDER &&
+    MARKDOWN.test(third)
+  ) {
+    return {
+      axis,
+      file: BlockPathFile.With,
+      name: `${first}/${second}/${third}`,
+      with: third.slice(0, -MARKDOWN_EXTENSION.length),
     };
   }
 
   return {
-    file: 'stray',
+    axis: undefined,
+    file: BlockPathFile.Stray,
     // Stryker disable next-line StringLiteral: nothing reads the name of a stray file
     name: folder.rest.join('/'),
     with: undefined,
@@ -162,4 +198,4 @@ const classifyBlockPath = (path: string): BlockPath | undefined => {
 };
 
 export type { BlockPath };
-export { classifyBlockPath };
+export { BlockPathFile, classifyBlockPath };

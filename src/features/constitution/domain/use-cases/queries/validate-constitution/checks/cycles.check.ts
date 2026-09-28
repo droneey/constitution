@@ -1,4 +1,5 @@
 import type { Finding } from '#/kernel';
+import { Layer } from '#/kernel';
 
 import type { Block } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -19,7 +20,7 @@ const nextOf = (input: { block: Block; byId: BlocksById }): readonly Block[] =>
 
     return next === undefined ||
       next.id === input.block.id ||
-      next.layer !== 'implementation'
+      next.layer !== Layer.Implementation
       ? []
       : [
           next,
@@ -54,6 +55,7 @@ const cycleFrom = (search: Search): readonly string[] | undefined => {
     }
   }
 
+  // Stryker disable next-line CallExpression: the set only spares a second walk; the cycle found is the same
   search.explored.add(search.block.id);
 
   return undefined;

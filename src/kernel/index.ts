@@ -1,21 +1,17 @@
 export type { Finding } from './finding.types';
 export { compareFindings, compareText } from './order.utils';
-export type {
-  Kind,
-  Layer,
-  Level,
-  Role,
-  Status,
-  Tag,
-} from './vocabulary.constants';
 export {
+  AXES,
+  Axis,
   KIND_OF_LAYER,
-  KINDS,
+  Kind,
   LANGUAGE_FREE_ROLES,
   LAYER_RANK,
   LAYERS,
+  Layer,
   LEVELS,
+  Level,
   ROLES,
-  STATUSES,
-  TAGS,
+  Role,
+  Tag,
 } from './vocabulary.constants';

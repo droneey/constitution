@@ -29,7 +29,6 @@ const implementationRequiring = (input: {
   [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
     body: `# ${input.id}\n`,
     id: input.id,
-    kind: 'implementation',
     requires: input.requires,
   }),
 });

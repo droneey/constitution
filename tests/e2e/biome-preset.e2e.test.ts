@@ -84,6 +84,24 @@ describe('the Biome preset', () => {
       },
       message: 'Call an effect from a hook',
     },
+    {
+      condition: 'a type is taken from an as-const array',
+      files: {
+        'src/features/orders/domain/order-status.ts':
+          "const STATUSES = ['open', 'closed'] as const;\n\nexport type OrderStatus = (typeof STATUSES)[number];\n",
+      },
+      message:
+        'A closed set of named values is a string enum, not a type taken from an as-const array',
+    },
+    {
+      condition: 'a type is a union of string literals',
+      files: {
+        'src/features/orders/domain/order-status.ts':
+          "export type OrderStatus = 'open' | 'closed';\n",
+      },
+      message:
+        'A closed set of named values is a string enum, not a union of string literals',
+    },
   ])('should report a plugin finding when $condition', ({ files, message }) => {
     // Arrange
     const project = {
@@ -171,6 +189,20 @@ describe('the Biome preset', () => {
       condition: 'a hooks file calls an effect through an effect event',
       files: {
         'src/room.hooks.ts': ROOM_HOOK,
+      },
+    },
+    {
+      condition: 'a union mixes a string literal with another type',
+      files: {
+        'src/features/orders/domain/limit.ts':
+          "export type Limit = 'none' | number;\n",
+      },
+    },
+    {
+      condition: 'an object type has a string literal property',
+      files: {
+        'src/features/orders/domain/opened.ts':
+          "export interface Opened {\n  status: 'open';\n}\n",
       },
     },
   ])('should report no plugin finding when $condition', ({ files }) => {
