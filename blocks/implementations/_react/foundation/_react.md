@@ -19,13 +19,13 @@ No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effe
 Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup, actions. The legacy form of each is forbidden.
 **Why:** two forms of one thing double what a reader must know, and the legacy forms are on their way out.
 **Check:** tool — lint
-**Tags:** architecture
+**Tags:** design
 
 ## function-components-only · MUST
 Components are functions, composed, never inherited; a class only for an error boundary.
 **Why:** hooks work only in functions, and inheritance between components couples them to each other's internals.
 **Check:** tool — lint
-**Tags:** architecture
+**Tags:** design
 **Implements:** `inheritance-only-for-errors-and-framework-points`
 
 ## hooks-at-top-level · MUST
@@ -52,7 +52,7 @@ A list's key comes from the item's identity, never its index.
 An effect synchronises with a system outside React — never state from state, never the response to an event. An external store is read with `useSyncExternalStore`.
 **Why:** an effect that sets state from state renders twice and races; an event's response belongs in its handler.
 **Check:** review
-**Tags:** architecture
+**Tags:** design
 
 ## effect-cleans-up-and-cancels · MUST
 Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
@@ -80,7 +80,7 @@ A hook that folds a fast source schedules its state once per animation frame; an
 A compound's parts are attached to its root with a typed `Object.assign`, and the root shares its state — the choreography of animated regions included — through `<name>.context.ts`.
 **Why:** the parts read what the root decides, without props threaded through the consumer's markup.
 **Check:** review
-**Tags:** architecture
+**Tags:** design
 **Implements:** `compound-root-owns-choreography`
 
 ## error-boundary-catches-render-errors · SHOULD
@@ -88,4 +88,3 @@ A screen's error boundary catches the render errors below it, reports once, and 
 **Why:** a thrown render error then costs one screen, and an expected failure is shown where it belongs.
 **Check:** review
 **Tags:** errors, ux
-**Implements:** `error-boundary-per-screen`

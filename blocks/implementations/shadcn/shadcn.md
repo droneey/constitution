@@ -19,5 +19,5 @@ governs: ["components.json", "**/libs/ui/components/**"]
 |---|---|---|
 | `ui-primitives-keyboard-and-focus` | Radix implements the WAI-ARIA patterns: keyboard, focus, roles | met |
 | `ui-primitives-unstyled` | Radix primitives carry no look; shadcn's classes are rewritten to tokens on arrival | met |
-| `ui-primitives-text-by-props` | the source ships English strings, such as a screen reader's "Close" | partial: removed on arrival, the text passed by props |
+| `primitives-take-text-by-props` | the source ships English strings, such as a screen reader's "Close" | partial: removed on arrival, the text passed by props |
 | `ui-primitives-slot` | Radix `Slot` | met |

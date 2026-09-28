@@ -13,7 +13,7 @@ Offline, the app opens, shows the data it has cached, marked as such, and says w
 **Tags:** ux, data
 
 ## credentials-in-secure-storage · MUST
-Tokens and credentials live only in the system's secure storage.
+Tokens, credentials and other secrets on the device live only in the system's secure storage, the keychain or keystore, never in plain asynchronous storage.
 **Why:** anything else on the device can be read by backups, other apps or whoever holds the phone.
 **Check:** review
 **Tags:** security

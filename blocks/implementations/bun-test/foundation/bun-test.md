@@ -8,11 +8,11 @@ A case compares with `toStrictEqual`, never `toEqual`.
 **Implements:** `one-intent-per-case`
 
 ## no-module-mocks · SHOULD
-No `mock.module` and no `spyOn` over a real module: effects are faked through their ports.
+No `mock.module` and no `spyOn` over a real module: an effect is replaced by its port's fake.
 **Why:** a mocked module replaces code the spec claims to test, and breaks when the module moves.
 **Check:** tool — lint
 **Tags:** testing
-**Implements:** `effects-faked-through-ports`
+**Implements:** `one-fake-per-port`
 
 ## integration-specs-run-apart · SHOULD
 The unit run leaves out `*.integration.test.ts`; integration specs run as their own script of the check.

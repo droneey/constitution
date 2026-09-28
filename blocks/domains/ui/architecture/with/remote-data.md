@@ -1,25 +1,23 @@
 # User interface with remote data
 
-> Screens that show and change data another system owns: how an operation is bound to the screen, how the application is composed, and how optimistic writes stay correct.
+> Screens that show and change data another system owns: how an operation is bound to the screen and how the application is composed.
 
-## providers-compose-the-ui-application · SHOULD
+## providers-compose-the-ui-application · MUST
 The providers are the application's composition root: they build the configuration, the transport and the cache client, build each adapter by its factory from the transport, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
 **Why:** every concrete choice is made in one place, and a test hands the same binding unit a different transport or adapter without touching it.
 **Check:** review
-**Tags:** architecture
 **Implements:** `one-explicit-composition-root`
 
 ## binding-unit-composes-its-operation · SHOULD
 A binding unit binds one operation: it takes its adapter from the providers and calls the use-case, or the port when there is none. A plain function form of it is added only when a caller that is not reactive appears.
 **Why:** each operation is bound once, and the screen never learns which adapter serves it.
 **Check:** review
-**Tags:** architecture
 
 ## configuration-provider-reads-environment · SHOULD
 The configuration provider is the application's one reader of the environment, and parses it once, at boot.
 **Why:** a missing setting fails at start, and no component reads the environment on its own.
 **Check:** review
-**Tags:** security, architecture
+**Tags:** security
 **Implements:** `environment-read-once-at-boot`
 
 ## command-invalidates-in-its-binding-unit · SHOULD
@@ -28,15 +26,8 @@ After a write, invalidation happens in the command's binding unit, through the f
 **Check:** review
 **Tags:** data
 
-## optimistic-writes-in-rollback-lifecycle · MUST
-An optimistic write happens only in the mutation's lifecycle, which can roll it back, never in the request itself. Optimistic entities come from domain factories. Folding streamed data as it arrives is not optimism.
-**Why:** an optimistic change without a rollback leaves the screen showing what the server refused.
-**Check:** review
-**Tags:** data
-**Implements:** `entities-guarded-where-the-program-owns-them`
-
 ## unauthorized-handled-once-in-cache · SHOULD
-The cache's global error handler, wired by the providers, turns an unauthorized failure into session state through the surface of the feature that owns sessions. Other failures reach the screen through the binding unit's error state.
+The cache's global error handler, wired by the providers, receives the unauthorized domain error the shared mapper produced and turns it into session state through the surface of the feature that owns sessions. Other failures reach the screen through the binding unit's error state.
 **Why:** an expired session is handled once, the same way on every screen, and no screen handles it differently.
 **Check:** review
 **Tags:** errors, security

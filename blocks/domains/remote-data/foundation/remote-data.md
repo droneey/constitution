@@ -1,6 +1,6 @@
 # Remote data
 
-## stream-ends-with-terminal-event · SHOULD
+## stream-ends-with-terminal-event · MUST
 A stream that ends without its terminal event fails with a domain error.
 **Why:** a stream cut short otherwise looks like a complete one, and the user sees a partial result as final.
 **Check:** test

@@ -51,7 +51,7 @@ A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role 
 | `audit` | no known vulnerability, and only allowed licences |
 | `commits` | commit messages and branch names follow their format; any language |
 
-A rule's Tags are lenses, for reviewing a project across every layer at once: `a11y`, `architecture`, `data`, `errors`, `naming`, `performance`, `security`, `testing`, `types`, `ux`, `workflow`.
+A rule's Tags are lenses, for reviewing a project across every layer at once: `a11y`, `data`, `design`, `errors`, `naming`, `performance`, `process`, `security`, `testing`, `types`, `ux`. A rule on `foundation/` carries at least one; on `architecture/` and `workflow/` the axis is itself a lens.
 
 A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 

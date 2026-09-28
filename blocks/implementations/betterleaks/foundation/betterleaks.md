@@ -7,12 +7,12 @@ The check scans the history the clone holds and the uncommitted changes, staged 
 **Tags:** security
 **Implements:** `no-secret-in-repository`
 
-## history-scanned-once-on-adoption · SHOULD
+## history-scanned-once-on-adoption · MUST
 The whole history, every ref, is scanned once when the scanner is adopted, and before a first public release.
 **Why:** a secret committed before the scanner existed is in history all the same.
 **Check:** review
 **Tags:** security
-**Implements:** `secret-in-history-is-compromised`
+**Implements:** `leaked-secret-rotated-at-once`
 
 ## scanner-reports-redacted · MUST
 Every scan passes `--redact`: a report shows a finding by its rule, file and line, never by its value.

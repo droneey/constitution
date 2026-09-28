@@ -13,3 +13,9 @@ Tracked URLs carry no identifiers or query values, custom dimensions carry no pe
 **Check:** review
 **Tags:** security
 **Implements:** `no-personal-data-in-events`
+
+## matomo-data-layer-seeded-before-container · MUST
+The data layer is seeded before Matomo's container script, and the script loads asynchronously.
+**Why:** an event pushed before the container arrives waits in the data layer instead of being lost, and the page never waits for the service.
+**Check:** review
+**Tags:** performance

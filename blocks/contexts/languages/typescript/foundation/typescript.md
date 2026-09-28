@@ -6,7 +6,7 @@
 `#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's surface through `imports`. No alias in a bundler.
 **Why:** one declaration is the source and the mirror is checked against it on sight; a third alias elsewhere drifts unseen.
 **Check:** review
-**Tags:** architecture
+**Tags:** design
 
 ## file-named-after-its-export · SHOULD
 A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
@@ -14,6 +14,13 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 **Check:** review
 **Tags:** naming
 **Implements:** `file-is-one-semantic-unit`
+
+## typescript-file-forms · MUST
+Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<port>.fake.ts`, fixtures `<name>.fixtures.ts`.
+**Why:** one spelling of every kind of file lets the tools and the reader find a file by its name.
+**Check:** tool — names
+**Tags:** naming
+**Implements:** `kebab-case-file-names`
 
 ## Names
 
@@ -30,6 +37,26 @@ A type is a noun, undecorated: no `I` prefix, on ports too, and no `Type` or `In
 **Tags:** naming
 
 ## Values and types
+
+## undefined-is-the-only-absence · MUST
+Internal code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears in internal code only in a comparison with what a platform API returns. The compiler runs with `exactOptionalPropertyTypes`.
+**Why:** one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident.
+**Check:** tool — lint
+**Tags:** types, data
+**Implements:** `absence-has-one-value-normalised-at-boundary`
+
+## brand-is-an-intersection-or-unique-symbol · SHOULD
+An identifier's brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol. An alias of the vocabulary stays a plain name, never branded.
+**Why:** one form of brand reads the same in every file, and an alias of the vocabulary names a meaning, not a proof of where a value came from.
+**Check:** review
+**Tags:** types
+**Implements:** `identifiers-branded-by-entity`
+
+## semantic-alias-names-a-shared-meaning · SHOULD
+A semantic alias — `type Email = string` — is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string.
+**Why:** an alias names a meaning the program shares; one per string turns vocabulary into noise.
+**Check:** review
+**Tags:** types, naming
 
 ## enums-for-named-value-groups · MUST
 A closed set of named values is a string `enum` — never a union of string literals, and never an `as const` array or object whose type names the set. Numbers another system defines — exit statuses, HTTP statuses — are a numeric `enum` with every value written, and an incoming number stays `number`, compared with the members. `as const` is for a single literal and for data that is not a set of names. A union's discriminant is an enum member when the enum owns the vocabulary, and a string literal otherwise.
@@ -62,7 +89,7 @@ No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@
 **Tags:** types
 **Implements:** `suppression-states-its-reason`
 
-## exhaustive-branching-over-unions · SHOULD
+## exhaustive-branching-over-unions · MUST
 A branch over a union handles every member: a `switch` whose default proves `never`, or an `if` chain that ends in a `never` check.
 **Why:** a new member then fails to compile at every branch that forgot it.
 **Check:** tool — lint
@@ -124,20 +151,19 @@ The compiler, not a bundler or the runtime, is the type gate: `tsc --noEmit` run
 Build, test and lint tools are development dependencies, and production code imports none of them.
 **Why:** a tool in production dependencies ships to every installation, and one imported by production code ships inside it.
 **Check:** tool — architecture
-**Tags:** security, architecture
+**Tags:** security
 
 ## one-version-per-dependency · MUST
 Each dependency has one version across every manifest of the repository.
 **Why:** two versions of one dependency behave differently in two places, and the difference is found in production.
 **Check:** tool — versions
-**Tags:** workflow
+**Tags:** process
 
 ## caret-ranges-lockfile-pins · SHOULD
 A manifest's ranges are caret ranges; the lockfile pins the exact versions.
 **Why:** the manifest says what is compatible, the lockfile what is installed; pinning in both makes every update touch two files.
 **Check:** tool — versions
 **Tags:** security
-**Implements:** `dependencies-pinned-by-lockfile`
 
 ## shared-state-packages-once-in-lockfile · SHOULD
 A package that holds state or types across the program — the schema engine, the interface framework — resolves to one version in the lockfile.
@@ -149,4 +175,4 @@ A package that holds state or types across the program — the schema engine, th
 The fields of `package.json` follow the shared order.
 **Why:** every manifest reads the same way, and a diff shows a change of content, not of order.
 **Check:** tool — format
-**Tags:** workflow
+**Tags:** process

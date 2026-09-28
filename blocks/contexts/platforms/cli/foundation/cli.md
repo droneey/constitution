@@ -2,6 +2,12 @@
 
 ## Output and exit
 
+## exit-codes-from-one-map · MUST
+Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag — and 70 an internal error, the program's own bug.
+**Why:** a script decides what to do from the exit code alone, so each code must mean one thing in every command.
+**Check:** test
+**Tags:** errors, ux
+
 ## stdout-data-stderr-diagnostics · SHOULD
 Data goes to standard output; diagnostics and failures go to standard error.
 **Why:** a script that pipes the output receives only the data, and the person at the terminal still sees what went wrong.

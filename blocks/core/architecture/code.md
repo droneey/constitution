@@ -13,79 +13,65 @@ A domain name names the concept, never the vendor or the storage behind it: `Use
 ## Units
 
 ## deep-modules-no-pass-through · SHOULD
-A module hides much behind a small interface. A layer that only passes a call through is removed.
+A layer that only passes a call through to the next one is removed. A domain use-case exists only when its operation carries business logic; without any, its binding unit calls the port directly.
 **Why:** a pass-through adds a place to read and change without hiding anything.
 **Check:** review
-**Tags:** architecture
-
-## pure-by-default · SHOULD
-A function's output depends only on its input. Effects live where the laws put them, never inside an otherwise pure helper.
-**Why:** a pure function can be understood, tested and moved on its own.
-**Check:** review
-**Tags:** architecture
+**Implements:** `module-hides-much-behind-small-interface`
 
 ## Comments and leftovers
 
-## no-debug-output-in-shipped-code · SHOULD
-Shipped code writes no debug output and stops at no breakpoint; diagnostics go through the logging port. The output of a command-line program is its interface, not debug.
-**Why:** stray output is noise to users and can leak what it prints.
-**Check:** tool — lint
-**Tags:** workflow, security
+## diagnostics-through-the-logging-port · SHOULD
+Diagnostics a program keeps on purpose go through the logging port, never straight to the console or a stream.
+**Why:** a port decides in one place where diagnostics go and what they may carry, and a test replaces it without touching the code.
+**Check:** review
+**Implements:** `no-debug-output-in-shipped-code`
 
 ## Absence
 
-## absence-has-one-value-normalised-at-boundary · MUST
-Internal code spells absence with one value, which the language block names. The other spellings live only in wire types and at the boundary, which maps them to it.
-**Why:** two spellings of absence make every check ask twice, and one of them is always forgotten.
-**Check:** tool — lint
+## wire-absence-mapped-at-boundary · MUST
+Other spellings of absence live only in wire types and in the adapters that read them, which map them to the one internal value at the boundary.
+**Why:** a wire spelling that travels inward brings a second absence into code that checks for one.
+**Check:** review
 **Tags:** types, data
+**Implements:** `absence-has-one-value-normalised-at-boundary`
 
 ## Failure
 
-## expected-failures-typed-with-codes · SHOULD
-An expected failure is typed, carries a stable code `<MODULE>_<ENTITY>_<KIND>` and details that say what to do, and belongs to the contract that can fail. Universal failures live in `kernel/errors`, a feature's in its `domain/errors`, and adapters map transport failures to them; nothing raw passes a boundary.
-**Why:** a caller that branches on a typed code keeps working when the message is reworded, and a failure that is part of the contract is handled by design.
+## typed-failures-homed-by-layer · SHOULD
+Universal failures live in `kernel/errors`, a feature's in its `domain/errors`, and adapters map transport failures to them; nothing raw passes a boundary.
+**Why:** a failure declared where its contract lives is found with it, and a raw transport failure that passes the boundary couples its caller to the vendor.
 **Check:** review
 **Tags:** errors
+**Implements:** `expected-failures-typed-with-codes`
 
 ## one-error-handler-per-transport · SHOULD
-Defects travel to the boundary. Each transport has one handler that turns a failure into what its user sees: what happened and what to do next, never a stack trace or internals. A program exits only there.
-**Why:** one handler gives every failure the same shape and the same next step, and no internal detail leaks.
+Defects travel to the boundary. Each transport has one handler that turns a failure into what its user sees, and a program exits only there.
+**Why:** one handler gives every failure the same shape and the same next step, and no internal detail leaks past it.
 **Check:** review
 **Tags:** errors, security, ux
+**Implements:** `failure-shown-as-what-happened-and-what-next`
 
 ## Types
 
 ## schema-derives-from-domain-types · MUST
-A schema over a domain type or enum derives its values from it and is checked by type against what it produces. A subset of an enum is a named constant beside the enum, never a list typed out again.
+A schema over a domain type or enum derives its values from it, so the edge depends on the domain and never restates it.
 **Why:** a schema that restates the domain drifts from it, and a stricter or looser schema locks out, or lets in, what the domain does not mean.
-**Check:** tool — types
+**Check:** review
 **Tags:** types
+**Implements:** `domain-values-never-typed-again`
 
 ## Effects
-
-## effects-reached-through-ports · SHOULD
-Clock, randomness, identifiers and the environment are reached through ports, never called directly from the logic.
-**Why:** logic that reads the clock or draws a random number cannot be tested deterministically.
-**Check:** review
-**Tags:** architecture, testing
 
 ## environment-read-once-at-boot · SHOULD
 One place reads the environment: `root/`, or the configuration provider a lower block names. Configuration is parsed once, at boot, into a typed value the rest of the program receives.
 **Why:** a missing or malformed setting fails at start, not in the middle of a request, and no module depends on the process's environment.
 **Check:** review
-**Tags:** security, architecture
+**Tags:** security
 
 ## Patterns and design
 
-## canonical-patterns-by-need · SHOULD
-A pattern answers a present problem, and then the canonical one: strategy plus registry for vendors and kinds, factory or module object for adapters, decorator at the composition root, reducer for transitions, transition table for state machines, builder for test data.
-**Why:** one known pattern per problem is recognised at a glance; an invented one, or one used in advance, must be learned and maintained.
+## decorators-applied-at-composition-root · SHOULD
+A behaviour wrapped around an implementation is a decorator, applied at the composition root where the implementation is chosen.
+**Why:** the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps.
 **Check:** review
-**Tags:** architecture
-
-## dry-applies-to-knowledge · SHOULD
-Don't-repeat-yourself applies to knowledge, not to text that merely looks alike. Placement lifts shared code on the second consumer; an abstraction waits for the third occurrence.
-**Why:** two copies of one fact drift, but two similar pieces with different reasons to change are coupled wrongly by one abstraction.
-**Check:** review
-**Tags:** architecture
+**Implements:** `canonical-patterns-by-need`

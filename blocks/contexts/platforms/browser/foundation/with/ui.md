@@ -2,6 +2,12 @@
 
 > Screens in a browser: the URL, the document, the viewport and the pointer.
 
+## links-are-anchors · MUST
+Navigation renders an anchor with a real `href`.
+**Why:** a real link opens in a new tab, can be copied and is announced as a link; a click handler is none of these.
+**Check:** review
+**Tags:** a11y, ux
+
 ## mobile-first-additive-breakpoints · SHOULD
 Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out, and every entry document declares the responsive viewport.
 **Why:** styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought.

@@ -6,13 +6,19 @@ A third-party script is rendered as `<script async src>` where it is needed; no 
 **Check:** review
 **Tags:** performance
 
+## document-metadata-rendered-by-its-owner · SHOULD
+`<title>`, `<meta>` and `<link>` are rendered as elements, which React hoists into the head; no head library, and no effect writing to the document head.
+**Why:** a library or an effect is a second writer of the head, and it and React overwrite each other.
+**Check:** review
+**Tags:** ux
+
 ## aria-attributes-as-the-dom-spells-them · MUST
 ARIA attributes are written hyphenated, as the DOM spells them; the camelCase form is forbidden.
 **Why:** a camelCase ARIA prop is not an attribute the browser knows, so assistive technology never sees it.
 **Check:** tool — lint
 **Tags:** a11y
 
-## labels-bound-with-use-id · SHOULD
+## labels-bound-with-use-id · MUST
 A label names its control with `htmlFor`, and the id comes from `useId`, never typed by hand or random.
 **Why:** a typed id collides when the component renders twice, and a random one differs between server and client.
 **Check:** tool — lint
@@ -25,7 +31,7 @@ An overlay — a dialog, a popover, a toast — renders through a portal.
 **Check:** review
 **Tags:** a11y, ux
 
-## browser-apis-read-outside-render · SHOULD
+## browser-apis-read-outside-render · MUST
 Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with a server snapshot, never during render.
 **Why:** read during render, they break server rendering and tear between renders.
 **Check:** review

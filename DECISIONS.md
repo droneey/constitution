@@ -21,7 +21,7 @@
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0076 |
 | Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 |
+| Axes | ADR-0088 – ADR-0089 |
 
 ---
 
@@ -531,4 +531,10 @@
 - **Decision.** A block is its card `<id>.md` — front matter and summary, no rule — and up to three axis folders: `foundation/`, `architecture/` and `workflow/`, each holding its chapters and its `with/` seams. Two questions place a rule, each apart from the other: its layer by what must disappear for it to lose its meaning, and its axis by whether a team with another architecture, or another workflow, would still want it. Architecture is the structure of a system in the sense of Clean Architecture, DDD and hexagonal architecture — layers and their duties, the direction of dependencies, boundaries with ports and adapters, the homes of input, output and state, the composition root, the isolation of parts, read and write apart, and the tree that spells them; workflow is how a change travels from the idea to the release. A rule that implements an architecture or workflow rule is on that axis; the layout of tests is foundation. Architecture and workflow may refer to foundation; foundation refers only to itself, and the two never to each other. A project lists the axes it follows in `constitution.yaml`, `foundation` always among them. Every rule moved to its axis by a census of all 614; a rule that bundles two axes stays whole on the stricter one until it is split. Core's `architecture` chapter is now `anatomy`, its `workflow` chapter `delivery`, and its two rules about files form `foundation/files.md`.
 - **Rejected.** Two parallel trees `foundation/` and `architecture/` above the layers, which give a block two homes; a suffix `.architecture.md` beside a default axis; a mark on each rule, which a hook cannot drop as a whole and which drifts, as the `architecture` tag did; one architecture block that places every other block's rules, which would name every library from above; folder names as the test of architecture, which misses the dependency rule itself.
 - **Why.** A team adopts the foundation the way it adopts a tool's recommended preset, whatever its own architecture and workflow, and the axes make that choice one line. The literature separates the three the same way: style guides and Clean Code for the craft, Clean Architecture, hexagonal architecture and DDD for the structure, and engineering practices — Clean Coder, Accelerate, the code-review guides — for the process.
+
+## ADR-0089 — A rule sits on one axis, refers inward and is never looser than its parent
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** Every rule that bundled two axes is split into one rule per axis; the half on `architecture/` or `workflow/` may implement the half on `foundation/`, and where one half repeated another rule it was dropped instead. A rule on `foundation/` implements only `foundation/`, and `architecture/` and `workflow/` never implement each other; `blocks:check` reports any other reference. A rule is never looser than the rule it implements: a SHOULD that realised a MUST is now MUST, and a link a preference cannot honour is dropped; the check reports a looser child. Twelve duplicates are merged into the rule that keeps their meaning, `fast-source-updates-once-per-frame` moves to ui, `pipeline-stages-under-steps` and `dependencies-imported-from-their-entries` to core, and an abstraction waits for its third occurrence in the principles as in ADR-0058. The `architecture` tag is gone, since the axis says it; the `workflow` tag is now `process`, and `design` is the lens for the craft of functions and modules. A rule on `foundation/` carries a lens; on `architecture/` and `workflow/` the axis is its lens.
+- **Why.** A foundation-only project must receive rules that stand on their own, and a MUST loses its force when the rules that carry it out may be left with a reason.
 

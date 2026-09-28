@@ -20,7 +20,19 @@ A caught error is handled, rethrown, or mapped to a typed error. Code branches o
 Every rule whose Check names a role is held by a tool of that role in the project's check, configured to fail on a violation. A rule no configured tool holds is reviewed, or lowered by an override.
 **Why:** a rule held only by prose is broken as soon as nobody reads it, and a tool never tires.
 **Check:** review
-**Tags:** workflow
+**Tags:** process
+
+## one-reason-per-unit · MUST
+Each unit — a function, a class, a file — has one reason to change.
+**Why:** a unit with two reasons changes for both, and every change risks the other purpose.
+**Check:** review
+**Tags:** design
+
+## numbers-in-text-from-data · MUST
+A number shown in a text — a count, a total, a limit — is read from the data it describes, never typed again.
+**Why:** a number typed twice drifts from its source, and the text then states something the program no longer does.
+**Check:** review
+**Tags:** data
 
 ## The modelling vocabulary
 

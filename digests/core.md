@@ -33,5 +33,5 @@ Hold it to the rules of the project's domains and language and their requirement
 
 This file, then each axis's `principles`, then the chapters of the task: `anatomy` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `delivery` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.
 
-Laws of foundation: illegal-states-unrepresentable, errors-surfaced-never-swallowed, rules-held-by-tools.
+Laws of foundation: illegal-states-unrepresentable, errors-surfaced-never-swallowed, rules-held-by-tools, one-reason-per-unit, numbers-in-text-from-data.
 Laws of architecture: dependencies-point-inward-without-cycles, inner-layers-declare-their-contracts, domain-imports-only-itself-and-kernel, one-reason-to-change, one-home-per-datum, features-blind-to-each-other, access-only-through-curated-surface, external-shapes-mapped-at-boundary, side-effects-at-the-edges, one-explicit-composition-root, reads-and-writes-apart, code-lives-with-its-reason-to-change, contracts-shaped-by-role, untrusted-input-parsed-at-edge, extension-by-addition.

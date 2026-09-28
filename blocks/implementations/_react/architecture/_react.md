@@ -13,7 +13,6 @@ A value that can be derived is computed during render, never stored in state and
 A component file calls no effect hook: its effects live in hooks in `<name>.hooks.ts` beside it, and input or output goes only through binding units.
 **Why:** a component then reads as its markup, and its effects are found and tested in one place.
 **Check:** tool — lint
-**Tags:** architecture
 **Implements:** `side-effects-at-the-edges`
 
 ## Composition

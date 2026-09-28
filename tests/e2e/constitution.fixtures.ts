@@ -48,7 +48,7 @@ const rule = (input: RuleFixture): string =>
     input.statement,
     '**Why:** it keeps the fixture honest.',
     `**Check:** ${input.check ?? 'review'}`,
-    '**Tags:** architecture',
+    '**Tags:** design',
     '',
   ].join('\n');
 

@@ -111,6 +111,12 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 **Check:** review
 **Tags:** testing, security
 
+## one-fake-per-port · SHOULD
+Each port has one fake, `<port>.fake`, shared by every spec that needs it.
+**Why:** one fake per port is kept in step with its real adapter once, not once per spec that writes its own.
+**Check:** review
+**Tags:** testing
+
 ## adapter-integration-tested-in-sandbox · SHOULD
 Each adapter is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each port operation and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
 **Why:** a fake proves the domain; only the real engine proves the mapping to it.

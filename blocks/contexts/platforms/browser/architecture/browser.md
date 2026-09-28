@@ -4,13 +4,12 @@
 The program's logic runs in the tab. Server rendering, when it is on, only speeds the first paint: no business logic, no data access and no server function lives on the web tier.
 **Why:** a web tier with logic of its own is a second backend nobody designed, with its own secrets and failures.
 **Check:** review
-**Tags:** architecture
 
-## runtime-configuration-served-beside-bundle · MUST
-One bundle serves every environment: its configuration is served beside it and read once, at boot, by the configuration provider. No environment value is baked into the bundle.
-**Why:** one tested bundle is promoted from staging to production unchanged, and nothing environment-specific is published inside it.
+## served-configuration-read-at-boot · MUST
+In the tab, the configuration served beside the bundle is the environment: the configuration provider reads it once, at boot.
+**Why:** the program then depends on one typed configuration, and a missing or malformed setting fails at start in every environment alike.
 **Check:** review
-**Tags:** security, architecture
+**Tags:** security
 **Implements:** `environment-read-once-at-boot`
 
 ## cross-window-messages-check-origin · MUST

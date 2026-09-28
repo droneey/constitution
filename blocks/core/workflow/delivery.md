@@ -6,4 +6,4 @@
 Specs, plans and working notes live in a `local/` folder that version control ignores.
 **Why:** working notes are true for a day; committed, they mislead every later reader.
 **Check:** review
-**Tags:** workflow
+**Tags:** process

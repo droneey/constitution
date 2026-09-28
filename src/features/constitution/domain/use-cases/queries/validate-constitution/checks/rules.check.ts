@@ -1,5 +1,5 @@
 import type { Finding } from '#/kernel';
-import { ROLES, Tag } from '#/kernel';
+import { Axis, LEVELS, ROLES, Tag } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -41,7 +41,9 @@ const labelFindings = (rule: Rule): readonly Finding[] => {
     rule.statement === '' ? 'has no statement' : undefined,
     (rule.labels.why ?? '') === '' ? 'has no Why' : undefined,
     checkMessage(rule),
-    ruleTags.length === 0 ? 'has no Tags' : undefined,
+    ruleTags.length === 0 && rule.axis === Axis.Foundation
+      ? 'has no Tags; a foundation rule carries a lens'
+      : undefined,
     ...ruleTags
       .filter((tag) => !tags.includes(tag))
       .map((tag) => `has the tag "${tag}", which is not a lens`),
@@ -92,13 +94,23 @@ const implementsMessage = (input: {
     return 'implements itself';
   }
 
-  return mayReferTo({
-    byId: input.byId,
-    from: input.rule,
-    to: target.block,
-  })
-    ? undefined
-    : `implements "${slug}" of ${target.block}, which its block may not refer to`;
+  if (
+    !mayReferTo({
+      byId: input.byId,
+      from: input.rule,
+      to: target.block,
+    })
+  ) {
+    return `implements "${slug}" of ${target.block}, which its block may not refer to`;
+  }
+
+  if (target.axis !== input.rule.axis && target.axis !== Axis.Foundation) {
+    return `implements "${slug}" on ${target.axis}, which a rule on ${input.rule.axis} may not refer to`;
+  }
+
+  return LEVELS.indexOf(input.rule.level) > LEVELS.indexOf(target.level)
+    ? `is ${input.rule.level} while it implements the ${target.level} rule "${slug}"; a rule is never looser than the rule it implements`
+    : undefined;
 };
 
 const rulesCheck: Check = ({

@@ -85,7 +85,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tdependencies-point-inward',
       record:
-        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\tarchitecture\tfoundation\tThe dependencies-point-inward rule holds.',
+        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\tdesign\tfoundation\tThe dependencies-point-inward rule holds.',
       what: 'an empty check kind and role',
     },
     {

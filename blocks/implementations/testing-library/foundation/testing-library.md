@@ -26,9 +26,9 @@ A binding unit is proven through the screen or widget that uses it; `renderHook`
 **Tags:** testing
 **Implements:** `spec-per-boundary`
 
-## render-helper-builds-fresh-providers · SHOULD
-One render helper in `__tests__/<name>.fixtures` mounts the providers a spec needs, fresh for each spec, with the transport replaced by captured responses.
-**Why:** every spec then runs inside the real composition, and nothing leaks from one spec into the next.
+## render-helper-builds-fresh-providers · MUST
+One render helper in `__tests__/<name>.fixtures` mounts the providers a spec needs, fresh for each spec, with the transport replaced by captured responses and the cache client's retries off; no client is shared between specs.
+**Why:** every spec then runs inside the real composition, and nothing leaks from one spec's cache into the next.
 **Check:** review
 **Tags:** testing
 **Implements:** `ui-specs-replace-the-transport`

@@ -86,7 +86,7 @@ const rule = (input: RuleFixture): string =>
     input.statement ?? `The ${input.slug} rule holds.`,
     `**Why:** ${input.why ?? 'it keeps the code honest.'}`,
     `**Check:** ${input.check ?? 'review'}`,
-    `**Tags:** ${input.tags ?? 'architecture'}`,
+    `**Tags:** ${input.tags ?? 'design'}`,
     ...(input.implementsSlug === undefined
       ? []
       : [

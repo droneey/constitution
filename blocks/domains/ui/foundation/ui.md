@@ -26,7 +26,7 @@ A button names its result, verb and object — never "Submit" or "OK". "Cancel" 
 A need is met by existing components first, then by extending a primitive, and only then by a new primitive that is composed in. A primitive's markup is never re-created.
 **Why:** each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first.
 **Check:** review
-**Tags:** architecture, ux
+**Tags:** ux
 
 ## complex-patterns-on-accessible-primitives · MUST
 A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the accessible primitive library, never by hand.
@@ -38,13 +38,13 @@ A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their ki
 A component with a second region, an optional part or a slot is a compound: a root with named parts, its content passed as children. A leaf stays a leaf; a recurring arrangement becomes a widget.
 **Why:** a component with a prop per region grows a prop for every new need; a compound grows by composition.
 **Check:** review
-**Tags:** architecture, ux
+**Tags:** ux
 
 ## compound-root-owns-choreography · SHOULD
 The root of a compound owns the choreography of its animated regions and shares it through the compound's context.
 **Why:** regions that animate on their own drift out of step; one owner keeps them in time.
 **Check:** review
-**Tags:** architecture, ux
+**Tags:** ux
 
 ## boolean-props-prefixed · MUST
 A boolean prop starts with `is` for a state, `has` for content, `with` for an opt-in part, `should` for a policy, or `as` for a polymorphic render; never a bare, mixed or negated name.
@@ -67,12 +67,25 @@ Before a prop is added, the existing name for the same meaning is reused; synony
 **Tags:** naming
 **Implements:** `one-word-per-concept`
 
-## unused-props-deleted · SHOULD
+## unused-props-deleted · MUST
 An optional prop no call site uses is deleted, and its default inlined.
 **Why:** an unused option is a branch nobody tests and an API nobody needs.
 **Check:** review
-**Tags:** architecture
+**Tags:** design
 **Implements:** `no-dead-code`
+
+## vendored-components-adapted-on-arrival · SHOULD
+A component installed as source is, before review, restyled to tokens, stripped of unused props and made to follow the prop rules. The existing primitives are searched first; the component is integrated or rejected, never kept as it came.
+**Why:** code copied in as it came brings another project's names and looks, and stays foreign until someone changes it.
+**Check:** review
+**Tags:** ux
+
+## props-drilled-at-most-two-levels · SHOULD
+A prop passed unchanged through more than two levels calls for composition or a nearer widget.
+**Why:** a prop threaded through components that do not use it couples them all to it.
+**Check:** review
+**Tags:** design
+**Implements:** `talk-only-to-neighbours`
 
 ## components-size-to-their-container · SHOULD
 A component sizes to its container, not to the screen. A breakpoint restyles and never swaps a tree that holds state; a hidden region keeps its data.
@@ -85,6 +98,12 @@ Drag and drop shows that an item can be grabbed, that it is grabbed, where it ca
 **Why:** a drag without feedback is a guess, and a dropped item lands where the user did not mean.
 **Check:** review
 **Tags:** ux
+
+## fast-source-updates-once-per-frame · SHOULD
+A fast source — a resize, a scroll, a stream — updates state at most once per frame, folding its events in batches.
+**Why:** dozens of updates a second redraw nothing the user can see and starve everything else.
+**Check:** review
+**Tags:** performance
 
 ## targets-meet-platform-minimum · MUST
 Every target meets the platform's minimum size, counting its padding.
@@ -142,4 +161,4 @@ Primitives carry no look of their own.
 A slot renders the consumer's element with the primitive's behaviour.
 **Why:** a link or a custom element can then take a primitive's behaviour without wrapping it in another element.
 **Check:** review
-**Tags:** architecture
+**Tags:** design

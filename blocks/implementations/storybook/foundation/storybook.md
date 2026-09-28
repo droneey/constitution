@@ -6,7 +6,7 @@ Every UI-kit component has `<name>.stories.tsx` beside it, with a story per vari
 **Check:** review
 **Tags:** ux, testing
 
-## stories-render-from-fixtures · SHOULD
+## stories-render-from-fixtures · MUST
 Stories render from fixtures and fakes; no request leaves a story.
 **Why:** a story that reaches the network breaks when the server does, and shows data nobody chose.
 **Check:** review
@@ -19,3 +19,9 @@ Screenshots are compared over the UI kit's stories, where the look is the contra
 **Check:** review
 **Tags:** testing
 **Implements:** `screenshots-only-where-look-is-contract`
+
+## stories-outside-coverage · MUST
+Stories are outside coverage.
+**Why:** a story renders a component without asserting anything, so a line it covers would count as proven when no spec proves it.
+**Check:** review
+**Tags:** testing

@@ -17,7 +17,7 @@ governs: ["lingui.config.ts", "**/locales/**"]
 
 | Requirement | How in Lingui | Status |
 |---|---|---|
-| `i18n-plurals-by-cldr` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | met |
-| `i18n-parameters-without-concatenation` | ICU placeholders; `<Trans>` keeps components inside the message | met |
+| `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | met |
+| `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | met |
 | `i18n-typed-keys` | a message's id is its source text, checked by extraction; no compile-time key type | partial: the strict compile fails on a missing message |
 | `i18n-lazy-locales` | a dynamic import per locale through the build plugin | met |

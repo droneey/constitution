@@ -17,8 +17,15 @@ A utility with no token behind it — `flex`, `items-center`, `truncate` — is 
 A cascading variant is a `data-*` attribute on the root, resolved by an `@utility` rule, and never passed down as a prop.
 **Why:** the stylesheet reaches every descendant at once, with no prop threaded through them.
 **Check:** review
-**Tags:** architecture
+**Tags:** design
 **Implements:** `cascading-variant-by-data-attribute`
+
+## variants-in-one-cva-map · MUST
+A component's own variants are one `cva` map, which types the props through `VariantProps`. The axis is declared once, never again as an enum or a union; `cn()` merges classes and never decides one.
+**Why:** a second declaration of an axis drifts from the map, and a class decided outside the map is a variant nobody can find.
+**Check:** review
+**Tags:** types
+**Implements:** `variant-axis-declared-once-in-map`
 
 ## mobile-first-breakpoints · MUST
 Base classes serve small screens and are widened by `md:`, `lg:` and `xl:`; `max-*:` is forbidden.
@@ -27,7 +34,7 @@ Base classes serve small screens and are widened by `md:`, `lg:` and `xl:`; `max
 **Tags:** ux
 **Implements:** `mobile-first-additive-breakpoints`
 
-## dynamic-viewport-classes · SHOULD
+## dynamic-viewport-classes · MUST
 Viewport heights use the dynamic units (`h-dvh`), never `h-screen`.
 **Why:** `h-screen` is `100vh`, which ignores the browser's own toolbars on phones.
 **Check:** tool — lint

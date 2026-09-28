@@ -7,7 +7,6 @@ Every visual value — colour, space, size, type, radius, shadow, motion, layer 
 **Why:** a value typed outside the tokens is a second design that the next theme change misses.
 **Check:** tool — lint
 **Tags:** ux
-**Implements:** `one-home-per-datum`
 
 ## token-grammar-and-layers · MUST
 Tokens are named `<namespace>.<group>.<role>[.<step>]`, in four layers: primitive, never used by a component; semantic, on closed vocabularies; common, for the shell's constants; composite. A semantic token refers to primitives, never to a raw value.
@@ -26,20 +25,18 @@ Light and dark are one set of semantic tokens. Their values are derived by rule 
 **Why:** one set means a component is written once for both themes, and derived values keep contrast right when a colour changes.
 **Check:** review
 **Tags:** ux
-**Implements:** `generated-files-marked-never-edited`
 
 ## variant-axis-declared-once-in-map · MUST
 A component's variants are one declarative map from variant to style, in its `.variants` file, which also types the variant props. No style is decided outside it, and no second declaration — such as a parallel enum — repeats an axis.
 **Why:** the map is the one place a variant is defined, so adding one cannot miss a copy.
 **Check:** review
 **Tags:** types, ux
-**Implements:** `one-home-per-datum`
 
 ## cascading-variant-set-once-on-ancestor · SHOULD
 A variant that restyles descendants is set once on their ancestor and resolved by the styling cascade, never passed down as a prop.
 **Why:** a prop drilled for looks couples every component in between to a decision only the ancestor and the leaves care about.
 **Check:** review
-**Tags:** ux, architecture
+**Tags:** ux
 
 ## motion-from-tokens · SHOULD
 Durations and easings are tokens of two kinds, micro and macro; motion driven from code uses the same tokens, so a request for reduced motion switches them all.

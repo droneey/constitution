@@ -17,8 +17,8 @@ A secret never travels in a URL, and never reaches a build artefact: an image la
 **Tags:** security
 
 ## leaked-secret-rotated-at-once · MUST
-A secret that leaked — into a commit, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.
-**Why:** a leaked secret is compromised whether or not the leak is undone, and only its access log says whether it was used.
+A secret that leaked — into a commit, a log, a message — is rotated at once, and the access made with it while it was exposed is checked. Rewriting the history does not undo a leak into a commit.
+**Why:** a leaked secret is compromised whether or not the leak is undone — every clone and every cache already holds it — and only its access log says whether it was used.
 **Check:** review
 **Tags:** security
 
@@ -27,6 +27,12 @@ No secret and no personal data appear in logs, errors, test data or documents. A
 **Why:** output is copied to places with weaker access than the data it came from.
 **Check:** review
 **Tags:** security, data
+
+## local-environment-file-ignored · SHOULD
+The local environment file is ignored by version control; its committed example carries placeholders only.
+**Why:** the real values stay on the machine they belong to, and a real value never lands in the example.
+**Check:** review
+**Tags:** security
 
 ## least-privilege-credentials · SHOULD
 A credential belongs to one identity and one purpose, per environment, with only the permissions its job needs, documented beside its use. Access is granted to people and services, never through a shared credential.
@@ -86,6 +92,12 @@ Every dependency's licence is on the project's allowlist.
 **Tags:** security
 
 ## Operations and access
+
+## access-denied-unless-granted · MUST
+Access is denied unless a rule grants it, and a test proves the access of each entry point.
+**Why:** access open by default is open wherever someone forgot a rule, and only a test notices the entry point that forgot.
+**Check:** test
+**Tags:** security
 
 ## irreversible-operations-behind-flag-and-human · MUST
 An operation that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
