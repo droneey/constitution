@@ -1,48 +1,45 @@
 ---
 id: core
-kind: core
 summary: What holds for any program, in any language, of any kind.
-chapters: [principles.md, architecture.md, code.md, testing.md, security.md, workflow.md, collaboration.md]
 requires: []
 extends: null
 abstract: false
 checks: []
-owns: []
+dictionary: []
 governs: []
-status: stable
 ---
 
 # The droneey constitution
 
-The rules a droneey repository is built by. The digest at session start lists the active blocks and their files; the files hold the rules, so read the ones that govern the work.
+The rules a droneey repository is built by. The digest lists the active blocks and their files; read the files that govern the work.
 
 ## How to use it
 
-1. Before a change, read core's chapters and the files of the blocks that govern it. Before handing the work back, check it against every active rule, not only those the task seemed to touch.
-2. A rule is a heading `<slug> · <level>` with its Why, Check and Tags. MUST binds. SHOULD is the default; not following it needs a stated reason. MAY is a permitted choice.
-3. A request against a MUST is answered with the conflict and an alternative, never obeyed silently.
-4. A case no rule covers follows the nearest principle. A real gap is amended in the constitution or written as a local block, never kept as a silent habit.
+1. Before a change, read core's chapters and the files of the blocks that govern it, on the project's axes. Before handing it back, check it against every active rule, not only those it seemed to touch.
+2. A rule is `<slug> · <level>`, or `<slug> → <rule>` with that rule's level, then its Why, Check and Tags. MUST binds; SHOULD is left only with a reason; MAY is a choice.
+3. A request against a MUST gets the conflict and an alternative, never silent obedience.
+4. A case no rule covers follows the nearest principle; a real gap is amended or written as a local block, never kept as a silent habit.
 
 ## Precedence
 
-1. An override in `constitution.yaml` is stronger than any rule, core included. It is written only with the user's consent in the chat, for that override, with its reason.
+1. An override in `constitution.yaml` is stronger than any rule, core included. It is written only with the user's consent to it, and its reason.
 2. Otherwise the more specific layer wins: implementations, then contexts (platforms and languages), then domains, then core. A block tightens what is above it, never loosens it.
-3. A clash between a platform and a language means the rule is misplaced; it moves to an implementation or to the project.
+3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project.
 
 ## Where a rule goes
 
-Ask what must disappear for the rule to lose its meaning. Nothing: core. An interface, an API, a network: that domain. A runtime or a language: that context. A library: its block.
+Two questions place a rule. Its layer: what must disappear for it to lose its meaning? Nothing: core. An interface, an API, a network: that domain. A runtime or a language: that context. A library: its block. Its axis: would a team with another architecture still want it? If not, `architecture/` — layers, dependency direction, ports and adapters, homes of I/O and state, the composition root, the tree. With another workflow? If not, `workflow/` — branch, commit, review, release. Otherwise `foundation/`; a rule failing both is split, and one implementing a rule on an axis is on it. `architecture/` and `workflow/` refer to `foundation/`, never to each other; `foundation/` refers only to itself.
 
 ## A library with no block
 
-Apply the rules of the project's domains and language to it directly, and check it against their requirements for implementation. Report every MUST it cannot meet, and propose a local block for it, marked `status: draft`. Never break a rule silently.
+Hold it to the rules of the project's domains and language and their requirements for implementation, report every MUST it cannot meet, and propose a local block for it. Never break a rule silently.
 
 ## The project's files
 
-- `constitution.yaml`: the pinned version, the blocks the project follows, its applications, its check command and its overrides.
-- `PROJECT.md`: what the product is and for whom, its entities, its boundaries and its glossary.
+- `constitution.yaml`: the pinned version, its axes (`foundation` always), its blocks, its applications, its check command and its overrides.
+- `PROJECT.md`: the product and its users, entities, boundaries and glossary.
 - `rules/`: the project's local blocks.
 
 ## Reading order
 
-This file, then `principles`, then the chapter of the task: `architecture` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `workflow` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.
+This file, then each axis's `principles`, then the chapters of the task: `anatomy` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `delivery` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.

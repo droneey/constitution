@@ -6,6 +6,7 @@ import type {
   RequirementAnswer,
   Rule,
 } from '../../../entities';
+import { BlockFileRole } from '../../../entities';
 import type { BlocksById } from '../../../utils';
 import {
   checkOf,
@@ -13,7 +14,6 @@ import {
   languagesOf,
   rewriteLocalLinks,
   ruleLanguagesOf,
-  tagsOf,
   targetFromRoot,
 } from '../../../utils';
 import { ancestorsOf } from './ancestors.utils';
@@ -52,15 +52,15 @@ const blockRecord = (input: {
     block.layer,
     block.frontMatter.summary,
     block.files
-      .filter((file) => file.role === 'chapter')
-      .map((file) => fileNameOf(file.path))
+      .filter((file) => file.role === BlockFileRole.Chapter)
+      .map((file) => `${file.axis}/${fileNameOf(file.path)}`)
       .join(LIST),
     block.files
       .flatMap((file) =>
         file.with === undefined
           ? []
           : [
-              file.with,
+              `${file.axis}/${file.with}`,
             ],
       )
       .join(LIST),
@@ -99,7 +99,10 @@ const ruleRecord = (input: { byId: BlocksById; rule: Rule }): string => {
     // Stryker disable next-line ConditionalExpression: join writes a missing role as empty
     check.kind === 'tool' ? check.role : '',
     ruleLanguagesOf(input).join(LIST),
-    tagsOf(rule).join(LIST),
+    rule.tags.join(LIST),
+    rule.axis,
+    rule.parent ?? '',
+    String(rule.statedLevel !== undefined),
     // The digest has no folder, so a link in the headline is read from the root.
     rewriteLocalLinks({
       rewrite: (target: string): string =>

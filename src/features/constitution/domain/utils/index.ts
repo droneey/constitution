@@ -25,6 +25,6 @@ export {
   stemOf,
 } from './paths.utils';
 export type { RuleCheck } from './rule-labels.utils';
-export { checkOf, tagsOf } from './rule-labels.utils';
+export { checkOf } from './rule-labels.utils';
 export type { MarkdownSection } from './sections.utils';
 export { sectionsOf } from './sections.utils';

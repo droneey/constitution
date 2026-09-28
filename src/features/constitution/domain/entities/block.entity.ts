@@ -1,22 +1,24 @@
-import type { Kind, Layer, Role, Status } from '#/kernel';
+import type { Axis, Layer, Role } from '#/kernel';
 
 interface FrontMatter {
   abstract: boolean;
-  chapters: readonly string[];
   checks: readonly Role[];
+  dictionary: readonly string[];
   extends: string | undefined;
   governs: readonly string[];
   id: string;
-  kind: Kind;
-  owns: readonly string[];
   requires: readonly string[];
-  status: Status;
   summary: string;
 }
 
-type BlockFileRole = 'main' | 'chapter' | 'with';
+enum BlockFileRole {
+  Main = 'main',
+  Chapter = 'chapter',
+  With = 'with',
+}
 
 interface BlockFile {
+  axis: Axis | undefined;
   body: string;
   lines: number;
   path: string;
@@ -32,4 +34,5 @@ interface Block {
   path: string;
 }
 
-export type { Block, BlockFile, BlockFileRole, FrontMatter };
+export type { Block, BlockFile, FrontMatter };
+export { BlockFileRole };

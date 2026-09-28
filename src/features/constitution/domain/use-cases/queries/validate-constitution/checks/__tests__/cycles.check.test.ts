@@ -15,7 +15,6 @@ const requiring = (input: {
   [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
     body: `# ${input.id}\n`,
     id: input.id,
-    kind: 'implementation',
     requires: input.requires,
   }),
 });
@@ -119,7 +118,6 @@ describe('cyclesCheck', () => {
         'blocks/contexts/platforms/browser/browser.md': mainFile({
           body: '# Browser\n',
           id: 'browser',
-          kind: 'context',
           requires: [
             'react-dom',
           ],

@@ -6,6 +6,13 @@ const ADAPTERS = [
   '^src/features/[^/]+/adapters/',
 ];
 
+export const ROOT_CALLERS = [
+  ENTRY,
+  '^src/entrypoints/[^/]+/main\\.[^/]+$',
+  '^src/root/',
+  SPECS,
+];
+
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
   forbidden: [
@@ -64,14 +71,7 @@ export default {
       name: 'root-reached-only-from-entries',
       severity: 'error',
       from: {
-        pathNot: [
-          ENTRY,
-          '^src/entrypoints/[^/]+/main\\.[^/]+$',
-          '^src/root/',
-          '^src/router\\.[^/]+$',
-          '^src/routes/__root\\.[^/]+$',
-          SPECS,
-        ],
+        pathNot: ROOT_CALLERS,
       },
       to: {
         path: '^src/root/',

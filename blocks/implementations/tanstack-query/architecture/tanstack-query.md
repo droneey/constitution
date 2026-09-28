@@ -1,0 +1,29 @@
+# TanStack Query
+
+## query-functions-call-the-handed-adapter → binding-unit-composes-its-operation
+`queryFn` and `mutationFn` call the operation with the adapter the providers hand to the binding unit.
+
+| Why | Check | Tags |
+|---|---|---|
+| the adapter stays the composition root's choice, and a spec hands in another. | review | [] |
+
+## key-factory-in-cache-utils → cache-keys-from-feature-factory
+Each feature's key factory lives in its `app/utils/cache.utils.ts`.
+
+| Why | Check | Tags |
+|---|---|---|
+| every binding unit of the feature takes its keys from one known module, so a read and the invalidation that refreshes it build the same key. | review | [] |
+
+## cache-is-the-only-home-of-server-data → server-owns-remote-data
+Server data lives only in the cache: never copied into state, a context or a store.
+
+| Why | Check | Tags |
+|---|---|---|
+| a copy stops updating when the cache does, and the screen shows the copy. | review | [] |
+
+## unauthorized-handled-once-in-the-cache → unauthorized-handled-once-in-cache
+`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, turns an unauthorized error into session state through the auth feature's surface, once.
+
+| Why | Check | Tags |
+|---|---|---|
+| an expired session is handled the same way for every read and write. | review | [] |

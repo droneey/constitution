@@ -1,24 +1,22 @@
-import type { Level } from '#/kernel';
+import type { Axis, Level } from '#/kernel';
 
-const RULE_LABELS = [
-  'why',
-  'check',
-  'tags',
-  'example',
-  'implements',
-] as const;
-
-type RuleLabel = (typeof RULE_LABELS)[number];
-
-interface Rule {
+interface StatedRule {
+  axis: Axis;
   block: string;
+  check: string;
   file: string;
-  labels: Readonly<Partial<Record<RuleLabel, string>>>;
-  level: Level;
+  ownTags: readonly string[];
+  parent: string | undefined;
   slug: string;
+  statedLevel: Level | undefined;
   statement: string;
+  why: string;
   with: string | undefined;
 }
 
-export type { Rule, RuleLabel };
-export { RULE_LABELS };
+interface Rule extends StatedRule {
+  level: Level;
+  tags: readonly string[];
+}
+
+export type { Rule, StatedRule };

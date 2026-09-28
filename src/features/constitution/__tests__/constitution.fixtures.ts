@@ -13,25 +13,31 @@ import { createFakeFileTree } from './file-tree.fake';
 
 type Files = Record<string, string>;
 
-interface BlockFixture {
+interface CardFixture {
   abstract?: boolean;
-  body: string;
-  chapters?: readonly string[];
   checks?: readonly string[];
+  dictionary?: readonly string[];
   extends?: string | undefined;
   governs?: readonly string[];
   id: string;
-  kind: string;
-  owns?: readonly string[];
   requires?: readonly string[];
-  status?: string;
   summary?: string;
+}
+
+interface BlockFixture extends CardFixture {
+  body: string;
+}
+
+interface BlockFilesFixture extends CardFixture {
+  body?: string;
+  dir: string;
+  files?: Readonly<Files>;
 }
 
 interface RuleFixture {
   check?: string;
-  implementsSlug?: string;
   level?: string;
+  parent?: string;
   slug: string;
   statement?: string;
   tags?: string;
@@ -45,33 +51,48 @@ const mainFile = (block: BlockFixture): string =>
   [
     '---',
     `id: ${block.id}`,
-    `kind: ${block.kind}`,
     `summary: ${block.summary ?? `The ${block.id} block.`}`,
-    `chapters: ${list(block.chapters)}`,
     `requires: ${list(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
     `checks: ${list(block.checks)}`,
-    `owns: ${list(block.owns)}`,
+    `dictionary: ${list(block.dictionary)}`,
     `governs: ${list(block.governs)}`,
-    `status: ${block.status ?? 'stable'}`,
     '---',
     '',
     block.body,
   ].join('\n');
 
+const blockFiles = (input: BlockFilesFixture): Files => {
+  const { dir, files = {}, ...card } = input;
+
+  return {
+    [`${dir}/${input.id}.md`]: mainFile({
+      ...card,
+      body: input.body ?? `# ${input.id}\n`,
+    }),
+    ...Object.fromEntries(
+      Object.entries(files).map(([path, text]) => [
+        `${dir}/${path}`,
+        text,
+      ]),
+    ),
+  };
+};
+
+const headingOf = (input: RuleFixture): string =>
+  input.parent === undefined
+    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
+    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+
 const rule = (input: RuleFixture): string =>
   [
-    `## ${input.slug} · ${input.level ?? 'MUST'}`,
+    headingOf(input),
     input.statement ?? `The ${input.slug} rule holds.`,
-    `**Why:** ${input.why ?? 'it keeps the code honest.'}`,
-    `**Check:** ${input.check ?? 'review'}`,
-    `**Tags:** ${input.tags ?? 'architecture'}`,
-    ...(input.implementsSlug === undefined
-      ? []
-      : [
-          `**Implements:** \`${input.implementsSlug}\``,
-        ]),
+    '',
+    '| Why | Check | Tags |',
+    '|---|---|---|',
+    `| ${input.why ?? 'it keeps the code honest.'} | ${input.check ?? 'review'} | ${input.tags ?? '[]'} |`,
     '',
   ].join('\n');
 
@@ -123,4 +144,13 @@ const without = (input: { files: Readonly<Files>; path: string }): Files =>
   );
 
 export type { BlockFixture, Files, RuleFixture };
-export { checkInputOf, loadedOf, mainFile, rule, sourceOf, textOf, without };
+export {
+  blockFiles,
+  checkInputOf,
+  loadedOf,
+  mainFile,
+  rule,
+  sourceOf,
+  textOf,
+  without,
+};

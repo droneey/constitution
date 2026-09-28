@@ -10,7 +10,7 @@ import { decisionsCheck } from '../decisions.check';
 const LOG = 'DECISIONS.md';
 const ACCEPTED = '**Date:** 2026-09-25 · **Status:** Accepted';
 const NO_DATE_LINE =
-  'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN" under its heading';
+  'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed" under its heading';
 
 const logOf = (entries: readonly string[]): string =>
   [
@@ -48,20 +48,21 @@ describe('decisionsCheck', () => {
   it.each([
     {
       expected:
-        'entry ADR-0003 sits where ADR-0002 is expected; the log is contiguous and append-only',
-      name: 'a number is skipped',
-      numbers: [
-        '0001',
-        '0003',
-      ],
-    },
-    {
-      expected:
-        'entry ADR-0001 sits where ADR-0002 is expected; the log is contiguous and append-only',
+        'entry ADR-0001 follows ADR-0001; the numbers of the log only rise',
       name: 'a number repeats',
       numbers: [
         '0001',
         '0001',
+      ],
+    },
+    {
+      expected:
+        'entry ADR-0002 follows ADR-0003; the numbers of the log only rise',
+      name: 'a number falls',
+      numbers: [
+        '0001',
+        '0003',
+        '0002',
       ],
     },
   ])(
@@ -116,9 +117,8 @@ describe('decisionsCheck', () => {
       line: '**Date:** 2026-13-05 · **Status:** Accepted',
     },
     {
-      expected:
-        'entry ADR-0001 is superseded by ADR-0009, which is not an entry',
-      line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0009',
+      expected: NO_DATE_LINE,
+      line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
     },
   ])(
     'should report "$expected" when the line under the heading is $line',
@@ -150,15 +150,15 @@ describe('decisionsCheck', () => {
     {
       log: logOf([
         entry({
-          line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
+          line: ACCEPTED,
           number: '0001',
         }),
         entry({
           line: '**Date:** 2026-09-26 · **Status:** Proposed',
-          number: '0002',
+          number: '0003',
         }),
       ]),
-      name: 'a later entry supersedes an earlier one',
+      name: 'a deleted entry leaves its number unused',
     },
     {
       log: logOf([

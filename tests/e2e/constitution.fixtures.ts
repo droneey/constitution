@@ -1,13 +1,13 @@
+import { Axis } from '#/kernel';
+
 type Files = Record<string, string>;
 
 interface BlockFixture {
   abstract?: boolean;
   body: string;
-  chapters?: readonly string[];
   checks?: readonly string[];
   extends?: string;
   id: string;
-  kind: string;
   requires?: readonly string[];
   summary: string;
 }
@@ -15,6 +15,7 @@ interface BlockFixture {
 interface RuleFixture {
   check?: string;
   level?: string;
+  parent?: string;
   slug: string;
   statement: string;
 }
@@ -30,28 +31,31 @@ const mainFile = (block: BlockFixture): string =>
   [
     '---',
     `id: ${block.id}`,
-    `kind: ${block.kind}`,
     `summary: ${block.summary}`,
-    `chapters: ${list(block.chapters)}`,
     `requires: ${list(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
     `checks: ${list(block.checks)}`,
-    'owns: []',
+    'dictionary: []',
     'governs: []',
-    'status: stable',
     '---',
     '',
     block.body,
   ].join('\n');
 
+const headingOf = (input: RuleFixture): string =>
+  input.parent === undefined
+    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
+    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+
 const rule = (input: RuleFixture): string =>
   [
-    `## ${input.slug} · ${input.level ?? 'MUST'}`,
+    headingOf(input),
     input.statement,
-    '**Why:** it keeps the fixture honest.',
-    `**Check:** ${input.check ?? 'review'}`,
-    '**Tags:** architecture',
+    '',
+    '| Why | Check | Tags |',
+    '|---|---|---|',
+    `| it keeps the fixture honest. | ${input.check ?? 'review'} | [] |`,
     '',
   ].join('\n');
 
@@ -59,6 +63,25 @@ const section = (input: {
   rules: readonly RuleFixture[];
   title: string;
 }): string => `# ${input.title}\n\n${input.rules.map(rule).join('\n')}`;
+
+const blockFiles = (
+  input: BlockFixture & {
+    dir: string;
+    files?: Readonly<Files>;
+  },
+): Files => {
+  const { dir, files = {}, ...card } = input;
+
+  return {
+    [`${dir}/${input.id}.md`]: mainFile(card),
+    ...Object.fromEntries(
+      Object.entries(files).map(([path, text]) => [
+        `${dir}/${path}`,
+        text,
+      ]),
+    ),
+  };
+};
 
 // Core's part runs close to its 3,500 bytes, as the real one may.
 const CORE_BODY = [
@@ -78,73 +101,116 @@ const CORE_BODY = [
     paragraph,
     '',
   ]),
-  rule({
-    slug: 'rules-bind',
-    statement: 'Every change follows the active rules.',
-  }),
 ].join('\n');
 
-const CORE_PART = `${CORE_BODY.trim()}\n\nLaws: dependencies-point-inward, names-reveal-intent.\n`;
+const LAWS_OF_FOUNDATION = 'Laws of foundation: names-reveal-intent.';
+const LAWS_OF_ARCHITECTURE = 'Laws of architecture: dependencies-point-inward.';
+const CORE_PART = `${CORE_BODY.trim()}\n\n${LAWS_OF_FOUNDATION}\n${LAWS_OF_ARCHITECTURE}\n`;
 
-const coreFiles = (): Files => ({
-  'blocks/core/code.md': section({
-    rules: [
-      {
-        check: 'tool — secrets',
-        slug: 'no-secret-in-code',
-        statement: 'No secret is written into the code.',
-      },
-    ],
-    title: 'Code',
-  }),
-  'blocks/core/core.md': mainFile({
+const coreFiles = (): Files =>
+  blockFiles({
     body: CORE_BODY,
-    chapters: [
-      'principles.md',
-      'code.md',
-    ],
+    dir: 'blocks/core',
+    files: {
+      'foundation/principles.md': section({
+        rules: [
+          {
+            slug: 'names-reveal-intent',
+            statement: 'A name says what a thing is for.',
+          },
+          {
+            level: 'SHOULD',
+            slug: 'names-are-short',
+            statement: 'A name is as short as its meaning allows.',
+          },
+        ],
+        title: 'Principles',
+      }),
+      'foundation/code.md': section({
+        rules: [
+          {
+            check: 'tool — secrets',
+            slug: 'no-secret-in-code',
+            statement: 'No secret is written into the code.',
+          },
+        ],
+        title: 'Code',
+      }),
+      'architecture/principles.md': section({
+        rules: [
+          {
+            slug: 'dependencies-point-inward',
+            statement: 'Dependencies point inward.',
+          },
+        ],
+        title: 'Principles',
+      }),
+      'workflow/delivery.md': section({
+        rules: [
+          {
+            slug: 'rules-bind',
+            statement: 'Every change follows the active rules.',
+          },
+        ],
+        title: 'Delivery',
+      }),
+    },
     id: 'core',
-    kind: 'core',
     summary: 'The laws for any program.',
-  }),
-  'blocks/core/principles.md': section({
-    rules: [
-      {
-        slug: 'dependencies-point-inward',
-        statement: 'Dependencies point inward.',
-      },
-      {
-        slug: 'names-reveal-intent',
-        statement: 'A name says what a thing is for.',
-      },
-    ],
-    title: 'Principles',
+  });
+
+const rulesFile = (input: {
+  axis?: Axis;
+  id: string;
+  rules: readonly RuleFixture[];
+}): Files => ({
+  [`${input.axis ?? Axis.Foundation}/${input.id}.md`]: section({
+    rules: input.rules,
+    title: input.id,
   }),
 });
 
 const domain = (input: {
-  chapters?: readonly string[];
+  axis?: Axis;
+  files?: Readonly<Files>;
   id: string;
   rules: readonly RuleFixture[];
   summary: string;
-}): Files => ({
-  [`blocks/domains/${input.id}/${input.id}.md`]: mainFile({
-    body: section({
-      rules: input.rules,
-      title: input.id,
-    }),
-    chapters: input.chapters ?? [],
+}): Files =>
+  blockFiles({
+    body: `# ${input.id}\n`,
+    dir: `blocks/domains/${input.id}`,
+    files: {
+      ...rulesFile(input),
+      ...input.files,
+    },
     id: input.id,
-    kind: 'domain',
     summary: input.summary,
-  }),
-});
+  });
 
 const domainFiles = (): Files => ({
   ...domain({
-    chapters: [
-      'forms.md',
-    ],
+    files: {
+      'architecture/forms.md': section({
+        rules: [
+          {
+            slug: 'labels-on-fields',
+            statement: 'Every field has a visible label.',
+          },
+        ],
+        title: 'Forms',
+      }),
+      'architecture/with/remote-data.md': section({
+        rules: [
+          {
+            slug: 'optimistic-writes-roll-back',
+            statement:
+              'An optimistic write rolls back when the server refuses it.',
+          },
+        ],
+        title: 'UI with remote data',
+      }),
+    },
     id: 'ui',
     rules: [
       {
@@ -152,28 +218,27 @@ const domainFiles = (): Files => ({
         slug: 'four-data-states',
         statement: 'Every data view shows loading, empty, error and content.',
       },
+      {
+        parent: 'four-data-states',
+        slug: 'loading-state-shown',
+        statement: 'A view shows that it loads.',
+      },
+      {
+        parent: 'loading-state-shown',
+        slug: 'skeleton-matches-content',
+        statement: 'A skeleton has the shape of its content.',
+      },
+      {
+        level: 'MUST',
+        parent: 'four-data-states',
+        slug: 'error-state-offers-retry',
+        statement: 'An error state offers a retry.',
+      },
     ],
     summary: 'Screens and what a user sees on them.',
   }),
-  'blocks/domains/ui/forms.md': section({
-    rules: [
-      {
-        slug: 'labels-on-fields',
-        statement: 'Every field has a visible label.',
-      },
-    ],
-    title: 'Forms',
-  }),
-  'blocks/domains/ui/with/remote-data.md': section({
-    rules: [
-      {
-        slug: 'optimistic-writes-roll-back',
-        statement: 'An optimistic write rolls back when the server refuses it.',
-      },
-    ],
-    title: 'UI with remote data',
-  }),
   ...domain({
+    axis: Axis.Architecture,
     id: 'remote-data',
     rules: [
       {
@@ -214,6 +279,7 @@ const domainFiles = (): Files => ({
     summary: 'Measuring how the product is used.',
   }),
   ...domain({
+    axis: Axis.Workflow,
     id: 'version-control',
     rules: [
       {
@@ -240,79 +306,106 @@ const domainFiles = (): Files => ({
   }),
 });
 
+enum ContextFolder {
+  Languages = 'languages',
+  Platforms = 'platforms',
+}
+
+const context = (input: {
+  axis?: Axis;
+  checks?: readonly string[];
+  folder: ContextFolder;
+  id: string;
+  requires?: readonly string[];
+  rules: readonly RuleFixture[];
+  summary: string;
+  title: string;
+}): Files =>
+  blockFiles({
+    body: `# ${input.title}\n`,
+    ...(input.checks === undefined
+      ? {}
+      : {
+          checks: input.checks,
+        }),
+    dir: `blocks/contexts/${input.folder}/${input.id}`,
+    files: rulesFile(input),
+    id: input.id,
+    ...(input.requires === undefined
+      ? {}
+      : {
+          requires: input.requires,
+        }),
+    summary: input.summary,
+  });
+
 const contextFiles = (): Files => ({
-  'blocks/contexts/languages/typescript/typescript.md': mainFile({
-    body: section({
-      rules: [
-        {
-          check: 'tool — types',
-          slug: 'no-any',
-          statement: 'A value is never typed `any`.',
-        },
-      ],
-      title: 'TypeScript',
-    }),
+  ...context({
     checks: [
       'types',
     ],
+    folder: ContextFolder.Languages,
     id: 'typescript',
-    kind: 'context',
+    rules: [
+      {
+        check: 'tool — types',
+        slug: 'no-any',
+        statement: 'A value is never typed `any`.',
+      },
+    ],
     summary: 'Code written in TypeScript.',
+    title: 'TypeScript',
   }),
-  'blocks/contexts/languages/python/python.md': mainFile({
-    body: section({
-      rules: [
-        {
-          check: 'tool — lint',
-          slug: 'no-bare-except',
-          statement: 'An except clause names what it catches.',
-        },
-      ],
-      title: 'Python',
-    }),
+  ...context({
+    folder: ContextFolder.Languages,
     id: 'python',
-    kind: 'context',
+    rules: [
+      {
+        check: 'tool — lint',
+        slug: 'no-bare-except',
+        statement: 'An except clause names what it catches.',
+      },
+    ],
     summary: 'Code written in Python.',
+    title: 'Python',
   }),
-  'blocks/contexts/platforms/browser/browser.md': mainFile({
-    body: section({
-      rules: [
-        {
-          slug: 'no-window-during-render',
-          statement: 'Rendering never reads the window.',
-        },
-      ],
-      title: 'Browser',
-    }),
+  ...context({
+    axis: Axis.Architecture,
+    folder: ContextFolder.Platforms,
     id: 'browser',
-    kind: 'context',
     requires: [
       'untrusted-client',
       'unreliable-network',
     ],
+    rules: [
+      {
+        slug: 'no-window-during-render',
+        statement: 'Rendering never reads the window.',
+      },
+    ],
     summary: 'Code that runs in a browser tab.',
+    title: 'Browser',
   }),
-  'blocks/contexts/platforms/cli/cli.md': mainFile({
-    body: section({
-      rules: [
-        {
-          slug: 'exit-codes-are-documented',
-          statement: 'Every exit code is documented.',
-        },
-      ],
-      title: 'CLI',
-    }),
+  ...context({
+    folder: ContextFolder.Platforms,
     id: 'cli',
-    kind: 'context',
     requires: [
       'untrusted-client',
     ],
+    rules: [
+      {
+        slug: 'exit-codes-are-documented',
+        statement: 'Every exit code is documented.',
+      },
+    ],
     summary: 'A program run from a terminal.',
+    title: 'CLI',
   }),
 });
 
 const implementation = (input: {
   abstract?: boolean;
+  axis?: Axis;
   body?: string;
   checks?: readonly string[];
   extends?: string;
@@ -320,16 +413,27 @@ const implementation = (input: {
   requires: readonly string[];
   rules?: readonly RuleFixture[];
   summary: string;
-}): Files => ({
-  [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
-    ...input,
-    body: `${section({
-      rules: input.rules ?? [],
-      title: input.id,
-    })}${input.body ?? ''}`,
-    kind: 'implementation',
-  }),
-});
+}): Files => {
+  const { axis, rules, ...card } = input;
+
+  return blockFiles({
+    ...card,
+    body: `# ${input.id}\n${input.body ?? ''}`,
+    dir: `blocks/implementations/${input.id}`,
+    files:
+      rules === undefined
+        ? {}
+        : rulesFile({
+            ...(axis === undefined
+              ? {}
+              : {
+                  axis,
+                }),
+            id: input.id,
+            rules,
+          }),
+  });
+};
 
 const implementationFiles = (): Files => ({
   ...implementation({
@@ -378,6 +482,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     extends: '_react',
+    axis: Axis.Architecture,
     id: 'react-dom',
     requires: [
       'browser',
@@ -391,6 +496,7 @@ const implementationFiles = (): Files => ({
     summary: 'React in the browser.',
   }),
   ...implementation({
+    axis: Axis.Architecture,
     id: 'tanstack-query',
     requires: [
       '_react',
@@ -416,6 +522,7 @@ const implementationFiles = (): Files => ({
     summary: 'Formats and lints TypeScript.',
   }),
   ...implementation({
+    axis: Axis.Workflow,
     id: 'bun',
     requires: [
       'typescript',
@@ -429,6 +536,7 @@ const implementationFiles = (): Files => ({
     summary: 'The runtime and package manager.',
   }),
   ...implementation({
+    axis: Axis.Workflow,
     id: 'git',
     requires: [
       'version-control',
@@ -443,6 +551,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     extends: 'git',
+    axis: Axis.Workflow,
     id: 'lefthook',
     requires: [],
     rules: [
@@ -527,4 +636,10 @@ const constitutionFiles = (): Files => ({
 });
 
 export type { Files };
-export { CORE_PART, constitutionFiles, syntheticId };
+export {
+  CORE_PART,
+  constitutionFiles,
+  LAWS_OF_ARCHITECTURE,
+  LAWS_OF_FOUNDATION,
+  syntheticId,
+};

@@ -1,15 +1,12 @@
 ---
 id: <id>
-kind: implementation
 summary: <One sentence of at most 70 characters.>
-chapters: []
 requires: []
 extends: null
 abstract: false
 checks: []
-owns: []
+dictionary: []
 governs: []
-status: draft
 ---
 
 # <Name>
@@ -24,6 +21,7 @@ status: draft
 
 ## <rule-slug> · MUST
 <The rule, in one or two sentences.>
-**Why:** <the reason>
-**Check:** <tool — role, test or review>
-**Tags:** <lens, lens>
+
+| Why | Check | Tags |
+|---|---|---|
+| <the reason> | <tool — role, test or review> | [<lens>, <lens>] |

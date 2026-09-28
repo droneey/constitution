@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Axis, Level } from '#/kernel';
+
 import type { Files } from '../../../__tests__/constitution.fixtures';
 import {
   checkInputOf,
@@ -14,7 +16,6 @@ const PYTHON_BLOCK: Files = {
   'blocks/contexts/languages/python/python.md': mainFile({
     body: '# Python\n',
     id: 'python',
-    kind: 'context',
   }),
 };
 
@@ -22,18 +23,23 @@ const biomeRequiring = (requires: readonly string[]): Files => ({
   'blocks/implementations/biome/biome.md': mainFile({
     body: '# Biome\n',
     id: 'biome',
-    kind: 'implementation',
     requires,
   }),
 });
 
 const ruleOf = (input: { block: string; with: string }): Rule => ({
+  axis: Axis.Architecture,
   block: input.block,
-  file: `blocks/${input.block}/with/${input.with}.md`,
-  labels: {},
-  level: 'MUST',
+  check: 'review',
+  file: `blocks/${input.block}/architecture/with/${input.with}.md`,
+  level: Level.Must,
+  ownTags: [],
+  parent: undefined,
   slug: 'a-rule',
+  statedLevel: Level.Must,
   statement: 'A rule holds.',
+  tags: [],
+  why: 'w.',
   with: input.with,
 });
 

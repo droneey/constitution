@@ -2,7 +2,7 @@
 
 > A journal of the decisions behind the constitution and the reasoning behind them. **Not a rulebook** — the blocks say *how things are*; this log records *why it was decided and what was rejected*.
 >
-> **Conventions:** append-only. One entry per decision, numbered. To change a decision, add a **new** entry and mark the old one `Superseded by ADR-NNNN` — never rewrite history. Statuses: `Accepted` · `Proposed` · `Superseded by ADR-NNNN`.
+> **Conventions:** one entry per decision, numbered, and only decisions in force. A new decision is a new entry; the entry it replaces is deleted, and one it changes in part loses that part. Statuses: `Accepted` · `Proposed`.
 >
 > Its entries record the decisions of the constitution 1.0 in theme order, each with the date it was taken.
 
@@ -16,10 +16,12 @@
 | Delivery | ADR-0021 – ADR-0027 |
 | The anatomy | ADR-0028 – ADR-0036 |
 | The rest | ADR-0037 – ADR-0045 |
-| Testing | ADR-0046 – ADR-0049 |
+| Testing | ADR-0046 – ADR-0048 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0076 |
+| Tools and tests | ADR-0077 – ADR-0087 |
+| Axes | ADR-0088 – ADR-0089 |
 
 ---
 
@@ -52,7 +54,7 @@
 ## ADR-0005 — Seam rules live in with/ files
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A rule that needs two blocks lives in `<block>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/with/remote-data.md`, `browser/with/a11y.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
+- **Decision.** A rule that needs two blocks lives in `<block>/<axis>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/architecture/with/remote-data.md`, `browser/foundation/with/a11y.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
 - **Rejected.** Conditional sections inside a block's main file.
 - **Why.** A file per seam stays readable as seams multiply, and its name says when it applies.
 
@@ -102,18 +104,12 @@
 - **Decision.** A rule is a heading `## <slug> · MUST|SHOULD|MAY`, its statement, then the labels **Why**, **Check** and **Tags**, and **Example** and **Implements** where they are needed. A slug is kebab-case, unique across the whole constitution, carries no number and is never renamed once published; an outdated rule is marked deprecated, and its replacement gets a new slug. Blocks, labels and hook output are written in English.
 - **Rejected.** Numbered rules, which shift with every insertion.
 
-## ADR-0014 — No rule names a tool
+## ADR-0014 — No rule above the implementations names a tool
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** No rule names a tool, at any layer. A rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a devkit preset or the project's own — built to hold every active rule of its roles.
+- **Decision.** No rule of core, a domain or a context names a tool, and no rule's check does: a rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a devkit preset or the project's own — built to hold every active rule of its roles.
 - **Rejected.** Tables that map each rule to a setting of a tool.
 - **Why.** A tool can then be swapped without touching a rule.
-
-## ADR-0015 — A tool-checked rule names its role
-**Date:** 2026-09-25 · **Status:** Superseded by ADR-0054
-
-- **Decision.** A rule's check is `test`, `review`, or `tool — <role>` with a role from a closed list: `format`, `lint`, `types`, `architecture`, `names`, `unused`, `versions`, `tests`, `coverage`, `mutation`, `secrets`, `audit`. A language or an implementation lists the roles it checks in `checks`. When a tool-checked MUST rule's role has no tool for a language the rule applies to, the hook warns and the constitution's check reports it.
-- **Why.** Only MUST rules count, so a missing tool for an advisory rule raises no noise.
 
 ## ADR-0016 — Every rule carries a lens
 **Date:** 2026-09-25 · **Status:** Accepted
@@ -145,7 +141,7 @@
 ## ADR-0021 — The run time is a shell hook and markdown skills
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** The plugin runs only a shell hook and markdown skills. Everything the hook reads is generated here, committed, and verified by regeneration. Nothing from the constitution is installed into a project: no TypeScript, no Bun, no generated configuration.
+- **Decision.** The plugin runs only a shell hook and markdown skills. Everything the hook reads is generated here, committed, and verified by regeneration. The plugin installs nothing into a project: no TypeScript, no Bun, no generated configuration.
 
 ## ADR-0022 — The run time is language-agnostic
 **Date:** 2026-09-25 · **Status:** Accepted
@@ -171,11 +167,6 @@
 - **Decision.** Warnings come under one header, `⚠️ Warnings`, one line each in a fixed form, `- <code>: <fact> — <fix>`, with a closed list of codes. Only at `startup` does the header ask the agent to tell the user.
 - **Rejected.** An emoji on every line.
 
-## ADR-0026 — Generated files are committed only here, in digests/
-**Date:** 2026-09-25 · **Status:** Superseded by ADR-0062
-
-- **Decision.** The pieces the hook reads are generated into `digests/`, committed, and verified by regeneration. This is the one repository that commits generated files; the `workflow` rules keep forbidding them in projects.
-
 ## ADR-0027 — Three skills and one agent
 **Date:** 2026-09-25 · **Status:** Accepted
 
@@ -186,11 +177,6 @@
 **Date:** 2026-09-24 · **Status:** Accepted
 
 - **Decision.** `root/` is the composition root, `adapters/` holds port implementations, `libs/` holds project-agnostic code, and a feature's surface is the index at the feature's root.
-
-## ADR-0029 — Every grouping folder has a surface
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** Every folder that groups modules has a surface file that re-exports what its consumers may couple to — the module's offer — and nothing else.
 
 ## ADR-0030 — Role folders and suffixes follow the reference applications
 **Date:** 2026-09-24 · **Status:** Accepted
@@ -207,27 +193,16 @@
 
 - **Decision.** Dead code means unused files, dependencies and internal code. An unused export of a surface is not dead code: a surface offers what its consumers may use.
 
-## ADR-0033 — Coverage is 100 percent on every gated layer
-**Date:** 2026-09-24 · **Status:** Superseded by ADR-0048
-
-- **Decision.** Every gated layer is held at 100 percent. UI code, and a project that adopts the gate late, reach it through a ratchet floor that only rises.
-
 ## ADR-0034 — Lint limits are errors
 **Date:** 2026-09-24 · **Status:** Accepted
 
 - **Decision.** A function holds at most 100 lines, a file 500, and cognitive complexity stays at 10 or below; the linter reports each as an error. Specs have no line limit.
 
-## ADR-0035 — A UI application composes through its providers and binding units
-**Date:** 2026-09-25 · **Status:** Superseded by ADR-0066
-
-- **Decision.** In a UI application, providers build the shared transport and configuration, adapters are module objects over them, each binding unit binds its operation's adapter, and tests replace the transport through the test sandbox. It is stated in `ui/with/remote-data.md`.
-- **Why.** It is the form of the owner's reference web application.
-
 ## ADR-0036 — Vendor libraries stay out of the domain
 **Date:** 2026-09-26 · **Status:** Accepted
 
 - **Context.** The first validator of this repository parsed YAML and checked schemas with a validation engine inside its domain code, reading the purity law as "no side effects".
-- **Decision.** No vendor library is imported under `domain/`, a pure one included. Parsing a format and checking its wire shape happen in an adapter behind a port, with the wire shapes as that adapter's models, and the domain checks its own rules on the parsed data. The repository's own project-agnostic helpers in `libs/` may be used, as the features of a command-line tool use its kit.
+- **Decision.** No vendor library is imported under `domain/`, a pure one included. Parsing a format and checking its wire shape happen in an adapter behind a port, with the wire shapes as that adapter's models, and the domain checks its own rules on the parsed data.
 - **Why.** The core imports only itself and the shared kernel, so a vendor's types and upgrades never reach it.
 
 ## ADR-0037 — Language and tool specifics live in their blocks
@@ -279,14 +254,14 @@
 ## ADR-0046 — A spec proves the behaviour of a boundary
 **Date:** 2026-09-26 · **Status:** Accepted
 
-- **Decision.** A spec proves one boundary — a use case, a command, an adapter, a screen, a reusable component, a library primitive, a module of pure rules — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own, and is then a module of pure rules. A case checks what a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call is the behaviour. Types, constants, schemas, composition, entry files, generated files and third-party code get no spec; a constant does only when a reader outside the code relies on it, as one table. Unit tests prove the domain with fakes; integration tests prove each adapter against the real engine in a sandbox, in `<name>.integration.spec`, one case for each port operation and each failure it maps; end-to-end tests prove each critical scenario the project names, through the delivery layer. A file in `__tests__/`, or in the folder of end-to-end specs, is a spec named after the file or the scenario it proves (`<name>.spec`, `<name>.integration.spec`, `<name>.e2e.spec`), a fake (`<port>.fake`) or fixtures (`<name>.fixtures`), and nothing else: a spec named otherwise would not run. The linter holds the names.
+- **Decision.** A spec proves one boundary — a use case, a command, an adapter, a screen, a reusable component, a library primitive, a module of pure rules — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own, and is then a module of pure rules. A case checks what a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call is the behaviour. Types, constants, schemas, composition, entry files, generated files and third-party code get no spec; a constant does only when a reader outside the code relies on it, as one table. Unit tests prove the domain with fakes; integration tests prove each adapter against the real engine in a sandbox, in `<name>.integration.test`, one case for each port operation and each failure it maps; end-to-end tests prove each critical scenario the project names, through the delivery layer. A file in `__tests__/`, or in the folder of end-to-end specs, is a spec named after the file or the scenario it proves (`<name>.test`, `<name>.integration.test`, `<name>.e2e.test`), a fake (`<port>.fake`) or fixtures (`<name>.fixtures`), and nothing else: a spec named otherwise would not run. The linter holds the names.
 - **Rejected.** One spec per source file; checking the calls of mocks; the `fake-<port>` prefix.
 - **Why.** A spec per file mirrors the layout, not the behaviour: it breaks when a helper moves and the behaviour stays, and its cases repeat what the boundary's spec already proves (#49).
 
 ## ADR-0047 — A case earns its place, and mutation measures the tests
 **Date:** 2026-09-26 · **Status:** Accepted
 
-- **Decision.** A case earns its place by failing for a plausible bug no other case catches; a case that cannot — a restated constant, a check of the library or the framework, a duplicate — is deleted. Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment. A bug fix begins with the test that reproduces the bug. When a behaviour is described before it is built, in an issue or a plan, an agent writes its tests from the description first; a person may write the code first. Mutation testing measures the tests, and every mutant of the logic is killed: a mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the run. It runs in the check over the files a change touches, reusing the results of earlier runs. A mutant in code no test runs survives, so the rule also holds every line of logic to a test.
+- **Decision.** A case earns its place by failing for a plausible bug no other case catches; a case that cannot — a restated constant, a check of the library or the framework, a duplicate — is deleted. Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment. A bug fix begins with the test that reproduces the bug. When a behaviour is described before it is built, in an issue or a plan, an agent writes its tests from the description first; a person may write the code first. Mutation testing measures the tests, and every mutant of the logic is killed: a mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the run. It runs in the check over the lines a change touches. A mutant in code no test runs survives, so the rule also holds every line of logic to a test.
 - **Rejected.** Test-first as a mandate for every change; coverage as the measure of how good the tests are; a mutation score below 100 percent as a floor.
 - **Why.** A test never seen failing may test nothing, and a suite that lets mutants live is weaker than its coverage says.
 
@@ -296,13 +271,6 @@
 - **Decision.** All logic — the domain, the adapters, the libraries, the UI — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. A line no behaviour reaches is a behaviour without its test, or code nothing needs, which is deleted; it is never a reason for a test of its own. Excluded: the entry, an entrypoint's entry file, the wiring file, generated files, declarations and vendored code. There is no ratchet: a project below 100 percent breaks the rule like any other, the hook and the check say so, and a project that skips it on purpose records an override with its reason.
 - **Rejected.** A floor that only rises; a percentage per layer; a gate on the domain alone.
 - **Why.** Tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test.
-
-## ADR-0049 — UI is tested the way a user uses it
-**Date:** 2026-09-26 · **Status:** Superseded by ADR-0067
-
-- **Decision.** A screen is a boundary: its spec renders it with fakes of its use cases and proves each data state — loading, empty, error, content — each interaction that changes something, each message the user sees and each navigation. A reusable component's spec proves the variants that change behaviour or meaning, keyboard, focus and ARIA. Elements are found by role, label and text, never by class or internal state, so a test changes only when behaviour does, and a change of behaviour updates its spec in the same change. Every screen and component spec runs an accessibility scan with zero violations. Appearance is compared by screenshot only where the look is the contract, in a design system.
-- **Rejected.** A coverage floor for UI; snapshots of the DOM.
-- **Why.** A test written against what the user sees survives refactoring and fails when the user's experience changes.
 
 ## ADR-0050 — Absence is undefined, and the tools hold it
 **Date:** 2026-09-26 · **Status:** Accepted
@@ -314,13 +282,13 @@
 ## ADR-0051 — A file carries its role's suffix
 **Date:** 2026-09-26 · **Status:** Accepted
 
-- **Decision.** A file carries its role's suffix, whatever its folder: `.entity`, `.error`, `.repository`, `.port`, `.adapter` for a port's implementation that is not a repository, `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`, the suffixes a block adds, and those a project adds for its own roles. A surface, the entry, a name a framework or tool fixes, a component file named after its component, a member of a set whose role has no suffix and a registry carry none. In `__tests__/` a spec is named after the file it proves plus `.spec`, the one place a double suffix appears, beside `<port>.fake` and `<name>.fixtures`.
+- **Decision.** A file carries its role's suffix, whatever its folder: `.entity`, `.error`, `.repository`, `.port`, `.adapter` for a port's implementation that is not a repository, `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`, the suffixes a block adds, and those a project adds for its own roles. A surface, the entry, a name a framework or tool fixes, a component file named after its component, a member of a set whose role has no suffix and a registry carry none. In `__tests__/` a spec is named after the file it proves plus `.test`, beside `<port>.fake` and `<name>.fixtures`.
 - **Why.** The name tells the role before the file is opened, and a tool can check it.
 
 ## ADR-0052 — A layer folder is a container without a surface
 **Date:** 2026-09-26 · **Status:** Accepted
 
-- **Decision.** Outside a folder, a caller imports only its surface; inside, files import each other directly and never their own folder's surface. A folder of one role — `entities`, `contracts`, `use-cases`, `queries`, `commands`, `repositories`, `components`, `utils`, `models` — and each module inside it has a surface. A layer folder (`domain/`, `app/`, `infra/`, `adapters/`, `ui/`) and an area folder (`src/`, `features/`, `libs/`) is never an import target and has none: a caller imports the role folder inside it.
+- **Decision.** Outside a folder, a caller imports only its surface; inside, files import each other directly and never their own folder's surface. A folder of one role — `entities`, `contracts`, `use-cases`, `queries`, `commands`, `repositories`, `components`, `utils`, `models` — and each module inside it has a surface. A layer folder (`domain/`, `app/`, `adapters/`, `ui/`) and an area folder (`src/`, `features/`, `libs/`) is never an import target and has none: a caller imports the role folder inside it.
 - **Rejected.** A surface that aggregates a layer; Biome's `noPrivateImports`, which demands a surface at every level.
 - **Why.** An import names the role it couples to, and no aggregate hides an edge the layer rules forbid.
 
@@ -348,7 +316,7 @@
 ## ADR-0056 — version-control holds what is true of any version control
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line. Everything about git — commit messages, branch names, worktrees, its commands — belongs to the implementation `git`.
+- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line, the formats of commits, branches and release tags. Everything only git has — staging, ignores, annotated tags, LFS, worktrees, its commands — belongs to the implementation `git`.
 - **Why.** A rule that names a git concept loses its meaning without git, so it belongs to the git block.
 
 ## ADR-0057 — A block never cites the decision log
@@ -460,13 +428,6 @@
 - **Rejected.** Naming each setting's slug in a comment, or each dependency-cruiser rule after its slug: nothing would check the names, and they would drift.
 - **Why.** The block's text is the one place the constitution and the tool meet; a second mapping in every configuration is a detail nobody keeps.
 
-## ADR-0073 — The constitution carries the presets that name its folders
-**Date:** 2026-09-27 · **Status:** Superseded by ADR-0076
-
-- **Decision.** A tool preset whose rules name the constitution's folders, files or suffixes — Biome's plugins scoped to `adapters/` or `.hooks.ts`, dependency-cruiser's layer sets — ships in the constitution's own package as `@droneey/constitution/<tool>`, in the version of its blocks. devkit's presets hold only what any team can take. A spec fails when the constitution's preset names a folder or suffix its blocks do not write.
-- **Rejected.** Keeping that preset in devkit, where the folders are written a second time and a rename switches a rule off unnoticed; generating devkit's preset from the blocks, a build between two repositories.
-- **Why.** A folder renamed in a block and in its preset changes in one pull request and ships in one version, and a project pinned to a version of the constitution gets that version's preset.
-
 ## ADR-0074 — betterleaks holds the secrets
 **Date:** 2026-09-27 · **Status:** Accepted
 
@@ -550,3 +511,30 @@
 - **Decision.** The `vitest` block is removed. Every droneey project runs its specs with `bun test`; a Vitest block and devkit's Vitest preset come back together when a project needs them.
 - **Rejected.** Keeping the block while its preset does not exist, which states checks no tool performs.
 - **Why.** A block that names a preset nobody ships describes a check that never runs.
+
+## ADR-0086 — zod is kept out of the domain by the domain law alone
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** `zod-only-at-the-edge` and its dependency-cruiser part are deleted. A schema is written wherever input crosses a boundary — an adapter's models, a route's search parameters, a form — and `domain-imports-only-itself-and-kernel` keeps zod, like every vendor, out of `domain/`.
+- **Rejected.** Widening the rule's list of edges to routes and forms, which names the router's and the form library's folders in zod's block.
+- **Why.** The rule forbade the schemas `search-params-validated-by-schema` and the form rules require, while what it protected — a domain free of the schema library — the law already holds. Router and form libraries take any Standard Schema validator, so a schema at the delivery layer is the boundary, not a leak.
+
+## ADR-0087 — The formats of commits, branches and release tags belong to version-control
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** The rules on the commit header, the empty body, the commit type, the subject, placeholder subjects, the branch name, the version bump, the squash merge, the pull request's title and the release tag's name move from `git` to `version-control`. `git` keeps what only git has; `release-tags-annotated-semver` splits into `release-tags-named-by-semver` in the domain and `release-tags-annotated` in `git`.
+- **Why.** The formats hold for any version control: Jujutsu or Mercurial would take `feat: Subject`, `feature/12-name` and `v1.2.0` unchanged, so they do not lose their meaning without git.
+
+## ADR-0088 — Every block lays its rules out on three axes
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** A block is its card `<id>.md` — front matter and summary, no rule — and up to three axis folders: `foundation/`, `architecture/` and `workflow/`, each holding its chapters and its `with/` seams. Two questions place a rule, each apart from the other: its layer by what must disappear for it to lose its meaning, and its axis by whether a team with another architecture, or another workflow, would still want it. Architecture is the structure of a system in the sense of Clean Architecture, DDD and hexagonal architecture — layers and their duties, the direction of dependencies, boundaries with ports and adapters, the homes of input, output and state, the composition root, the isolation of parts, read and write apart, and the tree that spells them; workflow is how a change travels from the idea to the release. A rule that implements an architecture or workflow rule is on that axis; the layout of tests is foundation. Architecture and workflow may refer to foundation; foundation refers only to itself, and the two never to each other. A project lists the axes it follows in `constitution.yaml`, `foundation` always among them. Every rule moved to its axis by a census of all 614; a rule that bundles two axes stays whole on the stricter one until it is split. Core's `architecture` chapter is now `anatomy`, its `workflow` chapter `delivery`, and its two rules about files form `foundation/files.md`.
+- **Rejected.** Two parallel trees `foundation/` and `architecture/` above the layers, which give a block two homes; a suffix `.architecture.md` beside a default axis; a mark on each rule, which a hook cannot drop as a whole and which drifts, as the `architecture` tag did; one architecture block that places every other block's rules, which would name every library from above; folder names as the test of architecture, which misses the dependency rule itself.
+- **Why.** A team adopts the foundation the way it adopts a tool's recommended preset, whatever its own architecture and workflow, and the axes make that choice one line. The literature separates the three the same way: style guides and Clean Code for the craft, Clean Architecture, hexagonal architecture and DDD for the structure, and engineering practices — Clean Coder, Accelerate, the code-review guides — for the process.
+
+## ADR-0089 — A rule sits on one axis, names the rule it carries out and takes its level from it
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** Every rule that bundled two axes is split into one rule per axis; the half on `architecture/` or `workflow/` may carry out the half on `foundation/`, and where one half repeated another rule it was dropped instead. A rule that carries out another names it in its heading, `## <slug> → <rule>`, instead of a level: it takes that rule's level and tags, may state a stricter level, `→ <rule> · MUST`, never a looser one, and carries out one rule at most. An override of a rule lowers every rule under it that states no level of its own. A rule on `foundation/` carries out only `foundation/`, and `architecture/` and `workflow/` never each other; `blocks:check` reports any other reference, a looser stated level, a cycle and a missing rule. A rule's Why, Check and Tags are one table under its statement, the same columns in every rule, and a list written as in the front matter, `[]` when empty. The tags are the lenses that cross every axis — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — optional, since a full review reads every rule. Twelve duplicates are merged into the rule that keeps their meaning, `fast-source-updates-once-per-frame` moves to ui, `pipeline-stages-under-steps` and `dependencies-imported-from-their-entries` to core, and an abstraction waits for its third occurrence in the principles as in ADR-0058.
+- **Rejected.** A level stated again on every rule that carries out another, which lets the two drift and keeps an override from reaching them; the Implements label beside the heading; labels on consecutive lines, which render as one run-on paragraph; lenses that name a chapter's topic — design, naming, types, process — or an axis.
+- **Why.** The force of a rule is set in one place and reaches every rule that carries it out, and a lens is worth filtering by only when it crosses the axes.

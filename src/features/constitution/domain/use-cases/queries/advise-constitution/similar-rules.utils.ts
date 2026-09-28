@@ -1,3 +1,5 @@
+import { KIND_OF_LAYER } from '#/kernel';
+
 import type { Block, Rule } from '../../../entities';
 import type { BlocksById } from '../../../utils';
 
@@ -37,7 +39,7 @@ const areSiblings = (input: {
     // Stryker disable next-line ConditionalExpression: every rule's block is in byId
     right !== undefined &&
     left.id !== right.id &&
-    left.frontMatter.kind === right.frontMatter.kind
+    KIND_OF_LAYER[left.layer] === KIND_OF_LAYER[right.layer]
   );
 };
 

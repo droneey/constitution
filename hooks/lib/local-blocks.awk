@@ -52,7 +52,12 @@ function front_matter(file,   line, r, key, value) {
   return -1
 }
 
-function local_block(s, i,   path, key, name, r, n, a, k, missing) {
+function local_layer(path, key,   l) {
+  for (l = 1; l <= 4; l++) if (index(path, "./rules/" FOLDER[layers[l]] "/") == 1) return layers[l]
+  return LAYER_OF[key]
+}
+
+function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   path = ITEXT[i]
   key = IKEY[i]
   if (path !~ /^\.\// || path ~ /(^|\/)\.\.(\/|$)/) {
@@ -87,7 +92,8 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing) {
   n = split(FIELDS, a, " ")
   for (k = 1; k <= n; k++) if (!(a[k] in FM)) missing = missing (missing == "" ? "" : ", ") a[k]
   if (missing != "") warn("local-block", path " has no " missing " — fix its front matter")
-  if (("kind" in FM) && FM["kind"] != KIND_OF[key]) warn("local-block", path " has kind " FM["kind"] " — make it " KIND_OF[key] " or move the block out of " key)
+  layer = local_layer(path, key)
+  if (layer != LAYER_OF[key]) warn("wrong-key", name " is " ARTICLE[layer] " — move it from " key " to " KEY_OF[layer])
   if (("id" in FM) && FM["id"] != name) warn("local-block", path " has id " FM["id"] " — make it " name ", the file's name")
   if (name in KNOWN) {
     warn("local-block", path " repeats the constitution id " name " — rename it")
@@ -98,9 +104,8 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing) {
   for (k = 1; k <= n; k++) if (!(a[k] in KNOWN) && !(a[k] in LOCAL)) warn("local-block", path " requires " a[k] ", which is not a block — fix its front matter")
   LPATH[++nlocal] = path
   LID[nlocal] = name
-  LLAYER[nlocal] = LAYER_OF[key]
+  LLAYER[nlocal] = layer
   LSUMMARY[nlocal] = FM["summary"]
-  LSTATUS[nlocal] = FM["status"]
   LREQUIRES[nlocal] = FM["requires"]
   LEXTENDS[nlocal] = FM["extends"]
   LCHECKS[nlocal] = FM["checks"]

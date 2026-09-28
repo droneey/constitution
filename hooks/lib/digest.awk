@@ -72,6 +72,7 @@ function core(   path, line, r, lines) {
   path = ENVIRON["CONSTITUTION_CORE"]
   lines = 0
   while ((r = (getline line < path)) > 0) {
+    if (line ~ /^Laws of [a-z]+: / && !(substr(line, 9, index(line, ":") - 9) in FOLLOWED)) continue
     if (!lines++) open_section()
     put(line)
   }
@@ -131,6 +132,7 @@ function print_json(   k) {
 
 $1 == "error" { failed = $2 }
 $1 == "core" { corefiles = text(1) }
+$1 == "axis" { FOLLOWED[$2] = 1 }
 $1 == "pin" { pin = text(1) }
 $1 == "count" { count = $2 }
 $1 == "warning" { WARNING[++nwarnings] = text(1) }

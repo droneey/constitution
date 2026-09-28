@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import {
   checkInputOf,
   mainFile,
-  rule,
   without,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { GOLDEN_INDEX } from '../../../../../../__tests__/valid-digests.fixtures';
@@ -98,14 +97,8 @@ describe('digestsCheck', () => {
     // Arrange
     const files = validFiles();
     files['blocks/core/core.md'] = mainFile({
-      body: `# Core\n\n${'Ω'.repeat(1750)}\n\n${rule({
-        slug: 'rules-bind',
-      })}`,
-      chapters: [
-        'principles.md',
-      ],
+      body: `# Core\n\n${'Ω'.repeat(1750)}\n`,
       id: 'core',
-      kind: 'core',
     });
     const input = checkInputOf(files);
 
@@ -116,7 +109,7 @@ describe('digestsCheck', () => {
     expect(findings).toStrictEqual([
       {
         message:
-          'makes a core part of 3669 bytes; the digest holds at most 3500 of core',
+          'makes a core part of 3557 bytes; the digest holds at most 3500 of core',
         path: 'blocks/core/core.md',
       },
       {

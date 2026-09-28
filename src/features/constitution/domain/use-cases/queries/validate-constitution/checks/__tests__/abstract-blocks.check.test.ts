@@ -15,7 +15,6 @@ const reactBase = (input: { body: string; summary: string }): string =>
     abstract: true,
     body: input.body,
     id: '_react',
-    kind: 'implementation',
     summary: input.summary,
   });
 
@@ -26,7 +25,6 @@ describe('abstractBlocksCheck', () => {
     files['blocks/implementations/react-dom/react-dom.md'] = mainFile({
       body: '# React DOM\n',
       id: 'react-dom',
-      kind: 'implementation',
     });
     const input = checkInputOf(files);
 
@@ -61,13 +59,13 @@ describe('abstractBlocksCheck', () => {
           body: '# React\n',
           summary: 'The base of react-dom.',
         }),
-        'blocks/implementations/_react/with/browser.md':
+        'blocks/implementations/_react/foundation/with/browser.md':
           '# React in the browser\n',
       },
       name: 'its summary, which its other files do not repeat',
     },
   ])(
-    'should report the heir at the main file when the base names it in $name',
+    'should report the heir at the card when the base names it in $name',
     ({ files }) => {
       // Arrange
       const input = checkInputOf({
@@ -92,7 +90,7 @@ describe('abstractBlocksCheck', () => {
   it('should report a with/ file of the base when it is named after an heir', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/implementations/_react/with/react-dom.md'] =
+    files['blocks/implementations/_react/architecture/with/react-dom.md'] =
       '# Seam\n\nPortals.\n';
     const input = checkInputOf(files);
 
@@ -104,7 +102,7 @@ describe('abstractBlocksCheck', () => {
       {
         message:
           'is a with/ file named after the heir react-dom; a base knows nothing of its heirs',
-        path: 'blocks/implementations/_react/with/react-dom.md',
+        path: 'blocks/implementations/_react/architecture/with/react-dom.md',
       },
     ]);
   });

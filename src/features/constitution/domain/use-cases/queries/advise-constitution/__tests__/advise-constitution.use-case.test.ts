@@ -12,14 +12,17 @@ import {
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { adviseConstitution } from '../advise-constitution.use-case';
 
-const I18N = 'blocks/domains/i18n/i18n.md';
-const UI = 'blocks/domains/ui/ui.md';
-const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/with/remote-data.md';
-const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
+const I18N = 'blocks/domains/i18n/foundation/i18n.md';
+const UI = 'blocks/domains/ui/foundation/ui.md';
+const UI_WITH_REMOTE_DATA =
+  'blocks/domains/ui/architecture/with/remote-data.md';
+const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
 const BROWSER_WITH_TYPESCRIPT =
-  'blocks/contexts/platforms/browser/with/typescript.md';
-const TYPESCRIPT = 'blocks/contexts/languages/typescript/typescript.md';
-const TYPESCRIPT_WITH_CSS = 'blocks/contexts/languages/typescript/with/css.md';
+  'blocks/contexts/platforms/browser/foundation/with/typescript.md';
+const TYPESCRIPT =
+  'blocks/contexts/languages/typescript/foundation/typescript.md';
+const TYPESCRIPT_WITH_CSS =
+  'blocks/contexts/languages/typescript/workflow/with/css.md';
 const PYTHON = 'blocks/contexts/languages/python/python.md';
 const CSS = 'blocks/contexts/languages/css/css.md';
 const BIOME = 'blocks/implementations/biome/biome.md';
@@ -31,13 +34,11 @@ const STATEMENT = 'Every visible label comes from a message catalog.';
 const PYTHON_FILE = mainFile({
   body: '# Python\n',
   id: 'python',
-  kind: 'context',
 });
 
 const CSS_FILE = mainFile({
   body: '# CSS\n',
   id: 'css',
-  kind: 'context',
 });
 
 const prettierFile = (checks: readonly string[]): string =>
@@ -45,7 +46,6 @@ const prettierFile = (checks: readonly string[]): string =>
     body: '# Prettier\n',
     checks,
     id: 'prettier',
-    kind: 'implementation',
     requires: [
       'typescript',
       'css',
@@ -205,7 +205,6 @@ describe('adviseConstitution', () => {
             'names',
           ],
           id: 'biome',
-          kind: 'implementation',
         }),
         [PYTHON]: PYTHON_FILE,
       },
@@ -340,7 +339,7 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [],
-      name: 'the main file and a with/ file of one block say the same',
+      name: 'a chapter and a with/ file of one block say the same',
       ...pairOf({
         first: UI,
         left: STATEMENT,

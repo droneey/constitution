@@ -3,6 +3,10 @@ import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import {
+  LAWS_OF_ARCHITECTURE,
+  LAWS_OF_FOUNDATION,
+} from './constitution.fixtures';
+import {
   browserAppContext,
   cliContext,
   coreOnlyContext,
@@ -11,21 +15,24 @@ import {
   localBlocksContext,
   unparsedContext,
 } from './digests.fixtures';
-import type { HookEvent, HookRun } from './hook.fixtures';
+import type { HookRun } from './hook.fixtures';
 import {
   blockListOf,
   bytesAfterHeader,
   contextOf,
+  coreLinesOf,
   factsOf,
   HOOK_TODAY,
+  HookEvent,
   headlineOf,
+  headlinesOf,
   lastLinesOf,
   outputOf,
   runHook,
   warningsOf,
 } from './hook.fixtures';
-import type { Breakage } from './plugin-root.fixtures';
 import {
+  Breakage,
   corePartOfBytes,
   createPluginRoot,
   removePluginRoots,
@@ -34,6 +41,7 @@ import type { ProjectLayout } from './project.fixtures';
 import {
   BROWSER_APP,
   CLI,
+  ConfigKey,
   configOf,
   createProject,
   HTML_SITE,
@@ -46,6 +54,7 @@ import {
   RATIFIED,
   REAL_CLI,
   REAL_WEB_APP,
+  Repository,
   removeProjects,
   syntheticProject,
 } from './project.fixtures';
@@ -64,7 +73,7 @@ interface QuietCase extends Place {
 interface FindCase extends Place {
   condition: string;
   nonUtf8Byte?: boolean;
-  repository: 'folder' | 'worktree' | 'none';
+  repository: Repository;
   spawnOutside?: boolean;
 }
 
@@ -134,6 +143,19 @@ interface FailureCase {
   stderr: (paths: { plugin: string; project: string }) => string;
 }
 
+interface AxesView {
+  core: readonly string[];
+  headlines: readonly string[];
+  list: readonly string[];
+  warnings: readonly string[];
+}
+
+interface AxesCase {
+  condition: string;
+  config: string;
+  view: AxesView;
+}
+
 interface BlockListCase {
   condition: string;
   layout: ProjectLayout;
@@ -162,6 +184,75 @@ const unknownIds = (count: number): readonly string[] =>
   );
 const unknownWarning = (id: string): string =>
   `- unknown: ${id} is not a block — check the name`;
+
+const CORE_FILES = "Core's files, under blocks/core/: core.md";
+const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
+const AXIS_DOMAINS = '[ui, remote-data, version-control]';
+const REMOTE_DATA = '- remote-data: Data another system owns.';
+const UI = '- ui: Screens and what a user sees on them.';
+const VERSION_CONTROL = '- version-control: History of the code.';
+const READS_ARE_CANCELLABLE =
+  '- reads-are-cancellable: A read of remote data can be cancelled.';
+const FOUR_DATA_STATES =
+  '- four-data-states: Every data view shows loading, empty, error and content.';
+const LABELS_ON_FIELDS = '- labels-on-fields: Every field has a visible label.';
+const BELOW_FOUR_DATA_STATES = [
+  '- loading-state-shown: A view shows that it loads.',
+  '- skeleton-matches-content: A skeleton has the shape of its content.',
+  '- error-state-offers-retry: An error state offers a retry.',
+];
+const OPTIMISTIC_WRITES_ROLL_BACK =
+  '- optimistic-writes-roll-back: An optimistic write rolls back when the server refuses it.';
+const COMMITS_ARE_ATOMIC = '- commits-are-atomic: A commit holds one change.';
+const EVERY_AXIS: AxesView = {
+  core: [
+    LAWS_OF_FOUNDATION,
+    LAWS_OF_ARCHITECTURE,
+    `${CORE_FILES}, foundation/code.md, foundation/principles.md, architecture/principles.md, workflow/delivery.md.`,
+  ],
+  headlines: [
+    READS_ARE_CANCELLABLE,
+    FOUR_DATA_STATES,
+    ...BELOW_FOUR_DATA_STATES,
+    LABELS_ON_FIELDS,
+    OPTIMISTIC_WRITES_ROLL_BACK,
+    COMMITS_ARE_ATOMIC,
+  ],
+  list: [
+    DOMAINS,
+    `${REMOTE_DATA} Also: architecture/remote-data.md`,
+    `${UI} Also: foundation/ui.md, architecture/forms.md, architecture/with/remote-data.md`,
+    `${VERSION_CONTROL} Also: workflow/version-control.md`,
+  ],
+  warnings: [],
+};
+const FOUNDATION_ONLY: AxesView = {
+  core: [
+    LAWS_OF_FOUNDATION,
+    `${CORE_FILES}, foundation/code.md, foundation/principles.md.`,
+  ],
+  headlines: [
+    FOUR_DATA_STATES,
+    ...BELOW_FOUR_DATA_STATES,
+  ],
+  list: [
+    DOMAINS,
+    REMOTE_DATA,
+    `${UI} Also: foundation/ui.md`,
+    VERSION_CONTROL,
+  ],
+  warnings: [],
+};
+const axesConfigOf = (input: { apps?: string; axes: string }): string =>
+  configOf({
+    ...(input.apps === undefined
+      ? {}
+      : {
+          apps: input.apps,
+        }),
+    axes: input.axes,
+    domains: '[ui, version-control]',
+  });
 
 let root = '';
 
@@ -203,7 +294,7 @@ describe('session-start hook', () => {
       cwd: '',
       layout: {
         aboveConfig: FOUND,
-        repository: 'none',
+        repository: Repository.None,
       },
     },
     {
@@ -221,7 +312,7 @@ describe('session-start hook', () => {
       // Act
       const run = runHook({
         cwd,
-        event: 'startup',
+        event: HookEvent.Startup,
         pluginRootUnset,
         project,
         projectDir,
@@ -243,65 +334,65 @@ describe('session-start hook', () => {
         'CLAUDE_PROJECT_DIR names the project root and cwd lies outside it',
       cwd: '..',
       projectDir: '',
-      repository: 'folder',
+      repository: Repository.Folder,
     },
     {
       condition: 'CLAUDE_PROJECT_DIR names a subfolder of the repository',
       cwd: '..',
       projectDir: 'packages/app',
-      repository: 'folder',
+      repository: Repository.Folder,
     },
     {
       condition: 'CLAUDE_PROJECT_DIR is unset and cwd is a subfolder',
       cwd: 'src/deep',
-      repository: 'folder',
+      repository: Repository.Folder,
     },
     {
       condition: 'cwd is a subfolder of a worktree, whose .git is a file',
       cwd: 'src/deep',
-      repository: 'worktree',
+      repository: Repository.Worktree,
     },
     {
       condition:
         'no repository holds the start folder and constitution.yaml lies in it',
       cwd: '',
-      repository: 'none',
+      repository: Repository.None,
     },
     {
       condition:
         'CLAUDE_PROJECT_DIR is a symbolic link to a subfolder of the repository',
       cwd: '..',
       projectDir: '../link',
-      repository: 'folder',
+      repository: Repository.Folder,
     },
     {
       condition: 'the process starts outside the cwd the event names',
       cwd: 'src/deep',
-      repository: 'folder',
+      repository: Repository.Folder,
       spawnOutside: true,
     },
     {
       condition: 'the event names a cwd holding a quote',
       cwd: 'q"b',
-      repository: 'folder',
+      repository: Repository.Folder,
       spawnOutside: true,
     },
     {
       condition: 'the event names a cwd holding a backslash',
       cwd: 'b\\s',
-      repository: 'folder',
+      repository: Repository.Folder,
       spawnOutside: true,
     },
     {
       condition: 'the event names a cwd holding a control byte',
       cwd: 'c\u0001x',
-      repository: 'folder',
+      repository: Repository.Folder,
       spawnOutside: true,
     },
     {
       condition: 'the event names a cwd holding non-ASCII text',
       cwd: 'crème',
-      repository: 'folder',
+      repository: Repository.Folder,
       spawnOutside: true,
     },
     {
@@ -309,7 +400,7 @@ describe('session-start hook', () => {
         'the event holds a byte that is not UTF-8 and the locale is UTF-8',
       cwd: '',
       nonUtf8Byte: true,
-      repository: 'folder',
+      repository: Repository.Folder,
     },
   ])(
     'should find the project and state its pin when $condition',
@@ -336,7 +427,7 @@ describe('session-start hook', () => {
         contextOf(
           runHook({
             cwd,
-            event: 'subagent',
+            event: HookEvent.Subagent,
             nonUtf8Byte,
             project,
             projectDir,
@@ -362,18 +453,27 @@ describe('session-start hook', () => {
       line: 1,
     },
     {
+      condition:
+        'axes leaves architecture and workflow out and a later list item is an alias',
+      config: configOf({
+        axes: '[foundation]',
+        platforms: '[*browser]',
+      }),
+      line: 4,
+    },
+    {
       condition: 'a list item is an alias',
       config: configOf({
         platforms: '[*browser]',
       }),
-      line: 3,
+      line: 4,
     },
     {
       condition: 'a tab indents a line',
       config: configOf({
         domains: '\n\t- ui',
       }),
-      line: 3,
+      line: 4,
     },
     {
       condition: 'a flow list never closes',
@@ -385,24 +485,24 @@ describe('session-start hook', () => {
       config: configOf({
         check: '|\n  bun run check',
       }),
-      line: 7,
+      line: 8,
     },
     {
       condition: 'a second document follows',
       config: `${configOf({})}---\nversion: 1.0.0\n`,
-      line: 9,
+      line: 10,
     },
     {
       condition: 'a key is repeated',
       config: `${configOf({})}domains: [ui]\n`,
-      line: 9,
+      line: 10,
     },
     {
       condition: 'an override has a field outside the grammar',
       config: configOf({
         overrides: fourDataStatesOverride('    level: MAY\n    ticket: X-1'),
       }),
-      line: 11,
+      line: 12,
     },
     {
       condition: 'a value carries a tag',
@@ -416,7 +516,7 @@ describe('session-start hook', () => {
       config: configOf({
         domains: '[{a: b}]',
       }),
-      line: 2,
+      line: 3,
     },
     {
       condition: 'a flow list nests another that runs on to the next line',
@@ -428,7 +528,7 @@ describe('session-start hook', () => {
       config: configOf({
         domains: '[ui,, i18n]',
       }),
-      line: 2,
+      line: 3,
     },
     {
       condition: 'a flow list goes on at the start of a line',
@@ -438,44 +538,44 @@ describe('session-start hook', () => {
     {
       condition: 'a key has no space after its colon',
       config: `${configOf({
-        omit: 'check',
+        omit: ConfigKey.Check,
       })}check:bun run check\n`,
-      line: 8,
+      line: 9,
     },
     {
       condition: 'an application path is repeated',
       config: configOf({
         apps: '\n  web:\n    domains: [ui]\n  web:\n    domains: [i18n]',
       }),
-      line: 9,
+      line: 10,
     },
     {
       condition: "an application's key is repeated",
       config: configOf({
         apps: '\n  web:\n    domains: [ui]\n    domains: [i18n]',
       }),
-      line: 9,
+      line: 10,
     },
     {
       condition: "an override's field is repeated",
       config: configOf({
         overrides: fourDataStatesOverride('    level: MAY\n    level: SHOULD'),
       }),
-      line: 11,
+      line: 12,
     },
     {
       condition: "an override's field is indented past its item",
       config: configOf({
         overrides: fourDataStatesOverride('      level: MAY'),
       }),
-      line: 10,
+      line: 11,
     },
     {
       condition: 'an application has a key outside the grammar',
       config: configOf({
         apps: '\n  web:\n    stack: [react]',
       }),
-      line: 8,
+      line: 9,
     },
   ])(
     'should name the line and give only core when $condition',
@@ -489,7 +589,7 @@ describe('session-start hook', () => {
       const context = contextOf(
         runHook({
           project,
-          event: 'startup',
+          event: HookEvent.Startup,
           root,
         }),
       );
@@ -597,7 +697,7 @@ describe('session-start hook', () => {
       const printed = factsOf(
         contextOf(
           runHook({
-            event: 'subagent',
+            event: HookEvent.Subagent,
             project,
             root,
           }),
@@ -626,7 +726,7 @@ describe('session-start hook', () => {
       contextOf(
         runHook({
           cwd: 'sub/deep',
-          event: 'subagent',
+          event: HookEvent.Subagent,
           project,
           root,
         }),
@@ -646,7 +746,7 @@ describe('session-start hook', () => {
     // Act
     const context = contextOf(
       runHook({
-        event: 'startup',
+        event: HookEvent.Startup,
         project,
         root,
       }),
@@ -662,7 +762,7 @@ describe('session-start hook', () => {
         'constitution.yaml pins 1.0.0; 7 blocks are active.',
       ],
       local: [
-        '- paraglide (local, draft, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
+        '- paraglide (local, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
       ],
       warnings: [],
     });
@@ -671,7 +771,7 @@ describe('session-start hook', () => {
   it.each<FactsCase>([
     {
       condition: 'the pin differs at startup',
-      event: 'startup',
+      event: HookEvent.Startup,
       facts: [
         'constitution.yaml pins 0.9.0; 3 blocks are active.',
         'constitution.yaml pins 0.9.0 while the installed plugin is 1.0.0; this digest follows 1.0.0.',
@@ -680,7 +780,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the pin differs after clear',
-      event: 'clear',
+      event: HookEvent.Clear,
       facts: [
         'constitution.yaml pins 0.9.0; 3 blocks are active.',
       ],
@@ -688,7 +788,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the pin differs after compact',
-      event: 'compact',
+      event: HookEvent.Compact,
       facts: [
         'constitution.yaml pins 0.9.0; 3 blocks are active.',
       ],
@@ -696,7 +796,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the pin differs in a sub-agent',
-      event: 'subagent',
+      event: HookEvent.Subagent,
       facts: [
         'constitution.yaml pins 0.9.0; 3 blocks are active.',
       ],
@@ -704,7 +804,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the pin equals the installed version at startup',
-      event: 'startup',
+      event: HookEvent.Startup,
       facts: [
         'constitution.yaml pins 1.0.0; 3 blocks are active.',
       ],
@@ -712,7 +812,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'constitution.yaml pins no version at startup',
-      event: 'startup',
+      event: HookEvent.Startup,
       facts: [
         'constitution.yaml pins no version; 3 blocks are active.',
       ],
@@ -748,19 +848,19 @@ describe('session-start hook', () => {
 
   it.each<HeadingCase>([
     {
-      event: 'startup',
+      event: HookEvent.Startup,
       heading: `${WARNINGS} — tell the user at the start of the session`,
     },
     {
-      event: 'clear',
+      event: HookEvent.Clear,
       heading: WARNINGS,
     },
     {
-      event: 'compact',
+      event: HookEvent.Compact,
       heading: WARNINGS,
     },
     {
-      event: 'subagent',
+      event: HookEvent.Subagent,
       heading: WARNINGS,
     },
   ])(
@@ -885,7 +985,7 @@ describe('session-start hook', () => {
       condition: 'a key is missing',
       layout: {
         config: configOf({
-          omit: 'apps',
+          omit: ConfigKey.Apps,
         }),
       },
       warnings: [
@@ -937,7 +1037,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- config: the override on line 9 has no reason — complete it or remove it',
+        '- config: the override on line 10 has no reason — complete it or remove it',
       ],
     },
     {
@@ -956,20 +1056,20 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'a local block has no kind',
+      condition: 'a local block has no dictionary',
       layout: {
         config: configOf({
           domains: '[i18n]',
           implementations: `[${PARAGLIDE}]`,
         }),
         files: paraglideFiles({
-          omit: 'kind',
+          omit: 'dictionary',
           requires: '[i18n]',
         }),
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${PARAGLIDE} has no kind — fix its front matter`,
+        `- local-block: ${PARAGLIDE} has no dictionary — fix its front matter`,
       ],
     },
     {
@@ -1118,7 +1218,7 @@ describe('session-start hook', () => {
           domains: '[analytics, version-control]',
           implementations: `[_react, tanstak-query, ui, ${PARAGLIDE}, matomo, git, react-dom]`,
           languages: '[typescript]',
-          omit: 'apps',
+          omit: ConfigKey.Apps,
           overrides: fourDataStatesOverride(
             '    level: MAY\n    reason: "later"\n    until: 2020-01-01',
           ),
@@ -1196,25 +1296,23 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- config: the override on line 9 has no rule, level — complete it or remove it',
+        '- config: the override on line 10 has no rule, level — complete it or remove it',
       ],
     },
     {
-      condition: "a local block's kind belongs to another key",
+      condition: "a local block's folder names a layer other than its key's",
       layout: {
         config: configOf({
-          implementations: `[${localPath('kit')}]`,
+          implementations: `[${localPath('kit', 'domains')}]`,
         }),
         files: localBlockFiles({
-          fields: {
-            kind: 'domain',
-          },
+          folder: 'domains',
           id: 'kit',
         }),
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${localPath('kit')} has kind domain — make it implementation or move the block out of implementations`,
+        '- wrong-key: kit is a domain — move it from implementations to domains',
       ],
     },
     {
@@ -1349,12 +1447,29 @@ describe('session-start hook', () => {
         config: configOf({
           domains: '[version-control]',
           implementations: '[git]',
-          languages: `[${localPath('elixir')}]`,
+          languages: `[${localPath('elixir', 'contexts/languages')}]`,
         }),
         files: localBlockFiles({
-          fields: {
-            kind: 'context',
-          },
+          folder: 'contexts/languages',
+          id: 'elixir',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        '- no-tool: rules checked by secrets have no tool for elixir — add one, such as betterleaks, or override them',
+      ],
+    },
+    {
+      condition:
+        'a local language outside every layer folder has no tool for a role of an active rule',
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: '[git]',
+          languages: `[${localPath('elixir', '')}]`,
+        }),
+        files: localBlockFiles({
+          folder: '',
           id: 'elixir',
         }),
       },
@@ -1611,7 +1726,7 @@ describe('session-start hook', () => {
       contextOf(
         runHook({
           project,
-          event: 'subagent',
+          event: HookEvent.Subagent,
           root,
         }),
       ),
@@ -1654,7 +1769,7 @@ describe('session-start hook', () => {
         contextOf(
           runHook({
             project,
-            event: 'subagent',
+            event: HookEvent.Subagent,
             root,
           }),
         ),
@@ -1701,7 +1816,7 @@ describe('session-start hook', () => {
       const printed = contextOf(
         runHook({
           project,
-          event: 'startup',
+          event: HookEvent.Startup,
           root,
         }),
       );
@@ -1715,13 +1830,13 @@ describe('session-start hook', () => {
     {
       blocks: 34,
       tail: [
-        'The MUST headlines of 28 blocks were left out; the block files hold them.',
+        'The MUST headlines of 30 blocks were left out; the block files hold them.',
       ],
     },
     {
       blocks: 120,
       tail: [
-        '55 more lines of the block list did not fit; constitution.yaml names every block.',
+        '73 more lines of the block list did not fit; constitution.yaml names every block.',
         '',
         'The MUST headlines of 120 blocks were left out; the block files hold them.',
       ],
@@ -1736,7 +1851,7 @@ describe('session-start hook', () => {
       const context = contextOf(
         runHook({
           project,
-          event: 'startup',
+          event: HookEvent.Startup,
           root,
         }),
       );
@@ -1769,7 +1884,7 @@ describe('session-start hook', () => {
         contextOf(
           runHook({
             project,
-            event: 'startup',
+            event: HookEvent.Startup,
             root,
           }),
         ),
@@ -1799,7 +1914,7 @@ describe('session-start hook', () => {
       const context = contextOf(
         runHook({
           project,
-          event: 'subagent',
+          event: HookEvent.Subagent,
           root: REPOSITORY,
         }),
       );
@@ -1864,7 +1979,7 @@ describe('session-start hook', () => {
       // Act
       const output = outputOf(
         runHook({
-          event: 'subagent',
+          event: HookEvent.Subagent,
           project,
           root,
         }),
@@ -1891,7 +2006,7 @@ describe('session-start hook', () => {
 
     // Act
     const run = runHook({
-      event: 'subagent',
+      event: HookEvent.Subagent,
       project,
       root,
     });
@@ -1916,7 +2031,7 @@ describe('session-start hook', () => {
     const headline = headlineOf({
       context: contextOf(
         runHook({
-          event: 'subagent',
+          event: HookEvent.Subagent,
           project,
           root,
         }),
@@ -1931,12 +2046,12 @@ describe('session-start hook', () => {
   });
 
   // Core's part sets how much room is left: the line naming core's files takes
-  // 67 bytes, the gap and heading of the block list 42, a synthetic domain's
-  // line 88 and the gap, heading and three headlines of its block 436.
+  // 139 bytes, the gap and heading of the block list 42, a synthetic domain's
+  // line 122 and the gap, heading and three headlines of its block 436.
   it.each<EdgeCase>([
     {
       condition: 'the last headline block ends on the budget, reserve kept',
-      corePart: 8567,
+      corePart: 8461,
       domains: '[synthetic-001]',
       tail: [
         '- synthetic-001-rule-3: The synthetic-001 rule number 3 holds for every file, and its headline is long enough to weigh on the byte budget.',
@@ -1944,27 +2059,27 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the last headline block passes the budget by one byte',
-      corePart: 8568,
+      corePart: 8462,
       domains: '[synthetic-001]',
       tail: [
-        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up.',
+        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up. Also: foundation/synthetic-001.md',
         '',
         LEFT_OUT_ONE,
       ],
     },
     {
       condition: 'a block that does not fit comes before one that would',
-      corePart: 8745,
+      corePart: 8602,
       domains: '[synthetic-001, untrusted-client]',
       tail: [
-        '- untrusted-client: Code on a machine the user controls.',
+        '- untrusted-client: Code on a machine the user controls. Also: foundation/untrusted-client.md',
         '',
         'The MUST headlines of 2 blocks were left out; the block files hold them.',
       ],
     },
     {
       condition: 'the heading of the block list ends on the budget',
-      corePart: 9091,
+      corePart: 9019,
       domains: '[synthetic-001]',
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
@@ -1975,7 +2090,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list passes the budget by one byte',
-      corePart: 9092,
+      corePart: 9020,
       domains: '[synthetic-001]',
       tail: [
         '',
@@ -2000,7 +2115,7 @@ describe('session-start hook', () => {
       // Act
       const context = contextOf(
         runHook({
-          event: 'startup',
+          event: HookEvent.Startup,
           project,
           root: plugin,
         }),
@@ -2019,7 +2134,7 @@ describe('session-start hook', () => {
   it('should fill the budget to its last byte when the last headline block ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8567),
+      corePart: corePartOfBytes(8461),
     });
     const project = createProject({
       config: configOf({
@@ -2031,7 +2146,7 @@ describe('session-start hook', () => {
     const bytes = bytesAfterHeader(
       contextOf(
         runHook({
-          event: 'startup',
+          event: HookEvent.Startup,
           project,
           root: plugin,
         }),
@@ -2044,15 +2159,15 @@ describe('session-start hook', () => {
 
   it.each<EventCase>([
     {
-      event: 'startup',
+      event: HookEvent.Startup,
       name: 'SessionStart',
     },
     {
-      event: 'compact',
+      event: HookEvent.Compact,
       name: 'SessionStart',
     },
     {
-      event: 'subagent',
+      event: HookEvent.Subagent,
       name: 'SubagentStart',
     },
   ])(
@@ -2077,28 +2192,28 @@ describe('session-start hook', () => {
 
   it.each<FailureCase>([
     {
-      breakage: 'digests/index.tsv',
+      breakage: Breakage.DigestIndex,
       condition: 'the plugin root lacks digests/index.tsv',
       layout: CLI,
       stderr: ({ plugin }): string =>
         `constitution hook: cannot read ${plugin}/digests/index.tsv\n`,
     },
     {
-      breakage: 'digests/core.md',
+      breakage: Breakage.DigestCore,
       condition: 'the plugin root lacks digests/core.md',
       layout: CLI,
       stderr: ({ plugin }): string =>
         `constitution hook: cannot read ${plugin}/digests/core.md\n`,
     },
     {
-      breakage: 'version',
+      breakage: Breakage.Version,
       condition: "the plugin's package.json has no version",
       layout: CLI,
       stderr: ({ plugin }): string =>
         `constitution hook: ${plugin}/package.json has no version\n`,
     },
     {
-      breakage: 'hooks/lib/resolve.awk',
+      breakage: Breakage.Resolve,
       condition: 'an awk program in the middle of the pipeline fails',
       layout: CLI,
       stderr: (): string => 'constitution hook: cannot build the digest\n',
@@ -2129,7 +2244,7 @@ describe('session-start hook', () => {
 
       // Act
       const run = runHook({
-        event: 'startup',
+        event: HookEvent.Startup,
         project,
         root: plugin,
       });
@@ -2158,10 +2273,10 @@ describe('session-start hook', () => {
       },
       lines: [
         '## Domains (blocks/domains/<id>/<id>.md)',
-        '- ui: Screens and what a user sees on them. Also: forms.md',
+        '- ui: Screens and what a user sees on them. Also: foundation/ui.md, architecture/forms.md',
         '## packages/web',
-        '- remote-data (domains): Data another system owns.',
-        '- ui (domains): Also: with/remote-data.md',
+        '- remote-data (domains): Data another system owns. Also: architecture/remote-data.md',
+        '- ui (domains): Also: architecture/with/remote-data.md',
       ],
     },
   ])(
@@ -2174,7 +2289,7 @@ describe('session-start hook', () => {
       const list = blockListOf(
         contextOf(
           runHook({
-            event: 'subagent',
+            event: HookEvent.Subagent,
             project,
             root,
           }),
@@ -2183,6 +2298,224 @@ describe('session-start hook', () => {
 
       // Assert
       expect(list).toStrictEqual(lines);
+    },
+  );
+
+  it.each<AxesCase>([
+    {
+      condition: 'the repository follows all three axes',
+      config: configOf({
+        domains: AXIS_DOMAINS,
+      }),
+      view: EVERY_AXIS,
+    },
+    {
+      condition: 'the repository follows only foundation',
+      config: configOf({
+        axes: '[foundation]',
+        domains: AXIS_DOMAINS,
+      }),
+      view: FOUNDATION_ONLY,
+    },
+    {
+      condition: 'constitution.yaml has no axes key',
+      config: configOf({
+        domains: AXIS_DOMAINS,
+        omit: ConfigKey.Axes,
+      }),
+      view: {
+        ...EVERY_AXIS,
+        warnings: [
+          WARNINGS,
+          '- config: constitution.yaml has no axes key — add axes: [foundation, architecture, workflow]',
+        ],
+      },
+    },
+    {
+      condition: 'axes names an axis that does not exist',
+      config: configOf({
+        axes: '[foundation, design]',
+        domains: AXIS_DOMAINS,
+      }),
+      view: {
+        ...FOUNDATION_ONLY,
+        warnings: [
+          WARNINGS,
+          '- config: axes names design — write foundation, architecture or workflow',
+        ],
+      },
+    },
+    {
+      condition: 'axes leaves foundation out',
+      config: configOf({
+        axes: '[architecture]',
+        domains: AXIS_DOMAINS,
+      }),
+      view: {
+        core: [
+          LAWS_OF_FOUNDATION,
+          LAWS_OF_ARCHITECTURE,
+          `${CORE_FILES}, foundation/code.md, foundation/principles.md, architecture/principles.md.`,
+        ],
+        headlines: [
+          READS_ARE_CANCELLABLE,
+          FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
+          LABELS_ON_FIELDS,
+          OPTIMISTIC_WRITES_ROLL_BACK,
+        ],
+        list: [
+          DOMAINS,
+          `${REMOTE_DATA} Also: architecture/remote-data.md`,
+          `${UI} Also: foundation/ui.md, architecture/forms.md, architecture/with/remote-data.md`,
+          VERSION_CONTROL,
+        ],
+        warnings: [
+          WARNINGS,
+          '- config: constitution.yaml leaves foundation out of axes — foundation is always followed, add it',
+        ],
+      },
+    },
+    {
+      condition:
+        'an application follows an axis the repository leaves out, for its own block and a top-level one',
+      config: axesConfigOf({
+        apps: '\n  packages/web:\n    axes: [foundation, architecture]\n    domains: [remote-data]',
+        axes: '[foundation]',
+      }),
+      view: {
+        core: FOUNDATION_ONLY.core,
+        headlines: [
+          READS_ARE_CANCELLABLE,
+          FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
+          LABELS_ON_FIELDS,
+          OPTIMISTIC_WRITES_ROLL_BACK,
+        ],
+        list: [
+          DOMAINS,
+          `${UI} Also: foundation/ui.md`,
+          VERSION_CONTROL,
+          '## packages/web',
+          '- remote-data (domains): Data another system owns. Also: architecture/remote-data.md',
+          '- ui (domains): Also: architecture/forms.md, architecture/with/remote-data.md',
+        ],
+        warnings: [],
+      },
+    },
+    {
+      condition: 'an application leaves foundation out of its axes',
+      config: axesConfigOf({
+        apps: '\n  packages/web:\n    axes: [workflow]\n    domains: [remote-data]',
+        axes: '[foundation]',
+      }),
+      view: {
+        core: FOUNDATION_ONLY.core,
+        headlines: [
+          FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
+          COMMITS_ARE_ATOMIC,
+        ],
+        list: [
+          DOMAINS,
+          `${UI} Also: foundation/ui.md`,
+          VERSION_CONTROL,
+          '## packages/web',
+          '- remote-data (domains): Data another system owns.',
+          '- version-control (domains): Also: workflow/version-control.md',
+        ],
+        warnings: [
+          WARNINGS,
+          '- config: packages/web leaves foundation out of axes — foundation is always followed, add it',
+        ],
+      },
+    },
+  ])(
+    'should give the laws, files and headlines of the axes followed when $condition',
+    ({ config, view }) => {
+      // Arrange
+      const project = createProject({
+        config,
+      });
+
+      // Act
+      const context = contextOf(
+        runHook({
+          event: HookEvent.Subagent,
+          project,
+          root,
+        }),
+      );
+
+      // Assert
+      expect({
+        core: coreLinesOf(context),
+        headlines: headlinesOf(context),
+        list: blockListOf(context),
+        warnings: warningsOf(context),
+      }).toStrictEqual<AxesView>(view);
+    },
+  );
+
+  it.each<{
+    condition: string;
+    headlines: readonly string[];
+    overrides: string;
+  }>([
+    {
+      condition: 'an override lowers a root rule',
+      headlines: [
+        '- four-data-states (SHOULD): Every data view shows loading, empty, error and content.',
+        '- loading-state-shown (SHOULD via four-data-states): A view shows that it loads.',
+        '- skeleton-matches-content (SHOULD via four-data-states): A skeleton has the shape of its content.',
+        '- error-state-offers-retry: An error state offers a retry.',
+      ],
+      overrides: fourDataStatesOverride(
+        '    level: SHOULD\n    reason: "Early screens"',
+      ),
+    },
+    {
+      condition: 'an override lowers a rule in the middle of a chain',
+      headlines: [
+        '- four-data-states: Every data view shows loading, empty, error and content.',
+        '- loading-state-shown (MAY): A view shows that it loads.',
+        '- skeleton-matches-content (MAY via loading-state-shown): A skeleton has the shape of its content.',
+        '- error-state-offers-retry: An error state offers a retry.',
+      ],
+      overrides:
+        '\n  - rule: loading-state-shown\n    level: MAY\n    reason: "No spinner yet"',
+    },
+  ])(
+    'should lower the rules below that state no level of their own when $condition',
+    ({ headlines, overrides }) => {
+      // Arrange
+      const project = createProject({
+        config: configOf({
+          domains: '[ui]',
+          overrides,
+        }),
+      });
+
+      // Act
+      const shown: readonly string[] = headlinesOf(
+        contextOf(
+          runHook({
+            event: HookEvent.Subagent,
+            project,
+            root,
+          }),
+        ),
+      ).filter((line) =>
+        [
+          'four-data-states',
+          'loading-state-shown',
+          'skeleton-matches-content',
+          'error-state-offers-retry',
+        ].includes(line.slice(2).split(/[ :]/)[0] ?? ''),
+      );
+
+      // Assert
+      expect(shown).toStrictEqual(headlines);
     },
   );
 });

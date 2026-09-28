@@ -1,4 +1,5 @@
 import type { Finding } from '#/kernel';
+import { Layer } from '#/kernel';
 
 import type { RequirementAnswer, Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -96,7 +97,7 @@ const requirementsCheck: Check = ({
 }: CheckInput): readonly Finding[] => {
   const isInImplementation = (answer: RequirementAnswer): boolean =>
     // Stryker disable next-line OptionalChaining: every answer comes from a loaded block
-    byId.get(answer.block)?.layer === 'implementation';
+    byId.get(answer.block)?.layer === Layer.Implementation;
   const fileFindings = (input: {
     isMisplaced: (answer: RequirementAnswer) => boolean;
     message: string;

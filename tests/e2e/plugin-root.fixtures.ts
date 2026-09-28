@@ -22,11 +22,12 @@ import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
 
 // A file the plugin root is built without, or its package.json's version.
-type Breakage =
-  | 'digests/core.md'
-  | 'digests/index.tsv'
-  | 'hooks/lib/resolve.awk'
-  | 'version';
+enum Breakage {
+  DigestCore = 'digests/core.md',
+  DigestIndex = 'digests/index.tsv',
+  Resolve = 'hooks/lib/resolve.awk',
+  Version = 'version',
+}
 
 interface PluginRootOptions {
   breakage?: Breakage;
@@ -118,7 +119,7 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
       {
         name: '@droneey/constitution',
         private: true,
-        ...(breakage === 'version'
+        ...(breakage === Breakage.Version
           ? {}
           : {
               version: INSTALLED,
@@ -129,7 +130,7 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
     )}\n`,
   );
 
-  if (breakage !== undefined && breakage !== 'version') {
+  if (breakage !== undefined && breakage !== Breakage.Version) {
     rmSync(join(root, breakage));
   }
 
@@ -166,8 +167,8 @@ const removePluginRoots = (): void => {
   }
 };
 
-export type { Breakage };
 export {
+  Breakage,
   corePartOfBytes,
   createPluginRoot,
   INSTALLED,
