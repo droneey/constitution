@@ -1,6 +1,8 @@
 import type { Finding } from '#/kernel';
+import { AXES, Layer, Level } from '#/kernel';
 
 import type { Constitution } from '../../../entities';
+import { BlockFileRole } from '../../../entities';
 import {
   directoryOf,
   joinPaths,
@@ -17,10 +19,8 @@ const CORE_BUDGET = 3500;
 const PRINCIPLES = 'principles.md';
 const encoder = new TextEncoder();
 
-// Core's part is core.md's own text and the titles of the laws, the MUST rules
-// of the principles chapter; step 2 writes both to fit the budget.
 const corePartOf = (constitution: Constitution): CorePart => {
-  const core = constitution.blocks.find((block) => block.layer === 'core');
+  const core = constitution.blocks.find((block) => block.layer === Layer.Core);
 
   if (core === undefined) {
     return {
@@ -30,29 +30,35 @@ const corePartOf = (constitution: Constitution): CorePart => {
   }
 
   const folder = directoryOf(core.path);
-  const principles = joinPaths([
-    folder,
-    PRINCIPLES,
-  ]);
-  const laws = constitution.rules
-    .filter((rule) => rule.file === principles && rule.level === 'MUST')
-    .map((rule) => rule.slug);
+  const laws = AXES.flatMap((axis) => {
+    const principles = joinPaths([
+      folder,
+      axis,
+      PRINCIPLES,
+    ]);
+    const slugs = constitution.rules
+      .filter((rule) => rule.file === principles && rule.level === Level.Must)
+      .map((rule) => rule.slug);
+
+    return slugs.length === 0
+      ? []
+      : [
+          `Laws of ${axis}: ${slugs.join(', ')}.`,
+        ];
+  });
   const body = rewriteLocalLinks({
     rewrite: (target: string): string =>
       targetFromRoot({
         path: core.path,
         target,
       }),
-    // Stryker disable next-line OptionalChaining,ConditionalExpression,StringLiteral: a block's first file is its main one
-    text: core.files.find((file) => file.role === 'main')?.body ?? '',
+    text:
+      // Stryker disable next-line OptionalChaining,ConditionalExpression,StringLiteral: a block's first file is its card
+      core.files.find((file) => file.role === BlockFileRole.Main)?.body ?? '',
   });
   const text = `${[
     body.trim(),
-    ...(laws.length === 0
-      ? []
-      : [
-          `Laws: ${laws.join(', ')}.`,
-        ]),
+    laws.join('\n'),
   ]
     .filter((part) => part !== '')
     .join('\n\n')}\n`;

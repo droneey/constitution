@@ -1,14 +1,14 @@
 import type { Finding } from '#/kernel';
 
-import { DOCUMENT_PATHS } from '../../../../constants';
+import { DocumentPath } from '../../../../constants';
 import { generateDigests } from '../../generate-digests';
 import type { Check, CheckInput } from '../check.types';
 
 const RUN = 'run bun run digests:write';
 const DIGESTS = 'digests/';
 const WRITTEN: ReadonlySet<string> = new Set([
-  DOCUMENT_PATHS.digestCore,
-  DOCUMENT_PATHS.digestIndex,
+  DocumentPath.DigestCore,
+  DocumentPath.DigestIndex,
 ]);
 
 const staleMessage = (input: {
@@ -50,14 +50,14 @@ const digestsCheck: Check = ({
           committed: index,
           generated: generated.index,
         }),
-        path: DOCUMENT_PATHS.digestIndex,
+        path: DocumentPath.DigestIndex,
       },
       {
         message: staleMessage({
           committed: core,
           generated: generated.core,
         }),
-        path: DOCUMENT_PATHS.digestCore,
+        path: DocumentPath.DigestCore,
       },
     ].flatMap(({ message, path }) =>
       message === undefined

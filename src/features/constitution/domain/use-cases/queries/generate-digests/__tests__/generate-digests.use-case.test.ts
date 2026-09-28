@@ -16,18 +16,15 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { generateDigests } from '../generate-digests.use-case';
 
 const CORE = 'blocks/core/core.md';
-const PRINCIPLES = 'blocks/core/principles.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const WORKFLOW = 'blocks/core/workflow/workflow.md';
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
-const LAWS = 'Laws: dependencies-point-inward.';
+const LAWS = 'Laws of foundation: dependencies-point-inward.';
 
 const coreFile = (body: string): string =>
   mainFile({
     body,
-    chapters: [
-      'principles.md',
-    ],
     id: 'core',
-    kind: 'core',
   });
 
 const implementation = (input: { extends: string; id: string }): Files => ({
@@ -35,7 +32,6 @@ const implementation = (input: { extends: string; id: string }): Files => ({
     body: `# ${input.id}\n`,
     extends: input.extends,
     id: input.id,
-    kind: 'implementation',
   }),
 });
 
@@ -89,7 +85,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tdependencies-point-inward',
       record:
-        'rule\tdependencies-point-inward\tcore\tblocks/core/principles.md\t\tMUST\t\t\t\tarchitecture\tThe dependencies-point-inward rule holds.',
+        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\tarchitecture\tfoundation\tThe dependencies-point-inward rule holds.',
       what: 'an empty check kind and role',
     },
     {
@@ -129,16 +125,33 @@ describe('generateDigests', () => {
       condition:
         "a with/ rule's statement links relatively and runs past one sentence",
       files: {
-        'blocks/domains/ui/with/remote-data.md': `# Seam\n\n${rule({
-          slug: 'seam-rule',
-          statement:
-            'A write rolls back to [the ui block](../ui.md). It keeps the error.',
-        })}`,
+        'blocks/domains/ui/architecture/with/remote-data.md': `# Seam\n\n${rule(
+          {
+            slug: 'seam-rule',
+            statement:
+              'A write rolls back to [the ui block](../../ui.md). It keeps the error.',
+            tags: 'data',
+          },
+        )}`,
       },
       key: 'rule\tseam-rule',
       record:
-        'rule\tseam-rule\tui\tblocks/domains/ui/with/remote-data.md\tremote-data\tMUST\treview\t\t\tarchitecture\tA write rolls back to [the ui block](blocks/domains/ui/ui.md).',
+        'rule\tseam-rule\tui\tblocks/domains/ui/architecture/with/remote-data.md\tremote-data\tMUST\treview\t\t\tdata\tarchitecture\tA write rolls back to [the ui block](blocks/domains/ui/ui.md).',
       what: 'the first sentence with its link read from the root',
+    },
+    {
+      condition:
+        'its chapters and seams sit on several axes and one chapter takes its name',
+      files: {
+        'blocks/domains/ui/architecture/forms.md': '# Forms\n',
+        'blocks/domains/ui/foundation/design-system.md': '# Design system\n',
+        'blocks/domains/ui/workflow/reviews.md': '# Reviews\n',
+        'blocks/domains/ui/workflow/with/i18n.md': '# UI with i18n\n',
+      },
+      key: 'block\tui',
+      record:
+        'block\tui\tdomain\tThe ui block.\tfoundation/ui.md foundation/design-system.md architecture/forms.md workflow/reviews.md\tarchitecture/remote-data workflow/i18n\t\t\tfalse\t\t\t\t\t**/ui/**',
+      what: 'each chapter and seam with its axis, in axis order and the named chapter first',
     },
     {
       condition: 'a Requirements row is partial with a note',
@@ -181,10 +194,13 @@ describe('generateDigests', () => {
     const input = checkInputOf(
       without({
         files: without({
-          files: validFiles(),
-          path: CORE,
+          files: without({
+            files: validFiles(),
+            path: CORE,
+          }),
+          path: PRINCIPLES,
         }),
-        path: PRINCIPLES,
+        path: WORKFLOW,
       }),
     );
 
@@ -203,7 +219,7 @@ describe('generateDigests', () => {
 
   it.each([
     {
-      condition: 'core.md has no body',
+      condition: 'the card core.md has no body',
       files: {
         ...validFiles(),
         [CORE]: coreFile(''),
@@ -221,7 +237,21 @@ describe('generateDigests', () => {
           slug: 'dependencies-point-inward',
         })}`,
       },
-      text: '# Core\n\nLaws: names-say-what, dependencies-point-inward.\n',
+      text: '# Core\n\nLaws of foundation: names-say-what, dependencies-point-inward.\n',
+    },
+    {
+      condition: 'the principles of two axes hold MUST rules',
+      files: {
+        ...validFiles(),
+        [CORE]: mainFile({
+          body: '# Core\n',
+          id: 'core',
+        }),
+        'blocks/core/architecture/principles.md': `# Principles\n\n${rule({
+          slug: 'layers-point-inward',
+        })}`,
+      },
+      text: '# Core\n\nLaws of foundation: dependencies-point-inward.\nLaws of architecture: layers-point-inward.\n',
     },
     {
       condition: 'principles holds only SHOULD and MAY rules',
@@ -239,7 +269,7 @@ describe('generateDigests', () => {
       text: '# Core\n',
     },
   ])(
-    'should write core.md and the MUST rules of principles as laws in the core part when $condition',
+    'should write the card core.md and the MUST rules of each principles chapter as laws in the core part when $condition',
     ({ files, text }) => {
       // Arrange
       const input = checkInputOf(files);
@@ -258,16 +288,16 @@ describe('generateDigests', () => {
     },
   );
 
-  // Beside the filler the part holds 43 bytes: "# Core", two paragraph breaks,
+  // Beside the filler the part holds 57 bytes: "# Core", two paragraph breaks,
   // the laws line and the closing newline; Ω takes two bytes of UTF-8.
   it.each([
     {
-      filler: 'a'.repeat(3457),
+      filler: 'a'.repeat(3443),
       findings: [],
       name: '3,500 bytes',
     },
     {
-      filler: 'Ω'.repeat(1729),
+      filler: 'Ω'.repeat(1722),
       findings: [
         {
           message:
@@ -275,7 +305,7 @@ describe('generateDigests', () => {
           path: CORE,
         },
       ],
-      name: '3,501 bytes in 1,772 characters',
+      name: '3,501 bytes in 1,779 characters',
     },
   ])(
     'should report core only past 3,500 UTF-8 bytes when its part holds $name',

@@ -7,19 +7,18 @@ BEGIN {
   FS = "\t"
   T = "\t"
   CODES = "missing abstract unknown wrong-key config local-block no-tool not-met override"
-  KEYS = "version domains platforms languages implementations apps check overrides"
-  FIELDS = "id kind summary chapters requires extends abstract checks owns governs status"
+  KEYS = "version axes domains platforms languages implementations apps check overrides"
+  FIELDS = "id summary requires extends abstract checks dictionary governs"
   LAYERS = "domain platform language implementation"
+  AXES = "foundation architecture workflow"
   TODAY = ENVIRON["CONSTITUTION_TODAY"]
   split("domains platforms languages implementations", keys, " ")
   split(LAYERS, layers, " ")
   split("Domains Platforms Languages Implementations", titles, " ")
-  split("domain context context implementation", kinds, " ")
   split("domains contexts/platforms contexts/languages implementations", folders, " ")
   split("a domain|a platform|a language|an implementation", articles, "|")
   for (k = 1; k <= 4; k++) {
     LAYER_OF[keys[k]] = layers[k]
-    KIND_OF[keys[k]] = kinds[k]
     KEY_OF[layers[k]] = keys[k]
     TITLE[layers[k]] = titles[k]
     FOLDER[layers[k]] = folders[k]
@@ -28,10 +27,12 @@ BEGIN {
     FILL[keys[k]] = "write " keys[k] ": []"
   }
   ADD["version"] = "version: " ENVIRON["CONSTITUTION_INSTALLED"]
+  ADD["axes"] = "axes: [foundation, architecture, workflow]"
   ADD["apps"] = "apps: {}"
   ADD["check"] = "check: <the command that runs every check>"
   ADD["overrides"] = "overrides: []"
   FILL["version"] = "write version: " ENVIRON["CONSTITUTION_INSTALLED"]
+  FILL["axes"] = "write axes: [foundation, architecture, workflow]"
   FILL["apps"] = "write apps: {}"
   FILL["check"] = "name the command that runs every check"
   FILL["overrides"] = "write overrides: []"
@@ -67,7 +68,8 @@ function read_index(path,   line, f, r) {
       RCHECK[nr] = f[7]
       RROLE[nr] = f[8]
       RLANGS[nr] = f[9]
-      RHEAD[nr] = f[11]
+      RAXIS[nr] = f[11]
+      RHEAD[nr] = f[12]
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
@@ -183,7 +185,48 @@ function apply_overrides(   o, s, rule, missing) {
 }
 
 function active_rule(s, i) {
-  return IN[s, RBLOCK[i]] && (RWITH[i] == "" || IN[s, RWITH[i]])
+  return ON[s, RAXIS[i]] && IN[s, RBLOCK[i]] && (RWITH[i] == "" || IN[s, RWITH[i]])
+}
+
+function axes_of(s,   i, n, a, k, named) {
+  named = 0
+  for (i = 1; i <= nitems; i++) {
+    if (IKEY[i] != "axes" || IAPP[i] != (s ? APP[s] : "")) continue
+    if (!has(AXES, ITEXT[i])) {
+      warn("config", "axes names " ITEXT[i] " — write foundation, architecture or workflow")
+      continue
+    }
+    if (!named++) delete PICKED
+    PICKED[ITEXT[i]] = 1
+  }
+  n = split(AXES, a, " ")
+  for (k = 1; k <= n; k++) {
+    if (named) ON[s, a[k]] = (a[k] in PICKED)
+    else ON[s, a[k]] = s ? ON[0, a[k]] : 1
+  }
+  if (named && !ON[s, "foundation"]) {
+    warn("config", (s ? APP[s] : "constitution.yaml") " leaves foundation out of axes — foundation is always followed, add it")
+    ON[s, "foundation"] = 1
+  }
+}
+
+function all_axes(   n, a, k) {
+  n = split(AXES, a, " ")
+  for (k = 1; k <= n; k++) ON[0, a[k]] = 1
+}
+
+function print_core(   n, a, k) {
+  n = split(AXES, a, " ")
+  for (k = 1; k <= n; k++) if (ON[0, a[k]]) print "axis" T a[k]
+  if ("core" in KNOWN) print "core" T "Core's files, under blocks/core/: " join(trim("core.md " chapters(0, "core")), ", ") "."
+}
+
+function axis_of(entry) {
+  return substr(entry, 1, index(entry, "/") - 1)
+}
+
+function name_of(entry) {
+  return substr(entry, index(entry, "/") + 1)
 }
 
 function needs(s, id, list,   n, a, k) {
@@ -266,17 +309,26 @@ function active_count(   j, s, k, n) {
   return n
 }
 
-function also(s, id,   out, n, a, k) {
+function chapters(s, id,   out, n, a, k) {
   out = ""
   n = split(CHAPTERS[id], a, " ")
-  for (k = 1; k <= n; k++) out = out (out == "" ? "" : ", ") a[k]
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])]) out = out (out == "" ? "" : " ") a[k]
+  return out
+}
+
+function seam(entry) {
+  return axis_of(entry) "/with/" name_of(entry) ".md"
+}
+
+function also(s, id,   out, n, a, k) {
+  out = join(chapters(s, id), ", ")
   n = split(WITH[id], a, " ")
-  for (k = 1; k <= n; k++) if (IN[s, a[k]]) out = out (out == "" ? "" : ", ") "with/" a[k] ".md"
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out (out == "" ? "" : ", ") seam(a[k])
   return (out == "") ? "" : " Also: " out
 }
 
 function local_line(k) {
-  return "- " LID[k] " (local, " (LSTATUS[k] == "" ? "" : LSTATUS[k] ", ") LPATH[k] "): " LSUMMARY[k]
+  return "- " LID[k] " (local, " LPATH[k] "): " LSUMMARY[k]
 }
 
 function print_blocks(   l, layer, j, id, k, s, lines) {
@@ -301,9 +353,9 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
       id = B[j]
       if (LAYER[id] == "core" || !IN[s, id]) continue
       if (IN[0, id]) {
-        if (app_only_seams(s, id) == "") continue
+        if (app_only_files(s, id) == "") continue
         if (!lines++) print "index" T "## " APP[s]
-        print "index" T "- " id " (" FOLDER[LAYER[id]] "): Also: " app_only_seams(s, id)
+        print "index" T "- " id " (" FOLDER[LAYER[id]] "): Also: " app_only_files(s, id)
         continue
       }
       if (!lines++) print "index" T "## " APP[s]
@@ -326,10 +378,15 @@ function print_overrides(   k, o) {
   }
 }
 
-function app_only_seams(s, id,   out, n, a, k) {
+function app_only_files(s, id,   out, n, a, k, b) {
   out = ""
+  n = split(CHAPTERS[id], a, " ")
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && !ON[0, axis_of(a[k])]) out = out (out == "" ? "" : ", ") a[k]
   n = split(WITH[id], a, " ")
-  for (k = 1; k <= n; k++) if (IN[s, a[k]] && !IN[0, a[k]]) out = out (out == "" ? "" : ", ") "with/" a[k] ".md"
+  for (k = 1; k <= n; k++) {
+    b = name_of(a[k])
+    if (ON[s, axis_of(a[k])] && IN[s, b] && !(IN[0, b] && ON[0, axis_of(a[k])])) out = out (out == "" ? "" : ", ") seam(a[k])
+  }
   return out
 }
 
@@ -376,8 +433,9 @@ record == "override" {
 
 END {
   if (broken) exit 2
-  if ("core" in KNOWN) print "core" T "Core's files, under blocks/core/: " join("core.md " CHAPTERS["core"], ", ") "."
   if (failed != "") {
+    all_axes()
+    print_core()
     print "error" T failed
     exit
   }
@@ -392,11 +450,14 @@ END {
     LOCAL_KEY[name] = IKEY[i]
   }
   if ("core" in KNOWN) IN[0, "core"] = 1
-  for (i = 1; i <= nitems; i++) if (IAPP[i] == "") declare(0, i)
+  axes_of(0)
+  for (s = 1; s <= napps; s++) axes_of(s)
+  print_core()
+  for (i = 1; i <= nitems; i++) if (IAPP[i] == "" && IKEY[i] != "axes") declare(0, i)
   for (s = 1; s <= napps; s++) {
     for (j = 1; j <= nb; j++) if (IN[0, B[j]]) IN[s, B[j]] = 1
     for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == 0) IN[s, LID[k]] = 1
-    for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s]) declare(s, i)
+    for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s] && IKEY[i] != "axes") declare(s, i)
   }
   local_languages()
   apply_overrides()

@@ -20,7 +20,8 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0076 |
-| Tools and tests | ADR-0077 – ADR-0086 |
+| Tools and tests | ADR-0077 – ADR-0087 |
+| Axes | ADR-0088 |
 
 ---
 
@@ -53,7 +54,7 @@
 ## ADR-0005 — Seam rules live in with/ files
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A rule that needs two blocks lives in `<block>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/with/remote-data.md`, `browser/with/a11y.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
+- **Decision.** A rule that needs two blocks lives in `<block>/<axis>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/architecture/with/remote-data.md`, `browser/foundation/with/a11y.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
 - **Rejected.** Conditional sections inside a block's main file.
 - **Why.** A file per seam stays readable as seams multiply, and its name says when it applies.
 
@@ -315,7 +316,7 @@
 ## ADR-0056 — version-control holds what is true of any version control
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line. Everything about git — commit messages, branch names, worktrees, its commands — belongs to the implementation `git`.
+- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line, the formats of commits, branches and release tags. Everything only git has — staging, ignores, annotated tags, LFS, worktrees, its commands — belongs to the implementation `git`.
 - **Why.** A rule that names a git concept loses its meaning without git, so it belongs to the git block.
 
 ## ADR-0057 — A block never cites the decision log
@@ -517,3 +518,17 @@
 - **Decision.** `zod-only-at-the-edge` and its dependency-cruiser part are deleted. A schema is written wherever input crosses a boundary — an adapter's models, a route's search parameters, a form — and `domain-imports-only-itself-and-kernel` keeps zod, like every vendor, out of `domain/`.
 - **Rejected.** Widening the rule's list of edges to routes and forms, which names the router's and the form library's folders in zod's block.
 - **Why.** The rule forbade the schemas `search-params-validated-by-schema` and the form rules require, while what it protected — a domain free of the schema library — the law already holds. Router and form libraries take any Standard Schema validator, so a schema at the delivery layer is the boundary, not a leak.
+
+## ADR-0087 — The formats of commits, branches and release tags belong to version-control
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** The rules on the commit header, the empty body, the commit type, the subject, placeholder subjects, the branch name, the version bump, the squash merge, the pull request's title and the release tag's name move from `git` to `version-control`. `git` keeps what only git has; `release-tags-annotated-semver` splits into `release-tags-named-by-semver` in the domain and `release-tags-annotated` in `git`.
+- **Why.** The formats hold for any version control: Jujutsu or Mercurial would take `feat: Subject`, `feature/12-name` and `v1.2.0` unchanged, so they do not lose their meaning without git.
+
+## ADR-0088 — Every block lays its rules out on three axes
+**Date:** 2026-09-28 · **Status:** Accepted
+
+- **Decision.** A block is its card `<id>.md` — front matter and summary, no rule — and up to three axis folders: `foundation/`, `architecture/` and `workflow/`, each holding its chapters and its `with/` seams. Two questions place a rule, each apart from the other: its layer by what must disappear for it to lose its meaning, and its axis by whether a team with another architecture, or another workflow, would still want it. Architecture is the structure of a system in the sense of Clean Architecture, DDD and hexagonal architecture — layers and their duties, the direction of dependencies, boundaries with ports and adapters, the homes of input, output and state, the composition root, the isolation of parts, read and write apart, and the tree that spells them; workflow is how a change travels from the idea to the release. A rule that implements an architecture or workflow rule is on that axis; the layout of tests is foundation. Architecture and workflow may refer to foundation; foundation refers only to itself, and the two never to each other. A project lists the axes it follows in `constitution.yaml`, `foundation` always among them. Every rule moved to its axis by a census of all 614; a rule that bundles two axes stays whole on the stricter one until it is split. Core's `architecture` chapter is now `anatomy`, its `workflow` chapter `delivery`, and its two rules about files form `foundation/files.md`.
+- **Rejected.** Two parallel trees `foundation/` and `architecture/` above the layers, which give a block two homes; a suffix `.architecture.md` beside a default axis; a mark on each rule, which a hook cannot drop as a whole and which drifts, as the `architecture` tag did; one architecture block that places every other block's rules, which would name every library from above; folder names as the test of architecture, which misses the dependency rule itself.
+- **Why.** A team adopts the foundation the way it adopts a tool's recommended preset, whatever its own architecture and workflow, and the axes make that choice one line. The literature separates the three the same way: style guides and Clean Code for the craft, Clean Architecture, hexagonal architecture and DDD for the structure, and engineering practices — Clean Coder, Accelerate, the code-review guides — for the process.
+

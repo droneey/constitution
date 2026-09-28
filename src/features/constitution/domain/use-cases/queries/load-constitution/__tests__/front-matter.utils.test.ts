@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Role } from '#/kernel';
+
 import { createFakeFrontMatterParser } from '../../../../../__tests__/front-matter-parser.fake';
 import type { FrontMatterFields, FrontMatterRead } from '../../../../contracts';
 import { readFrontMatter } from '../front-matter.utils';
@@ -9,29 +11,23 @@ const TEXT = '---\nid: ui\n---\n# UI\n';
 const BODY = '# UI\n';
 const FIELDS: FrontMatterFields = {
   abstract: false,
-  chapters: [],
   checks: [],
+  dictionary: [],
   extends: undefined,
   governs: [],
   id: 'ui',
-  kind: 'domain',
-  owns: [],
   requires: [],
-  status: 'stable',
   summary: 'The ui block.',
 };
 const KEYS = [
   'id',
-  'kind',
   'summary',
-  'chapters',
   'requires',
   'extends',
   'abstract',
   'checks',
-  'owns',
+  'dictionary',
   'governs',
-  'status',
 ];
 
 const mappingOf = (input: {
@@ -59,17 +55,14 @@ describe('readFrontMatter', () => {
     // Arrange
     const read = mappingOf({
       fields: {
-        chapters: [
-          'data-states.md',
-        ],
         checks: [
           'lint',
         ],
+        dictionary: [
+          'UI kit',
+        ],
         governs: [
           '**/ui/**',
-        ],
-        owns: [
-          'UI kit',
         ],
         requires: [
           'remote-data',
@@ -86,25 +79,20 @@ describe('readFrontMatter', () => {
       findings: [],
       frontMatter: {
         abstract: false,
-        chapters: [
-          'data-states.md',
-        ],
         checks: [
-          'lint',
+          Role.Lint,
+        ],
+        dictionary: [
+          'UI kit',
         ],
         extends: undefined,
         governs: [
           '**/ui/**',
         ],
         id: 'ui',
-        kind: 'domain',
-        owns: [
-          'UI kit',
-        ],
         requires: [
           'remote-data',
         ],
-        status: 'stable',
         summary: 'The ui block.',
       },
     });
@@ -134,13 +122,13 @@ describe('readFrontMatter', () => {
     {
       lines: [
         'id: ui',
-        'kind: domain',
         'summary: Screens: states.',
+        'requires: []',
       ],
-      message: 'front matter line 4 (summary) is not valid YAML: broken',
+      message: 'front matter line 3 (summary) is not valid YAML: broken',
       name: 'a YAML error on the line of a field',
       read: {
-        line: 3,
+        line: 2,
         reason: 'broken',
         status: 'not-yaml',
       },
@@ -148,9 +136,9 @@ describe('readFrontMatter', () => {
     {
       lines: [
         'id: ui',
-        'kind : domain',
+        'summary : Screens.',
       ],
-      message: 'front matter line 3 (kind) is not valid YAML: broken',
+      message: 'front matter line 3 (summary) is not valid YAML: broken',
       name: 'a YAML error on the line of a field with a space before its colon',
       read: {
         line: 2,
@@ -175,7 +163,7 @@ describe('readFrontMatter', () => {
     {
       lines: [
         '- id',
-        'kind: domain',
+        'summary: Screens.',
       ],
       message: 'front matter line 2 is not valid YAML: broken',
       name: 'a YAML error above every field',
@@ -282,8 +270,8 @@ describe('readFrontMatter', () => {
     name: string;
   }>([
     {
-      keys: KEYS.filter((key) => key !== 'status'),
-      message: 'front matter lacks "status"; every block declares every field',
+      keys: KEYS.filter((key) => key !== 'governs'),
+      message: 'front matter lacks "governs"; every block declares every field',
       name: 'a missing field',
     },
     {
@@ -296,12 +284,12 @@ describe('readFrontMatter', () => {
     },
     {
       keys: [
-        'kind',
+        'summary',
         'id',
         ...KEYS.slice(2),
       ],
       message:
-        'front matter lists its fields out of order; the order is id, kind, summary, chapters, requires, extends, abstract, checks, owns, governs, status',
+        'front matter lists its fields out of order; the order is id, summary, requires, extends, abstract, checks, dictionary, governs',
       name: 'its fields out of order',
     },
     {
@@ -310,14 +298,6 @@ describe('readFrontMatter', () => {
       },
       message: 'front matter: id "ui_kit" is not a kebab-case block id',
       name: 'an id in snake case',
-    },
-    {
-      fields: {
-        kind: 'platform',
-      },
-      message:
-        'front matter: kind "platform" is not one of core, domain, context, implementation',
-      name: 'an unknown kind',
     },
     {
       fields: {
@@ -351,43 +331,6 @@ describe('readFrontMatter', () => {
     },
     {
       fields: {
-        status: 'done',
-      },
-      message: 'front matter: status "done" is not one of stable, draft',
-      name: 'an unknown status',
-    },
-    {
-      fields: {
-        chapters: [
-          'Parts.md',
-        ],
-      },
-      message:
-        'front matter: chapters lists "Parts.md", which is not a kebab-case .md file name',
-      name: 'a chapter name with a capital letter',
-    },
-    {
-      fields: {
-        chapters: [
-          'parts.mdx',
-        ],
-      },
-      message:
-        'front matter: chapters lists "parts.mdx", which is not a kebab-case .md file name',
-      name: 'a chapter that is no .md file',
-    },
-    {
-      fields: {
-        chapters: [
-          'ui.md',
-        ],
-      },
-      message:
-        'front matter: chapters lists the main file ui.md; chapters are the files after it',
-      name: 'the main file among its chapters',
-    },
-    {
-      fields: {
         requires: [
           'Bad',
         ],
@@ -406,13 +349,13 @@ describe('readFrontMatter', () => {
     },
     {
       fields: {
-        owns: [
+        dictionary: [
           ' ',
           '  ',
         ],
       },
-      message: 'front matter: owns and governs hold no empty entry',
-      name: 'owns entries of whitespace only',
+      message: 'front matter: dictionary and governs hold no empty entry',
+      name: 'dictionary entries of whitespace only',
     },
     {
       fields: {
@@ -420,7 +363,7 @@ describe('readFrontMatter', () => {
           '',
         ],
       },
-      message: 'front matter: owns and governs hold no empty entry',
+      message: 'front matter: dictionary and governs hold no empty entry',
       name: 'an empty governs entry',
     },
     {

@@ -1,5 +1,5 @@
 import type { Files } from './constitution.fixtures';
-import { mainFile, rule } from './constitution.fixtures';
+import { blockFiles, mainFile, rule } from './constitution.fixtures';
 import { digestFiles } from './valid-digests.fixtures';
 
 const pluginFiles = (): Files => ({
@@ -37,87 +37,105 @@ const pluginFiles = (): Files => ({
 });
 
 const upperFiles = (): Files => ({
-  'blocks/core/core.md': mainFile({
-    body: `# Core\n\nRead [principles](principles.md).\n\n${rule({
-      slug: 'rules-bind',
-    })}`,
-    chapters: [
-      'principles.md',
-    ],
+  ...blockFiles({
+    body: '# Core\n\nRead [principles](foundation/principles.md).\n',
+    dir: 'blocks/core',
+    files: {
+      'foundation/principles.md': `# Principles\n\n${rule({
+        slug: 'dependencies-point-inward',
+      })}`,
+      'workflow/workflow.md': `# Workflow\n\n${rule({
+        slug: 'rules-bind',
+      })}`,
+    },
     id: 'core',
-    kind: 'core',
   }),
-  'blocks/core/principles.md': `# Principles\n\n${rule({
-    slug: 'dependencies-point-inward',
-  })}`,
-  'blocks/domains/i18n/i18n.md': mainFile({
-    body: `# i18n\n\n${rule({
-      slug: 'i18n-plurals-by-cldr',
-      tags: 'ux',
-    })}`,
+  ...blockFiles({
+    body: '# i18n\n',
+    dir: 'blocks/domains/i18n',
+    files: {
+      'foundation/i18n.md': `# i18n\n\n${rule({
+        slug: 'i18n-plurals-by-cldr',
+        tags: 'ux',
+      })}`,
+    },
     id: 'i18n',
-    kind: 'domain',
   }),
-  'blocks/domains/remote-data/remote-data.md': mainFile({
-    body: `# Remote data\n\n${rule({
-      slug: 'reads-are-cancellable',
-      tags: 'data',
-    })}`,
+  ...blockFiles({
+    body: '# Remote data\n',
+    dir: 'blocks/domains/remote-data',
+    files: {
+      'architecture/remote-data.md': `# Remote data\n\n${rule({
+        slug: 'reads-are-cancellable',
+        tags: 'data',
+      })}`,
+    },
     id: 'remote-data',
-    kind: 'domain',
   }),
-  'blocks/domains/ui/ui.md': mainFile({
-    body: `# UI\n\n${rule({
-      check: 'test',
-      slug: 'four-data-states',
-      tags: 'ux, a11y',
-    })}`,
+  ...blockFiles({
+    body: '# UI\n',
+    dir: 'blocks/domains/ui',
+    files: {
+      'architecture/with/remote-data.md': `# UI with remote data\n\n${rule({
+        implementsSlug: 'reads-are-cancellable',
+        slug: 'optimistic-writes-roll-back',
+        tags: 'ux, data',
+      })}`,
+      'foundation/ui.md': `# UI\n\n${rule({
+        check: 'test',
+        slug: 'four-data-states',
+        tags: 'ux, a11y',
+      })}`,
+    },
     governs: [
       '**/ui/**',
     ],
     id: 'ui',
-    kind: 'domain',
   }),
-  'blocks/domains/ui/with/remote-data.md': `# UI with remote data\n\n${rule({
-    implementsSlug: 'reads-are-cancellable',
-    slug: 'optimistic-writes-roll-back',
-    tags: 'ux, data',
-  })}`,
-  'blocks/domains/untrusted-client/untrusted-client.md': mainFile({
-    body: `# Untrusted client\n\n${rule({
-      slug: 'no-secret-in-the-client',
-      tags: 'security',
-    })}`,
+  ...blockFiles({
+    body: '# Untrusted client\n',
+    dir: 'blocks/domains/untrusted-client',
+    files: {
+      'foundation/untrusted-client.md': `# Untrusted client\n\n${rule({
+        slug: 'no-secret-in-the-client',
+        tags: 'security',
+      })}`,
+    },
     id: 'untrusted-client',
-    kind: 'domain',
   }),
 });
 
 const contextFiles = (): Files => ({
-  'blocks/contexts/languages/typescript/typescript.md': mainFile({
-    body: `# TypeScript\n\n${rule({
-      check: 'tool — types',
-      slug: 'no-any',
-      statement: 'A TypeScript value is never typed `any`.',
-      tags: 'types',
-    })}`,
+  ...blockFiles({
+    body: '# TypeScript\n',
     checks: [
       'types',
     ],
+    dir: 'blocks/contexts/languages/typescript',
+    files: {
+      'foundation/typescript.md': `# TypeScript\n\n${rule({
+        check: 'tool — types',
+        slug: 'no-any',
+        statement: 'A TypeScript value is never typed `any`.',
+        tags: 'types',
+      })}`,
+    },
     id: 'typescript',
-    kind: 'context',
-    owns: [
+    dictionary: [
       'TypeScript',
       '.ts',
       'index.ts',
     ],
   }),
-  'blocks/contexts/platforms/browser/browser.md': mainFile({
-    body: `# Browser\n\n${rule({
-      slug: 'no-window-during-render',
-    })}`,
+  ...blockFiles({
+    body: '# Browser\n',
+    dir: 'blocks/contexts/platforms/browser',
+    files: {
+      'architecture/browser.md': `# Browser\n\n${rule({
+        slug: 'no-window-during-render',
+      })}`,
+    },
     id: 'browser',
-    kind: 'context',
     requires: [
       'untrusted-client',
     ],
@@ -125,16 +143,19 @@ const contextFiles = (): Files => ({
 });
 
 const implementationFiles = (): Files => ({
-  'blocks/implementations/_react/_react.md': mainFile({
+  ...blockFiles({
     abstract: true,
-    body: `# React\n\n${rule({
-      check: 'tool — lint',
-      slug: 'hooks-at-top-level',
-      statement: 'A React hook is called only at the top level.',
-    })}`,
+    body: '# React\n',
+    dir: 'blocks/implementations/_react',
+    files: {
+      'foundation/hooks.md': `# Hooks\n\n${rule({
+        check: 'tool — lint',
+        slug: 'hooks-at-top-level',
+        statement: 'A React hook is called only at the top level.',
+      })}`,
+    },
     id: '_react',
-    kind: 'implementation',
-    owns: [
+    dictionary: [
       'React',
     ],
     requires: [
@@ -148,8 +169,7 @@ const implementationFiles = (): Files => ({
       'lint',
     ],
     id: 'biome',
-    kind: 'implementation',
-    owns: [
+    dictionary: [
       'Biome',
     ],
     requires: [
@@ -170,8 +190,7 @@ const implementationFiles = (): Files => ({
       '',
     ].join('\n'),
     id: 'lingui',
-    kind: 'implementation',
-    owns: [
+    dictionary: [
       'Lingui',
     ],
     requires: [
@@ -179,15 +198,18 @@ const implementationFiles = (): Files => ({
       'typescript',
     ],
   }),
-  'blocks/implementations/react-dom/react-dom.md': mainFile({
-    body: `# React DOM\n\n${rule({
-      slug: 'portals-for-overlays',
-      statement: 'React DOM renders an overlay through a portal.',
-    })}`,
+  ...blockFiles({
+    body: '# React DOM\n',
+    dir: 'blocks/implementations/react-dom',
     extends: '_react',
+    files: {
+      'workflow/portals.md': `# Portals\n\n${rule({
+        slug: 'portals-for-overlays',
+        statement: 'React DOM renders an overlay through a portal.',
+      })}`,
+    },
     id: 'react-dom',
-    kind: 'implementation',
-    owns: [
+    dictionary: [
       'React DOM',
     ],
     requires: [

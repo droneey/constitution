@@ -1,4 +1,4 @@
-import { LANGUAGE_FREE_ROLES, ROLES } from '#/kernel';
+import { LANGUAGE_FREE_ROLES, Layer, Level, ROLES } from '#/kernel';
 
 import type { Block, Constitution, Rule } from '../../../entities';
 import type { BlocksById } from '../../../utils';
@@ -37,7 +37,7 @@ const neededRoles = (input: {
 }): readonly string[] => [
   ...new Set(
     input.rules
-      .filter((rule) => rule.level === 'MUST')
+      .filter((rule) => rule.level === Level.Must)
       .flatMap((rule) => {
         const check = checkOf(rule);
         const languages = ruleLanguagesOf({
@@ -62,7 +62,7 @@ const roleCoverage = (input: {
   constitution: Constitution;
 }): readonly string[] =>
   input.constitution.blocks
-    .filter((block) => block.layer === 'language')
+    .filter((block) => block.layer === Layer.Language)
     .flatMap((language) => {
       const held = heldRoles({
         blocks: input.constitution.blocks,

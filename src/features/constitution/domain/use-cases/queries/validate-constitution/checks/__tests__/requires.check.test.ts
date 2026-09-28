@@ -18,7 +18,6 @@ describe('requiresCheck', () => {
     files[BROWSER] = mainFile({
       body: '# Browser\n',
       id: 'browser',
-      kind: 'context',
       requires: [
         'core',
         'typescript',
@@ -59,7 +58,6 @@ describe('requiresCheck', () => {
     files[BIOME] = mainFile({
       body: '# Biome\n',
       id: 'biome',
-      kind: 'implementation',
       requires: [
         'typescript',
         'lingui',
@@ -82,7 +80,6 @@ describe('requiresCheck', () => {
       block: {
         body: '# i18n\n',
         id: 'i18n',
-        kind: 'domain',
         requires: [
           'remote-data',
         ],
@@ -94,7 +91,6 @@ describe('requiresCheck', () => {
         body: '# i18n\n',
         extends: 'remote-data',
         id: 'i18n',
-        kind: 'domain',
       },
       field: 'extends',
     },
@@ -138,7 +134,6 @@ describe('requiresCheck', () => {
         body: '# Biome\n',
         extends: base,
         id: 'biome',
-        kind: 'implementation',
       });
       const input = checkInputOf(files);
 

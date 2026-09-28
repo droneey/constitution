@@ -1,4 +1,4 @@
-import { compareText } from '#/kernel';
+import { compareText, Layer } from '#/kernel';
 
 import type { Rule } from '../entities';
 import type { BlocksById } from './closure.utils';
@@ -14,7 +14,7 @@ const languagesOf = (input: {
     input.blockId,
     ...closureOf(input),
   ]
-    .filter((id) => input.byId.get(id)?.layer === 'language')
+    .filter((id) => input.byId.get(id)?.layer === Layer.Language)
     .toSorted(compareText);
 
 // A rule of a with/ file holds only where both blocks do, so it takes the

@@ -1,4 +1,5 @@
-import type { Finding, Layer } from '#/kernel';
+import type { Finding } from '#/kernel';
+import { Layer } from '#/kernel';
 
 import type { Block } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -53,7 +54,7 @@ const extendsMessage = (subject: Subject): string | undefined => {
     return 'extends itself';
   }
 
-  return target.layer === 'implementation'
+  return target.layer === Layer.Implementation
     ? undefined
     : `extends ${base}, ${aBlock(target.layer)}; a block extends only an implementation`;
 };
@@ -72,7 +73,7 @@ const blockFindings = (subject: Subject): readonly Finding[] => {
             id,
           }),
         )),
-    subject.block.layer === 'implementation'
+    subject.block.layer === Layer.Implementation
       ? extendsMessage(subject)
       : undefined,
   ];

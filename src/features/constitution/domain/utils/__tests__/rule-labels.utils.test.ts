@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Axis, Level } from '#/kernel';
+
 import type { Rule } from '../../entities';
 import type { RuleCheck } from '../rule-labels.utils';
 import { checkOf, tagsOf } from '../rule-labels.utils';
@@ -11,10 +13,11 @@ interface CheckCase {
 }
 
 const ruleWith = (labels: Rule['labels']): Rule => ({
+  axis: Axis.Foundation,
   block: 'core',
-  file: 'blocks/core/core.md',
+  file: 'blocks/core/foundation/principles.md',
   labels,
-  level: 'MUST',
+  level: Level.Must,
   slug: 'a',
   statement: 'A.',
   with: undefined,

@@ -4,30 +4,24 @@ import { createYamlFrontMatterParser } from '../yaml-front-matter-parser.adapter
 
 const FIELDS = [
   'id: ui',
-  'kind: domain',
   'summary: Screens.',
-  'chapters: []',
   'requires: []',
   'extends: null',
   'abstract: false',
   'checks: []',
-  'owns: []',
+  'dictionary: []',
   'governs: ["**/ui/**"]',
-  'status: stable',
 ].join('\n');
 
 const KEYS = [
   'id',
-  'kind',
   'summary',
-  'chapters',
   'requires',
   'extends',
   'abstract',
   'checks',
-  'owns',
+  'dictionary',
   'governs',
-  'status',
 ];
 
 describe('createYamlFrontMatterParser', () => {
@@ -42,17 +36,14 @@ describe('createYamlFrontMatterParser', () => {
     expect(read).toStrictEqual({
       fields: {
         abstract: false,
-        chapters: [],
         checks: [],
+        dictionary: [],
         extends: undefined,
         governs: [
           '**/ui/**',
         ],
         id: 'ui',
-        kind: 'domain',
-        owns: [],
         requires: [],
-        status: 'stable',
         summary: 'Screens.',
       },
       issues: [],
@@ -65,8 +56,8 @@ describe('createYamlFrontMatterParser', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
     const yaml = FIELDS.replace('abstract: false', 'abstract: "no"').replace(
-      'owns: []',
-      'owns: [React, 19]',
+      'dictionary: []',
+      'dictionary: [React, 19]',
     );
 
     // Act
@@ -81,7 +72,7 @@ describe('createYamlFrontMatterParser', () => {
           message: 'Invalid input: expected boolean, received string',
         },
         {
-          field: 'owns.1',
+          field: 'dictionary.1',
           message: 'Invalid input: expected string, received number',
         },
       ],
@@ -103,7 +94,7 @@ describe('createYamlFrontMatterParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      line: 10,
+      line: 8,
       reason: 'Missing , or : between flow sequence items',
       status: 'not-yaml',
     });
@@ -112,7 +103,7 @@ describe('createYamlFrontMatterParser', () => {
   it('should report the line of an unquoted star when a value reads as an alias', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
-    const yaml = 'id: ui\ngoverns:\n  - *.tsx\nstatus: stable';
+    const yaml = 'id: ui\ngoverns:\n  - *.tsx\ndictionary: []';
 
     // Act
     const read = parser.parse(yaml);
@@ -129,7 +120,7 @@ describe('createYamlFrontMatterParser', () => {
   it.each([
     {
       name: 'a list',
-      yaml: '- id\n- kind',
+      yaml: '- id\n- summary',
     },
     {
       name: 'a plain text',

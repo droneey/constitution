@@ -1,1 +1,1 @@
-export { DOCUMENT_PATHS } from './documents.constants';
+export { DocumentPath } from './documents.constants';

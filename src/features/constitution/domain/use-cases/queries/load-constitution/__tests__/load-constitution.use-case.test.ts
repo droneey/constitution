@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { Finding } from '#/kernel';
+import { Axis } from '#/kernel';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
 import {
@@ -9,25 +10,23 @@ import {
   rule,
   textOf,
 } from '../../../../../__tests__/constitution.fixtures';
-import { paraglideFromTemplate } from '../../../../../__tests__/templates.fixtures';
+import { paraglideOnAxes } from '../../../../../__tests__/templates.fixtures';
 import {
   GOLDEN_CORE,
   GOLDEN_INDEX,
 } from '../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
+import { BlockFileRole } from '../../../../entities';
 
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
-  'is not a block file; a block holds its main file, its chapters and with/<block>.md';
+  'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md';
 
-const uiMain = (chapters: readonly string[]): string =>
-  mainFile({
-    body: '# UI\n',
-    chapters,
-    id: 'ui',
-    kind: 'domain',
-  });
+const UI_CARD = mainFile({
+  body: '# UI\n',
+  id: 'ui',
+});
 
 describe('loadConstitution', () => {
   it('should keep only the paths when the tree holds neither a block nor a document', () => {
@@ -154,11 +153,9 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should load a block written from templates/block.md without a finding when its placeholders are filled', () => {
+  it('should load a block written from templates/block.md without a finding when its placeholders are filled and its rules sit in an axis chapter', () => {
     // Arrange
-    const files = {
-      'blocks/implementations/paraglide/paraglide.md': paraglideFromTemplate(),
-    };
+    const files = paraglideOnAxes();
 
     // Act
     const loaded = loadedOf(files);
@@ -169,7 +166,7 @@ describe('loadConstitution', () => {
         (answer) => `${answer.requirement} ${answer.status}`,
       ),
       blocks: loaded.constitution.blocks.map(
-        (block) => `${block.id} ${block.frontMatter.status}`,
+        (block) => `${block.layer} ${block.id}`,
       ),
       findings: loaded.findings,
       rules: loaded.constitution.rules.map(
@@ -180,7 +177,7 @@ describe('loadConstitution', () => {
         'i18n-plurals-by-cldr met',
       ],
       blocks: [
-        'paraglide draft',
+        'implementation paraglide',
       ],
       findings: [],
       rules: [
@@ -196,7 +193,6 @@ describe('loadConstitution', () => {
       'blocks/contexts/platforms/web/web.md': mainFile({
         body: '# Web\n',
         id: 'web',
-        kind: 'context',
       }),
     };
 
@@ -254,13 +250,19 @@ describe('loadConstitution', () => {
 
   it.each([
     'blocks/domains/ui/.draft.md',
-    'blocks/domains/ui/parts.mdx',
-    'blocks/domains/ui/parts/a.md',
-    'blocks/domains/ui/old.md/a.md',
-    'blocks/domains/ui/with/notes.txt',
-    'blocks/domains/ui/with/old.md/a.md',
+    'blocks/domains/ui/parts.md',
+    'blocks/domains/ui/with/remote-data.md',
+    'blocks/domains/ui/design/parts.md',
+    'blocks/domains/ui/design/with/remote-data.md',
+    'blocks/domains/ui/foundation',
+    'blocks/domains/ui/foundation/.draft.md',
+    'blocks/domains/ui/foundation/parts.mdx',
+    'blocks/domains/ui/foundation/parts/a.md',
+    'blocks/domains/ui/foundation/old.md/a.md',
+    'blocks/domains/ui/foundation/with/notes.txt',
+    'blocks/domains/ui/foundation/with/old.md/a.md',
   ])(
-    'should report %p as a stray file when it is hidden, nested or not markdown',
+    'should report %p as a stray file when it is hidden, nested, not markdown or outside an axis folder',
     (path) => {
       // Arrange
       const files = {
@@ -280,16 +282,17 @@ describe('loadConstitution', () => {
     },
   );
 
-  it('should load the main file, the chapters in listed order, then the seams when a chapter and a seam share a name', () => {
+  it('should load the card, the chapters by axis with the one named after the block first, then the seams by axis, when the tree lists them otherwise', () => {
     // Arrange
     const files = {
-      'blocks/domains/ui/a.md': '# A\n',
-      'blocks/domains/ui/remote-data.md': '# Remote data\n\nText.',
-      'blocks/domains/ui/ui.md': uiMain([
-        'remote-data.md',
-        'a.md',
-      ]),
-      'blocks/domains/ui/with/remote-data.md': '# UI with remote data\n',
+      'blocks/domains/ui/architecture/remote-data.md': '# Remote data\n\nText.',
+      'blocks/domains/ui/architecture/with/remote-data.md':
+        '# UI with remote data\n',
+      'blocks/domains/ui/foundation/a.md': '# A\n',
+      'blocks/domains/ui/foundation/ui.md': '# UI\n',
+      'blocks/domains/ui/foundation/with/i18n.md': '# UI with i18n\n',
+      'blocks/domains/ui/ui.md': UI_CARD,
+      'blocks/domains/ui/workflow/reviews.md': '# Reviews\n',
     };
 
     // Act
@@ -303,31 +306,59 @@ describe('loadConstitution', () => {
       files: [
         [
           {
+            axis: undefined,
             body: '\n# UI\n',
-            lines: 15,
+            lines: 12,
             path: 'blocks/domains/ui/ui.md',
-            role: 'main',
+            role: BlockFileRole.Main,
             with: undefined,
           },
           {
-            body: '# Remote data\n\nText.',
-            lines: 3,
-            path: 'blocks/domains/ui/remote-data.md',
-            role: 'chapter',
+            axis: Axis.Foundation,
+            body: '# UI\n',
+            lines: 1,
+            path: 'blocks/domains/ui/foundation/ui.md',
+            role: BlockFileRole.Chapter,
             with: undefined,
           },
           {
+            axis: Axis.Foundation,
             body: '# A\n',
             lines: 1,
-            path: 'blocks/domains/ui/a.md',
-            role: 'chapter',
+            path: 'blocks/domains/ui/foundation/a.md',
+            role: BlockFileRole.Chapter,
             with: undefined,
           },
           {
+            axis: Axis.Architecture,
+            body: '# Remote data\n\nText.',
+            lines: 3,
+            path: 'blocks/domains/ui/architecture/remote-data.md',
+            role: BlockFileRole.Chapter,
+            with: undefined,
+          },
+          {
+            axis: Axis.Workflow,
+            body: '# Reviews\n',
+            lines: 1,
+            path: 'blocks/domains/ui/workflow/reviews.md',
+            role: BlockFileRole.Chapter,
+            with: undefined,
+          },
+          {
+            axis: Axis.Foundation,
+            body: '# UI with i18n\n',
+            lines: 1,
+            path: 'blocks/domains/ui/foundation/with/i18n.md',
+            role: BlockFileRole.With,
+            with: 'i18n',
+          },
+          {
+            axis: Axis.Architecture,
             body: '# UI with remote data\n',
             lines: 1,
-            path: 'blocks/domains/ui/with/remote-data.md',
-            role: 'with',
+            path: 'blocks/domains/ui/architecture/with/remote-data.md',
+            role: BlockFileRole.With,
             with: 'remote-data',
           },
         ],
@@ -342,36 +373,23 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/ui.md': uiMain([]),
-        'blocks/domains/ui/with/i18n.md':
+        'blocks/domains/ui/foundation/with/i18n.md':
           '---\nid: i18n\n---\n# UI with i18n\n',
+        'blocks/domains/ui/ui.md': UI_CARD,
       },
       finding: {
         message: 'has front matter; only the main file of a block carries it',
-        path: 'blocks/domains/ui/with/i18n.md',
+        path: 'blocks/domains/ui/foundation/with/i18n.md',
       },
     },
     {
       files: {
-        'blocks/domains/ui/parts.md': '# Parts\n',
-        'blocks/domains/ui/ui.md': uiMain([]),
+        'blocks/domains/ui/ui.md': UI_CARD,
+        'blocks/domains/ui/workflow/reviews.md': '---\nid: reviews\n---\n',
       },
       finding: {
-        message: 'is not listed in the chapters of ui',
-        path: 'blocks/domains/ui/parts.md',
-      },
-    },
-    {
-      files: {
-        'blocks/domains/ui/parts.md': '# Parts\n',
-        'blocks/domains/ui/ui.md': uiMain([
-          'parts.md',
-          'gone.md',
-        ]),
-      },
-      finding: {
-        message: 'lists the chapter gone.md, which does not exist',
-        path: 'blocks/domains/ui/ui.md',
+        message: 'has front matter; only the main file of a block carries it',
+        path: 'blocks/domains/ui/workflow/reviews.md',
       },
     },
   ])(
@@ -397,7 +415,7 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/core/principles.md': '# Principles\n',
+        'blocks/core/foundation/principles.md': '# Principles\n',
       },
       finding: {
         message: 'has no main file core.md',
@@ -407,7 +425,7 @@ describe('loadConstitution', () => {
     },
     {
       files: {
-        'blocks/domains/ui/parts.md': '# Parts\n',
+        'blocks/domains/ui/foundation/parts.md': '# Parts\n',
       },
       finding: {
         message: 'has no main file ui.md',
@@ -450,13 +468,11 @@ describe('loadConstitution', () => {
       'blocks/contexts/platforms/ui/ui.md': mainFile({
         body: '# UI platform\n',
         id: 'ui',
-        kind: 'context',
       }),
-      'blocks/domains/ui/ui.md': uiMain([]),
+      'blocks/domains/ui/ui.md': UI_CARD,
       'blocks/implementations/ui/ui.md': mainFile({
         body: '# UI kit\n',
         id: 'ui',
-        kind: 'implementation',
       }),
     };
 
@@ -483,17 +499,24 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should gather the rules, the answers and their findings of every block when they spread over main files, chapters and seams', () => {
+  it('should gather the rules, the answers and their findings of every block when they spread over cards, chapters and seams', () => {
     // Arrange
     const files = {
-      'blocks/domains/i18n/i18n.md': mainFile({
-        body: rule({
-          slug: 'i18n-plurals-by-cldr',
-        }),
-        id: 'i18n',
-        kind: 'domain',
+      'blocks/domains/i18n/foundation/i18n.md': rule({
+        slug: 'i18n-plurals-by-cldr',
       }),
-      'blocks/implementations/lingui/catalogs.md': [
+      'blocks/domains/i18n/i18n.md': mainFile({
+        body: '# i18n\n',
+        id: 'i18n',
+      }),
+      'blocks/implementations/lingui/architecture/with/react-dom.md': [
+        '# Lingui with React DOM',
+        '',
+        rule({
+          slug: 'provider-at-the-root',
+        }),
+      ].join('\n'),
+      'blocks/implementations/lingui/workflow/catalogs.md': [
         '# Catalogs',
         '',
         '### loose · MUST',
@@ -512,19 +535,8 @@ describe('loadConstitution', () => {
           '| i18n typed keys | catalogs | met |',
           '',
         ].join('\n'),
-        chapters: [
-          'catalogs.md',
-        ],
         id: 'lingui',
-        kind: 'implementation',
       }),
-      'blocks/implementations/lingui/with/react-dom.md': [
-        '# Lingui with React DOM',
-        '',
-        rule({
-          slug: 'provider-at-the-root',
-        }),
-      ].join('\n'),
     };
 
     // Act
@@ -536,6 +548,7 @@ describe('loadConstitution', () => {
       findings: loaded.findings,
       rules: loaded.constitution.rules.map((parsed) => [
         parsed.block,
+        parsed.axis,
         parsed.file,
         parsed.with,
         parsed.slug,
@@ -555,7 +568,7 @@ describe('loadConstitution', () => {
         {
           message:
             'heading "### loose · MUST" looks like a rule but is not "## <slug> · MUST|SHOULD|MAY"',
-          path: 'blocks/implementations/lingui/catalogs.md',
+          path: 'blocks/implementations/lingui/workflow/catalogs.md',
         },
         {
           message:
@@ -566,23 +579,56 @@ describe('loadConstitution', () => {
       rules: [
         [
           'i18n',
-          'blocks/domains/i18n/i18n.md',
+          'foundation',
+          'blocks/domains/i18n/foundation/i18n.md',
           undefined,
           'i18n-plurals-by-cldr',
         ],
         [
           'lingui',
-          'blocks/implementations/lingui/catalogs.md',
+          'workflow',
+          'blocks/implementations/lingui/workflow/catalogs.md',
           undefined,
           'catalogs-are-compiled',
         ],
         [
           'lingui',
-          'blocks/implementations/lingui/with/react-dom.md',
+          'architecture',
+          'blocks/implementations/lingui/architecture/with/react-dom.md',
           'react-dom',
           'provider-at-the-root',
         ],
       ],
+    });
+  });
+
+  it('should report the rule and load none when it sits in the card', () => {
+    // Arrange
+    const files = {
+      'blocks/domains/ui/ui.md': mainFile({
+        body: `# UI\n\n${rule({
+          slug: 'four-data-states',
+        })}`,
+        id: 'ui',
+      }),
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect({
+      findings: loaded.findings,
+      rules: loaded.constitution.rules,
+    }).toStrictEqual({
+      findings: [
+        {
+          message:
+            'rule "four-data-states" sits in the card; a block\'s rules live in foundation/, architecture/ or workflow/',
+          path: 'blocks/domains/ui/ui.md',
+        },
+      ],
+      rules: [],
     });
   });
 
@@ -603,7 +649,6 @@ describe('loadConstitution', () => {
           '',
         ].join('\n'),
         id: 'lingui',
-        kind: 'implementation',
       }),
     };
 

@@ -29,6 +29,13 @@
       ],
     },
     {
+      "path": "./.constitution/presets/biome/plugins/named-value-sets.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
       "path": "./.constitution/presets/biome/plugins/case-names.grit",
       "includes": [
         "**/__tests__/**",

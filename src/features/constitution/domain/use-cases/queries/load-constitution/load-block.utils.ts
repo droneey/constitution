@@ -1,9 +1,12 @@
 import type { Finding, Layer } from '#/kernel';
+import { AXES, compareText } from '#/kernel';
 
 import type { FileTree, FrontMatterParser } from '../../../contracts';
 import type { Block, BlockFile } from '../../../entities';
-import { splitFrontMatter } from '../../../utils';
+import { BlockFileRole } from '../../../entities';
+import { fileNameOf, splitFrontMatter } from '../../../utils';
 import type { BlockPath } from './block-path.utils';
+import { BlockPathFile } from './block-path.utils';
 import { readFrontMatter } from './front-matter.utils';
 
 interface Located {
@@ -61,64 +64,66 @@ const groupByFolder = (located: readonly Located[]): readonly BlockFolder[] => {
   ];
 };
 
-const secondaryFindings = (input: {
-  id: string;
-  listed: readonly string[];
-  mainPath: string;
-  secondary: readonly Secondary[];
-}): readonly Finding[] => {
-  const chapters = input.secondary
-    .map(({ entry }) => entry)
-    .filter((entry) => entry.block.file === 'chapter');
-
-  return [
-    ...input.secondary
-      .filter(({ text }) => splitFrontMatter(text).frontMatter !== undefined)
-      .map(({ entry }) => ({
-        message: 'has front matter; only the main file of a block carries it',
-        path: entry.path,
-      })),
-    ...chapters
-      .filter((entry) => !input.listed.includes(entry.block.name))
-      .map((entry) => ({
-        message: `is not listed in the chapters of ${input.id}`,
-        path: entry.path,
-      })),
-    ...input.listed
-      .filter((name) => !chapters.some((entry) => entry.block.name === name))
-      .map((name) => ({
-        message: `lists the chapter ${name}, which does not exist`,
-        path: input.mainPath,
-      })),
-  ];
-};
+const secondaryFindings = (
+  secondary: readonly Secondary[],
+): readonly Finding[] =>
+  secondary
+    .filter(({ text }) => splitFrontMatter(text).frontMatter !== undefined)
+    .map(({ entry }) => ({
+      message: 'has front matter; only the main file of a block carries it',
+      path: entry.path,
+    }));
 
 const secondaryFile = ({ entry, text }: Secondary): BlockFile => ({
+  axis: entry.block.axis,
   body: text,
   lines: lineCount(text),
   path: entry.path,
-  role: entry.block.file === 'with' ? 'with' : 'chapter',
+  role:
+    entry.block.file === BlockPathFile.With
+      ? BlockFileRole.With
+      : BlockFileRole.Chapter,
   with: entry.block.with,
 });
 
+const axisRank = (entry: Located): number =>
+  // Stryker disable next-line ConditionalExpression: a secondary file always has an axis
+  entry.block.axis === undefined ? AXES.length : AXES.indexOf(entry.block.axis);
+
+const nameRank = (input: { entry: Located; id: string }): number =>
+  fileNameOf(input.entry.path) === `${input.id}.md` ? 0 : 1;
+
+const compareSecondary =
+  (id: string) =>
+  (left: Secondary, right: Secondary): number =>
+    axisRank(left.entry) - axisRank(right.entry) ||
+    nameRank({
+      entry: left.entry,
+      id,
+    }) -
+      nameRank({
+        entry: right.entry,
+        id,
+      }) ||
+    compareText(left.entry.block.name, right.entry.block.name);
+
 const filesOf = (input: {
-  listed: readonly string[];
+  id: string;
   main: BlockFile;
   secondary: readonly Secondary[];
-}): readonly BlockFile[] => [
-  input.main,
-  ...input.listed.flatMap((name) =>
-    input.secondary
-      .filter(
-        ({ entry }) =>
-          entry.block.file === 'chapter' && entry.block.name === name,
-      )
+}): readonly BlockFile[] => {
+  const ordered = input.secondary.toSorted(compareSecondary(input.id));
+
+  return [
+    input.main,
+    ...ordered
+      .filter(({ entry }) => entry.block.file === BlockPathFile.Chapter)
       .map(secondaryFile),
-  ),
-  ...input.secondary
-    .filter(({ entry }) => entry.block.file === 'with')
-    .map(secondaryFile),
-];
+    ...ordered
+      .filter(({ entry }) => entry.block.file === BlockPathFile.With)
+      .map(secondaryFile),
+  ];
+};
 
 const loadBlock = (input: {
   folder: BlockFolder;
@@ -126,7 +131,7 @@ const loadBlock = (input: {
   tree: FileTree;
 }): BlockLoaded => {
   const { dir, entries, id, layer } = input.folder;
-  const main = entries.find((entry) => entry.block.file === 'main');
+  const main = entries.find((entry) => entry.block.file === BlockPathFile.Main);
 
   if (main === undefined) {
     return {
@@ -153,7 +158,7 @@ const loadBlock = (input: {
   }
 
   const secondary = entries
-    .filter((entry) => entry.block.file !== 'main')
+    .filter((entry) => entry.block.file !== BlockPathFile.Main)
     .map((entry) => ({
       entry,
       text: input.tree.read(entry.path),
@@ -162,12 +167,13 @@ const loadBlock = (input: {
   return {
     block: {
       files: filesOf({
-        listed: read.frontMatter.chapters,
+        id,
         main: {
+          axis: undefined,
           body: read.body,
           lines: lineCount(text),
           path: main.path,
-          role: 'main',
+          role: BlockFileRole.Main,
           with: undefined,
         },
         secondary,
@@ -177,12 +183,7 @@ const loadBlock = (input: {
       layer,
       path: main.path,
     },
-    findings: secondaryFindings({
-      id,
-      listed: read.frontMatter.chapters,
-      mainPath: main.path,
-      secondary,
-    }),
+    findings: secondaryFindings(secondary),
   };
 };
 
