@@ -404,9 +404,7 @@ function app_only_files(s, id,   out, n, a, k, b) {
   return out
 }
 
-# What the later hooks read from the session's state, so they never resolve
-# again: the check command, none for null, and each scope's active blocks with
-# the globs they govern and their files.
+# Records the digest ignores: the session's state keeps them for the later hooks.
 function print_active(   check, s, j, k) {
   check = VALUE["check"]
   if (check == "null" || check == "~") check = ""

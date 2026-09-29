@@ -30,8 +30,7 @@ interface HookCall {
   session?: string | undefined;
   // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
-  // TMPDIR, where the hook keeps the session's state
-  stateRoot?: string | undefined;
+  tmpDir?: string | undefined;
 }
 
 interface HookRun {
@@ -177,12 +176,12 @@ const runHook = (call: HookCall): HookRun => {
                 join(call.project, call.projectDir),
               ],
             ]),
-        ...(call.stateRoot === undefined
+        ...(call.tmpDir === undefined
           ? []
           : [
               [
                 'TMPDIR',
-                call.stateRoot,
+                call.tmpDir,
               ],
             ]),
       ]),

@@ -106,10 +106,7 @@ resolved="$(printf '%s\n%s' "${records}" "${files}" |
   awk -f "${lib}/local-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
 output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
 
-# The later hooks and skills read the active set from the session's state and
-# never resolve again. A session id that is not a plain name writes nothing, and
-# a state that cannot be written costs only the reminders and the gate. A
-# resumed session keeps what it was already reminded of.
+# A state that cannot be written costs the reminders and the gate, never the digest.
 save_state() {
   state="${TMPDIR:-/tmp}/droneey-constitution/${session}"
   mkdir -p "${state}" 2>/dev/null || return

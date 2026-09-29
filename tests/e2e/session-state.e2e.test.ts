@@ -76,7 +76,7 @@ describe('the session state the session-start hook saves', () => {
       project,
       root,
       session: SESSION,
-      stateRoot,
+      tmpDir: stateRoot,
     });
 
     // Assert
@@ -131,7 +131,7 @@ describe('the session state the session-start hook saves', () => {
       project,
       root,
       session: SESSION,
-      stateRoot,
+      tmpDir: stateRoot,
     });
 
     // Assert
@@ -176,7 +176,7 @@ describe('the session state the session-start hook saves', () => {
       project,
       root,
       session,
-      stateRoot,
+      tmpDir: stateRoot,
     });
 
     // Assert
@@ -212,7 +212,7 @@ describe('the session state the session-start hook saves', () => {
         project,
         root,
         session: SESSION,
-        stateRoot,
+        tmpDir: stateRoot,
       });
       writeFileSync(join(stateOf(stateRoot), 'reminded'), 'ui\n');
 
@@ -222,7 +222,7 @@ describe('the session state the session-start hook saves', () => {
         project,
         root,
         session: SESSION,
-        stateRoot,
+        tmpDir: stateRoot,
       });
 
       // Assert
