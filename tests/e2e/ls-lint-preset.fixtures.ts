@@ -32,7 +32,7 @@ const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'ls-lint');
 const PARTS = [
   'foundation/core',
   'foundation/typescript',
-  'architecture/core',
+  'architecture/typescript',
 ];
 
 const LS_LINT = miseBinary('ls-lint');

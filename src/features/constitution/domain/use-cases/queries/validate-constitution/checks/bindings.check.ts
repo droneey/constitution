@@ -8,7 +8,12 @@ import type {
   Rule,
 } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { checkOf, PresetFileKind, presetPathOf } from '../../../../utils';
+import {
+  checkOf,
+  mayReferTo,
+  PresetFileKind,
+  presetPathOf,
+} from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const partOf = (input: {
@@ -26,8 +31,36 @@ const partOf = (input: {
     );
   });
 
+const SELF = 'self';
+
+// A part is named after the block its settings need, and holds rules of that
+// block, of the blocks above it, or of a seam with it; self holds the tool
+// block's.
+const isAbove = (input: {
+  binding: Binding;
+  byId: BlocksById;
+  rule: Rule;
+}): boolean => {
+  const owner =
+    input.binding.part === SELF ? input.binding.tool : input.binding.part;
+
+  return (
+    owner === input.rule.with ||
+    !input.byId.has(owner) ||
+    mayReferTo({
+      byId: input.byId,
+      from: {
+        block: owner,
+        with: undefined,
+      },
+      to: input.rule.block,
+    })
+  );
+};
+
 const bindingMessage = (input: {
   binding: Binding;
+  byId: BlocksById;
   presets: readonly PresetFile[];
   rule: Rule | undefined;
 }): string | undefined => {
@@ -42,6 +75,16 @@ const bindingMessage = (input: {
     return `binds ${rule.slug}, a rule of ${rule.axis}, under ${binding.axis}`;
   }
 
+  if (
+    !isAbove({
+      binding,
+      byId: input.byId,
+      rule,
+    })
+  ) {
+    return `binds ${rule.slug}, a rule of ${rule.block}, to the part ${binding.part}, which may hold only rules of its block, of the blocks above it or of a seam with it`;
+  }
+
   const part = partOf(input);
 
   if (part === undefined) {
@@ -53,7 +96,11 @@ const bindingMessage = (input: {
     : `binds ${rule.slug} to "${binding.setting}", which ${part.path} does not hold`;
 };
 
-const bindingFindings = (constitution: Constitution): readonly Finding[] => {
+const bindingFindings = (input: {
+  byId: BlocksById;
+  constitution: Constitution;
+}): readonly Finding[] => {
+  const { constitution } = input;
   const rules = new Map(
     constitution.rules.map((rule) => [
       rule.slug,
@@ -64,6 +111,7 @@ const bindingFindings = (constitution: Constitution): readonly Finding[] => {
   return constitution.bindings.flatMap((binding) => {
     const message = bindingMessage({
       binding,
+      byId: input.byId,
       presets: constitution.presets,
       rule: rules.get(binding.rule),
     });
@@ -135,7 +183,10 @@ const bindingsCheck: Check = ({
   byId,
   constitution,
 }: CheckInput): readonly Finding[] => [
-  ...bindingFindings(constitution),
+  ...bindingFindings({
+    byId,
+    constitution,
+  }),
   ...unheldFindings({
     byId,
     constitution,

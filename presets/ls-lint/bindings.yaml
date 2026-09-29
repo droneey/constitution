@@ -28,14 +28,22 @@ architecture:
   cli:
     commands-in-the-cli-folder:
       - 'src/cli'
-  core:
+  expo:
+    expo-router-root-is-routes:
+      - 'src/routes'
+    router-file-names-kept:
+      - _layout
+  tanstack-router:
+    screen-private-pieces-in-dash-folders:
+      - 'src/routes'
+    screens-are-file-routes:
+      - 'src/routes'
+  typescript:
     anatomy-top-level-by-concern:
       - src
     data-ports-split-by-reads-and-writes:
       - 'src/*/**/repositories'
       - 'src/*/**/repositories/{queries,commands}'
-    expo-router-root-is-routes:
-      - src
     feature-anatomy:
       - 'src/features/*/domain'
     file-carries-its-role-suffix:
@@ -62,11 +70,6 @@ architecture:
       - 'src/*/**/types'
       - 'src/*/**/utils'
       - 'src/contracts'
-  tanstack-router:
-    screen-private-pieces-in-dash-folders:
-      - 'src/routes'
-    screens-are-file-routes:
-      - 'src/routes'
   ui:
     component-in-its-own-folder:
       - 'src/*/**/components'

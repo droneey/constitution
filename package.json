@@ -32,7 +32,7 @@
     "architecture:check": "depcruise src tests tools --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --production --no-config-hints",
     "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .constitution/presets/osv-scanner/foundation/core.txt)\" .",
-    "names:check": "ls-lint --config .constitution/presets/ls-lint/foundation/self.yaml --config .constitution/presets/ls-lint/foundation/core.yaml --config .constitution/presets/ls-lint/foundation/typescript.yaml --config .constitution/presets/ls-lint/architecture/core.yaml --config .ls-lint.yaml",
+    "names:check": "ls-lint --config .constitution/presets/ls-lint/foundation/self.yaml --config .constitution/presets/ls-lint/foundation/core.yaml --config .constitution/presets/ls-lint/foundation/typescript.yaml --config .constitution/presets/ls-lint/architecture/typescript.yaml --config .ls-lint.yaml",
     "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run audit:check"
   },
   "dependencies": {

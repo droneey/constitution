@@ -278,6 +278,84 @@ describe('the ls-lint preset', () => {
   });
 });
 
+describe('the ls-lint expo part', () => {
+  it('should report nothing when the files of Expo Router sit under src/routes', () => {
+    // Arrange
+    const project = {
+      paths: [
+        'src/routes/_layout.tsx',
+        'src/routes/+not-found.tsx',
+        'src/routes/(tabs)/_layout.tsx',
+        'src/routes/(tabs)/index.tsx',
+        'src/routes/orders/[orderId].tsx',
+        'src/routes/docs/[...slug].tsx',
+      ],
+      parts: [
+        ...PARTS,
+        'architecture/expo',
+      ],
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'the router sits in src/app',
+      parts: [
+        ...PARTS,
+        'architecture/expo',
+      ],
+      path: 'src/app/_layout.tsx',
+      reported: [
+        'src/app',
+        'src/app/_layout.tsx',
+      ],
+    },
+    {
+      condition: 'a project leaves the expo part out',
+      parts: PARTS,
+      path: 'src/routes/_layout.tsx',
+      reported: [
+        'src/routes',
+        'src/routes/_layout.tsx',
+      ],
+    },
+    {
+      condition: 'a screen is in PascalCase',
+      parts: [
+        ...PARTS,
+        'architecture/expo',
+      ],
+      path: 'src/routes/Orders.tsx',
+      reported: [
+        'src/routes/Orders.tsx',
+      ],
+    },
+  ])(
+    'should report the names it refuses when $condition',
+    ({ parts, path, reported }) => {
+      // Arrange
+      const project = {
+        paths: [
+          path,
+        ],
+        parts,
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed).toStrictEqual(reported);
+    },
+  );
+});
+
 describe('the ls-lint foundation parts', () => {
   it.each([
     {

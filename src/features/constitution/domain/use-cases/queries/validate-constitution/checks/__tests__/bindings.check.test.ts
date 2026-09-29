@@ -200,6 +200,75 @@ describe('bindingsCheck', () => {
     ]);
   });
 
+  it.each([
+    {
+      message:
+        'binds hooks-at-top-level, a rule of _react, to the part ui, which may hold only rules of its block, of the blocks above it or of a seam with it',
+      name: 'a domain part holds a rule of a library',
+      part: 'presets/biome/foundation/ui.jsonc',
+      yaml: 'foundation:\n  ui:\n    hooks-at-top-level: [useHookAtTopLevel]\n',
+    },
+    {
+      message:
+        'binds hooks-at-top-level, a rule of _react, to the part self, which may hold only rules of its block, of the blocks above it or of a seam with it',
+      name: "the tool's own part holds a rule of a library beside it",
+      part: 'presets/biome/foundation/self.jsonc',
+      yaml: 'foundation:\n  self:\n    hooks-at-top-level: [useHookAtTopLevel]\n',
+    },
+  ])('should report the binding when $name', ({ message, part, yaml }) => {
+    // Arrange
+    const files = {
+      ...presetFiles(),
+      [BINDINGS]: yaml,
+      [part]: '{ "useHookAtTopLevel": "error" }\n',
+    };
+
+    // Act
+    const findings = findingsOf(files);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message,
+        path: BINDINGS,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      name: 'the part of a platform holds a rule of a domain above it',
+      part: 'browser',
+      slug: 'four-data-states',
+    },
+    {
+      name: 'the part of a block holds a rule of its seam with it',
+      part: 'remote-data',
+      slug: 'optimistic-writes-roll-back',
+    },
+    {
+      name: 'a part named after no block holds a rule',
+      part: 'nowhere',
+      slug: 'four-data-states',
+    },
+  ])('should find no binding amiss when $name', ({ part, slug }) => {
+    // Arrange
+    const axis =
+      slug === 'optimistic-writes-roll-back' ? 'architecture' : 'foundation';
+    const files = {
+      ...presetFiles(),
+      [BINDINGS]: `${HOOKS_BINDING}${axis === 'foundation' ? '' : `${axis}:\n`}  ${part}:\n    ${slug}: [useHookAtTopLevel]\n`,
+      [`presets/biome/${axis}/${part}.jsonc`]:
+        '{ "useHookAtTopLevel": "error" }\n',
+    };
+
+    // Act
+    const findings = findingsOf(files);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
   it('should report the part as missing when only a stray file, a plugin, another axis or another tool holds a file of its name', () => {
     // Arrange
     const setting = '{ "useHookAtTopLevel": "error" }\n';

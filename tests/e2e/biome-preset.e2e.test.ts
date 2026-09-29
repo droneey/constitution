@@ -43,8 +43,6 @@ const MANIFEST = JSON.stringify({
 
 const WEB_PARTS = [
   ...FOUNDATION_PARTS,
-  'foundation/a11y',
-  'foundation/ui',
   'foundation/_react',
   'foundation/react-dom',
   'foundation/browser',
@@ -716,7 +714,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/a11y',
+        'foundation/react-dom',
       ],
       rule: 'noNoninteractiveElementInteractions',
     },
@@ -750,7 +748,8 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/ui',
+        'foundation/_react',
+        'foundation/react-native',
       ],
       rule: 'noReactNativeLiteralColors',
     },

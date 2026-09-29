@@ -33,12 +33,6 @@ export default {
   ],
   options: {
     parser: 'swc',
-    builtInModules: {
-      add: [
-        'bun',
-        'bun:test',
-      ],
-    },
     doNotFollow: {
       path: [
         'node_modules',

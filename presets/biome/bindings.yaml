@@ -15,33 +15,6 @@ foundation:
       - noNestedComponentDefinitions
     no-manual-memoisation:
       - no-manual-memoisation.grit
-  a11y:
-    every-control-has-an-accessible-name:
-      - noLabelWithoutControl
-      - noSvgWithoutTitle
-      - useAltText
-      - useAnchorContent
-      - useControlLabel
-      - useIframeTitle
-    native-html-elements-first:
-      - noStaticElementInteractions
-      - useSemanticElements
-      - useValidAnchor
-    native-semantics-first:
-      - noInteractiveElementToNoninteractiveRole
-      - noNoninteractiveElementInteractions
-      - noNoninteractiveElementToInteractiveRole
-      - noRedundantRoles
-      - noStaticElementInteractions
-      - useAriaPropsForRole
-      - useFocusableInteractive
-      - useSemanticElements
-      - useValidAriaProps
-      - useValidAriaRole
-      - useValidAriaValues
-  browser:
-    fields-declare-autocomplete:
-      - fields-declare-autocomplete.grit
   bun-test:
     no-module-mocks:
       - no-module-mocks.grit
@@ -76,22 +49,52 @@ foundation:
       - noFocusedTests
       - noSkippedTests
       - useExpect
-    typescript-file-forms:
-      - useFilenamingConvention
   ky:
     ky-body-parsed-by-schema:
       - ky-body-parsed-by-schema.grit
   react-dom:
     aria-attributes-as-the-dom-spells-them:
       - noUnknownAttribute
+    every-control-has-an-accessible-name:
+      - noLabelWithoutControl
+      - noSvgWithoutTitle
+      - useAltText
+      - useAnchorContent
+      - useControlLabel
+      - useIframeTitle
+    fields-declare-autocomplete:
+      - fields-declare-autocomplete.grit
     labels-bound-with-use-id:
       - labels-bound-with-use-id.grit
       - useUniqueElementIds
+    native-html-elements-first:
+      - noStaticElementInteractions
+      - useSemanticElements
+      - useValidAnchor
+    native-semantics-first:
+      - noInteractiveElementToNoninteractiveRole
+      - noNoninteractiveElementInteractions
+      - noNoninteractiveElementToInteractiveRole
+      - noRedundantRoles
+      - noStaticElementInteractions
+      - useAriaPropsForRole
+      - useFocusableInteractive
+      - useSemanticElements
+      - useValidAriaProps
+      - useValidAriaRole
+      - useValidAriaValues
+    tokens-single-source-of-appearance:
+      - noInlineStyles
+  react-native:
+    tokens-single-source-of-appearance:
+      - noReactNativeLiteralColors
   tailwind:
     dynamic-viewport-classes:
       - dynamic-viewport-classes.grit
     mobile-first-breakpoints:
       - mobile-first-breakpoints.grit
+    tokens-single-source-of-appearance:
+      - noTailwindArbitraryValue
   tanstack-query:
     keys-only-from-the-key-factory:
       - keys-only-from-the-key-factory.grit
@@ -120,11 +123,6 @@ foundation:
     undefined-is-the-only-absence:
       - noUselessUndefined
       - undefined-is-the-only-absence.grit
-  ui:
-    tokens-single-source-of-appearance:
-      - noInlineStyles
-      - noReactNativeLiteralColors
-      - noTailwindArbitraryValue
 architecture:
   _react:
     component-effects-in-its-hooks-file:

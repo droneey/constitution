@@ -67,7 +67,7 @@ A block refers only to the layers above it, through its front matter. The rules 
 A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<tool>/<axis>/<block>.*`:
 - the folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `typescript` for the compiler;
 - the axis folder is the axis whose rules the part holds, so a project that leaves an axis out leaves out its parts;
-- a part is named after the block whose rules it holds, and `self` holds the tool's own settings; GritQL rules are `<axis>/plugins/<rule-slug>.grit`.
+- a part is named after the block its settings need, the one without which they mean nothing: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s; settings that need no block beyond the tool sit in `core` when they hold a rule of core and in `self` when they are the tool's own; GritQL rules are `<axis>/plugins/<rule-slug>.grit`.
 
 A project's configuration extends the parts of its active blocks on its axes, foundation first:
 
@@ -144,7 +144,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
 - a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
 - a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`;
-- a binding whose rule, axis, part or setting does not hold, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
+- a binding whose rule, axis, part or setting does not hold, or whose rule belongs to a block below its part, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;

@@ -2,7 +2,7 @@
   "linter": {
     "rules": {
       "nursery": {
-        "useDomNodeTextContent": "error",
+        "noReactNativeLiteralColors": "error",
       },
     },
   },

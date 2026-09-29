@@ -46,7 +46,6 @@
             "noComponentHookFactories": "error",
             "useReactCompiler": "error",
             "noReactStringRefs": "error",
-            "noInvalidFileInputAccept": "error",
             "useReactNamingConvention": "error",
             "useReactFunctionComponentDefinition": {
               "level": "error",
@@ -72,9 +71,7 @@
           "complexity": {
             "noUselessFragments": "error",
           },
-          "security": {
-            "noBlankTarget": "error",
-          },
+          "security": {},
           "performance": {
             "noJsxPropsBind": "off",
           },
