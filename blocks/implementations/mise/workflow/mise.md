@@ -1,7 +1,7 @@
 # mise
 
-## tool-configuration-from-the-kit-archive → shared-tooling-from-pinned-packages
-Shared configuration that is not an npm package comes from the release archive of its source: devkit's `devkit.tar.gz` for the tools outside the package manager, the constitution's `constitution.tar.gz` for its presets. mise installs each through its `github` backend, pinned by version, with `asset_pattern` naming the archive and `strip_components = 0` so the archive keeps its folders; `mise.lock` holds the checksum GitHub publishes for it. A `postinstall` hook links it as `.devkit` or `.constitution`, which version control ignores. The same hook installs the commit hooks, never a package manager's install script.
+## tool-configuration-from-the-constitution-archive → shared-tooling-from-pinned-packages
+Shared tool configuration comes from the constitution's release archive, `constitution.tar.gz`, for the tools of every language: its presets, its starter files and its built tools. mise installs it through its `github` backend, pinned by version, with `asset_pattern` naming the archive and `strip_components = 0` so the archive keeps its folders; `mise.lock` holds the checksum GitHub publishes for it. A `postinstall` hook links it as `.constitution`, which version control ignores. The same hook installs the commit hooks, never a package manager's install script.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -1,0 +1,10 @@
+language js
+
+`$runner.todo($...)` where {
+  $runner <: or {
+    `test`,
+    `it`,
+    `describe`
+  },
+  register_diagnostic(span=$runner, message="Write the case or leave it out: a todo case passes without testing anything", severity="error")
+}

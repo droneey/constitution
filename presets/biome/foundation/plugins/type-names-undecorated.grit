@@ -1,0 +1,9 @@
+language js
+
+or {
+  TsInterfaceDeclaration(id=$name),
+  TsTypeAliasDeclaration(binding_identifier=$name)
+} where {
+  $name <: r"I[A-Z].*|.*Type|.*Interface",
+  register_diagnostic(span=$name, message="A type is a noun, undecorated: no I prefix, no Type or Interface suffix", severity="error")
+}

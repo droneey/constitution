@@ -1,0 +1,42 @@
+---
+extends: default
+
+rules:
+  # Indentation
+  indentation:
+    spaces: 2
+    indent-sequences: true
+
+  # Line length
+  line-length:
+    max: 120
+    allow-non-breakable-inline-mappings: true
+
+  # Braces and brackets
+  braces:
+    min-spaces-inside: 1
+    max-spaces-inside: 1
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+
+  # Comments
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: enable
+
+  # Document markers
+  document-start: disable
+  document-end: disable
+
+  # Empty lines
+  empty-lines:
+    max: 1
+
+  # Key duplicates
+  key-duplicates: enable
+
+  # Truthy values
+  truthy:
+    allowed-values: ['true', 'false']
+    check-keys: false

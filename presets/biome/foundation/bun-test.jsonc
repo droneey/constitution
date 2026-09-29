@@ -1,0 +1,20 @@
+{
+  "plugins": [
+    {
+      "path": "./.constitution/presets/biome/foundation/plugins/no-module-mocks.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.constitution/presets/biome/foundation/plugins/strict-matcher-only.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+  ],
+}

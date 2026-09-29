@@ -1,1 +1,1 @@
-export { config as default } from '@droneey/devkit-ts-syncpack';
+export { default } from './.constitution/presets/syncpack/foundation/typescript.mjs';

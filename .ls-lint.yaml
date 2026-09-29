@@ -3,5 +3,7 @@ ls:
     .dir: kebab-case | regex:^_[a-z0-9]+(-[a-z0-9]+)*$
     .md: kebab-case | regex:^_[a-z0-9]+(-[a-z0-9]+)*$
     .*: kebab-case
+  presets:
+    .*: kebab-case | regex:^_[a-z0-9]+(-[a-z0-9]+)*$
 ignore:
   - local

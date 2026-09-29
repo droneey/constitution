@@ -1,0 +1,55 @@
+{
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noDoubleEquals": {
+          "level": "error",
+          "options": {
+            "ignoreNull": false,
+          },
+        },
+        "noExplicitAny": "error",
+        "noTsIgnore": "error",
+      },
+      "style": {
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "conventions": [
+              {
+                "selector": {
+                  "kind": "typeParameter",
+                },
+                "match": "T([A-Z].*)?",
+                "formats": [
+                  "PascalCase",
+                ],
+              },
+            ],
+          },
+        },
+        "noNonNullAssertion": "error",
+      },
+      "nursery": {
+        "useExhaustiveSwitchCases": "error",
+        "useNullishCoalescing": "error",
+      },
+    },
+  },
+  "plugins": [
+    "./.constitution/presets/biome/foundation/plugins/type-names-undecorated.grit",
+    {
+      "path": "./.constitution/presets/biome/foundation/plugins/undefined-is-the-only-absence.grit",
+      "includes": [
+        "**",
+      ],
+    },
+    {
+      "path": "./.constitution/presets/biome/foundation/plugins/enums-for-named-value-groups.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

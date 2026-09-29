@@ -33,8 +33,7 @@ The droneey constitution: the engineering rules every droneey repository is buil
 
 ## Boundaries — what it does not do
 
-- It installs nothing into a project: no code, no configuration, no generated file.
-- It does not configure tools; devkit's presets hold the tool-checked rules.
+- It installs nothing into a project: no code, no configuration, no generated file. A project extends the presets of its release archive from its own configuration.
 - It does not run a project's checks; the project's own check command does.
 
 ## Glossary

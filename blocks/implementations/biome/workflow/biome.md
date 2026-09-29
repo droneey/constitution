@@ -1,7 +1,7 @@
 # Biome
 
 ## project-grit-rules-scoped → shared-tooling-from-pinned-packages
-A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until a shared preset carries it: devkit's, or the constitution's when the rule names the constitution's folders.
+A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the constitution's presets carry it.
 
 | Why | Check | Tags |
 |---|---|---|

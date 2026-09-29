@@ -1,5 +1,8 @@
 {
-  "extends": "@droneey/devkit-ts-tsconfig/node",
+  "extends": [
+    "./.constitution/presets/typescript/foundation/self.json",
+    "./.constitution/presets/typescript/foundation/bun.json"
+  ],
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
     "noEmit": true,
@@ -15,7 +18,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "tools/*/src/**/*.ts"
   ],
   "exclude": [
     "**/coverage"

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { blockCode } from './biome-preset.fixtures';
-import { failedPaths, presetWords } from './ls-lint-preset.fixtures';
+import { failedPaths, PARTS, presetWords } from './ls-lint-preset.fixtures';
 
 const WELL_FORMED = [
   '.github/ISSUE_TEMPLATE/bug_report.yml',
@@ -46,12 +46,12 @@ const WELL_FORMED = [
   'tests/e2e/shop.fixtures.ts',
 ];
 
-const PARTS = [
-  'base',
-  'analytics',
-  'cli',
-  'tanstack-router',
-  'ui',
+const BLOCK_PARTS = [
+  ...PARTS,
+  'architecture/analytics',
+  'architecture/cli',
+  'architecture/tanstack-router',
+  'architecture/ui',
 ];
 
 const WELL_FORMED_WITH_PARTS = [
@@ -220,7 +220,7 @@ describe('the ls-lint preset', () => {
     ({ path, reported }) => {
       // Arrange
       const project = {
-        parts: PARTS,
+        parts: BLOCK_PARTS,
         paths: [
           path,
         ],
@@ -237,7 +237,7 @@ describe('the ls-lint preset', () => {
   it('should report nothing when every name follows the tree and the block parts', () => {
     // Arrange
     const project = {
-      parts: PARTS,
+      parts: BLOCK_PARTS,
       paths: [
         ...WELL_FORMED,
         ...WELL_FORMED_WITH_PARTS,
@@ -276,4 +276,169 @@ describe('the ls-lint preset', () => {
     // Assert
     expect(unwritten).toStrictEqual([]);
   });
+});
+
+describe('the ls-lint foundation parts', () => {
+  it.each([
+    {
+      condition: 'a folder is in snake_case',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'assets/order_icons/order-icon.svg',
+      reported: 'assets/order_icons',
+    },
+    {
+      condition: 'a file is in camelCase',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'assets/orderIcon.svg',
+      reported: 'assets/orderIcon.svg',
+    },
+    {
+      condition: 'a style module is in PascalCase',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'assets/Theme.module.css',
+      reported: 'assets/Theme.module.css',
+    },
+    {
+      condition: 'an end-to-end spec is in PascalCase',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'e2e/Checkout.e2e.test.js',
+      reported: 'e2e/Checkout.e2e.test.js',
+    },
+    {
+      condition: 'a document is in PascalCase',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'docs/Guide.md',
+      reported: 'docs/Guide.md',
+    },
+    {
+      condition: 'a YAML file ends in .yml',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'config/app.yml',
+      reported: 'config/app.yml',
+    },
+    {
+      condition: 'a test folder has no typescript part',
+      parts: [
+        'foundation/core',
+      ],
+      path: 'src/__tests__/order-view.test.ts',
+      reported: 'src/__tests__',
+    },
+    {
+      condition: 'a component file is in PascalCase',
+      parts: [
+        'foundation/core',
+        'foundation/typescript',
+      ],
+      path: 'src/components/OrderCard.tsx',
+      reported: 'src/components/OrderCard.tsx',
+    },
+    {
+      condition: 'a spec file is in PascalCase',
+      parts: [
+        'foundation/core',
+        'foundation/typescript',
+      ],
+      path: 'src/__tests__/OrderView.test.ts',
+      reported: 'src/__tests__/OrderView.test.ts',
+    },
+    {
+      condition: 'a typescript folder is in snake_case',
+      parts: [
+        'foundation/core',
+        'foundation/typescript',
+      ],
+      path: 'src/order_views/order-view.ts',
+      reported: 'src/order_views',
+    },
+  ])(
+    'should report the name when $condition and a project extends $parts',
+    ({ parts, path, reported }) => {
+      // Arrange
+      const project = {
+        parts,
+        paths: [
+          path,
+        ],
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed).toContain(reported);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'every name is kebab-case, hidden or ignored',
+      parts: [
+        'foundation/core',
+      ],
+      paths: [
+        '.dependency-cruiser.mjs',
+        '.editorconfig',
+        '.env.local',
+        '.github/workflows/check.yaml',
+        'assets/order-icon.svg',
+        'assets/theme.module.css',
+        'e2e/checkout.e2e.test.js',
+        'dist/Bundle.js',
+        'node_modules/SomePackage/Index.js',
+      ],
+    },
+    {
+      condition: 'documents are kebab-case or in upper case',
+      parts: [
+        'foundation/core',
+      ],
+      paths: [
+        'LICENSE.md',
+        'README.md',
+        'docs/CODE_OF_CONDUCT.md',
+        'docs/order-guide.md',
+      ],
+    },
+    {
+      condition: 'typescript names are kebab-case beside a test folder',
+      parts: [
+        'foundation/core',
+        'foundation/typescript',
+      ],
+      paths: [
+        'src/__tests__/order-view.test.ts',
+        'src/components/order-card.stories.tsx',
+        'src/components/order-card.tsx',
+        'src/order-view.ts',
+      ],
+    },
+  ])(
+    'should report nothing when $condition and a project extends $parts',
+    ({ parts, paths }) => {
+      // Arrange
+      const project = {
+        parts,
+        paths,
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed).toStrictEqual([]);
+    },
+  );
 });

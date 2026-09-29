@@ -1,0 +1,21 @@
+# Dependencies
+**/node_modules/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Build
+*.tgz
+*.lcov
+
+# Auth
+.npmrc
+
+# Caches
+.eslintcache
+.cache
+*.tsbuildinfo

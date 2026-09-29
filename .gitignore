@@ -5,6 +5,7 @@
 /local/
 
 # JS
+**/dist/
 **/node_modules/
 **/coverage/
 *.tsbuildinfo
@@ -14,5 +15,4 @@
 
 # mise
 mise.local.toml
-/.devkit
 /.constitution

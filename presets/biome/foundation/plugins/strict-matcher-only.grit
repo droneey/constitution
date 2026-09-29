@@ -1,0 +1,5 @@
+language js
+
+`$_.toEqual($_)` as $call where {
+  register_diagnostic(span=$call, message="Compare with toStrictEqual: toEqual ignores undefined fields and class types", severity="error")
+}
