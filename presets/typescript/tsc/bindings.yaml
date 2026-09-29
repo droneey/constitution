@@ -7,7 +7,7 @@ foundation:
       - allowUnreachableCode
       - allowUnusedLabels
   nestjs:
-    nestjs-keeps-decorator-metadata:
+    compiler-keeps-decorator-metadata:
       - emitDecoratorMetadata
       - experimentalDecorators
   self:

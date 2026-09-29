@@ -8,3 +8,10 @@
 | Why | Check | Tags |
 |---|---|---|
 | a secret stopped before the commit never reaches history, where it is compromised for good. | tool/secrets | [] |
+
+## commit-scan-redacted → scanner-reports-redacted
+The commit hook's scan passes `--redact`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a finding the hook prints stays in the terminal and in any log that captures it. | tool/secrets | [] |

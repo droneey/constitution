@@ -74,14 +74,28 @@ A component's folder name carries its location and role: no prefix in `libs/ui` 
 
 | Why | Check | Tags |
 |---|---|---|
-| the name alone tells where a component comes from and whether it holds logic. | tool/names | [] |
+| the name alone tells where a component comes from and whether it holds logic. | review | [] |
+
+## widget-folder-ends-in-widget → component-named-by-location
+A widget's folder name ends in `-widget`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the name alone tells that it holds logic. | tool/names | [] |
 
 ## components-dumb-widgets-smart → side-effects-at-the-edges
 A component in `components/` takes data and callbacks, performs no input or output, and imports no binding unit. Only a widget consumes binding units, and it works wherever it is placed.
 
 | Why | Check | Tags |
 |---|---|---|
-| a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | tool/architecture | [] |
+| a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | review | [] |
+
+## components-import-no-adapter → components-dumb-widgets-smart
+A component in `components/` imports no adapter, no shared contract of `contracts/` and no application layer.
+
+| Why | Check | Tags |
+|---|---|---|
+| a component that reaches a mechanism can no longer be shown or tested with plain data. | tool/architecture | [] |
 
 ## ui-layer-imports → dependencies-point-inward
 A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities as types, and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
@@ -95,7 +109,14 @@ A component has its own folder: the component file, its `.types`, `.variants` an
 
 | Why | Check | Tags |
 |---|---|---|
-| everything about one component is in one place, and its internals stay private. | tool/names | [] |
+| everything about one component is in one place, and its internals stay private. | review | [] |
+
+## component-folders-hold-their-files → component-in-its-own-folder
+`components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `__tests__/` and its surface.
+
+| Why | Check | Tags |
+|---|---|---|
+| a component's files are then found by its name. | tool/names | [] |
 
 ## vendored-component-placed-by-its-home → vendored-components-adapted-on-arrival
 A component installed as source is, before review, moved to the home its knowledge gives it and named by that home, never left where its installer put it.
@@ -116,4 +137,4 @@ The primitive library holds no user-facing text and no message catalog; text arr
 
 | Why | Check | Tags |
 |---|---|---|
-| a primitive with its own text cannot be translated or reworded by the application that uses it. | tool/architecture | [ux] |
+| a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |

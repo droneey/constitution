@@ -67,7 +67,14 @@ A module is reached from outside only through its surface, and the surface is cu
 
 | Why | Check | Tags |
 |---|---|---|
-| whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | tool/architecture | [] |
+| whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | review | [] |
+
+## surface-is-the-only-way-in → access-only-through-curated-surface
+A module, a domain role folder and the kernel are reached from outside only through their surface.
+
+| Why | Check | Tags |
+|---|---|---|
+| an import past the surface couples to an internal the module is free to change. | tool/architecture | [] |
 
 ## external-shapes-mapped-at-boundary · MUST
 An external shape — a response, a row, a message, a file format — is mapped to the inner model at the edge, in both directions. A wire shape never travels inward.
@@ -81,7 +88,7 @@ Input and output, network, storage, clock, randomness and processes live in adap
 
 | Why | Check | Tags |
 |---|---|---|
-| code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | tool/architecture | [] |
+| code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | review | [] |
 
 ## one-explicit-composition-root · MUST
 Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies, typed by their contracts, and never builds an adapter itself. No container magic.

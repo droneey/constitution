@@ -1,7 +1,7 @@
 # yaml
 
 ## yaml-only-at-the-edge → domain-imports-only-itself-and-kernel
-The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses, and its result is `unknown` until a schema parses it.
+The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses.
 
 | Why | Check | Tags |
 |---|---|---|

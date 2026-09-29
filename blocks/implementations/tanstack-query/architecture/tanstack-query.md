@@ -34,3 +34,10 @@ Server data lives only in the cache: never copied into state, a context or a sto
 | Why | Check | Tags |
 |---|---|---|
 | an expired session is handled the same way for every read and write. | review | [] |
+
+## components-import-no-query-library → components-dumb-widgets-smart
+A component in `components/` imports no query library.
+
+| Why | Check | Tags |
+|---|---|---|
+| a component that queries can no longer be shown or tested with plain data. | tool/architecture | [] |

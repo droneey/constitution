@@ -1,6 +1,6 @@
 foundation:
   bun-test:
-    stryker-drives-bun-test-by-command:
+    stryker-runs-the-bun-test-command:
       - command
       - coverageAnalysis
       - testRunner

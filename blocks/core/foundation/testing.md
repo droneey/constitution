@@ -148,14 +148,21 @@ A file in `__tests__/` or in `tests/` is a spec named after the file or scenario
 
 | Why | Check | Tags |
 |---|---|---|
-| a spec named otherwise would not run, and a helper named like a spec would. | tool/names | [testing] |
+| a spec named otherwise would not run, and a helper named like a spec would. | review | [testing] |
 
 ## cases-named-should-when · SHOULD
 A suite is named after its boundary, and a case reads `should <behaviour> when <condition>`, in the language's spelling.
 
 | Why | Check | Tags |
 |---|---|---|
-| a failing case then says which behaviour broke and under what condition, without opening it. | tool/lint | [testing] |
+| a failing case then says which behaviour broke and under what condition, without opening it. | review | [testing] |
+
+## case-reads-should-when → cases-named-should-when
+A case reads `should <behaviour> when <condition>`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a failing case then names what broke and under what condition. | tool/lint | [testing] |
 
 ## arrange-act-assert-marked · SHOULD
 A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call.
@@ -192,7 +199,7 @@ All logic — the program's own rules, the code that talks to external systems, 
 
 | Why | Check | Tags |
 |---|---|---|
-| tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test. | tool/coverage | [testing] |
+| tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test. | review | [testing] |
 
 ## mutants-all-killed · MUST
 Mutation testing measures the tests, and every mutant of the logic is killed. A mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the check. It runs in the check over the lines a change touches, every new file and every file whose spec a change touches.

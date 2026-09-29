@@ -21,7 +21,14 @@ Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref cal
 
 | Why | Check | Tags |
 |---|---|---|
-| two forms of one thing double what a reader must know, and the legacy forms are on their way out. | tool/lint | [] |
+| two forms of one thing double what a reader must know, and the legacy forms are on their way out. | review | [] |
+
+## legacy-react-api-refused → modern-react-api-only
+No `useContext`, `Context.Provider`, `forwardRef`, `defaultProps`, `createRef` or string ref.
+
+| Why | Check | Tags |
+|---|---|---|
+| each legacy form has a modern one, and two forms of one thing double what a reader must know. | tool/lint | [] |
 
 ## function-components-only → inheritance-only-for-errors-and-framework-points · MUST
 Components are functions, composed, never inherited; a class only for an error boundary.

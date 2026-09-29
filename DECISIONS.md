@@ -20,7 +20,7 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0074, ADR-0092, ADR-0095 |
-| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0100 |
+| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 
 ---
@@ -594,3 +594,10 @@
 - **Decision.** `no-raw-html-injection` moves from `react-dom` to `browser`: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`, held by a GritQL rule in the browser's part. `react-dom` keeps `no-dangerously-set-inner-html`, held by `noDangerouslySetInnerHtml`.
 - **Rejected.** Keeping the whole rule in `react-dom`, where it named DOM APIs a program without React uses as well, and held only React's door.
 - **Why.** The DOM takes markup through its own calls in any browser program; each block now forbids the door it owns, and the parent says what both mean.
+
+## ADR-0101 — A rule a tool holds in part is reviewed, and a child says what the tool holds
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** Where a tool holds only part of a rule, the rule keeps its slug and its statement and becomes `review`, and a child `→` it states exactly what the tool holds, with the tool's Check and its bindings. So it is for 39 rules: among them `access-only-through-curated-surface` (`surface-is-the-only-way-in`), `commit-header-type-and-subject` (`commit-header-format`), `coverage-holds-all-logic` (`coverage-gate-on-loaded-files` in `bun-test`), `every-control-has-an-accessible-name` and `native-semantics-first` (`jsx-controls-named`, `jsx-roles-and-aria-valid` in `react-dom`'s seam with `a11y`, which `labels-bound-with-use-id` joins, so a React Native project claims no setting it lacks), `tokens-single-source-of-appearance` (one child each in `react-dom`, `react-native` and, under `utilities-only-from-tokens`, `tailwind`), `components-dumb-widgets-smart` (a child in `ui`, and one in each of `ky` and `tanstack-query` for the library it keeps out), and `primitives-take-text-by-props` (`primitives-import-no-message-catalog` in `lingui`'s seam with `ui`). `side-effects-at-the-edges`, `suppression-states-its-reason` and `folder-named-for-purpose-or-role` become `review`, their held parts already held by children. The same holds where a binding sat on a reviewed rule: `commit-scan-redacted` (`lefthook` with `betterleaks`) and `stryker-runs-the-bun-test-command` take theirs, and a setting that wires a hook, which no role checks, holds no rule. Three statements lose a clause another rule holds: `yaml-only-at-the-edge` the `unknown` result (`boundary-values-unknown-until-parsed`), `known-vulnerabilities-fail-the-check` the accepted vulnerability (`accepted-vulnerability-states-reason-and-expiry`), and `no-dead-code` the unreached branch (`coverage-holds-all-logic`) for the unreachable statement the compiler refuses.
+- **Rejected.** Narrowing each rule to what its tool holds, which would drop the judgement half a reviewer still needs; siblings beside each rule, as ADR-0097 did, which name two rules where one carries out the other.
+- **Why.** A Check says who holds a rule. A child that states only what its setting refuses keeps that true, and the rule above it stays whole for the review.

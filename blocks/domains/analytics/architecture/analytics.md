@@ -7,7 +7,14 @@ Each analytics service is one sink, one `.sink` file in `sinks/`, under one cont
 
 | Why | Check | Tags |
 |---|---|---|
-| a service is added or removed as one file, and nothing else knows which services exist. | tool/names | [] |
+| a service is added or removed as one file, and nothing else knows which services exist. | review | [] |
+
+## sinks-folder-holds-sink-files → sinks-behind-one-contract
+`sinks/` holds only `.sink` files, a surface and `__tests__/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a service is then one file of one form. | tool/names | [] |
 
 ## features-never-track → features-blind-to-each-other
 A feature never sends an event; the composing layer translates the feature's intents and outcomes into events.

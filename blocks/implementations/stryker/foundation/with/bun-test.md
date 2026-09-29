@@ -9,6 +9,13 @@ Stryker drives the specs through its command runner — `bun --config=./bunfig.m
 |---|---|---|
 | Stryker has no runner for `bun test`, and a run per mutant must be fast and stop at the first failure. | review | [] |
 
+## stryker-runs-the-bun-test-command → stryker-drives-bun-test-by-command
+Stryker's `testRunner` is `command`, with `coverageAnalysis: "off"`, and the command is `bun --config=./bunfig.mutation.toml test --bail`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the runner and the command are what make a run per mutant fast and stop at its first failure. | tool/mutation | [] |
+
 ## stryker-runs-on-node → other-runtime-only-where-bun-cannot
 Stryker itself runs on Node — its code generator fails under Bun — so the script removes Bun's `node` shim from the PATH.
 

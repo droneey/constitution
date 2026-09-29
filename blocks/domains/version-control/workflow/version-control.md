@@ -7,7 +7,14 @@ A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with on
 
 | Why | Check | Tags |
 |---|---|---|
-| four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong. | tool/commits | [] |
+| four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong. | review | [] |
+
+## commit-header-format → commit-header-type-and-subject
+A commit's header is `type: Subject` or `type!: Subject`, with one of `feat`, `fix`, `refactor` and `chore`, no scope, at most 100 characters, and a subject that starts with a capital letter.
+
+| Why | Check | Tags |
+|---|---|---|
+| a header in one form is read the same way by people and by the release automation. | tool/commits | [] |
 
 ## commit-body-empty-reason-in-pull-request → reason-for-change-recorded · MUST
 A commit's body and footer are empty. The reason for the change, the migration of a breaking change and the issue it closes live in the pull request description.
