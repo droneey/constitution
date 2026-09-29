@@ -1,6 +1,7 @@
 {
   "extends": [
     "./.constitution/presets/typescript/foundation/self.json",
+    "./.constitution/presets/typescript/foundation/core.json",
     "./.constitution/presets/typescript/foundation/bun.json"
   ],
   "compilerOptions": {

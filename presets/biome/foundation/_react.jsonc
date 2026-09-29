@@ -18,20 +18,6 @@
         "**/*.tsx",
         "**/*.jsx",
       ],
-      "assist": {
-        "actions": {
-          "source": {
-            "useSortedAttributes": {
-              "level": "on",
-              "options": {},
-            },
-            "noDuplicateClasses": {
-              "level": "on",
-              "options": {},
-            },
-          },
-        },
-      },
       "linter": {
         "rules": {
           "correctness": {
@@ -40,7 +26,6 @@
             "noChildrenProp": "error",
             "useJsxKeyInIterable": "error",
             "noNestedComponentDefinitions": "error",
-            "noNextAsyncClientComponent": "error",
           },
           "nursery": {
             "noComponentHookFactories": "error",
@@ -56,24 +41,37 @@
           },
           "suspicious": {
             "noArrayIndexKey": "error",
-            "noDuplicateJsxProps": "error",
             "noReactForwardRef": "error",
             "noLeakedRender": "error",
+            "noDuplicateJsxProps": "error",
           },
           "style": {
-            "noImplicitBoolean": "error",
             "useFragmentSyntax": "error",
-            "useConsistentCurlyBraces": "error",
             "useComponentExportOnlyModules": "error",
-            "useSelfClosingElements": "error",
             "useReactFunctionComponents": "error",
+            "noImplicitBoolean": "error",
+            "useConsistentCurlyBraces": "error",
+            "useSelfClosingElements": "error",
+          },
+          "performance": {
+            "noJsxPropsBind": "off",
           },
           "complexity": {
             "noUselessFragments": "error",
           },
-          "security": {},
-          "performance": {
-            "noJsxPropsBind": "off",
+        },
+      },
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
           },
         },
       },

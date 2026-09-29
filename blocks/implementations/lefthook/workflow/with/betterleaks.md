@@ -7,4 +7,4 @@
 
 | Why | Check | Tags |
 |---|---|---|
-| a secret stopped before the commit never reaches history, where it is compromised for good. | tool — secrets | [] |
+| a secret stopped before the commit never reaches history, where it is compromised for good. | tool/secrets | [] |

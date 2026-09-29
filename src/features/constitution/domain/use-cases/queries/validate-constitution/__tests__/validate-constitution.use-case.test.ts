@@ -15,7 +15,7 @@ const PRINCIPLES = 'blocks/core/foundation/principles.md';
 // A MUST rule whose role, architecture, no tool of typescript checks: the
 // advice names it whenever the checks run.
 const UNTOOLED_RULE = rule({
-  check: 'tool — architecture',
+  check: 'tool/architecture',
   slug: 'screens-import-inward',
 });
 

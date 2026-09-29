@@ -30,20 +30,6 @@ A pointer target is at least 24 × 24 CSS pixels, padding included, and 44 for a
 |---|---|---|
 | 24 is the floor WCAG sets for any pointer; 44 is what a thumb hits reliably. | review | [] |
 
-## hover-styles-behind-hover-media → hover-content-reachable-by-focus-and-tap
-A hover style that changes visibility has a state without hover, or sits behind `@media (hover: hover)`.
-
-| Why | Check | Tags |
-|---|---|---|
-| on a touch screen hover never happens, and whatever it reveals would never appear. | review | [] |
-
-## cascading-variant-by-data-attribute → cascading-variant-set-once-on-ancestor
-A variant that restyles descendants is a `data-*` attribute on their ancestor, resolved by the stylesheet.
-
-| Why | Check | Tags |
-|---|---|---|
-| the stylesheet then reaches every descendant, and no prop is drilled for looks. | review | [] |
-
 ## images-sized-for-density · SHOULD
 Content images carry `srcset` and `sizes`, in a modern format; a canvas scales by the device's pixel ratio; icons are SVG.
 

@@ -14,8 +14,6 @@
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,

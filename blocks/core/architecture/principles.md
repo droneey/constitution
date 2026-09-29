@@ -25,7 +25,7 @@ Imports point inward, toward stability, and form no cycle, direct or through a c
 
 | Why | Check | Tags |
 |---|---|---|
-| a cycle ties two modules into one unit that can be neither tested nor changed apart, and an outward import lets a volatile detail break a stable rule. | tool — architecture | [] |
+| a cycle ties two modules into one unit that can be neither tested nor changed apart, and an outward import lets a volatile detail break a stable rule. | tool/architecture | [] |
 
 ## inner-layers-declare-their-contracts · MUST
 The inner layer declares, in its own words, the contracts it needs; the outer layer implements them. Both depend on the contract, never the inner layer on the implementation.
@@ -39,7 +39,7 @@ The domain imports only itself and the shared kernel: no framework, no input or 
 
 | Why | Check | Tags |
 |---|---|---|
-| a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool — architecture | [] |
+| a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/architecture | [] |
 
 ## one-reason-to-change · MUST
 Each layer and each module has one reason to change.
@@ -60,14 +60,14 @@ A feature never imports another feature. Features are combined only by the layer
 
 | Why | Check | Tags |
 |---|---|---|
-| a feature that knows another cannot change, be tested or be removed alone. | tool — architecture | [] |
+| a feature that knows another cannot change, be tested or be removed alone. | tool/architecture | [] |
 
 ## access-only-through-curated-surface · MUST
 A module is reached from outside only through its surface, and the surface is curated: it offers what a caller may couple to and nothing else. Its internals are private.
 
 | Why | Check | Tags |
 |---|---|---|
-| whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | tool — architecture | [] |
+| whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | tool/architecture | [] |
 
 ## external-shapes-mapped-at-boundary · MUST
 An external shape — a response, a row, a message, a file format — is mapped to the inner model at the edge, in both directions. A wire shape never travels inward.
@@ -81,7 +81,7 @@ Input and output, network, storage, clock, randomness and processes live in adap
 
 | Why | Check | Tags |
 |---|---|---|
-| code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | tool — architecture | [] |
+| code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | tool/architecture | [] |
 
 ## one-explicit-composition-root · MUST
 Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies, typed by their contracts, and never builds an adapter itself. No container magic.
@@ -95,7 +95,7 @@ Where one operation reads and another writes, the read path and the write path n
 
 | Why | Check | Tags |
 |---|---|---|
-| reads and writes change for different reasons and scale differently; kept apart, each can change without the other. | tool — architecture | [] |
+| reads and writes change for different reasons and scale differently; kept apart, each can change without the other. | tool/architecture | [] |
 
 ## code-lives-with-its-reason-to-change · MUST
 Code lives in the layer that owns its reason to change, beside its consumer when they share that reason, and lifts to the nearest common level only when a second consumer appears. A tool is placed by the same rule. Business rules stay in the domain even with a single consumer: their reason to change is the business, not the caller.

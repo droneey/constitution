@@ -5,7 +5,7 @@ A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`: one rule and i
 
 | Why | Check | Tags |
 |---|---|---|
-| a suppression that names its rule and reason can be judged; a blanket one silences rules nobody meant to. | tool — lint | [] |
+| a suppression that names its rule and reason can be judged; a blanket one silences rules nobody meant to. | tool/lint | [] |
 
 ## biome-warnings-fail-the-check → check-passes-before-hand-back
 Warnings fail the check: every rule is an error, or the check passes `--error-on-warnings`.

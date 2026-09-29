@@ -61,6 +61,7 @@ const PARTS: readonly string[] = [
   'foundation/bun-test',
   'foundation/_react',
   'architecture/core',
+  'architecture/typescript',
   'architecture/_react',
 ];
 

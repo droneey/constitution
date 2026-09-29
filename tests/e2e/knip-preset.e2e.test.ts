@@ -87,8 +87,70 @@ describe('the knip preset', () => {
 
     // Assert
     expect(unused).toStrictEqual({
+      binaries: [],
       exports: [],
       files: [],
     });
+  });
+
+  it.each([
+    {
+      binary: 'betterleaks',
+      part: 'foundation/betterleaks',
+    },
+    {
+      binary: 'ls-lint',
+      part: 'foundation/ls-lint',
+    },
+    {
+      binary: 'mise',
+      part: 'foundation/mise',
+    },
+    {
+      binary: 'osv-scanner',
+      part: 'foundation/osv-scanner',
+    },
+    {
+      binary: 'lefthook',
+      part: 'workflow/lefthook',
+    },
+  ])(
+    'should report no missing binary when a script runs $binary and the project joins $part',
+    ({ binary, part }) => {
+      // Arrange
+      const project = {
+        files: WIRED,
+        parts: [
+          part,
+        ],
+        scripts: {
+          tool: binary,
+        },
+      };
+
+      // Act
+      const { binaries } = unusedCode(project);
+
+      // Assert
+      expect(binaries).toStrictEqual([]);
+    },
+  );
+
+  it('should report a missing binary when a script runs a tool whose part the project does not join', () => {
+    // Arrange
+    const project = {
+      files: WIRED,
+      scripts: {
+        tool: 'osv-scanner',
+      },
+    };
+
+    // Act
+    const { binaries } = unusedCode(project);
+
+    // Assert
+    expect(binaries).toStrictEqual([
+      'osv-scanner',
+    ]);
   });
 });

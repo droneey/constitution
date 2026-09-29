@@ -1,4 +1,4 @@
-import { Axis } from '#/kernel';
+import { Axis, ROLES } from '#/kernel';
 
 type Files = Record<string, string>;
 
@@ -8,7 +8,9 @@ interface BlockFixture {
   checks?: readonly string[];
   extends?: string;
   id: string;
+  languages?: readonly string[];
   requires?: readonly string[];
+  roles?: readonly string[];
   summary: string;
 }
 
@@ -36,6 +38,8 @@ const mainFile = (block: BlockFixture): string =>
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
     `checks: ${list(block.checks)}`,
+    `languages: ${list(block.languages)}`,
+    `roles: ${list(block.roles)}`,
     'dictionary: []',
     'governs: []',
     '---',
@@ -127,7 +131,7 @@ const coreFiles = (): Files =>
       'foundation/code.md': section({
         rules: [
           {
-            check: 'tool — secrets',
+            check: 'tool/secrets',
             slug: 'no-secret-in-code',
             statement: 'No secret is written into the code.',
           },
@@ -314,7 +318,9 @@ const context = (input: {
   checks?: readonly string[];
   folder: ContextFolder;
   id: string;
+  languages?: readonly string[];
   requires?: readonly string[];
+  roles?: readonly string[];
   rules: readonly RuleFixture[];
   summary: string;
   title: string;
@@ -325,6 +331,16 @@ const context = (input: {
       ? {}
       : {
           checks: input.checks,
+        }),
+    ...(input.languages === undefined
+      ? {}
+      : {
+          languages: input.languages,
+        }),
+    ...(input.roles === undefined
+      ? {}
+      : {
+          roles: input.roles,
         }),
     dir: `blocks/contexts/${input.folder}/${input.id}`,
     files: rulesFile(input),
@@ -344,9 +360,13 @@ const contextFiles = (): Files => ({
     ],
     folder: ContextFolder.Languages,
     id: 'typescript',
+    languages: [
+      'typescript',
+    ],
+    roles: ROLES,
     rules: [
       {
-        check: 'tool — types',
+        check: 'tool/types',
         slug: 'no-any',
         statement: 'A value is never typed `any`.',
       },
@@ -357,9 +377,10 @@ const contextFiles = (): Files => ({
   ...context({
     folder: ContextFolder.Languages,
     id: 'python',
+    roles: ROLES,
     rules: [
       {
-        check: 'tool — lint',
+        check: 'tool/lint',
         slug: 'no-bare-except',
         statement: 'An except clause names what it catches.',
       },
@@ -408,6 +429,7 @@ const implementation = (input: {
   checks?: readonly string[];
   extends?: string;
   id: string;
+  languages?: readonly string[];
   requires: readonly string[];
   rules?: readonly RuleFixture[];
   summary: string;
@@ -440,6 +462,9 @@ const implementationFiles = (): Files => ({
       'lint',
     ],
     id: '_lint-base',
+    languages: [
+      'typescript',
+    ],
     requires: [
       'typescript',
     ],
@@ -458,6 +483,9 @@ const implementationFiles = (): Files => ({
       'lint',
     ],
     id: 'ruff',
+    languages: [
+      'python',
+    ],
     requires: [
       'python',
     ],
@@ -471,7 +499,7 @@ const implementationFiles = (): Files => ({
     ],
     rules: [
       {
-        check: 'tool — lint',
+        check: 'tool/lint',
         slug: 'hooks-at-top-level',
         statement: 'A hook is called only at the top level.',
       },
@@ -514,6 +542,9 @@ const implementationFiles = (): Files => ({
       'lint',
     ],
     id: 'biome',
+    languages: [
+      'typescript',
+    ],
     requires: [
       'typescript',
     ],

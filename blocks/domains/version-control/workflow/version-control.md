@@ -7,14 +7,14 @@ A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with on
 
 | Why | Check | Tags |
 |---|---|---|
-| four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong. | tool — commits | [] |
+| four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong. | tool/commits | [] |
 
 ## commit-body-empty-reason-in-pull-request → reason-for-change-recorded · MUST
 A commit's body and footer are empty. The reason for the change, the migration of a breaking change and the issue it closes live in the pull request description.
 
 | Why | Check | Tags |
 |---|---|---|
-| the pull request is where the reason is reviewed, and a squash merge keeps one clean subject per change. | tool — commits | [] |
+| the pull request is where the reason is reviewed, and a squash merge keeps one clean subject per change. | tool/commits | [] |
 
 ## commit-type-matches-the-diff → refactor-apart-from-behaviour-change
 The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` and `chore` change none; `!` marks every change a consumer must adapt to.
@@ -37,7 +37,7 @@ A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<kebab-name>`. 
 
 | Why | Check | Tags |
 |---|---|---|
-| the name ties the branch to its issue and tells the release automation which version to bump. | tool — commits | [] |
+| the name ties the branch to its issue and tells the release automation which version to bump. | tool/commits | [] |
 
 ## branch-type-sets-version-bump → release-cut-by-automation-promoted-by-person
 The type of the merged branch sets the version bump: `feature` a minor one; `fix`, `hotfix` and dependency updates a patch.

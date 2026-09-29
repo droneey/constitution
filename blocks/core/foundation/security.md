@@ -9,7 +9,7 @@ No secret is committed — not in code, documents, tests, fixtures or history. A
 
 | Why | Check | Tags |
 |---|---|---|
-| a committed secret is readable by everyone who ever clones the repository, long after it is deleted. | tool — secrets | [security] |
+| a committed secret is readable by everyone who ever clones the repository, long after it is deleted. | tool/secrets | [security] |
 
 ## secret-never-in-url-or-artefact · MUST
 A secret never travels in a URL, and never reaches a build artefact: an image layer, a client bundle, a variable baked in at build time.
@@ -95,14 +95,14 @@ A known vulnerability of any severity in any dependency, development dependencie
 
 | Why | Check | Tags |
 |---|---|---|
-| a vulnerability found by the check is fixed before release; one accepted without an expiry is accepted forever. | tool — audit | [security] |
+| a vulnerability found by the check is fixed before release; one accepted without an expiry is accepted forever. | tool/audit | [security] |
 
 ## licences-from-an-allowlist · MUST
 Every dependency's licence is on the project's allowlist.
 
 | Why | Check | Tags |
 |---|---|---|
-| a licence the project cannot honour is a legal obligation it took on without knowing. | tool — audit | [security] |
+| a licence the project cannot honour is a legal obligation it took on without knowing. | tool/audit | [security] |
 
 ## Operations and access
 

@@ -34,8 +34,8 @@ const partOf = (input: {
 const SELF = 'self';
 
 // A part is named after the block its settings need, and holds rules of that
-// block, of the blocks above it, or of a seam with it; self holds the tool
-// block's.
+// block, of the blocks above it, of a seam with it, or of the tool itself;
+// self is the tool's own.
 const isAbove = (input: {
   binding: Binding;
   byId: BlocksById;
@@ -45,6 +45,7 @@ const isAbove = (input: {
     input.binding.part === SELF ? input.binding.tool : input.binding.part;
 
   return (
+    input.rule.block === input.binding.tool ||
     owner === input.rule.with ||
     !input.byId.has(owner) ||
     mayReferTo({
@@ -82,7 +83,7 @@ const bindingMessage = (input: {
       rule,
     })
   ) {
-    return `binds ${rule.slug}, a rule of ${rule.block}, to the part ${binding.part}, which may hold only rules of its block, of the blocks above it or of a seam with it`;
+    return `binds ${rule.slug}, a rule of ${rule.block}, to the part ${binding.part}, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool`;
   }
 
   const part = partOf(input);
@@ -172,7 +173,7 @@ const unheldFindings = (input: {
       ? []
       : [
           {
-            message: `says a tool holds ${rule.slug} (tool — ${role}), but no binding holds it, nor a rule that carries it out`,
+            message: `says a tool holds ${rule.slug} (tool/${role}), but no binding holds it, nor a rule that carries it out`,
             path: rule.file,
           },
         ];

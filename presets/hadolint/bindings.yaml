@@ -11,6 +11,7 @@ foundation:
       - DL3007
     shell-steps-fail-on-any-error:
       - DL4006
+      - failure-threshold
     system-packages-pinned-and-lean:
       - DL3008
       - DL3009

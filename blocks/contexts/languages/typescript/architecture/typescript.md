@@ -16,7 +16,7 @@ A role file is `<name>.<role>.ts`, and a folder's surface is `index.ts`.
 
 | Why | Check | Tags |
 |---|---|---|
-| one spelling of every role and of the surface lets the tools and the reader find a file by its name. | tool — names | [] |
+| one spelling of every role and of the surface lets the tools and the reader find a file by its name. | tool/names | [] |
 
 ## Values and types
 

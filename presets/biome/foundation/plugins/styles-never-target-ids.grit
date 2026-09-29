@@ -1,0 +1,5 @@
+language css
+
+CssIdSelector() as $id where {
+  register_diagnostic(span=$id, message="Style by class or attribute: an id selector outweighs every class and styles one element only", severity="error")
+}

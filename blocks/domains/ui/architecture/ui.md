@@ -16,7 +16,7 @@ A presentational component or a screen's piece imports no navigation or route-pa
 
 | Why | Check | Tags |
 |---|---|---|
-| a piece that navigates by itself works on one screen only, and its behaviour hides from the screen that composes it. | tool — architecture | [] |
+| a piece that navigates by itself works on one screen only, and its behaviour hides from the screen that composes it. | tool/architecture | [] |
 
 ## navigation-passed-by-slot · SHOULD
 Navigation reaches a presentational component through a slot that renders the link — its children first, then the data; any other action reaches it through a callback.
@@ -74,28 +74,28 @@ A component's folder name carries its location and role: no prefix in `libs/ui` 
 
 | Why | Check | Tags |
 |---|---|---|
-| the name alone tells where a component comes from and whether it holds logic. | tool — names | [] |
+| the name alone tells where a component comes from and whether it holds logic. | tool/names | [] |
 
 ## components-dumb-widgets-smart → side-effects-at-the-edges
 A component in `components/` takes data and callbacks, performs no input or output, and imports no binding unit. Only a widget consumes binding units, and it works wherever it is placed.
 
 | Why | Check | Tags |
 |---|---|---|
-| a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | tool — architecture | [] |
+| a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | tool/architecture | [] |
 
 ## ui-layer-imports → dependencies-point-inward-without-cycles
 A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities as types, and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool — architecture | [] |
+| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool/architecture | [] |
 
 ## component-in-its-own-folder → file-carries-its-role-suffix
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.
 
 | Why | Check | Tags |
 |---|---|---|
-| everything about one component is in one place, and its internals stay private. | tool — names | [] |
+| everything about one component is in one place, and its internals stay private. | tool/names | [] |
 
 ## vendored-component-placed-by-its-home → vendored-components-adapted-on-arrival
 A component installed as source is, before review, moved to the home its knowledge gives it and named by that home, never left where its installer put it.
@@ -116,4 +116,4 @@ The primitive library holds no user-facing text and no message catalog; text arr
 
 | Why | Check | Tags |
 |---|---|---|
-| a primitive with its own text cannot be translated or reworded by the application that uses it. | tool — architecture | [ux] |
+| a primitive with its own text cannot be translated or reworded by the application that uses it. | tool/architecture | [ux] |

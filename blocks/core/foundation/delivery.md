@@ -90,7 +90,7 @@ Files and folders are named in kebab-case. Root files that convention names in u
 
 | Why | Check | Tags |
 |---|---|---|
-| one case removes a decision from every new file and keeps names portable across file systems. | tool — names | [] |
+| one case removes a decision from every new file and keeps names portable across file systems. | tool/names | [] |
 
 ## public-repository-carries-a-licence · SHOULD
 A public repository carries a licence file that names its author.

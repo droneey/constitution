@@ -2,6 +2,7 @@ import type { Finding } from '#/kernel';
 import { LAYERS, Layer } from '#/kernel';
 
 import type { Block, FrontMatter } from '../../../../entities';
+import type { BlocksById } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../direction.utils';
 import { aBlock } from '../wording.utils';
@@ -11,6 +12,8 @@ enum LayerField {
   Extends = 'extends',
   Abstract = 'abstract',
   Checks = 'checks',
+  Languages = 'languages',
+  Roles = 'roles',
   Dictionary = 'dictionary',
 }
 
@@ -19,6 +22,8 @@ const LAYER_FIELDS: readonly LayerField[] = [
   LayerField.Extends,
   LayerField.Abstract,
   LayerField.Checks,
+  LayerField.Languages,
+  LayerField.Roles,
   LayerField.Dictionary,
 ];
 
@@ -37,9 +42,16 @@ const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {
   [LayerField.Extends]: [
     Layer.Implementation,
   ],
+  [LayerField.Languages]: [
+    Layer.Language,
+    Layer.Implementation,
+  ],
   [LayerField.Requires]: LAYERS.filter(
     (layer) => requirableBy(layer).length > 0,
   ),
+  [LayerField.Roles]: [
+    Layer.Language,
+  ],
 };
 
 const isEmpty = (value: FrontMatter[LayerField]): boolean =>
@@ -69,6 +81,36 @@ const layerFindings = (block: Block): readonly Finding[] =>
     path: block.path,
   }));
 
+// A tool's languages are those whose files its checks cover, so a block that
+// checks nothing covers none. A layer that leaves the field empty is reported
+// by layerFindings alone.
+const languageFindings = (input: {
+  block: Block;
+  byId: BlocksById;
+}): readonly Finding[] => {
+  const { frontMatter, layer } = input.block;
+
+  if (!FILLED_ON[LayerField.Languages].includes(layer)) {
+    return [];
+  }
+
+  const messages = [
+    ...(frontMatter.checks.length === 0 && frontMatter.languages.length > 0
+      ? [
+          'sets "languages" but checks no role; only a block that checks roles covers languages',
+        ]
+      : []),
+    ...frontMatter.languages
+      .filter((id) => input.byId.get(id)?.layer !== Layer.Language)
+      .map((id) => `languages lists ${id}, which is not a language block`),
+  ];
+
+  return messages.map((message) => ({
+    message,
+    path: input.block.path,
+  }));
+};
+
 const flagFindings = (block: Block): readonly Finding[] => {
   const isAbstract = block.frontMatter.abstract;
 
@@ -85,11 +127,16 @@ const flagFindings = (block: Block): readonly Finding[] => {
 };
 
 const frontMatterCheck: Check = ({
+  byId,
   constitution,
 }: CheckInput): readonly Finding[] =>
   constitution.blocks.flatMap((block) => [
     ...identityFindings(block),
     ...layerFindings(block),
+    ...languageFindings({
+      block,
+      byId,
+    }),
     ...flagFindings(block),
   ]);
 

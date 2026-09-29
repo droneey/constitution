@@ -1,5 +1,12 @@
 foundation:
+  bun-test:
+    stryker-drives-bun-test-by-command:
+      - command
+      - coverageAnalysis
+      - testRunner
   core:
     mutants-all-killed:
       - break
+  typescript:
+    mutants-all-killed:
       - mutate

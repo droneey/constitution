@@ -25,4 +25,4 @@ Production code never imports a file of `__tests__/` or of `tests/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a fake or a fixture in production code ships test behaviour to users. | tool — architecture | [testing] |
+| a fake or a fixture in production code ships test behaviour to users. | tool/architecture | [testing] |

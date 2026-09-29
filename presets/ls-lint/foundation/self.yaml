@@ -1,8 +1,4 @@
 ignore:
-  - .git
-  - .constitution
-  - .stryker-tmp
-  - node_modules
   - coverage
   - dist
   - reports

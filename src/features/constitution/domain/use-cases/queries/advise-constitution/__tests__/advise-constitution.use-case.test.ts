@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { ROLES } from '#/kernel';
+
 import type {
   Files,
   RuleFixture,
@@ -31,24 +33,40 @@ const STATEMENT = 'Every visible label comes from a message catalog.';
 
 // A second language no tool is built for: the lint rule of _react holds for
 // every language, so python has no tool for lint.
-const PYTHON_FILE = mainFile({
-  body: '# Python\n',
-  id: 'python',
-});
+const pythonFile = (roles: readonly string[]): string =>
+  mainFile({
+    body: '# Python\n',
+    id: 'python',
+    roles,
+  });
 
+const PYTHON_FILE = pythonFile(ROLES);
+
+// A stylesheet is held to fewer roles than a program.
 const CSS_FILE = mainFile({
   body: '# CSS\n',
   id: 'css',
+  roles: [
+    'format',
+    'lint',
+    'names',
+  ],
 });
 
-const prettierFile = (checks: readonly string[]): string =>
+const prettierFile = (input: {
+  checks: readonly string[];
+  requires?: readonly string[];
+}): string =>
   mainFile({
     body: '# Prettier\n',
-    checks,
+    checks: input.checks,
     id: 'prettier',
-    requires: [
+    languages: [
       'typescript',
       'css',
+    ],
+    requires: input.requires ?? [
+      'typescript',
     ],
   });
 
@@ -116,17 +134,17 @@ describe('adviseConstitution', () => {
       rules: {
         [I18N]: [
           {
-            check: 'tool — unused',
+            check: 'tool/unused',
             slug: 'every-message-is-used',
           },
         ],
         [UI]: [
           {
-            check: 'tool — architecture',
+            check: 'tool/architecture',
             slug: 'screens-hold-no-logic',
           },
           {
-            check: 'tool — unused',
+            check: 'tool/unused',
             slug: 'no-unused-screen',
           },
         ],
@@ -144,7 +162,7 @@ describe('adviseConstitution', () => {
       rules: {
         [BROWSER_WITH_TYPESCRIPT]: [
           {
-            check: 'tool — architecture',
+            check: 'tool/architecture',
             slug: 'layers-import-downward',
           },
         ],
@@ -152,20 +170,21 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [
-        'role coverage: css has no tool for architecture',
         'role coverage: typescript has no tool for architecture',
       ],
-      name: 'a MUST rule sits in a with/ file that pairs typescript with css',
+      name: "a MUST rule sits in a with/ file that pairs typescript with css, whose roles leave the rule's role out",
       files: {
         [CSS]: CSS_FILE,
-        [PRETTIER]: prettierFile([
-          'lint',
-        ]),
+        [PRETTIER]: prettierFile({
+          checks: [
+            'lint',
+          ],
+        }),
       },
       rules: {
         [TYPESCRIPT_WITH_CSS]: [
           {
-            check: 'tool — architecture',
+            check: 'tool/architecture',
             slug: 'layers-import-downward',
           },
         ],
@@ -175,17 +194,19 @@ describe('adviseConstitution', () => {
       expected: [
         'role coverage: css has no tool for lint',
       ],
-      name: 'a tool spans typescript and css and checks the role a MUST rule needs',
+      name: 'a tool names typescript and css and checks the role a MUST rule needs',
       files: {
         [CSS]: CSS_FILE,
-        [PRETTIER]: prettierFile([
-          'architecture',
-        ]),
+        [PRETTIER]: prettierFile({
+          checks: [
+            'architecture',
+          ],
+        }),
       },
       rules: {
         [UI]: [
           {
-            check: 'tool — architecture',
+            check: 'tool/architecture',
             slug: 'screens-hold-no-logic',
           },
         ],
@@ -211,10 +232,49 @@ describe('adviseConstitution', () => {
       rules: {
         [UI]: [
           {
-            check: 'tool — names',
+            check: 'tool/names',
             slug: 'names-follow-the-glossary',
           },
         ],
+      },
+    },
+    {
+      expected: [],
+      name: 'a tool names css, which it does not require',
+      files: {
+        [CSS]: CSS_FILE,
+        [PRETTIER]: prettierFile({
+          checks: [
+            'lint',
+          ],
+          requires: [],
+        }),
+      },
+    },
+    {
+      expected: [
+        'role coverage: typescript has no tool for lint',
+      ],
+      name: 'a tool requires typescript but names no language',
+      files: {
+        [BIOME]: mainFile({
+          body: '# Biome\n',
+          checks: [
+            'format',
+            'lint',
+          ],
+          id: 'biome',
+          requires: [
+            'typescript',
+          ],
+        }),
+      },
+    },
+    {
+      expected: [],
+      name: 'a language is held to no role',
+      files: {
+        [PYTHON]: pythonFile([]),
       },
     },
     {
@@ -223,7 +283,7 @@ describe('adviseConstitution', () => {
       rules: {
         [UI]: [
           {
-            check: 'tool — architecture',
+            check: 'tool/architecture',
             level: 'SHOULD',
             slug: 'screens-hold-no-logic',
           },
@@ -236,7 +296,7 @@ describe('adviseConstitution', () => {
       rules: {
         [UI]: [
           {
-            check: 'tool — linting',
+            check: 'tool/linting',
             slug: 'screens-hold-no-logic',
           },
         ],
@@ -373,7 +433,7 @@ describe('adviseConstitution', () => {
         ],
         [UI]: [
           {
-            check: 'tool — architecture',
+            check: 'tool/architecture',
             slug: 'labels-from-catalogs',
             statement: STATEMENT,
           },

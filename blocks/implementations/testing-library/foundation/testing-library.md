@@ -5,7 +5,7 @@ Elements are queried by role first, then by label and text; `getByTestId`, `cont
 
 | Why | Check | Tags |
 |---|---|---|
-| a spec that finds elements as a user does breaks only when the user's experience does. | tool — lint | [] |
+| a spec that finds elements as a user does breaks only when the user's experience does. | tool/lint | [] |
 
 ## interactions-through-user-event · SHOULD
 Interactions go through `userEvent`, never `fireEvent`.

@@ -33,42 +33,42 @@ A program's source is laid out by concern in the folders of the top-level tree, 
 
 | Why | Check | Tags |
 |---|---|---|
-| a reader who knows one repository finds their way in every other, and a file has one obvious place. | tool — names | [] |
+| a reader who knows one repository finds their way in every other, and a file has one obvious place. | tool/names | [] |
 
 ## root-imported-only-by-entry-and-delivery-wiring · MUST
 `root/` is imported only by entry files and by the delivery layer's own wiring. Nothing else reaches back to the composition root.
 
 | Why | Check | Tags |
 |---|---|---|
-| the root knows every concrete choice; code that imports it depends on all of them and can no longer be tested with fakes. | tool — architecture | [] |
+| the root knows every concrete choice; code that imports it depends on all of them and can no longer be tested with fakes. | tool/architecture | [] |
 
 ## nothing-imports-an-entrypoint · MUST
 No code imports an entrypoint. An entrypoint composes features through their surfaces, `shared/` and `libs/`, and holds everything that ships only in its artifact.
 
 | Why | Check | Tags |
 |---|---|---|
-| an entrypoint is a separate artifact; importing it drags that artifact into another one. | tool — architecture | [] |
+| an entrypoint is a separate artifact; importing it drags that artifact into another one. | tool/architecture | [] |
 
 ## kernel-imports-only-itself · MUST
 `kernel/` imports only itself. It holds business types and values every feature shares — money, an email address, a date range — and structural contracts such as a paginated result.
 
 | Why | Check | Tags |
 |---|---|---|
-| everything depends on the kernel, so it must depend on nothing that changes. | tool — architecture | [] |
+| everything depends on the kernel, so it must depend on nothing that changes. | tool/architecture | [] |
 
 ## libs-import-no-application-code · MUST
 `libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/` or `root/` — and knows nothing of the repository that uses it.
 
 | Why | Check | Tags |
 |---|---|---|
-| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool — architecture | [] |
+| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool/architecture | [] |
 
 ## shared-imports-no-feature-or-root · MUST
 `shared/` imports no feature and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
 
 | Why | Check | Tags |
 |---|---|---|
-| plumbing that knows a feature is part of that feature, and every other feature that uses it depends on it too. | tool — architecture | [] |
+| plumbing that knows a feature is part of that feature, and every other feature that uses it depends on it too. | tool/architecture | [] |
 
 ## kernel-or-shared-by-meaning · SHOULD
 A shared piece with business meaning goes to `kernel/`; one without goes to `shared/`; one that would make sense in any program goes to `libs/`. Each is created by symptom, when a second feature needs it, and `kernel/` stays small.
@@ -110,14 +110,14 @@ A feature is laid out as `domain/`, `adapters/<system>/` and `app/` with the rol
 
 | Why | Check | Tags |
 |---|---|---|
-| a use-case, a port or an adapter is found in the same place in every feature. | tool — names | [] |
+| a use-case, a port or an adapter is found in the same place in every feature. | tool/names | [] |
 
 ## data-ports-split-by-reads-and-writes · SHOULD
 A data port is a repository per aggregate, one file per side: `repositories/queries/<aggregate>.repository` for reads and `repositories/commands/<aggregate>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name.
 
 | Why | Check | Tags |
 |---|---|---|
-| reads and writes change apart, and a caller that only reads cannot reach a write. | tool — names | [] |
+| reads and writes change apart, and a caller that only reads cannot reach a write. | tool/names | [] |
 
 ## pipeline-stages-under-steps · SHOULD
 A pipeline use-case keeps its stages under `steps/`, in the order the use-case calls them; a stage never calls another.
@@ -131,14 +131,14 @@ A contract — a port, its parameters and results — imports no vendor, no adap
 
 | Why | Check | Tags |
 |---|---|---|
-| a contract that knows a vendor ties every implementation to it, and the domain that declares it along with them. | tool — architecture | [] |
+| a contract that knows a vendor ties every implementation to it, and the domain that declares it along with them. | tool/architecture | [] |
 
 ## adapters-never-import-each-other-or-callers · MUST
 An adapter imports its contracts, `kernel/` and `libs/`, and never a feature's application layer, the delivery layer or another adapter. What two adapters share lives in `libs/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| adapters that know each other or their callers form a second, hidden program beside the domain. | tool — architecture | [] |
+| adapters that know each other or their callers form a second, hidden program beside the domain. | tool/architecture | [] |
 
 ## feature-speaks-in-its-own-contracts · SHOULD
 A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature's surface.
@@ -156,21 +156,21 @@ Outside a folder, a caller imports only its surface. Inside it, files import eac
 
 | Why | Check | Tags |
 |---|---|---|
-| the surface is the folder's offer, so a caller couples only to what is offered; importing one's own surface is where import cycles begin. | tool — architecture | [] |
+| the surface is the folder's offer, so a caller couples only to what is offered; importing one's own surface is where import cycles begin. | tool/architecture | [] |
 
 ## layer-folder-has-no-surface · MUST
 A layer folder — `domain/`, `app/`, `adapters/`, `src/`, `features/`, `libs/` — has no surface and is never an import target. A caller imports the role folder inside it, so the feature's root surface is the only one that re-exports a whole feature.
 
 | Why | Check | Tags |
 |---|---|---|
-| an import then names the role it couples to, and no aggregate hides an edge the layer rules forbid. | tool — architecture | [] |
+| an import then names the role it couples to, and no aggregate hides an edge the layer rules forbid. | tool/architecture | [] |
 
 ## surface-only-re-exports · MUST
 A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
 
 | Why | Check | Tags |
 |---|---|---|
-| a surface that declares or computes becomes a room of its own, and a wildcard re-export offers internals nobody chose to offer. | tool — lint | [] |
+| a surface that declares or computes becomes a room of its own, and a wildcard re-export offers internals nobody chose to offer. | tool/lint | [] |
 
 ## surface-offers-operations-not-mechanisms · SHOULD
 A feature's surface offers its operations and its presentation — use-cases, binding units, entities, widgets — and never its mechanisms: repositories, mappers, wire types, cache keys.
@@ -184,7 +184,7 @@ A dependency is imported only from the entries it publishes, never from its inte
 
 | Why | Check | Tags |
 |---|---|---|
-| internal paths change between releases without notice, and an update then breaks the program. | tool — lint | [] |
+| internal paths change between releases without notice, and an update then breaks the program. | tool/lint | [] |
 
 ## Placement
 
@@ -257,7 +257,7 @@ A folder is named for its purpose, or by a role of the vocabulary of the project
 
 | Why | Check | Tags |
 |---|---|---|
-| a folder named for what its contents are for tells a reader about the system; one named for their shape tells nothing. | tool — names | [] |
+| a folder named for what its contents are for tells a reader about the system; one named for their shape tells nothing. | tool/names | [] |
 
 ## one-purpose-per-folder · SHOULD
 A folder holds one purpose, said in one phrase without "and". It appears to separate purposes already mixed, never for members that do not exist yet.
@@ -278,8 +278,8 @@ A file carries its role's suffix, whatever its folder: `entities/chat.entity`. N
 
 | Why | Check | Tags |
 |---|---|---|
-| the name tells the role before the file is opened, and a tool can check it. | tool — names | [] |
+| the name tells the role before the file is opened, and a tool can check it. | tool/names | [] |
 
 ## The layer matrix
 
-The import rules of this chapter, with the laws of `principles`, are the layer matrix. Each is stated once, with the check `tool — architecture`; the tool that holds the role is configured for the project's layers from a shared preset, and nothing is generated into the project. The language block names the source root, the surface file and the suffix form.
+The import rules of this chapter, with the laws of `principles`, are the layer matrix. Each is stated once, with the check `tool/architecture`; the tool that holds the role is configured for the project's layers from a shared preset, and nothing is generated into the project. The language block names the source root, the surface file and the suffix form.

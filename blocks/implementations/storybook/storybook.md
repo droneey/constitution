@@ -5,6 +5,8 @@ requires: [_react]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Storybook, .stories, .storybook]
 governs: ["**/*.stories.tsx", ".storybook/**"]
 ---

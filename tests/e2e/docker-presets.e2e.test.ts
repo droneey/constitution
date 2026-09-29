@@ -107,6 +107,12 @@ describe('the hadolint docker part', () => {
       from: 'SHELL ["/bin/bash", "-o", "pipefail", "-c"]\n',
       to: 'RUN curl -s https://example.com | tee /tmp/page\n',
     },
+    {
+      code: 'SC2086',
+      condition: 'a step fails the shell linter',
+      from: 'COPY . /app',
+      to: 'COPY . /app\nRUN echo $HOME',
+    },
   ])('should fail with $code when $condition', ({ code, from, to }) => {
     // Arrange
     const text = DOCKERFILE.replace(from, to);

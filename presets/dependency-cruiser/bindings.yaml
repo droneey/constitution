@@ -68,6 +68,8 @@ architecture:
     package-dependency-matrix:
       - common-imports-nothing
       - packages-blind-to-each-other
+    package-entries-curated:
+      - root-takes-packages-by-name
     package-knows-no-consumer:
       - package-knows-no-consumer
   storybook:

@@ -26,4 +26,4 @@ Beside kebab-case, a route keeps the names Expo Router reads: `_layout.tsx`, `+n
 
 | Why | Check | Tags |
 |---|---|---|
-| the router finds its layouts, groups and parameters by these names alone. | tool — names | [] |
+| the router finds its layouts, groups and parameters by these names alone. | tool/names | [] |

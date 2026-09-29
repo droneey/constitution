@@ -5,4 +5,4 @@ Expo Router's root is `src/routes/`, so `app` keeps its meaning as a feature's l
 
 | Why | Check | Tags |
 |---|---|---|
-| the router's default `src/app/` would give one word two meanings in one tree. | tool — names | [] |
+| the router's default `src/app/` would give one word two meanings in one tree. | tool/names | [] |

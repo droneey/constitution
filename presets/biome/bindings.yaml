@@ -6,6 +6,7 @@ foundation:
       - useHookAtTopLevel
     list-keys-from-identity:
       - noArrayIndexKey
+      - useJsxKeyInIterable
     modern-react-api-only:
       - modern-react-api-only.grit
       - noReactForwardRef
@@ -28,6 +29,8 @@ foundation:
       - useMaxParams
     cases-named-should-when:
       - cases-named-should-when.grit
+    error-cause-preserved-logged-once:
+      - useErrorCause
     errors-surfaced-never-swallowed:
       - noEmptyBlockStatements
     function-file-and-complexity-limits:
@@ -44,11 +47,34 @@ foundation:
       - no-empty-names.grit
     no-empty-verbs:
       - no-empty-verbs.grit
+    no-secret-in-repository:
+      - noSecrets
     no-skipped-or-empty-tests:
       - no-skipped-or-empty-tests.grit
+      - noConditionalExpect
       - noFocusedTests
       - noSkippedTests
       - useExpect
+  css:
+    baseline-features-only:
+      - useBaseline
+    classes-declared-and-used:
+      - noUndeclaredClasses
+      - noUnusedClasses
+    custom-properties-declared-before-use:
+      - noUndeclaredCustomProperties
+      - noInvalidPropertyInitValue
+      - noMissingVarFunction
+    no-important-declarations:
+      - noImportantStyles
+    selectors-stay-shallow:
+      - noExcessiveSelectorClasses
+      - noDescendingSpecificity
+    styles-in-named-layers:
+      - useLayeredStyles
+      - useNamedLayer
+    styles-never-target-ids:
+      - styles-never-target-ids.grit
   ky:
     ky-body-parsed-by-schema:
       - ky-body-parsed-by-schema.grit
@@ -64,6 +90,7 @@ foundation:
       - useIframeTitle
     fields-declare-autocomplete:
       - fields-declare-autocomplete.grit
+      - useValidAutocomplete
     labels-bound-with-use-id:
       - labels-bound-with-use-id.grit
       - useUniqueElementIds
@@ -72,6 +99,7 @@ foundation:
       - useSemanticElements
       - useValidAnchor
     native-semantics-first:
+      - noAriaHiddenOnFocusable
       - noInteractiveElementToNoninteractiveRole
       - noNoninteractiveElementInteractions
       - noNoninteractiveElementToInteractiveRole
@@ -130,10 +158,12 @@ architecture:
   core:
     surface-only-re-exports:
       - noReExportAll
-      - surface-only-re-exports.grit
   react-dom:
     no-raw-html-injection:
       - noDangerouslySetInnerHtml
   react-native:
     dependencies-imported-from-their-entries:
       - noReactNativeDeepImports
+  typescript:
+    surface-only-re-exports:
+      - surface-only-re-exports.grit

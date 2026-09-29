@@ -68,6 +68,74 @@ describe('frontMatterCheck', () => {
     },
     {
       block: {
+        body: '# Browser\n',
+        id: 'browser',
+        languages: [
+          'typescript',
+        ],
+      },
+      expected: 'sets "languages", which a platform block leaves empty',
+      path: BROWSER,
+    },
+    {
+      block: {
+        body: '# Biome\n',
+        checks: [
+          'lint',
+        ],
+        id: 'biome',
+        languages: [
+          'typescript',
+        ],
+        roles: [
+          'lint',
+        ],
+      },
+      expected: 'sets "roles", which an implementation block leaves empty',
+      path: BIOME,
+    },
+    {
+      block: {
+        body: '# Biome\n',
+        id: 'biome',
+        languages: [
+          'typescript',
+        ],
+      },
+      expected:
+        'sets "languages" but checks no role; only a block that checks roles covers languages',
+      path: BIOME,
+    },
+    {
+      block: {
+        body: '# Biome\n',
+        checks: [
+          'lint',
+        ],
+        id: 'biome',
+        languages: [
+          'ui',
+        ],
+      },
+      expected: 'languages lists ui, which is not a language block',
+      path: BIOME,
+    },
+    {
+      block: {
+        body: '# Biome\n',
+        checks: [
+          'lint',
+        ],
+        id: 'biome',
+        languages: [
+          'kotlin',
+        ],
+      },
+      expected: 'languages lists kotlin, which is not a language block',
+      path: BIOME,
+    },
+    {
+      block: {
         body: '# UI\n',
         id: 'ui',
         dictionary: [

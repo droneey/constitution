@@ -278,7 +278,57 @@ describe('the ls-lint preset', () => {
   });
 });
 
-describe('the ls-lint expo part', () => {
+const EXPO_FOUNDATION_PARTS = [
+  'foundation/core',
+  'foundation/typescript',
+  'foundation/expo',
+];
+
+describe('the ls-lint expo parts', () => {
+  it.each([
+    'app',
+    'src/app',
+  ])(
+    'should report nothing when the files of Expo Router sit under %s and the project follows only foundation',
+    (root) => {
+      // Arrange
+      const project = {
+        paths: [
+          `${root}/_layout.tsx`,
+          `${root}/+not-found.tsx`,
+          `${root}/(tabs)/_layout.tsx`,
+          `${root}/(tabs)/index.tsx`,
+          `${root}/orders/[orderId].tsx`,
+        ],
+        parts: EXPO_FOUNDATION_PARTS,
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed).toStrictEqual([]);
+    },
+  );
+
+  it('should report a screen in PascalCase when the project follows only foundation', () => {
+    // Arrange
+    const project = {
+      paths: [
+        'app/Orders.tsx',
+      ],
+      parts: EXPO_FOUNDATION_PARTS,
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toStrictEqual([
+      'app/Orders.tsx',
+    ]);
+  });
+
   it('should report nothing when the files of Expo Router sit under src/routes', () => {
     // Arrange
     const project = {
@@ -292,6 +342,7 @@ describe('the ls-lint expo part', () => {
       ],
       parts: [
         ...PARTS,
+        'foundation/expo',
         'architecture/expo',
       ],
     };
@@ -308,6 +359,7 @@ describe('the ls-lint expo part', () => {
       condition: 'the router sits in src/app',
       parts: [
         ...PARTS,
+        'foundation/expo',
         'architecture/expo',
       ],
       path: 'src/app/_layout.tsx',
@@ -329,6 +381,7 @@ describe('the ls-lint expo part', () => {
       condition: 'a screen is in PascalCase',
       parts: [
         ...PARTS,
+        'foundation/expo',
         'architecture/expo',
       ],
       path: 'src/routes/Orders.tsx',
@@ -493,7 +546,6 @@ describe('the ls-lint foundation parts', () => {
         'assets/theme.module.css',
         'e2e/checkout.e2e.test.js',
         'dist/Bundle.js',
-        'node_modules/SomePackage/Index.js',
       ],
     },
     {
@@ -519,6 +571,7 @@ describe('the ls-lint foundation parts', () => {
         'src/components/order-card.stories.tsx',
         'src/components/order-card.tsx',
         'src/order-view.ts',
+        'node_modules/SomePackage/Index.js',
       ],
     },
   ])(
@@ -535,6 +588,61 @@ describe('the ls-lint foundation parts', () => {
 
       // Assert
       expect(failed).toStrictEqual([]);
+    },
+  );
+});
+
+describe('the ls-lint parts of the tools that write folders', () => {
+  it.each([
+    {
+      part: 'foundation/git',
+      path: '.git/refs/remotes/Upstream/main',
+      reported: '.git/refs/remotes/Upstream',
+    },
+    {
+      part: 'foundation/stryker',
+      path: '.stryker-tmp/sandbox-AhbDNq/package.json',
+      reported: '.stryker-tmp/sandbox-AhbDNq',
+    },
+    {
+      part: 'foundation/typescript',
+      path: 'node_modules/some-package/index.js',
+      reported: 'node_modules',
+    },
+  ])(
+    'should skip the folder its tool writes only when a project extends $part',
+    ({ part, path, reported }) => {
+      // Arrange
+      const project = {
+        paths: [
+          path,
+        ],
+      };
+
+      // Act
+      const failed = {
+        with: failedPaths({
+          ...project,
+          parts: [
+            'foundation/core',
+            part,
+          ],
+        }),
+        without: failedPaths({
+          ...project,
+          parts: [
+            'foundation/core',
+          ],
+        }),
+      };
+
+      // Assert
+      expect(failed).toStrictEqual({
+        with: [],
+        without: [
+          reported,
+        ],
+      });
     },
   );
 });

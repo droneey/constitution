@@ -23,7 +23,7 @@ describe('rulesCheck', () => {
       '',
       '| Why | Check | Tags |',
       '|---|---|---|',
-      '|  | tool — spelling | [vibes, ux] |',
+      '|  | tool/spelling | [vibes, ux] |',
       '',
       rule({
         check: 'by eye',
@@ -66,7 +66,7 @@ describe('rulesCheck', () => {
       },
       {
         message:
-          'rule "b" has the check "by eye"; a check is test, review or tool — <role>',
+          'rule "b" has the check "by eye"; a check is test, review or tool/<role>',
         path: PRINCIPLES,
       },
       {

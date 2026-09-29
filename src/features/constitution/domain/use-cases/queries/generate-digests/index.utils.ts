@@ -11,7 +11,6 @@ import type { BlocksById } from '../../../utils';
 import {
   checkOf,
   fileNameOf,
-  languagesOf,
   rewriteLocalLinks,
   ruleLanguagesOf,
   targetFromRoot,
@@ -71,10 +70,8 @@ const blockRecord = (input: {
       .map((heir) => heir.id)
       .join(LIST),
     block.frontMatter.checks.join(LIST),
-    languagesOf({
-      blockId: block.id,
-      byId: input.byId,
-    }).join(LIST),
+    block.frontMatter.languages.join(LIST),
+    block.frontMatter.roles.join(LIST),
     ancestorsOf({
       blockId: block.id,
       byId: input.byId,

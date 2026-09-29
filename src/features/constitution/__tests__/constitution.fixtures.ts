@@ -26,7 +26,9 @@ interface CardFixture {
   extends?: string | undefined;
   governs?: readonly string[];
   id: string;
+  languages?: readonly string[];
   requires?: readonly string[];
+  roles?: readonly string[];
   summary?: string;
 }
 
@@ -62,6 +64,8 @@ const mainFile = (block: BlockFixture): string =>
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
     `checks: ${list(block.checks)}`,
+    `languages: ${list(block.languages)}`,
+    `roles: ${list(block.roles)}`,
     `dictionary: ${list(block.dictionary)}`,
     `governs: ${list(block.governs)}`,
     '---',

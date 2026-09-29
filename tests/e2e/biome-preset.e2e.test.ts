@@ -586,6 +586,220 @@ describe('the Biome foundation parts', () => {
   });
 });
 
+const ERROR_WITHOUT_CAUSE =
+  "export const readOrder = (text: string): unknown => {\n  try {\n    return JSON.parse(text);\n  } catch (error) {\n    throw new Error('unreadable order');\n  }\n};\n";
+
+const UNTYPED_RETURN = 'export const next = (count: number) => count + 1;\n';
+
+describe('the Biome part that needs each setting', () => {
+  it.each([
+    {
+      condition: 'a function leaves its return type unwritten',
+      files: {
+        'src/main.ts': UNTYPED_RETURN,
+      },
+      isReported: false,
+      parts: [
+        'foundation/self',
+        'foundation/core',
+      ],
+      rule: 'useExplicitType',
+    },
+    {
+      condition: 'a function leaves its return type unwritten',
+      files: {
+        'src/main.ts': UNTYPED_RETURN,
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'useExplicitType',
+    },
+    {
+      condition: 'a catch block throws a new error without its cause',
+      files: {
+        'src/main.ts': ERROR_WITHOUT_CAUSE,
+      },
+      isReported: false,
+      parts: [
+        'foundation/self',
+      ],
+      rule: 'useErrorCause',
+    },
+    {
+      condition: 'a catch block throws a new error without its cause',
+      files: {
+        'src/main.ts': ERROR_WITHOUT_CAUSE,
+      },
+      isReported: true,
+      parts: [
+        'foundation/self',
+        'foundation/core',
+      ],
+      rule: 'useErrorCause',
+    },
+    {
+      condition: 'the dependency-cruiser configuration exports by default',
+      files: {
+        '.dependency-cruiser.mjs': 'export default {};\n',
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'noDefaultExport',
+    },
+    {
+      condition: 'the dependency-cruiser configuration exports by default',
+      files: {
+        '.dependency-cruiser.mjs': 'export default {};\n',
+      },
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/dependency-cruiser',
+      ],
+      rule: 'noDefaultExport',
+    },
+    {
+      condition: 'an element without children is closed by a tag',
+      files: {
+        'src/panel.tsx': component('<div></div>'),
+      },
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/_react',
+      ],
+      rule: 'useSelfClosingElements',
+    },
+  ])(
+    'should report $rule $isReported when $condition and a project extends $parts',
+    ({ files, isReported, parts, rule }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes(rule)).toBe(isReported);
+    },
+  );
+});
+
+const LAYERED =
+  '@layer base, components;\n\n@layer base {\n  :root {\n    --color-text: oklch(20% 0 0);\n  }\n}\n\n';
+
+describe('the Biome css part', () => {
+  it.each([
+    {
+      condition: 'a rule sits outside a layer',
+      css: '.card {\n  color: var(--color-text);\n}\n',
+      rule: 'useLayeredStyles',
+    },
+    {
+      condition: 'a layer has no name',
+      css: '@layer {\n  .card {\n    color: var(--color-text);\n  }\n}\n',
+      rule: 'useNamedLayer',
+    },
+    {
+      condition: 'a declaration is important',
+      css: '@layer components {\n  .card {\n    color: var(--color-text) !important;\n  }\n}\n',
+      rule: 'noImportantStyles',
+    },
+    {
+      condition: 'a selector holds four classes',
+      css: '@layer components {\n  .card .title .label .icon {\n    color: var(--color-text);\n  }\n}\n',
+      rule: 'noExcessiveSelectorClasses',
+    },
+    {
+      condition: 'a custom property is read before it is declared',
+      css: '@layer components {\n  .card {\n    color: var(--color-missing);\n  }\n}\n',
+      rule: 'noUndeclaredCustomProperties',
+    },
+  ])('should report $rule when $condition', ({ css, rule }) => {
+    // Arrange
+    const project = {
+      files: {
+        'src/panel.tsx':
+          "import './theme.css';\n\nexport function Panel(): React.ReactElement {\n  return <div className='card title label icon' />;\n}\n",
+        'src/theme.css': `${LAYERED}${css}`,
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/css',
+      ],
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).toContain(rule);
+  });
+
+  it('should report a plugin finding when a stylesheet styles an element by its id', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/theme.css': `${LAYERED}@layer components {\n  #main {\n    color: var(--color-text);\n  }\n}\n`,
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/css',
+      ],
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(
+      plugins.some((finding) =>
+        finding.startsWith('Style by class or attribute'),
+      ),
+    ).toBe(true);
+  });
+
+  it.each([
+    {
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/css',
+      ],
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/css',
+        'foundation/tailwind',
+      ],
+    },
+  ])(
+    'should report a utility class as undeclared $isReported when a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/panel.tsx':
+            "import './theme.css';\n\nexport function Panel(): React.ReactElement {\n  return <div className='flex' />;\n}\n",
+          'src/theme.css': LAYERED,
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noUndeclaredClasses')).toBe(isReported);
+    },
+  );
+});
+
 describe('the Biome tanstack-query part', () => {
   it.each([
     {
@@ -703,7 +917,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/ui',
+        'foundation/css',
       ],
       rule: 'useNamedLayer',
     },
@@ -1066,6 +1280,76 @@ describe('the Biome architecture parts', () => {
 
       // Assert
       expect(rules).toContain(rule);
+    },
+  );
+
+  it.each([
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'architecture/core',
+      ],
+    },
+    {
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'architecture/typescript',
+      ],
+    },
+  ])(
+    'should report a declaring surface $isReported when a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/features/orders/index.ts': "export const ORDERS = 'orders';\n",
+        },
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(
+        plugins.some((finding) =>
+          finding.startsWith('A surface only re-exports by name'),
+        ),
+      ).toBe(isReported);
+    },
+  );
+
+  it.each([
+    {
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/nestjs',
+      ],
+    },
+  ])(
+    'should report noParameterProperties $isReported when a provider takes its dependencies through its constructor and a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/orders.service.ts':
+            'export class OrdersService {\n  public constructor(private readonly clock: Date) {}\n}\n',
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noParameterProperties')).toBe(isReported);
     },
   );
 });

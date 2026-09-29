@@ -25,6 +25,7 @@
             "maxLines": 500,
           },
         },
+        "useErrorCause": "error",
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": {
@@ -90,14 +91,39 @@
   "overrides": [
     {
       "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
         "**/*.test.tsx",
       ],
       "linter": {
         "rules": {
-          "nursery": {
-            "noIdenticalTestTitle": "error",
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+          },
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
           },
         },
       },

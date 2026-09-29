@@ -1115,33 +1115,123 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'a local tool reaches its language through another local block, listed after it',
+      condition: 'a local tool names a language it does not require',
       layout: {
         config: configOf({
           domains:
             '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: `[react-dom, git, betterleaks, ${localPath('lint-tool')}, ${localPath('ts-base')}]`,
+          implementations: `[react-dom, git, betterleaks, ${localPath('lint-tool')}]`,
           languages: '[typescript]',
           platforms: '[browser]',
+        }),
+        files: localBlockFiles({
+          fields: {
+            checks: '[lint]',
+            languages: '[typescript]',
+          },
+          id: 'lint-tool',
+        }),
+      },
+      warnings: [],
+    },
+    {
+      condition: 'a local tool names a local language listed after it',
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: `[git, ${localPath('mix-audit')}]`,
+          languages: `[${localPath('elixir', 'contexts/languages')}]`,
+        }),
+        files: {
+          ...localBlockFiles({
+            fields: {
+              checks: '[secrets]',
+              languages: '[elixir]',
+            },
+            id: 'mix-audit',
+          }),
+          ...localBlockFiles({
+            fields: {
+              roles: '[secrets]',
+            },
+            folder: 'contexts/languages',
+            id: 'elixir',
+          }),
+        },
+      },
+      warnings: [],
+    },
+    {
+      condition: 'a local tool requires its language but names none',
+      layout: {
+        config: configOf({
+          domains:
+            '[ui, untrusted-client, unreliable-network, version-control]',
+          implementations: `[react-dom, git, ${localPath('lint-tool')}]`,
+          languages: '[typescript]',
+          platforms: '[browser]',
+        }),
+        files: localBlockFiles({
+          fields: {
+            checks: '[lint, secrets]',
+            requires: '[typescript]',
+          },
+          id: 'lint-tool',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
+      ],
+    },
+    {
+      condition: "a local block's languages name blocks that are no language",
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: `[git, betterleaks, ${localPath('lint-tool')}, ${localPath('kit')}]`,
+          languages: '[typescript]',
         }),
         files: {
           ...localBlockFiles({
             fields: {
               checks: '[lint]',
-              requires: '[ts-base]',
+              languages: '[typescript, ui, kit, kotlin]',
             },
             id: 'lint-tool',
           }),
           ...localBlockFiles({
-            fields: {
-              requires: '[typescript]',
-            },
-            id: 'ts-base',
+            id: 'kit',
           }),
         },
       },
-      warnings: [],
+      warnings: [
+        WARNINGS,
+        `- local-block: ${localPath('lint-tool')} covers ui, which is not a language block — fix its front matter`,
+        `- local-block: ${localPath('lint-tool')} covers kit, which is not a language block — fix its front matter`,
+        `- local-block: ${localPath('lint-tool')} covers kotlin, which is not a language block — fix its front matter`,
+      ],
+    },
+    {
+      condition: "a local language's roles name no role",
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: '[git, betterleaks]',
+          languages: `[${localPath('elixir', 'contexts/languages')}]`,
+        }),
+        files: localBlockFiles({
+          fields: {
+            roles: '[secrets, style]',
+          },
+          folder: 'contexts/languages',
+          id: 'elixir',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        `- local-block: ${localPath('elixir', 'contexts/languages')} is held to style, which is not a role — fix its front matter`,
+      ],
     },
     {
       condition: 'a local block path names a folder',
@@ -1443,6 +1533,9 @@ describe('session-start hook', () => {
           languages: `[${localPath('elixir', 'contexts/languages')}]`,
         }),
         files: localBlockFiles({
+          fields: {
+            roles: '[format, lint, secrets]',
+          },
           folder: 'contexts/languages',
           id: 'elixir',
         }),
@@ -1454,6 +1547,25 @@ describe('session-start hook', () => {
     },
     {
       condition:
+        "a local language's roles leave out the role of an active rule",
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: '[git]',
+          languages: `[${localPath('elixir', 'contexts/languages')}]`,
+        }),
+        files: localBlockFiles({
+          fields: {
+            roles: '[format, lint]',
+          },
+          folder: 'contexts/languages',
+          id: 'elixir',
+        }),
+      },
+      warnings: [],
+    },
+    {
+      condition:
         'a local language outside every layer folder has no tool for a role of an active rule',
       layout: {
         config: configOf({
@@ -1462,6 +1574,9 @@ describe('session-start hook', () => {
           languages: `[${localPath('elixir', '')}]`,
         }),
         files: localBlockFiles({
+          fields: {
+            roles: '[secrets]',
+          },
           folder: '',
           id: 'elixir',
         }),
@@ -1529,6 +1644,7 @@ describe('session-start hook', () => {
         files: localBlockFiles({
           fields: {
             checks: '[lint]',
+            languages: '[typescript]',
             requires: '[typescript]',
           },
           id: 'lint-kit',

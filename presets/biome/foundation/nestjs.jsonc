@@ -11,11 +11,11 @@
       ],
       "linter": {
         "rules": {
-          "style": {
-            "noParameterProperties": "off",
-          },
           "complexity": {
             "noStaticOnlyClass": "off",
+          },
+          "style": {
+            "noParameterProperties": "off",
           },
         },
       },

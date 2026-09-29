@@ -22,8 +22,7 @@ interface Project {
 }
 
 const PRESET = z.object({
-  ignore: z.array(z.string()).optional(),
-  ls: z.record(z.string(), z.unknown()),
+  ls: z.record(z.string(), z.unknown()).default({}),
 });
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
@@ -111,14 +110,9 @@ const presetWords = (): readonly string[] => {
     recursive: true,
   })
     .map(String)
-    // The tool's own settings name what it skips, and bindings.yaml sits
-    // outside the axis folders: neither names what the blocks write.
-    .filter(
-      (path) =>
-        path.includes('/') &&
-        path.endsWith('.yaml') &&
-        !path.endsWith('self.yaml'),
-    )
+    // bindings.yaml sits outside the axis folders, and a tool names what a part
+    // ignores: neither names what the blocks write.
+    .filter((path) => path.includes('/') && path.endsWith('.yaml'))
     .map((path) =>
       PRESET.parse(
         parse(readFileSync(join(PRESETS_FOLDER, path), 'utf8'), {
@@ -148,7 +142,6 @@ const presetWords = (): readonly string[] => {
     .flatMap((rules) => rules.split(' | '))
     .filter((rule) => rule.startsWith('regex:'))
     .flatMap((rule) => rule.replace(/^regex:\^\(?|\)?\$$/g, '').split('|'));
-  const ignored = presets.flatMap(({ ignore }) => ignore ?? []);
 
   return [
     ...new Set(
@@ -156,7 +149,6 @@ const presetWords = (): readonly string[] => {
         ...folders,
         ...suffixes,
         ...alternatives,
-        ...ignored,
       ].filter((word) => /^\.?[\w-]+$/.test(word)),
     ),
   ];

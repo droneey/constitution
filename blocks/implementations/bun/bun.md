@@ -5,6 +5,8 @@ requires: [typescript]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Bun, bun, bunx, bun.lock, bunfig.toml, trustedDependencies]
 governs: ["bunfig.toml", "package.json"]
 ---

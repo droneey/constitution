@@ -19,14 +19,14 @@ ARIA attributes are written hyphenated, as the DOM spells them; the camelCase fo
 
 | Why | Check | Tags |
 |---|---|---|
-| a camelCase ARIA prop is not an attribute the browser knows, so assistive technology never sees it. | tool — lint | [a11y] |
+| a camelCase ARIA prop is not an attribute the browser knows, so assistive technology never sees it. | tool/lint | [a11y] |
 
 ## labels-bound-with-use-id → every-control-has-an-accessible-name
 A label names its control with `htmlFor`, and the id comes from `useId`, never typed by hand or random.
 
 | Why | Check | Tags |
 |---|---|---|
-| a typed id collides when the component renders twice, and a random one differs between server and client. | tool — lint | [] |
+| a typed id collides when the component renders twice, and a random one differs between server and client. | tool/lint | [] |
 
 ## overlays-rendered-through-portal · SHOULD
 An overlay — a dialog, a popover, a toast — renders through a portal.

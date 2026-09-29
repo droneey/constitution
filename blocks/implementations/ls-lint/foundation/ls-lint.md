@@ -5,4 +5,4 @@ The configuration is `.ls-lint.yaml`, passed with `--config`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the default name ends in the spelling the constitution forbids. | tool — names | [] |
+| the default name ends in the spelling the constitution forbids. | tool/names | [] |

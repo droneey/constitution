@@ -1,4 +1,14 @@
 {
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedInterfaceMembers": {
+          "level": "on",
+          "options": {},
+        },
+      },
+    },
+  },
   "linter": {
     "rules": {
       "suspicious": {
@@ -10,6 +20,8 @@
         },
         "noExplicitAny": "error",
         "noTsIgnore": "error",
+        "noEvolvingTypes": "error",
+        "noDuplicateEnumValues": "error",
       },
       "style": {
         "useNamingConvention": {
@@ -30,6 +42,28 @@
         },
         "noNonNullAssertion": "error",
         "useEnumInitializers": "error",
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+        "noParameterProperties": "error",
+        "useConsistentMemberAccessibility": {
+          "level": "error",
+          "options": {
+            "accessibility": "explicit",
+          },
+        },
+        "noNamespace": "error",
+        "useReadonlyClassProperties": "error",
+        "useUnifiedTypeSignatures": "error",
+        "useExportType": "error",
+        "useAsConstAssertion": "error",
+        "useConsistentArrayType": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useConsistentEnumValueType": "error",
+        "useConsistentMethodSignatures": "error",
       },
       "complexity": {
         "noUselessUndefined": "error",
@@ -37,6 +71,7 @@
       "nursery": {
         "useExhaustiveSwitchCases": "error",
         "useNullishCoalescing": "error",
+        "useExplicitType": "error",
       },
     },
   },
@@ -54,6 +89,53 @@
         "**/*.ts",
         "**/*.tsx",
       ],
+    },
+  ],
+  "overrides": [
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/.*rc.ts",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useExplicitType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+          },
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentMemberAccessibility": "off",
+          },
+          "nursery": {
+            "useExplicitType": "off",
+          },
+        },
+      },
     },
   ],
 }

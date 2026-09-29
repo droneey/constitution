@@ -12,6 +12,8 @@ const FIELD_WITHOUT_INITIALIZER =
 const READS_THE_DOCUMENT = 'export const title = document.title;\n';
 const READS_BUN = 'export const version = Bun.version;\n';
 const READS_THE_PROCESS = 'export const home = process.env.HOME;\n';
+const UNREACHABLE_CODE =
+  "export const kind = (): string => {\n  return 'order';\n  console.log('never');\n};\n";
 
 describe('the tsconfig preset', () => {
   it.each([
@@ -47,6 +49,16 @@ describe('the tsconfig preset', () => {
       main: TYPE_IMPORTED_AS_VALUE,
       parts: [
         'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'code follows a return',
+      main: UNREACHABLE_CODE,
+      parts: [
+        'self',
+        'core',
         'bun',
       ],
     },
@@ -55,6 +67,7 @@ describe('the tsconfig preset', () => {
       main: FIELD_WITHOUT_INITIALIZER,
       parts: [
         'self',
+        'core',
         'bun',
       ],
     },
@@ -63,6 +76,7 @@ describe('the tsconfig preset', () => {
       main: IMPORT_WITH_TS_EXTENSION,
       parts: [
         'self',
+        'core',
         'bun',
         'nestjs',
       ],
@@ -72,6 +86,7 @@ describe('the tsconfig preset', () => {
       main: READS_THE_DOCUMENT,
       parts: [
         'self',
+        'core',
         'bun',
       ],
     },
@@ -80,6 +95,7 @@ describe('the tsconfig preset', () => {
       main: READS_BUN,
       parts: [
         'self',
+        'core',
         'browser',
       ],
     },
@@ -88,6 +104,7 @@ describe('the tsconfig preset', () => {
       main: READS_THE_PROCESS,
       parts: [
         'self',
+        'core',
         'browser',
         '_react',
       ],
@@ -111,10 +128,19 @@ describe('the tsconfig preset', () => {
 
   it.each([
     {
+      condition: 'code follows a return, as only the core part refuses it',
+      main: UNREACHABLE_CODE,
+      parts: [
+        'self',
+        'bun',
+      ],
+    },
+    {
       condition: 'an import names its .ts extension',
       main: IMPORT_WITH_TS_EXTENSION,
       parts: [
         'self',
+        'core',
         'bun',
       ],
     },
@@ -123,6 +149,7 @@ describe('the tsconfig preset', () => {
       main: TYPE_IMPORTED_AS_VALUE,
       parts: [
         'self',
+        'core',
         'bun',
         'nestjs',
       ],
@@ -132,6 +159,7 @@ describe('the tsconfig preset', () => {
       main: FIELD_WITHOUT_INITIALIZER,
       parts: [
         'self',
+        'core',
         'bun',
         'nestjs',
       ],
@@ -141,6 +169,7 @@ describe('the tsconfig preset', () => {
       main: READS_THE_DOCUMENT,
       parts: [
         'self',
+        'core',
         'browser',
         '_react',
       ],
@@ -150,6 +179,7 @@ describe('the tsconfig preset', () => {
       main: READS_BUN,
       parts: [
         'self',
+        'core',
         'bun',
       ],
     },

@@ -5,6 +5,8 @@ requires: []
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: []
 governs: []
 ---
@@ -24,4 +26,4 @@ governs: []
 
 | Why | Check | Tags |
 |---|---|---|
-| <the reason> | <tool — role, test or review> | [<lens>, <lens>] |
+| <the reason> | <tool/role, test or review> | [<lens>, <lens>] |

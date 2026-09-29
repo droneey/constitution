@@ -8,6 +8,12 @@ foundation:
       - '.md'
     yaml-files-end-in-yaml:
       - '.yml'
+  expo:
+    kebab-case-file-names:
+      - app
+      - 'src/app'
+    router-file-names-kept:
+      - _layout
   typescript:
     kebab-case-file-names:
       - '.dir'
@@ -21,19 +27,30 @@ foundation:
       - 'src/**/__tests__'
       - tests
       - 'tests/*'
+    yaml-files-end-in-yaml:
+      - '.yml'
 architecture:
   analytics:
+    kebab-case-file-names:
+      - 'src/*/**/sinks'
     sinks-behind-one-contract:
       - 'src/*/**/sinks'
   cli:
     commands-in-the-cli-folder:
       - 'src/cli'
+    kebab-case-file-names:
+      - 'src/cli'
   expo:
     expo-router-root-is-routes:
+      - 'src/app'
+      - 'src/routes'
+    kebab-case-file-names:
       - 'src/routes'
     router-file-names-kept:
       - _layout
   tanstack-router:
+    kebab-case-file-names:
+      - 'src/routes'
     screen-private-pieces-in-dash-folders:
       - 'src/routes'
     screens-are-file-routes:
@@ -60,6 +77,12 @@ architecture:
     folder-named-for-purpose-or-role:
       - src
       - 'src/features/*/domain'
+    kebab-case-file-names:
+      - '.*'
+      - '.*.*'
+      - '.dir'
+    layer-folder-has-no-surface:
+      - 'src/features/*/domain'
     typescript-role-and-surface-files:
       - 'src/*/**/constants'
       - 'src/*/**/contracts'
@@ -68,8 +91,11 @@ architecture:
       - 'src/*/**/models'
       - 'src/*/**/repositories/{queries,commands}'
       - 'src/*/**/types'
+      - 'src/*/**/use-cases/{queries,commands}'
       - 'src/*/**/utils'
       - 'src/contracts'
+    yaml-files-end-in-yaml:
+      - '.yml'
   ui:
     component-in-its-own-folder:
       - 'src/*/**/components'
@@ -78,3 +104,6 @@ architecture:
       - 'src/*/**/widgets/*'
     component-named-by-location:
       - 'src/*/**/widgets/*'
+    kebab-case-file-names:
+      - 'src/*/**/assets'
+      - 'src/*/**/components/*'

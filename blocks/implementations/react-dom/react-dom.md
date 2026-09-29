@@ -5,6 +5,8 @@ requires: [browser]
 extends: _react
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [React DOM]
 governs: ["**/*.tsx"]
 ---

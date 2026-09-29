@@ -14,7 +14,7 @@ const BINDINGS = 'presets/biome/bindings.yaml';
 const HOOKS = 'blocks/implementations/_react/foundation/hooks.md';
 const PART = 'presets/biome/foundation/_react.jsonc';
 const UNHELD =
-  'says a tool holds hooks-at-top-level (tool — lint), but no binding holds it, nor a rule that carries it out';
+  'says a tool holds hooks-at-top-level (tool/lint), but no binding holds it, nor a rule that carries it out';
 const HOOKS_BINDING =
   'foundation:\n  _react:\n    hooks-at-top-level: [useHookAtTopLevel]\n';
 
@@ -80,7 +80,7 @@ describe('bindingsCheck', () => {
         'foundation:\n  _react:\n    hooks-in-components: [useHookAtTopLevel]\n',
       'blocks/implementations/_react/foundation/components.md': `# Components\n\n${rule(
         {
-          check: 'tool — lint',
+          check: 'tool/lint',
           parent: 'hooks-at-top-level',
           slug: 'hooks-in-components',
         },
@@ -126,7 +126,7 @@ describe('bindingsCheck', () => {
       ...presetFiles(),
       [BINDINGS]: HOOKS_BINDING,
       'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
-        check: 'tool — lint',
+        check: 'tool/lint',
         slug: 'biome-runs-in-the-check',
       })}`,
     };
@@ -203,14 +203,14 @@ describe('bindingsCheck', () => {
   it.each([
     {
       message:
-        'binds hooks-at-top-level, a rule of _react, to the part ui, which may hold only rules of its block, of the blocks above it or of a seam with it',
+        'binds hooks-at-top-level, a rule of _react, to the part ui, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
       name: 'a domain part holds a rule of a library',
       part: 'presets/biome/foundation/ui.jsonc',
       yaml: 'foundation:\n  ui:\n    hooks-at-top-level: [useHookAtTopLevel]\n',
     },
     {
       message:
-        'binds hooks-at-top-level, a rule of _react, to the part self, which may hold only rules of its block, of the blocks above it or of a seam with it',
+        'binds hooks-at-top-level, a rule of _react, to the part self, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
       name: "the tool's own part holds a rule of a library beside it",
       part: 'presets/biome/foundation/self.jsonc',
       yaml: 'foundation:\n  self:\n    hooks-at-top-level: [useHookAtTopLevel]\n',
@@ -247,6 +247,11 @@ describe('bindingsCheck', () => {
       slug: 'optimistic-writes-roll-back',
     },
     {
+      name: 'the part of a library holds a rule of the tool itself',
+      part: 'ui',
+      slug: 'biome-runs-in-the-check',
+    },
+    {
       name: 'a part named after no block holds a rule',
       part: 'nowhere',
       slug: 'four-data-states',
@@ -260,6 +265,10 @@ describe('bindingsCheck', () => {
       [BINDINGS]: `${HOOKS_BINDING}${axis === 'foundation' ? '' : `${axis}:\n`}  ${part}:\n    ${slug}: [useHookAtTopLevel]\n`,
       [`presets/biome/${axis}/${part}.jsonc`]:
         '{ "useHookAtTopLevel": "error" }\n',
+      'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
+        check: 'tool/lint',
+        slug: 'biome-runs-in-the-check',
+      })}`,
     };
 
     // Act

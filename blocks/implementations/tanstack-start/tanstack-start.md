@@ -5,6 +5,8 @@ requires: []
 extends: tanstack-router
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [TanStack Start, createServerFn, Nitro]
 governs: ["src/routes/__root.tsx", "src/router.tsx"]
 ---

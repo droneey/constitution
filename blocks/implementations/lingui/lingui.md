@@ -5,6 +5,8 @@ requires: [i18n, typescript]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Lingui, lingui.config.ts]
 governs: ["lingui.config.ts", "**/locales/**"]
 ---

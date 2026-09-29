@@ -4,8 +4,11 @@
     "./.constitution/presets/biome/foundation/self.jsonc",
     "./.constitution/presets/biome/foundation/core.jsonc",
     "./.constitution/presets/biome/foundation/typescript.jsonc",
+    "./.constitution/presets/biome/foundation/git.jsonc",
     "./.constitution/presets/biome/foundation/bun-test.jsonc",
-    "./.constitution/presets/biome/architecture/core.jsonc"
+    "./.constitution/presets/biome/foundation/dependency-cruiser.jsonc",
+    "./.constitution/presets/biome/architecture/core.jsonc",
+    "./.constitution/presets/biome/architecture/typescript.jsonc"
   ],
   "overrides": [
     {

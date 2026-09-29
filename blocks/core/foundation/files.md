@@ -12,4 +12,4 @@ A YAML file ends in `.yaml`, never `.yml`, unless a tool reads it only by a fixe
 
 | Why | Check | Tags |
 |---|---|---|
-| one spelling of one format lets every glob, tool and reader find all of them; a name a tool fixes is not the project's to choose. | tool — names | [] |
+| one spelling of one format lets every glob, tool and reader find all of them; a name a tool fixes is not the project's to choose. | tool/names | [] |

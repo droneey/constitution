@@ -32,14 +32,14 @@ No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `val
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty name makes the reader look up what it holds, every time. | tool — lint | [] |
+| an empty name makes the reader look up what it holds, every time. | tool/lint | [] |
 
 ## no-empty-verbs · SHOULD
 A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`.
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty verb says a function does something, never what. | tool — lint | [] |
+| an empty verb says a function does something, never what. | tool/lint | [] |
 
 ## collections-plural-items-singular · SHOULD
 A collection is named in the plural and one of its items in the singular, destructured names included.
@@ -83,7 +83,7 @@ A function takes at most three positional parameters. Values that make one whole
 
 | Why | Check | Tags |
 |---|---|---|
-| each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | tool — lint | [] |
+| each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | tool/lint | [] |
 
 ## Units
 
@@ -99,7 +99,7 @@ A function holds at most 100 lines, a file at most 500, and a function's cogniti
 
 | Why | Check | Tags |
 |---|---|---|
-| past these sizes code stops fitting in a reader's head, and a limit that only warns is ignored. | tool — lint | [] |
+| past these sizes code stops fitting in a reader's head, and a limit that only warns is ignored. | tool/lint | [] |
 
 ## guard-clauses-first · SHOULD
 Failure paths leave first, through guard clauses, so the main path stays at the top level of indentation. A genuine hierarchy — a parser, a tree walk — is the exception.
@@ -164,21 +164,21 @@ No unused file, dependency, export, parameter, variable or branch. Code and depe
 
 | Why | Check | Tags |
 |---|---|---|
-| dead code is read, maintained and feared by people who cannot know it does nothing. | tool — unused | [] |
+| dead code is read, maintained and feared by people who cannot know it does nothing. | tool/unused | [] |
 
 ## suppression-states-its-reason · MUST
 Silencing a check — a lint rule, a type error, a mutant, a deliberately ignored error — carries its reason beside it. A bare suppression is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|
-| the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | tool — lint | [] |
+| the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | tool/lint | [] |
 
 ## no-debug-output-in-shipped-code · SHOULD
 Shipped code writes no debug output and stops at no breakpoint. What a command-line program writes for its user — its results, prompts and messages — is its output, not debug.
 
 | Why | Check | Tags |
 |---|---|---|
-| stray output is noise to users and can leak what it prints. | tool — lint | [security] |
+| stray output is noise to users and can leak what it prints. | tool/lint | [security] |
 
 ## Absence
 
@@ -187,7 +187,7 @@ Code spells absence with one value, which the language block names; another spel
 
 | Why | Check | Tags |
 |---|---|---|
-| two spellings of absence make every check ask twice, and one of them is always forgotten. | tool — lint | [data] |
+| two spellings of absence make every check ask twice, and one of them is always forgotten. | tool/lint | [data] |
 
 ## Failure
 
@@ -284,7 +284,7 @@ Asynchronous work is awaited, or detached on purpose with its failure handled.
 
 | Why | Check | Tags |
 |---|---|---|
-| a forgotten promise fails where nobody listens, and the program carries on as if it succeeded. | tool — lint | [errors] |
+| a forgotten promise fails where nobody listens, and the program carries on as if it succeeded. | tool/lint | [errors] |
 
 ## io-has-timeout-and-cancellation · SHOULD
 Every call across a process boundary has a timeout and can be cancelled.

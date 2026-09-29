@@ -1,9 +1,4 @@
 {
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true,
-  },
   "files": {
     "includes": [
       "**",
@@ -66,10 +61,6 @@
             ],
           },
         },
-        "useSortedInterfaceMembers": {
-          "level": "on",
-          "options": {},
-        },
       },
     },
   },
@@ -83,13 +74,11 @@
         "useNumberToFixedDigitsArgument": "error",
         "noConstantBinaryExpressions": "error",
         "noDeprecatedImports": "error",
-        "noEvolvingTypes": "error",
         "noMisplacedAssertion": "error",
         "noUnassignedVariables": "error",
         "noVar": "error",
         "noReturnAssign": "error",
         "noProto": "error",
-        "noDuplicateEnumValues": "error",
         "noForIn": "error",
         "noNestedPromises": "error",
         "noShadow": "error",
@@ -97,16 +86,9 @@
         "useArraySortCompare": "error",
       },
       "style": {
-        "useImportType": {
-          "level": "error",
-          "options": {
-            "style": "separatedType",
-          },
-        },
         "noParameterAssign": "error",
         "noNestedTernary": "error",
         "useThrowOnlyError": "error",
-        "noParameterProperties": "error",
         "useNumberNamespace": "error",
         "noMagicNumbers": "error",
         "useBlockStatements": "error",
@@ -116,12 +98,6 @@
         "useConsistentBuiltinInstantiation": "error",
         "useShorthandAssign": "error",
         "noYodaExpression": "error",
-        "useConsistentMemberAccessibility": {
-          "level": "error",
-          "options": {
-            "accessibility": "explicit",
-          },
-        },
         "useExplicitLengthCheck": "error",
         "useAtIndex": "error",
         "useTrimStartEnd": "error",
@@ -130,26 +106,19 @@
         "noDefaultExport": "error",
         "noDoneCallback": "error",
         "noExportedImports": "error",
-        "noNamespace": "error",
         "useNumericSeparators": "error",
         "useObjectSpread": "error",
-        "useReadonlyClassProperties": "error",
         "useSingleVarDeclarator": "error",
         "useSymbolDescription": "error",
         "useThrowNewError": "error",
-        "useUnifiedTypeSignatures": "error",
         "useNodeAssertStrict": "error",
-        "useExportType": "error",
         "useExportsLast": "error",
         "useForOf": "error",
         "useGroupedAccessorPairs": "error",
         "useDefaultParameterLast": "error",
         "useDefaultSwitchClause": "error",
-        "useAsConstAssertion": "error",
         "useCollapsedIf": "error",
-        "useConsistentArrayType": "error",
         "useConsistentArrowReturn": "error",
-        "useConsistentTypeDefinitions": "error",
         "useTemplate": "error",
         "useArrayLiterals": "error",
         "useExponentiationOperator": "error",
@@ -157,9 +126,6 @@
         "noUnusedTemplateLiteral": "error",
         "noMultiAssign": "error",
         "noExcessiveClassesPerFile": "error",
-        "useConsistentEnumValueType": "error",
-        "useConsistentMethodSignatures": "error",
-        "useErrorCause": "error",
         "useGlobalThis": "error",
         "noMultilineString": "error",
         "useSpreadOverApply": "error",
@@ -199,7 +165,6 @@
         "noDynamicNamespaceImportAccess": "error",
       },
       "nursery": {
-        "useExplicitType": "error",
         "useArraySome": "error",
         "useAwaitThenable": "error",
         "useStringStartsEndsWith": "error",
@@ -227,47 +192,11 @@
         "**/.*rc.js",
         "**/.*rc.mjs",
         "**/.*rc.cjs",
-        "**/.dependency-cruiser.js",
-        "**/.dependency-cruiser.mjs",
-        "**/.dependency-cruiser.cjs",
       ],
       "linter": {
         "rules": {
           "style": {
             "noDefaultExport": "off",
-          },
-          "nursery": {
-            "useExplicitType": "off",
-          },
-          "security": {
-            "noSecrets": "off",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/*.d.ts",
-      ],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUnusedVariables": "off",
-          },
-          "style": {
-            "noDefaultExport": "off",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/bun.lock",
-      ],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "noEmptyObjectKeys": "off",
           },
         },
       },
@@ -292,18 +221,12 @@
         "rules": {
           "style": {
             "noMagicNumbers": "off",
-            "useConsistentMemberAccessibility": "off",
-            "noExcessiveLinesPerFile": "off",
-          },
-          "suspicious": {
-            "noEmptyBlockStatements": "off",
           },
           "complexity": {
             "noStaticOnlyClass": "off",
-            "noExcessiveLinesPerFunction": "off",
           },
           "nursery": {
-            "useExplicitType": "off",
+            "noIdenticalTestTitle": "error",
           },
         },
       },

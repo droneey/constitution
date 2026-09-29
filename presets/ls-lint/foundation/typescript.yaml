@@ -24,3 +24,5 @@ ls:
     .yml: regex:^$
   tests: *tests
   tests/*: *tests
+ignore:
+  - node_modules

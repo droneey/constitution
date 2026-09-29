@@ -5,6 +5,8 @@ requires: [typescript, remote-data]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [ky]
 governs: ["**/providers/**", "**/adapters/**"]
 ---

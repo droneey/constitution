@@ -17,7 +17,13 @@
             ],
           },
         },
+        "noUndeclaredClasses": "off",
       },
+    },
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true,
     },
   },
 }

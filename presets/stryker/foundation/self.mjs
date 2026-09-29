@@ -1,10 +1,5 @@
 // biome-ignore lint/style/noDefaultExport: Stryker reads a configuration's default export
 export default {
-  testRunner: 'command',
-  coverageAnalysis: 'off',
-  ignorePatterns: [
-    '/.constitution',
-  ],
   reporters: [
     'clear-text',
   ],

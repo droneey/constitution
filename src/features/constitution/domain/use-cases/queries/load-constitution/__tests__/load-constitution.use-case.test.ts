@@ -337,7 +337,7 @@ describe('loadConstitution', () => {
           {
             axis: undefined,
             body: '\n# UI\n',
-            lines: 12,
+            lines: 14,
             path: 'blocks/domains/ui/ui.md',
             role: BlockFileRole.Main,
             with: undefined,

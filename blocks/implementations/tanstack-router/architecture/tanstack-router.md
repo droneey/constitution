@@ -7,7 +7,7 @@ Screens are file routes under `routes/`, the delivery layer, from which the rout
 
 | Why | Check | Tags |
 |---|---|---|
-| the file tree is the route tree, so a screen is found by its URL. | tool — names | [] |
+| the file tree is the route tree, so a screen is found by its URL. | tool/names | [] |
 
 ## route-owns-its-url → screen-composes-the-page
 A route owns its URL: it reads and validates its search, runs its loader, and composes the page.
@@ -21,7 +21,7 @@ Router primitives — `Link`, `useNavigate`, `useSearch`, `useParams` — are im
 
 | Why | Check | Tags |
 |---|---|---|
-| a presentational component that navigates works on one screen only. | tool — architecture | [] |
+| a presentational component that navigates works on one screen only. | tool/architecture | [] |
 
 ## search-params-validated-by-schema → untrusted-input-parsed-at-edge
 Every route with search parameters validates them by a schema in `validateSearch`.
@@ -42,7 +42,7 @@ A screen's private pieces live beside its route in `-components/`, its private b
 
 | Why | Check | Tags |
 |---|---|---|
-| the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run. | tool — names | [] |
+| the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run. | tool/names | [] |
 
 ## guard-reaches-features-outside-react → screen-guards-through-auth-surface
 A route's guard reaches the feature that decides access through the feature's composition outside React, never through the UI layer.

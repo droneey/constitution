@@ -13,7 +13,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli`, `server` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
-| `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block, rule and requirement answer, and `core.md`, core's part of the digest |
+| `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block — with the languages its checks cover and the roles a language is held to — rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
 | `skills` | `/ratify` and `/amend`, which write a project's files |
 | `presets` | The tool configurations that hold the tool-checked rules, `presets/<tool>/<axis>/<block>.*` |
@@ -25,7 +25,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
 | `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
 
-A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
+A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `languages`, `roles`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
 
 ```markdown
 ## four-data-states · MUST
@@ -40,7 +40,7 @@ A rule that carries out another names it with an arrow instead of a level, and t
 
 The levels mean what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) give them, in capitals only. A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The digest prints MUST headlines, and only MUST rules raise the hook's warnings.
 
-A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role of the tool that holds it, never the tool; a tool's block lists the roles it checks:
+A rule's Check is `test`, `review`, or `tool/<role>`. A rule names the role of the tool that holds it, never the tool; a tool's block lists the roles it checks:
 
 | 🔎 Role | ✅ The tool proves |
 |---|---|
@@ -55,8 +55,10 @@ A rule's Check is `test`, `review`, or `tool — <role>`. A rule names the role 
 | `coverage` | the coverage gate holds |
 | `mutation` | every mutant of the logic is killed |
 | `secrets` | no secret is committed; any language |
-| `audit` | no known vulnerability, and only allowed licences |
+| `audit` | no known vulnerability, and only allowed licences; any language |
 | `commits` | commit messages and branch names follow their format; any language |
+
+A tool's block lists in `languages` the language blocks whose files its checks cover, whatever it requires: Biome requires `typescript` and covers `typescript` and `css`. A tool that lists none holds only the roles of any language, for every language. A language block lists in `roles` the roles its files are held to — `css` is held to `format`, `lint` and `names`, not to `tests` — and every other block leaves both empty. A language then needs each role of an active MUST rule that holds for it and that it is held to; a role no active tool covers for it is a warning of the hook and advice of `blocks:check`.
 
 A rule's Tags are lenses for the concerns that cross every axis and layer — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — so a review can take one concern across the whole project. They are optional: a full review reads every rule, and a rule inherits the tags of the rule it carries out.
 
@@ -134,7 +136,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 
 `blocks:check` loads every block and fails on:
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
-- a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty;
+- a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty; a `languages` entry that is no language block, and `languages` on a block that checks no role;
 - a `requires` or `extends` that points down, or sideways where the layer allows no peer, a `with/` file named after a block below its own layer, and a cycle between implementations;
 - a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or the arrow of a rule heading;
 - an abstract block without an heir, or one that names its heirs;
@@ -152,7 +154,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 
 It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.
 
-After the findings it prints advice that does not fail the check: the roles of tool-checked MUST rules that no tool checks for a language, and rules of sibling blocks similar enough to lift one layer up.
+After the findings it prints advice that does not fail the check: the roles a language is held to that its tool-checked MUST rules need and no tool covers for it, and rules of sibling blocks similar enough to lift one layer up.
 
 ## ⚙️ Workflows
 
