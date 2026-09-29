@@ -1,0 +1,77 @@
+foundation:
+  core:
+    kebab-case-file-names:
+      - '.*'
+      - '.*.*'
+      - '.*.*.*'
+      - '.dir'
+      - '.md'
+    yaml-files-end-in-yaml:
+      - '.yml'
+  typescript:
+    kebab-case-file-names:
+      - '.dir'
+    test-files-named-by-role:
+      - 'src/**/__tests__'
+      - tests
+      - 'tests/*'
+    typescript-file-forms:
+      - '.ts'
+      - '.tsx'
+      - 'src/**/__tests__'
+      - tests
+      - 'tests/*'
+architecture:
+  analytics:
+    sinks-behind-one-contract:
+      - 'src/*/**/sinks'
+  cli:
+    commands-in-the-cli-folder:
+      - 'src/cli'
+  core:
+    anatomy-top-level-by-concern:
+      - src
+    data-ports-split-by-reads-and-writes:
+      - 'src/*/**/repositories'
+      - 'src/*/**/repositories/{queries,commands}'
+    expo-router-root-is-routes:
+      - src
+    feature-anatomy:
+      - 'src/features/*/domain'
+    file-carries-its-role-suffix:
+      - 'src/*/**/constants'
+      - 'src/*/**/contracts'
+      - 'src/*/**/entities'
+      - 'src/*/**/errors'
+      - 'src/*/**/models'
+      - 'src/*/**/repositories/{queries,commands}'
+      - 'src/*/**/types'
+      - 'src/*/**/use-cases/{queries,commands}'
+      - 'src/*/**/utils'
+      - 'src/contracts'
+    folder-named-for-purpose-or-role:
+      - src
+      - 'src/features/*/domain'
+    typescript-role-and-surface-files:
+      - 'src/*/**/constants'
+      - 'src/*/**/contracts'
+      - 'src/*/**/entities'
+      - 'src/*/**/errors'
+      - 'src/*/**/models'
+      - 'src/*/**/repositories/{queries,commands}'
+      - 'src/*/**/types'
+      - 'src/*/**/utils'
+      - 'src/contracts'
+  tanstack-router:
+    screen-private-pieces-in-dash-folders:
+      - 'src/routes'
+    screens-are-file-routes:
+      - 'src/routes'
+  ui:
+    component-in-its-own-folder:
+      - 'src/*/**/components'
+      - 'src/*/**/components/*'
+      - 'src/*/**/widgets'
+      - 'src/*/**/widgets/*'
+    component-named-by-location:
+      - 'src/*/**/widgets/*'

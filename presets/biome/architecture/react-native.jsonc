@@ -3,7 +3,6 @@
     "rules": {
       "nursery": {
         "noReactNativeDeepImports": "error",
-        "noReactNativeLiteralColors": "error",
       },
     },
   },

@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    "./.constitution/presets/biome/foundation/plugins/keys-only-from-the-key-factory.grit",
+  ],
+}

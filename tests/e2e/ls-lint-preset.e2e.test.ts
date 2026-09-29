@@ -355,6 +355,24 @@ describe('the ls-lint foundation parts', () => {
       reported: 'src/__tests__/OrderView.test.ts',
     },
     {
+      condition: 'a test folder holds a helper',
+      parts: [
+        'foundation/core',
+        'foundation/typescript',
+      ],
+      path: 'src/__tests__/helpers.ts',
+      reported: 'src/__tests__',
+    },
+    {
+      condition: 'an end-to-end folder holds a helper',
+      parts: [
+        'foundation/core',
+        'foundation/typescript',
+      ],
+      path: 'tests/e2e/helpers.ts',
+      reported: 'tests/e2e',
+    },
+    {
       condition: 'a typescript folder is in snake_case',
       parts: [
         'foundation/core',

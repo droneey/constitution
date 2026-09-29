@@ -13,6 +13,7 @@ import type { FileTree } from '#/features/constitution';
 import {
   createJsonManifestParser,
   createNodeFileSystem,
+  createYamlBindingsParser,
   createYamlFrontMatterParser,
   createYamlVocabularyParser,
   prepareDigests,
@@ -82,6 +83,7 @@ const writeDigestsOf = (input: {
   root: string;
 }): void => {
   const prepared = prepareDigests({
+    bindingsParser: createYamlBindingsParser(),
     frontMatterParser: createYamlFrontMatterParser(),
     manifestParser: createJsonManifestParser(),
     tree: createFileTree(input.files),

@@ -1,0 +1,5 @@
+foundation:
+  core:
+    no-dead-code:
+      - entry
+      - project

@@ -54,7 +54,7 @@ const checkCommitMessage = (message: string): HookRun => {
       jobRun({
         hook: Hook.CommitMessage,
         job: 'commit-message',
-        part: 'core',
+        part: 'version-control',
       }).replaceAll('{1}', file),
     ],
     {

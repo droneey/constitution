@@ -43,6 +43,8 @@ const MANIFEST = JSON.stringify({
 
 const WEB_PARTS = [
   ...FOUNDATION_PARTS,
+  'foundation/a11y',
+  'foundation/ui',
   'foundation/_react',
   'foundation/react-dom',
   'foundation/browser',
@@ -417,6 +419,21 @@ describe('the Biome foundation parts', () => {
       },
       rule: 'noFocusedTests',
     },
+    {
+      condition: 'an enum member leaves its value unwritten',
+      files: {
+        'src/main.ts': 'export enum ExitStatus {\n  Success,\n  Failure,\n}\n',
+      },
+      rule: 'useEnumInitializers',
+    },
+    {
+      condition: 'a function returns undefined by name',
+      files: {
+        'src/main.ts':
+          'export const settle = (): undefined => {\n  return undefined;\n};\n',
+      },
+      rule: 'noUselessUndefined',
+    },
   ])('should report $rule when $condition', ({ files, rule }) => {
     // Arrange
     const project = {
@@ -571,6 +588,53 @@ describe('the Biome foundation parts', () => {
   });
 });
 
+describe('the Biome tanstack-query part', () => {
+  it.each([
+    {
+      condition: 'a query writes its key inline',
+      isReported: true,
+      source:
+        "export const read = (id: string) => useQuery({ queryKey: ['orders', id], queryFn });\n",
+    },
+    {
+      condition: 'an invalidation writes its key inline',
+      isReported: true,
+      source:
+        "export const refresh = () => client.invalidateQueries({ queryKey: ['orders'] });\n",
+    },
+    {
+      condition: 'a query takes its key from the factory',
+      isReported: false,
+      source:
+        'export const read = (id: string) => useQuery({ queryKey: orderKeys.detail(id), queryFn });\n',
+    },
+  ])(
+    'should report an inline key $isReported when $condition',
+    ({ isReported, source }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/features/orders/orders.hooks.ts': source,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'foundation/tanstack-query',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(
+        plugins.some((finding) =>
+          finding.startsWith('Take the key from the key factory'),
+        ),
+      ).toBe(isReported);
+    },
+  );
+});
+
 describe('the Biome framework parts', () => {
   it.each([
     {
@@ -652,7 +716,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/_react',
+        'foundation/a11y',
       ],
       rule: 'noNoninteractiveElementInteractions',
     },
@@ -686,8 +750,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/_react',
-        'foundation/react-native',
+        'foundation/ui',
       ],
       rule: 'noReactNativeLiteralColors',
     },
@@ -954,4 +1017,56 @@ describe('the Biome framework parts', () => {
     // Assert
     expect(rules).toContain('useExhaustiveDependencies');
   });
+});
+
+describe('the Biome architecture parts', () => {
+  it.each([
+    {
+      condition: 'a surface re-exports everything',
+      files: {
+        'src/features/orders/index.ts': "export * from './app';\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'architecture/core',
+      ],
+      rule: 'noReExportAll',
+    },
+    {
+      condition: 'a React Native module is imported by its internal path',
+      files: {
+        'src/panel.ts':
+          "export { default as Pressable } from 'react-native/Libraries/Components/Pressable/Pressable';\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'architecture/react-native',
+      ],
+      rule: 'noReactNativeDeepImports',
+    },
+  ])(
+    'should report $rule when $condition and a project extends $parts',
+    ({ files, parts, rule }) => {
+      // Arrange
+      const project = {
+        files: {
+          'package.json': JSON.stringify({
+            name: 'fixture',
+            dependencies: {
+              react: '19.2.0',
+              'react-native': '0.81.0',
+            },
+          }),
+          ...files,
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules).toContain(rule);
+    },
+  );
 });

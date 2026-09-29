@@ -1,0 +1,14 @@
+foundation:
+  bun:
+    own-packages-as-workspace-dependencies:
+      - versionGroups
+  typescript:
+    caret-ranges-lockfile-pins:
+      - semverGroups
+    manifest-fields-in-shared-order:
+      - sortFirst
+workflow:
+  package:
+    one-version-for-all-packages:
+      - customTypes
+      - versionGroups

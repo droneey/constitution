@@ -1,4 +1,11 @@
 {
+  "linter": {
+    "rules": {
+      "performance": {
+        "noReExportAll": "error",
+      },
+    },
+  },
   "plugins": [
     {
       "path": "./.constitution/presets/biome/foundation/plugins/undefined-is-the-only-absence.grit",

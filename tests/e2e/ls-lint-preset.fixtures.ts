@@ -111,8 +111,14 @@ const presetWords = (): readonly string[] => {
     recursive: true,
   })
     .map(String)
-    // The tool's own settings name what it skips, not what the blocks write.
-    .filter((path) => path.endsWith('.yaml') && !path.endsWith('self.yaml'))
+    // The tool's own settings name what it skips, and bindings.yaml sits
+    // outside the axis folders: neither names what the blocks write.
+    .filter(
+      (path) =>
+        path.includes('/') &&
+        path.endsWith('.yaml') &&
+        !path.endsWith('self.yaml'),
+    )
     .map((path) =>
       PRESET.parse(
         parse(readFileSync(join(PRESETS_FOLDER, path), 'utf8'), {

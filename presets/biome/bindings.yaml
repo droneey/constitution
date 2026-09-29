@@ -1,0 +1,141 @@
+foundation:
+  _react:
+    function-components-only:
+      - useReactFunctionComponents
+    hooks-at-top-level:
+      - useHookAtTopLevel
+    list-keys-from-identity:
+      - noArrayIndexKey
+    modern-react-api-only:
+      - modern-react-api-only.grit
+      - noReactForwardRef
+      - noReactStringRefs
+    no-component-defined-inside-component:
+      - noComponentHookFactories
+      - noNestedComponentDefinitions
+    no-manual-memoisation:
+      - no-manual-memoisation.grit
+  a11y:
+    every-control-has-an-accessible-name:
+      - noLabelWithoutControl
+      - noSvgWithoutTitle
+      - useAltText
+      - useAnchorContent
+      - useControlLabel
+      - useIframeTitle
+    native-html-elements-first:
+      - noStaticElementInteractions
+      - useSemanticElements
+      - useValidAnchor
+    native-semantics-first:
+      - noInteractiveElementToNoninteractiveRole
+      - noNoninteractiveElementInteractions
+      - noNoninteractiveElementToInteractiveRole
+      - noRedundantRoles
+      - noStaticElementInteractions
+      - useAriaPropsForRole
+      - useFocusableInteractive
+      - useSemanticElements
+      - useValidAriaProps
+      - useValidAriaRole
+      - useValidAriaValues
+  browser:
+    fields-declare-autocomplete:
+      - fields-declare-autocomplete.grit
+  bun-test:
+    no-module-mocks:
+      - no-module-mocks.grit
+    strict-matcher-only:
+      - strict-matcher-only.grit
+  core:
+    async-work-awaited-or-deliberately-detached:
+      - noFloatingPromises
+      - noMisusedPromises
+    at-most-three-positional-arguments:
+      - useMaxParams
+    cases-named-should-when:
+      - cases-named-should-when.grit
+    errors-surfaced-never-swallowed:
+      - noEmptyBlockStatements
+    function-file-and-complexity-limits:
+      - noExcessiveCognitiveComplexity
+      - noExcessiveLinesPerFile
+      - noExcessiveLinesPerFunction
+    kebab-case-file-names:
+      - useFilenamingConvention
+    no-debug-output-in-shipped-code:
+      - noAlert
+      - noConsole
+      - noDebugger
+    no-empty-names:
+      - no-empty-names.grit
+    no-empty-verbs:
+      - no-empty-verbs.grit
+    no-skipped-or-empty-tests:
+      - no-skipped-or-empty-tests.grit
+      - noFocusedTests
+      - noSkippedTests
+      - useExpect
+    typescript-file-forms:
+      - useFilenamingConvention
+  ky:
+    ky-body-parsed-by-schema:
+      - ky-body-parsed-by-schema.grit
+  react-dom:
+    aria-attributes-as-the-dom-spells-them:
+      - noUnknownAttribute
+    labels-bound-with-use-id:
+      - labels-bound-with-use-id.grit
+      - useUniqueElementIds
+  tailwind:
+    dynamic-viewport-classes:
+      - dynamic-viewport-classes.grit
+    mobile-first-breakpoints:
+      - mobile-first-breakpoints.grit
+  tanstack-query:
+    keys-only-from-the-key-factory:
+      - keys-only-from-the-key-factory.grit
+  testing-library:
+    queries-by-role-label-text:
+      - queries-by-role-label-text.grit
+  typescript:
+    enums-for-named-value-groups:
+      - enums-for-named-value-groups.grit
+      - useEnumInitializers
+    exhaustive-branching-over-unions:
+      - useExhaustiveSwitchCases
+    identifier-case-by-kind:
+      - useNamingConvention
+    no-any:
+      - noExplicitAny
+    no-unchecked-escape-hatches:
+      - noNonNullAssertion
+      - noTsIgnore
+    nullish-operators-for-absence:
+      - useNullishCoalescing
+    strict-equality-only:
+      - noDoubleEquals
+    type-names-undecorated:
+      - type-names-undecorated.grit
+    undefined-is-the-only-absence:
+      - noUselessUndefined
+      - undefined-is-the-only-absence.grit
+  ui:
+    tokens-single-source-of-appearance:
+      - noInlineStyles
+      - noReactNativeLiteralColors
+      - noTailwindArbitraryValue
+architecture:
+  _react:
+    component-effects-in-its-hooks-file:
+      - component-effects-in-its-hooks-file.grit
+  core:
+    surface-only-re-exports:
+      - noReExportAll
+      - surface-only-re-exports.grit
+  react-dom:
+    no-raw-html-injection:
+      - noDangerouslySetInnerHtml
+  react-native:
+    dependencies-imported-from-their-entries:
+      - noReactNativeDeepImports

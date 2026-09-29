@@ -29,6 +29,10 @@
           },
         },
         "noNonNullAssertion": "error",
+        "useEnumInitializers": "error",
+      },
+      "complexity": {
+        "noUselessUndefined": "error",
       },
       "nursery": {
         "useExhaustiveSwitchCases": "error",

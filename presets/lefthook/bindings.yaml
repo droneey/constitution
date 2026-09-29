@@ -1,0 +1,15 @@
+workflow:
+  betterleaks:
+    secrets-scanned-before-each-commit:
+      - secrets
+    staged-changes-scanned-before-commit:
+      - secrets
+  version-control:
+    branch-named-type-issue-name:
+      - validate-branch
+    commit-body-empty-reason-in-pull-request:
+      - commit-message
+    commit-header-type-and-subject:
+      - commit-message
+    no-placeholder-commit-subjects:
+      - commit-message

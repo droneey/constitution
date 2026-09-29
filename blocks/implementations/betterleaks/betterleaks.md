@@ -11,4 +11,4 @@ governs: [".betterleaks.toml", ".betterleaksignore"]
 
 # Betterleaks
 
-> Finds secrets in changes and history. `.betterleaks.toml` extends `presets/betterleaks/foundation/self.toml` of the constitution's release archive — betterleaks' default rules: cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — and holds every active rule whose check is `tool — secrets`. The check runs `betterleaks git`, never `betterleaks dir`, which also reads ignored files such as a local `.env`.
+> Finds secrets in changes and history. `.betterleaks.toml` extends `presets/betterleaks/foundation/core.toml` of the constitution's release archive — betterleaks' default rules: cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — and holds every active rule whose check is `tool — secrets`. The check runs `betterleaks git`, never `betterleaks dir`, which also reads ignored files such as a local `.env`.

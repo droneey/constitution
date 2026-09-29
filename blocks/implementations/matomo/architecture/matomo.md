@@ -7,4 +7,4 @@ Only the Matomo sink knows Matomo — its data layer, and the container's addres
 
 | Why | Check | Tags |
 |---|---|---|
-| the service is replaced or removed as one file, and nothing else in the program knows it exists. | tool — architecture | [] |
+| the service is replaced or removed as one file, and nothing else in the program knows it exists. | review | [] |

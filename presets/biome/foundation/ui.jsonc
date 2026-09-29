@@ -8,6 +8,19 @@
         "noInvalidPropertyInitValue": "error",
         "useNamedLayer": "error",
         "noExcessiveSelectorClasses": "error",
+        "noInlineStyles": "error",
+        "noReactNativeLiteralColors": "error",
+        "noTailwindArbitraryValue": {
+          "level": "error",
+          "options": {
+            "functions": [
+              "cva",
+              "cn",
+              "clsx",
+              "twMerge",
+            ],
+          },
+        },
       },
     },
   },

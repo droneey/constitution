@@ -1,4 +1,4 @@
 extends:
-  - .constitution/presets/lefthook/workflow/core.yaml
+  - .constitution/presets/lefthook/workflow/version-control.yaml
   - .constitution/presets/lefthook/workflow/biome.yaml
   - .constitution/presets/lefthook/workflow/betterleaks.yaml

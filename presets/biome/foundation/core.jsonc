@@ -10,6 +10,15 @@
         "noDebugger": "error",
       },
       "style": {
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": true,
+            "filenameCases": [
+              "kebab-case",
+            ],
+          },
+        },
         "noExcessiveLinesPerFile": {
           "level": "error",
           "options": {

@@ -1,21 +1,4 @@
 {
-  "linter": {
-    "rules": {
-      "nursery": {
-        "noTailwindArbitraryValue": {
-          "level": "error",
-          "options": {
-            "functions": [
-              "cva",
-              "cn",
-              "clsx",
-              "twMerge",
-            ],
-          },
-        },
-      },
-    },
-  },
   "plugins": [
     "./.constitution/presets/biome/foundation/plugins/dynamic-viewport-classes.grit",
     "./.constitution/presets/biome/foundation/plugins/mobile-first-breakpoints.grit",

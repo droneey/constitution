@@ -1,2 +1,2 @@
 [extend]
-path = ".constitution/presets/betterleaks/foundation/self.toml"
+path = ".constitution/presets/betterleaks/foundation/core.toml"

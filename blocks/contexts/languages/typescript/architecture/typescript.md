@@ -9,7 +9,7 @@ An import that leaves its module uses `#/`; files inside one module import each 
 
 | Why | Check | Tags |
 |---|---|---|
-| the specifier then shows at a glance whether an import crosses a module's border, and a module that imports its own `#/` path starts a cycle through its surface. | tool — lint | [] |
+| the specifier then shows at a glance whether an import crosses a module's border, and a module that imports its own `#/` path starts a cycle through its surface. | review | [] |
 
 ## typescript-role-and-surface-files → file-carries-its-role-suffix
 A role file is `<name>.<role>.ts`, and a folder's surface is `index.ts`.
@@ -32,7 +32,7 @@ A value from beyond the boundary — `JSON.parse`, a response body, a file, a me
 
 | Why | Check | Tags |
 |---|---|---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | tool — lint | [] |
+| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
 
 ## brands-set-at-the-boundary → identifiers-branded-by-entity
 An identifier's brand is set only in the mapper at the boundary.

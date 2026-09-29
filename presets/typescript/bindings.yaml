@@ -1,0 +1,20 @@
+foundation:
+  nestjs:
+    nestjs-keeps-decorator-metadata:
+      - emitDecoratorMetadata
+      - experimentalDecorators
+  self:
+    compiler-is-the-type-gate:
+      - exactOptionalPropertyTypes
+      - noFallthroughCasesInSwitch
+      - noImplicitOverride
+      - noImplicitReturns
+      - noUncheckedIndexedAccess
+      - noUnusedLocals
+      - noUnusedParameters
+      - strict
+      - verbatimModuleSyntax
+    no-any:
+      - strict
+    undefined-is-the-only-absence:
+      - exactOptionalPropertyTypes

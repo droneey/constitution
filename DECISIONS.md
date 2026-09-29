@@ -21,7 +21,7 @@
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0074, ADR-0092 |
 | Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 – ADR-0091, ADR-0093 |
+| Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094 |
 
 ---
 
@@ -108,7 +108,7 @@
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** No rule of core, a domain or a context names a tool, and no rule's check does: a rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a preset of the constitution's release archive or the project's own — built to hold every active rule of its roles.
-- **Rejected.** Tables that map each rule to a setting of a tool.
+- **Rejected.** A rule that names its tool or its setting; the preset's `bindings.yaml`, ADR-0094, maps them instead.
 - **Why.** A tool can then be swapped without touching a rule.
 
 ## ADR-0016 — Every rule carries a lens
@@ -421,13 +421,6 @@
 - **Rejected.** The eleven types of the common convention (`perf`, `docs`, `ci`, `build`, `test`, `style`, `revert`…), which the changelog ignores and the history barely uses; scopes, which a single changelog does not read; a `BREAKING CHANGE` footer, since commit bodies stay empty.
 - **Why.** `feat` and `fix` are what the specification and the changelog read; `chore` carries the automation's own commits; `refactor` promises what a reviewer can check — no change of behaviour.
 
-## ADR-0072 — A tool's configuration does not name the rules it holds
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** A tool block says which roles it checks and what its configuration holds. The configuration — a preset, a project's own file — carries no comment per setting naming the rule it holds.
-- **Rejected.** Naming each setting's slug in a comment: nothing would check the names, and they would drift.
-- **Why.** The block's text is the one place the constitution and the tool meet; a second mapping in every configuration is a detail nobody keeps.
-
 ## ADR-0074 — betterleaks holds the secrets
 **Date:** 2026-09-27 · **Status:** Accepted
 
@@ -552,3 +545,10 @@
 - **Decision.** `vocabulary.yaml` keeps a word only when it has no meaning outside its axis: folders, role suffixes, terms of several words and words such as `semver`. `adapter`, `aggregate`, `entrypoint`, `kernel`, `port`, `sink`, `surface`, `widget` and `chore` leave it; their folders and suffixes stay. The meaning of a rule is judged by the `rule-placement` agent of this repository, which answers the layer and axis questions for every rule a change adds or rewrites and reports each rule that sits elsewhere; its answers go into the pull request.
 - **Rejected.** Exceptions per word or per block, or reading only the prose outside code spans: a word with two meanings turns up in plain text as well, and every exception is one more rule to keep; the agent inside `bun run check`, which must give the same answer on the same code.
 - **Why.** A word check that cries wolf gets its words rewritten rather than its rules moved; the words that remain catch a plain leak cheaply, and the placement itself needs the reading of meaning the two questions ask for.
+
+## ADR-0094 — Each preset binds its settings to the rules they hold
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** A preset holds, beside its parts, `presets/<tool>/bindings.yaml`: by axis, part and rule, the settings that hold the rule, each as the part's file spells it. `blocks:check` holds one direction: every rule whose check is `tool — <role>` is implemented — by a binding, by a rule under it with the same check that is, or by the tool block that checks that role and describes its run; a role no tool with presets checks needs none. A binding it holds must be real: its rule exists and sits on the part's axis or on foundation, which any axis may carry out; its part exists; its file spells the setting. A setting that holds no rule is never reported. A preset file is a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`. The configuration carries no comment per setting. Where no setting of any tool holds a rule, its Check says `review`: `domain-values-never-typed-again`, `identifiers-branded-by-entity`, `booleans-read-as-predicates`, `boundary-values-unknown-until-parsed`, `schema-held-exactly-to-its-model`, `shared-state-packages-once-in-lockfile`, `hash-imports-leave-the-module`, `package-anatomy`, `package-repository-layout`, `screen-private-pieces-beside-screen` and `matomo-only-in-its-sink`. A GritQL rule now holds `keys-only-from-the-key-factory`.
+- **Rejected.** A Bindings table in the tool block's chapters, which filled a tool's chapter with other blocks' rules and made a language name the frameworks below it; a check that every setting holds a rule, since a tool's own opinions need none; a comment per setting in the configuration, which nothing checks; dependency-cruiser rules renamed to their slugs, since several of its rules hold one slug and it drops a repeated name across `extends`.
+- **Why.** A block keeps its own rules and nothing else, the presets keep the tools' side, and the check reads the one place they meet: a renamed setting, a moved part or a rule a tool only claims to hold fails the check instead of drifting.

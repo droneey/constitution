@@ -13,9 +13,6 @@
       "a11y": {
         "useValidAutocomplete": "error",
       },
-      "nursery": {
-        "noInlineStyles": "error",
-      },
     },
   },
   "plugins": [

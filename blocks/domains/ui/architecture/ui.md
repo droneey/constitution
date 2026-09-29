@@ -30,7 +30,7 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 
 | Why | Check | Tags |
 |---|---|---|
-| what one screen uses changes with that screen, and nothing else can reach it by accident. | tool — architecture | [] |
+| what one screen uses changes with that screen, and nothing else can reach it by accident. | review | [] |
 
 ## screen-guards-through-auth-surface → access-denied-unless-granted
 Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.

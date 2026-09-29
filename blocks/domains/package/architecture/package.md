@@ -7,7 +7,7 @@ A repository of packages keeps each package at `packages/<language>/libs/<name>/
 
 | Why | Check | Tags |
 |---|---|---|
-| a reader finds every package of every repository in the same place, and a new language adds a folder without moving the others. | tool — names | [] |
+| a reader finds every package of every repository in the same place, and a new language adds a folder without moving the others. | review | [] |
 
 ## package-root-private · SHOULD
 The root of a repository of packages is private: it holds only the workspace, the scripts of the check, and a README with one row per package.
@@ -21,7 +21,7 @@ A package holds its manifest, its README, its licence, its `configs/` or `src/`,
 
 | Why | Check | Tags |
 |---|---|---|
-| every package looks the same inside, so a reader and a tool know where each part is. | tool — names | [] |
+| every package looks the same inside, so a reader and a tool know where each part is. | review | [] |
 
 ## package-dependency-matrix → dependencies-point-inward-without-cycles
 `common` imports nothing. A language package reaches only its peers, its declared dependencies and `common` at build time; no package imports another package's files.

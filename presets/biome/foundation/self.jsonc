@@ -145,7 +145,6 @@
         "useGroupedAccessorPairs": "error",
         "useDefaultParameterLast": "error",
         "useDefaultSwitchClause": "error",
-        "useEnumInitializers": "error",
         "useAsConstAssertion": "error",
         "useCollapsedIf": "error",
         "useConsistentArrayType": "error",
@@ -156,15 +155,6 @@
         "useExponentiationOperator": "error",
         "noShoutyConstants": "error",
         "noUnusedTemplateLiteral": "error",
-        "useFilenamingConvention": {
-          "level": "error",
-          "options": {
-            "strictCase": true,
-            "filenameCases": [
-              "kebab-case",
-            ],
-          },
-        },
         "noMultiAssign": "error",
         "noExcessiveClassesPerFile": "error",
         "useConsistentEnumValueType": "error",
@@ -187,7 +177,6 @@
         "noUselessLabel": "error",
         "noExtraBooleanCast": "error",
         "noVoid": "error",
-        "noUselessUndefined": "error",
         "noUselessStringConcat": "error",
         "noImplicitCoercions": "error",
         "noForEach": "error",
@@ -208,7 +197,6 @@
         "noAccumulatingSpread": "error",
         "noAwaitInLoops": "error",
         "noDynamicNamespaceImportAccess": "error",
-        "noReExportAll": "error",
       },
       "nursery": {
         "useExplicitType": "error",

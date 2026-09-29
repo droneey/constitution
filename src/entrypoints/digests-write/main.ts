@@ -6,6 +6,7 @@ const wiring = createWiring({
   root: process.cwd(),
 });
 const prepared = prepareDigests({
+  bindingsParser: wiring.bindingsParser,
   frontMatterParser: wiring.frontMatterParser,
   manifestParser: wiring.manifestParser,
   tree: wiring.fileSystem,

@@ -24,6 +24,8 @@ export {
   normalizePath,
   stemOf,
 } from './paths.utils';
+export type { PresetPath } from './preset-paths.utils';
+export { PresetFileKind, presetPathOf } from './preset-paths.utils';
 export type { RuleCheck } from './rule-labels.utils';
 export { checkOf } from './rule-labels.utils';
 export type { MarkdownSection } from './sections.utils';

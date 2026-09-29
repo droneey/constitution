@@ -74,7 +74,7 @@ A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `shou
 
 | Why | Check | Tags |
 |---|---|---|
-| `if (isVisible)` reads as a question with a yes-or-no answer; `if (visible)` does not say which. | tool — lint | [] |
+| `if (isVisible)` reads as a question with a yes-or-no answer; `if (visible)` does not say which. | review | [] |
 
 ## Arguments
 
@@ -254,14 +254,14 @@ An entity's identifier is a type of its own, branded by its entity, so an order'
 
 | Why | Check | Tags |
 |---|---|---|
-| two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | tool — types | [] |
+| two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | review | [] |
 
 ## domain-values-never-typed-again · MUST
 A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces.
 
 | Why | Check | Tags |
 |---|---|---|
-| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | tool — types | [] |
+| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | review | [] |
 
 ## types-live-with-their-consumer · SHOULD
 A type lives beside the unit whose signature introduces it, and every other unit imports it from there. It moves to its own file when a second consumer appears, and never gets a second home through a re-export.

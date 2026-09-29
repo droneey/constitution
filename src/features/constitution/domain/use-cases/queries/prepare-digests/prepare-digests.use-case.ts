@@ -2,6 +2,7 @@ import type { Finding } from '#/kernel';
 import { compareFindings } from '#/kernel';
 
 import type {
+  BindingsParser,
   FileTree,
   FrontMatterParser,
   ManifestParser,
@@ -25,6 +26,7 @@ type DigestsPrepared =
 // Digests of a constitution that does not load would index a broken model, so
 // they are refused until the loader has no finding.
 const prepareDigests = (input: {
+  bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;

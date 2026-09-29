@@ -41,6 +41,7 @@ describe('loadConstitution', () => {
     // Assert
     expect(loaded).toStrictEqual({
       constitution: {
+        bindings: [],
         blocks: [],
         documents: {
           decisions: undefined,
@@ -58,6 +59,7 @@ describe('loadConstitution', () => {
         paths: new Set([
           'LICENSE.md',
         ]),
+        presets: [],
         requirementAnswers: [],
         rules: [],
       },
@@ -628,6 +630,114 @@ describe('loadConstitution', () => {
       ],
     });
   });
+
+  it('should flatten the bindings of a tool by axis, part and rule and keep every preset file with its text when bindings.yaml sits beside the parts', () => {
+    // Arrange
+    const files: Files = {
+      ...validFiles(),
+      'presets/biome/bindings.yaml': [
+        'architecture:',
+        '  core:',
+        '    reads-are-cancellable: [surface.grit]',
+        'foundation:',
+        '  _react:',
+        '    hooks-at-top-level: [useHookAtTopLevel, useExhaustiveDependencies]',
+        '',
+      ].join('\n'),
+      'presets/biome/foundation/_react.jsonc': '{}\n',
+      'presets/biome/notes/bindings.yaml': 'foundation: {}\n',
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect({
+      bindings: loaded.constitution.bindings,
+      findings: loaded.findings,
+      presets: loaded.constitution.presets.map((preset) => preset.path),
+    }).toStrictEqual({
+      bindings: [
+        {
+          axis: Axis.Foundation,
+          file: 'presets/biome/bindings.yaml',
+          part: '_react',
+          rule: 'hooks-at-top-level',
+          setting: 'useHookAtTopLevel',
+          tool: 'biome',
+        },
+        {
+          axis: Axis.Foundation,
+          file: 'presets/biome/bindings.yaml',
+          part: '_react',
+          rule: 'hooks-at-top-level',
+          setting: 'useExhaustiveDependencies',
+          tool: 'biome',
+        },
+        {
+          axis: Axis.Architecture,
+          file: 'presets/biome/bindings.yaml',
+          part: 'core',
+          rule: 'reads-are-cancellable',
+          setting: 'surface.grit',
+          tool: 'biome',
+        },
+      ],
+      findings: [],
+      presets: [
+        'presets/biome/bindings.yaml',
+        'presets/biome/foundation/_react.jsonc',
+        'presets/biome/notes/bindings.yaml',
+      ],
+    });
+  });
+
+  it.each([
+    {
+      message:
+        'is not valid YAML: Unexpected flow-seq-end token in YAML stream: "]"',
+      name: 'the file is not YAML',
+      text: 'foundation: ]\n',
+    },
+    {
+      message:
+        'does not match its schema: <root>: Invalid input: expected record, received array',
+      name: 'the file is a list',
+      text: '- foundation\n',
+    },
+    {
+      message:
+        'does not match its schema: foundation.core.no-any: Too small: expected array to have >=1 items',
+      name: 'a rule lists no setting',
+      text: 'foundation:\n  core:\n    no-any: []\n',
+    },
+  ])(
+    'should report the bindings and load none when $name',
+    ({ message, text }) => {
+      // Arrange
+      const files: Files = {
+        ...validFiles(),
+        'presets/biome/bindings.yaml': text,
+      };
+
+      // Act
+      const loaded = loadedOf(files);
+
+      // Assert
+      expect({
+        bindings: loaded.constitution.bindings,
+        findings: loaded.findings,
+      }).toStrictEqual({
+        bindings: [],
+        findings: [
+          {
+            message,
+            path: 'presets/biome/bindings.yaml',
+          },
+        ],
+      });
+    },
+  );
 
   it('should report the rule and load none when it sits in the card', () => {
     // Arrange

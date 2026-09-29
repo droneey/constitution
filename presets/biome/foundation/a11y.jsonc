@@ -1,0 +1,44 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useButtonType": "error",
+            "useAnchorContent": "error",
+            "useValidAnchor": "error",
+            "useAriaPropsForRole": "error",
+            "useAltText": "error",
+            "useHtmlLang": "error",
+            "useHeadingContent": "error",
+            "noRedundantRoles": "error",
+            "noAutofocus": "error",
+            "useKeyWithClickEvents": "error",
+            "noPositiveTabindex": "error",
+            "noRedundantAlt": "error",
+            "noLabelWithoutControl": "error",
+            "noInteractiveElementToNoninteractiveRole": "error",
+            "useIframeTitle": "error",
+            "noSvgWithoutTitle": "error",
+            "useValidAriaValues": "error",
+            "noAriaHiddenOnFocusable": "error",
+            "useSemanticElements": "error",
+            "useValidAriaProps": "error",
+            "useValidAriaRole": "error",
+            "noStaticElementInteractions": "error",
+            "useFocusableInteractive": "error",
+            "noNoninteractiveElementInteractions": "error",
+            "noNoninteractiveElementToInteractiveRole": "error",
+          },
+          "nursery": {
+            "useControlLabel": "error",
+          },
+        },
+      },
+    },
+  ],
+}

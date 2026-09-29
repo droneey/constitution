@@ -1,0 +1,7 @@
+language js
+
+JsPropertyObjectMember(name=$name, value=$key) where {
+  $name <: r"queryKey",
+  $key <: JsArrayExpression(),
+  register_diagnostic(span=$key, message="Take the key from the key factory: an inline key drifts from it and an invalidation misses it", severity="error")
+}

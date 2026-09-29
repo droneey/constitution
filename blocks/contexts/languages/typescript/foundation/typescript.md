@@ -184,7 +184,7 @@ A package that holds state or types across the program — the schema engine, th
 
 | Why | Check | Tags |
 |---|---|---|
-| two copies of such a package split its state, and its types stop matching across the split. | tool — versions | [] |
+| two copies of such a package split its state, and its types stop matching across the split. | review | [] |
 
 ## manifest-fields-in-shared-order · SHOULD
 The fields of `package.json` follow the shared order.

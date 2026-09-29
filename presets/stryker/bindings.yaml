@@ -1,0 +1,5 @@
+foundation:
+  core:
+    mutants-all-killed:
+      - break
+      - mutate

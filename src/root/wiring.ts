@@ -1,4 +1,5 @@
 import type {
+  BindingsParser,
   DigestWriter,
   FileTree,
   FrontMatterParser,
@@ -8,11 +9,13 @@ import type {
 import {
   createJsonManifestParser,
   createNodeFileSystem,
+  createYamlBindingsParser,
   createYamlFrontMatterParser,
   createYamlVocabularyParser,
 } from '#/features/constitution';
 
 interface Wiring {
+  bindingsParser: BindingsParser;
   console: {
     write: (text: string) => void;
   };
@@ -23,6 +26,7 @@ interface Wiring {
 }
 
 const createWiring = (input: { root: string }): Wiring => ({
+  bindingsParser: createYamlBindingsParser(),
   console: {
     write: (text: string): void => {
       process.stdout.write(text);

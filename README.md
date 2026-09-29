@@ -85,6 +85,16 @@ A project's configuration extends the parts of its active blocks on its axes, fo
 
 A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists.
 
+Beside its parts, a preset holds `bindings.yaml`: which setting of which part holds which rule, by axis, part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
+
+```yaml
+foundation:
+  typescript:
+    no-any: [noExplicitAny]
+  core:
+    no-empty-verbs: [no-empty-verbs.grit]
+```
+
 ## 🧭 What a session receives
 
 The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
@@ -133,6 +143,8 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits, a cycle and a missing rule;
 - a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
 - a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
+- a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`;
+- a binding whose rule, axis, part or setting does not hold, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
