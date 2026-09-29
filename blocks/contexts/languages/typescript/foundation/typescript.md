@@ -133,7 +133,7 @@ A branch over a union handles every member: a `switch` whose default proves `nev
 | a new member then fails to compile at every branch that forgot it. | review | [] |
 
 ## switch-over-union-exhaustive → exhaustive-branching-over-unions
-A `switch` over a union handles every member.
+A `switch` over a union of literals handles every member.
 
 | Why | Check | Tags |
 |---|---|---|
