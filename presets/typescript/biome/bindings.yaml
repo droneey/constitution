@@ -136,6 +136,9 @@ foundation:
       - noUselessUndefined
       - undefined-is-the-only-absence.grit
 architecture:
+  browser:
+    no-raw-html-injection:
+      - no-raw-html-injection.grit
   _react:
     component-effects-in-its-hooks-file:
       - component-effects-in-its-hooks-file.grit
@@ -143,7 +146,7 @@ architecture:
     surface-only-re-exports:
       - noReExportAll
   react-dom:
-    no-raw-html-injection:
+    no-dangerously-set-inner-html:
       - noDangerouslySetInnerHtml
   react-native:
     react-native-imported-from-its-entry:

@@ -102,6 +102,22 @@ describe('the Biome preset', () => {
       message: 'Name what it holds',
     },
     {
+      condition: 'a parameter is named by an empty word',
+      files: {
+        'src/features/orders/order.ts':
+          'export const doubled = (data: number): number => data * 2;\n',
+      },
+      message: 'Name what it holds',
+    },
+    {
+      condition: 'a destructured field keeps an empty name',
+      files: {
+        'src/features/orders/order.ts':
+          'export const doubled = ({ value }: { value: number }): number => value * 2;\n',
+      },
+      message: 'Name what it holds',
+    },
+    {
       condition: 'a case does not read should … when …',
       files: {
         'src/__tests__/order.test.ts':
@@ -114,6 +130,14 @@ describe('the Biome preset', () => {
       files: {
         'src/__tests__/order.test.ts':
           "import { mock } from 'bun:test';\n\nmock.module('./order', () => ({}));\n",
+      },
+      message: 'Fake an effect through its port',
+    },
+    {
+      condition: 'a spec spies on a module',
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { spyOn } from 'bun:test';\n\nimport * as orders from '../orders';\n\nspyOn(orders, 'load');\n",
       },
       message: 'Fake an effect through its port',
     },
@@ -146,6 +170,15 @@ describe('the Biome preset', () => {
       files: {
         'src/features/orders/domain/order-status.ts':
           "const STATUSES = ['open', 'closed'] as const;\n\nexport type OrderStatus = (typeof STATUSES)[number];\n",
+      },
+      message:
+        'A closed set of named values is a string enum, not a type taken from an as-const array',
+    },
+    {
+      condition: 'a type is taken from the values of an as-const object',
+      files: {
+        'src/features/orders/domain/order-status.ts':
+          "const STATUS = { Open: 'open', Closed: 'closed' } as const;\n\nexport type OrderStatus = (typeof STATUS)[keyof typeof STATUS];\n",
       },
       message:
         'A closed set of named values is a string enum, not a type taken from an as-const array',
@@ -844,6 +877,23 @@ describe('the Biome tanstack-query part', () => {
         "export const refresh = () => client.invalidateQueries({ queryKey: ['orders'] });\n",
     },
     {
+      condition: 'the query client writes a key inline',
+      isReported: true,
+      source:
+        "export const reset = () => client.setQueryData(['orders'], []);\n",
+    },
+    {
+      condition: 'the query client reads a key inline',
+      isReported: true,
+      source: "export const cached = () => client.getQueryData(['orders']);\n",
+    },
+    {
+      condition: 'the query client reads a key from the factory',
+      isReported: false,
+      source:
+        'export const cached = (id: string) => client.getQueryData(orderKeys.detail(id));\n',
+    },
+    {
       condition: 'a query takes its key from the factory',
       isReported: false,
       source:
@@ -874,6 +924,47 @@ describe('the Biome tanstack-query part', () => {
       ).toBe(isReported);
     },
   );
+});
+
+describe('the Biome browser part', () => {
+  it.each([
+    {
+      condition: 'markup is assigned to innerHTML',
+      source:
+        'export const show = (panel: Element, markup: string): void => {\n  panel.innerHTML = markup;\n};\n',
+    },
+    {
+      condition: 'markup is inserted beside an element',
+      source:
+        "export const show = (panel: Element, markup: string): void => {\n  panel.insertAdjacentHTML('beforeend', markup);\n};\n",
+    },
+    {
+      condition: 'markup is written into the document',
+      source:
+        'export const show = (markup: string): void => {\n  document.write(markup);\n};\n',
+    },
+  ])('should report raw HTML when $condition', ({ source }) => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/ui/show.ts': source,
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/browser',
+      ],
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(
+      plugins.some((finding) =>
+        finding.startsWith('Render markup through a sanitising renderer'),
+      ),
+    ).toBe(true);
+  });
 });
 
 describe('the Biome framework parts', () => {

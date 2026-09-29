@@ -3,5 +3,5 @@ ls:
     .dir: kebab-case | regex:^__tests__$
     .*: kebab-case
     .ts: kebab-case
-    .*.ts: kebab-case
+    .*.ts: exists:0
     .cli.ts: kebab-case

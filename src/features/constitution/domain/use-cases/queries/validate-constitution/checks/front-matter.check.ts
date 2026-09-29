@@ -54,10 +54,10 @@ const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {
   ],
 };
 
-const isEmpty = (value: FrontMatter[LayerField]): boolean =>
-  value === undefined ||
-  value === false ||
-  (Array.isArray(value) && value.length === 0);
+const isEmpty = (field: FrontMatter[LayerField]): boolean =>
+  field === undefined ||
+  field === false ||
+  (Array.isArray(field) && field.length === 0);
 
 const identityFindings = (block: Block): readonly Finding[] =>
   block.frontMatter.id === block.id

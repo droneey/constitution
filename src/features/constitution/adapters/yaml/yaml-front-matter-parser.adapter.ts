@@ -11,8 +11,8 @@ import { frontMatterModel, skillFrontMatterModel } from './models';
 const ALIAS_REASON =
   'an unquoted value starts with "*", which YAML reads as an alias; quote it';
 
-const isMapping = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+const isMapping = (parsed: unknown): parsed is Record<string, unknown> =>
+  typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
 
 const aliasOffset = (document: Document): number | undefined => {
   let offset: number | undefined;
@@ -31,8 +31,8 @@ const aliasOffset = (document: Document): number | undefined => {
   return offset;
 };
 
-const mappingOf = (value: Record<string, unknown>): FrontMatterRead => {
-  const parsing = frontMatterModel.safeParse(value);
+const mappingOf = (mapping: Record<string, unknown>): FrontMatterRead => {
+  const parsing = frontMatterModel.safeParse(mapping);
 
   return {
     fields: parsing.success ? parsing.data : undefined,
@@ -42,7 +42,7 @@ const mappingOf = (value: Record<string, unknown>): FrontMatterRead => {
           field: issue.path.map(String).join('.'),
           message: issue.message,
         })),
-    keys: Object.keys(value),
+    keys: Object.keys(mapping),
     status: 'mapping',
   };
 };
@@ -73,10 +73,10 @@ const parse = (yaml: string): FrontMatterRead => {
     };
   }
 
-  const value: unknown = document.toJS();
+  const parsed: unknown = document.toJS();
 
-  return isMapping(value)
-    ? mappingOf(value)
+  return isMapping(parsed)
+    ? mappingOf(parsed)
     : {
         status: 'not-a-mapping',
       };

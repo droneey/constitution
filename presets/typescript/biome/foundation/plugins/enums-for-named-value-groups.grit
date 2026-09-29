@@ -1,7 +1,11 @@
 language js
 
 or {
-  TsIndexedAccessType(object_type=TsParenthesizedType(ty=TsTypeofType()), index_type=TsNumberType()) as $set where {
+  TsIndexedAccessType(object_type=TsParenthesizedType(ty=TsTypeofType()), index_type=$index) as $set where {
+    $index <: or {
+      TsNumberType(),
+      TsTypeOperatorType()
+    },
     register_diagnostic(span=$set, message="A closed set of named values is a string enum, not a type taken from an as-const array", severity="error")
   },
   TsUnionType(types=$members) as $union where {

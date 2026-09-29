@@ -20,7 +20,7 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0074, ADR-0092, ADR-0095 |
-| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 |
+| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0100 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 
 ---
@@ -587,3 +587,10 @@
 - **Decision.** Biome's `noUnsafeTypeAssertion` holds the `as` cast of `no-unchecked-escape-hatches`, in specs as in production; only `as const` passes. `boundary-values-unknown-until-parsed` makes a value from beyond the boundary known by the project's schema or by plain checks — `typeof`, `in`, `Array.isArray` — the same way in specs and in production.
 - **Rejected.** A schema for every value from outside, which brings a dependency into a small tool that reads one field; casts left in specs, which let a spec pass on data in a shape the tool never gave.
 - **Why.** A cast over data nobody read promises a shape nobody checked; a schema or a narrowing check reads it, and the first unexpected field fails where it enters.
+
+## ADR-0100 — Raw HTML is refused in the browser, and React's own door in react-dom
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** `no-raw-html-injection` moves from `react-dom` to `browser`: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`, held by a GritQL rule in the browser's part. `react-dom` keeps `no-dangerously-set-inner-html`, held by `noDangerouslySetInnerHtml`.
+- **Rejected.** Keeping the whole rule in `react-dom`, where it named DOM APIs a program without React uses as well, and held only React's door.
+- **Why.** The DOM takes markup through its own calls in any browser program; each block now forbids the door it owns, and the parent says what both mean.

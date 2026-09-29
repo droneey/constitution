@@ -193,7 +193,7 @@ const removeProjects = (): void => {
 const localBlock = (fields: Readonly<Record<string, string>>): string =>
   [
     '---',
-    ...Object.entries(fields).map(([key, value]) => `${key}: ${value}`),
+    ...Object.entries(fields).map(([key, field]) => `${key}: ${field}`),
     '---',
     '',
     '# A local block',
@@ -394,7 +394,7 @@ const fromTemplate = (input: {
   name: string;
 }): string =>
   input.fills.reduce(
-    (text, [placeholder, value]) => text.replace(placeholder, value),
+    (text, [placeholder, filling]) => text.replace(placeholder, filling),
     readFileSync(join(TEMPLATES, input.name), 'utf8'),
   );
 

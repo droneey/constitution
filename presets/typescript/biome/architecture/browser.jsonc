@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    "./.constitution/presets/typescript/biome/architecture/plugins/no-raw-html-injection.grit",
+  ],
+}

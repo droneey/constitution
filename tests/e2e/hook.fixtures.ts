@@ -189,8 +189,8 @@ const runHook = (call: HookCall): HookRun => {
   };
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+const isRecord = (parsed: unknown): parsed is Record<string, unknown> =>
+  typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
 
 // JSON.parse refuses a second object, so a parse proves there is exactly one.
 const outputOf = (run: HookRun): HookOutput => {

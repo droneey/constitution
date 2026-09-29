@@ -1,0 +1,11 @@
+language js
+
+or {
+  `$_.innerHTML = $_`,
+  `$_.outerHTML = $_`,
+  `$_.insertAdjacentHTML($_, $_)`,
+  `document.write($_)`,
+  `document.writeln($_)`
+} as $injection where {
+  register_diagnostic(span=$injection, message="Render markup through a sanitising renderer, never as raw HTML", severity="error")
+}

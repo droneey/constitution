@@ -1,7 +1,11 @@
 language js
 
-JsPropertyObjectMember(name=$name, value=$key) where {
-  $name <: r"queryKey",
+or {
+  JsPropertyObjectMember(name=r"queryKey", value=$key),
+  `$client.getQueryData($key)`,
+  `$client.getQueryState($key)`,
+  `$client.setQueryData($key, $_)`
+} where {
   $key <: JsArrayExpression(),
   register_diagnostic(span=$key, message="Take the key from the key factory: an inline key drifts from it and an invalidation misses it", severity="error")
 }

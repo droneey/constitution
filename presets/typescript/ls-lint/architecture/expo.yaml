@@ -3,6 +3,9 @@ ls:
     .dir: kebab-case | regex:^\([a-z0-9-]+\)$ | regex:^\[[a-zA-Z0-9]+\]$
     .ts: kebab-case
     .tsx: kebab-case | regex:^(_layout|\+not-found|\+html|\[[a-zA-Z0-9]+\]|\[\.\.\.[a-zA-Z0-9]+\])$
+  app:
+    .dir: regex:^$
+    .*: regex:^$
   src/app:
     .dir: regex:^$
     .*: regex:^$

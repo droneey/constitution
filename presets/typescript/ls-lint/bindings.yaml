@@ -32,6 +32,7 @@ architecture:
   cli:
     commands-in-the-cli-folder:
       - 'src/cli'
+      - 'exists:0'
     kebab-case-file-names:
       - 'src/cli'
   core:
@@ -79,6 +80,7 @@ architecture:
     expo-router-file-names-kept:
       - _layout
     expo-router-root-is-routes:
+      - 'app'
       - 'src/app'
       - 'src/routes'
     kebab-case-file-names:

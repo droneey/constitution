@@ -137,7 +137,7 @@ const scalarMessages = (fields: FrontMatterFields): readonly string[] => [
 ];
 
 const repeatsOf = (values: readonly string[]): readonly string[] => [
-  ...new Set(values.filter((value, index) => values.indexOf(value) !== index)),
+  ...new Set(values.filter((entry, index) => values.indexOf(entry) !== index)),
 ];
 
 const notRoles = (input: {
@@ -197,13 +197,13 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
     ),
   ...LIST_FIELDS.flatMap((field) =>
     repeatsOf(fields[field]).map(
-      (value) => `front matter: ${field} lists "${value}" twice`,
+      (repeat) => `front matter: ${field} lists "${repeat}" twice`,
     ),
   ),
 ];
 
 const rolesOf = (values: readonly string[]): readonly Role[] =>
-  values.flatMap((value) => ROLES.filter((role) => role === value));
+  values.flatMap((name) => ROLES.filter((role) => role === name));
 
 const typedOf = (fields: FrontMatterFields): FrontMatter => ({
   ...fields,
