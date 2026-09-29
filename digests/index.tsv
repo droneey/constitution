@@ -46,7 +46,7 @@ block	lingui	implementation	Lingui for messages — ICU catalogs compiled per lo
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names			.ls-lint.yaml
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false			typescript		**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false					mise.toml mise.lock
-block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md		typescript		false			typescript		nest-cli.json .swcrc
+block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md		typescript		false			typescript		nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md				false		audit			osv-scanner.toml
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md		browser	_react	false			typescript	_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md		mobile	_react	false	expo		typescript	_react	**/*.tsx
@@ -637,7 +637,7 @@ rule	tool-configuration-from-the-constitution-archive	mise	blocks/implementation
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false	CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false	`[env] _.path` in `mise.toml` puts the program's engine directory on the PATH for developers and CI; engine versions live in the program, not in `mise.toml`.
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript	errors	foundation		true	The compiler and the build keep what Nest's injector reads: `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig.json`, `legacyDecorator` and `decoratorMetadata` in `.swcrc`.
-rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	testing	foundation		true	A provider takes its dependencies as `private readonly` parameters of its constructor, never from a module's own instance or a global.
+rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false	A provider takes its dependencies as `private readonly` parameters of its constructor, and a module's providers are its wiring; a provider never builds a dependency or reaches a global.
 rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	known-vulnerabilities-fail-the-check	false	The check runs `osv-scanner scan source` over the repository, development dependencies included.
 rule	licences-checked-against-the-shared-allowlist	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	licences-from-an-allowlist	false	The same run passes the allowlist of the constitution's release archive as `--licenses`, so a licence that is not on it fails the check.
 rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false	An accepted vulnerability is an `[[IgnoredVulns]]` entry in `osv-scanner.toml` with its `reason` and an `ignoreUntil` date.
@@ -750,6 +750,7 @@ answer	matomo	analytics-consent-first	yes
 answer	matomo	analytics-anonymous-by-default	yes
 answer	matomo	analytics-loads-without-blocking	yes
 answer	matomo	analytics-context-dimensions	yes
+answer	nestjs	one-explicit-composition-root	partly
 answer	nestjs	compiler-is-the-type-gate	partly
 answer	shadcn	ui-primitives-keyboard-and-focus	yes
 answer	shadcn	ui-primitives-unstyled	yes
