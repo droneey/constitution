@@ -16,6 +16,8 @@ jobs:
       contents: write
       pull-requests: read
     with:
-      version-command: npm version --no-git-tag-version "$VERSION"
+      version-command: >-
+        npm version --no-git-tag-version "$VERSION"
+        && sed -i "s/^version: .*/version: $VERSION/" constitution.yaml
     secrets:
       token: ${{ secrets.GH_TOKEN }}

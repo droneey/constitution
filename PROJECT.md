@@ -14,9 +14,10 @@ The droneey constitution: the engineering rules every droneey repository is buil
 
 ## Domains of the business
 
-- **Blocks** — the rules, split by layer: core, domains, contexts, implementations.
+- **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis: `foundation`, `architecture`, `workflow`.
 - **Validation** — the checks that keep every block sound and consistent with the others.
-- **Delivery** — the digests generated from the blocks, the session-start hook that reads them, and the skills that write a project's files.
+- **Presets** — the tool configurations that hold the tool-checked rules, split into parts by scope, tool and axis, with the bindings that say which setting holds which rule.
+- **Delivery** — the digests generated from the blocks, the session-start hook that reads them, the skills that write a project's files, and the release archive that carries the presets and templates.
 
 ## Core entities and relationships
 
@@ -24,6 +25,8 @@ The droneey constitution: the engineering rules every droneey repository is buil
 - **Rule** — a slug, a level, a statement, Why, Check and Tags; it belongs to one block.
 - **Requirement answer** — a library block's answer to a requirement of a block above it.
 - **Digest** — what the hook prints: the active blocks of a project, core's part and MUST headlines.
+- **Preset part** — a file of `presets/<scope>/<tool>/<axis>/`, named after the block its settings need.
+- **Binding** — an entry of a preset's `bindings.yaml`: the settings of a part that hold a rule.
 - **Decision** — an entry of `DECISIONS.md`: why a rule of the constitution is what it is.
 
 ## Critical scenarios
@@ -38,7 +41,8 @@ The droneey constitution: the engineering rules every droneey repository is buil
 
 ## Glossary
 
-- **Layer** — one of core, domain, context, implementation; a block's `kind`.
+- **Layer** — one of core, domain, context, implementation: the folder a block sits in.
+- **Axis** — `foundation`, `architecture` or `workflow`: the folder a rule sits in inside its block; a project follows `foundation` and the axes it chooses.
 - **Active set** — the blocks a project follows: core, the declared blocks and the bases of their `extends` chains.
 - **Override** — a project's recorded lowering of one rule, with the user's consent and a reason.
 - **Local block** — a block file inside a project, under `rules/`.
