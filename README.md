@@ -22,7 +22,8 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
-| `vocabulary.yaml` | The words the `architecture` and `workflow` axes own — concepts, folders of the tree, role suffixes, branch prefixes |
+| `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
+| `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
 
 A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
 

@@ -19,9 +19,9 @@
 | Testing | ADR-0046 – ADR-0048 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0074 |
+| Blocks | ADR-0064 – ADR-0074, ADR-0092 |
 | Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 – ADR-0091 |
+| Axes | ADR-0088 – ADR-0091, ADR-0093 |
 
 ---
 
@@ -538,3 +538,17 @@
 - **Decision.** devkit's presets, starter files and `mutation-check` move into the constitution, and its release archive `constitution.tar.gz` is the one way a project takes them, in any language: `presets/`, `templates/project/<block>/`, and `tools/mutation-check/dist/main.js`, built at release. A preset is split into parts, `presets/<tool>/<axis>/<block>.*`: the folder is the tool's block — `typescript` for the compiler's `tsconfig` — the axis folder is the axis of the rules the part holds, and the part is named after the block whose rules it holds, an abstract block's underscore included; the tool's own settings are `self`. A GritQL rule is `<axis>/plugins/<rule-slug>.grit`, and an architecture part narrows a foundation part's GritQL rule by listing the same path. mise's `tool-configuration-from-the-kit-archive` becomes `tool-configuration-from-the-constitution-archive`, and osv-scanner's `licences-checked-against-devkit-allowlist` becomes `licences-checked-against-the-shared-allowlist`. The node environment's parts are dropped; Python's configurations stay in devkit until a project needs them.
 - **Rejected.** npm packages for the TypeScript tools beside an archive for the rest, which released the same rule twice — most of devkit's changes came paired with one of the constitution's; splitting parts by language beside the blocks (`common/`, `typescript/`), a second division when the language is itself a block; naming the tool's own part after the tool, which reads `biome/foundation/biome.jsonc`; dropping an abstract block's underscore in its parts, which gives one block two names.
 - **Why.** A rule and the setting that holds it change in one pull request and ship in one version; a project that leaves an axis out leaves out its parts; and every part names the block that owns it, which a check can hold.
+
+## ADR-0092 — docker, its two linters, and nestjs get blocks
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** The `docker` implementation describes both files a project writes for containers. A Dockerfile pins its base image, copies rather than adds, runs its command in exec form, fails a piped step, pins and trims its system packages, runs as a numeric unprivileged user and takes a secret only through a secret mount. A Compose file keeps devkit's order of keys, has no `version`, quotes every published address and binds it to an interface, and its shared settings, variants, health waits and test services follow devkit's conventions. The check lints both, and any finding fails it: `hadolint` holds a Dockerfile with `failure-threshold: style`, `dclint` a Compose file with every rule an error, each from its preset in the release archive. `nestjs` keeps the decorator metadata its injector reads, and answers two rules partly: `compiler-is-the-type-gate`, since `verbatimModuleSyntax` and `strictPropertyInitialization` are off, and `one-explicit-composition-root`, since its injector is a container built from the modules' declarations; a provider still takes its dependencies through its constructor, a rule on the architecture axis. Its Biome part no longer turns `noEmptyBlockStatements` off, which Biome never raised on an empty module or constructor.
+- **Rejected.** One block per file, which splits the images a Compose file runs from the Dockerfiles that build them; the linters' defaults, which leave half their findings as warnings the check passes; turning a rule of core off for NestJS in its Biome part, which a block may not do.
+- **Why.** A container is built and run by the two files together, and each has a linter that holds most of its rules; what a linter cannot see is reviewed.
+
+## ADR-0093 — The vocabulary lists only words of one meaning, and an agent judges the placement
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** `vocabulary.yaml` keeps a word only when it has no meaning outside its axis: folders, role suffixes, terms of several words and words such as `semver`. `adapter`, `aggregate`, `entrypoint`, `kernel`, `port`, `sink`, `surface`, `widget` and `chore` leave it; their folders and suffixes stay. The meaning of a rule is judged by the `rule-placement` agent of this repository, which answers the layer and axis questions for every rule a change adds or rewrites and reports each rule that sits elsewhere; its answers go into the pull request.
+- **Rejected.** Exceptions per word or per block, or reading only the prose outside code spans: a word with two meanings turns up in plain text as well, and every exception is one more rule to keep; the agent inside `bun run check`, which must give the same answer on the same code.
+- **Why.** A word check that cries wolf gets its words rewritten rather than its rules moved; the words that remain catch a plain leak cheaply, and the placement itself needs the reading of meaning the two questions ask for.
