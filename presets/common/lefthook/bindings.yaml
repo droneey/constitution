@@ -1,17 +1,9 @@
 workflow:
   betterleaks:
-    scanner-reports-redacted:
+    commit-scan-redacted:
       - --redact
-    secrets-scanned-before-each-commit:
-      - secrets
     staged-changes-scanned-before-commit:
       - secrets
-  biome:
-    check-run-by-hooks-and-ci:
-      - 'biome check'
-    hook-rewrites-only-staged-files:
-      - stage_fixed
-      - staged_files
   version-control:
     branch-named-type-issue-name:
       - validate-branch
