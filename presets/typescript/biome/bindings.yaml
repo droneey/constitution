@@ -7,7 +7,7 @@ foundation:
     list-keys-from-identity:
       - noArrayIndexKey
       - useJsxKeyInIterable
-    modern-react-api-only:
+    legacy-react-api-refused:
       - modern-react-api-only.grit
       - noReactForwardRef
       - noReactStringRefs
@@ -25,13 +25,13 @@ foundation:
     async-work-awaited-or-deliberately-detached:
       - noFloatingPromises
       - noMisusedPromises
-    at-most-three-positional-arguments:
+    positional-parameters-at-most-three:
       - useMaxParams
-    cases-named-should-when:
+    case-reads-should-when:
       - cases-named-should-when.grit
     error-cause-preserved:
       - useErrorCause
-    errors-surfaced-never-swallowed:
+    catch-never-empty:
       - noEmptyBlockStatements
     function-file-and-complexity-limits:
       - noExcessiveCognitiveComplexity
@@ -56,7 +56,7 @@ foundation:
       - noSkippedTests
       - useExpect
   css:
-    classes-declared-and-used:
+    stylesheet-classes-declared-and-used:
       - noUndeclaredClasses
   ky:
     ky-body-parsed-by-schema:
@@ -64,47 +64,45 @@ foundation:
   react-dom:
     aria-attributes-as-the-dom-spells-them:
       - noUnknownAttribute
-    every-control-has-an-accessible-name:
+    jsx-controls-named:
       - noLabelWithoutControl
       - noSvgWithoutTitle
       - useAltText
       - useAnchorContent
       - useControlLabel
       - useIframeTitle
-    fields-declare-autocomplete:
+    known-fields-declare-autocomplete:
       - fields-declare-autocomplete.grit
       - useValidAutocomplete
-    labels-bound-with-use-id:
+    ids-from-use-id:
       - labels-bound-with-use-id.grit
       - useUniqueElementIds
-    native-html-elements-first:
+    handlers-and-links-on-native-elements:
       - noStaticElementInteractions
       - useSemanticElements
       - useValidAnchor
-    native-semantics-first:
+    jsx-roles-and-aria-valid:
       - noAriaHiddenOnFocusable
       - noInteractiveElementToNoninteractiveRole
       - noNoninteractiveElementInteractions
       - noNoninteractiveElementToInteractiveRole
       - noRedundantRoles
-      - noStaticElementInteractions
       - useAriaPropsForRole
       - useFocusableInteractive
-      - useSemanticElements
       - useValidAriaProps
       - useValidAriaRole
       - useValidAriaValues
-    tokens-single-source-of-appearance:
+    no-inline-style:
       - noInlineStyles
   react-native:
-    tokens-single-source-of-appearance:
+    no-literal-colour-in-a-style:
       - noReactNativeLiteralColors
   tailwind:
     dynamic-viewport-classes:
       - dynamic-viewport-classes.grit
     mobile-first-breakpoints:
       - mobile-first-breakpoints.grit
-    tokens-single-source-of-appearance:
+    no-arbitrary-utility-value:
       - noTailwindArbitraryValue
   tanstack-query:
     keys-only-from-the-key-factory:
@@ -116,17 +114,17 @@ foundation:
     enums-for-named-value-groups:
       - enums-for-named-value-groups.grit
       - useEnumInitializers
-    exhaustive-branching-over-unions:
+    switch-over-union-exhaustive:
       - useExhaustiveSwitchCases
-    identifier-case-by-kind:
+    names-in-the-case-of-their-kind:
       - useNamingConvention
     no-any:
       - noExplicitAny
-    no-unchecked-escape-hatches:
+    casts-and-assertions-refused:
       - noNonNullAssertion
       - noTsIgnore
       - noUnsafeTypeAssertion
-    nullish-operators-for-absence:
+    nullish-default-over-or:
       - useNullishCoalescing
     strict-equality-only:
       - noDoubleEquals
@@ -140,7 +138,7 @@ architecture:
     no-raw-html-injection:
       - no-raw-html-injection.grit
   _react:
-    component-effects-in-its-hooks-file:
+    component-file-calls-no-effect-hook:
       - component-effects-in-its-hooks-file.grit
   core:
     surface-only-re-exports:

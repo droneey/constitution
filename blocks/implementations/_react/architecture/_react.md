@@ -16,7 +16,14 @@ A component file calls no effect hook: its effects live in hooks in `<name>.hook
 
 | Why | Check | Tags |
 |---|---|---|
-| a component then reads as its markup, and its effects are found and tested in one place. | tool/lint | [] |
+| a component then reads as its markup, and its effects are found and tested in one place. | review | [] |
+
+## component-file-calls-no-effect-hook → component-effects-in-its-hooks-file
+A component file calls no effect hook.
+
+| Why | Check | Tags |
+|---|---|---|
+| a component then reads as its markup. | tool/lint | [] |
 
 ## Composition
 

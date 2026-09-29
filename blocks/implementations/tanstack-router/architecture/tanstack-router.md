@@ -7,7 +7,14 @@ Screens are file routes under `routes/`, the delivery layer, from which the rout
 
 | Why | Check | Tags |
 |---|---|---|
-| the file tree is the route tree, so a screen is found by its URL. | tool/names | [] |
+| the file tree is the route tree, so a screen is found by its URL. | review | [] |
+
+## routes-folder-holds-file-routes → screens-are-file-routes
+`routes/` holds only file routes, their groups and parameters, and their dash folders.
+
+| Why | Check | Tags |
+|---|---|---|
+| the file tree is then the route tree. | tool/names | [] |
 
 ## route-owns-its-url → screen-composes-the-page
 A route owns its URL: it reads and validates its search, runs its loader, and composes the page.
@@ -42,7 +49,14 @@ A screen's private pieces live beside its route in `-components/`, its private b
 
 | Why | Check | Tags |
 |---|---|---|
-| the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run. | tool/names | [] |
+| the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run. | review | [] |
+
+## screen-pieces-in-dash-folders → screen-private-pieces-in-dash-folders
+A screen's private folders beside its route are `-components/` and `-hooks/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the dash keeps them out of the route tree. | tool/names | [] |
 
 ## guard-reaches-features-outside-react → screen-guards-through-auth-surface
 A route's guard reaches the feature that decides access through the feature's composition outside React, never through the UI layer.

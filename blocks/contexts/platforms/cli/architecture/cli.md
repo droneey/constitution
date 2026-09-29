@@ -9,7 +9,14 @@ The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag def
 
 | Why | Check | Tags |
 |---|---|---|
-| every command is found in one place, and a flag means the same thing in every command that takes it. | tool/names | [] |
+| every command is found in one place, and a flag means the same thing in every command that takes it. | review | [] |
+
+## command-files-in-cli → commands-in-the-cli-folder
+`cli/` holds `<name>.cli` files and plain files beside them, and no file of another role.
+
+| Why | Check | Tags |
+|---|---|---|
+| every command is found in one place. | tool/names | [] |
 
 ## report-is-a-value-the-command-prints → no-debug-output-in-shipped-code
 What a run reports is a value the command prints at the end, never lines the logic prints along the way.

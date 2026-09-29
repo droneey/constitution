@@ -17,7 +17,7 @@ workflow:
       - validate-branch
     commit-body-empty-reason-in-pull-request:
       - commit-message
-    commit-header-type-and-subject:
+    commit-header-format:
       - commit-message
     no-placeholder-commit-subjects:
       - commit-message

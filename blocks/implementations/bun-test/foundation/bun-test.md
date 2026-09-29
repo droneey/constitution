@@ -20,3 +20,10 @@ The unit run leaves out `*.integration.test.ts`; integration specs run as their 
 | Why | Check | Tags |
 |---|---|---|
 | the fast run stays fast, and the slower integration run fails on its own. | review | [] |
+
+## coverage-gate-on-loaded-files → coverage-holds-all-logic
+`bun test` fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions.
+
+| Why | Check | Tags |
+|---|---|---|
+| a line no behaviour reaches fails the check where it appears, not in a later review. | tool/coverage | [testing] |

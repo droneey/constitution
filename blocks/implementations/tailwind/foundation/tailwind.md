@@ -7,6 +7,13 @@
 |---|---|---|
 | with the default scales gone, a value outside the tokens cannot be written by accident. | review | [] |
 
+## no-arbitrary-utility-value → utilities-only-from-tokens
+A class carries no arbitrary value; one that assigns a token's variable carries a suppression that states why.
+
+| Why | Check | Tags |
+|---|---|---|
+| an arbitrary value is a visual value written outside the tokens. | tool/lint | [ux] |
+
 ## bare-utility-only-without-a-token · SHOULD
 A utility with no token behind it — `flex`, `items-center`, `truncate` — is used only where a token would make no sense.
 

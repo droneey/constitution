@@ -91,7 +91,7 @@ A dependency's install scripts run only when the dependency is listed by name as
 | an install script runs with the developer's rights before anyone reviews what it does. | review | [security] |
 
 ## known-vulnerabilities-fail-the-check · MUST
-A known vulnerability of any severity in any dependency, development dependencies included, fails the check. An accepted one is recorded in the audit configuration with its reason and an expiry.
+A known vulnerability of any severity in any dependency, development dependencies included, fails the check.
 
 | Why | Check | Tags |
 |---|---|---|

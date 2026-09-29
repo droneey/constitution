@@ -83,7 +83,14 @@ A function takes at most three positional parameters. Values that make one whole
 
 | Why | Check | Tags |
 |---|---|---|
-| each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | tool/lint | [] |
+| each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | review | [] |
+
+## positional-parameters-at-most-three → at-most-three-positional-arguments
+A function takes at most three positional parameters.
+
+| Why | Check | Tags |
+|---|---|---|
+| each position is an order the caller must remember. | tool/lint | [] |
 
 ## Units
 
@@ -167,7 +174,7 @@ Code is never commented out; it is deleted. History keeps it.
 | commented-out code rots unseen, misleads readers, and version control already remembers it. | review | [] |
 
 ## no-dead-code · MUST
-No unused file, dependency, export, parameter, variable or branch. Code and dependencies that only tests reach are unused too. An export a module offers through its public entry is not dead code.
+No unused file, dependency, export, parameter, variable or label, and no unreachable statement. Code and dependencies that only tests reach are unused too. An export a module offers through its public entry is not dead code.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -178,7 +185,7 @@ Silencing a check — a lint rule, a type error, a mutant, a deliberately ignore
 
 | Why | Check | Tags |
 |---|---|---|
-| the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | tool/lint | [] |
+| the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | review | [] |
 
 ## no-debug-output-in-shipped-code · SHOULD
 Shipped code writes no debug output and stops at no breakpoint. What a command-line program writes for its user — its results, prompts and messages — is its output, not debug.

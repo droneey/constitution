@@ -8,7 +8,7 @@ foundation:
     stories-unreachable-from-production:
       - stories-unreachable-from-production
   typescript:
-    tools-are-dev-dependencies:
+    production-imports-no-development-dependency:
       - no-development-dependency-in-production
 architecture:
   analytics:
@@ -18,7 +18,7 @@ architecture:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-commands
   core:
-    access-only-through-curated-surface:
+    surface-is-the-only-way-in:
       - domain-role-reached-through-its-surface
       - kernel-reached-through-its-surface
       - module-reached-through-its-surface
@@ -39,15 +39,11 @@ architecture:
       - domain-reaches-only-itself-and-kernel
     features-blind-to-each-other:
       - features-blind-to-each-other
-    import-only-through-surface:
-      - domain-role-reached-through-its-surface
-      - kernel-reached-through-its-surface
+    own-surface-never-imported:
       - module-never-imports-its-own-surface
-      - module-reached-through-its-surface
-      - module-reached-through-its-surface-from-outside-modules
     kernel-imports-only-itself:
       - kernel-reaches-only-itself
-    layer-folder-has-no-surface:
+    layer-folder-never-imported:
       - layer-folder-never-a-target
     libs-import-no-application-code:
       - libs-know-no-application
@@ -62,18 +58,16 @@ architecture:
       - root-reached-only-from-entries
     shared-imports-no-feature-or-root:
       - shared-knows-no-feature-or-root
-    side-effects-at-the-edges:
-      - domain-reaches-only-itself-and-kernel
   expo:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-routes
   ky:
-    components-dumb-widgets-smart:
+    components-import-no-http-client:
       - components-never-fetch
   lingui:
     domain-returns-codes-not-text:
       - application-returns-codes-not-text
-    primitives-take-text-by-props:
+    primitives-import-no-message-catalog:
       - primitives-hold-no-text
   package:
     consumers-import-package-entries:
@@ -84,7 +78,7 @@ architecture:
     package-knows-no-consumer:
       - package-knows-no-consumer
   tanstack-query:
-    components-dumb-widgets-smart:
+    components-import-no-query-library:
       - components-never-query
   tanstack-router:
     adapters-never-import-each-other-or-callers:
@@ -97,7 +91,7 @@ architecture:
       - router-primitives-only-in-screens-and-widgets
       - screen-pieces-never-navigate
   ui:
-    components-dumb-widgets-smart:
+    components-import-no-adapter:
       - components-take-data-and-callbacks
     ui-layer-imports:
       - ui-reaches-no-mechanism

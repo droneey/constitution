@@ -37,6 +37,13 @@ PascalCase for types, classes, enums and their members; camelCase for functions,
 
 | Why | Check | Tags |
 |---|---|---|
+| the case tells what kind of thing a name is before its declaration is read. | review | [] |
+
+## names-in-the-case-of-their-kind → identifier-case-by-kind
+Types, classes, interfaces and enums are in PascalCase, a type parameter is `T` or starts with it, and no name is in snake_case.
+
+| Why | Check | Tags |
+|---|---|---|
 | the case tells what kind of thing a name is before its declaration is read. | tool/lint | [] |
 
 ## type-names-undecorated · SHOULD
@@ -88,7 +95,14 @@ Comparisons are strict — `===` and `!==`, with `null` too; never `==`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `!value` also treats `0` and the empty string as absent, which is a bug waiting for its input. | tool/lint | [] |
+| `!value` also treats `0` and the empty string as absent, which is a bug waiting for its input. | review | [] |
+
+## nullish-default-over-or → nullish-operators-for-absence
+A default for an absent value is given with `??`, not `||`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a logical or also replaces `0`, an empty string and `false`, which are values, not absence. | tool/lint | [] |
 
 ## no-any · MUST
 No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, in tests too; `noImplicitAny` is never turned off.
@@ -102,14 +116,28 @@ No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@
 
 | Why | Check | Tags |
 |---|---|---|
-| each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | tool/lint | [] |
+| each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | review | [] |
+
+## casts-and-assertions-refused → no-unchecked-escape-hatches
+No `as` cast except `as const`, no `!` non-null assertion and no `@ts-ignore`.
+
+| Why | Check | Tags |
+|---|---|---|
+| each is a place where the code tells the compiler it knows better. | tool/lint | [] |
 
 ## exhaustive-branching-over-unions → illegal-states-unrepresentable
 A branch over a union handles every member: a `switch` whose default proves `never`, or an `if` chain that ends in a `never` check.
 
 | Why | Check | Tags |
 |---|---|---|
-| a new member then fails to compile at every branch that forgot it. | tool/lint | [] |
+| a new member then fails to compile at every branch that forgot it. | review | [] |
+
+## switch-over-union-exhaustive → exhaustive-branching-over-unions
+A `switch` over a union handles every member.
+
+| Why | Check | Tags |
+|---|---|---|
+| a member added later then fails the check at every switch that misses it. | tool/lint | [] |
 
 **Example:**
 ```ts
@@ -163,7 +191,14 @@ Build, test and lint tools are development dependencies, and production code imp
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool in production dependencies ships to every installation, and one imported by production code ships inside it. | tool/architecture | [security] |
+| a tool in production dependencies ships to every installation, and one imported by production code ships inside it. | review | [security] |
+
+## production-imports-no-development-dependency → tools-are-dev-dependencies
+Production code imports no development dependency.
+
+| Why | Check | Tags |
+|---|---|---|
+| a tool imported by production code ships inside it. | tool/architecture | [security] |
 
 ## one-version-per-dependency · MUST
 Each dependency has one version across every manifest of the repository.
@@ -192,3 +227,10 @@ The fields of `package.json` follow the shared order.
 | Why | Check | Tags |
 |---|---|---|
 | every manifest reads the same way, and a diff shows a change of content, not of order. | tool/format | [] |
+
+## test-folder-files-in-test-forms → test-files-named-by-role
+A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`, `.fake` or `.fixtures` file.
+
+| Why | Check | Tags |
+|---|---|---|
+| a spec named otherwise would not run, and a helper named like a spec would. | tool/names | [testing] |

@@ -33,7 +33,14 @@ A program's source is laid out by concern in the folders of the top-level tree, 
 
 | Why | Check | Tags |
 |---|---|---|
-| a reader who knows one repository finds their way in every other, and a file has one obvious place. | tool/names | [] |
+| a reader who knows one repository finds their way in every other, and a file has one obvious place. | review | [] |
+
+## top-level-folders-from-the-tree → anatomy-top-level-by-concern
+`src/` holds only the top-level folders of the tree.
+
+| Why | Check | Tags |
+|---|---|---|
+| a reader who knows one repository finds their way in every other. | tool/names | [] |
 
 ## root-imported-only-by-entry-and-delivery-wiring · MUST
 `root/` is imported only by entry files and by the delivery layer's own wiring. Nothing else reaches back to the composition root.
@@ -110,7 +117,14 @@ A feature is laid out as `domain/`, `adapters/<system>/` and `app/` with the rol
 
 | Why | Check | Tags |
 |---|---|---|
-| a use-case, a port or an adapter is found in the same place in every feature. | tool/names | [] |
+| a use-case, a port or an adapter is found in the same place in every feature. | review | [] |
+
+## feature-domain-holds-its-role-folders → feature-anatomy
+A feature's `domain/` holds only the role folders of the tree and no file of its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| a use-case, a port or an entity is found in the same place in every feature. | tool/names | [] |
 
 ## data-ports-split-by-reads-and-writes · SHOULD
 A data port is a repository per aggregate, one file per side: `repositories/queries/<aggregate>.repository` for reads and `repositories/commands/<aggregate>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name.
@@ -156,14 +170,28 @@ Outside a folder, a caller imports only its surface. Inside it, files import eac
 
 | Why | Check | Tags |
 |---|---|---|
-| the surface is the folder's offer, so a caller couples only to what is offered; importing one's own surface is where import cycles begin. | tool/architecture | [] |
+| the surface is the folder's offer, so a caller couples only to what is offered; importing one's own surface is where import cycles begin. | review | [] |
+
+## own-surface-never-imported → import-only-through-surface
+A file never imports the surface of the module it belongs to.
+
+| Why | Check | Tags |
+|---|---|---|
+| a module that imports its own surface imports itself, and that is where a cycle begins. | tool/architecture | [] |
 
 ## layer-folder-has-no-surface · MUST
 A layer folder — `domain/`, `app/`, `adapters/`, `src/`, `features/`, `libs/` — has no surface and is never an import target. A caller imports the role folder inside it, so the feature's root surface is the only one that re-exports a whole feature.
 
 | Why | Check | Tags |
 |---|---|---|
-| an import then names the role it couples to, and no aggregate hides an edge the layer rules forbid. | tool/architecture | [] |
+| an import then names the role it couples to, and no aggregate hides an edge the layer rules forbid. | review | [] |
+
+## layer-folder-never-imported → layer-folder-has-no-surface
+A layer folder is never an import target, and a feature's `domain/` has no surface.
+
+| Why | Check | Tags |
+|---|---|---|
+| an import then names the role it couples to. | tool/architecture | [] |
 
 ## surface-only-re-exports · MUST
 A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
@@ -257,7 +285,7 @@ A folder is named for its purpose, or by a role of the vocabulary of the project
 
 | Why | Check | Tags |
 |---|---|---|
-| a folder named for what its contents are for tells a reader about the system; one named for their shape tells nothing. | tool/names | [] |
+| a folder named for what its contents are for tells a reader about the system; one named for their shape tells nothing. | review | [] |
 
 ## one-purpose-per-folder · SHOULD
 A folder holds one purpose, said in one phrase without "and". It appears to separate purposes already mixed, never for members that do not exist yet.
@@ -278,7 +306,14 @@ A file carries its role's suffix, whatever its folder: `entities/chat.entity`. N
 
 | Why | Check | Tags |
 |---|---|---|
-| the name tells the role before the file is opened, and a tool can check it. | tool/names | [] |
+| the name tells the role before the file is opened, and a tool can check it. | review | [] |
+
+## role-folder-files-carry-its-suffix → file-carries-its-role-suffix
+A file in a role folder — `entities/`, `contracts/`, `errors/`, `models/`, `repositories/` and the rest — carries the role's suffix.
+
+| Why | Check | Tags |
+|---|---|---|
+| the name tells the role before the file is opened. | tool/names | [] |
 
 ## The layer matrix
 

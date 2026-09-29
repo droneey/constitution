@@ -2,9 +2,9 @@ foundation:
   css:
     baseline-features-only:
       - useBaseline
-    classes-declared-and-used:
+    stylesheet-classes-declared-and-used:
       - noUnusedClasses
-    custom-properties-declared-before-use:
+    custom-properties-declared-and-read-by-var:
       - noUndeclaredCustomProperties
       - noInvalidPropertyInitValue
       - noMissingVarFunction

@@ -21,13 +21,6 @@ ARIA attributes are written hyphenated, as the DOM spells them; the camelCase fo
 |---|---|---|
 | a camelCase ARIA prop is not an attribute the browser knows, so assistive technology never sees it. | tool/lint | [a11y] |
 
-## labels-bound-with-use-id → every-control-has-an-accessible-name
-A label names its control with `htmlFor`, and the id comes from `useId`, never typed by hand or random.
-
-| Why | Check | Tags |
-|---|---|---|
-| a typed id collides when the component renders twice, and a random one differs between server and client. | tool/lint | [] |
-
 ## overlays-rendered-through-portal · SHOULD
 An overlay — a dialog, a popover, a toast — renders through a portal.
 
@@ -41,3 +34,10 @@ Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with
 | Why | Check | Tags |
 |---|---|---|
 | read during render, they break server rendering and tear between renders. | review | [] |
+
+## no-inline-style → tokens-single-source-of-appearance
+No element takes an inline `style`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an inline style is a visual value written outside the tokens. | tool/lint | [ux] |

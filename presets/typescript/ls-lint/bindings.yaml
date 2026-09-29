@@ -11,7 +11,7 @@ foundation:
   typescript:
     kebab-case-file-names:
       - '.dir'
-    test-files-named-by-role:
+    test-folder-files-in-test-forms:
       - 'src/**/__tests__'
       - tests
       - 'tests/*'
@@ -27,23 +27,23 @@ architecture:
   analytics:
     kebab-case-file-names:
       - 'src/*/**/sinks'
-    sinks-behind-one-contract:
+    sinks-folder-holds-sink-files:
       - 'src/*/**/sinks'
   cli:
-    commands-in-the-cli-folder:
+    command-files-in-cli:
       - 'src/cli'
       - 'exists:0'
     kebab-case-file-names:
       - 'src/cli'
   core:
-    anatomy-top-level-by-concern:
+    top-level-folders-from-the-tree:
       - src
     data-ports-split-by-reads-and-writes:
       - 'src/*/**/repositories'
       - 'src/*/**/repositories/{queries,commands}'
-    feature-anatomy:
+    feature-domain-holds-its-role-folders:
       - 'src/features/*/domain'
-    file-carries-its-role-suffix:
+    role-folder-files-carry-its-suffix:
       - 'src/*/**/constants'
       - 'src/*/**/contracts'
       - 'src/*/**/entities'
@@ -54,14 +54,11 @@ architecture:
       - 'src/*/**/use-cases/{queries,commands}'
       - 'src/*/**/utils'
       - 'src/contracts'
-    folder-named-for-purpose-or-role:
-      - src
-      - 'src/features/*/domain'
     kebab-case-file-names:
       - '.*'
       - '.*.*'
       - '.dir'
-    layer-folder-has-no-surface:
+    layer-folder-never-imported:
       - 'src/features/*/domain'
     typescript-role-and-surface-files:
       - 'src/*/**/constants'
@@ -88,17 +85,17 @@ architecture:
   tanstack-router:
     kebab-case-file-names:
       - 'src/routes'
-    screen-private-pieces-in-dash-folders:
+    screen-pieces-in-dash-folders:
       - 'src/routes'
-    screens-are-file-routes:
+    routes-folder-holds-file-routes:
       - 'src/routes'
   ui:
-    component-in-its-own-folder:
+    component-folders-hold-their-files:
       - 'src/*/**/components'
       - 'src/*/**/components/*'
       - 'src/*/**/widgets'
       - 'src/*/**/widgets/*'
-    component-named-by-location:
+    widget-folder-ends-in-widget:
       - 'src/*/**/widgets/*'
     kebab-case-file-names:
       - 'src/*/**/assets'
