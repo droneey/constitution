@@ -103,11 +103,13 @@ foundation:
 
 The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
 
+At the start of a session it also saves the resolved active set outside the project, in `${TMPDIR}/droneey-constitution/<session_id>/`: the project's root, its check command — none for `check: null` — and each active block with the globs it governs and its files. The later hooks and skills read it there and never resolve again; `clear` and `compact` start the session's reminders over.
+
 ## ✍️ Skills
 
 Both are run by the user, never by the model on its own:
 
-- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it, asks about applications when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write and writes only after the owner's yes, never over a file without asking.
+- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about applications when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write and writes only after the owner's yes, never over a file without asking.
 - **`/constitution:amend [rule-slug]`** adds, changes or removes an override: a rule the index holds, a level below its current one, a reason, an optional end date and a scope — the whole repository or one application. It shows the exact change to `constitution.yaml` and writes it only after the owner's yes for that override.
 
 ## 🔌 Install

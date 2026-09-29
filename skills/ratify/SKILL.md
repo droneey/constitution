@@ -76,7 +76,7 @@ A local block is a draft until a person reviews it; say so.
 
 ### 4. Find the check command
 
-`check` names the one command that runs every check of the repository — lint, types, tests. Look for it: a `check` script in the manifest, a task runner target (`make check`, `just check`, `task check`), or the steps CI runs. Propose what you found and where. If there is none, ask the owner which command it is; do not write a command the repository cannot run.
+`check` names the one command that runs every check of the repository — lint, types, tests. Look for it: a `check` script in the manifest, a task runner target (`make check`, `just check`, `task check`), or the steps CI runs. Propose what you found and where. If there is none, ask the owner which command it is; do not write a command the repository cannot run. A repository with no check at all writes `check: null`.
 
 ### 5. Ask about applications
 

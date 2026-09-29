@@ -112,6 +112,7 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   LCHECKS[nlocal] = FM["checks"]
   LLANGS[nlocal] = FM["languages"]
   LROLES[nlocal] = FM["roles"]
+  LGOVERNS[nlocal] = FM["governs"]
   LSCOPE[nlocal] = s
   IN[s, name] = 1
   if (FM["extends"] in KNOWN) add_with_bases(s, FM["extends"])

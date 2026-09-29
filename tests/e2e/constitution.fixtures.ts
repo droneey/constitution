@@ -7,6 +7,7 @@ interface BlockFixture {
   body: string;
   checks?: readonly string[];
   extends?: string;
+  governs?: readonly string[];
   id: string;
   languages?: readonly string[];
   requires?: readonly string[];
@@ -41,7 +42,7 @@ const mainFile = (block: BlockFixture): string =>
     `languages: ${list(block.languages)}`,
     `roles: ${list(block.roles)}`,
     'dictionary: []',
-    'governs: []',
+    `governs: [${(block.governs ?? []).map((glob) => JSON.stringify(glob)).join(', ')}]`,
     '---',
     '',
     block.body,
@@ -175,6 +176,7 @@ const rulesFile = (input: {
 const domain = (input: {
   axis?: Axis;
   files?: Readonly<Files>;
+  governs?: readonly string[];
   id: string;
   rules: readonly RuleFixture[];
   summary: string;
@@ -186,6 +188,11 @@ const domain = (input: {
       ...rulesFile(input),
       ...input.files,
     },
+    ...(input.governs === undefined
+      ? {}
+      : {
+          governs: input.governs,
+        }),
     id: input.id,
     summary: input.summary,
   });
@@ -213,6 +220,10 @@ const domainFiles = (): Files => ({
         title: 'UI with remote data',
       }),
     },
+    governs: [
+      '**/ui/**',
+      '**/components/**',
+    ],
     id: 'ui',
     rules: [
       {

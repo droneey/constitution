@@ -10,7 +10,7 @@
 |---|---|
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0008 |
-| Project files | ADR-0009 – ADR-0012 |
+| Project files | ADR-0009 – ADR-0012, ADR-0102 |
 | Rules and roles | ADR-0013 – ADR-0018 |
 | Overrides and precedence | ADR-0019 – ADR-0020 |
 | Delivery | ADR-0021 – ADR-0027 |
@@ -601,3 +601,10 @@
 - **Decision.** Where a tool holds only part of a rule, the rule keeps its slug and its statement and becomes `review`, and a child `→` it states exactly what the tool holds, with the tool's Check and its bindings. So it is for 39 rules: among them `access-only-through-curated-surface` (`surface-is-the-only-way-in`), `commit-header-type-and-subject` (`commit-header-format`), `coverage-holds-all-logic` (`coverage-gate-on-loaded-files` in `bun-test`), `every-control-has-an-accessible-name` and `native-semantics-first` (`jsx-controls-named`, `jsx-roles-and-aria-valid` in `react-dom`'s seam with `a11y`, which `labels-bound-with-use-id` joins, so a React Native project claims no setting it lacks), `tokens-single-source-of-appearance` (one child each in `react-dom`, `react-native` and, under `utilities-only-from-tokens`, `tailwind`), `components-dumb-widgets-smart` (a child in `ui`, and one in each of `ky` and `tanstack-query` for the library it keeps out), and `primitives-take-text-by-props` (`primitives-import-no-message-catalog` in `lingui`'s seam with `ui`). `side-effects-at-the-edges`, `suppression-states-its-reason` and `folder-named-for-purpose-or-role` become `review`, their held parts already held by children. The same holds where a binding sat on a reviewed rule: `commit-scan-redacted` (`lefthook` with `betterleaks`) and `stryker-runs-the-bun-test-command` take theirs, and a setting that wires a hook, which no role checks, holds no rule. Three statements lose a clause another rule holds: `yaml-only-at-the-edge` the `unknown` result (`boundary-values-unknown-until-parsed`), `known-vulnerabilities-fail-the-check` the accepted vulnerability (`accepted-vulnerability-states-reason-and-expiry`), and `no-dead-code` the unreached branch (`coverage-holds-all-logic`) for the unreachable statement the compiler refuses.
 - **Rejected.** Narrowing each rule to what its tool holds, which would drop the judgement half a reviewer still needs; siblings beside each rule, as ADR-0097 did, which name two rules where one carries out the other.
 - **Why.** A Check says who holds a rule. A child that states only what its setting refuses keeps that true, and the rule above it stays whole for the review.
+
+## ADR-0102 — A project without a check command writes check: null
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** `check` stays a required key of `constitution.yaml`; a project with no command that runs its checks writes `check: null`, and the hook asks for nothing more. The hand-back gate of step 5 then has no command to require and only reminds of the review.
+- **Rejected.** Dropping the key when there is no command, which a missing key cannot tell apart from one forgotten; an empty value, which the hook already reads as unfinished.
+- **Why.** A project the constitution governs may have no checks yet, and saying so is different from not having answered.

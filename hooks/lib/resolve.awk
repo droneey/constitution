@@ -29,12 +29,12 @@ BEGIN {
   ADD["version"] = "version: " ENVIRON["CONSTITUTION_INSTALLED"]
   ADD["axes"] = "axes: [foundation, architecture, workflow]"
   ADD["apps"] = "apps: {}"
-  ADD["check"] = "check: <the command that runs every check>"
+  ADD["check"] = "check: <the command that runs every check, or null>"
   ADD["overrides"] = "overrides: []"
   FILL["version"] = "write version: " ENVIRON["CONSTITUTION_INSTALLED"]
   FILL["axes"] = "write axes: [foundation, architecture, workflow]"
   FILL["apps"] = "write apps: {}"
-  FILL["check"] = "name the command that runs every check"
+  FILL["check"] = "name the command that runs every check, or write check: null"
   FILL["overrides"] = "write overrides: []"
   read_index(ENVIRON["CONSTITUTION_INDEX"])
 }
@@ -60,6 +60,7 @@ function read_index(path,   line, f, r) {
       LANGS[f[2]] = f[12]
       HELD_TO[f[2]] = f[13]
       ANCESTORS[f[2]] = f[14]
+      GOVERNS[f[2]] = f[15]
     } else if (f[1] == "rule") {
       R[++nr] = f[2]
       RULE[f[2]] = nr
@@ -403,6 +404,27 @@ function app_only_files(s, id,   out, n, a, k, b) {
   return out
 }
 
+# Records the digest ignores: the session's state keeps them for the later hooks.
+function print_active(   check, s, j, k) {
+  check = VALUE["check"]
+  if (check == "null" || check == "~") check = ""
+  print "check" T check
+  for (s = 0; s <= napps; s++) {
+    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") print "active" T s T APP[s] T B[j] T GOVERNS[B[j]] T files_of(s, B[j])
+    for (k = 1; k <= nlocal; k++) if (IN[s, LID[k]]) print "active" T s T APP[s] T LID[k] T LGOVERNS[k] T LPATH[k]
+  }
+}
+
+function files_of(s, id,   base, out, n, a, k) {
+  base = "blocks/" FOLDER[LAYER[id]] "/" id "/"
+  out = base id ".md"
+  n = split(chapters(s, id), a, " ")
+  for (k = 1; k <= n; k++) out = out " " base a[k]
+  n = split(WITH[id], a, " ")
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out " " base seam(a[k])
+  return out
+}
+
 # The headlines are of domains, contexts and implementations, in the index's
 # order of layers.
 function print_headlines(   i, s) {
@@ -485,4 +507,5 @@ END {
   print_blocks()
   print_overrides()
   print_headlines()
+  print_active()
 }
