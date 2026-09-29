@@ -2,6 +2,10 @@
 . "${CLAUDE_PLUGIN_ROOT:-/dev/null}/hooks/lib/state.sh"
 
 event="$(field hook_event_name)" || exit 0
+if [ "${event}" = SubagentStop ] && { [ "$(field agent_type)" = constitution:reviewer ] || [ "$(field agent_name)" = constitution:reviewer ]; }; then
+  record reviewed "$(fingerprint)"
+  exit 0
+fi
 [ "$(field stop_hook_active)" = true ] && exit 0
 now="$(fingerprint)"
 [ -n "${now}" ] || exit 0

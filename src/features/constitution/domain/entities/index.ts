@@ -19,7 +19,7 @@ export type {
 export type { RequirementAnswer } from './requirement-answer.entity';
 export { Met } from './requirement-answer.entity';
 export type { Rule, StatedRule } from './rule.entity';
-export type { Skill, SkillFrontMatterRead } from './skill.entity';
+export type { Agent, Skill, SkillFrontMatterRead } from './skill.entity';
 export type {
   Vocabulary,
   VocabularyRead,

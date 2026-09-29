@@ -1,18 +1,17 @@
 import { execFileSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  realpathSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdirSync, realpathSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import type { HookRun } from './hook.fixtures';
-import { HookEvent, runHook, runScript } from './hook.fixtures';
+import {
+  HookEvent,
+  newSession,
+  removeSessions,
+  runHook,
+  runScript,
+} from './hook.fixtures';
 import { createPluginRoot, removePluginRoots } from './plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from './project.fixtures';
 
@@ -22,11 +21,10 @@ enum StopEvent {
 }
 
 interface Session {
+  id: string;
   project: string;
-  tmpDir: string;
 }
 
-const SESSION = 'session-1';
 const CHECK = 'bun run check';
 const BLOCKED = JSON.stringify({
   decision: 'block',
@@ -39,7 +37,6 @@ const REVIEW = JSON.stringify({
 });
 
 let root = '';
-const tmpDirs: string[] = [];
 
 const git = (input: { args: readonly string[]; project: string }): void => {
   execFileSync(
@@ -63,9 +60,8 @@ const startSession = (config: string): Session => {
       config,
     }),
   );
-  const tmpDir = mkdtempSync(join(tmpdir(), 'constitution-state-'));
+  const id = newSession();
 
-  tmpDirs.push(tmpDir);
   git({
     args: [
       'add',
@@ -87,13 +83,12 @@ const startSession = (config: string): Session => {
     event: HookEvent.Startup,
     project,
     root,
-    session: SESSION,
-    tmpDir,
+    session: id,
   });
 
   return {
+    id,
     project,
-    tmpDir,
   };
 };
 
@@ -118,13 +113,12 @@ const fire = (input: {
       ],
       [
         'session_id',
-        SESSION,
+        input.session.id,
       ],
       ...Object.entries(input.fields ?? {}),
     ]),
     root,
     script: input.script,
-    tmpDir: input.session.tmpDir,
   });
 
 const prompt = (session: Session): HookRun =>
@@ -179,13 +173,7 @@ beforeAll(() => {
 
 afterEach(() => {
   removeProjects();
-
-  for (const folder of tmpDirs.splice(0)) {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
+  removeSessions();
 });
 
 afterAll(() => {
@@ -364,6 +352,44 @@ describe('the hand-back gate', () => {
     expect(output).toBe('');
   });
 
+  it('should not ask for a review when the reviewer reviewed the changed tree', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      path: 'src/features/orders/ui/order-card.tsx',
+      project: session.project,
+    });
+    ran({
+      command: CHECK,
+      session,
+    });
+    fire({
+      event: StopEvent.Subagent,
+      fields: Object.fromEntries([
+        [
+          'agent_type',
+          'constitution:reviewer',
+        ],
+      ]),
+      script: 'stop.sh',
+      session,
+    });
+
+    // Act
+    const output = stop({
+      session,
+    });
+
+    // Assert
+    expect(output).toBe('');
+  });
+
   it('should let a subagent stop without asking for a review when the check passed', () => {
     // Arrange
     const session = startSession(
@@ -430,12 +456,11 @@ describe('the hand-back gate', () => {
         ],
         [
           'session_id',
-          'session-2',
+          newSession(),
         ],
       ]),
       root,
       script: 'stop.sh',
-      tmpDir: session.tmpDir,
     }).stdout;
 
     // Assert

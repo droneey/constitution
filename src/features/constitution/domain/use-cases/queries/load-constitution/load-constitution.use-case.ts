@@ -10,6 +10,7 @@ import type {
   VocabularyParser,
 } from '../../../contracts';
 import type {
+  Agent,
   Block,
   Constitution,
   Documents,
@@ -17,6 +18,7 @@ import type {
   RequirementAnswer,
   Rule,
   Skill,
+  SkillFrontMatterRead,
 } from '../../../entities';
 import { splitFrontMatter, withoutCodeFences } from '../../../utils';
 import { bindingsOf } from './bindings.utils';
@@ -46,6 +48,7 @@ const STRAY =
   'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md';
 // <directory>/<skill>/SKILL.md, where no folder is hidden
 const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
+const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
 
 // Five layers, not four ranks: the index groups platforms, then languages, and
 // the hook never sorts.
@@ -106,6 +109,18 @@ const duplicateIdFindings = (blocks: readonly Block[]): readonly Finding[] =>
         ];
   });
 
+const manifestOf = (input: {
+  parser: FrontMatterParser;
+  path: string;
+  tree: FileTree;
+}): SkillFrontMatterRead | undefined => {
+  const { frontMatter } = splitFrontMatter(input.tree.read(input.path));
+
+  return frontMatter === undefined
+    ? undefined
+    : input.parser.skill(frontMatter);
+};
+
 const skillsOf = (input: {
   listed: readonly string[];
   parser: FrontMatterParser;
@@ -118,15 +133,39 @@ const skillsOf = (input: {
       return [];
     }
 
-    const { frontMatter } = splitFrontMatter(input.tree.read(path));
-
     return [
       {
         directory,
-        frontMatter:
-          frontMatter === undefined
-            ? undefined
-            : input.parser.skill(frontMatter),
+        frontMatter: manifestOf({
+          parser: input.parser,
+          path,
+          tree: input.tree,
+        }),
+        path,
+      },
+    ];
+  });
+
+const agentsOf = (input: {
+  listed: readonly string[];
+  parser: FrontMatterParser;
+  tree: FileTree;
+}): readonly Agent[] =>
+  input.listed.flatMap((path) => {
+    const file = AGENT_FILE.exec(path)?.[1];
+
+    if (file === undefined) {
+      return [];
+    }
+
+    return [
+      {
+        file,
+        frontMatter: manifestOf({
+          parser: input.parser,
+          path,
+          tree: input.tree,
+        }),
         path,
       },
     ];
@@ -148,6 +187,11 @@ const documentsOf = (input: {
   const vocabulary = textOf(DocumentPath.Vocabulary);
 
   return {
+    agents: agentsOf({
+      listed: input.listed,
+      parser: input.frontMatterParser,
+      tree: input.tree,
+    }),
     decisions: textOf(DocumentPath.Decisions),
     digests: {
       core: textOf(DocumentPath.DigestCore),

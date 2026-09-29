@@ -2,6 +2,7 @@ import type { Finding } from '#/kernel';
 
 import { DocumentPath } from '../../../../constants';
 import type {
+  Agent,
   Constitution,
   HooksManifest,
   ManifestRead,
@@ -160,6 +161,46 @@ const skillFindings = (input: {
   ...input.skills.flatMap(frontMatterFindings),
 ];
 
+const agentFindings = (agent: Agent): readonly Finding[] => {
+  const { file, frontMatter, path } = agent;
+
+  if (frontMatter === undefined) {
+    return [
+      {
+        message:
+          'has no front matter; an agent names itself and says when to use it there',
+        path,
+      },
+    ];
+  }
+
+  if (frontMatter.status === 'not-yaml') {
+    return [
+      {
+        message: `front matter is not valid YAML: ${frontMatter.reason}`,
+        path,
+      },
+    ];
+  }
+
+  return [
+    ...Object.values(SkillField)
+      .filter((field) => frontMatter[field] === undefined)
+      .map((field) => ({
+        message: `front matter lacks "${field}"; an agent declares its name and description`,
+        path,
+      })),
+    ...(frontMatter.name === undefined || frontMatter.name === file
+      ? []
+      : [
+          {
+            message: `is named "${frontMatter.name}" in its front matter; an agent is named after its file, ${file}`,
+            path,
+          },
+        ]),
+  ];
+};
+
 const templateFindings = (paths: ReadonlySet<string>): readonly Finding[] =>
   Object.values(Template)
     .filter((path) => !paths.has(path))
@@ -299,6 +340,7 @@ const pluginCheck: Check = ({
       paths: constitution.paths,
       read: constitution.documents.hooks,
     }),
+    ...constitution.documents.agents.flatMap(agentFindings),
     ...templateFindings(constitution.paths),
   ];
 };

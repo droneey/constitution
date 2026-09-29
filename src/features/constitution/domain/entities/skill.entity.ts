@@ -16,4 +16,10 @@ interface Skill {
   path: string;
 }
 
-export type { Skill, SkillFrontMatterRead };
+interface Agent {
+  file: string;
+  frontMatter: SkillFrontMatterRead | undefined;
+  path: string;
+}
+
+export type { Agent, Skill, SkillFrontMatterRead };
