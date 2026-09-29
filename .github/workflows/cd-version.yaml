@@ -19,5 +19,6 @@ jobs:
       version-command: >-
         npm version --no-git-tag-version "$VERSION"
         && sed -i "s/^version: .*/version: $VERSION/" constitution.yaml
+        && sed -i "s/\"ref\": \"v[0-9.]*\"/\"ref\": \"v$VERSION\"/" .claude-plugin/marketplace.json
     secrets:
       token: ${{ secrets.GH_TOKEN }}

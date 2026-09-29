@@ -5,6 +5,7 @@ const PLUGIN_NAME = /^[a-z0-9-]+$/;
 
 const pluginModel = z.looseObject({
   name: z.string().regex(PLUGIN_NAME),
+  repository: z.string().optional(),
   skills: z
     .union([
       z.string().regex(RELATIVE_DIRECTORY),

@@ -5,12 +5,14 @@ interface FieldIssue {
 
 interface PluginManifest {
   name: string;
+  repository: string | undefined;
   skills: readonly string[];
 }
 
 interface MarketplacePlugin {
   name: string;
-  source: string;
+  ref: string | undefined;
+  repo: string | undefined;
 }
 
 interface MarketplaceManifest {

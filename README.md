@@ -122,7 +122,7 @@ claude plugin marketplace add droneey/constitution
 claude plugin install constitution@droneey
 ```
 
-`claude plugin marketplace update` pulls a newer version.
+The marketplace serves the plugin from the tag of its latest release: each release commit writes its tag into `.claude-plugin/marketplace.json`, so `claude plugin marketplace update` brings a release, never unreleased work on `main`.
 
 ## 🛠️ Development
 
@@ -132,7 +132,10 @@ bun install                  # installs the git hooks
 bun run check                # lint, package manifests, types, tests with the coverage gate, mutation, then the blocks check
 bun run digests:write        # regenerate digests/ after a change to a block
 bun run build                # build tools/mutation-check/dist/main.js, as the release does
+claude --plugin-dir .        # a session on the working tree's plugin instead of the installed release
 ```
+
+The release commit writes the version into `package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand, and a session with `--plugin-dir .` runs the same version this repository pins.
 
 The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
 
@@ -150,7 +153,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
 - a binding whose rule, axis, part or setting does not hold, or whose rule belongs to a block below its part, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
-- a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
+- a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository at a release tag, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
 - a `digests/` file that is missing or differs from its regeneration, a file there the generator does not write, and a core part of the digest over 3,500 bytes.
 

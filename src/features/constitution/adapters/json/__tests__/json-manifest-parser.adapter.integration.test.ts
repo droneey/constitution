@@ -51,17 +51,38 @@ describe('createJsonManifestParser', () => {
         status: 'parsed',
         value: {
           name: 'constitution',
+          repository: undefined,
           skills: expected,
         },
       });
     },
   );
 
-  it('should read every plugin with its source when the marketplace is valid', () => {
+  it('should read the repository when the plugin manifest names one', () => {
     // Arrange
     const parser = createJsonManifestParser();
     const json =
-      '{"name":"droneey","plugins":[{"name":"constitution","source":"./"},{"name":"devkit","source":"./devkit"}]}';
+      '{"name":"constitution","repository":"https://github.com/droneey/constitution"}';
+
+    // Act
+    const read = parser.plugin(json);
+
+    // Assert
+    expect(read).toStrictEqual({
+      status: 'parsed',
+      value: {
+        name: 'constitution',
+        repository: 'https://github.com/droneey/constitution',
+        skills: [],
+      },
+    });
+  });
+
+  it('should read the repository and ref of a GitHub source and neither of any other source when the marketplace is valid', () => {
+    // Arrange
+    const parser = createJsonManifestParser();
+    const json =
+      '{"name":"droneey","plugins":[{"name":"constitution","source":{"source":"github","repo":"droneey/constitution","ref":"v1.0.0"}},{"name":"local","source":"./local"},{"name":"remote","source":{"source":"url","url":"https://example.com/remote.git","ref":"v2.0.0"}}]}';
 
     // Act
     const read = parser.marketplace(json);
@@ -73,14 +94,42 @@ describe('createJsonManifestParser', () => {
         plugins: [
           {
             name: 'constitution',
-            source: './',
+            ref: 'v1.0.0',
+            repo: 'droneey/constitution',
           },
           {
-            name: 'devkit',
-            source: './devkit',
+            name: 'local',
+            ref: undefined,
+            repo: undefined,
+          },
+          {
+            name: 'remote',
+            ref: undefined,
+            repo: undefined,
           },
         ],
       },
+    });
+  });
+
+  it('should report the source when a plugin source object names no kind', () => {
+    // Arrange
+    const parser = createJsonManifestParser();
+    const json =
+      '{"name":"droneey","plugins":[{"name":"constitution","source":{"repo":"droneey/constitution"}}]}';
+
+    // Act
+    const read = parser.marketplace(json);
+
+    // Assert
+    expect(read).toStrictEqual({
+      issues: [
+        {
+          field: 'plugins.0.source',
+          message: 'Invalid input',
+        },
+      ],
+      status: 'mismatched',
     });
   });
 
@@ -138,7 +187,7 @@ describe('createJsonManifestParser', () => {
       issues: [
         {
           field: 'plugins.0.source',
-          message: 'Invalid input: expected string, received undefined',
+          message: 'Invalid input',
         },
       ],
       json: '{"name":"droneey","plugins":[{"name":"constitution"}]}',

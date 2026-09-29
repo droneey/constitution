@@ -12,8 +12,25 @@ import { pluginCheck } from '../plugin.check';
 
 const PLUGIN = '.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';
+const UNSERVED = (repo: string): string =>
+  `does not list the plugin "constitution" from the GitHub repository its manifest names (${repo}) at a release tag v<major>.<minor>.<patch>`;
+const listed = (source: unknown): string =>
+  JSON.stringify({
+    name: 'droneey',
+    plugins: [
+      {
+        name: 'constitution',
+        source,
+      },
+    ],
+  });
+const GITHUB = {
+  repo: 'droneey/constitution',
+  source: 'github',
+};
 const HOOKS = 'hooks/hooks.json';
-const LISTING_SKILLS = '{"name":"constitution","skills":["./skills/"]}';
+const LISTING_SKILLS =
+  '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./skills/"]}';
 const RATIFY =
   '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n';
 const SESSION_START_HOOK =
@@ -72,7 +89,8 @@ describe('pluginCheck', () => {
           path: PLUGIN,
         },
         {
-          message: 'does not list the plugin "" with source "./"',
+          message:
+            'does not list the plugin "" from the GitHub repository its manifest names (none) at a release tag v<major>.<minor>.<patch>',
           path: MARKETPLACE,
         },
       ]);
@@ -89,7 +107,8 @@ describe('pluginCheck', () => {
         },
       ],
       files: withFiles({
-        [PLUGIN]: '{"name":"constitution","skills":"./skills/"}',
+        [PLUGIN]:
+          '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":"./skills/"}',
       }),
       name: 'a listed directory holds no skill',
     },
@@ -115,7 +134,8 @@ describe('pluginCheck', () => {
     {
       expected: [],
       files: withFiles({
-        [PLUGIN]: '{"name":"constitution","skills":["./tools/skills/"]}',
+        [PLUGIN]:
+          '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./tools/skills/"]}',
         'tools/skills/ratify/SKILL.md': RATIFY,
       }),
       name: 'a listed nested directory holds its skills',
@@ -155,7 +175,8 @@ describe('pluginCheck', () => {
         },
       ],
       files: withFiles({
-        [PLUGIN]: '{"name":"constitution","skills":["./tools/skills/"]}',
+        [PLUGIN]:
+          '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./tools/skills/"]}',
         'tools/skills/check/references/roles.md': '# Roles\n',
         'tools/skills/ratify/SKILL.md': RATIFY,
       }),
@@ -300,15 +321,96 @@ describe('pluginCheck', () => {
     {
       expected: [
         {
-          message: 'does not list the plugin "constitution" with source "./"',
+          message: UNSERVED('droneey/constitution'),
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        [MARKETPLACE]: listed('./'),
+      }),
+      name: 'serving the plugin from its own folder',
+    },
+    {
+      expected: [
+        {
+          message: UNSERVED('droneey/constitution'),
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        [MARKETPLACE]: listed({
+          ...GITHUB,
+          repo: 'someone/constitution',
+          ref: 'v1.0.0',
+        }),
+      }),
+      name: 'serving the plugin from another repository',
+    },
+    ...[
+      'main',
+      'v1.0.0-rc.1',
+      'release-v1.0.0',
+      undefined,
+    ].map((ref) => ({
+      expected: [
+        {
+          message: UNSERVED('droneey/constitution'),
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        [MARKETPLACE]: listed({
+          ...GITHUB,
+          ref,
+        }),
+      }),
+      name: `serving the plugin at ${ref ?? 'no ref'}`,
+    })),
+    {
+      expected: [
+        {
+          message: UNSERVED('none'),
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        '.claude-plugin/plugin.json': '{"name":"constitution"}',
+        [MARKETPLACE]: listed({
+          ref: 'v1.0.0',
+          source: 'github',
+        }),
+      }),
+      name: 'listed while the plugin manifest names no repository',
+    },
+    {
+      expected: [
+        {
+          message: UNSERVED('none'),
+          path: MARKETPLACE,
+        },
+      ],
+      files: withFiles({
+        '.claude-plugin/plugin.json':
+          '{"name":"constitution","repository":"https://gitlab.com/droneey/constitution"}',
+        [MARKETPLACE]: listed({
+          ...GITHUB,
+          ref: 'v1.0.0',
+        }),
+      }),
+      name: 'listed while the plugin manifest names a repository off GitHub',
+    },
+    {
+      expected: [
+        {
+          message: UNSERVED('droneey/constitution'),
           path: MARKETPLACE,
         },
       ],
       files: withFiles({
         [MARKETPLACE]:
-          '{"name":"droneey","plugins":[{"name":"constitution","source":"./plugin/"}]}',
+          '{"name":"droneey","plugins":[{"name":"devkit","source":{"source":"github","repo":"droneey/constitution","ref":"v1.0.0"}}]}',
       }),
-      name: 'serving the plugin from another folder',
+      name: 'serving another plugin from the repository and release tag',
     },
     {
       expected: [
@@ -327,7 +429,7 @@ describe('pluginCheck', () => {
       expected: [],
       files: withFiles({
         [MARKETPLACE]:
-          '{"name":"droneey","plugins":[{"name":"constitution","source":"./"},{"name":"devkit","source":"./devkit/"}]}',
+          '{"name":"droneey","plugins":[{"name":"devkit","source":"./devkit/"},{"name":"constitution","source":{"source":"github","repo":"droneey/constitution","ref":"v10.10.10"}}]}',
       }),
       name: 'listing another plugin beside it',
     },
