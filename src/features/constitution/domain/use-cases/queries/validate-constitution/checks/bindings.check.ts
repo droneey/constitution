@@ -25,6 +25,7 @@ const partOf = (input: {
 
     return (
       path?.kind === PresetFileKind.Part &&
+      path.scope === input.binding.scope &&
       path.tool === input.binding.tool &&
       path.axis === input.binding.axis &&
       path.name === input.binding.part
@@ -32,30 +33,41 @@ const partOf = (input: {
   });
 
 const SELF = 'self';
+const COMMON = 'common';
 
-// A part is named after the block its settings need, and holds rules of that
-// block, of the blocks above it, of a seam with it, or of the tool itself;
-// self is the tool's own.
+// A part is named after the block its settings need — in a language's folder
+// when they also need that language — and holds rules of those blocks, of the
+// blocks above them, of a seam with them, or of the tool itself; self is the
+// tool's own.
 const isAbove = (input: {
   binding: Binding;
   byId: BlocksById;
   rule: Rule;
 }): boolean => {
-  const owner =
-    input.binding.part === SELF ? input.binding.tool : input.binding.part;
+  const owners = [
+    input.binding.part === SELF ? input.binding.tool : input.binding.part,
+    ...(input.binding.scope === COMMON
+      ? []
+      : [
+          input.binding.scope,
+        ]),
+  ];
 
   return (
     input.rule.block === input.binding.tool ||
-    owner === input.rule.with ||
-    !input.byId.has(owner) ||
-    mayReferTo({
-      byId: input.byId,
-      from: {
-        block: owner,
-        with: undefined,
-      },
-      to: input.rule.block,
-    })
+    owners.some(
+      (owner) =>
+        owner === input.rule.with ||
+        !input.byId.has(owner) ||
+        mayReferTo({
+          byId: input.byId,
+          from: {
+            block: owner,
+            with: undefined,
+          },
+          to: input.rule.block,
+        }),
+    )
   );
 };
 
@@ -89,7 +101,7 @@ const bindingMessage = (input: {
   const part = partOf(input);
 
   if (part === undefined) {
-    return `binds ${rule.slug} to the part ${binding.part}, which presets/${binding.tool}/${binding.axis}/ does not hold`;
+    return `binds ${rule.slug} to the part ${binding.part}, which presets/${binding.scope}/${binding.tool}/${binding.axis}/ does not hold`;
   }
 
   return part.text.includes(binding.setting)

@@ -96,23 +96,23 @@ describe('the knip preset', () => {
   it.each([
     {
       binary: 'betterleaks',
-      part: 'foundation/betterleaks',
+      part: 'typescript/foundation/betterleaks',
     },
     {
       binary: 'ls-lint',
-      part: 'foundation/ls-lint',
+      part: 'typescript/foundation/ls-lint',
     },
     {
       binary: 'mise',
-      part: 'foundation/mise',
+      part: 'typescript/foundation/mise',
     },
     {
       binary: 'osv-scanner',
-      part: 'foundation/osv-scanner',
+      part: 'typescript/foundation/osv-scanner',
     },
     {
       binary: 'lefthook',
-      part: 'workflow/lefthook',
+      part: 'typescript/workflow/lefthook',
     },
   ])(
     'should report no missing binary when a script runs $binary and the project joins $part',

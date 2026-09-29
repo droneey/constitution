@@ -7,39 +7,42 @@ enum PresetFileKind {
 type PresetPath =
   | {
       kind: PresetFileKind.Bindings;
+      scope: string;
       tool: string;
     }
   | {
       axis: string;
       kind: PresetFileKind.Part | PresetFileKind.Plugin;
       name: string;
+      scope: string;
       tool: string;
     };
 
-// presets/<tool>/bindings.yaml, <axis>/<part>.<extension>, or <axis>/plugins/<rule>.grit
-const BINDINGS = /^presets\/([^/]+)\/bindings\.yaml$/;
-const PART = /^presets\/([^/]+)\/([^/]+)\/([^/.]+)\.[^/]+$/;
-const PLUGIN = /^presets\/([^/]+)\/([^/]+)\/plugins\/([^/.]+)\.grit$/;
+// presets/<scope>/<tool>/bindings.yaml, <scope>/<tool>/<axis>/<part>.<extension>,
+// or <scope>/<tool>/<axis>/plugins/<rule>.grit
+const BINDINGS = /^presets\/([^/]+)\/([^/]+)\/bindings\.yaml$/;
+const PART = /^presets\/([^/]+)\/([^/]+)\/([^/]+)\/([^/.]+)\.[^/]+$/;
+const PLUGIN = /^presets\/([^/]+)\/([^/]+)\/([^/]+)\/plugins\/([^/.]+)\.grit$/;
 
 const presetPathOf = (path: string): PresetPath | undefined => {
   const bindings = BINDINGS.exec(path);
 
   if (bindings !== null) {
-    // Stryker disable next-line StringLiteral: the pattern always captures the tool
-    const [, tool = ''] = bindings;
+    // Stryker disable next-line StringLiteral: the pattern always captures the scope and the tool
+    const [, scope = '', tool = ''] = bindings;
 
     return {
       kind: PresetFileKind.Bindings,
+      scope,
       tool,
     };
   }
 
   const plugin = PLUGIN.exec(path);
-  const part = PART.exec(path);
   const [match, kind] =
     plugin === null
       ? [
-          part,
+          PART.exec(path),
           PresetFileKind.Part,
         ]
       : [
@@ -51,13 +54,14 @@ const presetPathOf = (path: string): PresetPath | undefined => {
     return undefined;
   }
 
-  // Stryker disable next-line StringLiteral: both patterns always capture all three
-  const [, tool = '', axis = '', name = ''] = match;
+  // Stryker disable next-line StringLiteral: both patterns always capture the scope, the tool, the axis and the name
+  const [, scope = '', tool = '', axis = '', name = ''] = match;
 
   return {
     axis,
     kind,
     name,
+    scope,
     tool,
   };
 };

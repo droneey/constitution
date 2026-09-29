@@ -20,3 +20,10 @@ Access control of a route sits in its `beforeLoad`, and ends in `redirect`.
 | Why | Check | Tags |
 |---|---|---|
 | the guard runs before the screen loads anything, so a denied user sees nothing of it. | review | [security] |
+
+## tanstack-router-file-names-kept → kebab-case-file-names
+Beside kebab-case, a route keeps the names TanStack Router reads: `__root.tsx`, a pathless layout `_auth.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the router builds its tree from these names alone. | tool/names | [] |

@@ -1,5 +1,0 @@
-{
-  "plugins": [
-    "./.constitution/presets/biome/foundation/plugins/ky-body-parsed-by-schema.grit",
-  ],
-}

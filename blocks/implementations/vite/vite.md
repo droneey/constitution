@@ -1,6 +1,6 @@
 ---
 id: vite
-summary: Vite builds and serves the bundle; the build is not the type gate.
+summary: Vite builds and serves the bundle.
 requires: [typescript]
 extends: null
 abstract: false

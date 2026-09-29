@@ -1,14 +1,15 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": [
-    "./.constitution/presets/biome/foundation/self.jsonc",
-    "./.constitution/presets/biome/foundation/core.jsonc",
-    "./.constitution/presets/biome/foundation/typescript.jsonc",
-    "./.constitution/presets/biome/foundation/git.jsonc",
-    "./.constitution/presets/biome/foundation/bun-test.jsonc",
-    "./.constitution/presets/biome/foundation/dependency-cruiser.jsonc",
-    "./.constitution/presets/biome/architecture/core.jsonc",
-    "./.constitution/presets/biome/architecture/typescript.jsonc"
+    "./.constitution/presets/common/biome/foundation/self.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/self.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/core.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/typescript.jsonc",
+    "./.constitution/presets/common/biome/foundation/git.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/bun-test.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/dependency-cruiser.jsonc",
+    "./.constitution/presets/typescript/biome/architecture/core.jsonc",
+    "./.constitution/presets/typescript/biome/architecture/typescript.jsonc"
   ],
   "overrides": [
     {

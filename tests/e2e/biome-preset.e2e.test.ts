@@ -28,7 +28,7 @@ export function useRoom(label: string): void {
 
 const TEST_PARTS = [
   ...FOUNDATION_PARTS,
-  'foundation/bun-test',
+  'typescript/foundation/bun-test',
 ];
 
 // Biome turns on the React and Tailwind rules only for a manifest that lists
@@ -43,11 +43,11 @@ const MANIFEST = JSON.stringify({
 
 const WEB_PARTS = [
   ...FOUNDATION_PARTS,
-  'foundation/_react',
-  'foundation/react-dom',
-  'foundation/browser',
-  'foundation/tailwind',
-  'foundation/testing-library',
+  'typescript/foundation/_react',
+  'typescript/foundation/react-dom',
+  'typescript/foundation/browser',
+  'typescript/foundation/tailwind',
+  'typescript/foundation/testing-library',
 ];
 
 const indexes = (count: number): readonly number[] => [
@@ -202,7 +202,7 @@ describe('the Biome preset', () => {
         files,
         parts: [
           ...FOUNDATION_PARTS,
-          'architecture/core',
+          'typescript/architecture/core',
         ],
       };
 
@@ -568,7 +568,7 @@ describe('the Biome foundation parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/ky',
+        'typescript/foundation/ky',
       ],
     };
 
@@ -600,8 +600,9 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        'foundation/self',
-        'foundation/core',
+        'common/foundation/self',
+        'typescript/foundation/self',
+        'typescript/foundation/core',
       ],
       rule: 'useExplicitType',
     },
@@ -621,7 +622,8 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        'foundation/self',
+        'common/foundation/self',
+        'typescript/foundation/self',
       ],
       rule: 'useErrorCause',
     },
@@ -632,8 +634,9 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        'foundation/self',
-        'foundation/core',
+        'common/foundation/self',
+        'typescript/foundation/self',
+        'typescript/foundation/core',
       ],
       rule: 'useErrorCause',
     },
@@ -654,7 +657,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: false,
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/dependency-cruiser',
+        'typescript/foundation/dependency-cruiser',
       ],
       rule: 'noDefaultExport',
     },
@@ -666,7 +669,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: true,
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/_react',
+        'typescript/foundation/_react',
       ],
       rule: 'useSelfClosingElements',
     },
@@ -728,7 +731,7 @@ describe('the Biome css part', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/css',
+        'css/foundation/css',
       ],
     };
 
@@ -747,7 +750,7 @@ describe('the Biome css part', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/css',
+        'css/foundation/css',
       ],
     };
 
@@ -767,15 +770,17 @@ describe('the Biome css part', () => {
       isReported: true,
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/css',
+        'css/foundation/css',
+        'typescript/foundation/css',
       ],
     },
     {
       isReported: false,
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/css',
-        'foundation/tailwind',
+        'css/foundation/css',
+        'typescript/foundation/css',
+        'typescript/foundation/tailwind',
       ],
     },
   ])(
@@ -830,7 +835,7 @@ describe('the Biome tanstack-query part', () => {
         },
         parts: [
           ...FOUNDATION_PARTS,
-          'foundation/tanstack-query',
+          'typescript/foundation/tanstack-query',
         ],
       };
 
@@ -917,7 +922,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/css',
+        'css/foundation/css',
       ],
       rule: 'useNamedLayer',
     },
@@ -928,7 +933,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/react-dom',
+        'typescript/foundation/react-dom',
       ],
       rule: 'noNoninteractiveElementInteractions',
     },
@@ -943,7 +948,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/_react',
+        'typescript/foundation/_react',
       ],
       rule: 'useHookAtTopLevel',
     },
@@ -962,8 +967,8 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/_react',
-        'foundation/react-native',
+        'typescript/foundation/_react',
+        'typescript/foundation/react-native',
       ],
       rule: 'noReactNativeLiteralColors',
     },
@@ -974,7 +979,7 @@ describe('the Biome framework parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/_react',
+        'typescript/foundation/_react',
       ],
       rule: 'useFilenamingConvention',
     },
@@ -1241,7 +1246,7 @@ describe('the Biome architecture parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'architecture/core',
+        'typescript/architecture/core',
       ],
       rule: 'noReExportAll',
     },
@@ -1253,7 +1258,7 @@ describe('the Biome architecture parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'architecture/react-native',
+        'typescript/architecture/react-native',
       ],
       rule: 'noReactNativeDeepImports',
     },
@@ -1288,14 +1293,14 @@ describe('the Biome architecture parts', () => {
       isReported: false,
       parts: [
         ...FOUNDATION_PARTS,
-        'architecture/core',
+        'typescript/architecture/core',
       ],
     },
     {
       isReported: true,
       parts: [
         ...FOUNDATION_PARTS,
-        'architecture/typescript',
+        'typescript/architecture/typescript',
       ],
     },
   ])(
@@ -1330,7 +1335,7 @@ describe('the Biome architecture parts', () => {
       isReported: false,
       parts: [
         ...FOUNDATION_PARTS,
-        'foundation/nestjs',
+        'typescript/foundation/nestjs',
       ],
     },
   ])(

@@ -14,6 +14,13 @@ One bundle serves every environment: its configuration is served beside it, and 
 |---|---|---|
 | one tested bundle is promoted from staging to production unchanged, and nothing environment-specific is published inside it. | review | [security] |
 
+## bundle-reads-no-build-environment → runtime-configuration-served-beside-bundle
+Browser code never reads `process.env`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
+
 ## bundle-size-budget · SHOULD
 Each bundle has a size budget the check holds, the embeddable one first.
 

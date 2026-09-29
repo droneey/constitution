@@ -27,3 +27,10 @@ Stories are outside coverage.
 | Why | Check | Tags |
 |---|---|---|
 | a story renders a component without asserting anything, so a line it covers would count as proven when no spec proves it. | review | [testing] |
+
+## stories-unreachable-from-production → test-code-unreachable-from-production
+Production code never imports a story.
+
+| Why | Check | Tags |
+|---|---|---|
+| a story in production ships fixtures and fakes to users. | tool/architecture | [] |

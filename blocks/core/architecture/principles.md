@@ -20,12 +20,12 @@
 
 The laws are the only MUST rules of this chapter. Each one is binding in every project; a project lowers one only by an override written with the user's consent.
 
-## dependencies-point-inward-without-cycles · MUST
-Imports point inward, toward stability, and form no cycle, direct or through a chain of modules.
+## dependencies-point-inward · MUST
+Imports point inward, toward stability: an outer part imports an inner one, never the reverse.
 
 | Why | Check | Tags |
 |---|---|---|
-| a cycle ties two modules into one unit that can be neither tested nor changed apart, and an outward import lets a volatile detail break a stable rule. | tool/architecture | [] |
+| an outward import lets a volatile detail break a stable rule. | tool/architecture | [] |
 
 ## inner-layers-declare-their-contracts · MUST
 The inner layer declares, in its own words, the contracts it needs; the outer layer implements them. Both depend on the contract, never the inner layer on the implementation.

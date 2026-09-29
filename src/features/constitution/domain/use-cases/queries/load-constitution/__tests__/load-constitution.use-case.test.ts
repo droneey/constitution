@@ -635,7 +635,7 @@ describe('loadConstitution', () => {
     // Arrange
     const files: Files = {
       ...validFiles(),
-      'presets/biome/bindings.yaml': [
+      'presets/typescript/biome/bindings.yaml': [
         'architecture:',
         '  core:',
         '    reads-are-cancellable: [surface.grit]',
@@ -644,8 +644,8 @@ describe('loadConstitution', () => {
         '    hooks-at-top-level: [useHookAtTopLevel, useExhaustiveDependencies]',
         '',
       ].join('\n'),
-      'presets/biome/foundation/_react.jsonc': '{}\n',
-      'presets/biome/notes/bindings.yaml': 'foundation: {}\n',
+      'presets/typescript/biome/foundation/_react.jsonc': '{}\n',
+      'presets/typescript/biome/notes/bindings.yaml': 'foundation: {}\n',
     };
 
     // Act
@@ -660,34 +660,37 @@ describe('loadConstitution', () => {
       bindings: [
         {
           axis: Axis.Foundation,
-          file: 'presets/biome/bindings.yaml',
+          file: 'presets/typescript/biome/bindings.yaml',
           part: '_react',
           rule: 'hooks-at-top-level',
+          scope: 'typescript',
           setting: 'useHookAtTopLevel',
           tool: 'biome',
         },
         {
           axis: Axis.Foundation,
-          file: 'presets/biome/bindings.yaml',
+          file: 'presets/typescript/biome/bindings.yaml',
           part: '_react',
           rule: 'hooks-at-top-level',
+          scope: 'typescript',
           setting: 'useExhaustiveDependencies',
           tool: 'biome',
         },
         {
           axis: Axis.Architecture,
-          file: 'presets/biome/bindings.yaml',
+          file: 'presets/typescript/biome/bindings.yaml',
           part: 'core',
           rule: 'reads-are-cancellable',
+          scope: 'typescript',
           setting: 'surface.grit',
           tool: 'biome',
         },
       ],
       findings: [],
       presets: [
-        'presets/biome/bindings.yaml',
-        'presets/biome/foundation/_react.jsonc',
-        'presets/biome/notes/bindings.yaml',
+        'presets/typescript/biome/bindings.yaml',
+        'presets/typescript/biome/foundation/_react.jsonc',
+        'presets/typescript/biome/notes/bindings.yaml',
       ],
     });
   });
@@ -717,7 +720,7 @@ describe('loadConstitution', () => {
       // Arrange
       const files: Files = {
         ...validFiles(),
-        'presets/biome/bindings.yaml': text,
+        'presets/typescript/biome/bindings.yaml': text,
       };
 
       // Act
@@ -732,7 +735,7 @@ describe('loadConstitution', () => {
         findings: [
           {
             message,
-            path: 'presets/biome/bindings.yaml',
+            path: 'presets/typescript/biome/bindings.yaml',
           },
         ],
       });

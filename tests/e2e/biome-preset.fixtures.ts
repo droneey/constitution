@@ -47,22 +47,23 @@ const PRESET = z.object({
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const BIOME = join(REPOSITORY, 'node_modules', '.bin', 'biome');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'biome');
+const PRESETS_FOLDER = join(REPOSITORY, 'presets');
 const BLOCKS = join(REPOSITORY, 'blocks');
 
 const FOUNDATION_PARTS = [
-  'foundation/self',
-  'foundation/core',
-  'foundation/typescript',
+  'common/foundation/self',
+  'typescript/foundation/self',
+  'typescript/foundation/core',
+  'typescript/foundation/typescript',
 ];
 
 const PARTS: readonly string[] = [
   ...FOUNDATION_PARTS,
-  'foundation/bun-test',
-  'foundation/_react',
-  'architecture/core',
-  'architecture/typescript',
-  'architecture/_react',
+  'typescript/foundation/bun-test',
+  'typescript/foundation/_react',
+  'typescript/architecture/core',
+  'typescript/architecture/typescript',
+  'typescript/architecture/_react',
 ];
 
 const writeFiles = (
@@ -91,7 +92,8 @@ const lintFindings = (project: Project): Findings => {
     ...project.files,
     'biome.json': JSON.stringify({
       extends: (project.parts ?? PARTS).map(
-        (part) => `./.constitution/presets/biome/${part}.jsonc`,
+        (part) =>
+          `./.constitution/presets/${part.replace('/', '/biome/')}.jsonc`,
       ),
       vcs: {
         enabled: false,
@@ -134,7 +136,7 @@ const presetFiles = (): readonly string[] =>
     recursive: true,
   })
     .map(String)
-    .filter((path) => path.endsWith('.jsonc'))
+    .filter((path) => path.split('/')[1] === 'biome' && path.endsWith('.jsonc'))
     .toSorted((left, right) => left.localeCompare(right));
 
 const presetText = (path: string): string =>

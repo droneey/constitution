@@ -1,0 +1,30 @@
+foundation:
+  browser:
+    bundle-reads-no-build-environment:
+      - types
+  core:
+    no-dead-code:
+      - allowUnreachableCode
+      - allowUnusedLabels
+  nestjs:
+    nestjs-keeps-decorator-metadata:
+      - emitDecoratorMetadata
+      - experimentalDecorators
+  self:
+    compiler-is-the-type-gate:
+      - exactOptionalPropertyTypes
+      - noFallthroughCasesInSwitch
+      - noImplicitOverride
+      - noImplicitReturns
+      - noUncheckedIndexedAccess
+      - noUnusedLocals
+      - noUnusedParameters
+      - strict
+      - verbatimModuleSyntax
+    no-any:
+      - strict
+    no-dead-code:
+      - noUnusedLocals
+      - noUnusedParameters
+    undefined-is-the-only-absence:
+      - exactOptionalPropertyTypes

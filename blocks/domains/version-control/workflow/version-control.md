@@ -33,7 +33,7 @@ The commit hooks run the check's fast part before each commit, and CI runs the s
 ## Branches
 
 ## branch-named-type-issue-name · MUST
-A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<kebab-name>`. A dependency bot's branches are exempt.
+A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<name>`: the issue's number, and a name of lowercase words joined by hyphens, with no digit. A dependency bot's branches are exempt.
 
 | Why | Check | Tags |
 |---|---|---|

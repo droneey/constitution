@@ -16,7 +16,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block — with the languages its checks cover and the roles a language is held to — rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
 | `skills` | `/ratify` and `/amend`, which write a project's files |
-| `presets` | The tool configurations that hold the tool-checked rules, `presets/<tool>/<axis>/<block>.*` |
+| `presets` | The tool configurations that hold the tool-checked rules, `presets/<scope>/<tool>/<axis>/<block>.*` |
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
 | `tools` | Programs the release archive carries, such as `mutation-check`, which mutates only the lines a change touches |
 | `.claude-plugin` | The plugin and marketplace manifests |
@@ -66,8 +66,9 @@ A block refers only to the layers above it, through its front matter. The rules 
 
 ## 🧰 Presets
 
-A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<tool>/<axis>/<block>.*`:
-- the folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `typescript` for the compiler;
+A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*`:
+- the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
+- the tool folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `tsc` for the compiler;
 - the axis folder is the axis whose rules the part holds, so a project that leaves an axis out leaves out its parts;
 - a part is named after the block its settings need, the one without which they mean nothing: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s; settings that need no block beyond the tool sit in `core` when they hold a rule of core and in `self` when they are the tool's own; GritQL rules are `<axis>/plugins/<rule-slug>.grit`.
 
@@ -76,18 +77,19 @@ A project's configuration extends the parts of its active blocks on its axes, fo
 ```json
 {
   "extends": [
-    "./.constitution/presets/biome/foundation/self.jsonc",
-    "./.constitution/presets/biome/foundation/core.jsonc",
-    "./.constitution/presets/biome/foundation/typescript.jsonc",
-    "./.constitution/presets/biome/foundation/react-dom.jsonc",
-    "./.constitution/presets/biome/architecture/core.jsonc"
+    "./.constitution/presets/common/biome/foundation/self.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/typescript.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/self.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/core.jsonc",
+    "./.constitution/presets/typescript/biome/foundation/react-dom.jsonc",
+    "./.constitution/presets/typescript/biome/architecture/core.jsonc"
   ]
 }
 ```
 
 A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists.
 
-Beside its parts, a preset holds `bindings.yaml`: which setting of which part holds which rule, by axis, part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
+Beside its parts, a preset holds `presets/<scope>/<tool>/bindings.yaml`: which setting of which part holds which rule, by axis, part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
 
 ```yaml
 foundation:
@@ -145,7 +147,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits, a cycle and a missing rule;
 - a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
 - a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
-- a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`;
+- a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
 - a binding whose rule, axis, part or setting does not hold, or whose rule belongs to a block below its part, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;

@@ -26,12 +26,12 @@ const PRESET = z.object({
 });
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'ls-lint');
+const PRESETS_FOLDER = join(REPOSITORY, 'presets');
 
 const PARTS = [
-  'foundation/core',
-  'foundation/typescript',
-  'architecture/typescript',
+  'common/foundation/core',
+  'typescript/foundation/typescript',
+  'typescript/architecture/core',
 ];
 
 const LS_LINT = miseBinary('ls-lint');
@@ -51,11 +51,11 @@ const failedPaths = (project: Project): readonly string[] => {
   const linting = spawnSync(
     LS_LINT,
     [
-      'foundation/self',
+      'common/foundation/self',
       ...(project.parts ?? PARTS),
     ].flatMap((part) => [
       '--config',
-      `.constitution/presets/ls-lint/${part}.yaml`,
+      `.constitution/presets/${part.replace('/', '/ls-lint/')}.yaml`,
     ]),
     {
       cwd: folder,
@@ -110,9 +110,13 @@ const presetWords = (): readonly string[] => {
     recursive: true,
   })
     .map(String)
-    // bindings.yaml sits outside the axis folders, and a tool names what a part
-    // ignores: neither names what the blocks write.
-    .filter((path) => path.includes('/') && path.endsWith('.yaml'))
+    // bindings.yaml names rules, not what the blocks write.
+    .filter(
+      (path) =>
+        path.split('/')[1] === 'ls-lint' &&
+        path.endsWith('.yaml') &&
+        !path.endsWith('/bindings.yaml'),
+    )
     .map((path) =>
       PRESET.parse(
         parse(readFileSync(join(PRESETS_FOLDER, path), 'utf8'), {

@@ -1,9 +1,8 @@
-import architecture from './.constitution/presets/stryker/architecture/typescript.mjs';
-import bunTest from './.constitution/presets/stryker/foundation/bun-test.mjs';
-import core from './.constitution/presets/stryker/foundation/core.mjs';
-import mise from './.constitution/presets/stryker/foundation/mise.mjs';
-import self from './.constitution/presets/stryker/foundation/self.mjs';
-import typescript from './.constitution/presets/stryker/foundation/typescript.mjs';
+import architecture from './.constitution/presets/typescript/stryker/architecture/core.mjs';
+import bunTest from './.constitution/presets/typescript/stryker/foundation/bun-test.mjs';
+import core from './.constitution/presets/typescript/stryker/foundation/core.mjs';
+import mise from './.constitution/presets/typescript/stryker/foundation/mise.mjs';
+import self from './.constitution/presets/typescript/stryker/foundation/self.mjs';
 
 export default {
   ...self,
@@ -14,7 +13,7 @@ export default {
     command: `${bunTest.commandRunner.command} ./src ./tools`,
   },
   mutate: [
-    ...typescript.mutate,
+    ...core.mutate,
     ...architecture.mutate,
     'tools/*/src/**/*.ts',
     '!tools/*/src/**/__tests__/**',

@@ -129,6 +129,13 @@ A function's output depends only on its input, and an effect never hides inside 
 |---|---|---|
 | a pure function can be understood, tested and moved on its own. | review | [] |
 
+## no-import-cycles · MUST
+Modules form no import cycle, direct or through a chain of modules.
+
+| Why | Check | Tags |
+|---|---|---|
+| a cycle ties two modules into one unit that can be neither tested nor changed apart. | tool/architecture | [] |
+
 ## Comments and leftovers
 
 ## comments-explain-why · SHOULD
@@ -191,12 +198,19 @@ Code spells absence with one value, which the language block names; another spel
 
 ## Failure
 
-## error-cause-preserved-logged-once · SHOULD
-A mapped error keeps its cause. An error is logged once, where it is handled, never at every level it passes.
+## error-cause-preserved · MUST
+A mapped error keeps its cause.
 
 | Why | Check | Tags |
 |---|---|---|
-| the cause is what finds the bug; a failure logged at every level looks like several. | review | [errors] |
+| the cause is what finds the bug. | tool/lint | [errors] |
+
+## error-logged-once · SHOULD
+An error is logged once, where it is handled, never at every level it passes.
+
+| Why | Check | Tags |
+|---|---|---|
+| a failure logged at every level looks like several. | review | [errors] |
 
 ## retry-only-transient-failures · SHOULD
 Only a transient failure — a timeout, a dropped connection, a rate limit — is retried, with backoff and a limit.

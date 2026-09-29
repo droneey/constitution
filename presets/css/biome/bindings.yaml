@@ -1,0 +1,20 @@
+foundation:
+  css:
+    baseline-features-only:
+      - useBaseline
+    classes-declared-and-used:
+      - noUnusedClasses
+    custom-properties-declared-before-use:
+      - noUndeclaredCustomProperties
+      - noInvalidPropertyInitValue
+      - noMissingVarFunction
+    no-important-declarations:
+      - noImportantStyles
+    selectors-stay-shallow:
+      - noExcessiveSelectorClasses
+      - noDescendingSpecificity
+    styles-in-named-layers:
+      - useLayeredStyles
+      - useNamedLayer
+    styles-never-target-ids:
+      - styles-never-target-ids.grit
