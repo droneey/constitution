@@ -1,0 +1,14 @@
+foundation:
+  docker:
+    commands-in-exec-form:
+      - failure-threshold
+    docker-files-linted-in-the-check:
+      - failure-threshold
+    files-copied-never-added:
+      - failure-threshold
+    images-pinned-to-a-version:
+      - failure-threshold
+    shell-steps-fail-on-any-error:
+      - failure-threshold
+    system-packages-pinned-and-lean:
+      - failure-threshold

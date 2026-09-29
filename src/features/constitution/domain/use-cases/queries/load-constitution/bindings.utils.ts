@@ -13,6 +13,7 @@ interface BindingsLoaded {
 const loadFile = (input: {
   parser: BindingsParser;
   preset: PresetFile;
+  scope: string;
   tool: string;
 }): BindingsLoaded => {
   const { path } = input.preset;
@@ -49,6 +50,7 @@ const loadFile = (input: {
             file: path,
             part,
             rule,
+            scope: input.scope,
             setting,
             tool: input.tool,
           })),
@@ -71,6 +73,7 @@ const bindingsOf = (input: {
           loadFile({
             parser: input.parser,
             preset,
+            scope: path.scope,
             tool: path.tool,
           }),
         ]

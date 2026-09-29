@@ -1,0 +1,90 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/*.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "error",
+            "useExhaustiveDependencies": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "error",
+            "useExhaustiveDependencies": "error",
+            "noChildrenProp": "error",
+            "useJsxKeyInIterable": "error",
+            "noNestedComponentDefinitions": "error",
+          },
+          "nursery": {
+            "noComponentHookFactories": "error",
+            "useReactCompiler": "error",
+            "noReactStringRefs": "error",
+            "useReactNamingConvention": "error",
+            "useReactFunctionComponentDefinition": {
+              "level": "error",
+              "options": {
+                "namedComponents": "functionDeclaration",
+              },
+            },
+          },
+          "suspicious": {
+            "noArrayIndexKey": "error",
+            "noReactForwardRef": "error",
+            "noLeakedRender": "error",
+            "noDuplicateJsxProps": "error",
+          },
+          "style": {
+            "useFragmentSyntax": "error",
+            "useComponentExportOnlyModules": "error",
+            "useReactFunctionComponents": "error",
+            "noImplicitBoolean": "error",
+            "useConsistentCurlyBraces": "error",
+            "useSelfClosingElements": "error",
+          },
+          "performance": {
+            "noJsxPropsBind": "off",
+          },
+          "complexity": {
+            "noUselessFragments": "error",
+          },
+        },
+      },
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+    },
+  ],
+  "plugins": [
+    "./.constitution/presets/typescript/biome/foundation/plugins/modern-react-api-only.grit",
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-manual-memoisation.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

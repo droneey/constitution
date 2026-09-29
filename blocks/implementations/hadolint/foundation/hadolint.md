@@ -1,7 +1,7 @@
 # hadolint
 
 ## hadolint-over-every-dockerfile → docker-files-linted-in-the-check
-The check runs hadolint, with the archive's `presets/hadolint/foundation/docker.yaml` as `--config`, over every Dockerfile it finds by name, never over a list kept by hand.
+The check runs hadolint, with the archive's `presets/common/hadolint/foundation/docker.yaml` as `--config`, over every Dockerfile it finds by name, never over a list kept by hand.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -184,7 +184,7 @@ A dependency is imported only from the entries it publishes, never from its inte
 
 | Why | Check | Tags |
 |---|---|---|
-| internal paths change between releases without notice, and an update then breaks the program. | tool/lint | [] |
+| internal paths change between releases without notice, and an update then breaks the program. | review | [] |
 
 ## Placement
 

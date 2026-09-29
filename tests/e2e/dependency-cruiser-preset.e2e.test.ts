@@ -315,7 +315,7 @@ describe('the dependency-cruiser layer set', () => {
     },
     {
       condition:
-        'two modules import each other, a rule of the architecture core part',
+        'two modules import each other, a rule of the foundation core part',
       files: {
         'src/shared/format/format.ts': importing({
           from: './parse',
@@ -365,8 +365,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/ui',
-        'architecture/core',
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
       ],
       rule: 'components-take-data-and-callbacks',
     },
@@ -379,8 +379,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/ky',
-        'architecture/core',
+        'typescript/architecture/ky',
+        'typescript/architecture/core',
       ],
       rule: 'components-never-fetch',
     },
@@ -393,8 +393,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/tanstack-query',
-        'architecture/core',
+        'typescript/architecture/tanstack-query',
+        'typescript/architecture/core',
       ],
       rule: 'components-never-query',
     },
@@ -409,8 +409,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/ui',
-        'architecture/core',
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
       ],
       rule: 'ui-reaches-no-mechanism',
     },
@@ -424,8 +424,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/ui',
-        'architecture/core',
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
       ],
       rule: 'ui-takes-entities-as-types',
     },
@@ -438,8 +438,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/lingui',
-        'architecture/core',
+        'typescript/architecture/lingui',
+        'typescript/architecture/core',
       ],
       rule: 'primitives-hold-no-text',
     },
@@ -452,8 +452,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/tanstack-router',
-        'architecture/core',
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/core',
       ],
       rule: 'router-primitives-only-in-screens-and-widgets',
     },
@@ -466,8 +466,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/tanstack-router',
-        'architecture/core',
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/core',
       ],
       rule: 'screen-pieces-never-navigate',
     },
@@ -481,8 +481,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/analytics',
-        'architecture/core',
+        'typescript/architecture/analytics',
+        'typescript/architecture/core',
       ],
       rule: 'features-never-track',
     },
@@ -495,8 +495,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/lingui',
-        'architecture/core',
+        'typescript/architecture/lingui',
+        'typescript/architecture/core',
       ],
       rule: 'application-returns-codes-not-text',
     },
@@ -510,8 +510,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/storybook',
-        'architecture/core',
+        'typescript/foundation/storybook',
+        'typescript/architecture/core',
       ],
       rule: 'stories-unreachable-from-production',
     },
@@ -524,8 +524,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/yaml',
-        'architecture/core',
+        'typescript/architecture/yaml',
+        'typescript/architecture/core',
       ],
       rule: 'yaml-only-at-the-edge',
     },
@@ -578,15 +578,15 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/ui',
-        'architecture/tanstack-router',
-        'architecture/analytics',
-        'architecture/lingui',
-        'architecture/tanstack-query',
-        'architecture/ky',
-        'architecture/storybook',
-        'architecture/yaml',
-        'architecture/core',
+        'typescript/architecture/ui',
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/analytics',
+        'typescript/architecture/lingui',
+        'typescript/architecture/tanstack-query',
+        'typescript/architecture/ky',
+        'typescript/foundation/storybook',
+        'typescript/architecture/yaml',
+        'typescript/architecture/core',
       ],
     };
 
@@ -663,7 +663,7 @@ describe('the dependency-cruiser layer set', () => {
       const project = {
         files,
         parts: [
-          'architecture/package',
+          'typescript/architecture/package',
         ],
         roots,
       };
@@ -689,7 +689,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'architecture/package',
+        'typescript/architecture/package',
       ],
       roots: [
         'packages',

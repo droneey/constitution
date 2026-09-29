@@ -28,6 +28,7 @@ interface Binding {
   file: string;
   part: string;
   rule: string;
+  scope: string;
   setting: string;
   tool: string;
 }

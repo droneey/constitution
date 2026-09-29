@@ -48,10 +48,10 @@ const WELL_FORMED = [
 
 const BLOCK_PARTS = [
   ...PARTS,
-  'architecture/analytics',
-  'architecture/cli',
-  'architecture/tanstack-router',
-  'architecture/ui',
+  'typescript/architecture/analytics',
+  'typescript/architecture/cli',
+  'typescript/architecture/tanstack-router',
+  'typescript/architecture/ui',
 ];
 
 const WELL_FORMED_WITH_PARTS = [
@@ -278,10 +278,72 @@ describe('the ls-lint preset', () => {
   });
 });
 
+describe('the ls-lint tanstack-router foundation part', () => {
+  it.each([
+    {
+      isReported: false,
+      parts: [
+        'common/foundation/core',
+        'typescript/foundation/typescript',
+        'typescript/foundation/tanstack-router',
+      ],
+    },
+    {
+      isReported: true,
+      parts: [
+        'common/foundation/core',
+        'typescript/foundation/typescript',
+      ],
+    },
+  ])(
+    "should report the router's names $isReported when a project follows only foundation and extends $parts",
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        paths: [
+          'src/routes/__root.tsx',
+          'src/routes/_auth.tsx',
+          'src/routes/(shop)/orders/$orderId.tsx',
+          'src/routes/posts_.tsx',
+        ],
+        parts,
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed.length > 0).toBe(isReported);
+    },
+  );
+
+  it('should report a route in PascalCase when a project follows only foundation', () => {
+    // Arrange
+    const project = {
+      paths: [
+        'src/routes/Orders.tsx',
+      ],
+      parts: [
+        'common/foundation/core',
+        'typescript/foundation/typescript',
+        'typescript/foundation/tanstack-router',
+      ],
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toStrictEqual([
+      'src/routes/Orders.tsx',
+    ]);
+  });
+});
+
 const EXPO_FOUNDATION_PARTS = [
-  'foundation/core',
-  'foundation/typescript',
-  'foundation/expo',
+  'common/foundation/core',
+  'typescript/foundation/typescript',
+  'typescript/foundation/expo',
 ];
 
 describe('the ls-lint expo parts', () => {
@@ -342,8 +404,8 @@ describe('the ls-lint expo parts', () => {
       ],
       parts: [
         ...PARTS,
-        'foundation/expo',
-        'architecture/expo',
+        'typescript/foundation/expo',
+        'typescript/architecture/expo',
       ],
     };
 
@@ -359,8 +421,8 @@ describe('the ls-lint expo parts', () => {
       condition: 'the router sits in src/app',
       parts: [
         ...PARTS,
-        'foundation/expo',
-        'architecture/expo',
+        'typescript/foundation/expo',
+        'typescript/architecture/expo',
       ],
       path: 'src/app/_layout.tsx',
       reported: [
@@ -381,8 +443,8 @@ describe('the ls-lint expo parts', () => {
       condition: 'a screen is in PascalCase',
       parts: [
         ...PARTS,
-        'foundation/expo',
-        'architecture/expo',
+        'typescript/foundation/expo',
+        'typescript/architecture/expo',
       ],
       path: 'src/routes/Orders.tsx',
       reported: [
@@ -414,7 +476,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a folder is in snake_case',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'assets/order_icons/order-icon.svg',
       reported: 'assets/order_icons',
@@ -422,7 +484,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a file is in camelCase',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'assets/orderIcon.svg',
       reported: 'assets/orderIcon.svg',
@@ -430,7 +492,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a style module is in PascalCase',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'assets/Theme.module.css',
       reported: 'assets/Theme.module.css',
@@ -438,7 +500,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'an end-to-end spec is in PascalCase',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'e2e/Checkout.e2e.test.js',
       reported: 'e2e/Checkout.e2e.test.js',
@@ -446,7 +508,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a document is in PascalCase',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'docs/Guide.md',
       reported: 'docs/Guide.md',
@@ -454,7 +516,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a YAML file ends in .yml',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'config/app.yml',
       reported: 'config/app.yml',
@@ -462,7 +524,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a test folder has no typescript part',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       path: 'src/__tests__/order-view.test.ts',
       reported: 'src/__tests__',
@@ -470,8 +532,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a component file is in PascalCase',
       parts: [
-        'foundation/core',
-        'foundation/typescript',
+        'common/foundation/core',
+        'typescript/foundation/typescript',
       ],
       path: 'src/components/OrderCard.tsx',
       reported: 'src/components/OrderCard.tsx',
@@ -479,8 +541,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a spec file is in PascalCase',
       parts: [
-        'foundation/core',
-        'foundation/typescript',
+        'common/foundation/core',
+        'typescript/foundation/typescript',
       ],
       path: 'src/__tests__/OrderView.test.ts',
       reported: 'src/__tests__/OrderView.test.ts',
@@ -488,8 +550,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a test folder holds a helper',
       parts: [
-        'foundation/core',
-        'foundation/typescript',
+        'common/foundation/core',
+        'typescript/foundation/typescript',
       ],
       path: 'src/__tests__/helpers.ts',
       reported: 'src/__tests__',
@@ -497,8 +559,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'an end-to-end folder holds a helper',
       parts: [
-        'foundation/core',
-        'foundation/typescript',
+        'common/foundation/core',
+        'typescript/foundation/typescript',
       ],
       path: 'tests/e2e/helpers.ts',
       reported: 'tests/e2e',
@@ -506,8 +568,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a typescript folder is in snake_case',
       parts: [
-        'foundation/core',
-        'foundation/typescript',
+        'common/foundation/core',
+        'typescript/foundation/typescript',
       ],
       path: 'src/order_views/order-view.ts',
       reported: 'src/order_views',
@@ -535,7 +597,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'every name is kebab-case, hidden or ignored',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       paths: [
         '.dependency-cruiser.mjs',
@@ -551,7 +613,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'documents are kebab-case or in upper case',
       parts: [
-        'foundation/core',
+        'common/foundation/core',
       ],
       paths: [
         'LICENSE.md',
@@ -563,8 +625,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'typescript names are kebab-case beside a test folder',
       parts: [
-        'foundation/core',
-        'foundation/typescript',
+        'common/foundation/core',
+        'typescript/foundation/typescript',
       ],
       paths: [
         'src/__tests__/order-view.test.ts',
@@ -595,17 +657,17 @@ describe('the ls-lint foundation parts', () => {
 describe('the ls-lint parts of the tools that write folders', () => {
   it.each([
     {
-      part: 'foundation/git',
+      part: 'common/foundation/git',
       path: '.git/refs/remotes/Upstream/main',
       reported: '.git/refs/remotes/Upstream',
     },
     {
-      part: 'foundation/stryker',
+      part: 'common/foundation/stryker',
       path: '.stryker-tmp/sandbox-AhbDNq/package.json',
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'foundation/typescript',
+      part: 'typescript/foundation/typescript',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },
@@ -624,14 +686,14 @@ describe('the ls-lint parts of the tools that write folders', () => {
         with: failedPaths({
           ...project,
           parts: [
-            'foundation/core',
+            'common/foundation/core',
             part,
           ],
         }),
         without: failedPaths({
           ...project,
           parts: [
-            'foundation/core',
+            'common/foundation/core',
           ],
         }),
       };

@@ -19,11 +19,11 @@ interface Manifest {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const SYNCPACK = join(REPOSITORY, 'node_modules', '.bin', 'syncpack');
 
-const CONFIG = `import bun from './.constitution/presets/syncpack/foundation/bun.mjs';
-import packageDependencies from './.constitution/presets/syncpack/foundation/package.mjs';
-import self from './.constitution/presets/syncpack/foundation/self.mjs';
-import typescript from './.constitution/presets/syncpack/foundation/typescript.mjs';
-import packageVersions from './.constitution/presets/syncpack/workflow/package.mjs';
+const CONFIG = `import bun from './.constitution/presets/typescript/syncpack/foundation/bun.mjs';
+import packageDependencies from './.constitution/presets/typescript/syncpack/foundation/package.mjs';
+import self from './.constitution/presets/typescript/syncpack/foundation/self.mjs';
+import typescript from './.constitution/presets/typescript/syncpack/foundation/typescript.mjs';
+import packageVersions from './.constitution/presets/typescript/syncpack/workflow/package.mjs';
 
 export default {
   ...self,

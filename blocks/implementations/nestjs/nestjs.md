@@ -1,7 +1,7 @@
 ---
 id: nestjs
 summary: NestJS — modules, providers and the injector that wires them.
-requires: [typescript]
+requires: [typescript, tsc]
 extends: null
 abstract: false
 checks: []
@@ -13,7 +13,7 @@ governs: ["nest-cli.json", ".swcrc"]
 
 # NestJS
 
-> Builds a server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive — `presets/typescript/foundation/nestjs.json`, `presets/biome/foundation/nestjs.jsonc` — and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
+> Builds a server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive — `presets/typescript/tsc/foundation/nestjs.json`, `presets/typescript/biome/foundation/nestjs.jsonc` — and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
 
 ## Requirements
 

@@ -1,7 +1,7 @@
 # yamllint
 
 ## yamllint-strict-over-every-file → rules-held-by-tools
-The check runs `yamllint --strict .` over every YAML file; the configuration is `.yamllint.yaml`, extending `presets/yamllint/foundation/self.yaml` of the constitution's release archive.
+The check runs `yamllint --strict .` over every YAML file; the configuration is `.yamllint.yaml`, extending `presets/common/yamllint/foundation/self.yaml` of the constitution's release archive.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -17,11 +17,18 @@ A base image in a Dockerfile and an image in a Compose file name a version tag, 
 | an untagged image changes under the same name, so two builds of one commit run different code. | tool/lint | [security] |
 
 ## files-copied-never-added · MUST
-Files enter an image with `COPY`, never `ADD`, which also fetches addresses and unpacks archives.
+Local files and folders enter an image with `COPY`, never `ADD`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `COPY` does one visible thing; `ADD` can pull code from outside the build context unseen. | tool/lint | [security] |
+| `COPY` does one visible thing; `ADD` also fetches addresses and unpacks archives, unseen. | tool/lint | [security] |
+
+## downloads-verified-archives-unpacked · MUST
+A file from the network is downloaded in a `RUN` step at a pinned version and checked against its checksum, and an archive is unpacked with `tar`; `ADD` never fetches an address or unpacks an archive.
+
+| Why | Check | Tags |
+|---|---|---|
+| an unverified download runs whatever the address serves that day, inside the image. | review | [security] |
 
 ## commands-in-exec-form · MUST
 `CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.

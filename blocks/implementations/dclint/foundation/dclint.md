@@ -1,7 +1,7 @@
 # DCLint
 
 ## dclint-over-the-whole-repository → docker-files-linted-in-the-check
-The check runs dclint with `--recursive` over the repository and the archive's `presets/dclint/foundation/docker.yaml` as `--config`, whose rules are all errors.
+The check runs dclint with `--recursive` over the repository and the archive's `presets/common/dclint/foundation/docker.yaml` as `--config`, whose rules are all errors.
 
 | Why | Check | Tags |
 |---|---|---|

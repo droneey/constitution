@@ -83,7 +83,7 @@ A component in `components/` takes data and callbacks, performs no input or outp
 |---|---|---|
 | a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | tool/architecture | [] |
 
-## ui-layer-imports → dependencies-point-inward-without-cycles
+## ui-layer-imports → dependencies-point-inward
 A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities as types, and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
 
 | Why | Check | Tags |

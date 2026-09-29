@@ -17,11 +17,18 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 | a reader who knows the name of a thing knows the name of its file. | review | [] |
 
 ## typescript-file-forms → kebab-case-file-names
-Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts` or `.tsx`. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
 
 | Why | Check | Tags |
 |---|---|---|
 | one spelling of every kind of file lets the tools and the reader find a file by its name. | tool/names | [] |
+
+## tsx-only-where-markup-is-written → typescript-file-forms
+A file is `.tsx` only where it writes markup.
+
+| Why | Check | Tags |
+|---|---|---|
+| the extension then says which files render, and a plain module is never parsed for markup. | review | [] |
 
 ## Names
 
@@ -148,13 +155,6 @@ JSDoc documents only a public entry whose use is not obvious, never a self-descr
 | Why | Check | Tags |
 |---|---|---|
 | JSDoc that repeats a signature drifts from it, and the editor already shows the types. | review | [] |
-
-## compiler-is-the-type-gate → rules-held-by-tools
-The compiler, not a bundler or the runtime, is the type gate: `tsc --noEmit` runs in the check with the strict options — `strict`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `noImplicitOverride`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `verbatimModuleSyntax`.
-
-| Why | Check | Tags |
-|---|---|---|
-| a bundler strips the types without checking them, so a build can pass with every type wrong. | tool/types | [] |
 
 ## Dependencies
 

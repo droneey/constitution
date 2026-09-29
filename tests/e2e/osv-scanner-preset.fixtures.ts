@@ -27,7 +27,14 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const OSV_SCANNER = miseBinary('osv-scanner');
 
 const ALLOWLIST = readFileSync(
-  join(REPOSITORY, 'presets', 'osv-scanner', 'foundation', 'core.txt'),
+  join(
+    REPOSITORY,
+    'presets',
+    'common',
+    'osv-scanner',
+    'foundation',
+    'core.txt',
+  ),
   'utf8',
 )
   .trim()

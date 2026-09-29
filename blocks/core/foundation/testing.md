@@ -171,6 +171,13 @@ No test is skipped, pending, focused or without an assertion.
 |---|---|---|
 | a skipped test looks like coverage and proves nothing, and a focused one silently skips all the others. | tool/lint | [testing] |
 
+## test-code-unreachable-from-production · MUST
+Production code never imports a file of `__tests__/` or of `tests/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a fake or a fixture in production code ships test behaviour to users. | tool/architecture | [testing] |
+
 ## The gates
 
 ## tests-pass-in-check · MUST
