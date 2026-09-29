@@ -5,12 +5,15 @@ interface FieldIssue {
 
 interface PluginManifest {
   name: string;
+  repository: string | undefined;
   skills: readonly string[];
 }
 
+// A source that is no GitHub repository has neither.
 interface MarketplacePlugin {
   name: string;
-  source: string;
+  ref: string | undefined;
+  repo: string | undefined;
 }
 
 interface MarketplaceManifest {

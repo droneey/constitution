@@ -10,7 +10,11 @@
   "plugins": [
     {
       "name": "constitution",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "droneey/constitution",
+        "ref": "v0.48.1"
+      },
       "description": "The rules every droneey repository is built by, declared per project in constitution.yaml."
     }
   ]

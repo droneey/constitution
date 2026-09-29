@@ -122,7 +122,7 @@ claude plugin marketplace add droneey/constitution
 claude plugin install constitution@droneey
 ```
 
-`claude plugin marketplace update` pulls a newer version.
+The marketplace serves the plugin from the tag of its latest release, which every release moves forward; `claude plugin marketplace update` pulls it.
 
 ## 🛠️ Development
 
@@ -150,7 +150,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
 - a binding whose rule, axis, part or setting does not hold, or whose rule belongs to a block below its part, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
-- a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
+- a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository at a release tag, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
 - a `digests/` file that is missing or differs from its regeneration, a file there the generator does not write, and a core part of the digest over 3,500 bytes.
 

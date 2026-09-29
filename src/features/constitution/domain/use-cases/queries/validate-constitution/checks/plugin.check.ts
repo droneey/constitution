@@ -18,6 +18,8 @@ type Unread = Exclude<
 >;
 
 const PLUGIN_FILE = /\$\{CLAUDE_PLUGIN_ROOT\}\/([^"'\s]+)/g;
+const GITHUB_URL = 'https://github.com/';
+const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
 const RELATIVE_PREFIX = './';
 // Claude Code scans it whether or not the manifest lists it.
 const DEFAULT_SKILLS = 'skills/';
@@ -171,6 +173,7 @@ const checkPlugin = (
 ): {
   findings: readonly Finding[];
   name: string | undefined;
+  repository: string | undefined;
 } => {
   const read = constitution.documents.plugin;
 
@@ -183,6 +186,7 @@ const checkPlugin = (
         }),
       ],
       name: undefined,
+      repository: undefined,
     };
   }
 
@@ -196,6 +200,7 @@ const checkPlugin = (
           skills: constitution.documents.skills,
         }),
         name: read.value.name,
+        repository: read.value.repository,
       }
     : {
         findings: readFindings({
@@ -203,12 +208,16 @@ const checkPlugin = (
           read,
         }),
         name: undefined,
+        repository: undefined,
       };
 };
 
+// The marketplace serves the plugin from the release tag of its own repository,
+// which the release moves with every version.
 const checkMarketplace = (input: {
   pluginName: string | undefined;
   read: ManifestRead<MarketplaceManifest> | undefined;
+  repository: string | undefined;
 }): readonly Finding[] => {
   if (input.read === undefined) {
     return [
@@ -226,13 +235,22 @@ const checkMarketplace = (input: {
     });
   }
 
+  const repo = input.repository?.startsWith(GITHUB_URL)
+    ? input.repository.slice(GITHUB_URL.length)
+    : undefined;
+
   return input.read.value.plugins.some(
-    (plugin) => plugin.name === input.pluginName && plugin.source === './',
+    (plugin) =>
+      plugin.name === input.pluginName &&
+      repo !== undefined &&
+      plugin.repo === repo &&
+      // Stryker disable next-line StringLiteral: no text in place of a missing ref is a release tag
+      RELEASE_TAG.test(plugin.ref ?? ''),
   )
     ? []
     : [
         {
-          message: `does not list the plugin "${input.pluginName ?? ''}" with source "./"`,
+          message: `does not list the plugin "${input.pluginName ?? ''}" from the GitHub repository its manifest names (${repo ?? 'none'}) at a release tag v<major>.<minor>.<patch>`,
           path: DocumentPath.Marketplace,
         },
       ];
@@ -277,6 +295,7 @@ const pluginCheck: Check = ({
     ...checkMarketplace({
       pluginName: plugin.name,
       read: constitution.documents.marketplace,
+      repository: plugin.repository,
     }),
     ...checkHooks({
       paths: constitution.paths,

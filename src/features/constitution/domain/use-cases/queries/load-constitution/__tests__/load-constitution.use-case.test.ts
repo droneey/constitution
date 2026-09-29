@@ -96,7 +96,8 @@ describe('loadConstitution', () => {
           plugins: [
             {
               name: 'constitution',
-              source: './',
+              ref: 'v1.0.0',
+              repo: 'droneey/constitution',
             },
           ],
         },
@@ -105,6 +106,7 @@ describe('loadConstitution', () => {
         status: 'parsed',
         value: {
           name: 'constitution',
+          repository: 'https://github.com/droneey/constitution',
           skills: [],
         },
       },

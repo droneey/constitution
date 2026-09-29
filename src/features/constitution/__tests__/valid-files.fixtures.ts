@@ -10,12 +10,17 @@ const pluginFiles = (): Files => ({
     plugins: [
       {
         name: 'constitution',
-        source: './',
+        source: {
+          ref: 'v1.0.0',
+          repo: 'droneey/constitution',
+          source: 'github',
+        },
       },
     ],
   }),
   '.claude-plugin/plugin.json': JSON.stringify({
     name: 'constitution',
+    repository: 'https://github.com/droneey/constitution',
   }),
   'DECISIONS.md': [
     '# Decision Log',
