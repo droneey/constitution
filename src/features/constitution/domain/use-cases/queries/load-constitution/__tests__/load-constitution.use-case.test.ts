@@ -44,6 +44,7 @@ describe('loadConstitution', () => {
         bindings: [],
         blocks: [],
         documents: {
+          agents: [],
           decisions: undefined,
           digests: {
             core: undefined,
@@ -76,6 +77,7 @@ describe('loadConstitution', () => {
 
     // Assert
     expect(loaded.constitution.documents).toStrictEqual({
+      agents: [],
       decisions: textOf({
         files,
         path: 'DECISIONS.md',
@@ -180,6 +182,40 @@ describe('loadConstitution', () => {
           status: 'not-yaml',
         },
         path: 'tools/skills/check/SKILL.md',
+      },
+    ]);
+  });
+
+  it("should read each agent's front matter when files sit directly in agents/, nested, hidden and other files aside", () => {
+    // Arrange
+    const files = {
+      '.claude/agents/local.md': '---\nname: local\n---\n',
+      'agents/.draft.md': '---\nname: draft\n---\n',
+      'agents/notes/reviewer.md': '---\nname: nested\n---\n',
+      'agents/reviewer.md.orig': '---\nname: backup\n---\n',
+      'agents/reviewer.md':
+        '---\nname: reviewer\ndescription: Reviews files.\n---\n\nYou review.\n',
+      'agents/scribe.md': '# Scribe\n',
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.constitution.documents.agents).toStrictEqual([
+      {
+        file: 'reviewer',
+        frontMatter: {
+          description: 'Reviews files.',
+          name: 'reviewer',
+          status: 'parsed',
+        },
+        path: 'agents/reviewer.md',
+      },
+      {
+        file: 'scribe',
+        frontMatter: undefined,
+        path: 'agents/scribe.md',
       },
     ]);
   });

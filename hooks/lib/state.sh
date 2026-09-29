@@ -15,7 +15,7 @@ session="$(field session_id)" || exit 0
 case "${session}" in
   '' | *[!A-Za-z0-9_-]*) exit 0 ;;
 esac
-state="${TMPDIR:-/tmp}/droneey-constitution/${session}"
+state="/tmp/droneey-constitution-$(id -u)/${session}"
 [ -f "${state}/active.tsv" ] || exit 0
 
 project="$(awk -F '\t' '$1 == "project" { print $2; exit }' "${state}/active.tsv" 2>/dev/null)"

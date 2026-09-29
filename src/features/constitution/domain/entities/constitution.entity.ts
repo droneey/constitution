@@ -8,10 +8,11 @@ import type {
 } from './manifest.entity';
 import type { RequirementAnswer } from './requirement-answer.entity';
 import type { Rule } from './rule.entity';
-import type { Skill } from './skill.entity';
+import type { Agent, Skill } from './skill.entity';
 import type { VocabularyRead } from './vocabulary.entity';
 
 interface Documents {
+  agents: readonly Agent[];
   decisions: string | undefined;
   digests: {
     core: string | undefined;

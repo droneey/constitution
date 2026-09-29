@@ -278,6 +278,74 @@ describe('pluginCheck', () => {
     },
   );
 
+  it.each<{
+    agent: string;
+    messages: readonly string[];
+    name: string;
+  }>([
+    {
+      agent: 'You review.\n',
+      messages: [
+        'has no front matter; an agent names itself and says when to use it there',
+      ],
+      name: 'it has no front matter',
+    },
+    {
+      agent: '---\nname: reviewer\ndescription: [a\n---\n',
+      messages: [
+        'front matter is not valid YAML: Flow sequence in block collection must be sufficiently indented and end with a ]',
+      ],
+      name: 'its front matter is not YAML',
+    },
+    {
+      agent: '---\ndescription: Reviews files.\n---\n',
+      messages: [
+        'front matter lacks "name"; an agent declares its name and description',
+      ],
+      name: 'it has no name',
+    },
+    {
+      agent: '---\nname: reviewer\n---\n',
+      messages: [
+        'front matter lacks "description"; an agent declares its name and description',
+      ],
+      name: 'it has no description',
+    },
+    {
+      agent: '---\nname: critic\ndescription: Reviews files.\n---\n',
+      messages: [
+        'is named "critic" in its front matter; an agent is named after its file, reviewer',
+      ],
+      name: 'its name is not its file',
+    },
+    {
+      agent: '---\nname: reviewer\ndescription: Reviews files.\n---\n',
+      messages: [],
+      name: 'it is named after its file and says what it does',
+    },
+  ])(
+    'should check what an agent declares when $name',
+    ({ agent, messages }) => {
+      // Arrange
+      const input = checkInputOf(
+        withFiles({
+          'agents/reviewer.md': agent,
+        }),
+      );
+
+      // Act
+      const findings = pluginCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual(
+        messages.map((message) => ({
+          message,
+          path: 'agents/reviewer.md',
+        })),
+      );
+    },
+  );
+
   it.each([
     'templates/PROJECT.md',
     'templates/block.md',

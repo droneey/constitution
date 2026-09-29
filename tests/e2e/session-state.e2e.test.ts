@@ -1,42 +1,27 @@
-import {
-  existsSync,
-  mkdtempSync,
-  readdirSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import { contextOf, HookEvent, runHook, warningsOf } from './hook.fixtures';
+import {
+  contextOf,
+  HookEvent,
+  newSession,
+  removeSessions,
+  runHook,
+  stateFolderOf,
+  warningsOf,
+} from './hook.fixtures';
 import { createPluginRoot, removePluginRoots } from './plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from './project.fixtures';
 
-const SESSION = 'session-1';
-
 let root = '';
-const stateRoots: string[] = [];
-
-const createStateRoot = (): string => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-state-'));
-
-  stateRoots.push(folder);
-
-  return folder;
-};
-
-const stateOf = (stateRoot: string): string =>
-  join(stateRoot, 'droneey-constitution', SESSION);
 
 const recordsOf = (input: {
   kind: string;
-  stateRoot: string;
+  session: string;
 }): readonly (readonly string[])[] =>
-  readFileSync(join(stateOf(input.stateRoot), 'active.tsv'), 'utf8')
+  readFileSync(join(stateFolderOf(input.session), 'active.tsv'), 'utf8')
     .split('\n')
     .map((line) => line.split('\t'))
     .filter((fields) => fields[0] === input.kind);
@@ -47,13 +32,7 @@ beforeAll(() => {
 
 afterEach(() => {
   removeProjects();
-
-  for (const folder of stateRoots.splice(0)) {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
+  removeSessions();
 });
 
 afterAll(() => {
@@ -68,35 +47,34 @@ describe('the session state the session-start hook saves', () => {
         domains: '[ui]',
       }),
     });
-    const stateRoot = createStateRoot();
+    const session = newSession();
 
     // Act
     runHook({
       event: HookEvent.Startup,
       project,
       root,
-      session: SESSION,
-      tmpDir: stateRoot,
+      session,
     });
 
     // Assert
     const active = recordsOf({
       kind: 'active',
-      stateRoot,
+      session,
     }).find((fields) => fields[3] === 'ui');
 
     expect({
       check: recordsOf({
         kind: 'check',
-        stateRoot,
+        session,
       }),
       files: active?.[5]?.split(' ').includes('blocks/domains/ui/ui.md'),
       governs: active?.[4],
       project: recordsOf({
         kind: 'project',
-        stateRoot,
+        session,
       }),
-      reminded: readFileSync(join(stateOf(stateRoot), 'reminded'), 'utf8'),
+      reminded: readFileSync(join(stateFolderOf(session), 'reminded'), 'utf8'),
     }).toStrictEqual({
       check: [
         [
@@ -123,22 +101,21 @@ describe('the session state the session-start hook saves', () => {
         check: 'null',
       }),
     });
-    const stateRoot = createStateRoot();
+    const session = newSession();
 
     // Act
     const run = runHook({
       event: HookEvent.Startup,
       project,
       root,
-      session: SESSION,
-      tmpDir: stateRoot,
+      session,
     });
 
     // Assert
     expect({
       check: recordsOf({
         kind: 'check',
-        stateRoot,
+        session,
       }),
       warnings: warningsOf(contextOf(run)),
     }).toStrictEqual({
@@ -156,31 +133,36 @@ describe('the session state the session-start hook saves', () => {
     {
       condition: 'a subagent starts',
       event: HookEvent.Subagent,
-      session: SESSION,
+      prefix: '',
     },
     {
       condition: 'the session id is not a plain name',
       event: HookEvent.Startup,
-      session: '../session-1',
+      prefix: '../',
     },
-  ])('should save nothing when $condition', ({ event, session }) => {
+  ])('should save nothing when $condition', ({ event, prefix }) => {
     // Arrange
     const project = createProject({
       config: configOf({}),
     });
-    const stateRoot = createStateRoot();
+    const session = newSession();
 
     // Act
     runHook({
       event,
       project,
       root,
-      session,
-      tmpDir: stateRoot,
+      session: `${prefix}${session}`,
     });
 
     // Assert
-    expect(readdirSync(stateRoot)).toStrictEqual([]);
+    expect([
+      existsSync(stateFolderOf(session)),
+      existsSync(join(stateFolderOf(session), '..', '..', session)),
+    ]).toStrictEqual([
+      false,
+      false,
+    ]);
   });
 
   it.each([
@@ -205,30 +187,31 @@ describe('the session state the session-start hook saves', () => {
           domains: '[ui]',
         }),
       });
-      const stateRoot = createStateRoot();
+      const session = newSession();
 
       runHook({
         event: HookEvent.Startup,
         project,
         root,
-        session: SESSION,
-        tmpDir: stateRoot,
+        session,
       });
-      writeFileSync(join(stateOf(stateRoot), 'reminded'), 'ui\n');
+      writeFileSync(join(stateFolderOf(session), 'reminded'), 'ui\n');
 
       // Act
       runHook({
         event,
         project,
         root,
-        session: SESSION,
-        tmpDir: stateRoot,
+        session,
       });
 
       // Assert
       expect({
-        reminded: readFileSync(join(stateOf(stateRoot), 'reminded'), 'utf8'),
-        saved: existsSync(join(stateOf(stateRoot), 'active.tsv')),
+        reminded: readFileSync(
+          join(stateFolderOf(session), 'reminded'),
+          'utf8',
+        ),
+        saved: existsSync(join(stateFolderOf(session), 'active.tsv')),
       }).toStrictEqual({
         reminded,
         saved: true,

@@ -1,50 +1,50 @@
-import { mkdtempSync, realpathSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { realpathSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import { HookEvent, outputOf, runHook, runScript } from './hook.fixtures';
+import {
+  HookEvent,
+  newSession,
+  outputOf,
+  removeSessions,
+  runHook,
+  runScript,
+} from './hook.fixtures';
 import { createPluginRoot, removePluginRoots } from './plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from './project.fixtures';
 
-const SESSION = 'session-1';
-
 let root = '';
-const tmpDirs: string[] = [];
 
 const startSession = (
   config: string,
 ): {
   project: string;
-  tmpDir: string;
+  session: string;
 } => {
   const project = realpathSync(
     createProject({
       config,
     }),
   );
-  const tmpDir = mkdtempSync(join(tmpdir(), 'constitution-state-'));
+  const session = newSession();
 
-  tmpDirs.push(tmpDir);
   runHook({
     event: HookEvent.Startup,
     project,
     root,
-    session: SESSION,
-    tmpDir,
+    session,
   });
 
   return {
     project,
-    tmpDir,
+    session,
   };
 };
 
 const touch = (input: {
   filePath: string;
-  session?: string;
-  tmpDir: string;
+  session: string;
   toolName?: string;
 }): string =>
   runScript({
@@ -55,7 +55,7 @@ const touch = (input: {
       ],
       [
         'session_id',
-        input.session ?? SESSION,
+        input.session,
       ],
       [
         'tool_input',
@@ -73,7 +73,6 @@ const touch = (input: {
     ]),
     root,
     script: 'post-tool-use.sh',
-    tmpDir: input.tmpDir,
   }).stdout;
 
 beforeAll(() => {
@@ -82,13 +81,7 @@ beforeAll(() => {
 
 afterEach(() => {
   removeProjects();
-
-  for (const folder of tmpDirs.splice(0)) {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
+  removeSessions();
 });
 
 afterAll(() => {
@@ -98,7 +91,7 @@ afterAll(() => {
 describe('the reminders of the post-tool-use hook', () => {
   it('should name the block that governs a file, its files and its MUST rules when the agent first touches it', () => {
     // Arrange
-    const { project, tmpDir } = startSession(
+    const { project, session } = startSession(
       configOf({
         domains: '[ui]',
       }),
@@ -107,7 +100,7 @@ describe('the reminders of the post-tool-use hook', () => {
     // Act
     const reminder = touch({
       filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      tmpDir,
+      session,
     });
 
     // Assert
@@ -138,7 +131,7 @@ describe('the reminders of the post-tool-use hook', () => {
     'styles/theme.scss',
   ])('should name the block when a glob of it matches %s', (path) => {
     // Arrange
-    const { project, tmpDir } = startSession(
+    const { project, session } = startSession(
       configOf({
         domains: '[ui]',
       }),
@@ -147,7 +140,7 @@ describe('the reminders of the post-tool-use hook', () => {
     // Act
     const reminder = touch({
       filePath: join(project, path),
-      tmpDir,
+      session,
     });
 
     // Assert
@@ -173,7 +166,7 @@ describe('the reminders of the post-tool-use hook', () => {
     },
   ])('should say nothing when $condition', ({ path }) => {
     // Arrange
-    const { project, tmpDir } = startSession(
+    const { project, session } = startSession(
       configOf({
         domains: '[ui]',
       }),
@@ -182,7 +175,7 @@ describe('the reminders of the post-tool-use hook', () => {
     // Act
     const reminder = touch({
       filePath: path.startsWith('/') ? path : join(project, path),
-      tmpDir,
+      session,
     });
 
     // Assert
@@ -191,7 +184,7 @@ describe('the reminders of the post-tool-use hook', () => {
 
   it('should say nothing when the block that governs a touched file was named before', () => {
     // Arrange
-    const { project, tmpDir } = startSession(
+    const { project, session } = startSession(
       configOf({
         domains: '[ui]',
       }),
@@ -199,13 +192,13 @@ describe('the reminders of the post-tool-use hook', () => {
 
     touch({
       filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      tmpDir,
+      session,
     });
 
     // Act
     const reminder = touch({
       filePath: join(project, 'src/shared/components/button.tsx'),
-      tmpDir,
+      session,
       toolName: 'Edit',
     });
 
@@ -215,7 +208,7 @@ describe('the reminders of the post-tool-use hook', () => {
 
   it('should remind again when the context was cleared', () => {
     // Arrange
-    const { project, tmpDir } = startSession(
+    const { project, session } = startSession(
       configOf({
         domains: '[ui]',
       }),
@@ -223,20 +216,19 @@ describe('the reminders of the post-tool-use hook', () => {
 
     touch({
       filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      tmpDir,
+      session,
     });
     runHook({
       event: HookEvent.Clear,
       project,
       root,
-      session: SESSION,
-      tmpDir,
+      session,
     });
 
     // Act
     const reminder = touch({
       filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      tmpDir,
+      session,
     });
 
     // Assert
@@ -245,7 +237,7 @@ describe('the reminders of the post-tool-use hook', () => {
 
   it('should say nothing when the session saved no state', () => {
     // Arrange
-    const { project, tmpDir } = startSession(
+    const { project } = startSession(
       configOf({
         domains: '[ui]',
       }),
@@ -254,8 +246,7 @@ describe('the reminders of the post-tool-use hook', () => {
     // Act
     const reminder = touch({
       filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      session: 'session-2',
-      tmpDir,
+      session: newSession(),
     });
 
     // Assert

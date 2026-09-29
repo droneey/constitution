@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import {
   chmodSync,
   existsSync,
@@ -30,7 +31,6 @@ interface HookCall {
   session?: string | undefined;
   // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
-  tmpDir?: string | undefined;
 }
 
 interface HookRun {
@@ -176,14 +176,6 @@ const runHook = (call: HookCall): HookRun => {
                 join(call.project, call.projectDir),
               ],
             ]),
-        ...(call.tmpDir === undefined
-          ? []
-          : [
-              [
-                'TMPDIR',
-                call.tmpDir,
-              ],
-            ]),
       ]),
       input: inputOf({
         cwd,
@@ -298,7 +290,6 @@ const runScript = (call: {
   event: Readonly<Record<string, unknown>>;
   root: string;
   script: string;
-  tmpDir: string;
 }): HookRun => {
   const hookRun = spawnSync(
     SHELL,
@@ -326,10 +317,6 @@ const runScript = (call: {
           'PATH',
           process.env['PATH'] ?? '',
         ],
-        [
-          'TMPDIR',
-          call.tmpDir,
-        ],
       ]),
       input: JSON.stringify(call.event),
     },
@@ -340,6 +327,33 @@ const runScript = (call: {
     stderr: hookRun.stderr,
     stdout: hookRun.stdout,
   };
+};
+
+const sessions: string[] = [];
+
+// A spec isolates its state by a session id of its own: the hooks' folder is fixed.
+const newSession = (): string => {
+  const session = `spec-${randomUUID()}`;
+
+  sessions.push(session);
+
+  return session;
+};
+
+const stateFolderOf = (session: string): string =>
+  join(
+    '/tmp',
+    `droneey-constitution-${String(process.getuid?.() ?? 0)}`,
+    session,
+  );
+
+const removeSessions = (): void => {
+  for (const session of sessions.splice(0)) {
+    rmSync(stateFolderOf(session), {
+      force: true,
+      recursive: true,
+    });
+  }
 };
 
 export type { HookRun };
@@ -354,8 +368,11 @@ export {
   headlineOf,
   headlinesOf,
   lastLinesOf,
+  newSession,
   outputOf,
+  removeSessions,
   runHook,
   runScript,
+  stateFolderOf,
   warningsOf,
 };

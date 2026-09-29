@@ -15,7 +15,8 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block — with the languages its checks cover and the roles a language is held to — rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
-| `skills` | `/ratify` and `/amend`, which write a project's files |
+| `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
+| `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold the tool-checked rules, `presets/<scope>/<tool>/<axis>/<block>.*` |
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
 | `tools` | Programs the release archive carries, such as `mutation-check`, which mutates only the lines a change touches |
@@ -103,7 +104,7 @@ foundation:
 
 The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
 
-At the start of a session it also saves the resolved active set outside the project, in `${TMPDIR}/droneey-constitution/<session_id>/`: the project's root, its check command — none for `check: null` — and each active block with the globs it governs and its files. The later hooks and skills read it there and never resolve again; `clear` and `compact` start the session's reminders over.
+At the start of a session it also saves the resolved active set outside the project, in `/tmp/droneey-constitution-<uid>/<session_id>/` — one place for the hooks and for the skills' commands, which a sandbox may give another `TMPDIR`: the project's root, its check command — none for `check: null` — and each active block with the globs it governs and its files. The later hooks and skills read it there and never resolve again; `clear` and `compact` start the session's reminders over.
 
 When the agent reads or edits a file, a second hook matches it against the `governs` globs of the active blocks — of its application, when it lies under one — and tells the agent, once per block per context, which block governs the file, the block's files and its MUST rules, in at most 300 bytes.
 
@@ -115,6 +116,10 @@ Both are run by the user, never by the model on its own:
 
 - **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about applications when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write and writes only after the owner's yes, never over a file without asking.
 - **`/constitution:amend [rule-slug]`** adds, changes or removes an override: a rule the index holds, a level below its current one, a reason, an optional end date and a scope — the whole repository or one application. It shows the exact change to `constitution.yaml` and writes it only after the owner's yes for that override.
+
+The model may run one more itself, as the hand-back reminder suggests:
+
+- **`/constitution:check [all|edits] [lens]`** runs the project's `check`, when there is one, then asks the `reviewer` agent to judge the changed files — or, with `all`, the whole project — against the rules of the blocks that govern them; a lens narrows it to the rules of one tag. The reviewer reads, never edits, and returns one finding per line: `<path>:<line> — <slug> — <what is wrong> — <the fix>`. When it finishes, a hook records the review, and the reminder waits for the next change.
 
 ## 🔌 Install
 

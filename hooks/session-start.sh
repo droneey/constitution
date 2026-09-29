@@ -108,7 +108,7 @@ output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/json.awk" -f "${lib}/dige
 
 # A state that cannot be written costs the reminders and the gate, never the digest.
 save_state() {
-  state="${TMPDIR:-/tmp}/droneey-constitution/${session}"
+  state="/tmp/droneey-constitution-$(id -u)/${session}"
   mkdir -p "${state}" 2>/dev/null || return
   {
     printf 'project\t%s\n' "${project}"
