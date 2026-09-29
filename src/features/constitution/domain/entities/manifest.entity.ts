@@ -9,7 +9,6 @@ interface PluginManifest {
   skills: readonly string[];
 }
 
-// A source that is no GitHub repository has neither.
 interface MarketplacePlugin {
   name: string;
   ref: string | undefined;

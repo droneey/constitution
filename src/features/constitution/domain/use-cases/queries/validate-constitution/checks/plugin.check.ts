@@ -212,8 +212,6 @@ const checkPlugin = (
       };
 };
 
-// The marketplace serves the plugin from the release tag of its own repository,
-// which the release moves with every version.
 const checkMarketplace = (input: {
   pluginName: string | undefined;
   read: ManifestRead<MarketplaceManifest> | undefined;
