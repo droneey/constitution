@@ -20,8 +20,8 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0074, ADR-0092, ADR-0095 |
-| Tools and tests | ADR-0077 – ADR-0087, ADR-0097 |
-| Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094 |
+| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097 |
+| Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 
 ---
 
