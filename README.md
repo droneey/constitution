@@ -22,7 +22,8 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
-| `vocabulary.yaml` | The words the `architecture` and `workflow` axes own — concepts, folders of the tree, role suffixes, branch prefixes |
+| `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
+| `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
 
 A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
 
@@ -130,7 +131,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - an owned word outside its owner and the blocks that depend on it;
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or table that misses the rule format;
 - a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits, a cycle and a missing rule;
-- a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card; a concept counts in prose, not in a code span, which names a tool's key such as `ports`;
+- a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
 - a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;

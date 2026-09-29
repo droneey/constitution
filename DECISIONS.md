@@ -21,7 +21,7 @@
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0074, ADR-0092 |
 | Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 – ADR-0091 |
+| Axes | ADR-0088 – ADR-0091, ADR-0093 |
 
 ---
 
@@ -545,3 +545,10 @@
 - **Decision.** The `docker` implementation describes both files a project writes for containers. A Dockerfile pins its base image, copies rather than adds, runs its command in exec form, fails a piped step, pins and trims its system packages, runs as a numeric unprivileged user and takes a secret only through a secret mount. A Compose file keeps devkit's order of keys, has no `version`, quotes every published address and binds it to an interface, and its shared settings, variants, health waits and test services follow devkit's conventions. The check lints both, and any finding fails it: `hadolint` holds a Dockerfile with `failure-threshold: style`, `dclint` a Compose file with every rule an error, each from its preset in the release archive. `nestjs` keeps the decorator metadata its injector reads, and answers `compiler-is-the-type-gate` partly: `verbatimModuleSyntax` and `strictPropertyInitialization` are off. Its Biome part no longer turns `noEmptyBlockStatements` off, which Biome never raised on an empty module or constructor.
 - **Rejected.** One block per file, which splits the images a Compose file runs from the Dockerfiles that build them; the linters' defaults, which leave half their findings as warnings the check passes; turning a rule of core off for NestJS in its Biome part, which a block may not do.
 - **Why.** A container is built and run by the two files together, and each has a linter that holds most of its rules; what a linter cannot see is reviewed.
+
+## ADR-0093 — The vocabulary lists only words of one meaning, and an agent judges the placement
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** `vocabulary.yaml` keeps a word only when it has no meaning outside its axis: folders, role suffixes, terms of several words and words such as `semver`. `adapter`, `aggregate`, `entrypoint`, `kernel`, `port`, `sink`, `surface`, `widget` and `chore` leave it; their folders and suffixes stay. The meaning of a rule is judged by the `rule-placement` agent of this repository, which answers the layer and axis questions for every rule a change adds or rewrites and reports each rule that sits elsewhere; its answers go into the pull request.
+- **Rejected.** Exceptions per word or per block, or reading only the prose outside code spans: a word with two meanings turns up in plain text as well, and every exception is one more rule to keep; the agent inside `bun run check`, which must give the same answer on the same code.
+- **Why.** A word check that cries wolf gets its words rewritten rather than its rules moved; the words that remain catch a plain leak cheaply, and the placement itself needs the reading of meaning the two questions ask for.

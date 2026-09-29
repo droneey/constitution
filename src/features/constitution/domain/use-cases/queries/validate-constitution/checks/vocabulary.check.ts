@@ -7,11 +7,7 @@ import type {
   Vocabulary,
   VocabularySection,
 } from '../../../../entities';
-import {
-  isHeading,
-  withoutCodeFences,
-  withoutInlineCode,
-} from '../../../../utils';
+import { isHeading, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { collapseWhitespace, WordKind, wordMatcher } from '../tokens.utils';
 
@@ -142,25 +138,19 @@ const usageFindings = (input: {
 }): readonly Finding[] => {
   const matchers = input.words.map((entry) => ({
     axis: entry.axis,
-    kind: entry.kind,
     matches: wordMatcher(entry),
     word: entry.word,
   }));
 
   return input.files.flatMap((file) => {
     const text = proseOf(file);
-    // A code span names a tool's key or instruction, such as `ports` or
-    // `ENTRYPOINT`, never a concept; folders and suffixes are written in one.
-    const words = withoutInlineCode(text);
     const place = file.axis ?? CARD;
 
     return [
       ...new Set(
         matchers
           .filter(
-            (matcher) =>
-              matcher.axis !== file.axis &&
-              matcher.matches(matcher.kind === WordKind.Concept ? words : text),
+            (matcher) => matcher.axis !== file.axis && matcher.matches(text),
           )
           .map(
             (matcher) =>

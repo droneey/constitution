@@ -1,7 +1,5 @@
 architecture:
   concepts:
-    - adapter
-    - aggregate
     - binding unit
     - bounded context
     - composition root
@@ -9,21 +7,15 @@ architecture:
     - delivery unit
     - domain error
     - domain event
-    - entrypoint
-    - kernel
     - layer folder
     - layer matrix
-    - port
     - read side
     - role file
     - role folder
     - role suffix
-    - sink
-    - surface
     - ubiquitous language
     - use-case
     - value object
-    - widget
     - wire model
     - wiring file
     - write side
@@ -66,7 +58,6 @@ architecture:
     - .variants
 workflow:
   concepts:
-    - chore
     - commit hook
     - conventional commit
     - dependency bot
