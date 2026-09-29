@@ -125,6 +125,7 @@ foundation:
     no-unchecked-escape-hatches:
       - noNonNullAssertion
       - noTsIgnore
+      - noUnsafeTypeAssertion
     nullish-operators-for-absence:
       - useNullishCoalescing
     strict-equality-only:

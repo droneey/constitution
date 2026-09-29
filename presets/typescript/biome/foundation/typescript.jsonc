@@ -69,6 +69,7 @@
         "noUselessUndefined": "error",
       },
       "nursery": {
+        "noUnsafeTypeAssertion": "error",
         "useExhaustiveSwitchCases": "error",
         "useNullishCoalescing": "error",
         "useExplicitType": "error",
