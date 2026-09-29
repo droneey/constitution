@@ -105,6 +105,8 @@ The hook finds the `constitution.yaml` of the repository a session works in and 
 
 At the start of a session it also saves the resolved active set outside the project, in `${TMPDIR}/droneey-constitution/<session_id>/`: the project's root, its check command — none for `check: null` — and each active block with the globs it governs and its files. The later hooks and skills read it there and never resolve again; `clear` and `compact` start the session's reminders over.
 
+When the agent reads or edits a file, a second hook matches it against the `governs` globs of the active blocks — of its application, when it lies under one — and tells the agent, once per block per context, which block governs the file, the block's files and its MUST rules, in at most 300 bytes.
+
 ## ✍️ Skills
 
 Both are run by the user, never by the model on its own:

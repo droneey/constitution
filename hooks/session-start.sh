@@ -104,7 +104,7 @@ export CONSTITUTION_ROOT="${root}" CONSTITUTION_PROJECT="${project}" \
 
 resolved="$(printf '%s\n%s' "${records}" "${files}" |
   awk -f "${lib}/local-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
-output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
+output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/json.awk" -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
 
 # A state that cannot be written costs the reminders and the gate, never the digest.
 save_state() {

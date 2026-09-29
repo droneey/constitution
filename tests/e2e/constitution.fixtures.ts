@@ -223,6 +223,7 @@ const domainFiles = (): Files => ({
     governs: [
       '**/ui/**',
       '**/components/**',
+      'styles/*.{css,scss}',
     ],
     id: 'ui',
     rules: [
