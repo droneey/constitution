@@ -1,12 +1,16 @@
-import architecture from './.constitution/presets/stryker/architecture/core.mjs';
-import core from './.constitution/presets/stryker/foundation/core.mjs';
-import self from './.constitution/presets/stryker/foundation/self.mjs';
+import architecture from './.constitution/presets/typescript/stryker/architecture/core.mjs';
+import bunTest from './.constitution/presets/typescript/stryker/foundation/bun-test.mjs';
+import core from './.constitution/presets/typescript/stryker/foundation/core.mjs';
+import mise from './.constitution/presets/typescript/stryker/foundation/mise.mjs';
+import self from './.constitution/presets/typescript/stryker/foundation/self.mjs';
 
 export default {
   ...self,
+  ...mise,
+  ...bunTest,
   ...core,
   commandRunner: {
-    command: `${self.commandRunner.command} ./src ./tools`,
+    command: `${bunTest.commandRunner.command} ./src ./tools`,
   },
   mutate: [
     ...core.mutate,

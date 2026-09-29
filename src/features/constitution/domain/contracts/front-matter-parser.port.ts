@@ -7,7 +7,9 @@ interface FrontMatterFields {
   extends: string | undefined;
   governs: readonly string[];
   id: string;
+  languages: readonly string[];
   requires: readonly string[];
+  roles: readonly string[];
   summary: string;
 }
 

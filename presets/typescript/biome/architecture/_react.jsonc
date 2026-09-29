@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    {
+      "path": "./.constitution/presets/typescript/biome/architecture/plugins/component-effects-in-its-hooks-file.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

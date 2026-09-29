@@ -96,10 +96,22 @@ describe('the hadolint docker part', () => {
       to: '',
     },
     {
+      code: 'DL3009',
+      condition: 'the package index stays in the layer',
+      from: ' \\\n  && rm -rf /var/lib/apt/lists/*',
+      to: '',
+    },
+    {
       code: 'DL4006',
       condition: 'a piped step runs without pipefail',
       from: 'SHELL ["/bin/bash", "-o", "pipefail", "-c"]\n',
       to: 'RUN curl -s https://example.com | tee /tmp/page\n',
+    },
+    {
+      code: 'SC2086',
+      condition: 'a step fails the shell linter',
+      from: 'COPY . /app',
+      to: 'COPY . /app\nRUN echo $HOME',
     },
   ])('should fail with $code when $condition', ({ code, from, to }) => {
     // Arrange

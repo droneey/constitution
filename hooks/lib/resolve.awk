@@ -8,7 +8,7 @@ BEGIN {
   T = "\t"
   CODES = "missing abstract unknown wrong-key config local-block no-tool not-met override"
   KEYS = "version axes domains platforms languages implementations apps check overrides"
-  FIELDS = "id summary requires extends abstract checks dictionary governs"
+  FIELDS = "id summary requires extends abstract checks languages roles dictionary governs"
   LAYERS = "domain platform language implementation"
   AXES = "foundation architecture workflow"
   TODAY = ENVIRON["CONSTITUTION_TODAY"]
@@ -58,7 +58,8 @@ function read_index(path,   line, f, r) {
       HEIRS[f[2]] = f[10]
       CHECKS[f[2]] = f[11]
       LANGS[f[2]] = f[12]
-      ANCESTORS[f[2]] = f[13]
+      HELD_TO[f[2]] = f[13]
+      ANCESTORS[f[2]] = f[14]
     } else if (f[1] == "rule") {
       R[++nr] = f[2]
       RULE[f[2]] = nr
@@ -254,8 +255,8 @@ function requires_of(s,   j, k) {
   for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == s) needs(s, LID[k], LREQUIRES[k])
 }
 
-# A tool checks its roles for the languages in its closure; a tool with none
-# checks only the language-free roles (spec §2), as the CI's role coverage has it.
+# A tool checks its roles for the languages it names; a tool that names none
+# checks only the language-free roles, as the CI's role coverage has it.
 function hold(checks, langs, language,   n, a, k) {
   n = split(checks, a, " ")
   for (k = 1; k <= n; k++) if ((langs == "") ? FREE[a[k]] : has(langs, language)) HELD[a[k]] = 1
@@ -269,13 +270,14 @@ function such_as(language, role,   j, id) {
   return ""
 }
 
-function no_tool(s, language,   j, k, i, role) {
+# A language needs only the roles its files are held to.
+function no_tool(s, language, roles,   j, k, i, role) {
   delete HELD
   delete NEEDED
   for (j = 1; j <= nb; j++) if (IN[s, B[j]]) hold(CHECKS[B[j]], LANGS[B[j]], language)
   for (k = 1; k <= nlocal; k++) if (IN[s, LID[k]]) hold(LCHECKS[k], LLANGS[k], language)
   for (i = 1; i <= nr; i++) {
-    if (RLEVEL[i] != "MUST" || RCHECK[i] != "tool" || !(RROLE[i] in FREE)) continue
+    if (RLEVEL[i] != "MUST" || RCHECK[i] != "tool" || !has(roles, RROLE[i])) continue
     if (active_rule(s, i) && (RLANGS[i] == "" || has(RLANGS[i], language)) && !lowered(s, R[i])) NEEDED[RROLE[i]] = 1
   }
   for (k = 1; k <= nroles; k++) {
@@ -288,8 +290,8 @@ function no_tool(s, language,   j, k, i, role) {
 }
 
 function tools_of(s,   j, k) {
-  for (j = 1; j <= nb; j++) if (LAYER[B[j]] == "language" && IN[s, B[j]]) no_tool(s, B[j])
-  for (k = 1; k <= nlocal; k++) if (LLAYER[k] == "language" && IN[s, LID[k]]) no_tool(s, LID[k])
+  for (j = 1; j <= nb; j++) if (LAYER[B[j]] == "language" && IN[s, B[j]]) no_tool(s, B[j], HELD_TO[B[j]])
+  for (k = 1; k <= nlocal; k++) if (LLAYER[k] == "language" && IN[s, LID[k]]) no_tool(s, LID[k], LROLES[k])
 }
 
 function answers_of(s,   i, k) {
@@ -470,7 +472,6 @@ END {
     for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == 0) IN[s, LID[k]] = 1
     for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s] && IKEY[i] != "axes") declare(s, i)
   }
-  local_languages()
   apply_overrides()
   for (s = 0; s <= napps; s++) {
     requires_of(s)

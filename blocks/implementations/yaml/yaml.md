@@ -5,6 +5,8 @@ requires: [typescript]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: []
 governs: []
 ---

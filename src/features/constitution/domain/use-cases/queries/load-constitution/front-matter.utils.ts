@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel';
+import type { Finding, Role } from '#/kernel';
 import { ROLES } from '#/kernel';
 
 import type { FrontMatterFields, FrontMatterParser } from '../../../contracts';
@@ -14,6 +14,8 @@ interface FrontMatterLoaded {
 enum ListField {
   Requires = 'requires',
   Checks = 'checks',
+  Languages = 'languages',
+  Roles = 'roles',
   Dictionary = 'dictionary',
   Governs = 'governs',
 }
@@ -25,12 +27,16 @@ const FIELDS: readonly string[] = [
   'extends',
   'abstract',
   'checks',
+  'languages',
+  'roles',
   'dictionary',
   'governs',
 ];
 const LIST_FIELDS: readonly ListField[] = [
   ListField.Requires,
   ListField.Checks,
+  ListField.Languages,
+  ListField.Roles,
   ListField.Dictionary,
   ListField.Governs,
 ];
@@ -134,11 +140,11 @@ const repeatsOf = (values: readonly string[]): readonly string[] => [
   ...new Set(values.filter((value, index) => values.indexOf(value) !== index)),
 ];
 
-const entryMessages = (fields: FrontMatterFields): readonly string[] => [
-  ...fields.requires
-    .filter((id) => !BLOCK_ID.test(id))
-    .map((id) => `front matter: requires "${id}", which is not a block id`),
-  ...fields.checks
+const notRoles = (input: {
+  field: ListField;
+  values: readonly string[];
+}): readonly string[] =>
+  input.values
     .filter(
       (role) =>
         oneOf({
@@ -146,7 +152,37 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
           values: ROLES,
         }) === undefined,
     )
-    .map((role) => `front matter: checks "${role}", which is not a role`),
+    .map(
+      (role) => `front matter: ${input.field} "${role}", which is not a role`,
+    );
+
+const notBlockIds = (input: {
+  field: ListField;
+  values: readonly string[];
+}): readonly string[] =>
+  input.values
+    .filter((id) => !BLOCK_ID.test(id))
+    .map(
+      (id) => `front matter: ${input.field} "${id}", which is not a block id`,
+    );
+
+const entryMessages = (fields: FrontMatterFields): readonly string[] => [
+  ...notBlockIds({
+    field: ListField.Requires,
+    values: fields.requires,
+  }),
+  ...notBlockIds({
+    field: ListField.Languages,
+    values: fields.languages,
+  }),
+  ...notRoles({
+    field: ListField.Checks,
+    values: fields.checks,
+  }),
+  ...notRoles({
+    field: ListField.Roles,
+    values: fields.roles,
+  }),
   ...[
     ...fields.dictionary,
     ...fields.governs,
@@ -166,11 +202,13 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
   ),
 ];
 
+const rolesOf = (values: readonly string[]): readonly Role[] =>
+  values.flatMap((value) => ROLES.filter((role) => role === value));
+
 const typedOf = (fields: FrontMatterFields): FrontMatter => ({
   ...fields,
-  checks: fields.checks.flatMap((check) =>
-    ROLES.filter((role) => role === check),
-  ),
+  checks: rolesOf(fields.checks),
+  roles: rolesOf(fields.roles),
 });
 
 const fieldMessages = (fields: FrontMatterFields): readonly string[] => [

@@ -5,6 +5,8 @@ requires: [version-control]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Git, git, .gitignore, .gitattributes, .gitkeep, Git LFS]
 governs: [".gitignore", ".gitattributes"]
 ---

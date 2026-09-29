@@ -1,3 +1,5 @@
+import { ROLES } from '#/kernel';
+
 import type { Files } from './constitution.fixtures';
 import { blockFiles, mainFile, rule } from './constitution.fixtures';
 import { digestFiles } from './valid-digests.fixtures';
@@ -125,7 +127,7 @@ const contextFiles = (): Files => ({
     dir: 'blocks/contexts/languages/typescript',
     files: {
       'foundation/typescript.md': `# TypeScript\n\n${rule({
-        check: 'tool — types',
+        check: 'tool/types',
         slug: 'no-any',
         statement: 'A TypeScript value is never typed `any`.',
       })}`,
@@ -136,6 +138,10 @@ const contextFiles = (): Files => ({
       '.ts',
       'index.ts',
     ],
+    languages: [
+      'typescript',
+    ],
+    roles: ROLES,
   }),
   ...blockFiles({
     body: '# Browser\n',
@@ -159,7 +165,7 @@ const implementationFiles = (): Files => ({
     dir: 'blocks/implementations/_react',
     files: {
       'foundation/hooks.md': `# Hooks\n\n${rule({
-        check: 'tool — lint',
+        check: 'tool/lint',
         slug: 'hooks-at-top-level',
         statement: 'A React hook is called only at the top level.',
       })}`,
@@ -181,6 +187,9 @@ const implementationFiles = (): Files => ({
     id: 'biome',
     dictionary: [
       'Biome',
+    ],
+    languages: [
+      'typescript',
     ],
     requires: [
       'typescript',

@@ -19,9 +19,9 @@
 | Testing | ADR-0046 – ADR-0048 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0074, ADR-0092 |
-| Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 – ADR-0091, ADR-0093 |
+| Blocks | ADR-0064 – ADR-0074, ADR-0092, ADR-0095 |
+| Tools and tests | ADR-0077 – ADR-0087, ADR-0097 |
+| Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094 |
 
 ---
 
@@ -108,7 +108,7 @@
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** No rule of core, a domain or a context names a tool, and no rule's check does: a rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a preset of the constitution's release archive or the project's own — built to hold every active rule of its roles.
-- **Rejected.** Tables that map each rule to a setting of a tool.
+- **Rejected.** A rule that names its tool or its setting; the preset's `bindings.yaml`, ADR-0094, maps them instead.
 - **Why.** A tool can then be swapped without touching a rule.
 
 ## ADR-0016 — Every rule carries a lens
@@ -302,7 +302,7 @@
 ## ADR-0054 — The check roles of 1.0
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** A rule's check is `test`, `review`, or `tool — <role>` with a role from this closed list: `format`, `lint`, `types`, `architecture`, `names`, `unused`, `versions`, `tests`, `coverage`, `mutation`, `secrets`, `audit`, `commits`. `names`, `secrets` and `commits` hold in any language; the others are checked per language. A language or an implementation lists the roles it checks in `checks`. When a tool-checked MUST rule's role has no tool for a language the rule applies to, the hook warns and the constitution's check reports it.
+- **Decision.** A rule's check is `test`, `review`, or `tool/<role>` with a role from this closed list: `format`, `lint`, `types`, `architecture`, `names`, `unused`, `versions`, `tests`, `coverage`, `mutation`, `secrets`, `audit`, `commits`. `names`, `secrets` and `commits` hold in any language; the others are checked per language. A language or an implementation lists the roles it checks in `checks`. When a tool-checked MUST rule's role has no tool for a language the rule applies to, the hook warns and the constitution's check reports it.
 - **Rejected.** Checking commit messages and branch names under `lint`, which is checked per language and would report a missing tool for every language.
 - **Why.** A commit message belongs to no language, and a rule held by a tool must say so to be counted.
 
@@ -421,13 +421,6 @@
 - **Rejected.** The eleven types of the common convention (`perf`, `docs`, `ci`, `build`, `test`, `style`, `revert`…), which the changelog ignores and the history barely uses; scopes, which a single changelog does not read; a `BREAKING CHANGE` footer, since commit bodies stay empty.
 - **Why.** `feat` and `fix` are what the specification and the changelog read; `chore` carries the automation's own commits; `refactor` promises what a reviewer can check — no change of behaviour.
 
-## ADR-0072 — A tool's configuration does not name the rules it holds
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** A tool block says which roles it checks and what its configuration holds. The configuration — a preset, a project's own file — carries no comment per setting naming the rule it holds.
-- **Rejected.** Naming each setting's slug in a comment: nothing would check the names, and they would drift.
-- **Why.** The block's text is the one place the constitution and the tool meet; a second mapping in every configuration is a detail nobody keeps.
-
 ## ADR-0074 — betterleaks holds the secrets
 **Date:** 2026-09-27 · **Status:** Accepted
 
@@ -535,8 +528,8 @@
 ## ADR-0091 — The constitution's archive carries every tool configuration, laid out by axis
 **Date:** 2026-09-29 · **Status:** Accepted
 
-- **Decision.** devkit's presets, starter files and `mutation-check` move into the constitution, and its release archive `constitution.tar.gz` is the one way a project takes them, in any language: `presets/`, `templates/project/<block>/`, and `tools/mutation-check/dist/main.js`, built at release. A preset is split into parts, `presets/<tool>/<axis>/<block>.*`: the folder is the tool's block — `typescript` for the compiler's `tsconfig` — the axis folder is the axis of the rules the part holds, and the part is named after the block whose rules it holds, an abstract block's underscore included; the tool's own settings are `self`. A GritQL rule is `<axis>/plugins/<rule-slug>.grit`, and an architecture part narrows a foundation part's GritQL rule by listing the same path. mise's `tool-configuration-from-the-kit-archive` becomes `tool-configuration-from-the-constitution-archive`, and osv-scanner's `licences-checked-against-devkit-allowlist` becomes `licences-checked-against-the-shared-allowlist`. The node environment's parts are dropped; Python's configurations stay in devkit until a project needs them.
-- **Rejected.** npm packages for the TypeScript tools beside an archive for the rest, which released the same rule twice — most of devkit's changes came paired with one of the constitution's; splitting parts by language beside the blocks (`common/`, `typescript/`), a second division when the language is itself a block; naming the tool's own part after the tool, which reads `biome/foundation/biome.jsonc`; dropping an abstract block's underscore in its parts, which gives one block two names.
+- **Decision.** devkit's presets, starter files and `mutation-check` move into the constitution, and its release archive `constitution.tar.gz` is the one way a project takes them, in any language: `presets/`, `templates/project/<block>/`, and `tools/mutation-check/dist/main.js`, built at release. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*` since ADR-0098: the tool folder is the tool's block, the axis folder is the axis of the rules the part holds, and the part is named after the block its settings need — the one without which they mean nothing, an abstract block's underscore included: `noTailwindArbitraryValue` sits in `tailwind` though it holds a rule of `ui`. Settings that need no block beyond the tool sit in `core` when they hold a rule of core, and in `self` when they are the tool's own. A GritQL rule is `<axis>/plugins/<rule-slug>.grit`, and an architecture part narrows a foundation part's GritQL rule by listing the same path. mise's `tool-configuration-from-the-kit-archive` becomes `tool-configuration-from-the-constitution-archive`, and osv-scanner's `licences-checked-against-devkit-allowlist` becomes `licences-checked-against-the-shared-allowlist`. The node environment's parts are dropped; Python's configurations stay in devkit until a project needs them.
+- **Rejected.** npm packages for the TypeScript tools beside an archive for the rest, which released the same rule twice — most of devkit's changes came paired with one of the constitution's; naming the tool's own part after the tool, which reads `biome/foundation/biome.jsonc`; dropping an abstract block's underscore in its parts, which gives one block two names.
 - **Why.** A rule and the setting that holds it change in one pull request and ship in one version; a project that leaves an axis out leaves out its parts; and every part names the block that owns it, which a check can hold.
 
 ## ADR-0092 — docker, its two linters, and nestjs get blocks
@@ -552,3 +545,38 @@
 - **Decision.** `vocabulary.yaml` keeps a word only when it has no meaning outside its axis: folders, role suffixes, terms of several words and words such as `semver`. `adapter`, `aggregate`, `entrypoint`, `kernel`, `port`, `sink`, `surface`, `widget` and `chore` leave it; their folders and suffixes stay. The meaning of a rule is judged by the `rule-placement` agent of this repository, which answers the layer and axis questions for every rule a change adds or rewrites and reports each rule that sits elsewhere; its answers go into the pull request.
 - **Rejected.** Exceptions per word or per block, or reading only the prose outside code spans: a word with two meanings turns up in plain text as well, and every exception is one more rule to keep; the agent inside `bun run check`, which must give the same answer on the same code.
 - **Why.** A word check that cries wolf gets its words rewritten rather than its rules moved; the words that remain catch a plain leak cheaply, and the placement itself needs the reading of meaning the two questions ask for.
+
+## ADR-0094 — Each preset binds its settings to the rules they hold
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** A preset holds, beside its parts, `presets/<scope>/<tool>/bindings.yaml`: by axis, part and rule, the settings that hold the rule, each as the part's file spells it. `blocks:check` holds one direction: every rule whose check is `tool/<role>` is implemented — by a binding, by a rule under it with the same check that is, or by the tool block that checks that role and describes its run; a role no tool with presets checks needs none. A binding it holds must be real: its rule exists and sits on the part's axis or on foundation, which any axis may carry out; its rule belongs to the part's block, a block above it or a seam with it, never a block below; its part exists; its file spells the setting. Whether a part is the block its settings need is judged by the `rule-placement` agent. A setting that holds no rule is never reported. A preset file is a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`. The configuration carries no comment per setting. Where no setting of any tool holds a rule, its Check says `review`: `domain-values-never-typed-again`, `identifiers-branded-by-entity`, `booleans-read-as-predicates`, `boundary-values-unknown-until-parsed`, `schema-held-exactly-to-its-model`, `shared-state-packages-once-in-lockfile`, `hash-imports-leave-the-module`, `package-anatomy`, `package-repository-layout`, `screen-private-pieces-beside-screen` and `matomo-only-in-its-sink`. A GritQL rule now holds `keys-only-from-the-key-factory`, and ls-lint's new `expo` part holds `expo-router-root-is-routes` and the new `expo-router-file-names-kept`, the names Expo Router reads.
+- **Rejected.** A Bindings table in the tool block's chapters, which filled a tool's chapter with other blocks' rules and made a language name the frameworks below it; a check that every setting holds a rule, since a tool's own opinions need none; a comment per setting in the configuration, which nothing checks; dependency-cruiser rules renamed to their slugs, since several of its rules hold one slug and it drops a repeated name across `extends`.
+- **Why.** A block keeps its own rules and nothing else, the presets keep the tools' side, and the check reads the one place they meet: a renamed setting, a moved part or a rule a tool only claims to hold fails the check instead of drifting.
+
+## ADR-0095 — CSS is a language block, and the stylesheet's rules move into it
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** `css` is a language context, beside `typescript`, for a program's stylesheets whatever writes the classes. Its rules: every style rule in a named cascade layer, the order of layers declared once, no `!important`, selectors of at most three classes that never descend in specificity, no id selector, custom properties declared before they are read and registered with `@property` where they are animated or typed, Baseline features only, classes declared and used and named for what an element is, container queries for components, global styles only in the entry stylesheet. A rule that carries out a rule of `ui`, `a11y` or `i18n` sits in css's seam with it: values from the theme's custom properties named after their tokens and, on the architecture axis, a component's CSS module in its folder with `ui`; logical properties with `i18n`. The rules that were written in CSS but kept in the browser's seams move into the css seams: `focus-ring-from-design-system`, `type-sized-in-rem` and `hover-styles-behind-hover-media` to `css/with/a11y`, `cascading-variant-by-data-attribute` to `css/with/ui`. HTML stays with `browser`: its elements, ARIA and focus mean something only in a browser's document. `tailwind` requires `css`. Biome's CSS rules move from the `browser` part to a `css` part, with a GritQL rule against id selectors; the `tailwind` part parses Tailwind's directives and turns `noUndeclaredClasses` off, since its utilities are declared by the library.
+- **Rejected.** The CSS rules in the `ui` or `browser` part, which gave a domain or a platform a language it may not have: a browser program need not write a stylesheet, and React Native has none; an `html` language block, which would repeat the browser platform.
+- **Why.** A rule sits where it loses its meaning: without CSS these rules mean nothing, and without a browser neither does HTML.
+
+## ADR-0096 — A tool names the languages it covers, and a language the roles it is held to
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** A block's card declares two more fields after `checks`: `languages` and `roles`. `languages` lists the language blocks whose files a tool's checks cover: `biome` covers `typescript` and `css`; `dependency-cruiser`, `knip`, `stryker`, `syncpack` and `bun-test` cover `typescript`; `typescript` covers itself for `types`. A tool that lists none — `ls-lint`, `betterleaks`, `osv-scanner`, `lefthook`, `hadolint`, `dclint` — holds only the language-free roles, for every language, and a block that checks nothing lists none. `roles` lists the roles a language block's files are held to: every role for `typescript`, `format`, `lint` and `names` for `css`; every other block leaves it empty. A language needs a role when an active MUST rule checked by `tool/<role>` holds for it and it is held to that role, and has it when an active tool lists the language in `languages`, or lists none and the role is language-free; the difference is the hook's warning and the advice of `blocks:check`. A tool's coverage no longer follows its `requires`; a rule's languages still come from its block's closure. `blocks:check` reports a `languages` entry that is no language block, `languages` on a block that checks nothing, a `roles` entry that is no role, and either field on a layer that leaves it empty; the hook holds a project's local blocks to the same. A rule's Check is written `tool/<role>` instead of `tool — <role>`.
+- **Rejected.** Coverage through `requires`, which took every language for a programming language: a project with CSS was told its stylesheets had no test runner, and Biome, which lints CSS, counted only for TypeScript; `biome` requiring `css`, which would bring CSS into every Biome project; exempting CSS by name, which the next such language would need again.
+- **Why.** What a tool reads and what a language is held to are facts of the tool and of the language, not of what either depends on: stated where they belong, a stylesheet is held only to what can be checked in it, and a tool counts for every language it really checks.
+
+## ADR-0097 — A tool-checked rule claims only what its tool holds
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** A rule that a tool holds only in part is split into the part a tool holds and the part that is reviewed: `files-copied-never-added` keeps local files in `COPY` and `downloads-verified-archives-unpacked` reviews downloads and archives; the Biome suppression rule becomes `biome-suppression-states-its-reason`, held, and `biome-suppression-names-one-rule`, reviewed; `dependencies-imported-from-their-entries` is reviewed, and `react-native-imported-from-its-entry` holds it for React Native; `typescript-file-forms` holds the forms, and `tsx-only-where-markup-is-written` is reviewed. Where a setting holds a rule or its half, that half says so: `error-cause-preserved` (a MUST now that `useErrorCause` holds it) and `error-logged-once`; `consumers-import-package-entries` under `package-entries-curated`; `bundle-reads-no-build-environment` under `runtime-configuration-served-beside-bundle`. A rule that bundled two axes is split: `no-import-cycles` on core's foundation and `dependencies-point-inward` on its architecture; `test-code-unreachable-from-production` and `stories-unreachable-from-production` move to foundation, with their dependency-cruiser rules. `tanstack-router-file-names-kept` joins `expo-router-file-names-kept`. A branch's name holds no digit but its issue's number.
+- **Rejected.** A Check that names a tool for a whole rule the tool holds in part, which hides the part nobody checks; a rule kept whole on its stricter axis, which denies a team the half it would take.
+- **Why.** A Check says who holds the rule; when it says a tool, the tool must hold all of it.
+
+## ADR-0098 — Presets are laid out by scope first, and the compiler gets its block
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** A preset's part is `presets/<scope>/<tool>/<axis>/<block>.*`, its bindings `presets/<scope>/<tool>/bindings.yaml` and its GritQL rules `presets/<scope>/<tool>/<axis>/plugins/<rule-slug>.grit`. The scope is the files the part reads: `common` for any language, or a language block its tool lists in `languages`. Every tool has a scope, even one that reads one language, so no tool is laid out apart. The compiler becomes the implementation block `tsc`, which checks `types` and governs `tsconfig.json`, and `compiler-is-the-type-gate` moves to it from `typescript`; its strict options sit in its `self` part again. Vite's `build-is-not-the-type-gate` moves to its seam with `tsc`, and `nestjs` requires `tsc`, whose options it relaxes.
+- **Rejected.** A language folder inside a tool's axis folder, which appears in some tools and not in others and names the axis before what the part reads; the language block `typescript` doubling as the compiler's tool, which gives one block two roles; a separate scope for the parts of one block, which a part's name already carries.
+- **Why.** A project takes a scope whole — `common` and the scope of each active language — and a language added later brings its own folder beside the others, with the same tools inside.

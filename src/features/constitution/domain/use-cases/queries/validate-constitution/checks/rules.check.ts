@@ -24,7 +24,7 @@ const checkMessage = (rule: Rule): string | undefined => {
   }
 
   if (read.kind === 'unknown') {
-    return `has the check "${rule.check}"; a check is test, review or tool — <role>`;
+    return `has the check "${rule.check}"; a check is test, review or tool/<role>`;
   }
 
   return read.kind !== 'tool' || roles.includes(read.role)

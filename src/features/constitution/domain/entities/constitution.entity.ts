@@ -1,3 +1,4 @@
+import type { Binding, PresetFile } from './binding.entity';
 import type { Block } from './block.entity';
 import type {
   HooksManifest,
@@ -25,9 +26,11 @@ interface Documents {
 }
 
 interface Constitution {
+  bindings: readonly Binding[];
   blocks: readonly Block[];
   documents: Documents;
   paths: ReadonlySet<string>;
+  presets: readonly PresetFile[];
   requirementAnswers: readonly RequirementAnswer[];
   rules: readonly Rule[];
 }

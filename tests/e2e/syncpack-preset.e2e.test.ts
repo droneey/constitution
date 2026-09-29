@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import typescript from '../../presets/syncpack/foundation/typescript.mjs';
+import self from '../../presets/typescript/syncpack/foundation/self.mjs';
+import typescript from '../../presets/typescript/syncpack/foundation/typescript.mjs';
 import { versionIssues } from './syncpack-preset.fixtures';
 
 describe('the syncpack typescript part', () => {
@@ -31,17 +32,6 @@ describe('the syncpack typescript part', () => {
     });
   });
 
-  it('should leave the scripts in the order the author chose when a manifest is formatted', () => {
-    // Arrange
-    const field = 'scripts';
-
-    // Act
-    const sorted = typescript.sortAz;
-
-    // Assert
-    expect(sorted).not.toContain(field);
-  });
-
   it('should ask for caret ranges on the project dependencies only when the versions are linted', () => {
     // Arrange
     const caretRanges = {
@@ -60,6 +50,19 @@ describe('the syncpack typescript part', () => {
     expect(groups).toStrictEqual([
       caretRanges,
     ]);
+  });
+});
+
+describe('the syncpack self part', () => {
+  it('should leave the scripts in the order the author chose when a manifest is formatted', () => {
+    // Arrange
+    const field = 'scripts';
+
+    // Act
+    const sorted = self.sortAz;
+
+    // Assert
+    expect(sorted).not.toContain(field);
   });
 });
 

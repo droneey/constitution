@@ -1,6 +1,10 @@
-import architecture from './.constitution/presets/knip/architecture/core.mjs';
-import core from './.constitution/presets/knip/foundation/core.mjs';
-import self from './.constitution/presets/knip/foundation/self.mjs';
+import architecture from './.constitution/presets/typescript/knip/architecture/core.mjs';
+import betterleaks from './.constitution/presets/typescript/knip/foundation/betterleaks.mjs';
+import core from './.constitution/presets/typescript/knip/foundation/core.mjs';
+import lsLint from './.constitution/presets/typescript/knip/foundation/ls-lint.mjs';
+import mise from './.constitution/presets/typescript/knip/foundation/mise.mjs';
+import osvScanner from './.constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
+import lefthook from './.constitution/presets/typescript/knip/workflow/lefthook.mjs';
 
 export default {
   entry: [
@@ -14,7 +18,11 @@ export default {
     '!tools/*/src/**/__tests__/**!',
   ],
   ignoreBinaries: [
-    ...self.ignoreBinaries,
+    ...betterleaks.ignoreBinaries,
+    ...lsLint.ignoreBinaries,
+    ...mise.ignoreBinaries,
+    ...osvScanner.ignoreBinaries,
+    ...lefthook.ignoreBinaries,
     'mkfifo',
     'stryker',
   ],

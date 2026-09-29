@@ -68,7 +68,7 @@ For a local block, fill the template's placeholders from the repository and the 
 - `id` is the file name without `.md`, and must not be an id from the list above;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names a constitution block it builds on, or stays `null`;
-- `checks` lists the roles the tool checks, if it is a checking tool — the `role` lines of `${CLAUDE_PLUGIN_ROOT}/digests/index.tsv` hold them; `dictionary` its brand and file names; `governs` the file globs its rules govern;
+- `checks` lists the roles the tool checks, if it is a checking tool — the `role` lines of `${CLAUDE_PLUGIN_ROOT}/digests/index.tsv` hold them; `languages` the language blocks whose files those checks cover — constitution ids or local language blocks — and `[]` when it checks nothing or only the roles the index marks `true`, which hold for every language; `roles` stays `[]`, since only a language block is held to roles; `dictionary` its brand and file names; `governs` the file globs its rules govern;
 - the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `${CLAUDE_PLUGIN_ROOT}/blocks/` to find them. One row per requirement: its slug, how the library meets it — with the workaround where it falls short — and whether it is met: `yes`, `partly` or `no`. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the template's format, with a slug no `rule` line of the index holds. Drop the placeholder rule when there is none.
 

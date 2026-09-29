@@ -1,0 +1,24 @@
+{
+  "plugins": [
+    "./.constitution/presets/typescript/biome/foundation/plugins/dynamic-viewport-classes.grit",
+    "./.constitution/presets/typescript/biome/foundation/plugins/mobile-first-breakpoints.grit",
+  ],
+  "linter": {
+    "rules": {
+      "nursery": {
+        "noTailwindArbitraryValue": {
+          "level": "error",
+          "options": {
+            "functions": [
+              "cva",
+              "cn",
+              "clsx",
+              "twMerge",
+            ],
+          },
+        },
+        "noUndeclaredClasses": "off",
+      },
+    },
+  },
+}

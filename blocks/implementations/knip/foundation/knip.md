@@ -5,4 +5,4 @@ The check runs knip twice: over everything, and in production mode (`--productio
 
 | Why | Check | Tags |
 |---|---|---|
-| code kept alive only by its tests is dead in production, and the full run alone cannot see it. | tool — unused | [] |
+| code kept alive only by its tests is dead in production, and the full run alone cannot see it. | tool/unused | [] |

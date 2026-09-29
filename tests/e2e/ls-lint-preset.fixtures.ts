@@ -22,17 +22,16 @@ interface Project {
 }
 
 const PRESET = z.object({
-  ignore: z.array(z.string()).optional(),
-  ls: z.record(z.string(), z.unknown()),
+  ls: z.record(z.string(), z.unknown()).default({}),
 });
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'ls-lint');
+const PRESETS_FOLDER = join(REPOSITORY, 'presets');
 
 const PARTS = [
-  'foundation/core',
-  'foundation/typescript',
-  'architecture/core',
+  'common/foundation/core',
+  'typescript/foundation/typescript',
+  'typescript/architecture/core',
 ];
 
 const LS_LINT = miseBinary('ls-lint');
@@ -52,11 +51,11 @@ const failedPaths = (project: Project): readonly string[] => {
   const linting = spawnSync(
     LS_LINT,
     [
-      'foundation/self',
+      'common/foundation/self',
       ...(project.parts ?? PARTS),
     ].flatMap((part) => [
       '--config',
-      `.constitution/presets/ls-lint/${part}.yaml`,
+      `.constitution/presets/${part.replace('/', '/ls-lint/')}.yaml`,
     ]),
     {
       cwd: folder,
@@ -111,8 +110,13 @@ const presetWords = (): readonly string[] => {
     recursive: true,
   })
     .map(String)
-    // The tool's own settings name what it skips, not what the blocks write.
-    .filter((path) => path.endsWith('.yaml') && !path.endsWith('self.yaml'))
+    // bindings.yaml names rules, not what the blocks write.
+    .filter(
+      (path) =>
+        path.split('/')[1] === 'ls-lint' &&
+        path.endsWith('.yaml') &&
+        !path.endsWith('/bindings.yaml'),
+    )
     .map((path) =>
       PRESET.parse(
         parse(readFileSync(join(PRESETS_FOLDER, path), 'utf8'), {
@@ -142,7 +146,6 @@ const presetWords = (): readonly string[] => {
     .flatMap((rules) => rules.split(' | '))
     .filter((rule) => rule.startsWith('regex:'))
     .flatMap((rule) => rule.replace(/^regex:\^\(?|\)?\$$/g, '').split('|'));
-  const ignored = presets.flatMap(({ ignore }) => ignore ?? []);
 
   return [
     ...new Set(
@@ -150,7 +153,6 @@ const presetWords = (): readonly string[] => {
         ...folders,
         ...suffixes,
         ...alternatives,
-        ...ignored,
       ].filter((word) => /^\.?[\w-]+$/.test(word)),
     ),
   ];

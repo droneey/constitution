@@ -1,6 +1,6 @@
 ---
 name: rule-placement
-description: Judges where each rule a change adds or rewrites belongs — its layer and its axis — by what it means, and reports every rule that sits elsewhere. Use on every change to blocks/ before it is handed back.
+description: Judges where each rule a change adds or rewrites belongs — its layer and its axis — and where each preset setting it adds or moves belongs, by what they mean, and reports what sits elsewhere. Use on every change to blocks/ or presets/ before it is handed back.
 tools: Read, Grep, Glob, Bash
 model: opus
 ---
@@ -28,6 +28,10 @@ A git range, `origin/main...HEAD` unless you are given another. Read the rules i
 Also check the arrow: `foundation/` refers only to `foundation/`; `architecture/` and `workflow/` refer to `foundation/`, never to each other. A child states no looser level than its parent.
 
 Judge the meaning, not the words. A foundation rule about a network port, a Docker `ENTRYPOINT` or an attack surface is fine; a foundation rule that says "code talking to the outside world lives apart from the logic" is architecture though it names no folder.
+
+## Preset settings
+
+Also read what the range changes under `presets/`: every setting added to or moved between parts `presets/<scope>/<tool>/<axis>/<part>.*`, and every entry of `presets/<scope>/<tool>/bindings.yaml`. A part is named after the block its settings need — the one without which they mean nothing. Ask of each setting: which block must be active for it to make sense? A setting that names or needs a library, a framework or a platform — `noTailwindArbitraryValue`, `noReactNativeLiteralColors`, a JSX rule — sits in that block's part even when the rule it holds belongs to a block above, such as `ui`; `bindings.yaml` records that rule. A setting that needs nothing beyond the tool sits in `core` when it holds a rule of core, and in `self` when it is the tool's own. The scope folder is `common` when the setting reads files of any language, and otherwise the language whose files it reads; the axis folder is the axis of the rule the setting holds. Report a setting in a part more general than it needs, and one in a part more specific than it needs, as findings of the same form, with the path of the part.
 
 ## Output
 

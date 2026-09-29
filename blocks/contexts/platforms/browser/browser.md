@@ -5,6 +5,8 @@ requires: [untrusted-client, unreliable-network]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: []
 governs: []
 ---

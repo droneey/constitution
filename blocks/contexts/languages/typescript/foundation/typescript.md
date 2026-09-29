@@ -17,11 +17,18 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 | a reader who knows the name of a thing knows the name of its file. | review | [] |
 
 ## typescript-file-forms → kebab-case-file-names
-Source files are kebab-case `.ts`, and `.tsx` only where markup is written. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts` or `.tsx`. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
 
 | Why | Check | Tags |
 |---|---|---|
-| one spelling of every kind of file lets the tools and the reader find a file by its name. | tool — names | [] |
+| one spelling of every kind of file lets the tools and the reader find a file by its name. | tool/names | [] |
+
+## tsx-only-where-markup-is-written → typescript-file-forms
+A file is `.tsx` only where it writes markup.
+
+| Why | Check | Tags |
+|---|---|---|
+| the extension then says which files render, and a plain module is never parsed for markup. | review | [] |
 
 ## Names
 
@@ -30,14 +37,14 @@ PascalCase for types, classes, enums and their members; camelCase for functions,
 
 | Why | Check | Tags |
 |---|---|---|
-| the case tells what kind of thing a name is before its declaration is read. | tool — lint | [] |
+| the case tells what kind of thing a name is before its declaration is read. | tool/lint | [] |
 
 ## type-names-undecorated · SHOULD
 A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` or `Interface` suffix.
 
 | Why | Check | Tags |
 |---|---|---|
-| a decoration repeats what the language already shows and makes every name longer. | tool — lint | [] |
+| a decoration repeats what the language already shows and makes every name longer. | tool/lint | [] |
 
 ## Values and types
 
@@ -46,7 +53,7 @@ Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefine
 
 | Why | Check | Tags |
 |---|---|---|
-| one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident. | tool — lint | [] |
+| one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident. | tool/lint | [] |
 
 ## brand-is-an-intersection-or-unique-symbol → identifiers-branded-by-entity
 An identifier's brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol. An alias of the vocabulary stays a plain name, never branded.
@@ -67,42 +74,42 @@ A closed set of named values is a string `enum` — never a union of string lite
 
 | Why | Check | Tags |
 |---|---|---|
-| an enum is one declaration of a closed set that the compiler checks everywhere it is used. | tool — lint | [] |
+| an enum is one declaration of a closed set that the compiler checks everywhere it is used. | tool/lint | [] |
 
 ## strict-equality-only · MUST
 Comparisons are strict — `===` and `!==`, with `null` too; never `==`.
 
 | Why | Check | Tags |
 |---|---|---|
-| loose equality converts its operands by rules few remember, and hides a second absent value behind the first. | tool — lint | [] |
+| loose equality converts its operands by rules few remember, and hides a second absent value behind the first. | tool/lint | [] |
 
 ## nullish-operators-for-absence · SHOULD
 `??` gives a default and `?.` reaches through an absent value; `!value` is never a check for absence on a value that is not boolean.
 
 | Why | Check | Tags |
 |---|---|---|
-| `!value` also treats `0` and the empty string as absent, which is a bug waiting for its input. | tool — lint | [] |
+| `!value` also treats `0` and the empty string as absent, which is a bug waiting for its input. | tool/lint | [] |
 
 ## no-any · MUST
 No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, in tests too; `noImplicitAny` is never turned off.
 
 | Why | Check | Tags |
 |---|---|---|
-| `any` switches the type checker off for everything it touches, and it spreads. | tool — lint | [] |
+| `any` switches the type checker off for everything it touches, and it spreads. | tool/lint | [] |
 
 ## no-unchecked-escape-hatches → suppression-states-its-reason
 No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@ts-nocheck`. `@ts-expect-error` and any other exception carry a suppression that states why.
 
 | Why | Check | Tags |
 |---|---|---|
-| each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | tool — lint | [] |
+| each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | tool/lint | [] |
 
 ## exhaustive-branching-over-unions → illegal-states-unrepresentable
 A branch over a union handles every member: a `switch` whose default proves `never`, or an `if` chain that ends in a `never` check.
 
 | Why | Check | Tags |
 |---|---|---|
-| a new member then fails to compile at every branch that forgot it. | tool — lint | [] |
+| a new member then fails to compile at every branch that forgot it. | tool/lint | [] |
 
 **Example:**
 ```ts
@@ -149,13 +156,6 @@ JSDoc documents only a public entry whose use is not obvious, never a self-descr
 |---|---|---|
 | JSDoc that repeats a signature drifts from it, and the editor already shows the types. | review | [] |
 
-## compiler-is-the-type-gate → rules-held-by-tools
-The compiler, not a bundler or the runtime, is the type gate: `tsc --noEmit` runs in the check with the strict options — `strict`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `noImplicitOverride`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `verbatimModuleSyntax`.
-
-| Why | Check | Tags |
-|---|---|---|
-| a bundler strips the types without checking them, so a build can pass with every type wrong. | tool — types | [] |
-
 ## Dependencies
 
 ## tools-are-dev-dependencies · MUST
@@ -163,32 +163,32 @@ Build, test and lint tools are development dependencies, and production code imp
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool in production dependencies ships to every installation, and one imported by production code ships inside it. | tool — architecture | [security] |
+| a tool in production dependencies ships to every installation, and one imported by production code ships inside it. | tool/architecture | [security] |
 
 ## one-version-per-dependency · MUST
 Each dependency has one version across every manifest of the repository.
 
 | Why | Check | Tags |
 |---|---|---|
-| two versions of one dependency behave differently in two places, and the difference is found in production. | tool — versions | [] |
+| two versions of one dependency behave differently in two places, and the difference is found in production. | tool/versions | [] |
 
 ## caret-ranges-lockfile-pins · SHOULD
 A manifest's ranges are caret ranges; the lockfile pins the exact versions.
 
 | Why | Check | Tags |
 |---|---|---|
-| the manifest says what is compatible, the lockfile what is installed; pinning in both makes every update touch two files. | tool — versions | [security] |
+| the manifest says what is compatible, the lockfile what is installed; pinning in both makes every update touch two files. | tool/versions | [security] |
 
 ## shared-state-packages-once-in-lockfile · SHOULD
 A package that holds state or types across the program — the schema engine, the user-interface framework — resolves to one version in the lockfile.
 
 | Why | Check | Tags |
 |---|---|---|
-| two copies of such a package split its state, and its types stop matching across the split. | tool — versions | [] |
+| two copies of such a package split its state, and its types stop matching across the split. | review | [] |
 
 ## manifest-fields-in-shared-order · SHOULD
 The fields of `package.json` follow the shared order.
 
 | Why | Check | Tags |
 |---|---|---|
-| every manifest reads the same way, and a diff shows a change of content, not of order. | tool — format | [] |
+| every manifest reads the same way, and a diff shows a change of content, not of order. | tool/format | [] |

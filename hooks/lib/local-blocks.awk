@@ -102,6 +102,7 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   if (FM["extends"] != "" && !(FM["extends"] in KNOWN)) warn("local-block", path " extends " FM["extends"] ", which is not a constitution block — fix its front matter")
   n = split(FM["requires"], a, " ")
   for (k = 1; k <= n; k++) if (!(a[k] in KNOWN) && !(a[k] in LOCAL)) warn("local-block", path " requires " a[k] ", which is not a block — fix its front matter")
+  check_coverage(path)
   LPATH[++nlocal] = path
   LID[nlocal] = name
   LLAYER[nlocal] = layer
@@ -109,35 +110,22 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   LREQUIRES[nlocal] = FM["requires"]
   LEXTENDS[nlocal] = FM["extends"]
   LCHECKS[nlocal] = FM["checks"]
+  LLANGS[nlocal] = FM["languages"]
+  LROLES[nlocal] = FM["roles"]
   LSCOPE[nlocal] = s
   IN[s, name] = 1
   if (FM["extends"] in KNOWN) add_with_bases(s, FM["extends"])
 }
 
-# A local block's languages, as the index gives them for a constitution block:
-# the language blocks in its closure. Another local block passes on its own, so
-# the pass repeats until nothing changes, whatever the order of the file.
-function local_languages(   k, n, a, m, j, changed) {
-  for (k = 1; k <= nlocal; k++) LLANGS[k] = (LLAYER[k] == "language") ? LID[k] : ""
-  do {
-    changed = 0
-    for (k = 1; k <= nlocal; k++) {
-      n = split(LREQUIRES[k] " " LEXTENDS[k], a, " ")
-      for (m = 1; m <= n; m++) {
-        if (a[m] in KNOWN) changed += add_languages(k, LANGS[a[m]])
-        else for (j = 1; j <= nlocal; j++) if (LID[j] == a[m]) changed += add_languages(k, LLANGS[j])
-      }
-    }
-  } while (changed)
+# A local block names a language of the constitution or one listed beside it.
+function is_language(id) {
+  if (id in KNOWN) return LAYER[id] == "language"
+  return (id in LOCAL) && local_layer(LOCAL_PATH[id], LOCAL_KEY[id]) == "language"
 }
 
-function add_languages(k, list,   n, a, m, added) {
-  n = split(list, a, " ")
-  added = 0
-  for (m = 1; m <= n; m++) {
-    if (has(LLANGS[k], a[m])) continue
-    LLANGS[k] = trim(LLANGS[k] " " a[m])
-    added = 1
-  }
-  return added
+function check_coverage(path,   n, a, k) {
+  n = split(FM["languages"], a, " ")
+  for (k = 1; k <= n; k++) if (!is_language(a[k])) warn("local-block", path " covers " a[k] ", which is not a language block — fix its front matter")
+  n = split(FM["roles"], a, " ")
+  for (k = 1; k <= n; k++) if (!(a[k] in FREE)) warn("local-block", path " is held to " a[k] ", which is not a role — fix its front matter")
 }

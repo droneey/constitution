@@ -15,7 +15,7 @@ type RuleCheck =
       kind: 'unknown';
     };
 
-const CHECK = /^(?:(test|review)|tool — (\S+))$/;
+const CHECK = /^(?:(test|review)|tool\/(\S+))$/;
 
 const checkOf = (rule: StatedRule): RuleCheck => {
   const match = CHECK.exec(rule.check);

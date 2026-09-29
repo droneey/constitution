@@ -30,7 +30,13 @@ const PRESET = z.record(
 );
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'lefthook', 'workflow');
+const PRESETS_FOLDER = join(
+  REPOSITORY,
+  'presets',
+  'common',
+  'lefthook',
+  'workflow',
+);
 
 const presetConfig = (part: string): unknown =>
   YAML.parse(readFileSync(join(PRESETS_FOLDER, `${part}.yaml`), 'utf8'));
@@ -54,7 +60,7 @@ const checkCommitMessage = (message: string): HookRun => {
       jobRun({
         hook: Hook.CommitMessage,
         job: 'commit-message',
-        part: 'core',
+        part: 'version-control',
       }).replaceAll('{1}', file),
     ],
     {

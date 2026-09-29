@@ -1,4 +1,5 @@
 export { abstractBlocksCheck } from './abstract-blocks.check';
+export { bindingsCheck } from './bindings.check';
 export { budgetCheck } from './budget.check';
 export { cyclesCheck } from './cycles.check';
 export { decisionsCheck } from './decisions.check';
@@ -7,6 +8,7 @@ export { frontMatterCheck } from './front-matter.check';
 export { linksCheck } from './links.check';
 export { ownedWordsCheck } from './owned-words.check';
 export { pluginCheck } from './plugin.check';
+export { presetsCheck } from './presets.check';
 export { referencesCheck } from './references.check';
 export { requirementsCheck } from './requirements.check';
 export { requiresCheck } from './requires.check';

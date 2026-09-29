@@ -1,11 +1,18 @@
 # Biome
 
-## biome-suppression-names-rule-and-reason → suppression-states-its-reason
-A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`: one rule and its reason; never a range or a whole file without one.
+## biome-suppression-states-its-reason → suppression-states-its-reason
+A `biome-ignore` comment states its reason after the colon.
 
 | Why | Check | Tags |
 |---|---|---|
-| a suppression that names its rule and reason can be judged; a blanket one silences rules nobody meant to. | tool — lint | [] |
+| Biome refuses a suppression without a reason, so every silenced finding says why. | tool/lint | [] |
+
+## biome-suppression-names-one-rule · MUST
+A suppression names one rule, `// biome-ignore lint/<group>/<rule>: <reason>`; never a group, the whole linter, a range or a whole file.
+
+| Why | Check | Tags |
+|---|---|---|
+| a suppression of one rule can be judged; a blanket one silences rules nobody meant to. | review | [] |
 
 ## biome-warnings-fail-the-check → check-passes-before-hand-back
 Warnings fail the check: every rule is an error, or the check passes `--error-on-warnings`.

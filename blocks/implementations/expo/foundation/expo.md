@@ -20,3 +20,10 @@ Native modules are installed at the versions the SDK supports, and the check ver
 | Why | Check | Tags |
 |---|---|---|
 | a native module at another version builds and then crashes on a device. | review | [] |
+
+## expo-router-file-names-kept → kebab-case-file-names
+Beside kebab-case, a route keeps the names Expo Router reads: `_layout.tsx`, `+not-found.tsx`, a group `(tabs)/` and a parameter `[orderId].tsx`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the router finds its layouts, groups and parameters by these names alone. | tool/names | [] |

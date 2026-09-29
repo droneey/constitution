@@ -62,8 +62,8 @@ const PARAGLIDE: ReadonlyArray<
     'the compiler checks a function call, and a key is only a string.',
   ],
   [
-    '<tool — role, test or review>',
-    'tool — types',
+    '<tool/role, test or review>',
+    'tool/types',
   ],
   [
     '[<lens>, <lens>]',

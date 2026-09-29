@@ -45,12 +45,12 @@ describe('checkOf', () => {
       name: '"review"',
     },
     {
-      check: 'tool — lint',
+      check: 'tool/lint',
       expected: {
         kind: 'tool',
         role: 'lint',
       },
-      name: '"tool — lint"',
+      name: '"tool/lint"',
     },
     {
       check: 'tool— lint',
@@ -67,7 +67,7 @@ describe('checkOf', () => {
       name: 'a check with words before it',
     },
     {
-      check: 'tool — lint types',
+      check: 'tool/lint types',
       expected: {
         kind: 'unknown',
       },

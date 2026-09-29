@@ -8,7 +8,9 @@ const FIELDS = [
   'requires: []',
   'extends: null',
   'abstract: false',
-  'checks: []',
+  'checks: [format]',
+  'languages: [css]',
+  'roles: [lint]',
   'dictionary: []',
   'governs: ["**/ui/**"]',
 ].join('\n');
@@ -20,6 +22,8 @@ const KEYS = [
   'extends',
   'abstract',
   'checks',
+  'languages',
+  'roles',
   'dictionary',
   'governs',
 ];
@@ -36,14 +40,22 @@ describe('createYamlFrontMatterParser', () => {
     expect(read).toStrictEqual({
       fields: {
         abstract: false,
-        checks: [],
+        checks: [
+          'format',
+        ],
         dictionary: [],
         extends: undefined,
         governs: [
           '**/ui/**',
         ],
         id: 'ui',
+        languages: [
+          'css',
+        ],
         requires: [],
+        roles: [
+          'lint',
+        ],
         summary: 'Screens.',
       },
       issues: [],
@@ -94,7 +106,7 @@ describe('createYamlFrontMatterParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      line: 8,
+      line: 10,
       reason: 'Missing , or : between flow sequence items',
       status: 'not-yaml',
     });

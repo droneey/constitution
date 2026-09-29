@@ -16,7 +16,9 @@ const FIELDS: FrontMatterFields = {
   extends: undefined,
   governs: [],
   id: 'ui',
+  languages: [],
   requires: [],
+  roles: [],
   summary: 'The ui block.',
 };
 const KEYS = [
@@ -26,6 +28,8 @@ const KEYS = [
   'extends',
   'abstract',
   'checks',
+  'languages',
+  'roles',
   'dictionary',
   'governs',
 ];
@@ -64,8 +68,15 @@ describe('readFrontMatter', () => {
         governs: [
           '**/ui/**',
         ],
+        languages: [
+          'typescript',
+        ],
         requires: [
           'remote-data',
+        ],
+        roles: [
+          'format',
+          'names',
         ],
       },
     });
@@ -90,8 +101,15 @@ describe('readFrontMatter', () => {
           '**/ui/**',
         ],
         id: 'ui',
+        languages: [
+          'typescript',
+        ],
         requires: [
           'remote-data',
+        ],
+        roles: [
+          Role.Format,
+          Role.Names,
         ],
         summary: 'The ui block.',
       },
@@ -289,7 +307,7 @@ describe('readFrontMatter', () => {
         ...KEYS.slice(2),
       ],
       message:
-        'front matter lists its fields out of order; the order is id, summary, requires, extends, abstract, checks, dictionary, governs',
+        'front matter lists its fields out of order; the order is id, summary, requires, extends, abstract, checks, languages, roles, dictionary, governs',
       name: 'its fields out of order',
     },
     {
@@ -346,6 +364,44 @@ describe('readFrontMatter', () => {
       },
       message: 'front matter: checks "linting", which is not a role',
       name: 'a checks entry that is no role',
+    },
+    {
+      fields: {
+        languages: [
+          'Type Script',
+        ],
+      },
+      message: 'front matter: languages "Type Script", which is not a block id',
+      name: 'a languages entry that is no block id',
+    },
+    {
+      fields: {
+        roles: [
+          'style',
+        ],
+      },
+      message: 'front matter: roles "style", which is not a role',
+      name: 'a roles entry that is no role',
+    },
+    {
+      fields: {
+        languages: [
+          'css',
+          'css',
+        ],
+      },
+      message: 'front matter: languages lists "css" twice',
+      name: 'the same language in languages twice',
+    },
+    {
+      fields: {
+        roles: [
+          'lint',
+          'lint',
+        ],
+      },
+      message: 'front matter: roles lists "lint" twice',
+      name: 'the same role in roles twice',
     },
     {
       fields: {

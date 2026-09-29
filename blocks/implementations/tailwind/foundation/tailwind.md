@@ -33,14 +33,14 @@ Base classes serve small screens and are widened by `md:`, `lg:` and `xl:`; `max
 
 | Why | Check | Tags |
 |---|---|---|
-| styles that only widen never undo each other, and the smallest screen is always the base. | tool — lint | [] |
+| styles that only widen never undo each other, and the smallest screen is always the base. | tool/lint | [] |
 
 ## dynamic-viewport-classes → dynamic-viewport-units
 Viewport heights use the dynamic units (`h-dvh`), never `h-screen`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `h-screen` is `100vh`, which ignores the browser's own toolbars on phones. | tool — lint | [] |
+| `h-screen` is `100vh`, which ignores the browser's own toolbars on phones. | tool/lint | [] |
 
 ## dark-theme-redefines-tokens → light-and-dark-one-token-set
 Dark mode redefines the semantic tokens under one selector; a component writes `dark:` only where no token can say it.

@@ -5,6 +5,8 @@ requires: [analytics, typescript]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Matomo, _mtm, _paq]
 governs: ["**/matomo.sink.ts"]
 ---

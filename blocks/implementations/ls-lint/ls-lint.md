@@ -5,10 +5,12 @@ requires: []
 extends: null
 abstract: false
 checks: [names]
+languages: []
+roles: []
 dictionary: [ls-lint, .ls-lint.yaml]
 governs: [".ls-lint.yaml"]
 ---
 
 # ls-lint
 
-> Holds names in any language. The check passes the parts of the constitution's release archive — `presets/ls-lint/foundation/core.yaml` and the language's part, such as `typescript.yaml`, then on the architecture axis `architecture/core.yaml` and the parts of the project's blocks (`ui`, `tanstack-router`, `cli`, `analytics`) — then the project's own `.ls-lint.yaml`. Together they hold every active rule whose check is `tool — names`: kebab-case for every folder and file, upper-case documents excepted; `__tests__/` and `tests/` admitting only the spec, fake and fixtures forms; YAML files only as `.yaml`. What it cannot see — a spec named after the wrong file — is reviewed.
+> Holds names in any language. The check passes the parts of the constitution's release archive — those of `presets/common/ls-lint/`, for any language: `self.yaml`, `core.yaml` and the part of each tool whose folder it skips, such as `stryker.yaml`; and those of the scope of each active language, such as `presets/typescript/ls-lint/`: the language's own part, `typescript.yaml`, on foundation the names of a framework, such as `expo.yaml`, and on the architecture axis core's tree, `core.yaml`, and each other block's, such as `ui.yaml` — then the project's own `.ls-lint.yaml`. Together they hold every active rule whose check is `tool/names`: kebab-case for every folder and file, upper-case documents excepted; `__tests__/` and `tests/` admitting only the spec, fake and fixtures forms; YAML files only as `.yaml`. What it cannot see — a spec named after the wrong file — is reviewed.

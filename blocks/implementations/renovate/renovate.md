@@ -5,6 +5,8 @@ requires: [git]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Renovate, renovate.json, renovate.json5, .renovaterc]
 governs: ["renovate.json"]
 ---

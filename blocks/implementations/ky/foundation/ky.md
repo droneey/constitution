@@ -12,4 +12,4 @@ A response body is read as `unknown` and parsed by a schema; `.json<T>()` is a c
 
 | Why | Check | Tags |
 |---|---|---|
-| a typed `.json<T>()` trusts the server with the program's types, and the first unexpected field breaks code far away. | tool — lint | [security] |
+| a typed `.json<T>()` trusts the server with the program's types, and the first unexpected field breaks code far away. | tool/lint | [security] |

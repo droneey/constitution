@@ -5,6 +5,8 @@ requires: [react-dom, tailwind]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [shadcn, Radix, components.json]
 governs: ["components.json", "**/libs/ui/components/**"]
 ---

@@ -16,7 +16,7 @@ A caught error is handled, rethrown, or mapped to a typed error. Code branches o
 
 | Why | Check | Tags |
 |---|---|---|
-| a swallowed error turns a failure into wrong data that shows up far from its cause, and a message is text a person may reword. | tool — lint | [errors] |
+| a swallowed error turns a failure into wrong data that shows up far from its cause, and a message is text a person may reword. | tool/lint | [errors] |
 
 ## rules-held-by-tools · MUST
 Every rule whose Check names a role is held by a tool of that role in the project's check, configured to fail on a violation. A rule no configured tool holds is reviewed, or lowered by an override.

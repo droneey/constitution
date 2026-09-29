@@ -5,6 +5,8 @@ requires: [bun, cli]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [bunli]
 governs: ["**/cli/**"]
 ---

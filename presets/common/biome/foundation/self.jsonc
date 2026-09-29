@@ -1,0 +1,34 @@
+{
+  "files": {
+    "includes": [
+      "**",
+      "!**/.constitution",
+    ],
+  },
+  "formatter": {
+    "lineWidth": 80,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "attributePosition": "multiline",
+    "expand": "always",
+    "useEditorconfig": true,
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended",
+    },
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.jsonc",
+      ],
+      "json": {
+        "formatter": {
+          "trailingCommas": "all",
+        },
+      },
+    },
+  ],
+}

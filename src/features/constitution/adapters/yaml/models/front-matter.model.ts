@@ -12,7 +12,9 @@ const frontMatterModel: z.ZodType<FrontMatterFields> = z.looseObject({
     .transform((value) => value ?? undefined),
   governs: z.array(z.string()),
   id: z.string(),
+  languages: z.array(z.string()),
   requires: z.array(z.string()),
+  roles: z.array(z.string()),
   summary: z.string(),
 });
 

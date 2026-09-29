@@ -5,6 +5,8 @@ requires: [_react, remote-data]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [TanStack Query, QueryClient, useQuery, useMutation]
 governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 ---

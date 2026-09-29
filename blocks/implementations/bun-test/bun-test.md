@@ -5,6 +5,8 @@ requires: []
 extends: bun
 abstract: false
 checks: [tests, coverage]
+languages: [typescript]
+roles: []
 dictionary: [bun:test]
 governs: ["**/__tests__/**"]
 ---

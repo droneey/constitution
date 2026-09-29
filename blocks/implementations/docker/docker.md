@@ -5,6 +5,8 @@ requires: []
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Docker, Dockerfile, .dockerignore, Docker Compose, compose.yaml]
 governs: ["**/Dockerfile", "**/*.Dockerfile", "**/.dockerignore", "**/compose.yaml", "**/compose.*.yaml"]
 ---

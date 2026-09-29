@@ -92,7 +92,7 @@ describe('generateDigests', () => {
       files: CYCLE,
       key: 'block\talpha',
       record:
-        'block\talpha\timplementation\tThe alpha block.\t\t\t\tbeta\tfalse\tbeta\t\t\tbeta\t',
+        'block\talpha\timplementation\tThe alpha block.\t\t\t\tbeta\tfalse\tbeta\t\t\t\tbeta\t',
       what: 'the ancestors up to the block',
     },
     {
@@ -106,7 +106,7 @@ describe('generateDigests', () => {
       },
       key: 'block\tgamma',
       record:
-        'block\tgamma\timplementation\tThe gamma block.\t\t\t\talpha\tfalse\t\t\t\talpha beta\t',
+        'block\tgamma\timplementation\tThe gamma block.\t\t\t\talpha\tfalse\t\t\t\t\talpha beta\t',
       what: 'each ancestor once',
     },
     {
@@ -117,7 +117,7 @@ describe('generateDigests', () => {
       }),
       key: 'block\torphan',
       record:
-        'block\torphan\timplementation\tThe orphan block.\t\t\t\tghost\tfalse\t\t\t\tghost\t',
+        'block\torphan\timplementation\tThe orphan block.\t\t\t\tghost\tfalse\t\t\t\t\tghost\t',
       what: 'the unknown base as the only ancestor',
     },
     {
@@ -184,7 +184,7 @@ describe('generateDigests', () => {
       },
       key: 'block\tui',
       record:
-        'block\tui\tdomain\tThe ui block.\tfoundation/ui.md foundation/design-system.md architecture/forms.md workflow/reviews.md\tarchitecture/remote-data workflow/i18n\t\t\tfalse\t\t\t\t\t**/ui/**',
+        'block\tui\tdomain\tThe ui block.\tfoundation/ui.md foundation/design-system.md architecture/forms.md workflow/reviews.md\tarchitecture/remote-data workflow/i18n\t\t\tfalse\t\t\t\t\t\t**/ui/**',
       what: 'each chapter and seam with its axis, in axis order and the named chapter first',
     },
     {

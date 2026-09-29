@@ -1,0 +1,40 @@
+// biome-ignore lint/style/noDefaultExport: syncpack reads a configuration's default export
+export default {
+  sortFirst: [
+    'name',
+    'version',
+    'private',
+    'description',
+    'keywords',
+    'homepage',
+    'bugs',
+    'license',
+    'author',
+    'repository',
+    'type',
+    'packageManager',
+    'bin',
+    'main',
+    'module',
+    'types',
+    'exports',
+    'imports',
+    'files',
+    'scripts',
+    'workspaces',
+    'dependencies',
+    'devDependencies',
+    'peerDependencies',
+    'peerDependenciesMeta',
+  ],
+  semverGroups: [
+    {
+      label: 'Use caret ranges for the dependencies of the project',
+      range: '^',
+      dependencyTypes: [
+        'dev',
+        'prod',
+      ],
+    },
+  ],
+};

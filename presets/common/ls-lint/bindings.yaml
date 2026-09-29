@@ -1,0 +1,10 @@
+foundation:
+  core:
+    kebab-case-file-names:
+      - '.*'
+      - '.*.*'
+      - '.*.*.*'
+      - '.dir'
+      - '.md'
+    yaml-files-end-in-yaml:
+      - '.yml'

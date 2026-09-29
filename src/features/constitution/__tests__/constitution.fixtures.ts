@@ -1,9 +1,11 @@
 import { createJsonManifestParser } from '../adapters/json';
 import {
+  createYamlBindingsParser,
   createYamlFrontMatterParser,
   createYamlVocabularyParser,
 } from '../adapters/yaml';
 import type {
+  BindingsParser,
   FileTree,
   FrontMatterParser,
   ManifestParser,
@@ -24,7 +26,9 @@ interface CardFixture {
   extends?: string | undefined;
   governs?: readonly string[];
   id: string;
+  languages?: readonly string[];
   requires?: readonly string[];
+  roles?: readonly string[];
   summary?: string;
 }
 
@@ -60,6 +64,8 @@ const mainFile = (block: BlockFixture): string =>
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
     `checks: ${list(block.checks)}`,
+    `languages: ${list(block.languages)}`,
+    `roles: ${list(block.roles)}`,
     `dictionary: ${list(block.dictionary)}`,
     `governs: ${list(block.governs)}`,
     '---',
@@ -101,6 +107,7 @@ const rule = (input: RuleFixture): string =>
   ].join('\n');
 
 interface Source {
+  bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;
@@ -108,6 +115,7 @@ interface Source {
 }
 
 const sourceOf = (files: Readonly<Files>): Source => ({
+  bindingsParser: createYamlBindingsParser(),
   frontMatterParser: createYamlFrontMatterParser(),
   manifestParser: createJsonManifestParser(),
   tree: createFakeFileTree(files),

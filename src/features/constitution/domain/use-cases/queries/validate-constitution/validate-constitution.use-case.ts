@@ -2,6 +2,7 @@ import type { Finding } from '#/kernel';
 import { compareFindings } from '#/kernel';
 
 import type {
+  BindingsParser,
   FileTree,
   FrontMatterParser,
   ManifestParser,
@@ -13,6 +14,7 @@ import { loadConstitution } from '../load-constitution';
 import type { Check } from './check.types';
 import {
   abstractBlocksCheck,
+  bindingsCheck,
   budgetCheck,
   cyclesCheck,
   decisionsCheck,
@@ -21,6 +23,7 @@ import {
   linksCheck,
   ownedWordsCheck,
   pluginCheck,
+  presetsCheck,
   referencesCheck,
   requirementsCheck,
   requiresCheck,
@@ -39,6 +42,8 @@ const CHECKS: readonly Check[] = [
   vocabularyCheck,
   rulesCheck,
   requirementsCheck,
+  presetsCheck,
+  bindingsCheck,
   referencesCheck,
   budgetCheck,
   linksCheck,
@@ -55,6 +60,7 @@ interface Validation {
 // The checks run on a sound structure only: a block that did not load would
 // otherwise be reported as missing by every check that names it.
 const validateConstitution = (input: {
+  bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;

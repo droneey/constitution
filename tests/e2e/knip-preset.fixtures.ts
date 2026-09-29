@@ -13,10 +13,13 @@ import { z } from 'zod';
 
 interface Project {
   files: Readonly<Record<string, string>>;
+  parts?: readonly string[];
   production?: boolean;
+  scripts?: Readonly<Record<string, string>>;
 }
 
 interface Unused {
+  binaries: readonly string[];
   exports: readonly string[];
   files: readonly string[];
 }
@@ -24,6 +27,11 @@ interface Unused {
 const REPORT = z.object({
   issues: z.array(
     z.object({
+      binaries: z.array(
+        z.object({
+          name: z.string(),
+        }),
+      ),
       exports: z.array(
         z.object({
           name: z.string(),
@@ -35,16 +43,25 @@ const REPORT = z.object({
   ),
 });
 
-const CONFIG = `import architecture from './.constitution/presets/knip/architecture/core.mjs';
-import core from './.constitution/presets/knip/foundation/core.mjs';
-import self from './.constitution/presets/knip/foundation/self.mjs';
+const configOf = (parts: readonly string[]): string => {
+  const names = parts.map((_, index) => `part${index}`);
+
+  return `import architecture from './.constitution/presets/typescript/knip/architecture/core.mjs';
+import core from './.constitution/presets/typescript/knip/foundation/core.mjs';
+${parts
+  .map(
+    (part, index) =>
+      `import ${names[index]} from './.constitution/presets/${part.replace('/', '/knip/')}.mjs';`,
+  )
+  .join('\n')}
 
 export default {
-  ...self,
   entry: [...core.entry, ...architecture.entry],
   project: core.project,
+  ignoreBinaries: [${names.map((name) => `...${name}.ignoreBinaries`).join(', ')}],
 };
 `;
+};
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const KNIP = join(REPOSITORY, 'node_modules', '.bin', 'knip');
@@ -53,11 +70,12 @@ const unusedCode = (project: Project): Unused => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-knip-'));
   const files = {
     ...project.files,
-    'knip.config.ts': CONFIG,
+    'knip.config.ts': configOf(project.parts ?? []),
     'package.json': JSON.stringify({
       name: 'fixture',
       scripts: {
         test: 'bun test',
+        ...project.scripts,
       },
       type: 'module',
     }),
@@ -98,6 +116,9 @@ const unusedCode = (project: Project): Unused => {
   const { issues } = REPORT.parse(JSON.parse(running.stdout));
 
   return {
+    binaries: issues.flatMap(({ binaries }) =>
+      binaries.map(({ name }) => name),
+    ),
     exports: issues.flatMap(({ exports }) => exports.map(({ name }) => name)),
     files: issues
       .filter(({ files: unused }) => unused.length > 0)

@@ -7,7 +7,9 @@ interface FrontMatter {
   extends: string | undefined;
   governs: readonly string[];
   id: string;
+  languages: readonly string[];
   requires: readonly string[];
+  roles: readonly Role[];
   summary: string;
 }
 

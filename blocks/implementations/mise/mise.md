@@ -5,6 +5,8 @@ requires: []
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [mise, mise.toml, mise.lock, mise.local.toml, mise-action, .constitution]
 governs: ["mise.toml", "mise.lock"]
 ---

@@ -35,7 +35,7 @@ Placeholder subjects are rejected: "update", "fix stuff", "wip", "changes", "mis
 
 | Why | Check | Tags |
 |---|---|---|
-| a placeholder subject makes the history useless at exactly the commit someone needs to understand. | tool — commits | [] |
+| a placeholder subject makes the history useless at exactly the commit someone needs to understand. | tool/commits | [] |
 
 ## Integration
 

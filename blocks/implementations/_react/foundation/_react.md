@@ -14,42 +14,42 @@ No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effe
 
 | Why | Check | Tags |
 |---|---|---|
-| hand-written memoisation is noise the Compiler makes useless, and it hides the real dependencies of the code. | tool — lint | [performance] |
+| hand-written memoisation is noise the Compiler makes useless, and it hides the real dependencies of the code. | tool/lint | [performance] |
 
 ## modern-react-api-only · MUST
 Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup, actions. The legacy form of each is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|
-| two forms of one thing double what a reader must know, and the legacy forms are on their way out. | tool — lint | [] |
+| two forms of one thing double what a reader must know, and the legacy forms are on their way out. | tool/lint | [] |
 
 ## function-components-only → inheritance-only-for-errors-and-framework-points · MUST
 Components are functions, composed, never inherited; a class only for an error boundary.
 
 | Why | Check | Tags |
 |---|---|---|
-| hooks work only in functions, and inheritance between components couples them to each other's internals. | tool — lint | [] |
+| hooks work only in functions, and inheritance between components couples them to each other's internals. | tool/lint | [] |
 
 ## hooks-at-top-level · MUST
 Hooks are called only at the top level of a component or a hook, never in a condition, a loop or a callback.
 
 | Why | Check | Tags |
 |---|---|---|
-| React matches hooks by their call order; a hook called conditionally reads another hook's state. | tool — lint | [errors] |
+| React matches hooks by their call order; a hook called conditionally reads another hook's state. | tool/lint | [errors] |
 
 ## no-component-defined-inside-component · MUST
 No component is defined inside another component.
 
 | Why | Check | Tags |
 |---|---|---|
-| a component defined inside another is a new type on every render, so its state resets each time. | tool — lint | [errors, performance] |
+| a component defined inside another is a new type on every render, so its state resets each time. | tool/lint | [errors, performance] |
 
 ## list-keys-from-identity · SHOULD
 A list's key comes from the item's identity, never its index.
 
 | Why | Check | Tags |
 |---|---|---|
-| an index key moves state to the wrong item when the list is reordered or filtered. | tool — lint | [errors] |
+| an index key moves state to the wrong item when the list is reordered or filtered. | tool/lint | [errors] |
 
 ## State and effects
 

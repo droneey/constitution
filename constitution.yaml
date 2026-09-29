@@ -4,7 +4,7 @@ axes: [foundation, architecture, workflow]
 domains: [version-control]
 platforms: []
 languages: [typescript]
-implementations: [bun, bun-test, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner]
+implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner]
 apps: {}
 check: bun run check
 overrides:

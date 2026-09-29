@@ -1,0 +1,21 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/.dependency-cruiser.js",
+        "**/.dependency-cruiser.mjs",
+        "**/.dependency-cruiser.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+          "security": {
+            "noSecrets": "off",
+          },
+        },
+      },
+    },
+  ],
+}

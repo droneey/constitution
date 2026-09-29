@@ -1,0 +1,18 @@
+{
+  "linter": {
+    "rules": {
+      "performance": {
+        "noReExportAll": "error",
+      },
+    },
+  },
+  "plugins": [
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-empty-names.grit",
+      "includes": [
+        "**",
+        "!**/src/libs/**",
+      ],
+    },
+  ],
+}

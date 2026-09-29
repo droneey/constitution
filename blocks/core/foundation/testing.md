@@ -148,14 +148,14 @@ A file in `__tests__/` or in `tests/` is a spec named after the file or scenario
 
 | Why | Check | Tags |
 |---|---|---|
-| a spec named otherwise would not run, and a helper named like a spec would. | tool — names | [testing] |
+| a spec named otherwise would not run, and a helper named like a spec would. | tool/names | [testing] |
 
 ## cases-named-should-when · SHOULD
 A suite is named after its boundary, and a case reads `should <behaviour> when <condition>`, in the language's spelling.
 
 | Why | Check | Tags |
 |---|---|---|
-| a failing case then says which behaviour broke and under what condition, without opening it. | tool — lint | [testing] |
+| a failing case then says which behaviour broke and under what condition, without opening it. | tool/lint | [testing] |
 
 ## arrange-act-assert-marked · SHOULD
 A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call.
@@ -169,7 +169,14 @@ No test is skipped, pending, focused or without an assertion.
 
 | Why | Check | Tags |
 |---|---|---|
-| a skipped test looks like coverage and proves nothing, and a focused one silently skips all the others. | tool — lint | [testing] |
+| a skipped test looks like coverage and proves nothing, and a focused one silently skips all the others. | tool/lint | [testing] |
+
+## test-code-unreachable-from-production · MUST
+Production code never imports a file of `__tests__/` or of `tests/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a fake or a fixture in production code ships test behaviour to users. | tool/architecture | [testing] |
 
 ## The gates
 
@@ -178,18 +185,18 @@ The project's check runs the tests, and fails when one fails.
 
 | Why | Check | Tags |
 |---|---|---|
-| a test that runs only when someone remembers protects nothing. | tool — tests | [testing] |
+| a test that runs only when someone remembers protects nothing. | tool/tests | [testing] |
 
 ## coverage-holds-all-logic · MUST
 All logic — the program's own rules, the code that talks to external systems, the libraries, the user interface — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. Excluded: the entry file of each artifact, the file that wires the program together, generated files, declarations and vendored code. A line no behaviour reaches is a missing behaviour test, or code nothing needs, which is deleted; never a reason for a test of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test. | tool — coverage | [testing] |
+| tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test. | tool/coverage | [testing] |
 
 ## mutants-all-killed · MUST
 Mutation testing measures the tests, and every mutant of the logic is killed. A mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the check. It runs in the check over the lines a change touches, every new file and every file whose spec a change touches.
 
 | Why | Check | Tags |
 |---|---|---|
-| a suite that lets mutants live is weaker than its coverage says, and a mutant in code no test runs also holds every line to a test. | tool — mutation | [testing] |
+| a suite that lets mutants live is weaker than its coverage says, and a mutant in code no test runs also holds every line to a test. | tool/mutation | [testing] |

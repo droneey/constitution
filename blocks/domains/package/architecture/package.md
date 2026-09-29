@@ -7,7 +7,7 @@ A repository of packages keeps each package at `packages/<language>/libs/<name>/
 
 | Why | Check | Tags |
 |---|---|---|
-| a reader finds every package of every repository in the same place, and a new language adds a folder without moving the others. | tool — names | [] |
+| a reader finds every package of every repository in the same place, and a new language adds a folder without moving the others. | review | [] |
 
 ## package-root-private · SHOULD
 The root of a repository of packages is private: it holds only the workspace, the scripts of the check, and a README with one row per package.
@@ -21,14 +21,14 @@ A package holds its manifest, its README, its licence, its `configs/` or `src/`,
 
 | Why | Check | Tags |
 |---|---|---|
-| every package looks the same inside, so a reader and a tool know where each part is. | tool — names | [] |
+| every package looks the same inside, so a reader and a tool know where each part is. | review | [] |
 
-## package-dependency-matrix → dependencies-point-inward-without-cycles
+## package-dependency-matrix → dependencies-point-inward
 `common` imports nothing. A language package reaches only its peers, its declared dependencies and `common` at build time; no package imports another package's files.
 
 | Why | Check | Tags |
 |---|---|---|
-| packages that reach into each other cannot be released, versioned or replaced apart. | tool — architecture | [] |
+| packages that reach into each other cannot be released, versioned or replaced apart. | tool/architecture | [] |
 
 ## Entries and consumers
 
@@ -37,14 +37,21 @@ A package ships configuration, primitives or tooling, never a product's business
 
 | Why | Check | Tags |
 |---|---|---|
-| a package that knows its consumer changes whenever the consumer does, and serves no one else. | tool — architecture | [] |
+| a package that knows its consumer changes whenever the consumer does, and serves no one else. | tool/architecture | [] |
 
 ## package-entries-curated → access-only-through-curated-surface
-The manifest lists every entry a consumer may use and nothing else, and names the files it ships. A consumer imports an entry, never a path inside the package.
+The manifest lists every entry a consumer may use and nothing else, and names the files it ships.
 
 | Why | Check | Tags |
 |---|---|---|
 | every path a consumer can reach becomes part of the contract, and cannot change without breaking someone. | review | [] |
+
+## consumers-import-package-entries → package-entries-curated
+A consumer imports a package by an entry its manifest lists, never by a path inside the package.
+
+| Why | Check | Tags |
+|---|---|---|
+| a path inside a package is not part of its contract, and the next release may move it. | tool/architecture | [] |
 
 ## consumers-extend-never-copy · SHOULD
 Consumers extend a package's entries; they never copy its files.

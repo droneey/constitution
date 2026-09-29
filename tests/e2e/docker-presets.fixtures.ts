@@ -63,7 +63,7 @@ const lintDockerfile = (text: string): Lint =>
           '--format',
           'json',
           '--config',
-          join(PRESETS, 'hadolint', 'foundation', 'docker.yaml'),
+          join(PRESETS, 'common', 'hadolint', 'foundation', 'docker.yaml'),
           path,
         ],
         {
@@ -91,7 +91,7 @@ const lintCompose = (text: string): Lint =>
           '--formatter',
           'json',
           '--config',
-          join(PRESETS, 'dclint', 'foundation', 'docker.yaml'),
+          join(PRESETS, 'common', 'dclint', 'foundation', 'docker.yaml'),
           path,
         ],
         {

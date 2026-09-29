@@ -3,6 +3,7 @@ import { compareText, LAYERS } from '#/kernel';
 
 import { DocumentPath } from '../../../constants';
 import type {
+  BindingsParser,
   FileTree,
   FrontMatterParser,
   ManifestParser,
@@ -12,11 +13,13 @@ import type {
   Block,
   Constitution,
   Documents,
+  PresetFile,
   RequirementAnswer,
   Rule,
   Skill,
 } from '../../../entities';
 import { splitFrontMatter, withoutCodeFences } from '../../../utils';
+import { bindingsOf } from './bindings.utils';
 import { BlockPathFile, classifyBlockPath } from './block-path.utils';
 import type { Located } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';
@@ -36,6 +39,7 @@ interface Parsed {
 }
 
 const BLOCKS = 'blocks/';
+const PRESETS = 'presets/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
@@ -169,6 +173,7 @@ const documentsOf = (input: {
 };
 
 const loadConstitution = (input: {
+  bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   tree: FileTree;
@@ -197,9 +202,20 @@ const loadConstitution = (input: {
     )
     .toSorted(byLayerThenId);
   const parsed = parsedOf(blocks);
+  const presets: readonly PresetFile[] = listed
+    .filter((path) => path.startsWith(PRESETS))
+    .map((path) => ({
+      path,
+      text: input.tree.read(path),
+    }));
+  const bindings = bindingsOf({
+    parser: input.bindingsParser,
+    presets,
+  });
 
   return {
     constitution: {
+      bindings: bindings.bindings,
       blocks,
       documents: documentsOf({
         frontMatterParser: input.frontMatterParser,
@@ -210,6 +226,7 @@ const loadConstitution = (input: {
         vocabularyParser: input.vocabularyParser,
       }),
       paths,
+      presets,
       requirementAnswers: parsed.answers,
       rules: parsed.rules,
     },
@@ -229,6 +246,7 @@ const loadConstitution = (input: {
       ...loaded.flatMap((result) => result.findings),
       ...duplicateIdFindings(blocks),
       ...parsed.findings,
+      ...bindings.findings,
     ],
   };
 };

@@ -5,6 +5,8 @@ requires: []
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: []
 governs: ["packages/**"]
 ---

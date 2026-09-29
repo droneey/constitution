@@ -5,7 +5,7 @@ The check lints every Dockerfile and every Compose file of the repository, and a
 
 | Why | Check | Tags |
 |---|---|---|
-| a file the check skips is held by nothing, and a warning that passes is one nobody fixes. | tool — lint | [] |
+| a file the check skips is held by nothing, and a warning that passes is one nobody fixes. | tool/lint | [] |
 
 ## Images
 
@@ -14,35 +14,42 @@ A base image in a Dockerfile and an image in a Compose file name a version tag, 
 
 | Why | Check | Tags |
 |---|---|---|
-| an untagged image changes under the same name, so two builds of one commit run different code. | tool — lint | [security] |
+| an untagged image changes under the same name, so two builds of one commit run different code. | tool/lint | [security] |
 
 ## files-copied-never-added · MUST
-Files enter an image with `COPY`, never `ADD`, which also fetches addresses and unpacks archives.
+Local files and folders enter an image with `COPY`, never `ADD`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `COPY` does one visible thing; `ADD` can pull code from outside the build context unseen. | tool — lint | [security] |
+| `COPY` does one visible thing; `ADD` also fetches addresses and unpacks archives, unseen. | tool/lint | [security] |
+
+## downloads-verified-archives-unpacked · MUST
+A file from the network is downloaded in a `RUN` step at a pinned version and checked against its checksum, and an archive is unpacked with `tar`; `ADD` never fetches an address or unpacks an archive.
+
+| Why | Check | Tags |
+|---|---|---|
+| an unverified download runs whatever the address serves that day, inside the image. | review | [security] |
 
 ## commands-in-exec-form · MUST
 `CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.
 
 | Why | Check | Tags |
 |---|---|---|
-| in the shell form a shell is the first process and swallows the stop signal, so every stop waits for the kill timeout. | tool — lint | [errors] |
+| in the shell form a shell is the first process and swallows the stop signal, so every stop waits for the kill timeout. | tool/lint | [errors] |
 
 ## shell-steps-fail-on-any-error · MUST
 A `RUN` that pipes sets `-o pipefail` through `SHELL`, and every `RUN` script passes a shell linter.
 
 | Why | Check | Tags |
 |---|---|---|
-| without it a failing command before a pipe leaves a broken layer that the build reports as built. | tool — lint | [errors] |
+| without it a failing command before a pipe leaves a broken layer that the build reports as built. | tool/lint | [errors] |
 
 ## system-packages-pinned-and-lean · MUST
 A system package is installed at a pinned version, without recommended extras, and the package index is removed in the same layer.
 
 | Why | Check | Tags |
 |---|---|---|
-| an unpinned package changes between two builds of one commit, and every extra package and cached index is size and code to attack that the program never uses. | tool — lint | [security, performance] |
+| an unpinned package changes between two builds of one commit, and every extra package and cached index is size and code to attack that the program never uses. | tool/lint | [security, performance] |
 
 ## image-runs-as-non-root · MUST
 The final stage of an image sets `USER` to the numeric id of an unprivileged user.
@@ -72,21 +79,21 @@ A Compose file lists its top-level keys as `name`, extensions (`x-*`), `services
 
 | Why | Check | Tags |
 |---|---|---|
-| a service read in one order everywhere is compared at a glance, and a diff shows a moved key as a move. | tool — lint | [] |
+| a service read in one order everywhere is compared at a glance, and a diff shows a moved key as a move. | tool/lint | [] |
 
 ## compose-without-version-field · MUST
 A Compose file has no `version` field.
 
 | Why | Check | Tags |
 |---|---|---|
-| Compose ignores it and warns; it only suggests a schema version that no longer exists. | tool — lint | [] |
+| Compose ignores it and warns; it only suggests a schema version that no longer exists. | tool/lint | [] |
 
 ## published-addresses-quoted-and-bound · MUST
 Every mapping under `ports` is quoted and names the host interface it listens on: `'127.0.0.1:5432:5432'`.
 
 | Why | Check | Tags |
 |---|---|---|
-| YAML can read an unquoted `22:22` as a number, and a mapping without an interface listens on every interface of the host, reachable from its network. | tool — lint | [security] |
+| YAML can read an unquoted `22:22` as a number, and a mapping without an interface listens on every interface of the host, reachable from its network. | tool/lint | [security] |
 
 ## repeated-settings-in-extension-fields · SHOULD
 Settings several services share — environment, logging, health checks, security options — are written once, as an `x-*` extension with an anchor.

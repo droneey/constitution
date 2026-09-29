@@ -7,7 +7,7 @@ The root installs the repository's own packages as `workspace:*` development dep
 
 | Why | Check | Tags |
 |---|---|---|
-| the root then uses each package as a consumer does, from the working tree. | tool — versions | [] |
+| the root then uses each package as a consumer does, from the working tree. | tool/versions | [] |
 
 ## workspaces-declared-in-the-root · SHOULD
 The root `package.json` is `private` and declares the repository's packages in `workspaces`.

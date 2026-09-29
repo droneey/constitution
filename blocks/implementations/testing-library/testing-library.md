@@ -5,6 +5,8 @@ requires: [_react]
 extends: null
 abstract: false
 checks: []
+languages: []
+roles: []
 dictionary: [Testing Library, userEvent]
 governs: ["**/__tests__/**/*.test.tsx"]
 ---

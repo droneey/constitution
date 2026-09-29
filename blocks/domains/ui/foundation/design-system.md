@@ -7,7 +7,7 @@ Every visual value — colour, space, size, type, radius, shadow, motion, layer 
 
 | Why | Check | Tags |
 |---|---|---|
-| a value typed outside the tokens is a second design that the next theme change misses. | tool — lint | [ux] |
+| a value typed outside the tokens is a second design that the next theme change misses. | tool/lint | [ux] |
 
 ## token-grammar-and-layers · MUST
 Tokens are named `<namespace>.<group>.<role>[.<step>]`, in four layers: primitive, never used by a component; semantic, on closed vocabularies; common, for the shell's constants; composite. A semantic token refers to primitives, never to a raw value.

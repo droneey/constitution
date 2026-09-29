@@ -50,8 +50,9 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
 
 const FOUNDATION_PARTS = [
-  'foundation/self',
-  'foundation/typescript',
+  'typescript/foundation/self',
+  'typescript/foundation/core',
+  'typescript/foundation/typescript',
 ];
 
 // The packages the blocks' rules name, and those the foundation parts tell
@@ -125,7 +126,10 @@ const configOf = (parts: readonly string[]): string =>
     [
       ...FOUNDATION_PARTS,
       ...parts,
-    ].map((part) => `./.constitution/presets/dependency-cruiser/${part}.mjs`),
+    ].map(
+      (part) =>
+        `./.constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
+    ),
   )},\n};\n`;
 
 const cruise = (project: Project): Cruise => {
@@ -135,7 +139,7 @@ const cruise = (project: Project): Cruise => {
     ...project.files,
     '.dependency-cruiser.mjs': configOf(
       project.parts ?? [
-        'architecture/core',
+        'typescript/architecture/core',
       ],
     ),
     'package.json': JSON.stringify({

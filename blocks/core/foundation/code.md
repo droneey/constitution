@@ -32,14 +32,14 @@ No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `val
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty name makes the reader look up what it holds, every time. | tool — lint | [] |
+| an empty name makes the reader look up what it holds, every time. | tool/lint | [] |
 
 ## no-empty-verbs · SHOULD
 A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`.
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty verb says a function does something, never what. | tool — lint | [] |
+| an empty verb says a function does something, never what. | tool/lint | [] |
 
 ## collections-plural-items-singular · SHOULD
 A collection is named in the plural and one of its items in the singular, destructured names included.
@@ -74,7 +74,7 @@ A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `shou
 
 | Why | Check | Tags |
 |---|---|---|
-| `if (isVisible)` reads as a question with a yes-or-no answer; `if (visible)` does not say which. | tool — lint | [] |
+| `if (isVisible)` reads as a question with a yes-or-no answer; `if (visible)` does not say which. | review | [] |
 
 ## Arguments
 
@@ -83,7 +83,7 @@ A function takes at most three positional parameters. Values that make one whole
 
 | Why | Check | Tags |
 |---|---|---|
-| each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | tool — lint | [] |
+| each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | tool/lint | [] |
 
 ## Units
 
@@ -99,7 +99,7 @@ A function holds at most 100 lines, a file at most 500, and a function's cogniti
 
 | Why | Check | Tags |
 |---|---|---|
-| past these sizes code stops fitting in a reader's head, and a limit that only warns is ignored. | tool — lint | [] |
+| past these sizes code stops fitting in a reader's head, and a limit that only warns is ignored. | tool/lint | [] |
 
 ## guard-clauses-first · SHOULD
 Failure paths leave first, through guard clauses, so the main path stays at the top level of indentation. A genuine hierarchy — a parser, a tree walk — is the exception.
@@ -128,6 +128,13 @@ A function's output depends only on its input, and an effect never hides inside 
 | Why | Check | Tags |
 |---|---|---|
 | a pure function can be understood, tested and moved on its own. | review | [] |
+
+## no-import-cycles · MUST
+Modules form no import cycle, direct or through a chain of modules.
+
+| Why | Check | Tags |
+|---|---|---|
+| a cycle ties two modules into one unit that can be neither tested nor changed apart. | tool/architecture | [] |
 
 ## Comments and leftovers
 
@@ -164,21 +171,21 @@ No unused file, dependency, export, parameter, variable or branch. Code and depe
 
 | Why | Check | Tags |
 |---|---|---|
-| dead code is read, maintained and feared by people who cannot know it does nothing. | tool — unused | [] |
+| dead code is read, maintained and feared by people who cannot know it does nothing. | tool/unused | [] |
 
 ## suppression-states-its-reason · MUST
 Silencing a check — a lint rule, a type error, a mutant, a deliberately ignored error — carries its reason beside it. A bare suppression is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|
-| the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | tool — lint | [] |
+| the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | tool/lint | [] |
 
 ## no-debug-output-in-shipped-code · SHOULD
 Shipped code writes no debug output and stops at no breakpoint. What a command-line program writes for its user — its results, prompts and messages — is its output, not debug.
 
 | Why | Check | Tags |
 |---|---|---|
-| stray output is noise to users and can leak what it prints. | tool — lint | [security] |
+| stray output is noise to users and can leak what it prints. | tool/lint | [security] |
 
 ## Absence
 
@@ -187,16 +194,23 @@ Code spells absence with one value, which the language block names; another spel
 
 | Why | Check | Tags |
 |---|---|---|
-| two spellings of absence make every check ask twice, and one of them is always forgotten. | tool — lint | [data] |
+| two spellings of absence make every check ask twice, and one of them is always forgotten. | tool/lint | [data] |
 
 ## Failure
 
-## error-cause-preserved-logged-once · SHOULD
-A mapped error keeps its cause. An error is logged once, where it is handled, never at every level it passes.
+## error-cause-preserved · MUST
+A mapped error keeps its cause.
 
 | Why | Check | Tags |
 |---|---|---|
-| the cause is what finds the bug; a failure logged at every level looks like several. | review | [errors] |
+| the cause is what finds the bug. | tool/lint | [errors] |
+
+## error-logged-once · SHOULD
+An error is logged once, where it is handled, never at every level it passes.
+
+| Why | Check | Tags |
+|---|---|---|
+| a failure logged at every level looks like several. | review | [errors] |
 
 ## retry-only-transient-failures · SHOULD
 Only a transient failure — a timeout, a dropped connection, a rate limit — is retried, with backoff and a limit.
@@ -254,14 +268,14 @@ An entity's identifier is a type of its own, branded by its entity, so an order'
 
 | Why | Check | Tags |
 |---|---|---|
-| two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | tool — types | [] |
+| two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | review | [] |
 
 ## domain-values-never-typed-again · MUST
 A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces.
 
 | Why | Check | Tags |
 |---|---|---|
-| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | tool — types | [] |
+| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | review | [] |
 
 ## types-live-with-their-consumer · SHOULD
 A type lives beside the unit whose signature introduces it, and every other unit imports it from there. It moves to its own file when a second consumer appears, and never gets a second home through a re-export.
@@ -284,7 +298,7 @@ Asynchronous work is awaited, or detached on purpose with its failure handled.
 
 | Why | Check | Tags |
 |---|---|---|
-| a forgotten promise fails where nobody listens, and the program carries on as if it succeeded. | tool — lint | [errors] |
+| a forgotten promise fails where nobody listens, and the program carries on as if it succeeded. | tool/lint | [errors] |
 
 ## io-has-timeout-and-cancellation · SHOULD
 Every call across a process boundary has a timeout and can be cancelled.
