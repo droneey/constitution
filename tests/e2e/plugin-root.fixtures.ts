@@ -38,7 +38,7 @@ interface PluginRootOptions {
 
 const INSTALLED = '1.0.0';
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const HOOK = 'hooks/session-start.sh';
+const HOOKS = 'hooks';
 const LIBRARY = 'hooks/lib';
 
 const created: string[] = [];
@@ -69,7 +69,11 @@ const copyHook = (root: string): void => {
   mkdirSync(join(root, LIBRARY), {
     recursive: true,
   });
-  copyFileSync(join(REPOSITORY, HOOK), join(root, HOOK));
+  for (const name of readdirSync(join(REPOSITORY, HOOKS)).filter((file) =>
+    file.endsWith('.sh'),
+  )) {
+    copyFileSync(join(REPOSITORY, HOOKS, name), join(root, HOOKS, name));
+  }
 
   for (const name of readdirSync(join(REPOSITORY, LIBRARY))) {
     copyFileSync(join(REPOSITORY, LIBRARY, name), join(root, LIBRARY, name));

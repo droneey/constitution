@@ -105,7 +105,7 @@ describe('the session state the session-start hook saves', () => {
         ],
       ],
       files: true,
-      governs: '**/ui/** **/components/**',
+      governs: '**/ui/** **/components/** styles/*.{css,scss}',
       project: [
         [
           'project',

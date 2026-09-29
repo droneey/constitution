@@ -294,6 +294,54 @@ const lastLinesOf = (input: {
   count: number;
 }): readonly string[] => linesOf(input.context).slice(-input.count);
 
+const runScript = (call: {
+  event: Readonly<Record<string, unknown>>;
+  root: string;
+  script: string;
+  tmpDir: string;
+}): HookRun => {
+  const hookRun = spawnSync(
+    SHELL,
+    [
+      join(call.root, 'hooks', call.script),
+    ],
+    {
+      cwd: tmpdir(),
+      encoding: 'utf8',
+      timeout: TIMEOUT_MS,
+      env: Object.fromEntries([
+        [
+          'CLAUDE_PLUGIN_ROOT',
+          call.root,
+        ],
+        [
+          'LANG',
+          LOCALE,
+        ],
+        [
+          'LC_ALL',
+          LOCALE,
+        ],
+        [
+          'PATH',
+          process.env['PATH'] ?? '',
+        ],
+        [
+          'TMPDIR',
+          call.tmpDir,
+        ],
+      ]),
+      input: JSON.stringify(call.event),
+    },
+  );
+
+  return {
+    exitCode: hookRun.status ?? undefined,
+    stderr: hookRun.stderr,
+    stdout: hookRun.stdout,
+  };
+};
+
 export type { HookRun };
 export {
   blockListOf,
@@ -308,5 +356,6 @@ export {
   lastLinesOf,
   outputOf,
   runHook,
+  runScript,
   warningsOf,
 };
