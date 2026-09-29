@@ -473,6 +473,109 @@ describe('the Biome foundation parts', () => {
       },
       rule: 'noUselessUndefined',
     },
+    {
+      condition: 'a promise is left floating',
+      files: {
+        'src/main.ts':
+          'export const save = async (): Promise<void> => {\n  await Promise.resolve();\n};\n\nexport const run = (): void => {\n  save();\n};\n',
+      },
+      rule: 'noFloatingPromises',
+    },
+    {
+      condition: 'a promise is used as a condition',
+      files: {
+        'src/main.ts':
+          'export const ready = (): void => {\n  const loading = Promise.resolve(true);\n\n  if (loading) {\n    globalThis.focus();\n  }\n};\n',
+      },
+      rule: 'noMisusedPromises',
+    },
+    {
+      condition: 'a block is empty',
+      files: {
+        'src/main.ts':
+          'export const load = (): void => {\n  try {\n    globalThis.focus();\n  } catch {}\n};\n',
+      },
+      rule: 'noEmptyBlockStatements',
+    },
+    {
+      condition: 'a function branches past its complexity',
+      files: {
+        'src/main.ts':
+          "export const grade = (a: number, b: number, c: number): string => {\n  if (a > 1) {\n    if (b > 1) {\n      if (c > 1) {\n        for (const x of [a, b]) {\n          if (x > c && a > b) {\n            return 'high';\n          } else if (x < c || a < b) {\n            return 'low';\n          }\n        }\n      }\n    }\n  }\n\n  return 'none';\n};\n",
+      },
+      rule: 'noExcessiveCognitiveComplexity',
+    },
+    {
+      condition: 'the code shows an alert',
+      files: {
+        'src/main.ts':
+          "export const warn = (): void => {\n  alert('saved');\n};\n",
+      },
+      rule: 'noAlert',
+    },
+    {
+      condition: 'the code stops in the debugger',
+      files: {
+        'src/main.ts': 'export const trace = (): void => {\n  debugger;\n};\n',
+      },
+      rule: 'noDebugger',
+    },
+    {
+      condition: 'a secret is written in the code',
+      files: {
+        'src/main.ts': `export const API_TOKEN = 'ghp_${'aB3dE5'.repeat(6)}';
+`,
+      },
+      rule: 'noSecrets',
+    },
+    {
+      condition: 'a switch over a union misses a member',
+      files: {
+        'src/main.ts':
+          "type Status = 'open' | 'closed';\n\nexport const label = (status: Status): string => {\n  switch (status) {\n    case 'open':\n      return 'open';\n  }\n};\n",
+      },
+      rule: 'useExhaustiveSwitchCases',
+    },
+    {
+      condition: 'a type error is ignored',
+      files: {
+        'src/main.ts':
+          "// @ts-ignore: legacy\nexport const total: number = 'one';\n",
+      },
+      rule: 'noTsIgnore',
+    },
+    {
+      condition: 'a default is given with a logical or',
+      files: {
+        'src/main.ts':
+          "export const nameOf = (name: string | undefined): string => name || 'anonymous';\n",
+      },
+      rule: 'useNullishCoalescing',
+    },
+    {
+      condition: 'an expectation sits in a branch',
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should add totals when both are set', () => {\n  const total = 1 + 1;\n\n  if (total > 1) {\n    expect(total).toBe(2);\n  }\n});\n",
+      },
+      rule: 'noConditionalExpect',
+    },
+    {
+      condition: 'a case is skipped',
+      files: {
+        'src/main.ts':
+          "import { expect, test } from 'bun:test';\n\ntest.skip('should add totals when both are set', () => {\n  expect(1 + 1).toBe(2);\n});\n",
+      },
+      rule: 'noSkippedTests',
+    },
+    {
+      condition: 'a case asserts nothing',
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { test } from 'bun:test';\n\ntest('should add totals when both are set', () => {\n  const total = 1 + 1;\n\n  globalThis.console.info(total);\n});\n",
+      },
+      rule: 'useExpect',
+    },
   ])('should report $rule when $condition', ({ files, rule }) => {
     // Arrange
     const project = {
@@ -778,6 +881,31 @@ describe('the Biome css part', () => {
       css: '@layer components {\n  .card {\n    color: var(--color-missing);\n  }\n}\n',
       rule: 'noUndeclaredCustomProperties',
     },
+    {
+      condition: 'a registered property has an invalid initial value',
+      css: "@property --size {\n  syntax: '<length>';\n  inherits: false;\n  initial-value: red;\n}\n",
+      rule: 'noInvalidPropertyInitValue',
+    },
+    {
+      condition: 'a custom property is read without var()',
+      css: '@layer components {\n  .card {\n    color: --color-text;\n  }\n}\n',
+      rule: 'noMissingVarFunction',
+    },
+    {
+      condition: 'a less specific selector follows a more specific one',
+      css: '@layer components {\n  .card .title {\n    color: var(--color-text);\n  }\n\n  .title {\n    color: var(--color-text);\n  }\n}\n',
+      rule: 'noDescendingSpecificity',
+    },
+    {
+      condition: 'a feature is not yet in the baseline',
+      css: '@layer components {\n  .card {\n    color: var(--color-text);\n    interpolate-size: allow-keywords;\n  }\n}\n',
+      rule: 'useBaseline',
+    },
+    {
+      condition: 'a declared class is used nowhere',
+      css: '@layer components {\n  .unused {\n    color: var(--color-text);\n  }\n}\n',
+      rule: 'noUnusedClasses',
+    },
   ])('should report $rule when $condition', ({ css, rule }) => {
     // Arrange
     const project = {
@@ -1011,6 +1139,128 @@ describe('the Biome framework parts', () => {
       condition: 'a class carries an arbitrary value',
       source: component("<div className='p-[13px]' />"),
       rule: 'noTailwindArbitraryValue',
+    },
+    {
+      condition: 'a list keys its items by index',
+      source: component(
+        '<ul>{items.map((item, index) => <li key={index}>{item}</li>)}</ul>',
+      ),
+      rule: 'noArrayIndexKey',
+    },
+    {
+      condition: 'an item of a mapped list has no key',
+      source: component('<ul>{items.map((item) => <li>{item}</li>)}</ul>'),
+      rule: 'useJsxKeyInIterable',
+    },
+    {
+      condition: 'a ref is forwarded the legacy way',
+      source:
+        "import { forwardRef } from 'react';\n\nexport const Field = forwardRef<HTMLInputElement>((props, ref) => <input ref={ref} {...props} />);\n",
+      rule: 'noReactForwardRef',
+    },
+    {
+      condition: 'a hook factory makes a component',
+      source:
+        'export function makeBadge() {\n  return function Badge(): null {\n    return null;\n  };\n}\n',
+      rule: 'noComponentHookFactories',
+    },
+    {
+      condition: 'a component is defined inside a component',
+      source:
+        'export function Panel(): React.ReactElement {\n  function Title(): React.ReactElement {\n    return <h2>Orders</h2>;\n  }\n\n  return <Title />;\n}\n',
+      rule: 'noNestedComponentDefinitions',
+    },
+    {
+      condition: 'a label names no control',
+      source: component('<label>Email</label>'),
+      rule: 'noLabelWithoutControl',
+    },
+    {
+      condition: 'an SVG has no title',
+      source: component("<svg><circle r='1' /></svg>"),
+      rule: 'noSvgWithoutTitle',
+    },
+    {
+      condition: 'an image has no alternative text',
+      source: component("<img src='/order.png' />"),
+      rule: 'useAltText',
+    },
+    {
+      condition: 'a link has no content',
+      source: component("<a href='/orders' />"),
+      rule: 'useAnchorContent',
+    },
+    {
+      condition: 'a button has no label',
+      source: component("<button type='button' />"),
+      rule: 'useControlLabel',
+    },
+    {
+      condition: 'an iframe has no title',
+      source: component("<iframe src='/map' />"),
+      rule: 'useIframeTitle',
+    },
+    {
+      condition: 'an autocomplete token is unknown',
+      source: component("<input type='email' autoComplete='mail' />"),
+      rule: 'useValidAutocomplete',
+    },
+    {
+      condition: 'a static element takes a handler',
+      source: component('<div onClick={open} />'),
+      rule: 'noStaticElementInteractions',
+    },
+    {
+      condition: 'a role HTML has an element for is set on a div',
+      source: component("<div role='button' tabIndex={0} />"),
+      rule: 'useSemanticElements',
+    },
+    {
+      condition: 'a link has no real href',
+      source: component("<a href='#'>Orders</a>"),
+      rule: 'useValidAnchor',
+    },
+    {
+      condition: 'a focusable element is hidden from assistive technology',
+      source: component(
+        "<button type='button' aria-hidden='true'>Save</button>",
+      ),
+      rule: 'noAriaHiddenOnFocusable',
+    },
+    {
+      condition: 'an interactive element takes a static role',
+      source: component("<button type='button' role='article'>Save</button>"),
+      rule: 'noInteractiveElementToNoninteractiveRole',
+    },
+    {
+      condition: 'a static element takes an interactive role',
+      source: component("<li role='button'>Save</li>"),
+      rule: 'noNoninteractiveElementToInteractiveRole',
+    },
+    {
+      condition: 'an element restates its own role',
+      source: component("<button type='button' role='button'>Save</button>"),
+      rule: 'noRedundantRoles',
+    },
+    {
+      condition: 'a role lacks its required attribute',
+      source: component("<span role='checkbox' />"),
+      rule: 'useAriaPropsForRole',
+    },
+    {
+      condition: 'an ARIA attribute does not exist',
+      source: component("<input aria-labeledby='x' />"),
+      rule: 'useValidAriaProps',
+    },
+    {
+      condition: 'a role does not exist',
+      source: component("<div role='datepicker' />"),
+      rule: 'useValidAriaRole',
+    },
+    {
+      condition: 'an ARIA value is of the wrong kind',
+      source: component("<div aria-hidden='yes' />"),
+      rule: 'useValidAriaValues',
     },
   ])('should report $rule when $condition', ({ rule, source }) => {
     // Arrange

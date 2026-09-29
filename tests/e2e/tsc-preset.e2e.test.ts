@@ -15,6 +15,25 @@ const READS_THE_PROCESS = 'export const home = process.env.HOME;\n';
 const UNREACHABLE_CODE =
   "export const kind = (): string => {\n  return 'order';\n  console.log('never');\n};\n";
 
+const OPTIONAL_SET_TO_UNDEFINED =
+  'interface Options {\n  limit?: number;\n}\nexport const options: Options = { limit: undefined };\n';
+const INDEX_READ_AS_PRESENT =
+  'const totals: number[] = [1];\nexport const first: number = totals[0];\n';
+const UNUSED_LOCAL = 'const unused = 1;\nexport const used = 2;\n';
+const UNUSED_PARAMETER =
+  'export const total = (price: number, count: number): number => price;\n';
+const OVERRIDE_UNMARKED =
+  'class Base {\n  public run(): void {}\n}\nexport class Child extends Base {\n  public run(): void {}\n}\n';
+const PATH_WITHOUT_RETURN =
+  'export const sign = (n: number): number | undefined => {\n  if (n > 0) {\n    return 1;\n  }\n};\n';
+const CASE_FALLS_THROUGH =
+  'export const level = (n: number): number => {\n  let result = 0;\n  switch (n) {\n    case 1:\n      result = 1;\n    case 2:\n      result = 2;\n      break;\n  }\n  return result;\n};\n';
+const IMPLICIT_ANY = 'export const double = (n) => n * 2;\n';
+const UNUSED_LABEL =
+  'export const first = (): number => {\n  outer: for (const n of [1]) {\n    return n;\n  }\n  return 0;\n};\n';
+const PARAMETER_DECORATOR =
+  'const Inject = (): ParameterDecorator => () => undefined;\nexport class Orders {\n  public constructor(@Inject() public readonly source: object) {}\n}\n';
+
 describe('the tsconfig preset', () => {
   it.each([
     ...presetParts(),
@@ -109,6 +128,96 @@ describe('the tsconfig preset', () => {
         '_react',
       ],
     },
+    {
+      condition: 'an optional field is set to undefined',
+      main: OPTIONAL_SET_TO_UNDEFINED,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'an indexed element is read as present',
+      main: INDEX_READ_AS_PRESENT,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a local is never read',
+      main: UNUSED_LOCAL,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a parameter is never read',
+      main: UNUSED_PARAMETER,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a method overrides without override',
+      main: OVERRIDE_UNMARKED,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a path returns no value',
+      main: PATH_WITHOUT_RETURN,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a case falls through',
+      main: CASE_FALLS_THROUGH,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a parameter is implicitly any',
+      main: IMPLICIT_ANY,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a label is never used',
+      main: UNUSED_LABEL,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
+    {
+      condition: 'a constructor parameter takes a decorator',
+      main: PARAMETER_DECORATOR,
+      parts: [
+        'self',
+        'core',
+        'bun',
+      ],
+    },
   ])(
     'should fail the type check of $parts when $condition',
     ({ main, parts }) => {
@@ -181,6 +290,16 @@ describe('the tsconfig preset', () => {
         'self',
         'core',
         'bun',
+      ],
+    },
+    {
+      condition: 'a constructor parameter takes a decorator the injector reads',
+      main: PARAMETER_DECORATOR,
+      parts: [
+        'self',
+        'core',
+        'bun',
+        'nestjs',
       ],
     },
   ])(

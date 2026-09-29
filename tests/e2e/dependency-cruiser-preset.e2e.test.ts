@@ -371,6 +371,20 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'components-take-data-and-callbacks',
     },
     {
+      condition: "a feature's adapter imports another feature's adapter",
+      files: {
+        'src/features/billing/adapters/api/index.ts': exported('charge'),
+        'src/features/orders/adapters/api/index.ts': importing({
+          from: '../../../billing/adapters/api',
+          name: 'charge',
+        }),
+      },
+      parts: [
+        'typescript/architecture/core',
+      ],
+      rule: 'feature-adapters-blind-to-each-other',
+    },
+    {
       condition: 'an adapter imports a screen',
       files: {
         'src/adapters/api/index.ts': importing({

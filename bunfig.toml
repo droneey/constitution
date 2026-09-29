@@ -7,8 +7,8 @@ coverageThreshold = { functions = 1.0, lines = 1.0 }
 coveragePathIgnorePatterns = [
   "**/__tests__/**",
   "tests/**",
-  "**/main.ts",
-  "**/root/wiring.ts",
+  "**/main.*",
+  "**/root/wiring.*",
 ]
 
 [run]
