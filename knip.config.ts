@@ -20,6 +20,7 @@ export default {
   ],
   ignoreDependencies: [
     '@stryker-mutator/command-runner',
+    'dclint',
     '@swc/core',
   ],
 };

@@ -455,6 +455,19 @@ describe('vocabularyCheck', () => {
       text: '# Principles\n\nMove readapters/ and v2adapters/ and re-adapters/ away.\n',
     },
     {
+      name: 'only code spans hold the concepts',
+      path: PRINCIPLES,
+      sections: {
+        architecture: {
+          concepts: [
+            'entrypoint',
+            'port',
+          ],
+        },
+      },
+      text: '# Principles\n\nList `ports` before `volumes`, and write `ENTRYPOINT` as JSON.\n',
+    },
+    {
       name: 'only headings use the words',
       path: PRINCIPLES,
       text: `# Ports\n\n${rule({

@@ -1,4 +1,9 @@
 {
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true,
+    },
+  },
   "overrides": [
     {
       "includes": [
@@ -8,9 +13,6 @@
         "rules": {
           "style": {
             "noParameterProperties": "off",
-          },
-          "suspicious": {
-            "noEmptyBlockStatements": "off",
           },
           "complexity": {
             "noStaticOnlyClass": "off",
