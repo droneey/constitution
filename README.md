@@ -107,6 +107,8 @@ At the start of a session it also saves the resolved active set outside the proj
 
 When the agent reads or edits a file, a second hook matches it against the `governs` globs of the active blocks — of its application, when it lies under one — and tells the agent, once per block per context, which block governs the file, the block's files and its MUST rules, in at most 300 bytes.
 
+At the hand-back, a third hook holds the gate. When the project names a `check` command and the tree changed since it last passed, the stop is blocked once, and the agent is told to run the command; a passing run — the command whole, first on its line or after `&&` or `;` — is recorded as it happens, and a failing one never counts. Then, when the changed files fall under a block's `governs` and `/check edits` did not review them, the user sees one line naming those blocks; nothing is blocked, and the agent spends nothing. A sub-agent meets only the first step. A project with `check: null` meets only the second.
+
 ## ✍️ Skills
 
 Both are run by the user, never by the model on its own:
