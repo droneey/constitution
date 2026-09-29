@@ -81,15 +81,15 @@ const failedPaths = (project: Project): readonly string[] => {
   return failed;
 };
 
-const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+const isRecord = (node: unknown): node is Readonly<Record<string, unknown>> =>
+  typeof node === 'object' && node !== null && !Array.isArray(node);
 
 const keysOf = (tree: Readonly<Record<string, unknown>>): readonly string[] =>
-  Object.entries(tree).flatMap(([key, value]) =>
-    isRecord(value)
+  Object.entries(tree).flatMap(([key, node]) =>
+    isRecord(node)
       ? [
           key,
-          ...keysOf(value),
+          ...keysOf(node),
         ]
       : [
           key,
@@ -97,11 +97,11 @@ const keysOf = (tree: Readonly<Record<string, unknown>>): readonly string[] =>
   );
 
 const valuesOf = (tree: Readonly<Record<string, unknown>>): readonly string[] =>
-  Object.values(tree).flatMap((value) =>
-    isRecord(value)
-      ? valuesOf(value)
+  Object.values(tree).flatMap((node) =>
+    isRecord(node)
+      ? valuesOf(node)
       : [
-          String(value),
+          String(node),
         ],
   );
 

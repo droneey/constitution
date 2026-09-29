@@ -1,8 +1,8 @@
 # React DOM
 
-## no-raw-html-injection → untrusted-input-parsed-at-edge
-No raw HTML is injected; untrusted markup goes through a sanitising renderer.
+## no-dangerously-set-inner-html → no-raw-html-injection
+`dangerouslySetInnerHTML` is never set.
 
 | Why | Check | Tags |
 |---|---|---|
-| injected HTML runs whatever script it carries, in the user's session. | tool/lint | [] |
+| it writes a string into the DOM as markup, past React's escaping. | tool/lint | [] |

@@ -206,6 +206,11 @@ describe('the ls-lint preset', () => {
       reported: 'src/cli/initProject.cli.ts',
     },
     {
+      condition: 'the command folder holds a file of another role',
+      path: 'src/cli/init.utils.ts',
+      reported: 'src/cli',
+    },
+    {
       condition: "a screen's private folder is not a dash folder",
       path: 'src/routes/orders/Components/order-summary.tsx',
       reported: 'src/routes/orders/Components',
@@ -428,6 +433,19 @@ describe('the ls-lint expo parts', () => {
       reported: [
         'src/app',
         'src/app/_layout.tsx',
+      ],
+    },
+    {
+      condition: 'the router sits in a root app folder',
+      parts: [
+        ...PARTS,
+        'typescript/foundation/expo',
+        'typescript/architecture/expo',
+      ],
+      path: 'app/_layout.tsx',
+      reported: [
+        'app',
+        'app/_layout.tsx',
       ],
     },
     {

@@ -371,6 +371,51 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'components-take-data-and-callbacks',
     },
     {
+      condition: 'an adapter imports a screen',
+      files: {
+        'src/adapters/api/index.ts': importing({
+          from: '../../routes/orders',
+          name: 'OrdersScreen',
+        }),
+        'src/routes/orders.tsx': exported('OrdersScreen'),
+      },
+      parts: [
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-routes',
+    },
+    {
+      condition: 'an adapter imports a mobile screen',
+      files: {
+        'src/adapters/api/index.ts': importing({
+          from: '../../routes/orders',
+          name: 'OrdersScreen',
+        }),
+        'src/routes/orders.tsx': exported('OrdersScreen'),
+      },
+      parts: [
+        'typescript/architecture/expo',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-routes',
+    },
+    {
+      condition: 'an adapter imports a command',
+      files: {
+        'src/adapters/api/index.ts': importing({
+          from: '../../cli/sync.cli',
+          name: 'sync',
+        }),
+        'src/cli/sync.cli.ts': exported('sync'),
+      },
+      parts: [
+        'typescript/architecture/cli',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-commands',
+    },
+    {
       condition: 'a component imports the HTTP client',
       files: {
         'src/features/orders/ui/components/order-card.tsx': importing({

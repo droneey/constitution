@@ -1,4 +1,4 @@
-import { ROOT_CALLERS } from './core.mjs';
+import { ADAPTERS, ROOT_CALLERS } from './core.mjs';
 
 const ROUTER = 'node_modules/@tanstack/react-router/';
 
@@ -17,6 +17,16 @@ export default {
       },
       to: {
         path: '^src/root/',
+      },
+    },
+    {
+      name: 'adapters-know-no-routes',
+      severity: 'error',
+      from: {
+        path: ADAPTERS,
+      },
+      to: {
+        path: '^src/routes/',
       },
     },
     {

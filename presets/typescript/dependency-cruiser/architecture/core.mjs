@@ -1,7 +1,7 @@
 const SPECS = '(^|/)__tests__/';
 const MODULE_LAYERS = 'features|contracts|adapters|shared|libs|composition';
 const ENTRY = '^src/main\\.[^/]+$';
-const ADAPTERS = [
+export const ADAPTERS = [
   '^src/adapters/',
   '^src/features/[^/]+/adapters/',
 ];

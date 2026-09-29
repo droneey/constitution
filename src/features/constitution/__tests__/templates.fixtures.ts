@@ -73,7 +73,7 @@ const PARAGLIDE: ReadonlyArray<
 
 const paraglideFromTemplate = (): string => {
   const filled = PARAGLIDE.reduce(
-    (text, [placeholder, value]) => text.replaceAll(placeholder, value),
+    (text, [placeholder, filling]) => text.replaceAll(placeholder, filling),
     readFileSync(join(TEMPLATES, 'block.md'), 'utf8'),
   );
   const left = PLACEHOLDER.exec(filled)?.[0];

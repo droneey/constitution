@@ -1,9 +1,6 @@
 language js
 
-or {
-  `const $name = $_`,
-  `let $name = $_`
-} where {
+JsIdentifierBinding() as $name where {
   $name <: or {
     `data`,
     `result`,

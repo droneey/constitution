@@ -20,3 +20,10 @@ A message from another window is accepted only from an expected origin, and pars
 | Why | Check | Tags |
 |---|---|---|
 | any page can post a message to any window; without the origin check, any page can drive the program. | review | [] |
+
+## no-raw-html-injection → untrusted-input-parsed-at-edge
+No raw HTML reaches the DOM: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`. Untrusted markup goes through a sanitising renderer.
+
+| Why | Check | Tags |
+|---|---|---|
+| injected HTML runs whatever script it carries, in the user's session. | tool/lint | [security] |

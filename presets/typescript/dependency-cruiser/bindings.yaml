@@ -14,6 +14,9 @@ architecture:
   analytics:
     features-never-track:
       - features-never-track
+  cli:
+    adapters-never-import-each-other-or-callers:
+      - adapters-know-no-commands
   core:
     access-only-through-curated-surface:
       - domain-role-reached-through-its-surface
@@ -61,6 +64,9 @@ architecture:
       - shared-knows-no-feature-or-root
     side-effects-at-the-edges:
       - domain-reaches-only-itself-and-kernel
+  expo:
+    adapters-never-import-each-other-or-callers:
+      - adapters-know-no-routes
   ky:
     components-dumb-widgets-smart:
       - components-never-fetch
@@ -81,6 +87,8 @@ architecture:
     components-dumb-widgets-smart:
       - components-never-query
   tanstack-router:
+    adapters-never-import-each-other-or-callers:
+      - adapters-know-no-routes
     query-client-through-router-context:
       - root-reached-only-from-entries
     root-imported-only-by-entry-and-delivery-wiring:

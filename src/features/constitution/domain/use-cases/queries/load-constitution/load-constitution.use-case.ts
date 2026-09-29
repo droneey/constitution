@@ -193,11 +193,11 @@ const loadConstitution = (input: {
     }),
   );
   const blocks = loaded
-    .flatMap((result) =>
-      result.block === undefined
+    .flatMap((outcome) =>
+      outcome.block === undefined
         ? []
         : [
-            result.block,
+            outcome.block,
           ],
     )
     .toSorted(byLayerThenId);
@@ -243,7 +243,7 @@ const loadConstitution = (input: {
           message: STRAY,
           path: entry.path,
         })),
-      ...loaded.flatMap((result) => result.findings),
+      ...loaded.flatMap((outcome) => outcome.findings),
       ...duplicateIdFindings(blocks),
       ...parsed.findings,
       ...bindings.findings,

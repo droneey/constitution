@@ -86,7 +86,7 @@ const wordsOf = (vocabulary: Vocabulary): readonly Word[] =>
   });
 
 const repeatsOf = (values: readonly string[]): readonly string[] => [
-  ...new Set(values.filter((value, index) => values.indexOf(value) !== index)),
+  ...new Set(values.filter((word, index) => values.indexOf(word) !== index)),
 ];
 
 const listFindings = (words: readonly Word[]): readonly Finding[] =>
