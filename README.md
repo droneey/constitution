@@ -16,7 +16,9 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block, rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
 | `skills` | `/ratify` and `/amend`, which write a project's files |
-| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block |
+| `presets` | The tool configurations that hold the tool-checked rules, `presets/<tool>/<axis>/<block>.*` |
+| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
+| `tools` | Programs the release archive carries, such as `mutation-check`, which mutates only the lines a change touches |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
@@ -59,6 +61,29 @@ A rule's Tags are lenses for the concerns that cross every axis and layer — `a
 
 A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 
+## 🧰 Presets
+
+A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<tool>/<axis>/<block>.*`:
+- the folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `typescript` for the compiler;
+- the axis folder is the axis whose rules the part holds, so a project that leaves an axis out leaves out its parts;
+- a part is named after the block whose rules it holds, and `self` holds the tool's own settings; GritQL rules are `<axis>/plugins/<rule-slug>.grit`.
+
+A project's configuration extends the parts of its active blocks on its axes, foundation first:
+
+```json
+{
+  "extends": [
+    "./.constitution/presets/biome/foundation/self.jsonc",
+    "./.constitution/presets/biome/foundation/core.jsonc",
+    "./.constitution/presets/biome/foundation/typescript.jsonc",
+    "./.constitution/presets/biome/foundation/react-dom.jsonc",
+    "./.constitution/presets/biome/architecture/core.jsonc"
+  ]
+}
+```
+
+A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists.
+
 ## 🧭 What a session receives
 
 The hook finds the `constitution.yaml` of the repository a session works in and gives the agent one digest, within Claude Code's 10,000-character cap: the installed version and where the block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each application's blocks under its path, the overrides, then MUST headlines while space lasts. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
@@ -91,6 +116,7 @@ mise trust && mise install   # bun
 bun install                  # installs the git hooks
 bun run check                # lint, package manifests, types, tests with the coverage gate, mutation, then the blocks check
 bun run digests:write        # regenerate digests/ after a change to a block
+bun run build                # build tools/mutation-check/dist/main.js, as the release does
 ```
 
 The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
@@ -119,9 +145,9 @@ After the findings it prints advice that does not fail the check: the roles of t
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yaml` | pull request into `main` | Lint, types, tests with the hook under mawk and again under gawk, the blocks check, the workflow lint; on macOS, the hook under `/bin/bash` 3.2 and the system awk |
+| `ci-check.yaml` | pull request into `main` | Lint, types, tests with the hook under mawk and again under gawk, the blocks check, the build of `mutation-check`, the workflow lint; on macOS, the hook under `/bin/bash` 3.2 and the system awk |
 | `cd-version.yaml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: opens the pre-release with its changelog |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds `mutation-check`, packs `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
 ## 🛠️ Changing it
 

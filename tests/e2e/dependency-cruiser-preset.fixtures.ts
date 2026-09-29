@@ -9,15 +9,17 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-interface Report {
-  summary: {
-    totalCruised: number;
-    violations: readonly {
-      rule: {
-        name: string;
-      };
-    }[];
-  };
+import { z } from 'zod';
+
+enum Declaration {
+  Production = 'production',
+  Development = 'development',
+  None = 'none',
+}
+
+interface Installed {
+  declaration: Declaration;
+  deprecated?: string;
 }
 
 interface Project {
@@ -31,23 +33,67 @@ interface Cruise {
   violations: readonly string[];
 }
 
+const REPORT = z.object({
+  summary: z.object({
+    totalCruised: z.number(),
+    violations: z.array(
+      z.object({
+        rule: z.object({
+          name: z.string(),
+        }),
+      }),
+    ),
+  }),
+});
+
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
 
-const INSTALLED = [
-  '@lingui/core',
-  '@tanstack/react-query',
-  '@tanstack/react-router',
-  'ky',
-  'yaml',
-  'zod',
+const FOUNDATION_PARTS = [
+  'foundation/self',
+  'foundation/typescript',
 ];
 
-// The packages the blocks' rules name, installed and declared, so devkit's base
-// stays silent about them.
+// The packages the blocks' rules name, and those the foundation parts tell
+// apart: `kit` declared, `devtool` a development dependency, `ghost` installed
+// but never declared, `legacy` deprecated.
+const INSTALLED: Readonly<Record<string, Installed>> = {
+  '@lingui/core': {
+    declaration: Declaration.Production,
+  },
+  '@tanstack/react-query': {
+    declaration: Declaration.Production,
+  },
+  '@tanstack/react-router': {
+    declaration: Declaration.Production,
+  },
+  devtool: {
+    declaration: Declaration.Development,
+  },
+  ghost: {
+    declaration: Declaration.None,
+  },
+  kit: {
+    declaration: Declaration.Production,
+  },
+  ky: {
+    declaration: Declaration.Production,
+  },
+  legacy: {
+    declaration: Declaration.Production,
+    deprecated: 'use kit',
+  },
+  yaml: {
+    declaration: Declaration.Production,
+  },
+  zod: {
+    declaration: Declaration.Production,
+  },
+};
+
 const installedFiles = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
-    INSTALLED.flatMap((name) => [
+    Object.entries(INSTALLED).flatMap(([name, { deprecated }]) => [
       [
         `node_modules/${name}/index.js`,
         'export const value = 1;\n',
@@ -55,6 +101,7 @@ const installedFiles = (): Readonly<Record<string, string>> =>
       [
         `node_modules/${name}/package.json`,
         JSON.stringify({
+          deprecated,
           main: 'index.js',
           name,
           version: '1.0.0',
@@ -63,13 +110,23 @@ const installedFiles = (): Readonly<Record<string, string>> =>
     ]),
   );
 
+const declared = (declaration: Declaration): Readonly<Record<string, string>> =>
+  Object.fromEntries(
+    Object.entries(INSTALLED)
+      .filter(([, installed]) => installed.declaration === declaration)
+      .map(([name]) => [
+        name,
+        '1.0.0',
+      ]),
+  );
+
 const configOf = (parts: readonly string[]): string =>
-  `export default {\n  extends: ${JSON.stringify([
-    '@droneey/devkit-ts-dependency-cruiser/configs/base.mjs',
-    ...parts.map(
-      (part) => `./.constitution/presets/dependency-cruiser/${part}.mjs`,
-    ),
-  ])},\n};\n`;
+  `export default {\n  extends: ${JSON.stringify(
+    [
+      ...FOUNDATION_PARTS,
+      ...parts,
+    ].map((part) => `./.constitution/presets/dependency-cruiser/${part}.mjs`),
+  )},\n};\n`;
 
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
@@ -78,16 +135,12 @@ const cruise = (project: Project): Cruise => {
     ...project.files,
     '.dependency-cruiser.mjs': configOf(
       project.parts ?? [
-        'base',
+        'architecture/core',
       ],
     ),
     'package.json': JSON.stringify({
-      dependencies: Object.fromEntries(
-        INSTALLED.map((name) => [
-          name,
-          '1.0.0',
-        ]),
-      ),
+      dependencies: declared(Declaration.Production),
+      devDependencies: declared(Declaration.Development),
       name: 'fixture',
       type: 'module',
     }),
@@ -101,18 +154,6 @@ const cruise = (project: Project): Cruise => {
   }
 
   symlinkSync(REPOSITORY, join(folder, '.constitution'));
-  mkdirSync(join(folder, 'node_modules', '@droneey'), {
-    recursive: true,
-  });
-  symlinkSync(
-    join(
-      REPOSITORY,
-      'node_modules',
-      '@droneey',
-      'devkit-ts-dependency-cruiser',
-    ),
-    join(folder, 'node_modules', '@droneey', 'devkit-ts-dependency-cruiser'),
-  );
 
   const cruising = spawnSync(
     DEPCRUISE,
@@ -136,12 +177,12 @@ const cruise = (project: Project): Cruise => {
     recursive: true,
   });
 
-  const report = JSON.parse(cruising.stdout) as Report;
+  const { summary } = REPORT.parse(JSON.parse(cruising.stdout));
 
   return {
-    cruised: report.summary.totalCruised,
+    cruised: summary.totalCruised,
     violations: [
-      ...new Set(report.summary.violations.map(({ rule }) => rule.name)),
+      ...new Set(summary.violations.map(({ rule }) => rule.name)),
     ],
   };
 };

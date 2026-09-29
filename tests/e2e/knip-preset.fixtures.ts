@@ -9,15 +9,7 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-interface Report {
-  issues: readonly {
-    exports: readonly {
-      name: string;
-    }[];
-    file: string;
-    files: readonly unknown[];
-  }[];
-}
+import { z } from 'zod';
 
 interface Project {
   files: Readonly<Record<string, string>>;
@@ -29,6 +21,31 @@ interface Unused {
   files: readonly string[];
 }
 
+const REPORT = z.object({
+  issues: z.array(
+    z.object({
+      exports: z.array(
+        z.object({
+          name: z.string(),
+        }),
+      ),
+      file: z.string(),
+      files: z.array(z.unknown()),
+    }),
+  ),
+});
+
+const CONFIG = `import architecture from './.constitution/presets/knip/architecture/core.mjs';
+import core from './.constitution/presets/knip/foundation/core.mjs';
+import self from './.constitution/presets/knip/foundation/self.mjs';
+
+export default {
+  ...self,
+  entry: [...core.entry, ...architecture.entry],
+  project: core.project,
+};
+`;
+
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const KNIP = join(REPOSITORY, 'node_modules', '.bin', 'knip');
 
@@ -36,8 +53,7 @@ const unusedCode = (project: Project): Unused => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-knip-'));
   const files = {
     ...project.files,
-    'knip.config.ts':
-      "export { default } from './.constitution/presets/knip/base.mjs';\n",
+    'knip.config.ts': CONFIG,
     'package.json': JSON.stringify({
       name: 'fixture',
       scripts: {
@@ -79,7 +95,7 @@ const unusedCode = (project: Project): Unused => {
     recursive: true,
   });
 
-  const { issues } = JSON.parse(running.stdout) as Report;
+  const { issues } = REPORT.parse(JSON.parse(running.stdout));
 
   return {
     exports: issues.flatMap(({ exports }) => exports.map(({ name }) => name)),

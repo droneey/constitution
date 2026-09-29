@@ -7,12 +7,12 @@ The check runs `osv-scanner scan source` over the repository, development depend
 |---|---|---|
 | a vulnerability found by the check is dealt with before release, in every language the same way. | tool — audit | [] |
 
-## licences-checked-against-devkit-allowlist → licences-from-an-allowlist
-The same run passes devkit's allowlist as `--licenses`, so a licence that is not on it fails the check.
+## licences-checked-against-the-shared-allowlist → licences-from-an-allowlist
+The same run passes the allowlist of the constitution's release archive as `--licenses`, so a licence that is not on it fails the check.
 
 | Why | Check | Tags |
 |---|---|---|
-| one list, versioned with devkit, says which licences every repository accepts. | tool — audit | [] |
+| one list, versioned with the constitution, says which licences every repository accepts. | tool — audit | [] |
 
 ## accepted-vulnerability-states-reason-and-expiry → known-vulnerabilities-fail-the-check
 An accepted vulnerability is an `[[IgnoredVulns]]` entry in `osv-scanner.toml` with its `reason` and an `ignoreUntil` date.

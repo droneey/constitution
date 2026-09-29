@@ -1,0 +1,22 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/*.ts",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noParameterProperties": "off",
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+          },
+          "complexity": {
+            "noStaticOnlyClass": "off",
+          },
+        },
+      },
+    },
+  ],
+}

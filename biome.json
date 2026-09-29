@@ -1,11 +1,11 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": [
-    "@droneey/devkit-ts-biome/base",
-    "@droneey/devkit-ts-biome/node",
-    "@droneey/devkit-ts-biome/test",
-    "./.constitution/presets/biome/base.jsonc",
-    "./.constitution/presets/biome/bun-test.jsonc"
+    "./.constitution/presets/biome/foundation/self.jsonc",
+    "./.constitution/presets/biome/foundation/core.jsonc",
+    "./.constitution/presets/biome/foundation/typescript.jsonc",
+    "./.constitution/presets/biome/foundation/bun-test.jsonc",
+    "./.constitution/presets/biome/architecture/core.jsonc"
   ],
   "overrides": [
     {

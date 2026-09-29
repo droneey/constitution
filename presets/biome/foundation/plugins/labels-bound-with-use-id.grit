@@ -1,0 +1,10 @@
+language js
+
+jsx_attribute(name=$name, value=$value) where {
+  $name <: r"id",
+  $value <: contains or {
+    `crypto.randomUUID()`,
+    `Math.random()`
+  },
+  register_diagnostic(span=$value, message="Take an id from useId: a random one differs between server and client", severity="error")
+}

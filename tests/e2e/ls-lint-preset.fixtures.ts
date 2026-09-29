@@ -4,7 +4,6 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
-  realpathSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -13,45 +12,30 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { parse } from 'yaml';
+import { z } from 'zod';
+
+import { miseBinary } from './mise.fixtures';
 
 interface Project {
   parts?: readonly string[];
   paths: readonly string[];
 }
 
-interface Preset {
-  ignore?: readonly string[];
-  ls: Readonly<Record<string, unknown>>;
-}
+const PRESET = z.object({
+  ignore: z.array(z.string()).optional(),
+  ls: z.record(z.string(), z.unknown()),
+});
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'ls-lint');
 
-const DEVKIT_PARTS = [
-  'base',
-  'markdown',
-  'typescript',
+const PARTS = [
+  'foundation/core',
+  'foundation/typescript',
+  'architecture/core',
 ];
 
-// mise pins ls-lint for this repository; its shim does not resolve in a
-// temporary folder, so the check runs the binary it points to.
-const LS_LINT = spawnSync(
-  'mise',
-  [
-    'which',
-    'ls-lint',
-  ],
-  {
-    cwd: REPOSITORY,
-    encoding: 'utf8',
-  },
-).stdout.trim();
-
-if (LS_LINT === '') {
-  throw new Error(
-    'ls-lint is not installed: run `mise install` in a trusted checkout',
-  );
-}
+const LS_LINT = miseBinary('ls-lint');
 
 const failedPaths = (project: Project): readonly string[] => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-ls-lint-'));
@@ -63,24 +47,16 @@ const failedPaths = (project: Project): readonly string[] => {
     writeFileSync(join(folder, path), '');
   }
 
-  symlinkSync(
-    realpathSync(join(REPOSITORY, '.devkit')),
-    join(folder, '.devkit'),
-  );
   symlinkSync(REPOSITORY, join(folder, '.constitution'));
 
   const linting = spawnSync(
     LS_LINT,
     [
-      ...DEVKIT_PARTS.map((part) => `.devkit/common/ls-lint/${part}.yaml`),
-      ...(
-        project.parts ?? [
-          'base',
-        ]
-      ).map((part) => `.constitution/presets/ls-lint/${part}.yaml`),
-    ].flatMap((config) => [
+      'foundation/self',
+      ...(project.parts ?? PARTS),
+    ].flatMap((part) => [
       '--config',
-      config,
+      `.constitution/presets/ls-lint/${part}.yaml`,
     ]),
     {
       cwd: folder,
@@ -106,12 +82,15 @@ const failedPaths = (project: Project): readonly string[] => {
   return failed;
 };
 
+const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 const keysOf = (tree: Readonly<Record<string, unknown>>): readonly string[] =>
   Object.entries(tree).flatMap(([key, value]) =>
-    typeof value === 'object' && value !== null
+    isRecord(value)
       ? [
           key,
-          ...keysOf(value as Record<string, unknown>),
+          ...keysOf(value),
         ]
       : [
           key,
@@ -120,21 +99,26 @@ const keysOf = (tree: Readonly<Record<string, unknown>>): readonly string[] =>
 
 const valuesOf = (tree: Readonly<Record<string, unknown>>): readonly string[] =>
   Object.values(tree).flatMap((value) =>
-    typeof value === 'object' && value !== null
-      ? valuesOf(value as Record<string, unknown>)
+    isRecord(value)
+      ? valuesOf(value)
       : [
           String(value),
         ],
   );
 
 const presetWords = (): readonly string[] => {
-  const presets = readdirSync(PRESETS_FOLDER)
-    .filter((name) => name.endsWith('.yaml'))
-    .map(
-      (name) =>
-        parse(readFileSync(join(PRESETS_FOLDER, name), 'utf8'), {
+  const presets = readdirSync(PRESETS_FOLDER, {
+    recursive: true,
+  })
+    .map(String)
+    // The tool's own settings name what it skips, not what the blocks write.
+    .filter((path) => path.endsWith('.yaml') && !path.endsWith('self.yaml'))
+    .map((path) =>
+      PRESET.parse(
+        parse(readFileSync(join(PRESETS_FOLDER, path), 'utf8'), {
           merge: true,
-        }) as Preset,
+        }),
+      ),
     );
   const folders = presets
     .flatMap(({ ls }) => keysOf(ls))
@@ -172,4 +156,4 @@ const presetWords = (): readonly string[] => {
   ];
 };
 
-export { failedPaths, presetWords };
+export { failedPaths, PARTS, presetWords };

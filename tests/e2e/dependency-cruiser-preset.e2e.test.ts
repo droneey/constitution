@@ -314,7 +314,8 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'reads-never-reach-writes',
     },
     {
-      condition: 'two modules import each other, a rule of devkit’s base',
+      condition:
+        'two modules import each other, a rule of the architecture core part',
       files: {
         'src/shared/format/format.ts': importing({
           from: './parse',
@@ -364,8 +365,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'ui',
-        'base',
+        'architecture/ui',
+        'architecture/core',
       ],
       rule: 'components-take-data-and-callbacks',
     },
@@ -378,8 +379,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'ky',
-        'base',
+        'architecture/ky',
+        'architecture/core',
       ],
       rule: 'components-never-fetch',
     },
@@ -392,8 +393,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'tanstack-query',
-        'base',
+        'architecture/tanstack-query',
+        'architecture/core',
       ],
       rule: 'components-never-query',
     },
@@ -408,8 +409,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'ui',
-        'base',
+        'architecture/ui',
+        'architecture/core',
       ],
       rule: 'ui-reaches-no-mechanism',
     },
@@ -423,8 +424,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'ui',
-        'base',
+        'architecture/ui',
+        'architecture/core',
       ],
       rule: 'ui-takes-entities-as-types',
     },
@@ -437,8 +438,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'lingui',
-        'base',
+        'architecture/lingui',
+        'architecture/core',
       ],
       rule: 'primitives-hold-no-text',
     },
@@ -451,8 +452,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'tanstack-router',
-        'base',
+        'architecture/tanstack-router',
+        'architecture/core',
       ],
       rule: 'router-primitives-only-in-screens-and-widgets',
     },
@@ -465,8 +466,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'tanstack-router',
-        'base',
+        'architecture/tanstack-router',
+        'architecture/core',
       ],
       rule: 'screen-pieces-never-navigate',
     },
@@ -480,8 +481,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'analytics',
-        'base',
+        'architecture/analytics',
+        'architecture/core',
       ],
       rule: 'features-never-track',
     },
@@ -494,8 +495,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'lingui',
-        'base',
+        'architecture/lingui',
+        'architecture/core',
       ],
       rule: 'application-returns-codes-not-text',
     },
@@ -509,8 +510,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'storybook',
-        'base',
+        'architecture/storybook',
+        'architecture/core',
       ],
       rule: 'stories-unreachable-from-production',
     },
@@ -523,8 +524,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'yaml',
-        'base',
+        'architecture/yaml',
+        'architecture/core',
       ],
       rule: 'yaml-only-at-the-edge',
     },
@@ -577,15 +578,15 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'ui',
-        'tanstack-router',
-        'analytics',
-        'lingui',
-        'tanstack-query',
-        'ky',
-        'storybook',
-        'yaml',
-        'base',
+        'architecture/ui',
+        'architecture/tanstack-router',
+        'architecture/analytics',
+        'architecture/lingui',
+        'architecture/tanstack-query',
+        'architecture/ky',
+        'architecture/storybook',
+        'architecture/yaml',
+        'architecture/core',
       ],
     };
 
@@ -656,13 +657,13 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'root-takes-packages-by-name',
     },
   ])(
-    'should report $rule when $condition and a repository of packages extends the package part',
+    'should report $rule when $condition and a repository of packages extends architecture package',
     ({ files, roots, rule }) => {
       // Arrange
       const project = {
         files,
         parts: [
-          'package',
+          'architecture/package',
         ],
         roots,
       };
@@ -688,7 +689,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'package',
+        'architecture/package',
       ],
       roots: [
         'packages',
@@ -701,5 +702,140 @@ describe('the dependency-cruiser layer set', () => {
 
     // Assert
     expect(violations).toStrictEqual([]);
+  });
+});
+
+describe('the dependency-cruiser foundation parts', () => {
+  it.each([
+    {
+      condition: 'two modules import each other',
+      files: {
+        'src/order.ts':
+          "import { line } from './line';\nexport const order = line;\n",
+        'src/line.ts':
+          "import { order } from './order';\nexport const line = order;\n",
+      },
+      rule: 'no-circular',
+    },
+    {
+      condition: 'production code imports a fixture',
+      files: {
+        'src/__tests__/order.fixtures.ts': 'export const anOrder = 1;\n',
+        'src/order.ts':
+          "import { anOrder } from './__tests__/order.fixtures';\nexport const order = anOrder;\n",
+      },
+      rule: 'no-test-code-in-production',
+    },
+    {
+      condition: 'production code imports a fixture under tests/',
+      files: {
+        'src/order.ts':
+          "import { shop } from '../tests/load/shop.fixtures';\nexport const order = shop;\n",
+        'tests/load/shop.fixtures.ts': 'export const shop = 1;\n',
+      },
+      rule: 'no-test-code-in-production',
+    },
+    {
+      condition: 'code imports a package the manifest does not declare',
+      files: {
+        'src/order.ts':
+          "import { ghost } from 'ghost';\nexport const order = ghost;\n",
+      },
+      rule: 'no-undeclared-dependency',
+    },
+    {
+      condition: 'code imports a module that does not exist',
+      files: {
+        'src/order.ts':
+          "import { line } from './line';\nexport const order = line;\n",
+      },
+      rule: 'no-unresolvable',
+    },
+    {
+      condition: 'code imports a deprecated package',
+      files: {
+        'src/order.ts':
+          "import { legacy } from 'legacy';\nexport const order = legacy;\n",
+      },
+      rule: 'no-deprecated-dependency',
+    },
+    {
+      condition: 'production code imports a development dependency',
+      files: {
+        'src/order.ts':
+          "import { devtool } from 'devtool';\nexport const order = devtool;\n",
+      },
+      rule: 'no-development-dependency-in-production',
+    },
+  ])('should report $rule when $condition', ({ files, rule }) => {
+    // Arrange
+    const project = {
+      files,
+      roots: [
+        '.',
+      ],
+    };
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toContain(rule);
+  });
+
+  it.each([
+    {
+      condition:
+        'production code imports a declared package and its own modules',
+      files: {
+        'src/line.ts': 'export const line = 1;\n',
+        'src/order.ts':
+          "import { kit } from 'kit';\nimport { line } from './line';\nexport const order = kit + line;\n",
+      },
+    },
+    {
+      condition:
+        'production code imports only the types of a development dependency',
+      files: {
+        'src/order.ts':
+          "import type { devtool } from 'devtool';\nexport type Order = typeof devtool;\n",
+      },
+    },
+    {
+      condition: 'a hidden folder holds modules that break the rules',
+      files: {
+        '.cache/order.ts':
+          "import { line } from './line';\nexport const order = line;\n",
+        'src/order.ts': 'export const order = 1;\n',
+      },
+    },
+    {
+      condition: 'a spec imports a fixture and a development dependency',
+      files: {
+        'src/__tests__/order.fixtures.ts': 'export const anOrder = 1;\n',
+        'src/__tests__/order.test.ts':
+          "import { devtool } from 'devtool';\nimport { anOrder } from './order.fixtures';\nexport const checked = devtool + anOrder;\n",
+      },
+    },
+  ])('should report no violation when $condition', ({ files }) => {
+    // Arrange
+    const project = {
+      files,
+      roots: [
+        '.',
+      ],
+    };
+
+    // Act
+    const { cruised, violations } = cruise(project);
+
+    // Assert
+    expect({
+      cruisedAny: cruised > 0,
+      violations,
+    }).toStrictEqual({
+      cruisedAny: true,
+      violations: [],
+    });
   });
 });

@@ -11,7 +11,7 @@ governs: ["biome.json", "**/*.grit"]
 
 # Biome
 
-> Formats and lints. `biome.json` extends devkit's general presets and the constitution's own, which hold the rules that name the constitution's folders and suffixes: `presets/biome/base.jsonc` of the constitution's release archive for core and TypeScript, and a part named after each other active block that has rules of its own, such as `react.jsonc`. Together they hold every active rule whose check is `format` or `lint`, and, with `useFilenamingConvention`, the names of source files and of `__tests__/`:
+> Formats and lints. `biome.json` extends the parts of the constitution's release archive: `presets/biome/foundation/self.jsonc`, Biome's own settings, then `core.jsonc`, `typescript.jsonc` and a part named after each other active block that has rules of its own, such as `react-dom.jsonc`, and on the architecture axis `architecture/core.jsonc` and its peers. Together they hold every active rule whose check is `format` or `lint`, and, with `useFilenamingConvention`, the names of source files and of `__tests__/`:
 > - the limits as errors — `noExcessiveLinesPerFunction` 100, `noExcessiveLinesPerFile` 500, `noExcessiveCognitiveComplexity` 10 — with both line limits off under `**/__tests__/**`;
 > - `noDoubleEquals` without its `null` exception;
 > - `noExplicitAny` everywhere, tests included; `noNonNullAssertion`, `noTsIgnore`; `noFloatingPromises`, `noMisusedPromises`; `noEmptyBlockStatements`;

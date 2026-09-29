@@ -11,4 +11,4 @@ governs: ["osv-scanner.toml"]
 
 # OSV-Scanner
 
-> Checks the dependencies of any language by their lockfiles against the OSV database, and their licences against devkit's allowlist, which the release archive carries as `common/osv-scanner/licenses.txt` and the check passes as `--licenses`. It holds every active rule whose check is `tool — audit`. It has no severity floor: any known vulnerability fails the run.
+> Checks the dependencies of any language by their lockfiles against the OSV database, and their licences against the shared allowlist, which the constitution's release archive carries as `presets/osv-scanner/foundation/core.txt` and the check passes as `--licenses`. It holds every active rule whose check is `tool — audit`. It has no severity floor: any known vulnerability fails the run.

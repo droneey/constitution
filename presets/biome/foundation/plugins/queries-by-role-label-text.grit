@@ -1,0 +1,10 @@
+language js
+
+`$query($...)` as $call where {
+  $query <: or {
+    r".*ByTestId",
+    r".*\.querySelector",
+    r".*\.querySelectorAll"
+  },
+  register_diagnostic(span=$call, message="Find an element as a person does: by role, then by label and text", severity="error")
+}

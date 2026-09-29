@@ -1,0 +1,53 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: validate-branch
+      run: |
+        BRANCH=$(git branch --show-current)
+        if ! echo "$BRANCH" | grep -qE '^(feature|fix|hotfix)/[0-9]+-[a-z]+(-[a-z]+)*$'; then
+          echo "Branch '$BRANCH' must match: (feature|fix|hotfix)/{id}-{name}"
+          exit 1
+        fi
+
+commit-msg:
+  jobs:
+    - name: commit-message
+      run: |
+        MSG=$(head -1 {1})
+
+        if [ ${#MSG} -gt 100 ]; then
+          echo "Header must be 100 characters or less (got ${#MSG})"
+          exit 1
+        fi
+
+        TYPE=$(printf '%s\n' "$MSG" | sed -n 's/^\([a-z]*\)!\{0,1\}: .*/\1/p')
+        SUBJECT=$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')
+
+        if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
+          echo "Commit must match format: type: Subject, or type!: Subject for a breaking change"
+          exit 1
+        fi
+
+        case "$TYPE" in
+          feat|fix|refactor|chore) ;;
+          *) echo "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"; exit 1 ;;
+        esac
+
+        FIRST_CHAR=$(printf '%s' "$SUBJECT" | cut -c1)
+        if ! printf '%s' "$FIRST_CHAR" | grep -q '[A-Z]'; then
+          echo "Subject must start with an uppercase letter (sentence-case)"
+          exit 1
+        fi
+
+        case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
+          update|updates|changes|change|misc|wip|fix|fixes|"fix stuff"|stuff|"minor changes"|"small fix"|tmp|test)
+            echo "Subject '$SUBJECT' says nothing; say what changed"
+            exit 1
+            ;;
+        esac
+
+        BODY=$(sed '1d;/^#/d;/^$/d' {1})
+        if [ -n "$BODY" ]; then
+          echo "Body and footer must be empty"
+          exit 1
+        fi

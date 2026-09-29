@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 
-import { blockCode, lintFindings, presetWords } from './biome-preset.fixtures';
+import {
+  blockCode,
+  FOUNDATION_PARTS,
+  lintFindings,
+  presetFiles,
+  presetText,
+  presetWords,
+} from './biome-preset.fixtures';
 
 const ROOM_HOOK = `import { useEffect, useEffectEvent } from 'react';
 
@@ -18,6 +25,56 @@ export function useRoom(label: string): void {
   }, []);
 }
 `;
+
+const TEST_PARTS = [
+  ...FOUNDATION_PARTS,
+  'foundation/bun-test',
+];
+
+// Biome turns on the React and Tailwind rules only for a manifest that lists
+// their libraries.
+const MANIFEST = JSON.stringify({
+  name: 'fixture',
+  dependencies: {
+    react: '19.2.0',
+    tailwindcss: '4.2.0',
+  },
+});
+
+const WEB_PARTS = [
+  ...FOUNDATION_PARTS,
+  'foundation/_react',
+  'foundation/react-dom',
+  'foundation/browser',
+  'foundation/tailwind',
+  'foundation/testing-library',
+];
+
+const indexes = (count: number): readonly number[] => [
+  ...new Array<undefined>(count).keys(),
+];
+
+const statements = (count: number): string =>
+  indexes(count)
+    .map((index) => `  total += '${String(index)}'.length;`)
+    .join('\n');
+
+// Biome counts a function's body, the lines between its braces.
+const functionWithBodyOf = (lines: number): string =>
+  `export const measure = (): number => {\n  let total = 0;\n${statements(lines - 2)}\n  return total;\n};\n`;
+
+const fileOfLines = (lines: number): string =>
+  `${indexes(lines)
+    .map((index) => `export const label${String(index)} = 'label';`)
+    .join('\n')}\n`;
+
+const THREE_PARAMETERS =
+  "export const joinAll = (head: string, middle: string, tail: string): string =>\n  [head, middle, tail].join('');\n";
+const FOUR_PARAMETERS =
+  "export const joinAll = (head: string, middle: string, tail: string, end: string): string =>\n  [head, middle, tail, end].join('');\n";
+
+const component = (markup: string): string =>
+  `export function Panel(): React.ReactElement {\n  return (\n    ${markup}\n  );\n}\n`;
 
 describe('the Biome preset', () => {
   it.each([
@@ -138,13 +195,14 @@ describe('the Biome preset', () => {
       },
     },
   ])(
-    'should report no plugin finding when $condition and a project extends only the base part',
+    'should report no plugin finding when $condition and a project extends only foundation self, core and typescript and architecture core',
     ({ files }) => {
       // Arrange
       const project = {
         files,
         parts: [
-          'base',
+          ...FOUNDATION_PARTS,
+          'architecture/core',
         ],
       };
 
@@ -218,6 +276,27 @@ describe('the Biome preset', () => {
     expect(plugins).toStrictEqual([]);
   });
 
+  it('should report a plugin finding when an adapter maps null from the wire and a project extends only foundation self, core and typescript', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/adapters/api/order.adapter.ts':
+          'export const toCancelledAt = (raw: string | null): string | undefined =>\n  raw === null ? undefined : raw;\n',
+      },
+      parts: FOUNDATION_PARTS,
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(
+      plugins.some((finding) =>
+        finding.startsWith('null outside the boundary'),
+      ),
+    ).toBe(true);
+  });
+
   it('should name only folders, files and suffixes the blocks write when the preset scopes its rules', () => {
     // Arrange
     const code = blockCode();
@@ -229,5 +308,650 @@ describe('the Biome preset', () => {
 
     // Assert
     expect(unwritten).toStrictEqual([]);
+  });
+});
+
+describe('the Biome foundation parts', () => {
+  it('should leave .constitution alone when a project lints its whole tree', () => {
+    // Arrange
+    const project = {
+      files: {
+        '.constitution/probe.ts': 'export const data = null;\n',
+        'src/order.ts': "export const orderKind = 'order';\n",
+      },
+      parts: FOUNDATION_PARTS,
+    };
+
+    // Act
+    const { plugins, rules } = lintFindings(project);
+
+    // Assert
+    expect([
+      ...plugins,
+      ...rules,
+    ]).toStrictEqual([]);
+  });
+
+  it.each([
+    ...presetFiles(),
+  ])('should parse when a project extends %s', (path) => {
+    // Arrange
+    const text = presetText(path);
+
+    // Act
+    const config: unknown = Bun.JSONC.parse(text);
+
+    // Assert
+    expect(config).toBeObject();
+  });
+
+  it('should hold no rule at warn when a project extends any part', () => {
+    // Arrange
+    const texts = presetFiles().map(presetText);
+
+    // Act
+    const warnings = texts.filter((text) => /"warn"/.test(text));
+
+    // Assert
+    expect(warnings).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'a function body passes 100 lines',
+      files: {
+        'src/main.ts': functionWithBodyOf(101),
+      },
+      rule: 'noExcessiveLinesPerFunction',
+    },
+    {
+      condition: 'a file passes 500 lines',
+      files: {
+        'src/main.ts': fileOfLines(501),
+      },
+      rule: 'noExcessiveLinesPerFile',
+    },
+    {
+      condition: 'null is compared loosely',
+      files: {
+        'src/main.ts':
+          'export const isAbsent = (value: string | null): boolean => value == null;\n',
+      },
+      rule: 'noDoubleEquals',
+    },
+    {
+      condition: 'a function takes a fourth positional argument',
+      files: {
+        'src/main.ts': FOUR_PARAMETERS,
+      },
+      rule: 'useMaxParams',
+    },
+    {
+      condition: 'shipped code writes to the console',
+      files: {
+        'src/main.ts': "console.info('ready');\n",
+      },
+      rule: 'noConsole',
+    },
+    {
+      condition: 'a spec types a value as any',
+      files: {
+        'src/__tests__/main.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should keep any out when a spec types a value', () => {\n  const value: any = 1;\n  expect(value).toBe(1);\n});\n",
+      },
+      rule: 'noExplicitAny',
+    },
+    {
+      condition: 'a helper in __tests__ asserts non-null',
+      files: {
+        'src/__tests__/order.fixtures.ts':
+          'export const first = (items: readonly string[]): string => items[0]!;\n',
+      },
+      rule: 'noNonNullAssertion',
+    },
+    {
+      condition: 'a spec is focused',
+      files: {
+        'src/__tests__/main.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest.only('should run alone when focused', () => {\n  expect(true).toBe(true);\n});\n",
+      },
+      rule: 'noFocusedTests',
+    },
+  ])('should report $rule when $condition', ({ files, rule }) => {
+    // Arrange
+    const project = {
+      files,
+      parts: TEST_PARTS,
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).toContain(rule);
+  });
+
+  it.each([
+    {
+      condition: 'a function body holds 100 lines',
+      files: {
+        'src/main.ts': functionWithBodyOf(100),
+      },
+      rule: 'noExcessiveLinesPerFunction',
+    },
+    {
+      condition: 'a spec passes 500 lines',
+      files: {
+        'src/__tests__/main.test.ts': fileOfLines(600),
+      },
+      rule: 'noExcessiveLinesPerFile',
+    },
+    {
+      condition: 'a function takes a third positional argument',
+      files: {
+        'src/main.ts': THREE_PARAMETERS,
+      },
+      rule: 'useMaxParams',
+    },
+    {
+      condition: 'a *.test.ts spec passes 500 lines',
+      files: {
+        'src/main.test.ts': fileOfLines(600),
+      },
+      rule: 'noExcessiveLinesPerFile',
+    },
+    {
+      condition: 'a spec holds a function of more than 100 lines',
+      files: {
+        'src/__tests__/main.test.ts': functionWithBodyOf(150),
+      },
+      rule: 'noExcessiveLinesPerFunction',
+    },
+  ])('should not report $rule when $condition', ({ files, rule }) => {
+    // Arrange
+    const project = {
+      files,
+      parts: TEST_PARTS,
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).not.toContain(rule);
+  });
+
+  it.each([
+    {
+      condition: 'a function is named by an empty verb',
+      files: {
+        'src/features/orders/order.ts':
+          'export const process = (): number => 1;\n',
+      },
+      message: 'Name what the function does',
+    },
+    {
+      condition: 'a method is named by an empty verb',
+      files: {
+        'src/features/orders/order.ts':
+          'export const orders = {\n  handle(): number {\n    return 1;\n  },\n};\n',
+      },
+      message: 'Name what the function does',
+    },
+    {
+      condition: 'a spec leaves a case to do',
+      files: {
+        'src/order.test.ts':
+          "import { test } from 'bun:test';\n\ntest.todo('adds totals');\n",
+      },
+      message: 'Write the case or leave it out',
+    },
+    {
+      condition: 'a type alias carries the Type suffix',
+      files: {
+        'src/features/orders/order.ts':
+          'export type OrderType = {\n  id: string;\n};\n',
+      },
+      message: 'A type is a noun, undecorated',
+    },
+    {
+      condition: 'an interface carries the I prefix',
+      files: {
+        'src/features/orders/order.ts':
+          'export interface IOrder {\n  id: string;\n}\n',
+      },
+      message: 'A type is a noun, undecorated',
+    },
+    {
+      condition: 'a spec compares with toEqual',
+      files: {
+        'src/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('adds totals', () => {\n  expect(1).toEqual(1);\n});\n",
+      },
+      message: 'Compare with toStrictEqual',
+    },
+  ])('should report a plugin finding when $condition', ({ files, message }) => {
+    // Arrange
+    const project = {
+      files,
+      parts: TEST_PARTS,
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+  });
+
+  it('should report a plugin finding when a response body is cast with .json<T>() and a project extends the ky part', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/order.ts':
+          'interface Order {\n  id: string;\n}\n\nexport const read = (response: Response): Promise<Order> =>\n  response.json<Order>();\n',
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/ky',
+      ],
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(
+      plugins.some((finding) =>
+        finding.startsWith(
+          'A response body is unknown until a schema parses it',
+        ),
+      ),
+    ).toBe(true);
+  });
+});
+
+describe('the Biome framework parts', () => {
+  it.each([
+    {
+      condition: 'a component is a class',
+      source:
+        "import { Component } from 'react';\n\nexport class Panel extends Component {\n  public render(): null {\n    return null;\n  }\n}\n",
+      rule: 'useReactFunctionComponents',
+    },
+    {
+      condition: 'a ref is a string',
+      source: component("<div ref='box' />"),
+      rule: 'noReactStringRefs',
+    },
+    {
+      condition: 'an element with an interactive role cannot take focus',
+      source: component("<div role='button' />"),
+      rule: 'useFocusableInteractive',
+    },
+    {
+      condition: 'an ARIA attribute is written in camelCase',
+      source: component("<input ariaLabel='Email' />"),
+      rule: 'noUnknownAttribute',
+    },
+    {
+      condition: 'an id is typed by hand',
+      source: component("<input id='email' />"),
+      rule: 'useUniqueElementIds',
+    },
+    {
+      condition: 'raw HTML is injected beside children',
+      source: component(
+        "<div dangerouslySetInnerHTML={{ __html: '' }}>text</div>",
+      ),
+      rule: 'noDangerouslySetInnerHtmlWithChildren',
+    },
+    {
+      condition: 'an element takes an inline style',
+      source: component("<div style={{ color: 'red' }} />"),
+      rule: 'noInlineStyles',
+    },
+    {
+      condition: 'a class carries an arbitrary value',
+      source: component("<div className='p-[13px]' />"),
+      rule: 'noTailwindArbitraryValue',
+    },
+  ])('should report $rule when $condition', ({ rule, source }) => {
+    // Arrange
+    const project = {
+      files: {
+        'package.json': MANIFEST,
+        'src/panel.tsx': source,
+      },
+      parts: WEB_PARTS,
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).toContain(rule);
+  });
+
+  it.each([
+    {
+      condition: 'a cascade layer has no name',
+      files: {
+        'src/styles.css': '@layer {\n  a {\n    color: red;\n  }\n}\n',
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/ui',
+      ],
+      rule: 'useNamedLayer',
+    },
+    {
+      condition: 'a list item takes a click handler',
+      files: {
+        'src/panel.tsx': component('<li onClick={() => undefined}>item</li>'),
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/_react',
+      ],
+      rule: 'noNoninteractiveElementInteractions',
+    },
+    {
+      condition: 'a hook is called inside a condition in a .ts file',
+      files: {
+        'package.json': JSON.stringify({
+          name: 'fixture',
+        }),
+        'src/order.hooks.ts':
+          "import { useState } from 'react';\n\nexport function useOrder(open: boolean): number {\n  if (open) {\n    const [count] = useState(0);\n    return count;\n  }\n  return 0;\n}\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/_react',
+      ],
+      rule: 'useHookAtTopLevel',
+    },
+    {
+      condition: 'a React Native style holds a literal colour',
+      files: {
+        'package.json': JSON.stringify({
+          name: 'fixture',
+          dependencies: {
+            react: '19.2.0',
+            'react-native': '0.81.0',
+          },
+        }),
+        'src/panel.tsx':
+          "import { View } from 'react-native';\n\nexport function Panel(): React.ReactElement {\n  return <View style={{ backgroundColor: 'red' }} />;\n}\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/_react',
+        'foundation/react-native',
+      ],
+      rule: 'noReactNativeLiteralColors',
+    },
+    {
+      condition: 'a component file is in PascalCase',
+      files: {
+        'src/Panel.tsx': component('<div />'),
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'foundation/_react',
+      ],
+      rule: 'useFilenamingConvention',
+    },
+  ])(
+    'should report $rule when $condition and a project extends $parts',
+    ({ files, parts, rule }) => {
+      // Arrange
+      const project = {
+        files: {
+          'package.json': MANIFEST,
+          ...files,
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules).toContain(rule);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'a cascade layer has no name',
+      files: {
+        'src/styles.css': '@layer {\n  a {\n    color: red;\n  }\n}\n',
+      },
+      rule: 'useNamedLayer',
+    },
+    {
+      condition: 'a list item takes a click handler',
+      files: {
+        'src/panel.tsx': component('<li onClick={() => undefined}>item</li>'),
+      },
+      rule: 'noNoninteractiveElementInteractions',
+    },
+    {
+      condition: 'a class carries an arbitrary value',
+      files: {
+        'src/panel.tsx': component("<div className='p-[13px]' />"),
+      },
+      rule: 'noTailwindArbitraryValue',
+    },
+  ])(
+    'should not report $rule when $condition and a project extends only foundation self, core and typescript',
+    ({ files, rule }) => {
+      // Arrange
+      const project = {
+        files: {
+          'package.json': MANIFEST,
+          ...files,
+        },
+        parts: FOUNDATION_PARTS,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules).not.toContain(rule);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'a context is read with useContext',
+      files: {
+        'src/panel.tsx':
+          "import { createContext, useContext } from 'react';\n\nconst ThemeContext = createContext('light');\n\nexport function Panel(): string {\n  return useContext(ThemeContext);\n}\n",
+      },
+      message: 'Read a context with use(Context)',
+    },
+    {
+      condition: 'a context is provided through Context.Provider',
+      files: {
+        'src/panel.tsx':
+          "import { createContext } from 'react';\n\nconst ThemeContext = createContext('light');\n\nexport function Panel(): React.ReactElement {\n  return <ThemeContext.Provider value='dark' />;\n}\n",
+      },
+      message: 'Render the context itself as its provider',
+    },
+    {
+      condition: 'a component takes defaultProps',
+      files: {
+        'src/panel.tsx': `${component('<div />')}\nPanel.defaultProps = {};\n`,
+      },
+      message: 'Give a prop its default in the parameter',
+    },
+    {
+      condition: 'a ref is made with createRef',
+      files: {
+        'src/panel.ts':
+          "import { createRef } from 'react';\n\nexport const panelRef = createRef<HTMLDivElement>();\n",
+      },
+      message: 'Hold a ref with useRef or a ref callback',
+    },
+    {
+      condition: 'an id is random',
+      files: {
+        'src/panel.tsx': component('<input id={crypto.randomUUID()} />'),
+      },
+      message: 'Take an id from useId',
+    },
+    {
+      condition: 'an email field declares no autocomplete',
+      files: {
+        'src/panel.tsx': component("<input aria-label='Email' type='email' />"),
+      },
+      message: "A field for the user's own data declares its purpose",
+    },
+    {
+      condition: 'a spec finds an element by its test id',
+      files: {
+        'src/__tests__/panel.test.tsx':
+          "import { screen } from '@testing-library/react';\n\nexport const panel = (): HTMLElement => screen.getByTestId('panel');\n",
+      },
+      message: 'Find an element as a person does',
+    },
+    {
+      condition: 'a spec finds an element by a selector',
+      files: {
+        'src/__tests__/panel.test.tsx':
+          "export const panel = (container: HTMLElement): Element | null =>\n  container.querySelector('.panel');\n",
+      },
+      message: 'Find an element as a person does',
+    },
+    {
+      condition: 'a class list sizes with h-screen',
+      files: {
+        'src/panel.tsx': component("<main className='min-h-screen' />"),
+      },
+      message: 'Size to the dynamic viewport with h-dvh',
+    },
+    {
+      condition: 'a variant map sizes with h-screen',
+      files: {
+        'src/panel.variants.ts':
+          "import { cva } from 'class-variance-authority';\n\nexport const panelVariants = cva('flex h-screen');\n",
+      },
+      message: 'Size to the dynamic viewport with h-dvh',
+    },
+    {
+      condition: 'a class list narrows with a max-* breakpoint',
+      files: {
+        'src/panel.tsx': component("<main className='flex max-md:hidden' />"),
+      },
+      message: 'Widen from the small screen',
+    },
+    {
+      condition: 'a variant map narrows with a max-* breakpoint',
+      files: {
+        'src/panel.variants.ts':
+          "import { cva } from 'class-variance-authority';\n\nexport const panelVariants = cva('flex max-md:hidden');\n",
+      },
+      message: 'Widen from the small screen',
+    },
+  ])('should report a plugin finding when $condition', ({ files, message }) => {
+    // Arrange
+    const project = {
+      files: {
+        'package.json': MANIFEST,
+        ...files,
+      },
+      parts: WEB_PARTS,
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+  });
+
+  it.each([
+    {
+      condition: 'a field declares its autocomplete',
+      files: {
+        'src/panel.tsx': component(
+          "<input aria-label='Email' autoComplete='email' type='email' />",
+        ),
+      },
+    },
+    {
+      condition: 'a class list sizes to the dynamic viewport',
+      files: {
+        'src/panel.tsx': component("<main className='h-dvh' />"),
+      },
+    },
+    {
+      condition: 'a class list widens from the small screen',
+      files: {
+        'src/panel.tsx': component("<main className='max-w-md md:flex' />"),
+      },
+    },
+    {
+      condition: 'a spec finds an element by its role',
+      files: {
+        'src/__tests__/panel.test.tsx':
+          "import { screen } from '@testing-library/react';\n\nexport const panel = (): HTMLElement => screen.getByRole('region');\n",
+      },
+    },
+  ])('should report no plugin finding when $condition', ({ files }) => {
+    // Arrange
+    const project = {
+      files: {
+        'package.json': MANIFEST,
+        ...files,
+      },
+      parts: WEB_PARTS,
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins).toStrictEqual([]);
+  });
+
+  it('should report no missing dependency when an effect calls an effect event', () => {
+    // Arrange
+    const project = {
+      files: {
+        'package.json': MANIFEST,
+        'src/room.hooks.ts': ROOM_HOOK,
+      },
+      parts: WEB_PARTS,
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).not.toContain('useExhaustiveDependencies');
+  });
+
+  it('should report a missing dependency when an effect calls a plain function', () => {
+    // Arrange
+    const project = {
+      files: {
+        'package.json': MANIFEST,
+        'src/room.hooks.ts': ROOM_HOOK.replace(
+          'useEffectEvent((): void => {',
+          '((): void => {',
+        ).replace(', useEffectEvent', ''),
+      },
+      parts: WEB_PARTS,
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).toContain('useExhaustiveDependencies');
   });
 });

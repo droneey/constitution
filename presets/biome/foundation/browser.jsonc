@@ -1,0 +1,12 @@
+{
+  "linter": {
+    "rules": {
+      "nursery": {
+        "useDomNodeTextContent": "error",
+      },
+    },
+  },
+  "plugins": [
+    "./.constitution/presets/biome/foundation/plugins/fields-declare-autocomplete.grit",
+  ],
+}

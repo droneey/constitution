@@ -1,0 +1,5 @@
+language js
+
+`$_.json<$_>()` as $call where {
+  register_diagnostic(span=$call, message="A response body is unknown until a schema parses it: .json<T>() is a cast", severity="error")
+}

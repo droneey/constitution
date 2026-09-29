@@ -1,0 +1,14 @@
+language js
+
+or {
+  jsx_attribute(name=$name, value=$classes) where { $name <: r"className" },
+  or {
+    `cva($...)`,
+    `cn($...)`,
+    `clsx($...)`,
+    `twMerge($...)`
+  } as $classes where { $classes <: not within jsx_attribute() }
+} where {
+  $classes <: r"(?s).*\bmax-\S*:.*",
+  register_diagnostic(span=$classes, message="Widen from the small screen with md:, lg: and xl:: a max-* breakpoint undoes the base", severity="error")
+}

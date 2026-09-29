@@ -25,13 +25,14 @@
     "test:unit": "bun test",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
-    "mutation:check": "mutation-check",
-    "mutation:all": "mutation-check all",
+    "build": "bun build --target=node --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist",
+    "mutation:check": "bun tools/mutation-check/src/main.ts",
+    "mutation:all": "bun tools/mutation-check/src/main.ts all",
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
-    "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
+    "architecture:check": "depcruise src tests tools --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --production --no-config-hints",
-    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .devkit/common/osv-scanner/licenses.txt)\" .",
-    "names:check": "ls-lint --config .devkit/common/ls-lint/base.yaml --config .devkit/common/ls-lint/markdown.yaml --config .devkit/common/ls-lint/typescript.yaml --config .constitution/presets/ls-lint/base.yaml --config .ls-lint.yaml",
+    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .constitution/presets/osv-scanner/foundation/core.txt)\" .",
+    "names:check": "ls-lint --config .constitution/presets/ls-lint/foundation/self.yaml --config .constitution/presets/ls-lint/foundation/core.yaml --config .constitution/presets/ls-lint/foundation/typescript.yaml --config .constitution/presets/ls-lint/architecture/core.yaml --config .ls-lint.yaml",
     "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run audit:check"
   },
   "dependencies": {
@@ -39,12 +40,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.12",
-    "@droneey/devkit-ts-biome": "^1.32.0",
-    "@droneey/devkit-ts-dependency-cruiser": "^1.32.0",
-    "@droneey/devkit-ts-stryker": "^1.32.0",
-    "@droneey/devkit-ts-syncpack": "^1.32.0",
-    "@droneey/devkit-ts-tsconfig": "^1.32.0",
+    "@biomejs/biome": "^2.5.13",
     "@stryker-mutator/core": "^10.0.0",
     "@swc/core": "^1.16.2",
     "@types/bun": "^1.4.1",

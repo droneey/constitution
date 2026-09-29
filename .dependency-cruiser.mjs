@@ -1,8 +1,9 @@
 export default {
   extends: [
-    '@droneey/devkit-ts-dependency-cruiser/configs/base.mjs',
-    './.constitution/presets/dependency-cruiser/yaml.mjs',
-    './.constitution/presets/dependency-cruiser/base.mjs',
+    './.constitution/presets/dependency-cruiser/foundation/self.mjs',
+    './.constitution/presets/dependency-cruiser/foundation/typescript.mjs',
+    './.constitution/presets/dependency-cruiser/architecture/yaml.mjs',
+    './.constitution/presets/dependency-cruiser/architecture/core.mjs',
   ],
   options: {
     tsConfig: {

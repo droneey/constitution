@@ -1,0 +1,18 @@
+language js
+
+jsx_self_closing_element(name=$name, attributes=$attributes) as $field where {
+  $name <: r"input",
+  $attributes <: contains jsx_attribute(name=$type, value=$purpose) where {
+    $type <: r"type",
+    $purpose <: or {
+      r".*\bemail\b.*",
+      r".*\btel\b.*",
+      r".*\bpassword\b.*",
+      r".*\burl\b.*"
+    }
+  },
+  $attributes <: not contains jsx_attribute(name=$declared) where {
+    $declared <: r"autoComplete"
+  },
+  register_diagnostic(span=$field, message="A field for the user's own data declares its purpose with autoComplete", severity="error")
+}

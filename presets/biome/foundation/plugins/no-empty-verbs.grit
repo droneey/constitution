@@ -1,0 +1,23 @@
+language js
+
+or {
+  `function $name($_): $_ { $_ }`,
+  `function $name($_) { $_ }`,
+  `const $name = ($_): $_ => $_`,
+  `const $name = ($_) => $_`,
+  JsMethodClassMember(name=$name),
+  JsMethodObjectMember(name=$name)
+} where {
+  $name <: or {
+    `handle`,
+    `process`,
+    `manage`,
+    `do`,
+    `run`,
+    `execute`,
+    `get`,
+    `set`,
+    `update`
+  },
+  register_diagnostic(span=$name, message="Name what the function does and to what: a verb alone says nothing", severity="error")
+}

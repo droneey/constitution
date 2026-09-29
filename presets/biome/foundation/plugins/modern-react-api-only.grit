@@ -1,0 +1,28 @@
+language js
+
+or {
+  or {
+    `useContext($_)`,
+    `React.useContext($_)`
+  } as $call where {
+    register_diagnostic(span=$call, message="Read a context with use(Context): useContext is the legacy form", severity="error")
+  },
+  or {
+    jsx_opening_element(name=$name),
+    jsx_self_closing_element(name=$name)
+  } where {
+    $name <: r".*\.Provider",
+    register_diagnostic(span=$name, message="Render the context itself as its provider, <Context value>: Context.Provider is the legacy form", severity="error")
+  },
+  `$_.defaultProps = $_` as $assignment where {
+    register_diagnostic(span=$assignment, message="Give a prop its default in the parameter: defaultProps is the legacy form", severity="error")
+  },
+  or {
+    `createRef()`,
+    `createRef<$_>()`,
+    `React.createRef()`,
+    `React.createRef<$_>()`
+  } as $call where {
+    register_diagnostic(span=$call, message="Hold a ref with useRef or a ref callback: createRef is the legacy form", severity="error")
+  }
+}

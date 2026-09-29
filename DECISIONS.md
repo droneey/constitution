@@ -19,9 +19,9 @@
 | Testing | ADR-0046 – ADR-0048 |
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0076 |
+| Blocks | ADR-0064 – ADR-0074 |
 | Tools and tests | ADR-0077 – ADR-0087 |
-| Axes | ADR-0088 – ADR-0090 |
+| Axes | ADR-0088 – ADR-0091 |
 
 ---
 
@@ -107,7 +107,7 @@
 ## ADR-0014 — No rule above the implementations names a tool
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** No rule of core, a domain or a context names a tool, and no rule's check does: a rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a devkit preset or the project's own — built to hold every active rule of its roles.
+- **Decision.** No rule of core, a domain or a context names a tool, and no rule's check does: a rule names the role of its check; the tool's block says which roles it checks and how to build its configuration. The configuration is a separate file — a preset of the constitution's release archive or the project's own — built to hold every active rule of its roles.
 - **Rejected.** Tables that map each rule to a setting of a tool.
 - **Why.** A tool can then be swapped without touching a rule.
 
@@ -239,7 +239,7 @@
 ## ADR-0043 — Python configs and tools live in devkit
 **Date:** 2026-09-24 · **Status:** Accepted
 
-- **Decision.** The shared configurations of the Python tools live in devkit, under `packages/python/`, beside the TypeScript ones.
+- **Decision.** The shared configurations of the Python tools live in devkit, under `packages/python/`, until a project needs them in the constitution's archive.
 
 ## ADR-0044 — The error and logging libraries get their own repository
 **Date:** 2026-09-24 · **Status:** Accepted
@@ -275,7 +275,7 @@
 ## ADR-0050 — Absence is undefined, and the tools hold it
 **Date:** 2026-09-26 · **Status:** Accepted
 
-- **Decision.** Internal code spells absence as `undefined`. `null` lives only in wire types and in the adapters, which map it to `undefined`, and where a platform API returns it, which the code compares and never passes on. The compiler runs with `exactOptionalPropertyTypes`; the linter forbids `==` with `null` and, through a GritQL rule, any `null` outside the adapters but a comparison. devkit's presets carry the three, so every project gets them.
+- **Decision.** Internal code spells absence as `undefined`. `null` lives only in wire types and in the adapters, which map it to `undefined`, and where a platform API returns it, which the code compares and never passes on. The compiler runs with `exactOptionalPropertyTypes`; the linter forbids `==` with `null` and, through a GritQL rule, any `null` outside the adapters but a comparison. The constitution's presets carry the three, so every project gets them.
 - **Rejected.** Holding the rule by review alone; banning every `null`, comparisons included.
 - **Why.** Two spellings of absence make every check ask twice, and a rule held only by review slips.
 
@@ -424,8 +424,8 @@
 ## ADR-0072 — A tool's configuration does not name the rules it holds
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** A tool block says which roles it checks and what its configuration holds. The configuration — a devkit preset, a project's own file — carries no link to the slugs of the rules it holds: no comment per setting, no rule named after its slug.
-- **Rejected.** Naming each setting's slug in a comment, or each dependency-cruiser rule after its slug: nothing would check the names, and they would drift.
+- **Decision.** A tool block says which roles it checks and what its configuration holds. The configuration — a preset, a project's own file — carries no comment per setting naming the rule it holds.
+- **Rejected.** Naming each setting's slug in a comment: nothing would check the names, and they would drift.
 - **Why.** The block's text is the one place the constitution and the tool meet; a second mapping in every configuration is a detail nobody keeps.
 
 ## ADR-0074 — betterleaks holds the secrets
@@ -434,20 +434,6 @@
 - **Decision.** The secrets role is held by betterleaks: the `betterleaks` block replaces `gitleaks`. The check scans the history the clone holds and the uncommitted changes, every report is redacted, and a false positive is allowed by `betterleaks:allow` or by its fingerprint in `.betterleaksignore`, each with its reason.
 - **Rejected.** gitleaks, which is feature-frozen; scanning `origin/main..HEAD`, which a clone of one commit cannot resolve; `betterleaks dir`, which reads ignored files such as a local `.env`.
 - **Why.** betterleaks is maintained by gitleaks' author, reads the same configuration and finds more; the scan the rules name then works on a laptop and on a shallow CI clone alike.
-
-## ADR-0075 — A tool outside the package manager takes its configuration from devkit's archive
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** The configuration of a tool that is not JavaScript — lefthook, betterleaks — comes from devkit's release archive, which mise installs pinned by version and checksum and links as the ignored `.devkit`; mise's `postinstall` hook also installs the git hooks. npm carries only the configuration of JavaScript and TypeScript tools.
-- **Rejected.** npm packages for those tools, which a repository of another language cannot take; a git submodule, which every clone and every CI checkout must fetch; lefthook's remotes, which put the version into every path and hide the files in `.git`; a branch of built files, which grows the history with each release.
-- **Why.** The configuration then arrives like the tools themselves — pinned, verified against its checksum, the same in every language — and a release can carry built files as well as sources.
-
-## ADR-0076 — The constitution ships the presets that name its folders in its release archive
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** A tool preset whose rules name the constitution's folders, files or suffixes ships with the constitution, in the version of its blocks, as `presets/` in its release archive `constitution.tar.gz`. A project installs the archive with mise and links it as `.constitution`, as it links devkit's archive as `.devkit`; the constitution links itself there. A spec fails when a preset names a folder or suffix the blocks do not write.
-- **Rejected.** Keeping the preset in devkit, where the folders are written a second time; exporting it from the constitution's package and taking it from git by tag, a second way beside devkit's archive; generating devkit's preset from the blocks.
-- **Why.** A folder renamed in a block and in its preset changes in one pull request and ships in one version, and the preset arrives like devkit's configuration — pinned, verified against its checksum, at one path.
 
 ## ADR-0077 — Tests that drive the built program live in `tests/` beside `src/`
 **Date:** 2026-09-28 · **Status:** Accepted
@@ -463,10 +449,10 @@
 - **Rejected.** Keeping `.spec`; `.test` for unit specs and `.spec` for end-to-end ones, a split no reader or tool knows; dropping the tail (`.e2e.ts`, `.integration.ts`), which no runner, knip or editor finds by default and which reads like a role of production code; dashes (`json-adapter-integration.test.ts`), which fold the role suffix into the name.
 - **Why.** `.test` is the spelling most of the React and Vitest ecosystem uses. The shared tail keeps every kind visible to every tool without configuration, while folders and explicit includes keep the runners apart.
 
-## ADR-0079 — mise takes the kit archives through its `github` backend
+## ADR-0079 — mise takes the release archive through its `github` backend
 **Date:** 2026-09-28 · **Status:** Accepted
 
-- **Decision.** mise installs devkit's and the constitution's release archives through its `github` backend: `asset_pattern` names the archive, `strip_components = 0` keeps its folders, and `mise.lock` holds the checksum GitHub publishes for the asset. This replaces the `http` backend of ADR-0075 and ADR-0076; the archives, their paths and their links stay as they were.
+- **Decision.** mise installs the constitution's release archive through its `github` backend: `asset_pattern` names the archive, `strip_components = 0` keeps its folders, and `mise.lock` holds the checksum GitHub publishes for the asset.
 - **Rejected.** The `http` backend, whose URL template and hand-copied checksum no dependency bot reads, so every release was bumped by hand.
 - **Why.** The pin is then a version alone, verified against the checksum the release itself publishes, and the dependency bot bumps the archive like any other tool.
 
@@ -480,7 +466,7 @@
 ## ADR-0081 — osv-scanner holds the audit, and any known vulnerability fails the check
 **Date:** 2026-09-28 · **Status:** Accepted
 
-- **Decision.** The `audit` role is held by osv-scanner: the `osv-scanner` block replaces `bun`'s `audit-in-the-check`. It checks the lockfiles of any language for known vulnerabilities and every licence against devkit's allowlist, in one run. `known-vulnerabilities-fail-the-check` now fails on a known vulnerability of any severity, not only a high or critical one; an accepted one is an `[[IgnoredVulns]]` entry with its reason and expiry. `audit` becomes a language-free role, as `names`, `secrets` and `commits` are: a block with no language, such as osv-scanner, holds it for every language.
+- **Decision.** The `audit` role is held by osv-scanner: the `osv-scanner` block replaces `bun`'s `audit-in-the-check`. It checks the lockfiles of any language for known vulnerabilities and every licence against the shared allowlist, in one run. `known-vulnerabilities-fail-the-check` now fails on a known vulnerability of any severity, not only a high or critical one; an accepted one is an `[[IgnoredVulns]]` entry with its reason and expiry. `audit` becomes a language-free role, as `names`, `secrets` and `commits` are: a block with no language, such as osv-scanner, holds it for every language.
 - **Rejected.** `bun audit --audit-level=high`, which checks no licence, reads only Bun's lockfile and keeps an accepted advisory as a bare `--ignore` flag with no reason or expiry; running both tools, since osv-scanner fails on a medium vulnerability all the same and each one would be recorded twice.
 - **Why.** One tool and one configuration hold vulnerabilities and licences in every language, and every exception carries its reason and date. osv-scanner has no severity floor, so the rule takes the stricter line rather than a second tool.
 
@@ -508,7 +494,7 @@
 ## ADR-0085 — No Vitest block until a project needs one
 **Date:** 2026-09-28 · **Status:** Accepted
 
-- **Decision.** The `vitest` block is removed. Every droneey project runs its specs with `bun test`; a Vitest block and devkit's Vitest preset come back together when a project needs them.
+- **Decision.** The `vitest` block is removed. Every droneey project runs its specs with `bun test`; a Vitest block and its preset come back together when a project needs them.
 - **Rejected.** Keeping the block while its preset does not exist, which states checks no tool performs.
 - **Why.** A block that names a preset nobody ships describes a check that never runs.
 
@@ -546,3 +532,9 @@
 - **Rejected.** Picking the words out of a markdown glossary by its file name; the words alone as the judge of an axis.
 - **Why.** A team with another architecture or workflow takes foundation as it is, so foundation must neither speak our words nor state our choices in plain ones.
 
+## ADR-0091 — The constitution's archive carries every tool configuration, laid out by axis
+**Date:** 2026-09-29 · **Status:** Accepted
+
+- **Decision.** devkit's presets, starter files and `mutation-check` move into the constitution, and its release archive `constitution.tar.gz` is the one way a project takes them, in any language: `presets/`, `templates/project/<block>/`, and `tools/mutation-check/dist/main.js`, built at release. A preset is split into parts, `presets/<tool>/<axis>/<block>.*`: the folder is the tool's block — `typescript` for the compiler's `tsconfig` — the axis folder is the axis of the rules the part holds, and the part is named after the block whose rules it holds, an abstract block's underscore included; the tool's own settings are `self`. A GritQL rule is `<axis>/plugins/<rule-slug>.grit`, and an architecture part narrows a foundation part's GritQL rule by listing the same path. mise's `tool-configuration-from-the-kit-archive` becomes `tool-configuration-from-the-constitution-archive`, and osv-scanner's `licences-checked-against-devkit-allowlist` becomes `licences-checked-against-the-shared-allowlist`. The node environment's parts are dropped; Python's configurations stay in devkit until a project needs them.
+- **Rejected.** npm packages for the TypeScript tools beside an archive for the rest, which released the same rule twice — most of devkit's changes came paired with one of the constitution's; splitting parts by language beside the blocks (`common/`, `typescript/`), a second division when the language is itself a block; naming the tool's own part after the tool, which reads `biome/foundation/biome.jsonc`; dropping an abstract block's underscore in its parts, which gives one block two names.
+- **Why.** A rule and the setting that holds it change in one pull request and ship in one version; a project that leaves an axis out leaves out its parts; and every part names the block that owns it, which a check can hold.

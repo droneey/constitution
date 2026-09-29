@@ -1,0 +1,35 @@
+# betterleaks 1.8.1's own prefilter with bun.lock added, as a prefilter here
+# replaces the default one; drop it once betterleaks/betterleaks#370 ships.
+prefilter = '''
+matchesAny(attributes["path"], [
+  `gitleaks\.toml`,
+  `(?i)\.(?:bmp|gif|jpe?g|png|svg|tiff?)$`,
+  `(?i)\.(?:eot|[ot]tf|woff2?)$`,
+  `(?i)\.(?:docx?|xlsx?|pdf|bin|socket|vsidx|v2|suo|wsuo|dll|pdb|exe|gltf)$`,
+  `go\.(?:mod|sum|work(?:\.sum)?)$`,
+  `(?:^|/)vendor/modules\.txt$`,
+  `(?:^|/)vendor/(?:github\.com|golang\.org/x|google\.golang\.org|gopkg\.in|istio\.io|k8s\.io|sigs\.k8s\.io)(?:/.*)?$`,
+  `(?:^|/)gradlew(?:\.bat)?$`,
+  `(?:^|/)gradle\.lockfile$`,
+  `(?:^|/)mvnw(?:\.cmd)?$`,
+  `(?:^|/)\.mvn/wrapper/MavenWrapperDownloader\.java$`,
+  `(?:^|/)node_modules(?:/.*)?$`,
+  `(?:^|/)(?:bun\.lockb?|deno\.lock|npm-shrinkwrap\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$`,
+  `(?:^|/)bower_components(?:/.*)?$`,
+  `(?:^|/)(?:angular|bootstrap|jquery(?:-?ui)?|plotly|swagger-?ui)[a-zA-Z0-9.-]*(?:\.min)?\.js(?:\.map)?$`,
+  `(?:^|/)javascript\.json$`,
+  `(?:^|/)(?:Pipfile|poetry)\.lock$`,
+  `(?i)(?:^|/)(?:v?env|virtualenv)/lib(?:64)?(?:/.*)?$`,
+  `(?i)(?:^|/)(?:lib(?:64)?/python[23](?:\.\d{1,2})+|python/[23](?:\.\d{1,2})+/lib(?:64)?)(?:/.*)?$`,
+  `(?i)(?:^|/)[a-z0-9_.]+-[0-9.]+\.dist-info(?:/.+)?$`,
+  `(?:^|/)vendor/(?:bundle|ruby)(?:/.*?)?$`,
+  `\.gem$`,
+  `verification-metadata\.xml`,
+  `Database.refactorlog`,
+  `(?:^|/)\.git$`
+])
+
+'''
+
+[extend]
+useDefault = true
