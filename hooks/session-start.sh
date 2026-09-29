@@ -24,6 +24,7 @@ input="$(tr -d '\r')" || fail 'cannot read the event on stdin'
 cwd="$(field cwd)" || fail 'cannot read cwd from the event'
 event="$(field hook_event_name)" || fail 'cannot read hook_event_name from the event'
 origin="$(field source)" || fail 'cannot read source from the event'
+session="$(field session_id)" || fail 'cannot read session_id from the event'
 
 # A start folder that does not exist holds no constitution.yaml. The walk goes
 # up the physical folders, as git does, so a link into a repository finds it.
@@ -101,7 +102,28 @@ export CONSTITUTION_ROOT="${root}" CONSTITUTION_PROJECT="${project}" \
   CONSTITUTION_INSTALLED="${installed}" CONSTITUTION_TODAY="${today}" \
   CONSTITUTION_EVENT="${event}" CONSTITUTION_STARTUP="${startup}"
 
-output="$(printf '%s\n%s' "${records}" "${files}" |
-  awk -f "${lib}/local-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null |
-  awk -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
+resolved="$(printf '%s\n%s' "${records}" "${files}" |
+  awk -f "${lib}/local-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
+output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
+
+# The later hooks and skills read the active set from the session's state and
+# never resolve again. A session id that is not a plain name writes nothing, and
+# a state that cannot be written costs only the reminders and the gate. A
+# resumed session keeps what it was already reminded of.
+save_state() {
+  state="${TMPDIR:-/tmp}/droneey-constitution/${session}"
+  mkdir -p "${state}" 2>/dev/null || return
+  {
+    printf 'project\t%s\n' "${project}"
+    printf '%s\n' "${resolved}" | awk -F '\t' '$1 == "check" || $1 == "active" || $1 == "headline"'
+  } >"${state}/active.tsv" 2>/dev/null
+  [ "${origin}" = resume ] || : >"${state}/reminded" 2>/dev/null
+}
+
+if [ "${event}" = SessionStart ]; then
+  case "${session}" in
+    '' | *[!A-Za-z0-9_-]*) ;;
+    *) save_state ;;
+  esac
+fi
 printf '%s\n' "${output}"

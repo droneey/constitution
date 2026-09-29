@@ -1005,7 +1005,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- config: constitution.yaml leaves check empty — name the command that runs every check',
+        '- config: constitution.yaml leaves check empty — name the command that runs every check, or write check: null',
       ],
     },
     {

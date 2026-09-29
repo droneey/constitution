@@ -11,6 +11,7 @@ import { join } from 'node:path';
 
 enum HookEvent {
   Startup = 'startup',
+  Resume = 'resume',
   Clear = 'clear',
   Compact = 'compact',
   Subagent = 'subagent',
@@ -26,8 +27,11 @@ interface HookCall {
   project: string;
   projectDir?: string | undefined;
   root: string;
+  session?: string | undefined;
   // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
+  // TMPDIR, where the hook keeps the session's state
+  stateRoot?: string | undefined;
 }
 
 interface HookRun {
@@ -58,11 +62,12 @@ const EXECUTABLE = 0o755;
 const eventOf = (input: {
   cwd: string;
   event: HookEvent;
+  session: string | undefined;
 }): Readonly<Record<string, string>> =>
   Object.fromEntries([
     [
       'session_id',
-      `session-${PLACEHOLDER}`,
+      input.session ?? `session-${PLACEHOLDER}`,
     ],
     [
       'transcript_path',
@@ -103,12 +108,16 @@ const inputOf = (input: {
   cwd: string;
   event: HookEvent;
   nonUtf8Byte: boolean;
+  session: string | undefined;
 }): Buffer => {
   const bytes = Buffer.from(JSON.stringify(eventOf(input)));
+  const placeholder = bytes.indexOf(PLACEHOLDER);
 
-  bytes[bytes.indexOf(PLACEHOLDER)] = input.nonUtf8Byte
-    ? NOT_UTF8
-    : PLACEHOLDER.charCodeAt(0);
+  if (placeholder >= 0) {
+    bytes[placeholder] = input.nonUtf8Byte
+      ? NOT_UTF8
+      : PLACEHOLDER.charCodeAt(0);
+  }
 
   return bytes;
 };
@@ -168,11 +177,20 @@ const runHook = (call: HookCall): HookRun => {
                 join(call.project, call.projectDir),
               ],
             ]),
+        ...(call.stateRoot === undefined
+          ? []
+          : [
+              [
+                'TMPDIR',
+                call.stateRoot,
+              ],
+            ]),
       ]),
       input: inputOf({
         cwd,
         event: call.event,
         nonUtf8Byte: call.nonUtf8Byte === true,
+        session: call.session,
       }),
     },
   );
