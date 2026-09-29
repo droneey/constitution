@@ -122,7 +122,7 @@ claude plugin marketplace add droneey/constitution
 claude plugin install constitution@droneey
 ```
 
-The marketplace serves the plugin from the tag of its latest release, which every release moves forward; `claude plugin marketplace update` pulls it.
+The marketplace serves the plugin from the tag of its latest release: each release commit writes its tag into `.claude-plugin/marketplace.json`, so `claude plugin marketplace update` brings a release, never unreleased work on `main`.
 
 ## 🛠️ Development
 
@@ -132,7 +132,10 @@ bun install                  # installs the git hooks
 bun run check                # lint, package manifests, types, tests with the coverage gate, mutation, then the blocks check
 bun run digests:write        # regenerate digests/ after a change to a block
 bun run build                # build tools/mutation-check/dist/main.js, as the release does
+claude --plugin-dir .        # a session on the working tree's plugin instead of the installed release
 ```
+
+The release commit writes the version into `package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand, and a session with `--plugin-dir .` runs the same version this repository pins.
 
 The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
 
