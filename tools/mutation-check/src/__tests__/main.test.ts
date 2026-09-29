@@ -15,6 +15,7 @@ import { describe, expect, test } from 'bun:test';
 
 interface Check {
   changes: Readonly<Record<string, string>>;
+  config?: Readonly<Record<string, string>>;
   mode?: 'all';
 }
 
@@ -25,10 +26,17 @@ interface Outcome {
 
 const MAIN = resolve(import.meta.dirname, '../main.ts');
 
-const BASE_FILES = {
+const SOURCE = {
   'src/order.utils.ts': 'export const total = 1;\nexport const count = 2;\n',
+};
+
+const CONFIG = {
   'stryker.config.mjs':
     "export default { mutate: ['src/**/*.ts', '!src/**/__tests__/**'] };\n",
+};
+
+const CHANGE = {
+  'src/order.utils.ts': 'export const total = 1;\nexport const count = 3;\n',
 };
 
 const git = (input: { args: readonly string[]; folder: string }): void => {
@@ -54,7 +62,10 @@ const runCheck = (check: Check): Outcome => {
   const bin = join(folder, '.bin');
 
   writeFiles({
-    files: BASE_FILES,
+    files: {
+      ...SOURCE,
+      ...(check.config ?? CONFIG),
+    },
     folder,
   });
   git({
@@ -160,6 +171,51 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBe(
       'run --mutate src/line.utils.ts,src/order.utils.ts:2-2',
     );
+  });
+
+  test('should mutate the changed line when the configuration is JSON', () => {
+    // Arrange
+    const check = {
+      changes: CHANGE,
+      config: {
+        'stryker.config.json': '{ "mutate": ["src/**/*.ts"] }\n',
+      },
+    };
+
+    // Act
+    const { strykerArguments } = runCheck(check);
+
+    // Assert
+    expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
+  });
+
+  test.each([
+    {
+      condition: 'names no patterns',
+      config: 'export default {};\n',
+    },
+    {
+      condition: 'names a pattern that is not text',
+      config: "export default { mutate: ['src/**/*.ts', 1] };\n",
+    },
+    {
+      condition: 'exports nothing by default',
+      config: 'export const mutate = [];\n',
+    },
+  ])('should run no mutant when the configuration $condition', ({ config }) => {
+    // Arrange
+    const check = {
+      changes: CHANGE,
+      config: {
+        'stryker.config.mjs': config,
+      },
+    };
+
+    // Act
+    const { strykerArguments } = runCheck(check);
+
+    // Assert
+    expect(strykerArguments).toBeUndefined();
   });
 
   test('should run no mutant when no mutated line changed', () => {

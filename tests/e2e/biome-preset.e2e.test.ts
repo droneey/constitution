@@ -372,6 +372,14 @@ describe('the Biome foundation parts', () => {
       rule: 'noExcessiveLinesPerFile',
     },
     {
+      condition: 'a value read from outside is cast to its type',
+      files: {
+        'src/main.ts':
+          'interface Order {\n  id: string;\n}\n\nexport const orderOf = (text: string): Order => JSON.parse(text) as Order;\n',
+      },
+      rule: 'noUnsafeTypeAssertion',
+    },
+    {
       condition: 'null is compared loosely',
       files: {
         'src/main.ts':
@@ -444,6 +452,22 @@ describe('the Biome foundation parts', () => {
 
     // Assert
     expect(rules).toContain(rule);
+  });
+
+  it('should report no cast when a value read from outside is narrowed by plain checks or held as a constant', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/main.ts':
+          "const STATUSES = ['open', 'closed'] as const;\n\nexport const statusOf = (text: string): (typeof STATUSES)[number] | undefined => {\n  const value: unknown = JSON.parse(text);\n\n  return STATUSES.find((status) => status === value);\n};\n",
+      },
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).not.toContain('noUnsafeTypeAssertion');
   });
 
   it.each([

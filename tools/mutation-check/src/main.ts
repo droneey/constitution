@@ -6,10 +6,6 @@ import { pathToFileURL } from 'node:url';
 
 import { mutateTargets } from './changes.ts';
 
-interface StrykerConfig {
-  mutate?: readonly string[];
-}
-
 const BASE = 'origin/main';
 
 const CONFIG_FILES = [
@@ -23,7 +19,19 @@ const git = (args: readonly string[]): string =>
     encoding: 'utf8',
   }).stdout;
 
-const loadConfig = async (): Promise<StrykerConfig> => {
+const mutatePatterns = (config: unknown): readonly string[] => {
+  const mutate =
+    typeof config === 'object' && config !== null && 'mutate' in config
+      ? config.mutate
+      : undefined;
+
+  return Array.isArray(mutate) &&
+    mutate.every((pattern) => typeof pattern === 'string')
+    ? mutate
+    : [];
+};
+
+const loadConfig = async (): Promise<unknown> => {
   const file = CONFIG_FILES.find((name) => existsSync(name));
 
   if (file === undefined) {
@@ -32,13 +40,15 @@ const loadConfig = async (): Promise<StrykerConfig> => {
     );
   }
 
-  return file.endsWith('.json')
-    ? (JSON.parse(readFileSync(file, 'utf8')) as StrykerConfig)
-    : (
-        (await import(pathToFileURL(resolve(file)).href)) as {
-          default: StrykerConfig;
-        }
-      ).default;
+  if (file.endsWith('.json')) {
+    return JSON.parse(readFileSync(file, 'utf8'));
+  }
+
+  const module: unknown = await import(pathToFileURL(resolve(file)).href);
+
+  return typeof module === 'object' && module !== null && 'default' in module
+    ? module.default
+    : undefined;
 };
 
 const runStryker = (args: readonly string[]): number =>
@@ -65,7 +75,7 @@ if (process.argv.includes('all')) {
       BASE,
     ]),
     exists: existsSync,
-    mutate: (await loadConfig()).mutate ?? [],
+    mutate: mutatePatterns(await loadConfig()),
     untracked: git([
       'ls-files',
       '--others',
