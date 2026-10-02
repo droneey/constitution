@@ -635,3 +635,15 @@
   - `integration-specs-run-apart` leaves out `tests/` as well, by `pathIgnorePatterns`, and names the integration run.
 - **Rejected.** A Stryker runner for Bun with per-test coverage: over 986 mutants it took 58 s against 52 s for the command runner, and it has one maintainer. The TypeScript checker: TypeScript 7.0 ships no compiler API until 7.1.
 - **Why.** A rule a tool claims to hold and does not is worse than a reviewed one: everyone trusts the check.
+
+## ADR-0106 — Value objects, thrown failures and the TypeScript rules of the 2026 audits
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - A business value with an invariant is a value object of the domain (`value-object-built-only-by-its-check`, MUST, on the architecture axis): built only by the domain's function that checks it, immutable, compared by value, never a class. A boundary gets one only through that function, and a zod schema never brands one itself. In TypeScript it is a branded type with `create<Name>` and `is<Name>`. A meaning without an invariant stays a vocabulary alias, and an existing alias is used instead of the bare type.
+  - Expected failures are thrown as errors of the kit, not returned: a contract lists them as one type beside it, a `catch` narrows by code and rethrows the rest, and only errors are thrown.
+  - A boolean is never positional; parameters of one type travel as one object or are told apart by their types.
+  - Shared shapes are composed of small ones; domain types are `readonly`; a type parameter appears twice; cancellation travels as an `AbortSignal`; resources are held by `using`; a module exports by name; text is made deliberately; a return type is no wider than what is returned; `process.env` is read only in the root and the entry files.
+  - Biome holds what it can: `useThrowOnlyError` and `noDefaultExport` move from the tool's own part to the TypeScript part that holds the rules, and `noBaseToString`, `noUnsafePlusOperands`, `noMisleadingReturnType` and `noProcessEnv` are added. Oxlint is not adopted (ADR-0045 stands).
+- **Rejected.** A `Result` type for expected failures: the owner keeps the language's own `throw` and `catch`. A value object as a class: its instance loses its methods in a cache, a URL and storage.
+- **Why.** The rozumchik-web audit found value objects unstated and rules about failure, arguments and types missing; the best-practices audit of 2026 found the rest.

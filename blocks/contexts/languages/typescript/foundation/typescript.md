@@ -63,18 +63,34 @@ Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefine
 | one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident. | tool/lint | [] |
 
 ## brand-is-an-intersection-or-unique-symbol → identifiers-branded-by-entity
-An identifier's brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol. An alias of the vocabulary stays a plain name, never branded.
+A brand — of an identifier, or of a value that keeps an invariant — is `string & { readonly __brand: 'OrderId' }` or a unique symbol. A vocabulary alias, which keeps no invariant, stays a plain name, never branded.
 
 | Why | Check | Tags |
 |---|---|---|
-| one form of brand reads the same in every file, and an alias of the vocabulary names a meaning, not a proof of where a value came from. | review | [] |
+| one form of brand reads the same in every file, and a brand is a proof a value passed its check, which a mere name does not give. | review | [] |
+
+## invariant-value-is-a-branded-type → invariant-values-are-plain-immutable-data
+A value that keeps an invariant is a branded type, built by `create<Name>`, which checks the invariant and throws the kit's error when it fails, and narrowed by `is<Name>`; never a class.
+
+```ts
+type Email = string & { readonly __brand: 'Email' };
+const isEmail = (text: string): text is Email => EMAIL.test(text);
+const createEmail = (text: string): Email => {
+  if (!isEmail(text)) throw new InvalidEmailError(text);
+  return text;
+};
+```
+
+| Why | Check | Tags |
+|---|---|---|
+| the brand is reachable only through the check, and the value stays a plain string every boundary can carry. | review | [] |
 
 ## semantic-alias-names-a-shared-meaning · SHOULD
-A semantic alias — `type Email = string` — is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string.
+A semantic alias — `type ChatTitle = string` — names a meaning without an invariant — a value that keeps one is branded instead; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type.
 
 | Why | Check | Tags |
 |---|---|---|
-| an alias names a meaning the program shares; one per string turns vocabulary into noise. | review | [] |
+| an alias names a meaning the program shares; one per string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. | review | [] |
 
 ## enums-for-named-value-groups · MUST
 A closed set of named values is a string `enum` — never a union of string literals, and never an `as const` array or object whose type names the set. Numbers another system defines — exit statuses, HTTP statuses — are a numeric `enum` with every value written, and an incoming number stays `number`, compared with the members. `as const` is for a single literal and for data that is not a set of names. A union's discriminant is an enum member when the enum owns the vocabulary, and a string literal otherwise.
@@ -169,6 +185,76 @@ A type derivable from an exported parent in one or two indexed accesses is deriv
 | Why | Check | Tags |
 |---|---|---|
 | an exported copy of a derivable type is one more name to keep in sync with its parent. | review | [] |
+
+## business-types-readonly → immutable-by-default
+The fields of a type of the program's business data are `readonly`, its lists `readonly T[]` and its maps `ReadonlyMap`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the compiler then refuses a mutation the domain never meant. | review | [] |
+
+## type-parameter-appears-twice · SHOULD
+A type parameter appears at least twice in its signature; one that appears once is its constraint written out.
+
+| Why | Check | Tags |
+|---|---|---|
+| a parameter used once relates nothing, and only lets a caller claim a type the function never checks. | review | [] |
+
+## text-made-deliberately · SHOULD
+A value becomes text through a function that names its form — a formatter, `String` of a primitive, a template of strings — never by `+` with a value that is not a string, or by an object's default `toString`.
+
+| Why | Check | Tags |
+|---|---|---|
+| `'Total: ' + order` prints `[object Object]`, and a number joined to a string is printed in no locale's form. | review | [] |
+
+## no-object-joined-into-text → text-made-deliberately
+No object reaches text through its default `toString`, by `+` or in a template, and `+` never mixes a `bigint` with a `number`.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are the joins that print `[object Object]` or throw at run time, which the linter can see from the types. | tool/lint | [] |
+
+## return-type-no-wider-than-returned · SHOULD
+A declared return type is no wider than what the function returns.
+
+| Why | Check | Tags |
+|---|---|---|
+| a wider annotation throws away what the compiler knew, and every caller narrows again. | review | [] |
+
+## return-union-lists-only-returned-members → return-type-no-wider-than-returned
+A union or literal a function declares as its return type lists no member, `undefined` aside, that the function never returns.
+
+| Why | Check | Tags |
+|---|---|---|
+| a member never returned is a case every caller handles for nothing, and the linter sees it from the returns. | tool/lint | [] |
+
+## no-literal-thrown → only-errors-thrown
+No literal, template or object literal is thrown.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are the thrown non-errors the linter can see without types; a variable holding one is left to review. | tool/lint | [] |
+
+## named-exports-only · MUST
+A module exports by name. A default export appears only in a configuration file a tool reads — `*.config.*`, `.*rc.*` — or where a framework reads one, and then its suppression says which.
+
+| Why | Check | Tags |
+|---|---|---|
+| one name for one thing in every import, so a rename reaches every place it is used. | tool/lint | [] |
+
+## cancellation-by-abort-signal → io-has-timeout-and-cancellation
+An operation that can be cancelled takes an `AbortSignal` in its options object and hands it to every I/O call it makes.
+
+| Why | Check | Tags |
+|---|---|---|
+| one signal from the caller stops all the work below it, and every API of the platform takes one. | review | [] |
+
+## resources-released-by-using · SHOULD
+A resource that must be released — a file handle, a lock, a subscription, a temporary folder — is held by `using` or `await using`, so it is released on every path.
+
+| Why | Check | Tags |
+|---|---|---|
+| a `finally` is forgotten on the next path added; `using` releases at the end of the scope whatever the path. | review | [] |
 
 ## options-object-typed-as-function-input → at-most-three-positional-arguments
 An object of values that travel together is typed by an interface named `<Function>Input`.

@@ -72,7 +72,6 @@
       "style": {
         "noParameterAssign": "error",
         "noNestedTernary": "error",
-        "useThrowOnlyError": "error",
         "useNumberNamespace": "error",
         "noMagicNumbers": "error",
         "useBlockStatements": "error",
@@ -87,7 +86,6 @@
         "useTrimStartEnd": "error",
         "noSubstr": "error",
         "noCommonJs": "error",
-        "noDefaultExport": "error",
         "noDoneCallback": "error",
         "noExportedImports": "error",
         "useNumericSeparators": "error",
@@ -166,25 +164,6 @@
     },
   },
   "overrides": [
-    {
-      "includes": [
-        "**/*.config.ts",
-        "**/*.config.js",
-        "**/*.config.mjs",
-        "**/*.config.cjs",
-        "**/.*rc.ts",
-        "**/.*rc.js",
-        "**/.*rc.mjs",
-        "**/.*rc.cjs",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "noDefaultExport": "off",
-          },
-        },
-      },
-    },
     {
       "includes": [
         "**/__tests__/**",

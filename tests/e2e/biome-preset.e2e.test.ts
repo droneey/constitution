@@ -743,6 +743,35 @@ describe('the Biome foundation parts', () => {
     expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
   });
 
+  it.each([
+    "z.string().brand<'Email'>()",
+    "z.string().email().brand('Email')",
+  ])(
+    'should report a plugin finding when a schema brands a value object with %s and a project extends the zod part',
+    (schema) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/features/accounts/adapters/api/models/account.model.ts': `import { z } from 'zod';\n\nexport const emailModel = ${schema};\n`,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'typescript/architecture/zod',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(
+        plugins.some((finding) =>
+          finding.startsWith('Build the value object through the domain'),
+        ),
+      ).toBe(true);
+    },
+  );
+
   it('should report a plugin finding when a response body is cast with .json<T>() and a project extends the ky part', () => {
     // Arrange
     const project = {
@@ -844,6 +873,72 @@ describe('the Biome part that needs each setting', () => {
         'typescript/foundation/dependency-cruiser',
       ],
       rule: 'noDefaultExport',
+    },
+    {
+      condition: 'a bigint is added to a number',
+      files: {
+        'src/main.ts':
+          'export const total = (count: number): bigint => 1n + count;\n',
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'noUnsafePlusOperands',
+    },
+    {
+      condition: 'an object is printed by its default toString',
+      files: {
+        'src/main.ts':
+          'interface Order {\n  id: string;\n}\n\nexport const label = (order: Order): string => `Order ${order}`;\n',
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'noBaseToString',
+    },
+    {
+      condition: 'a declared return type is wider than what is returned',
+      files: {
+        'src/main.ts':
+          'export const rank = (isFirst: boolean): number => (isFirst ? 0 : 1);\n',
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'noMisleadingReturnType',
+    },
+    {
+      condition: 'a string is thrown',
+      files: {
+        'src/main.ts':
+          "export const fail = (): never => {\n  throw 'broken';\n};\n",
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'useThrowOnlyError',
+    },
+    {
+      condition: 'a feature reads the environment',
+      files: {
+        'src/features/orders/order.ts':
+          "export const region = (): string => process.env['REGION'] ?? 'eu';\n",
+      },
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/typescript',
+      ],
+      rule: 'noProcessEnv',
+    },
+    {
+      condition: 'the root reads the environment',
+      files: {
+        'src/root/config.ts':
+          "export const region = (): string => process.env['REGION'] ?? 'eu';\n",
+      },
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/typescript',
+      ],
+      rule: 'noProcessEnv',
     },
     {
       condition: 'an element without children is closed by a tag',

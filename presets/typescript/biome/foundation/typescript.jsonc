@@ -64,6 +64,8 @@
         "useConsistentTypeDefinitions": "error",
         "useConsistentEnumValueType": "error",
         "useConsistentMethodSignatures": "error",
+        "useThrowOnlyError": "error",
+        "noDefaultExport": "error",
       },
       "complexity": {
         "noUselessUndefined": "error",
@@ -73,6 +75,9 @@
         "useExhaustiveSwitchCases": "error",
         "useNullishCoalescing": "error",
         "useExplicitType": "error",
+        "noUnsafePlusOperands": "error",
+        "noBaseToString": "error",
+        "noMisleadingReturnType": "error",
       },
     },
   },
@@ -93,6 +98,25 @@
     },
   ],
   "overrides": [
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
     {
       "includes": [
         "**/*.config.ts",
