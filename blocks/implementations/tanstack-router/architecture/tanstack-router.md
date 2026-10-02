@@ -28,7 +28,7 @@ Router primitives — `Link`, `useNavigate`, `useSearch`, `useParams` — are im
 
 | Why | Check | Tags |
 |---|---|---|
-| a presentational component that navigates works on one screen only. | tool/architecture | [] |
+| a presentational component that navigates works on one screen only. | tool/imports | [] |
 
 ## search-params-validated-by-schema → untrusted-input-parsed-at-edge
 Every route with search parameters validates them by a schema in `validateSearch`.

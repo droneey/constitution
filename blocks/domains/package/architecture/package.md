@@ -28,7 +28,7 @@ A package holds its manifest, its README, its licence, its `configs/` or `src/`,
 
 | Why | Check | Tags |
 |---|---|---|
-| packages that reach into each other cannot be released, versioned or replaced apart. | tool/architecture | [] |
+| packages that reach into each other cannot be released, versioned or replaced apart. | tool/imports | [] |
 
 ## Entries and consumers
 
@@ -37,7 +37,7 @@ A package ships configuration, primitives or tooling, never a product's business
 
 | Why | Check | Tags |
 |---|---|---|
-| a package that knows its consumer changes whenever the consumer does, and serves no one else. | tool/architecture | [] |
+| a package that knows its consumer changes whenever the consumer does, and serves no one else. | tool/imports | [] |
 
 ## package-entries-curated → access-only-through-curated-surface
 The manifest lists every entry a consumer may use and nothing else, and names the files it ships.
@@ -51,7 +51,7 @@ A consumer imports a package by an entry its manifest lists, never by a path ins
 
 | Why | Check | Tags |
 |---|---|---|
-| a path inside a package is not part of its contract, and the next release may move it. | tool/architecture | [] |
+| a path inside a package is not part of its contract, and the next release may move it. | tool/imports | [] |
 
 ## consumers-extend-never-copy · SHOULD
 Consumers extend a package's entries; they never copy its files.

@@ -48,7 +48,7 @@ A rule's Check is `test`, `review`, or `tool/<role>`. A rule names the role of t
 | `format` | the code is formatted |
 | `lint` | code-level rules hold |
 | `types` | the types check |
-| `architecture` | imports follow the layers |
+| `imports` | imports follow the layers |
 | `names` | files and folders follow the vocabulary; any language |
 | `unused` | no unused file, dependency or code |
 | `versions` | each dependency has one version |

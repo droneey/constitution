@@ -47,35 +47,35 @@ A program's source is laid out by concern in the folders of the top-level tree, 
 
 | Why | Check | Tags |
 |---|---|---|
-| the root knows every concrete choice; code that imports it depends on all of them and can no longer be tested with fakes. | tool/architecture | [] |
+| the root knows every concrete choice; code that imports it depends on all of them and can no longer be tested with fakes. | tool/imports | [] |
 
 ## nothing-imports-an-entrypoint · MUST
 No code imports an entrypoint. An entrypoint composes features through their surfaces, `shared/` and `libs/`, and holds everything that ships only in its artifact.
 
 | Why | Check | Tags |
 |---|---|---|
-| an entrypoint is a separate artifact; importing it drags that artifact into another one. | tool/architecture | [] |
+| an entrypoint is a separate artifact; importing it drags that artifact into another one. | tool/imports | [] |
 
 ## kernel-imports-only-itself · MUST
 `kernel/` imports only itself. It holds business types and values every feature shares — money, an email address, a date range — and structural contracts such as a paginated result.
 
 | Why | Check | Tags |
 |---|---|---|
-| everything depends on the kernel, so it must depend on nothing that changes. | tool/architecture | [] |
+| everything depends on the kernel, so it must depend on nothing that changes. | tool/imports | [] |
 
 ## libs-import-no-application-code · MUST
 `libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/` or `root/` — and knows nothing of the repository that uses it.
 
 | Why | Check | Tags |
 |---|---|---|
-| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool/architecture | [] |
+| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool/imports | [] |
 
 ## shared-imports-no-feature-or-root · MUST
 `shared/` imports no feature and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
 
 | Why | Check | Tags |
 |---|---|---|
-| plumbing that knows a feature is part of that feature, and every other feature that uses it depends on it too. | tool/architecture | [] |
+| plumbing that knows a feature is part of that feature, and every other feature that uses it depends on it too. | tool/imports | [] |
 
 ## kernel-or-shared-by-meaning · SHOULD
 A shared piece with business meaning goes to `kernel/`; one without goes to `shared/`; one that would make sense in any program goes to `libs/`. Each is created by symptom, when a second feature needs it, and `kernel/` stays small.
@@ -145,14 +145,14 @@ A contract — a port, its parameters and results — imports no vendor, no adap
 
 | Why | Check | Tags |
 |---|---|---|
-| a contract that knows a vendor ties every implementation to it, and the domain that declares it along with them. | tool/architecture | [] |
+| a contract that knows a vendor ties every implementation to it, and the domain that declares it along with them. | tool/imports | [] |
 
 ## adapters-never-import-each-other-or-callers · MUST
 An adapter imports its contracts, `kernel/` and `libs/`, and never a feature's application layer, the delivery layer or another adapter. What two adapters share lives in `libs/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| adapters that know each other or their callers form a second, hidden program beside the domain. | tool/architecture | [] |
+| adapters that know each other or their callers form a second, hidden program beside the domain. | tool/imports | [] |
 
 ## feature-speaks-in-its-own-contracts · SHOULD
 A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature's surface.
@@ -177,7 +177,7 @@ A file never imports the surface of the module it belongs to.
 
 | Why | Check | Tags |
 |---|---|---|
-| a module that imports its own surface imports itself, and that is where a cycle begins. | tool/architecture | [] |
+| a module that imports its own surface imports itself, and that is where a cycle begins. | tool/imports | [] |
 
 ## layer-folder-has-no-surface · MUST
 A layer folder — `domain/`, `app/`, `adapters/`, `src/`, `features/`, `libs/` — has no surface and is never an import target. A caller imports the role folder inside it, so the feature's root surface is the only one that re-exports a whole feature.
@@ -191,7 +191,7 @@ A layer folder is never an import target, and a feature's `domain/` has no surfa
 
 | Why | Check | Tags |
 |---|---|---|
-| an import then names the role it couples to. | tool/architecture | [] |
+| an import then names the role it couples to. | tool/imports | [] |
 
 ## surface-only-re-exports · MUST
 A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
@@ -317,4 +317,4 @@ A file in a role folder — `entities/`, `contracts/`, `errors/`, `models/`, `re
 
 ## The layer matrix
 
-The import rules of this chapter, with the laws of `principles`, are the layer matrix. Each is stated once, with the check `tool/architecture`; the tool that holds the role is configured for the project's layers from a shared preset, and nothing is generated into the project. The language block names the source root, the surface file and the suffix form.
+The import rules of this chapter, with the laws of `principles`, are the layer matrix. Each is stated once, with the check `tool/imports`; the tool that holds the role is configured for the project's layers from a shared preset, and nothing is generated into the project. The language block names the source root, the surface file and the suffix form.
