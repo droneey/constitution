@@ -6,6 +6,7 @@
       },
       "correctness": {
         "useUniqueElementIds": "error",
+        "useImageSize": "error",
       },
       "security": {
         "noDangerouslySetInnerHtmlWithChildren": "error",
@@ -40,13 +41,13 @@
         "noNoninteractiveElementToInteractiveRole": "error",
       },
       "nursery": {
-        "noInlineStyles": "error",
         "useControlLabel": "error",
         "noInvalidFileInputAccept": "error",
       },
     },
   },
   "plugins": [
+    "./.constitution/presets/typescript/biome/foundation/plugins/no-inline-style.grit",
     "./.constitution/presets/typescript/biome/foundation/plugins/labels-bound-with-use-id.grit",
     "./.constitution/presets/typescript/biome/foundation/plugins/fields-declare-autocomplete.grit",
   ],

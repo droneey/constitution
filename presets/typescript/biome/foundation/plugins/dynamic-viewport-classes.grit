@@ -9,6 +9,6 @@ or {
     `twMerge($...)`
   } as $classes where { $classes <: not within jsx_attribute() }
 } where {
-  $classes <: r"(?s).*\bh-screen\b.*",
-  register_diagnostic(span=$classes, message="Size to the dynamic viewport with h-dvh: h-screen ignores the phone's toolbars", severity="error")
+  $classes <: r"(?s).*\b[hw]-screen\b.*",
+  register_diagnostic(span=$classes, message="Size to the small viewport with h-svh, or to the container: h-screen and w-screen ignore the phone's toolbars and the scrollbar", severity="error")
 }

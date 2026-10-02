@@ -1,7 +1,7 @@
 # Storybook
 
 ## story-for-every-kit-state · SHOULD
-Every UI-kit component has `<name>.stories.tsx` beside it, with a story per variant and state — disabled, loading, error, empty, long text, both themes. A story never replaces the spec.
+Every UI-kit component has `<name>.stories.tsx` beside it, with a story per variant and state — disabled, loading, error, empty, long text — each shown in every theme through the theme global. A story never replaces the spec.
 
 | Why | Check | Tags |
 |---|---|---|

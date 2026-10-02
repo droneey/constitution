@@ -17,7 +17,7 @@ The order of the layers is declared once, at the top of the entry stylesheet, be
 | one line then says which styles win over which, and a layer filled before it is declared would take its place in the order by accident. | review | [] |
 
 ## no-important-declarations · MUST
-No declaration is `!important`; a rule that must win sits in a later layer.
+No declaration is `!important`; a rule that must win sits in a later layer. The one exception is the lowest layer, the one that resets the defaults, for a user preference such as reduced motion and for `[hidden]`, and its suppression says so.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -54,7 +54,7 @@ A custom property is declared before it is read and read through `var()`, and a 
 | an undeclared property resolves to nothing, silently. | tool/lint | [] |
 
 ## baseline-features-only · SHOULD
-A stylesheet uses only features that are Baseline widely available.
+A stylesheet uses only features that are Baseline widely available, or newly available ones behind a feature query with a fallback.
 
 | Why | Check | Tags |
 |---|---|---|

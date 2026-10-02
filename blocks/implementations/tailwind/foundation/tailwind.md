@@ -22,7 +22,7 @@ A utility with no token behind it — `flex`, `items-center`, `truncate` — is 
 | every visual value stays a token, and layout plumbing stays plain. | review | [ux] |
 
 ## cascading-variants-in-utilities → cascading-variant-by-data-attribute
-A cascading variant is a `data-*` attribute on the root, resolved by an `@utility` rule, and never passed down as a prop.
+A cascading variant is a `data-*` attribute on the root, resolved by a `@custom-variant` or the `in-data-*` variant, and never passed down as a prop.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -36,18 +36,18 @@ A component's own variants are one `cva` map, which types the props through `Var
 | a second declaration of an axis drifts from the map, and a class decided outside the map is a variant nobody can find. | review | [] |
 
 ## mobile-first-breakpoints → mobile-first-additive-breakpoints · MUST
-Base classes serve small screens and are widened by `md:`, `lg:` and `xl:`; `max-*:` is forbidden.
+No class opens with a `max-*:` variant: base classes serve small screens and are widened by `md:`, `lg:` and `xl:`, and a range is bounded after its minimum, as in `md:max-lg:`.
 
 | Why | Check | Tags |
 |---|---|---|
 | styles that only widen never undo each other, and the smallest screen is always the base. | tool/lint | [] |
 
 ## dynamic-viewport-classes → dynamic-viewport-units
-Viewport heights use the dynamic units (`h-dvh`), never `h-screen`.
+No class sizes with `h-screen` or `w-screen`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `h-screen` is `100vh`, which ignores the browser's own toolbars on phones. | tool/lint | [] |
+| `h-screen` is `100vh`, which ignores the browser's own toolbars on phones, and `w-screen` is `100vw`, which overflows beside a scrollbar. | tool/lint | [] |
 
 ## dark-theme-redefines-tokens → light-and-dark-one-token-set
 Dark mode redefines the semantic tokens under one selector; a component writes `dark:` only where no token can say it.
@@ -55,3 +55,17 @@ Dark mode redefines the semantic tokens under one selector; a component writes `
 | Why | Check | Tags |
 |---|---|---|
 | components written against tokens switch theme without a line of their own. | review | [] |
+
+## class-merger-knows-the-theme → utilities-only-from-tokens · MUST
+The class merger is configured with every scale the theme defines, and a spec proves that two classes of different groups both survive a merge.
+
+| Why | Check | Tags |
+|---|---|---|
+| with the default scales reset, the merger cannot tell a size from a colour of the theme and silently drops one of them. | test | [ux] |
+
+## tailwind-layers-are-the-order → layer-order-declared-once
+The order of the layers is Tailwind's — `theme, base, components, utilities` — with the project's layers named among them. Tailwind is imported layer by layer (`@import "tailwindcss/theme.css" layer(theme)` and the rest), and any other stylesheet from outside into a layer of its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| Tailwind declares its layers itself; a second order would fight it. | review | [] |

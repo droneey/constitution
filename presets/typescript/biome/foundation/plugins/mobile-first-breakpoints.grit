@@ -9,6 +9,6 @@ or {
     `twMerge($...)`
   } as $classes where { $classes <: not within jsx_attribute() }
 } where {
-  $classes <: r"(?s).*\bmax-\S*:.*",
-  register_diagnostic(span=$classes, message="Widen from the small screen with md:, lg: and xl:: a max-* breakpoint undoes the base", severity="error")
+  $classes <: r"(?s)(?:.*[\s\x22\x27\x60])?max-[^\s:]*:.*",
+  register_diagnostic(span=$classes, message="Widen from the small screen with md:, lg: and xl:: a max-* breakpoint alone undoes the base; bound a range after a minimum, as md:max-lg:", severity="error")
 }

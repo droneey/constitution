@@ -3,7 +3,7 @@
 ## Screens
 
 ## four-data-states · MUST
-Every data view shows four states: loading, empty, error and content.
+Every data view shows loading, error and content, and the empty or not-found state its data can have.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -26,21 +26,28 @@ A button names its result, verb and object — never "Submit" or "OK". "Cancel" 
 ## Components
 
 ## compose-before-authoring · SHOULD
-A need is met by existing components first, then by extending a primitive, and only then by a new primitive that is composed in. A primitive's markup is never re-created.
+A need is met by existing components first, then by extending a primitive, and only then by a new primitive that is composed in.
 
 | Why | Check | Tags |
 |---|---|---|
 | each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | review | [ux] |
 
+## primitive-markup-never-recreated → compose-before-authoring · MUST
+A primitive's markup is never re-created: a need it does not meet extends it, or a new primitive is composed beside it.
+
+| Why | Check | Tags |
+|---|---|---|
+| each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | review | [ux, a11y] |
+
 ## complex-patterns-on-accessible-primitives · MUST
-A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the accessible primitive library, never by hand.
+A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the platform's own element where it carries the whole pattern — `<dialog>`, `popover`, `<details>` — and otherwise on the accessible primitive library; never with roles and keys written by hand.
 
 | Why | Check | Tags |
 |---|---|---|
 | these patterns carry keyboard, focus and announcement behaviour that hand-built versions almost always get wrong. | review | [a11y, ux] |
 
 ## compound-over-prop-regions · SHOULD
-A component with a second region, an optional part or a slot is a compound: a root with named parts, its content passed as children. A leaf stays a leaf; a recurring arrangement becomes a component of its own.
+A component with a second region, an optional part or a slot is a compound: a root with named parts, its content passed as children. A leaf stays a leaf; a recurring arrangement becomes a component of its own. The signs that call for one: a `withX` or `hasX` switch that adds a part, an array prop mapped into children, a child prop named after a position.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -54,7 +61,7 @@ The root of a compound owns the choreography of its animated regions and shares 
 | regions that animate on their own drift out of step; one owner keeps them in time. | review | [ux] |
 
 ## boolean-props-prefixed → booleans-read-as-predicates · MUST
-A boolean prop starts with `is` for a state, `has` for content, `with` for an opt-in part, `should` for a policy, or `as` for a polymorphic render; never a bare, mixed or negated name.
+A boolean prop starts with `is` for a state, `has` for content, `with` for an opt-in part, `should` for a policy, or `as` for a polymorphic render; never a bare, mixed or negated name, except a name the platform's element or the primitive library already gives the same meaning — `disabled`, `open`, `checked`, `required`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -123,6 +130,26 @@ Every target meets the platform's minimum size, counting its padding.
 |---|---|---|
 | a target smaller than a finger or a tremor allows is missed, and the wrong action runs. | review | [a11y, ux] |
 
+## stateful-component-controllable-or-not · SHOULD
+A component that holds a value can be driven from outside or left to itself through one interface — the value, its initial value and a change callback — and never switches between the two.
+
+| Why | Check | Tags |
+|---|---|---|
+| one interface serves the screen that owns the value and the one that does not, and a component that switches loses or fights the value. | review | [ux] |
+
+## primitive-passes-its-element-through · SHOULD
+A primitive accepts its element's own props and reference, and merges its own props and handlers with the caller's.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it every consumer wraps or forks the primitive for one attribute. | review | [ux] |
+
+## loading-never-replaces-shown-content · SHOULD
+A refetch or a transition keeps the content already shown in place, and a first-load indicator appears only after a short delay, in the content's own space.
+
+| Why | Check | Tags |
+|---|---|---|
+| content that blinks to a skeleton on every refresh reads as a failure, and a late indicator that moves the layout makes the user lose their place. | review | [ux] |
 ## How a user interface is proven
 
 ## screen-spec-proves-states-and-interactions → spec-per-boundary

@@ -51,6 +51,19 @@ Durations and easings are tokens of two kinds, micro and macro; motion driven fr
 |---|---|---|
 | motion defined in one place feels consistent and can be turned off in one place. | review | [ux, a11y] |
 
+## theme-follows-system-until-chosen → light-and-dark-one-token-set
+The theme follows the system's preference until the user chooses one; the choice persists and is applied before the first paint.
+
+| Why | Check | Tags |
+|---|---|---|
+| a theme applied after the first paint flashes the wrong one, and a choice lost on reload is a choice the user makes every visit. | review | [ux] |
+
+## tokens-kept-in-the-interchange-format → tokens-single-source-of-appearance
+Where a design tool or a second platform reads the tokens, their source is the design-token interchange format, and every output is generated from it.
+
+| Why | Check | Tags |
+|---|---|---|
+| one source the design tool and every platform read keeps them the same; a project with one product and one platform may keep its tokens in the theme module alone. | review | [ux] |
 ## Requirements for implementation
 
 What any styling library must provide.

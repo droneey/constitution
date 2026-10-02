@@ -991,6 +991,11 @@ describe('the Biome css part', () => {
       rule: 'noImportantStyles',
     },
     {
+      condition: 'a stylesheet writes a hexadecimal colour',
+      css: '@layer components {\n  .card {\n    color: #102030;\n  }\n}\n',
+      rule: 'noHexColors',
+    },
+    {
       condition: 'a selector holds four classes',
       css: '@layer components {\n  .card .title .label .icon {\n    color: var(--color-text);\n  }\n}\n',
       rule: 'noExcessiveSelectorClasses',
@@ -1045,6 +1050,41 @@ describe('the Biome css part', () => {
     // Assert
     expect(rules).toContain(rule);
   });
+
+  it.each([
+    {
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'css/foundation/css',
+      ],
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'css/foundation/css',
+        'css/architecture/ui',
+      ],
+    },
+  ])(
+    'should report noHexColors $isReported when the theme writes a hexadecimal colour and a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/libs/ui/theme/theme.css': `${LAYERED}@layer components {\n  .card {\n    color: #102030;\n  }\n}\n`,
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noHexColors')).toBe(isReported);
+    },
+  );
 
   it('should report a plugin finding when a stylesheet styles an element by its id', () => {
     // Arrange
@@ -1250,9 +1290,15 @@ describe('the Biome framework parts', () => {
       rule: 'noDangerouslySetInnerHtmlWithChildren',
     },
     {
-      condition: 'an element takes an inline style',
-      source: component("<div style={{ color: 'red' }} />"),
-      rule: 'noInlineStyles',
+      condition: 'a component assigns to its props',
+      source:
+        'export function Panel(props: { size: number }): React.ReactElement {\n  props.size = 2;\n\n  return <div />;\n}\n',
+      rule: 'noReactPropAssignments',
+    },
+    {
+      condition: 'an image declares no size',
+      source: component("<img alt='Logo' src='/logo.svg' />"),
+      rule: 'useImageSize',
     },
     {
       condition: 'a class carries an arbitrary value',
@@ -1596,7 +1642,7 @@ describe('the Biome framework parts', () => {
       files: {
         'src/panel.tsx': component("<main className='min-h-screen' />"),
       },
-      message: 'Size to the dynamic viewport with h-dvh',
+      message: 'Size to the small viewport with h-svh',
     },
     {
       condition: 'a variant map sizes with h-screen',
@@ -1604,7 +1650,44 @@ describe('the Biome framework parts', () => {
         'src/panel.variants.ts':
           "import { cva } from 'class-variance-authority';\n\nexport const panelVariants = cva('flex h-screen');\n",
       },
-      message: 'Size to the dynamic viewport with h-dvh',
+      message: 'Size to the small viewport with h-svh',
+    },
+    {
+      condition: 'a class list sizes with w-screen',
+      files: {
+        'src/panel.tsx': component("<main className='w-screen' />"),
+      },
+      message: 'Size to the small viewport with h-svh',
+    },
+    {
+      condition: 'an inline style comes from a variable',
+      files: {
+        'src/panel.tsx':
+          "const look = { color: 'red' };\n\nexport function Panel(): React.ReactElement {\n  return <div style={look} />;\n}\n",
+      },
+      message: 'Pass the value as a custom property',
+    },
+    {
+      condition: 'an inline style spreads another object',
+      files: {
+        'src/panel.tsx': component("<div style={{ ...{ color: 'red' } }} />"),
+      },
+      message: 'Pass the value as a custom property',
+    },
+    {
+      condition: 'an inline style uses a shorthand property',
+      files: {
+        'src/panel.tsx':
+          'export function Panel({ top }: { top: number }): React.ReactElement {\n  return <div style={{ top }} />;\n}\n',
+      },
+      message: 'Pass the value as a custom property',
+    },
+    {
+      condition: 'an element takes an inline visual value',
+      files: {
+        'src/panel.tsx': component("<div style={{ color: 'red' }} />"),
+      },
+      message: 'Pass the value as a custom property',
     },
     {
       condition: 'a class list narrows with a max-* breakpoint',
@@ -1651,6 +1734,25 @@ describe('the Biome framework parts', () => {
       condition: 'a class list sizes to the dynamic viewport',
       files: {
         'src/panel.tsx': component("<main className='h-dvh' />"),
+      },
+    },
+    {
+      condition: 'a component renders nothing',
+      files: {
+        'src/panel.tsx':
+          'export function Panel(): React.ReactNode {\n  return null;\n}\n',
+      },
+    },
+    {
+      condition: 'an inline style sets only a custom property',
+      files: {
+        'src/panel.tsx': component("<div style={{ '--progress': '50%' }} />"),
+      },
+    },
+    {
+      condition: 'a max-* breakpoint bounds a range after a minimum',
+      files: {
+        'src/panel.tsx': component("<main className='md:max-lg:hidden' />"),
       },
     },
     {

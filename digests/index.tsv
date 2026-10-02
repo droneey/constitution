@@ -52,7 +52,7 @@ block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities 
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
-block	shadcn	implementation	UI kit from shadcn source on Radix primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
+block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md		_react		false						**/*.stories.tsx .storybook/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.	foundation/stryker.md	foundation/bun-test	typescript		false		mutation	typescript			stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
@@ -392,6 +392,7 @@ rule	four-data-states	ui	blocks/domains/ui/foundation/ui.md		MUST	test			ux a11y
 rule	state-messages-guide-the-user	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	button-names-its-result	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	compose-before-authoring	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	primitive-markup-never-recreated	ui	blocks/domains/ui/foundation/ui.md		MUST	review			ux a11y	foundation	compose-before-authoring	true
 rule	complex-patterns-on-accessible-primitives	ui	blocks/domains/ui/foundation/ui.md		MUST	review			a11y ux	foundation		true
 rule	compound-over-prop-regions	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	compound-root-owns-choreography	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
@@ -405,6 +406,9 @@ rule	components-size-to-their-container	ui	blocks/domains/ui/foundation/ui.md		S
 rule	drag-shows-its-state	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	fast-source-updates-once-per-frame	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			performance	foundation		true
 rule	targets-meet-platform-minimum	ui	blocks/domains/ui/foundation/ui.md		MUST	review			a11y ux	foundation		true
+rule	stateful-component-controllable-or-not	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	primitive-passes-its-element-through	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	loading-never-replaces-shown-content	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			ux testing	foundation	spec-per-boundary	false
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			a11y testing	foundation	spec-per-boundary	false
 rule	elements-found-by-role-label-text	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			a11y testing	foundation	assert-what-a-caller-observes	false
@@ -419,6 +423,8 @@ rule	light-and-dark-one-token-set	ui	blocks/domains/ui/foundation/design-system.
 rule	variant-axis-declared-once-in-map	ui	blocks/domains/ui/foundation/design-system.md		MUST	review			ux	foundation		true
 rule	cascading-variant-set-once-on-ancestor	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux	foundation		true
 rule	motion-from-tokens	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux a11y	foundation		true
+rule	theme-follows-system-until-chosen	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux	foundation	light-and-dark-one-token-set	false
+rule	tokens-kept-in-the-interchange-format	ui	blocks/domains/ui/foundation/design-system.md		MUST	review			ux	foundation	tokens-single-source-of-appearance	false
 rule	ui-styling-restricted-to-tokens	ui	blocks/domains/ui/foundation/design-system.md		MUST	review			ux	foundation		true
 rule	ui-styling-one-set-for-themes	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux	foundation		true
 rule	ui-styling-container-queries	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux	foundation		true
@@ -435,6 +441,7 @@ rule	view-state-homes	ui	blocks/domains/ui/architecture/ui.md		MUST	review			dat
 rule	form-reuses-domain-predicates	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			data	architecture	invariant-checked-at-construction	false
 rule	component-home-by-knowledge	ui	blocks/domains/ui/architecture/ui.md		MUST	review				architecture	code-lives-with-its-reason-to-change	false
 rule	component-named-by-location	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	folder-named-for-purpose-or-role	false
+rule	root-components-prefixed	ui	blocks/domains/ui/architecture/ui.md		SHOULD	tool	names			architecture	component-named-by-location	false
 rule	widget-folder-ends-in-widget	ui	blocks/domains/ui/architecture/ui.md		SHOULD	tool	names			architecture	component-named-by-location	false
 rule	components-dumb-widgets-smart	ui	blocks/domains/ui/architecture/ui.md		MUST	review				architecture	side-effects-at-the-edges	false
 rule	components-never-import-widgets	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture	components-dumb-widgets-smart	false
@@ -446,6 +453,7 @@ rule	component-folders-hold-their-files	ui	blocks/domains/ui/architecture/ui.md	
 rule	vendored-component-placed-by-its-home	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux	architecture	vendored-components-adapted-on-arrival	false
 rule	store-never-replaces-a-drilled-prop	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	props-drilled-at-most-two-levels	false
 rule	primitives-take-text-by-props	ui	blocks/domains/ui/architecture/ui.md		MUST	review			ux	architecture	libs-import-no-application-code	false
+rule	theme-in-the-design-system-library	ui	blocks/domains/ui/architecture/ui.md		MUST	review			ux	architecture	tokens-single-source-of-appearance	false
 rule	data-result-is-union-by-status	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	review			ux	foundation	illegal-states-unrepresentable	false
 rule	optimistic-writes-in-rollback-lifecycle	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	review			data	foundation		true
 rule	optimistic-lifecycle-safe-under-concurrency	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			data	foundation		true
@@ -494,6 +502,7 @@ rule	no-browser-globals-during-render	browser	blocks/contexts/platforms/browser/
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
 rule	bundle-reads-no-build-environment	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	tool	types		security	foundation	runtime-configuration-served-beside-bundle	false
 rule	bundle-size-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			performance	foundation		true
+rule	core-web-vitals-within-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	review			performance ux	foundation		true
 rule	server-rendering-is-delivery-only	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review				architecture		true
 rule	served-configuration-read-at-boot	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	environment-read-once-at-boot	true
 rule	cross-window-messages-check-origin	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	untrusted-input-parsed-at-edge	false
@@ -509,6 +518,8 @@ rule	dynamic-viewport-units	browser	blocks/contexts/platforms/browser/foundation
 rule	targets-at-least-24-css-px	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation	targets-meet-platform-minimum	false
 rule	images-sized-for-density	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			performance ux	foundation		true
 rule	content-avoids-the-fold	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation		true
+rule	primitive-passes-class-and-data-slot	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation	primitive-passes-its-element-through	false
+rule	images-declare-their-size	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			performance ux	foundation	core-web-vitals-within-budget	false
 rule	url-holds-shareable-view-state	browser	blocks/contexts/platforms/browser/architecture/with/ui.md	ui	MUST	review			ux data	architecture	view-state-homes	false
 rule	document-metadata-owned-by-screen	browser	blocks/contexts/platforms/browser/architecture/with/ui.md	ui	SHOULD	review				architecture		true
 rule	exit-codes-from-one-map	cli	blocks/contexts/platforms/cli/foundation/cli.md		MUST	test			errors ux	foundation		true
@@ -558,6 +569,8 @@ rule	logical-properties-for-direction	css	blocks/contexts/languages/css/foundati
 rule	cascading-variant-by-data-attribute	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	SHOULD	review		css	ux	foundation	cascading-variant-set-once-on-ancestor	false
 rule	stylesheet-values-from-theme-properties	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	tokens-single-source-of-appearance	false
 rule	custom-properties-spell-their-token	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	token-grammar-and-layers	false
+rule	color-scheme-declared-on-root	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	theme-follows-system-until-chosen	true
+rule	no-literal-colour-outside-the-theme	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	tool	lint	css	ux	foundation	stylesheet-values-from-theme-properties	false
 rule	component-styles-in-its-folder	css	blocks/contexts/languages/css/architecture/with/ui.md	ui	MUST	review		css		architecture	component-in-its-own-folder	false
 rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation		true
 rule	file-named-after-its-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	file-is-one-semantic-unit	false
@@ -611,6 +624,8 @@ rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript		foundation		true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
 rule	react-compiler-on	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	performance	foundation		true
+rule	render-is-pure	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
+rule	props-never-assigned	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	render-is-pure	false
 rule	no-manual-memoisation	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	performance	foundation	suppression-states-its-reason	false
 rule	modern-react-api-only	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	legacy-react-api-refused	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	modern-react-api-only	false
@@ -618,16 +633,21 @@ rule	function-components-only	_react	blocks/implementations/_react/foundation/_r
 rule	hooks-at-top-level	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	errors	foundation		true
 rule	no-component-defined-inside-component	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	errors performance	foundation		true
 rule	list-keys-from-identity	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	tool	lint	typescript	errors	foundation		true
+rule	components-named-in-pascal-case	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript		foundation	identifier-case-by-kind	false
+rule	nothing-rendered-as-null	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	data	foundation	absence-has-one-value	false
 rule	effects-only-for-external-systems	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	effect-cleans-up-and-cancels	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	errors performance	foundation	io-has-timeout-and-cancellation	true
 rule	async-ui-state-through-actions	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation		true
 rule	fast-source-batched-in-its-hook	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	performance	foundation	fast-source-updates-once-per-frame	false
 rule	compound-parts-share-the-root-context	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation	compound-root-owns-choreography	false
 rule	error-boundary-catches-render-errors	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	errors ux	foundation		true
+rule	hidden-state-kept-by-activity	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation		true
+rule	controllable-props-named-value-default-change	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation	stateful-component-controllable-or-not	false
 rule	derived-state-computed-in-render	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript	performance data	architecture	one-home-per-datum	false
 rule	component-effects-in-its-hooks-file	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript		architecture	side-effects-at-the-edges	false
 rule	component-file-calls-no-effect-hook	_react	blocks/implementations/_react/architecture/_react.md		MUST	tool	lint	typescript		architecture	component-effects-in-its-hooks-file	false
 rule	slot-and-container-children-typed	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript	ux	architecture	navigation-passed-by-slot	false
+rule	compound-parts-reached-through-the-root	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript	ux	architecture	compound-over-prop-regions	false
 rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/architecture/with/remote-data.md	remote-data	SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
 rule	secrets-scanned-on-every-change	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	tool	secrets		security	foundation	no-secret-in-repository	false
 rule	history-scanned-once-on-adoption	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	review			security	foundation	leaked-secret-rotated-at-once	false
@@ -734,6 +754,8 @@ rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/rea
 rule	overlays-rendered-through-portal	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	a11y ux	foundation		true
 rule	browser-apis-read-outside-render	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	review		typescript	errors	foundation	no-browser-globals-during-render	false
 rule	no-inline-style	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	ux	foundation	tokens-single-source-of-appearance	false
+rule	render-errors-reported-at-the-root	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	errors ux	foundation	error-boundary-catches-render-errors	false
+rule	jsx-images-declare-their-size	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	tool	lint	typescript	performance ux	foundation	images-declare-their-size	false
 rule	no-dangerously-set-inner-html	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		MUST	tool	lint	typescript	security	architecture	no-raw-html-injection	false
 rule	labels-bound-with-use-id	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y	foundation	every-control-has-an-accessible-name	false
 rule	ids-from-use-id	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	labels-bound-with-use-id	false
@@ -750,8 +772,8 @@ rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovat
 rule	updates-grouped-and-scheduled	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	dependencies-updated-by-bot	false
 rule	peer-ranges-widened-others-bumped	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	dependencies-updated-by-bot	false
 rule	toolchain-pins-updated-by-bot	renovate	blocks/implementations/renovate/workflow/with/mise.md	mise	SHOULD	review			security	workflow	dependencies-updated-by-bot	false
-rule	complex-widgets-on-radix	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	a11y ux	foundation	complex-patterns-on-accessible-primitives	false
-rule	slot-behind-as-child	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		SHOULD	review		css typescript		foundation		true
+rule	complex-widgets-on-base-ui	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	a11y ux	foundation	complex-patterns-on-accessible-primitives	false
+rule	polymorphism-through-render	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		SHOULD	review		css typescript		foundation		true
 rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	ux	foundation	vendored-components-adapted-on-arrival	true
 rule	shadcn-source-added-into-the-kit	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	review		css typescript	ux	architecture	vendored-component-placed-by-its-home	true
 rule	story-for-every-kit-state	storybook	blocks/implementations/storybook/foundation/storybook.md		SHOULD	review		typescript	ux testing	foundation		true
@@ -771,6 +793,8 @@ rule	variants-in-one-cva-map	tailwind	blocks/implementations/tailwind/foundation
 rule	mobile-first-breakpoints	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	mobile-first-additive-breakpoints	true
 rule	dynamic-viewport-classes	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	dynamic-viewport-units	false
 rule	dark-theme-redefines-tokens	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript	ux	foundation	light-and-dark-one-token-set	false
+rule	class-merger-knows-the-theme	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	test		css typescript	ux	foundation	utilities-only-from-tokens	true
+rule	tailwind-layers-are-the-order	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript		foundation	layer-order-declared-once	false
 rule	focus-shown-by-focusable-utility	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	review		css typescript	a11y	foundation	focus-always-visible	false
 rule	motion-tokens-honour-reduced-motion	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	review		css typescript	a11y	foundation	reduced-motion-honoured	false
 rule	type-tokens-in-rem	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	review		css typescript	a11y	foundation	type-sized-in-rem	false

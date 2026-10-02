@@ -33,3 +33,10 @@ A slot that keeps control of its element takes a `ReactElement`; a container tak
 | Why | Check | Tags |
 |---|---|---|
 | the type says what the caller may pass, and the compiler refuses the rest. | review | [] |
+
+## compound-parts-reached-through-the-root → compound-over-prop-regions
+A compound's surface exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |

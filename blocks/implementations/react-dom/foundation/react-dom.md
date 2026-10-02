@@ -22,7 +22,7 @@ ARIA attributes are written hyphenated, as the DOM spells them; the camelCase fo
 | a camelCase ARIA prop is not an attribute the browser knows, so assistive technology never sees it. | tool/lint | [a11y] |
 
 ## overlays-rendered-through-portal · SHOULD
-An overlay — a dialog, a popover, a toast — renders through a portal.
+An overlay — a dialog, a popover, a toast — renders through a portal, or in the top layer the platform gives a modal `<dialog>` and a `popover`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -36,8 +36,22 @@ Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with
 | read during render, they break server rendering and tear between renders. | review | [] |
 
 ## no-inline-style → tokens-single-source-of-appearance
-No element takes an inline `style`.
+An element's inline `style` is an object literal of custom properties only; geometry a positioning library computes is the one other inline value, and its suppression says so.
 
 | Why | Check | Tags |
 |---|---|---|
-| an inline style is a visual value written outside the tokens. | tool/lint | [ux] |
+| an inline visual value is a value written outside the tokens, while a custom property passes data to the stylesheet that styles it. | tool/lint | [ux] |
+
+## render-errors-reported-at-the-root → error-boundary-catches-render-errors
+Render errors are reported once, through the root's `onUncaughtError`, `onCaughtError` and `onRecoverableError`; a boundary renders the failure and reports nothing.
+
+| Why | Check | Tags |
+|---|---|---|
+| the root sees every render error, the ones a boundary catches included, so each is reported once. | review | [] |
+
+## jsx-images-declare-their-size → images-declare-their-size
+An `<img>` written in JSX declares `width` and `height`.
+
+| Why | Check | Tags |
+|---|---|---|
+| this is the form of the rule the linter sees in markup. | tool/lint | [performance] |

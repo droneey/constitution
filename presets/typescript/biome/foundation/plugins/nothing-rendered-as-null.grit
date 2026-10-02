@@ -1,0 +1,12 @@
+language js
+
+`null` as $value where {
+  $value <: not within or {
+    `return null`,
+    `$_ === null`,
+    `$_ !== null`,
+    `null === $_`,
+    `null !== $_`
+  } ,
+  register_diagnostic(span=$value, message="null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
+}

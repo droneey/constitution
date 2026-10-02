@@ -186,6 +186,11 @@ describe('the ls-lint preset', () => {
       reported: 'src/shared/ui/components',
     },
     {
+      condition: 'a component of the root has no root- prefix',
+      path: 'src/root/ui/components/app-header/app-header.tsx',
+      reported: 'src/root/ui/components/app-header',
+    },
+    {
       condition: 'a widget folder does not end in -widget',
       path: 'src/features/orders/ui/widgets/order-list/order-list.tsx',
       reported: 'src/features/orders/ui/widgets/order-list',
