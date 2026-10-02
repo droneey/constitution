@@ -27,3 +27,10 @@ Each bundle has a size budget the check holds, the embeddable one first.
 | Why | Check | Tags |
 |---|---|---|
 | size grows one dependency at a time, and only a budget notices the one that crosses the line. | test | [performance] |
+
+## core-web-vitals-within-budget · SHOULD
+Largest Contentful Paint stays within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1 at the 75th percentile, measured in the field.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are what users feel of speed; a bundle budget is only a proxy for them. | review | [performance, ux] |

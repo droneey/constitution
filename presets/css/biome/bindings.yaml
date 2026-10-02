@@ -10,6 +10,8 @@ foundation:
       - noMissingVarFunction
     no-important-declarations:
       - noImportantStyles
+    no-literal-colour-outside-the-theme:
+      - noHexColors
     selectors-stay-shallow:
       - noExcessiveSelectorClasses
       - noDescendingSpecificity

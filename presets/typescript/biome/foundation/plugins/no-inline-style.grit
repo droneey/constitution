@@ -1,0 +1,12 @@
+language js
+
+jsx_attribute(name=$name, value=$value) where {
+  $name <: r"style",
+  or {
+    $value <: not contains object(),
+    $value <: contains `...$_`,
+    $value <: r"(?s).*[,{]\s*[A-Za-z_$][\w$]*\s*[,}].*",
+    $value <: contains `$key: $_` where { $key <: not r"['\"]--.*" }
+  },
+  register_diagnostic(span=$value, message="Pass the value as a custom property: an inline style is an object of --* properties only", severity="error")
+}

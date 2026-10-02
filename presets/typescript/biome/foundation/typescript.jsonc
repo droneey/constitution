@@ -87,6 +87,7 @@
       "path": "./.constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
+        "!**/*.tsx",
       ],
     },
     {

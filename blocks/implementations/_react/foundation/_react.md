@@ -3,14 +3,28 @@
 ## Compiler and API
 
 ## react-compiler-on · MUST
-The build runs the React Compiler over every component and hook.
+The build runs the React Compiler over every component and hook, except one the Compiler refuses, whose `'use no memo'` states why.
 
 | Why | Check | Tags |
 |---|---|---|
 | the Compiler memoises what is safe to memoise, so the code stays plain and fast without hand-written memoisation. | review | [performance] |
 
+## render-is-pure · MUST
+A component or hook returns the same output for the same props, state and context: it changes nothing that existed before the render and reads no ref during it. The root renders inside `StrictMode`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the Compiler, concurrent rendering and `StrictMode` run a render more than once; one that is not pure behaves differently each time. | review | [] |
+
+## props-never-assigned → render-is-pure
+A component never assigns to its props.
+
+| Why | Check | Tags |
+|---|---|---|
+| props belong to the caller; this is the change to existing data the linter can see. | tool/lint | [] |
+
 ## no-manual-memoisation → suppression-states-its-reason
-No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception needs profiler evidence, stated in its suppression.
+No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -28,7 +42,7 @@ No `useContext`, `Context.Provider`, `forwardRef`, `defaultProps`, `createRef` o
 
 | Why | Check | Tags |
 |---|---|---|
-| each legacy form has a modern one, and two forms of one thing double what a reader must know. | tool/lint | [] |
+| each has a current form — `use` reads a context and can be called conditionally, a ref is a prop — and two forms of one thing double what a reader must know. | tool/lint | [] |
 
 ## function-components-only → inheritance-only-for-errors-and-framework-points · MUST
 Components are functions, composed, never inherited; a class only for an error boundary.
@@ -57,6 +71,20 @@ A list's key comes from the item's identity, never its index.
 | Why | Check | Tags |
 |---|---|---|
 | an index key moves state to the wrong item when the list is reordered or filtered. | tool/lint | [errors] |
+
+## components-named-in-pascal-case → identifier-case-by-kind
+A component is named in PascalCase.
+
+| Why | Check | Tags |
+|---|---|---|
+| React renders a lower-case name as an element of the platform, never as the component. | review | [] |
+
+## nothing-rendered-as-null → absence-has-one-value
+A component that renders nothing returns `null`, the one place internal code writes it.
+
+| Why | Check | Tags |
+|---|---|---|
+| React's own absence of output is `null`, and a component returning `undefined` reads as a forgotten return. | tool/lint | [] |
 
 ## State and effects
 
@@ -98,8 +126,22 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
 
 ## error-boundary-catches-render-errors · SHOULD
-A screen's error boundary catches the render errors below it, reports once, and shows the screen's error state. A failure a data hook returns as a state is rendered, not thrown.
+A screen's error boundary catches the render errors below it and shows the screen's error state, and the failure is reported once. A failure a data hook returns as a state is rendered, not thrown.
 
 | Why | Check | Tags |
 |---|---|---|
 | a thrown render error then costs one screen, and an expected failure is shown where it belongs. | review | [errors, ux] |
+
+## hidden-state-kept-by-activity · SHOULD
+A hidden part that must keep its state — a tab panel, a step, a view the user comes back to — is wrapped in `<Activity mode="hidden">`, neither unmounted nor hidden by a style alone.
+
+| Why | Check | Tags |
+|---|---|---|
+| unmounting loses the state, and a part hidden by a style alone keeps its effects running. | review | [ux] |
+
+## controllable-props-named-value-default-change → stateful-component-controllable-or-not
+The value is `<name>`, its initial value `default<Name>` and its callback `on<Name>Change`, resolved by one hook.
+
+| Why | Check | Tags |
+|---|---|---|
+| the names are the ones the primitive library and the platform use, so a component reads like the elements around it. | review | [] |

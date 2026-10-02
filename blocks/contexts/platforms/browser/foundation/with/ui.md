@@ -17,7 +17,7 @@ Base styles serve the smallest screen, and wider screens add overrides from a mi
 | styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | review | [] |
 
 ## dynamic-viewport-units → components-size-to-their-container · MUST
-Heights use dynamic viewport units or the container, never `100vh`, `100vw` or a fixed width in pixels.
+Heights use the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`, and no layout width is fixed in pixels outside the tokens.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -43,3 +43,17 @@ On a foldable screen, content and controls never cross the fold; the layout foll
 | Why | Check | Tags |
 |---|---|---|
 | text and buttons that fall into the hinge cannot be read or pressed. | review | [ux] |
+
+## primitive-passes-class-and-data-slot → primitive-passes-its-element-through
+In the browser, a primitive accepts its element's native attributes and class, merges its class through the class merger, and marks its parts with `data-slot`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a caller then styles and targets a primitive as it would the element underneath. | review | [ux] |
+
+## images-declare-their-size → core-web-vitals-within-budget
+An image declares its width and height.
+
+| Why | Check | Tags |
+|---|---|---|
+| the page reserves the image's space before it loads, so nothing moves when it arrives. | review | [performance] |

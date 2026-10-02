@@ -26,6 +26,7 @@
             "noChildrenProp": "error",
             "useJsxKeyInIterable": "error",
             "noNestedComponentDefinitions": "error",
+            "noReactPropAssignments": "error",
           },
           "nursery": {
             "noComponentHookFactories": "error",
@@ -44,12 +45,12 @@
             "noReactForwardRef": "error",
             "noLeakedRender": "error",
             "noDuplicateJsxProps": "error",
+            "noDuplicatedSpreadProps": "error",
           },
           "style": {
             "useFragmentSyntax": "error",
             "useComponentExportOnlyModules": "error",
             "useReactFunctionComponents": "error",
-            "noImplicitBoolean": "error",
             "useConsistentCurlyBraces": "error",
             "useSelfClosingElements": "error",
           },
@@ -79,6 +80,12 @@
   ],
   "plugins": [
     "./.constitution/presets/typescript/biome/foundation/plugins/modern-react-api-only.grit",
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/nothing-rendered-as-null.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
     {
       "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-manual-memoisation.grit",
       "includes": [

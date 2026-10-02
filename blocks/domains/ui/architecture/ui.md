@@ -83,6 +83,13 @@ A component's folder name carries its location and role: no prefix in `libs/ui` 
 |---|---|---|
 | the name alone tells where a component comes from and whether it holds logic. | review | [] |
 
+## root-components-prefixed → component-named-by-location
+A component of `root/ui` is in a folder named `root-<name>`.
+
+| Why | Check | Tags |
+|---|---|---|
+| this is the location prefix a folder pattern can hold; a feature's prefix names its own folder, which only review sees. | tool/names | [] |
+
 ## widget-folder-ends-in-widget → component-named-by-location
 A widget's folder name ends in `-widget`.
 
@@ -159,3 +166,10 @@ The primitive library holds no user-facing text and no message catalog; text arr
 | Why | Check | Tags |
 |---|---|---|
 | a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |
+
+## theme-in-the-design-system-library → tokens-single-source-of-appearance
+The theme module lives in `libs/ui/theme/`: its stylesheet, its tokens, its constants and its hooks.
+
+| Why | Check | Tags |
+|---|---|---|
+| the theme knows nothing of the application, and one home lets a tool and a reviewer find every token. | review | [ux] |

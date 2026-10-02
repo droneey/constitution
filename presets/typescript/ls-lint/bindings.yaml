@@ -92,11 +92,15 @@ architecture:
   ui:
     component-folders-hold-their-files:
       - 'src/*/**/components'
-      - 'src/*/**/components/*'
+      - 'src/{features,shared,libs,composition,entrypoints}/**/components/*'
+      - 'src/root/**/components/*'
       - 'src/*/**/widgets'
       - 'src/*/**/widgets/*'
     widget-folder-ends-in-widget:
       - 'src/*/**/widgets/*'
+    root-components-prefixed:
+      - 'src/root/**/components/*'
     kebab-case-file-names:
       - 'src/*/**/assets'
-      - 'src/*/**/components/*'
+      - 'src/{features,shared,libs,composition,entrypoints}/**/components/*'
+      - 'src/root/**/components/*'

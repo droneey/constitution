@@ -22,5 +22,5 @@ governs: ["**/*.css", "**/*.variants.ts"]
 | `ui-styling-restricted-to-tokens` | `@theme` holds the tokens and resets the default scales | yes |
 | `ui-styling-one-set-for-themes` | the tokens' variables are redefined under one selector | yes |
 | `ui-styling-container-queries` | `@container` and its variants | yes |
-| `ui-styling-cascading-variants` | `@utility` with `&[data-…]` | yes |
+| `ui-styling-cascading-variants` | `@custom-variant` or `in-data-*` | yes |
 | `ui-variant-map-types-props` | `cva` with `VariantProps` | yes |

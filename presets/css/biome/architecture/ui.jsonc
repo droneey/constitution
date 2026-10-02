@@ -1,0 +1,16 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/libs/ui/theme/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noHexColors": "off",
+          },
+        },
+      },
+    },
+  ],
+}

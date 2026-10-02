@@ -22,3 +22,17 @@ A custom property spells its token's name with dashes: `--color-text-muted` for 
 | Why | Check | Tags |
 |---|---|---|
 | the token and the property are then one name, found by one search in the theme and in every stylesheet. | review | [] |
+
+## color-scheme-declared-on-root → theme-follows-system-until-chosen · MUST
+The root declares `color-scheme` for the themes it supports.
+
+| Why | Check | Tags |
+|---|---|---|
+| native controls, scrollbars and the page's canvas then follow the theme. | review | [ux] |
+
+## no-literal-colour-outside-the-theme → stylesheet-values-from-theme-properties
+No hexadecimal colour is written outside the theme's stylesheet.
+
+| Why | Check | Tags |
+|---|---|---|
+| a literal colour is a value the next theme change misses. | tool/lint | [ux] |

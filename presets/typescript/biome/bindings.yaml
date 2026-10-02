@@ -1,5 +1,11 @@
 foundation:
   _react:
+    nothing-rendered-as-null:
+      - nothing-rendered-as-null.grit
+    props-never-assigned:
+      - noReactPropAssignments
+    undefined-is-the-only-absence:
+      - nothing-rendered-as-null.grit
     function-components-only:
       - useReactFunctionComponents
     hooks-at-top-level:
@@ -94,7 +100,9 @@ foundation:
       - useValidAriaRole
       - useValidAriaValues
     no-inline-style:
-      - noInlineStyles
+      - no-inline-style.grit
+    jsx-images-declare-their-size:
+      - useImageSize
   react-native:
     no-literal-colour-in-a-style:
       - noReactNativeLiteralColors
