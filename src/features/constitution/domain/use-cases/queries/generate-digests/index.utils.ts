@@ -8,15 +8,8 @@ import type {
 } from '../../../entities';
 import { BlockFileRole } from '../../../entities';
 import type { BlocksById } from '../../../utils';
-import {
-  checkOf,
-  fileNameOf,
-  rewriteLocalLinks,
-  ruleLanguagesOf,
-  targetFromRoot,
-} from '../../../utils';
+import { checkOf, fileNameOf, ruleLanguagesOf } from '../../../utils';
 import { ancestorsOf } from './ancestors.utils';
-import { headlineOf } from './headline.utils';
 
 const TAB = '\t';
 const LIST = ' ';
@@ -99,15 +92,6 @@ const ruleRecord = (input: { byId: BlocksById; rule: Rule }): string => {
     rule.axis,
     rule.parent ?? '',
     String(rule.statedLevel !== undefined),
-    // The digest has no folder, so a link in the headline is read from the root.
-    rewriteLocalLinks({
-      rewrite: (target: string): string =>
-        targetFromRoot({
-          path: rule.file,
-          target,
-        }),
-      text: headlineOf(rule.statement),
-    }),
   ]);
 };
 

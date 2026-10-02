@@ -158,7 +158,8 @@
 ## ADR-0024 — The digest is an index
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** At session start and in every sub-agent the hook prints, within Claude Code's 10,000-character cap: a header naming the plugin root, the warnings, core's part, the active blocks grouped by layer — one line each, the path derived from the root, the layer and the id — the active overrides, then MUST headlines while space lasts, a lowered one marked as such.
+- **Decision.** At session start and in every sub-agent the hook prints, within Claude Code's 10,000-character cap: a header naming the plugin root, the warnings, core's part, the active blocks grouped by layer — one line each, the path derived from the root, the layer and the id — and the active overrides. It carries no rule's text: the agent reads the block files it names, and the reminders name the MUST rules of the blocks that govern a file, a lowered one marked as such.
+- **Rejected.** MUST headlines while space lasts: a real web project's take about 36 KB against a budget of 9.4 KB, so only the smallest blocks that came first fitted, and a partial list read as if the rest mattered less.
 - **Why.** Every agent receives the rules, sub-agents and sessions after compaction included.
 
 ## ADR-0025 — Warnings: one header, one line each

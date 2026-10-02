@@ -17,12 +17,7 @@ $1 == "active" {
   FILES[N] = $6
 }
 # An overridden rule keeps its note, such as "(MAY in web)": its level is no longer MUST there.
-$1 == "headline" {
-  rule = $3
-  sub(/^- /, "", rule)
-  sub(/:.*$/, "", rule)
-  MUSTS[$2] = MUSTS[$2] (MUSTS[$2] == "" ? "" : ", ") rule
-}
+$1 == "must" { MUSTS[$2] = MUSTS[$2] (MUSTS[$2] == "" ? "" : ", ") $3 }
 
 END {
   if (project == "" || N == 0) exit

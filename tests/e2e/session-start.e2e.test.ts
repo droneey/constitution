@@ -20,10 +20,11 @@ import {
   factsOf,
   HOOK_TODAY,
   HookEvent,
-  headlineOf,
-  headlinesOf,
   lastLinesOf,
+  mustsOf,
+  newSession,
   outputOf,
+  removeSessions,
   runHook,
   warningsOf,
 } from './hook.fixtures';
@@ -141,8 +142,8 @@ interface FailureCase {
 
 interface AxesView {
   core: readonly string[];
-  headlines: readonly string[];
   list: readonly string[];
+  musts: readonly string[];
   warnings: readonly string[];
 }
 
@@ -159,8 +160,6 @@ interface BlockListCase {
 }
 
 const WARNINGS = '⚠️ Warnings';
-const LEFT_OUT_ONE =
-  'The MUST headlines of 1 block were left out; the block files hold them.';
 const BUDGET = 9400;
 // The real blocks and digests of this repository, read and never written.
 const REPOSITORY = join(import.meta.dir, '..', '..');
@@ -190,24 +189,21 @@ const AXIS_DOMAINS = '[ui, remote-data, version-control]';
 const REMOTE_DATA = '- remote-data: Data another system owns.';
 const UI = '- ui: Screens and what a user sees on them.';
 const VERSION_CONTROL = '- version-control: History of the code.';
-const READS_ARE_CANCELLABLE =
-  '- reads-are-cancellable: A read of remote data can be cancelled.';
-const FOUR_DATA_STATES =
-  '- four-data-states: Every data view shows loading, empty, error and content.';
-const LABELS_ON_FIELDS = '- labels-on-fields: Every field has a visible label.';
+const READS_ARE_CANCELLABLE = 'reads-are-cancellable';
+const FOUR_DATA_STATES = 'four-data-states';
+const LABELS_ON_FIELDS = 'labels-on-fields';
 const BELOW_FOUR_DATA_STATES = [
-  '- loading-state-shown: A view shows that it loads.',
-  '- skeleton-matches-content: A skeleton has the shape of its content.',
-  '- error-state-offers-retry: An error state offers a retry.',
+  'loading-state-shown',
+  'skeleton-matches-content',
+  'error-state-offers-retry',
 ];
-const OPTIMISTIC_WRITES_ROLL_BACK =
-  '- optimistic-writes-roll-back: An optimistic write rolls back when the server refuses it.';
-const COMMITS_ARE_ATOMIC = '- commits-are-atomic: A commit holds one change.';
+const OPTIMISTIC_WRITES_ROLL_BACK = 'optimistic-writes-roll-back';
+const COMMITS_ARE_ATOMIC = 'commits-are-atomic';
 const EVERY_AXIS: AxesView = {
   core: [
     `${CORE_FILES}; foundation: code, principles; architecture: principles; workflow: delivery.`,
   ],
-  headlines: [
+  musts: [
     READS_ARE_CANCELLABLE,
     FOUR_DATA_STATES,
     ...BELOW_FOUR_DATA_STATES,
@@ -228,7 +224,7 @@ const FOUNDATION_ONLY: AxesView = {
   core: [
     `${CORE_FILES}; foundation: code, principles.`,
   ],
-  headlines: [
+  musts: [
     FOUR_DATA_STATES,
     ...BELOW_FOUR_DATA_STATES,
   ],
@@ -260,6 +256,7 @@ beforeAll(() => {
 
 afterEach(() => {
   removeProjects();
+  removeSessions();
 });
 
 afterAll(() => {
@@ -1944,19 +1941,17 @@ describe('session-start hook', () => {
     {
       blocks: 34,
       tail: [
-        'The MUST headlines of 29 blocks were left out; the block files hold them.',
+        '- synthetic-034: Block synthetic-034 pads the digest to prove its byte budget holds up. (foundation)',
       ],
     },
     {
       blocks: 120,
       tail: [
         '63 more lines of the block list did not fit; constitution.yaml names every block.',
-        '',
-        'The MUST headlines of 120 blocks were left out; the block files hold them.',
       ],
     },
   ])(
-    'should say what was left out when $blocks domains are active beside core',
+    'should end on the last block that fits, and say how many did not, when $blocks domains are active beside core',
     ({ blocks, tail }) => {
       // Arrange
       const project = createProject(syntheticProject(blocks));
@@ -2044,23 +2039,21 @@ describe('session-start hook', () => {
     },
   );
 
-  it('should give some MUST headlines when the reference web application follows the real blocks', () => {
+  it('should list every active block when the reference web application follows the real blocks', () => {
     // Arrange
     const project = createProject(REAL_WEB_APP);
 
     // Act
-    const shown = headlinesOf(
-      contextOf(
-        runHook({
-          project,
-          event: HookEvent.Subagent,
-          root: REPOSITORY,
-        }),
-      ),
-    ).filter((line) => line.startsWith('- '));
+    const context = contextOf(
+      runHook({
+        project,
+        event: HookEvent.Subagent,
+        root: REPOSITORY,
+      }),
+    );
 
     // Assert
-    expect(shown.length).toBeGreaterThanOrEqual(5);
+    expect(context).not.toContain('did not fit');
   });
 
   it.each<EscapeCase>([
@@ -2148,7 +2141,7 @@ describe('session-start hook', () => {
     expect(run.stdout).toContain('pins 1.0\\u007f0;');
   });
 
-  it('should give every override the headline of its rule, in the order of the file, when a project overrides rules', () => {
+  it('should mark a rule with every override of it, in the order of the file, when a project overrides rules', () => {
     // Arrange
     const project = createProject({
       config: configOf({
@@ -2160,55 +2153,41 @@ describe('session-start hook', () => {
       }),
     });
 
+    const session = newSession();
+
     // Act
-    const headline = headlineOf({
-      context: contextOf(
-        runHook({
-          event: HookEvent.Subagent,
-          project,
-          root,
-        }),
-      ),
-      slug: 'four-data-states',
+    runHook({
+      event: HookEvent.Compact,
+      project,
+      root,
+      session,
     });
 
     // Assert
-    expect(headline).toBe(
-      '- four-data-states (SHOULD in web; MAY): Every data view shows loading, empty, error and content.',
-    );
+    expect(mustsOf(session)).toContain('four-data-states (SHOULD in web; MAY)');
   });
 
   // Core's part sets how much room is left: the line naming core's files takes
   // 138 bytes, the gap and heading of the block list 42, the line under that
-  // heading 85, a synthetic domain's line 101 and the gap, heading and three
-  // headlines of its block 436.
+  // heading 85 and a synthetic domain's line 101.
   it.each<EdgeCase>([
     {
-      condition: 'the last headline block ends on the budget, reserve kept',
-      corePart: 8398,
-      domains: '[synthetic-001]',
-      tail: [
-        '- synthetic-001-rule-3: The synthetic-001 rule number 3 holds for every file, and its headline is long enough to weigh on the byte budget.',
-      ],
-    },
-    {
-      condition: 'the last headline block passes the budget by one byte',
-      corePart: 8399,
+      condition:
+        'the last line of the block list ends on the budget, reserve kept',
+      corePart: 8834,
       domains: '[synthetic-001]',
       tail: [
         '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up. (foundation)',
-        '',
-        LEFT_OUT_ONE,
       ],
     },
     {
-      condition: 'a block that does not fit comes before one that does',
-      corePart: 8539,
-      domains: '[synthetic-001, untrusted-client]',
+      condition:
+        'the last line of the block list passes the budget by one byte',
+      corePart: 8835,
+      domains: '[synthetic-001]',
       tail: [
-        '## MUST headlines',
-        '- no-secret-in-the-client: The client holds no secret.',
-        LEFT_OUT_ONE,
+        KEY,
+        '1 more line of the block list did not fit; constitution.yaml names every block.',
       ],
     },
     {
@@ -2218,8 +2197,6 @@ describe('session-start hook', () => {
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
         '2 more lines of the block list did not fit; constitution.yaml names every block.',
-        '',
-        LEFT_OUT_ONE,
       ],
     },
     {
@@ -2229,8 +2206,6 @@ describe('session-start hook', () => {
       tail: [
         '',
         '3 more lines of the block list did not fit; constitution.yaml names every block.',
-        '',
-        LEFT_OUT_ONE,
       ],
     },
   ])(
@@ -2265,10 +2240,10 @@ describe('session-start hook', () => {
     },
   );
 
-  it('should fill the budget to its last byte when the last headline block ends on it', () => {
+  it('should fill the budget to its last byte when the last line of the block list ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8398),
+      corePart: corePartOfBytes(8834),
     });
     const project = createProject({
       config: configOf({
@@ -2490,7 +2465,7 @@ describe('session-start hook', () => {
         core: [
           `${CORE_FILES}; foundation: code, principles; architecture: principles.`,
         ],
-        headlines: [
+        musts: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
           ...BELOW_FOUR_DATA_STATES,
@@ -2519,7 +2494,7 @@ describe('session-start hook', () => {
       }),
       view: {
         core: FOUNDATION_ONLY.core,
-        headlines: [
+        musts: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
           ...BELOW_FOUR_DATA_STATES,
@@ -2546,7 +2521,7 @@ describe('session-start hook', () => {
       }),
       view: {
         core: FOUNDATION_ONLY.core,
-        headlines: [
+        musts: [
           FOUR_DATA_STATES,
           ...BELOW_FOUR_DATA_STATES,
           COMMITS_ARE_ATOMIC,
@@ -2567,27 +2542,29 @@ describe('session-start hook', () => {
       },
     },
   ])(
-    'should give the files and headlines of the axes followed when $condition',
+    'should give the files and MUST rules of the axes followed when $condition',
     ({ config, view }) => {
       // Arrange
       const project = createProject({
         config,
       });
+      const session = newSession();
 
       // Act
       const context = contextOf(
         runHook({
-          event: HookEvent.Subagent,
+          event: HookEvent.Compact,
           project,
           root,
+          session,
         }),
       );
 
       // Assert
       expect({
         core: coreLinesOf(context),
-        headlines: headlinesOf(context),
         list: blockListOf(context),
+        musts: mustsOf(session),
         warnings: warningsOf(context),
       }).toStrictEqual<AxesView>(view);
     },
@@ -2595,16 +2572,16 @@ describe('session-start hook', () => {
 
   it.each<{
     condition: string;
-    headlines: readonly string[];
+    musts: readonly string[];
     overrides: string;
   }>([
     {
       condition: 'an override lowers a root rule',
-      headlines: [
-        '- four-data-states (SHOULD): Every data view shows loading, empty, error and content.',
-        '- loading-state-shown (SHOULD via four-data-states): A view shows that it loads.',
-        '- skeleton-matches-content (SHOULD via four-data-states): A skeleton has the shape of its content.',
-        '- error-state-offers-retry: An error state offers a retry.',
+      musts: [
+        'four-data-states (SHOULD)',
+        'loading-state-shown (SHOULD via four-data-states)',
+        'skeleton-matches-content (SHOULD via four-data-states)',
+        'error-state-offers-retry',
       ],
       overrides: fourDataStatesOverride(
         '    level: SHOULD\n    reason: "Early screens"',
@@ -2612,18 +2589,18 @@ describe('session-start hook', () => {
     },
     {
       condition: 'an override lowers a rule in the middle of a chain',
-      headlines: [
-        '- four-data-states: Every data view shows loading, empty, error and content.',
-        '- loading-state-shown (MAY): A view shows that it loads.',
-        '- skeleton-matches-content (MAY via loading-state-shown): A skeleton has the shape of its content.',
-        '- error-state-offers-retry: An error state offers a retry.',
+      musts: [
+        'four-data-states',
+        'loading-state-shown (MAY)',
+        'skeleton-matches-content (MAY via loading-state-shown)',
+        'error-state-offers-retry',
       ],
       overrides:
         '\n  - rule: loading-state-shown\n    level: MAY\n    reason: "No spinner yet"',
     },
   ])(
     'should lower the rules below that state no level of their own when $condition',
-    ({ headlines, overrides }) => {
+    ({ musts, overrides }) => {
       // Arrange
       const project = createProject({
         config: configOf({
@@ -2631,27 +2608,27 @@ describe('session-start hook', () => {
           overrides,
         }),
       });
+      const session = newSession();
 
       // Act
-      const shown: readonly string[] = headlinesOf(
-        contextOf(
-          runHook({
-            event: HookEvent.Subagent,
-            project,
-            root,
-          }),
-        ),
-      ).filter((line) =>
+      runHook({
+        event: HookEvent.Compact,
+        project,
+        root,
+        session,
+      });
+
+      const shown: readonly string[] = mustsOf(session).filter((must) =>
         [
           'four-data-states',
           'loading-state-shown',
           'skeleton-matches-content',
           'error-state-offers-retry',
-        ].includes(line.slice(2).split(/[ :]/)[0] ?? ''),
+        ].includes(must.split(' ')[0] ?? ''),
       );
 
       // Assert
-      expect(shown).toStrictEqual(headlines);
+      expect(shown).toStrictEqual(musts);
     },
   );
 });

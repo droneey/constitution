@@ -72,7 +72,6 @@ function read_index(path,   line, f, r) {
       RLANGS[nr] = f[9]
       RAXIS[nr] = f[11]
       if (f[12] != "" && f[13] == "false") KIDS[f[12]] = KIDS[f[12]] " " f[2]
-      RHEAD[nr] = f[14]
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
@@ -445,14 +444,13 @@ function files_of(s, id,   base, out, n, a, k) {
   return out
 }
 
-# The headlines are of domains, contexts and implementations, in the index's
-# order of layers.
-function print_headlines(   i, s) {
+# The reminders name the MUST rules of domains, contexts and implementations.
+function print_musts(   i, s) {
   for (i = 1; i <= nr; i++) {
     if (RLEVEL[i] != "MUST" || LAYER[RBLOCK[i]] == "core") continue
     for (s = 0; s <= napps; s++) if (active_rule(s, i)) break
     if (s > napps) continue
-    print "headline" T RBLOCK[i] T "- " R[i] ((R[i] in NOTE) ? " (" NOTE[R[i]] ")" : "") ": " RHEAD[i]
+    print "must" T RBLOCK[i] T R[i] ((R[i] in NOTE) ? " (" NOTE[R[i]] ")" : "")
   }
 }
 
@@ -526,6 +524,6 @@ END {
   for (c = 1; c <= n; c++) for (k = 1; k <= WARNINGS[codes[c]] + 0; k++) print "warning" T "- " codes[c] ": " WARNING[codes[c], k]
   print_blocks()
   print_overrides()
-  print_headlines()
+  print_musts()
   print_active()
 }
