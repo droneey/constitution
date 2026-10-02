@@ -66,8 +66,43 @@ A route's guard reaches the feature that decides access through the feature's co
 | `beforeLoad` runs before any component renders, so a guard that needs a hook or a component's context has nothing to read. | review | [] |
 
 ## document-head-declared-by-route → document-metadata-owned-by-screen
-A route declares its document metadata in `head`, and the root renders `<HeadContent/>`.
+A route declares its document metadata in `head`.
 
 | Why | Check | Tags |
 |---|---|---|
 | the metadata changes with the route that owns it. | review | [ux] |
+
+## route-pieces-reach-the-route-by-its-api → screen-private-pieces-beside-screen
+A route's private pieces reach its params and search through `getRouteApi('<route id>')`, never by importing the route file.
+
+| Why | Check | Tags |
+|---|---|---|
+| a piece that imports its route file pulls the whole route into its module and ties the two into a cycle. | tool/imports | [] |
+
+## libs-import-no-router → libs-import-no-application-code
+`libs/` never imports the router.
+
+| Why | Check | Tags |
+|---|---|---|
+| what `libs/` wraps is one vendor's client; the application's navigation stays out. | tool/imports | [] |
+
+## routes-imported-only-by-the-router → screens-imported-by-nothing-inside
+Nothing under `features/`, `shared/`, `libs/`, `kernel/`, `contracts/` or `composition/` imports a file of `routes/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are the layers the router's screens sit above. | tool/imports | [] |
+
+## screen-reads-start-in-the-loader → route-owns-its-url
+A screen's reads start together in its route's loader, before it renders, never one after another as its components mount.
+
+| Why | Check | Tags |
+|---|---|---|
+| reads started in a loader run in parallel and before the first paint; reads in components wait for each other. | review | [] |
+
+## adapters-reach-loaders-through-router-context → guard-reaches-features-outside-react
+The adapters the providers built reach loaders and guards through the router's context.
+
+| Why | Check | Tags |
+|---|---|---|
+| a loader then reads through the same adapters as the screens, and a spec replaces them in one place. | review | [] |

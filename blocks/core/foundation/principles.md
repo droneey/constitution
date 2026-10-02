@@ -52,3 +52,10 @@ A value that must keep an invariant is built only through the function that chec
 | Why | Check | Tags |
 |---|---|---|
 | when the invariant is checked at construction, no caller has to check it again or can forget to. | review | [] |
+
+## one-writer-per-shared-resource · MUST
+Every resource the program shares with its host — the document's head, the URL, focus, the scroll position, the root element's classes and attributes, a service worker — has exactly one writer. A block that brings its own writer for such a resource claims it in a rule; a block whose default writer another active block has claimed yields, and no library or effect writes the resource besides.
+
+| Why | Check | Tags |
+|---|---|---|
+| two writers of one resource overwrite each other in an order no one chose, and the result depends on which ran last. | review | [] |

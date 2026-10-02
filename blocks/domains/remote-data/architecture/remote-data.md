@@ -31,7 +31,7 @@ Each feature owns one key factory, and every cache key is built through it from 
 | a key written by hand in two places drifts, and an invalidation then misses the data it meant to refresh. | review | [] |
 
 ## invalidation-stays-in-its-feature → features-blind-to-each-other
-A write invalidates only its own feature's keys. A refresh across features is coordinated by the composing layer, or left to staleness.
+A write invalidates only its own feature's keys. A refresh across features is coordinated by the composing layer, which calls the refresh operation each feature's surface offers, or left to staleness.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -52,7 +52,7 @@ Events that build an entity are folded by a pure reducer of the domain before th
 | the fold is tested without a network, and the transport can change without touching it. | review | [data] |
 
 ## no-second-model-of-remote-data → entities-guarded-where-the-program-owns-them
-Where another system owns the data, the program keeps no aggregates, domain events, event sourcing or specifications of its own. Only what the program owns — a draft, an optimistic item — gets a validating factory.
+Whoever decides whether a change is valid owns the data. Where another system decides, the program keeps no aggregates, domain events, event sourcing or specifications of its own for that data; what the program decides itself — a draft, an optimistic item, the folding of a stream, a grouping by period — it models in its domain.
 
 | Why | Check | Tags |
 |---|---|---|

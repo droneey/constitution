@@ -133,6 +133,13 @@ A data port is a repository per aggregate, one file per side: `repositories/quer
 |---|---|---|
 | reads and writes change apart, and a caller that only reads cannot reach a write. | tool/names | [] |
 
+## ports-named-by-aggregate-and-side → data-ports-split-by-reads-and-writes
+A data port's contract is named after its aggregate and its side: `<Aggregate>QueryRepository` for reads, `<Aggregate>CommandRepository` for writes.
+
+| Why | Check | Tags |
+|---|---|---|
+| the name alone tells two ports of one aggregate apart, wherever they are imported. | review | [] |
+
 ## pipeline-stages-under-steps · SHOULD
 A pipeline use-case keeps its stages under `steps/`, in the order the use-case calls them; a stage never calls another.
 

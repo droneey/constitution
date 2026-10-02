@@ -15,7 +15,7 @@ No key array is written inline; every key comes from the key factory, built from
 | an inline key drifts from the factory's, and an invalidation misses it. | tool/lint | [data] |
 
 ## query-result-returned-as-status-union → data-result-is-union-by-status
-What wraps a query or a mutation returns a union by `status` — pending; error, with its typed error; success, with its data. Query's flags are converted there, and no default is invented.
+What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. The error type is registered once for the cache, and no default is invented.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -62,3 +62,10 @@ A stream's events reach the cache in batches, with at most one cache write per f
 | Why | Check | Tags |
 |---|---|---|
 | a cache write per event redraws every subscriber on every event. | review | [data] |
+
+## write-pending-until-its-refresh-lands → invalidation-in-on-settled
+A mutation's `onSettled` returns the invalidation's promise, so the write stays pending until the fresh data lands.
+
+| Why | Check | Tags |
+|---|---|---|
+| a write that settles before its refresh shows the old data for a moment, as if it had failed. | review | [] |

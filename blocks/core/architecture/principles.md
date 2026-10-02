@@ -153,3 +153,10 @@ Where the program owns the data it changes, every change goes through its aggreg
 | Why | Check | Tags |
 |---|---|---|
 | one entrance per aggregate means one place holds its invariants, and small aggregates keep a change from locking unrelated data. | review | [data] |
+
+## entity-behaviour-beside-entity · SHOULD
+What concerns one entity alone — a predicate, a derived value, a transition of state the program owns — is a pure function in that entity's file, never a method and never repeated in use-cases or screens; a use-case orchestrates entities and ports.
+
+| Why | Check | Tags |
+|---|---|---|
+| a rule about one entity written once is changed once, and a screen asks the entity instead of repeating the check. | review | [] |
