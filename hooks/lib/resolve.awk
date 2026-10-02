@@ -230,8 +230,16 @@ function all_axes(   n, a, k) {
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
 
-function print_core() {
-  if ("core" in KNOWN) print "core" T "Core's files, under blocks/core/: " join(trim("core.md " chapters(0, "core")), ", ") "."
+function print_core(   n, a, k, out, axis) {
+  if (!("core" in KNOWN)) return
+  out = "core"
+  n = split(chapters(0, "core"), a, " ")
+  for (k = 1; k <= n; k++) {
+    sub(/\.md$/, "", a[k])
+    out = out (axis_of(a[k]) == axis ? ", " : "; " axis_of(a[k]) ": ") name_of(a[k])
+    axis = axis_of(a[k])
+  }
+  print "core" T "Core's files, under blocks/core/ and named without .md: " out "."
 }
 
 function axis_of(entry) {
@@ -331,18 +339,30 @@ function chapters(s, id,   out, n, a, k) {
 }
 
 function seam(entry) {
-  return axis_of(entry) "/with/" name_of(entry) ".md"
+  return axis_of(entry) "/with/" name_of(entry)
+}
+
+function chapter(entry, id) {
+  sub(/\.md$/, "", entry)
+  return (name_of(entry) == id) ? axis_of(entry) : entry
 }
 
 function also(s, id,   out, n, a, k) {
-  out = join(chapters(s, id), ", ")
+  out = ""
+  n = split(chapters(s, id), a, " ")
+  for (k = 1; k <= n; k++) out = out (out == "" ? "" : ", ") chapter(a[k], id)
   n = split(WITH[id], a, " ")
   for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out (out == "" ? "" : ", ") seam(a[k])
-  return (out == "") ? "" : " Also: " out
+  return (out == "") ? "" : " (" out ")"
 }
 
 function local_line(k) {
   return "- " LID[k] " (local, " LPATH[k] "): " LSUMMARY[k]
+}
+
+function heading(layer) {
+  print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
+  if (!KEYED++) print "index" T "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>."
 }
 
 function print_blocks(   l, layer, j, id, k, s, lines) {
@@ -352,12 +372,12 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
     for (j = 1; j <= nb; j++) {
       id = B[j]
       if (LAYER[id] != layer || !IN[0, id]) continue
-      if (!lines++) print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
+      if (!lines++) heading(layer)
       print "index" T "- " id ": " SUMMARY[id] also(0, id)
     }
     for (k = 1; k <= nlocal; k++) {
       if (LSCOPE[k] != 0 || LLAYER[k] != layer) continue
-      if (!lines++) print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
+      if (!lines++) heading(layer)
       print "index" T local_line(k)
     }
   }
@@ -395,7 +415,7 @@ function print_overrides(   k, o) {
 function app_only_files(s, id,   out, n, a, k, b) {
   out = ""
   n = split(CHAPTERS[id], a, " ")
-  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && !ON[0, axis_of(a[k])]) out = out (out == "" ? "" : ", ") a[k]
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && !ON[0, axis_of(a[k])]) out = out (out == "" ? "" : ", ") chapter(a[k], id)
   n = split(WITH[id], a, " ")
   for (k = 1; k <= n; k++) {
     b = name_of(a[k])
@@ -421,7 +441,7 @@ function files_of(s, id,   base, out, n, a, k) {
   n = split(chapters(s, id), a, " ")
   for (k = 1; k <= n; k++) out = out " " base a[k]
   n = split(WITH[id], a, " ")
-  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out " " base seam(a[k])
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out " " base seam(a[k]) ".md"
   return out
 }
 

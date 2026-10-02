@@ -1,7 +1,7 @@
 # Untrusted client
 
 ## client-holds-nothing-hidden · MUST
-Nothing shipped to the client — code, configuration, data in memory or in storage — is treated as hidden from its user, so none of it holds a secret; configuration the client receives at runtime is public.
+Nothing shipped to the client — code, configuration, a variable the build inlines under a public prefix, data in memory or in storage — is treated as hidden from its user, so none of it holds a secret; configuration the client receives at runtime is public.
 
 | Why | Check | Tags |
 |---|---|---|

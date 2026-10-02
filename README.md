@@ -14,7 +14,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block — with the languages its checks cover and the roles a language is held to — rule and requirement answer, and `core.md`, core's part of the digest |
-| `hooks` | `hooks.json`, which runs `session-start.sh` when a session starts, is cleared or compacted, and when a sub-agent starts; `lib/`, the awk programs it runs over the event, `constitution.yaml` and `digests/` |
+| `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
 | `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold the tool-checked rules, `presets/<scope>/<tool>/<axis>/<block>.*` |

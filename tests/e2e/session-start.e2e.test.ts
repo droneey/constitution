@@ -181,7 +181,10 @@ const unknownIds = (count: number): readonly string[] =>
 const unknownWarning = (id: string): string =>
   `- unknown: ${id} is not a block — check the name`;
 
-const CORE_FILES = "Core's files, under blocks/core/: core.md";
+const CORE_FILES =
+  "Core's files, under blocks/core/ and named without .md: core";
+const KEY =
+  "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const AXIS_DOMAINS = '[ui, remote-data, version-control]';
 const REMOTE_DATA = '- remote-data: Data another system owns.';
@@ -202,7 +205,7 @@ const OPTIMISTIC_WRITES_ROLL_BACK =
 const COMMITS_ARE_ATOMIC = '- commits-are-atomic: A commit holds one change.';
 const EVERY_AXIS: AxesView = {
   core: [
-    `${CORE_FILES}, foundation/code.md, foundation/principles.md, architecture/principles.md, workflow/delivery.md.`,
+    `${CORE_FILES}; foundation: code, principles; architecture: principles; workflow: delivery.`,
   ],
   headlines: [
     READS_ARE_CANCELLABLE,
@@ -214,15 +217,16 @@ const EVERY_AXIS: AxesView = {
   ],
   list: [
     DOMAINS,
-    `${REMOTE_DATA} Also: architecture/remote-data.md`,
-    `${UI} Also: foundation/ui.md, architecture/forms.md, architecture/with/remote-data.md`,
-    `${VERSION_CONTROL} Also: workflow/version-control.md`,
+    KEY,
+    `${REMOTE_DATA} (architecture)`,
+    `${UI} (foundation, architecture/forms, architecture/with/remote-data)`,
+    `${VERSION_CONTROL} (workflow)`,
   ],
   warnings: [],
 };
 const FOUNDATION_ONLY: AxesView = {
   core: [
-    `${CORE_FILES}, foundation/code.md, foundation/principles.md.`,
+    `${CORE_FILES}; foundation: code, principles.`,
   ],
   headlines: [
     FOUR_DATA_STATES,
@@ -230,8 +234,9 @@ const FOUNDATION_ONLY: AxesView = {
   ],
   list: [
     DOMAINS,
+    KEY,
     REMOTE_DATA,
-    `${UI} Also: foundation/ui.md`,
+    `${UI} (foundation)`,
     VERSION_CONTROL,
   ],
   warnings: [],
@@ -1939,13 +1944,13 @@ describe('session-start hook', () => {
     {
       blocks: 34,
       tail: [
-        'The MUST headlines of 30 blocks were left out; the block files hold them.',
+        'The MUST headlines of 29 blocks were left out; the block files hold them.',
       ],
     },
     {
       blocks: 120,
       tail: [
-        '72 more lines of the block list did not fit; constitution.yaml names every block.',
+        '63 more lines of the block list did not fit; constitution.yaml names every block.',
         '',
         'The MUST headlines of 120 blocks were left out; the block files hold them.',
       ],
@@ -2038,6 +2043,25 @@ describe('session-start hook', () => {
       });
     },
   );
+
+  it('should give some MUST headlines when the reference web application follows the real blocks', () => {
+    // Arrange
+    const project = createProject(REAL_WEB_APP);
+
+    // Act
+    const shown = headlinesOf(
+      contextOf(
+        runHook({
+          project,
+          event: HookEvent.Subagent,
+          root: REPOSITORY,
+        }),
+      ),
+    ).filter((line) => line.startsWith('- '));
+
+    // Assert
+    expect(shown.length).toBeGreaterThanOrEqual(5);
+  });
 
   it.each<EscapeCase>([
     {
@@ -2155,12 +2179,13 @@ describe('session-start hook', () => {
   });
 
   // Core's part sets how much room is left: the line naming core's files takes
-  // 139 bytes, the gap and heading of the block list 42, a synthetic domain's
-  // line 122 and the gap, heading and three headlines of its block 436.
+  // 138 bytes, the gap and heading of the block list 42, the line under that
+  // heading 85, a synthetic domain's line 101 and the gap, heading and three
+  // headlines of its block 436.
   it.each<EdgeCase>([
     {
       condition: 'the last headline block ends on the budget, reserve kept',
-      corePart: 8461,
+      corePart: 8398,
       domains: '[synthetic-001]',
       tail: [
         '- synthetic-001-rule-3: The synthetic-001 rule number 3 holds for every file, and its headline is long enough to weigh on the byte budget.',
@@ -2168,42 +2193,42 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the last headline block passes the budget by one byte',
-      corePart: 8462,
+      corePart: 8399,
       domains: '[synthetic-001]',
       tail: [
-        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up. Also: foundation/synthetic-001.md',
+        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up. (foundation)',
         '',
         LEFT_OUT_ONE,
       ],
     },
     {
-      condition: 'a block that does not fit comes before one that would',
-      corePart: 8602,
+      condition: 'a block that does not fit comes before one that does',
+      corePart: 8539,
       domains: '[synthetic-001, untrusted-client]',
       tail: [
-        '- untrusted-client: Code on a machine the user controls. Also: foundation/untrusted-client.md',
-        '',
-        'The MUST headlines of 2 blocks were left out; the block files hold them.',
+        '## MUST headlines',
+        '- no-secret-in-the-client: The client holds no secret.',
+        LEFT_OUT_ONE,
       ],
     },
     {
       condition: 'the heading of the block list ends on the budget',
-      corePart: 9019,
+      corePart: 9020,
       domains: '[synthetic-001]',
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
-        '1 more line of the block list did not fit; constitution.yaml names every block.',
+        '2 more lines of the block list did not fit; constitution.yaml names every block.',
         '',
         LEFT_OUT_ONE,
       ],
     },
     {
       condition: 'the heading of the block list passes the budget by one byte',
-      corePart: 9020,
+      corePart: 9021,
       domains: '[synthetic-001]',
       tail: [
         '',
-        '2 more lines of the block list did not fit; constitution.yaml names every block.',
+        '3 more lines of the block list did not fit; constitution.yaml names every block.',
         '',
         LEFT_OUT_ONE,
       ],
@@ -2243,7 +2268,7 @@ describe('session-start hook', () => {
   it('should fill the budget to its last byte when the last headline block ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8461),
+      corePart: corePartOfBytes(8398),
     });
     const project = createProject({
       config: configOf({
@@ -2382,10 +2407,11 @@ describe('session-start hook', () => {
       },
       lines: [
         '## Domains (blocks/domains/<id>/<id>.md)',
-        '- ui: Screens and what a user sees on them. Also: foundation/ui.md, architecture/forms.md',
+        KEY,
+        '- ui: Screens and what a user sees on them. (foundation, architecture/forms)',
         '## packages/web',
-        '- remote-data (domains): Data another system owns. Also: architecture/remote-data.md',
-        '- ui (domains): Also: architecture/with/remote-data.md',
+        '- remote-data (domains): Data another system owns. (architecture)',
+        '- ui (domains): Also: architecture/with/remote-data',
       ],
     },
   ])(
@@ -2462,7 +2488,7 @@ describe('session-start hook', () => {
       }),
       view: {
         core: [
-          `${CORE_FILES}, foundation/code.md, foundation/principles.md, architecture/principles.md.`,
+          `${CORE_FILES}; foundation: code, principles; architecture: principles.`,
         ],
         headlines: [
           READS_ARE_CANCELLABLE,
@@ -2473,8 +2499,9 @@ describe('session-start hook', () => {
         ],
         list: [
           DOMAINS,
-          `${REMOTE_DATA} Also: architecture/remote-data.md`,
-          `${UI} Also: foundation/ui.md, architecture/forms.md, architecture/with/remote-data.md`,
+          KEY,
+          `${REMOTE_DATA} (architecture)`,
+          `${UI} (foundation, architecture/forms, architecture/with/remote-data)`,
           VERSION_CONTROL,
         ],
         warnings: [
@@ -2501,11 +2528,12 @@ describe('session-start hook', () => {
         ],
         list: [
           DOMAINS,
-          `${UI} Also: foundation/ui.md`,
+          KEY,
+          `${UI} (foundation)`,
           VERSION_CONTROL,
           '## packages/web',
-          '- remote-data (domains): Data another system owns. Also: architecture/remote-data.md',
-          '- ui (domains): Also: architecture/forms.md, architecture/with/remote-data.md',
+          '- remote-data (domains): Data another system owns. (architecture)',
+          '- ui (domains): Also: architecture/forms, architecture/with/remote-data',
         ],
         warnings: [],
       },
@@ -2525,11 +2553,12 @@ describe('session-start hook', () => {
         ],
         list: [
           DOMAINS,
-          `${UI} Also: foundation/ui.md`,
+          KEY,
+          `${UI} (foundation)`,
           VERSION_CONTROL,
           '## packages/web',
           '- remote-data (domains): Data another system owns.',
-          '- version-control (domains): Also: workflow/version-control.md',
+          '- version-control (domains): Also: workflow',
         ],
         warnings: [
           WARNINGS,

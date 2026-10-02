@@ -75,7 +75,8 @@ function index_lines(   k) {
   cut = 1
 }
 
-# Headlines go in by whole blocks, in index order, until one does not fit.
+# Headlines go in by whole blocks, in index order; a block that does not fit
+# is left out, and a smaller one after it may still go in.
 function headlines(   k, g, end, cost, first, left) {
   first = 1
   left = 0
@@ -93,7 +94,6 @@ function headlines(   k, g, end, cost, first, left) {
         for (g = k; g <= end; g++) put(HEADLINE[g])
         continue
       }
-      cut = 1
     }
     left++
   }

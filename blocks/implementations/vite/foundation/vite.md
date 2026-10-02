@@ -1,12 +1,5 @@
 # Vite
 
-## vite-public-env-holds-no-secret → secret-never-in-url-or-artefact
-Only variables with the public prefix reach the bundle, and each of them is public: none holds a secret.
-
-| Why | Check | Tags |
-|---|---|---|
-| whatever reaches the bundle is readable by every user. | review | [] |
-
 ## bundle-measured-against-budget → bundle-size-budget
 The build's output is measured against the bundle's size budget in the check, entry by entry.
 

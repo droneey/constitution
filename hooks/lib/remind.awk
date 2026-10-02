@@ -16,11 +16,12 @@ $1 == "active" {
   GLOBS[N] = $5
   FILES[N] = $6
 }
+# An overridden rule keeps its note, such as "(MAY in web)": its level is no longer MUST there.
 $1 == "headline" {
-  slug = $3
-  sub(/^- /, "", slug)
-  sub(/[ :(].*$/, "", slug)
-  MUSTS[$2] = MUSTS[$2] (MUSTS[$2] == "" ? "" : ", ") slug
+  rule = $3
+  sub(/^- /, "", rule)
+  sub(/:.*$/, "", rule)
+  MUSTS[$2] = MUSTS[$2] (MUSTS[$2] == "" ? "" : ", ") rule
 }
 
 END {

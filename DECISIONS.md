@@ -34,7 +34,7 @@
 ## ADR-0002 — Four layers: core, domains, contexts, implementations
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** Blocks sit in four layers, from the most abstract down: `core`, true for any program; domains, an aspect a project has or has not whatever its technology — `ui`, `api`, `i18n`; contexts, where the code runs (a platform such as `browser` or `cli`) or what it is written in (a language such as `typescript`); and implementations, a framework, library or tool — `react-dom`, `bun`, `git`. A block's `kind` names its layer. There is no `web` block: a browser application is `browser` plus `ui`. Implementations carry no framework, library or tool tag.
+- **Decision.** Blocks sit in four layers, from the most abstract down: `core`, true for any program; domains, an aspect a project has or has not whatever its technology — `ui`, `api`, `i18n`; contexts, where the code runs (a platform such as `browser` or `cli`) or what it is written in (a language such as `typescript`); and implementations, a framework, library or tool — `react-dom`, `bun`, `git`. There is no `web` block: a browser application is `browser` plus `ui`. Implementations carry no framework, library or tool tag.
 - **Why.** Each layer combines freely with every element of the others and reduces to none of them; a combination lives in the more specific block or in a seam file.
 
 ## ADR-0003 — Two links between blocks: requires and extends
@@ -61,7 +61,7 @@
 ## ADR-0006 — A block owns its brand, language and file names
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A block lists in `owns` the words that belong to it: `_react` owns "React"; `typescript` owns "TypeScript", `.ts` and `index.ts`. A word appears only in its owner, in the blocks that depend on it, and in the `with/` files named after one of these; fenced code is exempt. A standard such as HTTP, JSON or WCAG belongs to no block.
+- **Decision.** A block lists in `dictionary` the words that belong to it: `_react` owns "React"; `typescript` owns "TypeScript", `.ts` and `index.ts`. A word appears only in its owner, in the blocks that depend on it, and in the `with/` files named after one of these; fenced code is exempt. A standard such as HTTP, JSON or WCAG belongs to no block.
 - **Rejected.** Two lists, `brands` and `forms`, for one purpose.
 - **Why.** Core and the domains stay free of any language or brand, which is what lets a project in any language follow them.
 
@@ -96,7 +96,7 @@
 ## ADR-0012 — Local blocks
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A project may keep blocks under `./rules/` with the same contract as a constitution block and name them in `constitution.yaml` by path. A local block is `status: draft` until a person reviews it, and it moves into the constitution when a second project needs it.
+- **Decision.** A project may keep blocks under `./rules/` with the same contract as a constitution block and name them in `constitution.yaml` by path. A local block moves into the constitution when a second project needs it.
 
 ## ADR-0013 — Rules: one format, global slugs
 **Date:** 2026-09-25 · **Status:** Accepted
@@ -615,3 +615,10 @@
 - **Decision.** The check role `architecture` is renamed `imports`: a rule held by the tool that follows imports between files — dependency-cruiser today — reads `Check: tool/imports`, and that tool's block lists `checks: [imports]`.
 - **Rejected.** Keeping `architecture`, the name of an axis since ADR-0088, which made a foundation rule such as `no-import-cycles` read `tool/architecture` and suggested an axis it is not on.
 - **Why.** A role names what its tool looks at; one word for a role and an axis made both harder to read.
+
+## ADR-0104 — A public build variable is a case of client-holds-nothing-hidden
+**Date:** 2026-10-02 · **Status:** Accepted
+
+- **Decision.** `client-holds-nothing-hidden` names a variable the build inlines under a public prefix among what is shipped to the client. `expo-public-env-holds-no-secret` and `vite-public-env-holds-no-secret` are removed: each said the same of its own prefix, under `secret-never-in-url-or-artefact`, and neither held more.
+- **Rejected.** Keeping one child per bundler, which repeats the domain's rule once for every tool that inlines variables.
+- **Why.** That the client's user can read the bundle is a fact of the untrusted client, whatever builds it.
