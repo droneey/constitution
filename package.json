@@ -22,7 +22,7 @@
     "packages:check": "syncpack lint && syncpack format --check",
     "packages:fix": "syncpack fix && syncpack format",
     "type:check": "tsc --noEmit",
-    "test:unit": "bun test",
+    "test:unit": "CI=1 bun test",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
     "build": "bun build --target=node --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist",
@@ -50,5 +50,6 @@
     "knip": "^6.38.0",
     "syncpack": "^15.3.3",
     "typescript": "^7.0.2"
-  }
+  },
+  "trustedDependencies": []
 }

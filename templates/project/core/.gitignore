@@ -35,7 +35,8 @@ pids
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea/
-.claude/
+.claude/settings.local.json
+.claude/worktrees/
 .project
 .classpath
 .c9/

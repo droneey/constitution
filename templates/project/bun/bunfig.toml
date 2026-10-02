@@ -1,4 +1,5 @@
 [test]
+pathIgnorePatterns = ["tests/**", "**/*.integration.test.*"]
 coverage = true
 coverageReporter = ["text"]
 coverageSkipTestFiles = true

@@ -1,0 +1,6 @@
+[test]
+root = "./src"
+coverage = false
+
+[run]
+bun = true

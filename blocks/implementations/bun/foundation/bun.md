@@ -17,7 +17,7 @@ CI and every script install with `bun install --frozen-lockfile`.
 | an install that may update the lockfile runs code nobody reviewed. | review | [] |
 
 ## trusted-dependencies-listed-by-name → install-scripts-only-for-listed-dependencies
-Bun runs no dependency's install script unless `trustedDependencies` in `package.json` lists that package by name.
+`package.json` always declares `trustedDependencies`, naming each dependency whose install script may run, and `[]` when none may: without the field, Bun runs the scripts of its own list of popular packages.
 
 | Why | Check | Tags |
 |---|---|---|
