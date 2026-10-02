@@ -64,9 +64,9 @@ block	tanstack-start	implementation	The TanStack app shell — SPA mode, root sh
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md		typescript		false		types	typescript			tsconfig.json
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md architecture/vite.md	foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
-block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						
+block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
-block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md architecture/zod.md		typescript		false						
+block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md architecture/zod.md		typescript		false						**/models/** **/adapters/**
 rule	intention-revealing-names	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	names-from-the-glossary	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	one-word-per-concept	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true

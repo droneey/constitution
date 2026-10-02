@@ -8,7 +8,7 @@ checks: []
 languages: []
 roles: []
 dictionary: [zod, Zod]
-governs: []
+governs: ["**/models/**", "**/adapters/**"]
 ---
 
 # zod

@@ -424,12 +424,35 @@ function app_only_files(s, id,   out, n, a, k, b) {
 }
 
 # Records the digest ignores: the session's state keeps them for the later hooks.
+function needed(s, id,   out, n, a, k) {
+  out = REQUIRES[id] " " ANCESTORS[id]
+  n = split(WITH[id], a, " ")
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])]) out = out " " name_of(a[k])
+  return out
+}
+
+# A block also governs what every active block that needs it, directly or
+# through others, governs: a domain names no file form of its own.
+function inherit(s, from, id, globs,   n, a, k) {
+  if ((s, from, id) in REACHED) return
+  REACHED[s, from, id] = 1
+  n = split(globs, a, " ")
+  for (k = 1; k <= n; k++) {
+    if ((s, id, a[k]) in OWNED) continue
+    OWNED[s, id, a[k]] = 1
+    GOVERNED[s, id] = GOVERNED[s, id] (GOVERNED[s, id] == "" ? "" : " ") a[k]
+  }
+  n = split(needed(s, id), a, " ")
+  for (k = 1; k <= n; k++) if (IN[s, a[k]] && a[k] != "core") inherit(s, from, a[k], globs)
+}
+
 function print_active(   check, s, j, k) {
   check = VALUE["check"]
   if (check == "null" || check == "~") check = ""
   print "check" T check
   for (s = 0; s <= napps; s++) {
-    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") print "active" T s T APP[s] T B[j] T GOVERNS[B[j]] T files_of(s, B[j])
+    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") inherit(s, B[j], B[j], GOVERNS[B[j]])
+    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") print "active" T s T APP[s] T B[j] T GOVERNED[s, B[j]] T files_of(s, B[j])
     for (k = 1; k <= nlocal; k++) if (IN[s, LID[k]]) print "active" T s T APP[s] T LID[k] T LGOVERNS[k] T LPATH[k]
   }
 }

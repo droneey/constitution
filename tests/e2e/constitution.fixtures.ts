@@ -440,6 +440,7 @@ const implementation = (input: {
   body?: string;
   checks?: readonly string[];
   extends?: string;
+  governs?: readonly string[];
   id: string;
   languages?: readonly string[];
   requires: readonly string[];
@@ -521,6 +522,9 @@ const implementationFiles = (): Files => ({
   ...implementation({
     extends: '_react',
     axis: Axis.Architecture,
+    governs: [
+      '**/*.tsx',
+    ],
     id: 'react-dom',
     requires: [
       'browser',
