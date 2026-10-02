@@ -16,12 +16,8 @@ $1 == "active" {
   GLOBS[N] = $5
   FILES[N] = $6
 }
-$1 == "headline" {
-  slug = $3
-  sub(/^- /, "", slug)
-  sub(/[ :(].*$/, "", slug)
-  MUSTS[$2] = MUSTS[$2] (MUSTS[$2] == "" ? "" : ", ") slug
-}
+# An overridden rule keeps its note, such as "(MAY in web)": its level is no longer MUST there.
+$1 == "must" { MUSTS[$2] = MUSTS[$2] (MUSTS[$2] == "" ? "" : ", ") $3 }
 
 END {
   if (project == "" || N == 0) exit

@@ -440,6 +440,7 @@ const implementation = (input: {
   body?: string;
   checks?: readonly string[];
   extends?: string;
+  governs?: readonly string[];
   id: string;
   languages?: readonly string[];
   requires: readonly string[];
@@ -521,6 +522,9 @@ const implementationFiles = (): Files => ({
   ...implementation({
     extends: '_react',
     axis: Axis.Architecture,
+    governs: [
+      '**/*.tsx',
+    ],
     id: 'react-dom',
     requires: [
       'browser',
@@ -640,7 +644,7 @@ const implementationFiles = (): Files => ({
 const syntheticId = (index: number): string =>
   `synthetic-${String(index).padStart(NUMBER_WIDTH, '0')}`;
 
-// Summaries of 70 bytes and long headlines make the budget bite.
+// Summaries of 70 bytes make the budget bite.
 const syntheticFiles = (): Files =>
   Object.assign(
     {},
@@ -659,7 +663,7 @@ const syntheticFiles = (): Files =>
             },
             (__, position) => ({
               slug: `${id}-rule-${position + 1}`,
-              statement: `The ${id} rule number ${position + 1} holds for every file, and its headline is long enough to weigh on the byte budget.`,
+              statement: `The ${id} rule number ${position + 1} holds for every file.`,
             }),
           ),
           summary: `Block ${id} pads the digest to prove its byte budget holds up.`,

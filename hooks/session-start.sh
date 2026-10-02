@@ -112,7 +112,7 @@ save_state() {
   mkdir -p "${state}" 2>/dev/null || return
   {
     printf 'project\t%s\n' "${project}"
-    printf '%s\n' "${resolved}" | awk -F '\t' '$1 == "check" || $1 == "active" || $1 == "headline"'
+    printf '%s\n' "${resolved}" | awk -F '\t' '$1 == "check" || $1 == "active" || $1 == "must"'
   } >"${state}/active.tsv" 2>/dev/null
   [ "${origin}" = resume ] || : >"${state}/reminded" 2>/dev/null
 }

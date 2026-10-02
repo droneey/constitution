@@ -84,7 +84,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tdependencies-point-inward',
       record:
-        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\t\tfoundation\t\ttrue\tThe dependencies-point-inward rule holds.',
+        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\t\tfoundation\t\ttrue',
       what: 'an empty check kind and role',
     },
     {
@@ -121,24 +121,6 @@ describe('generateDigests', () => {
       what: 'the unknown base as the only ancestor',
     },
     {
-      condition:
-        "a with/ rule's statement links relatively and runs past one sentence",
-      files: {
-        'blocks/domains/ui/architecture/with/remote-data.md': `# Seam\n\n${rule(
-          {
-            slug: 'seam-rule',
-            statement:
-              'A write rolls back to [the ui block](../../ui.md). It keeps the error.',
-            tags: '[data]',
-          },
-        )}`,
-      },
-      key: 'rule\tseam-rule',
-      record:
-        'rule\tseam-rule\tui\tblocks/domains/ui/architecture/with/remote-data.md\tremote-data\tMUST\treview\t\t\tdata\tarchitecture\t\ttrue\tA write rolls back to [the ui block](blocks/domains/ui/ui.md).',
-      what: 'the first sentence with its link read from the root',
-    },
-    {
       condition: 'a rule carries out a SHOULD rule and states no level',
       files: {
         [PRINCIPLES]: `# Principles\n\n${rule({
@@ -153,7 +135,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tlayers-point-inward',
       record:
-        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tSHOULD\treview\t\t\terrors data\tfoundation\tdependencies-point-inward\tfalse\tThe layers-point-inward rule holds.',
+        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tSHOULD\treview\t\t\terrors data\tfoundation\tdependencies-point-inward\tfalse',
       what: 'the inherited level, the united tags, the parent and a level not stated',
     },
     {
@@ -170,7 +152,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tlayers-point-inward',
       record:
-        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\treview\t\t\t\tfoundation\tdependencies-point-inward\ttrue\tThe layers-point-inward rule holds.',
+        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\treview\t\t\t\tfoundation\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
     },
     {

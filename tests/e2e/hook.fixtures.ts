@@ -4,6 +4,7 @@ import {
   chmodSync,
   existsSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -240,30 +241,13 @@ const blockListOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
   const start = lines.findIndex((line) => line.startsWith("Core's files")) + 2;
 
-  return lines.slice(start, lines.indexOf('', start));
-};
-
-const HEADLINES = '## MUST headlines';
-
-const headlinesOf = (context: string): readonly string[] => {
-  const lines = linesOf(context);
-  const start = lines.indexOf(HEADLINES);
-
-  if (start === -1) {
-    return [];
-  }
-
   const end = lines.indexOf('', start);
 
-  return lines.slice(start + 1, end === -1 ? undefined : end);
+  return lines.slice(start, end === -1 ? undefined : end);
 };
 
 const coreLinesOf = (context: string): readonly string[] =>
   linesOf(context).filter((line) => line.startsWith("Core's files"));
-
-const headlineOf = (input: { context: string; slug: string }): string =>
-  linesOf(input.context).find((line) => line.startsWith(`- ${input.slug} `)) ??
-  '';
 
 const warningsOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
@@ -347,6 +331,13 @@ const stateFolderOf = (session: string): string =>
     session,
   );
 
+const mustsOf = (session: string): readonly string[] =>
+  readFileSync(join(stateFolderOf(session), 'active.tsv'), 'utf8')
+    .split('\n')
+    .map((line) => line.split('\t'))
+    .filter((fields) => fields[0] === 'must')
+    .map((fields) => fields[2] ?? '');
+
 const removeSessions = (): void => {
   for (const session of sessions.splice(0)) {
     rmSync(stateFolderOf(session), {
@@ -365,9 +356,8 @@ export {
   factsOf,
   HOOK_TODAY,
   HookEvent,
-  headlineOf,
-  headlinesOf,
   lastLinesOf,
+  mustsOf,
   newSession,
   outputOf,
   removeSessions,

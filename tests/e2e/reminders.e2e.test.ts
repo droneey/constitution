@@ -182,6 +182,64 @@ describe('the reminders of the post-tool-use hook', () => {
     expect(reminder).toBe('');
   });
 
+  it('should name every block the governing block needs, through its requirements, bases and seams, when the agent first touches a file', () => {
+    // Arrange
+    const { project, session } = startSession(
+      configOf({
+        domains: '[ui, untrusted-client, unreliable-network]',
+        implementations: '[react-dom]',
+        platforms: '[browser]',
+      }),
+    );
+
+    // Act
+    const reminder = touch({
+      filePath: join(project, 'src/main.tsx'),
+      session,
+    });
+
+    // Assert
+    const { context } = outputOf({
+      exitCode: 0,
+      stderr: '',
+      stdout: reminder,
+    });
+
+    expect(
+      context
+        .split('\n')
+        .map((note) => note.split(' ')[0])
+        .toSorted(),
+    ).toStrictEqual([
+      '_react',
+      'browser',
+      'react-dom',
+      'ui',
+      'unreliable-network',
+      'untrusted-client',
+    ]);
+  });
+
+  it('should mark a rule an override lowered when the block that governs the file is named', () => {
+    // Arrange
+    const { project, session } = startSession(
+      configOf({
+        domains: '[ui]',
+        overrides:
+          '\n  - rule: four-data-states\n    level: MAY\n    reason: "The admin screens show their state in the toolbar"',
+      }),
+    );
+
+    // Act
+    const reminder = touch({
+      filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
+      session,
+    });
+
+    // Assert
+    expect(reminder).toContain('four-data-states (MAY)');
+  });
+
   it('should say nothing when the block that governs a touched file was named before', () => {
     // Arrange
     const { project, session } = startSession(

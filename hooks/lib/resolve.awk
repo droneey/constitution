@@ -72,7 +72,6 @@ function read_index(path,   line, f, r) {
       RLANGS[nr] = f[9]
       RAXIS[nr] = f[11]
       if (f[12] != "" && f[13] == "false") KIDS[f[12]] = KIDS[f[12]] " " f[2]
-      RHEAD[nr] = f[14]
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
@@ -230,8 +229,16 @@ function all_axes(   n, a, k) {
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
 
-function print_core() {
-  if ("core" in KNOWN) print "core" T "Core's files, under blocks/core/: " join(trim("core.md " chapters(0, "core")), ", ") "."
+function print_core(   n, a, k, out, axis) {
+  if (!("core" in KNOWN)) return
+  out = "core"
+  n = split(chapters(0, "core"), a, " ")
+  for (k = 1; k <= n; k++) {
+    sub(/\.md$/, "", a[k])
+    out = out (axis_of(a[k]) == axis ? ", " : "; " axis_of(a[k]) ": ") name_of(a[k])
+    axis = axis_of(a[k])
+  }
+  print "core" T "Core's files, under blocks/core/ and named without .md: " out "."
 }
 
 function axis_of(entry) {
@@ -331,18 +338,30 @@ function chapters(s, id,   out, n, a, k) {
 }
 
 function seam(entry) {
-  return axis_of(entry) "/with/" name_of(entry) ".md"
+  return axis_of(entry) "/with/" name_of(entry)
+}
+
+function chapter(entry, id) {
+  sub(/\.md$/, "", entry)
+  return (name_of(entry) == id) ? axis_of(entry) : entry
 }
 
 function also(s, id,   out, n, a, k) {
-  out = join(chapters(s, id), ", ")
+  out = ""
+  n = split(chapters(s, id), a, " ")
+  for (k = 1; k <= n; k++) out = out (out == "" ? "" : ", ") chapter(a[k], id)
   n = split(WITH[id], a, " ")
   for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out (out == "" ? "" : ", ") seam(a[k])
-  return (out == "") ? "" : " Also: " out
+  return (out == "") ? "" : " (" out ")"
 }
 
 function local_line(k) {
   return "- " LID[k] " (local, " LPATH[k] "): " LSUMMARY[k]
+}
+
+function heading(layer) {
+  print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
+  if (!KEYED++) print "index" T "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>."
 }
 
 function print_blocks(   l, layer, j, id, k, s, lines) {
@@ -352,12 +371,12 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
     for (j = 1; j <= nb; j++) {
       id = B[j]
       if (LAYER[id] != layer || !IN[0, id]) continue
-      if (!lines++) print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
+      if (!lines++) heading(layer)
       print "index" T "- " id ": " SUMMARY[id] also(0, id)
     }
     for (k = 1; k <= nlocal; k++) {
       if (LSCOPE[k] != 0 || LLAYER[k] != layer) continue
-      if (!lines++) print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
+      if (!lines++) heading(layer)
       print "index" T local_line(k)
     }
   }
@@ -395,7 +414,7 @@ function print_overrides(   k, o) {
 function app_only_files(s, id,   out, n, a, k, b) {
   out = ""
   n = split(CHAPTERS[id], a, " ")
-  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && !ON[0, axis_of(a[k])]) out = out (out == "" ? "" : ", ") a[k]
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && !ON[0, axis_of(a[k])]) out = out (out == "" ? "" : ", ") chapter(a[k], id)
   n = split(WITH[id], a, " ")
   for (k = 1; k <= n; k++) {
     b = name_of(a[k])
@@ -405,12 +424,35 @@ function app_only_files(s, id,   out, n, a, k, b) {
 }
 
 # Records the digest ignores: the session's state keeps them for the later hooks.
+function needed(s, id,   out, n, a, k) {
+  out = REQUIRES[id] " " ANCESTORS[id]
+  n = split(WITH[id], a, " ")
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])]) out = out " " name_of(a[k])
+  return out
+}
+
+# A block also governs what every active block that needs it, directly or
+# through others, governs: a domain names no file form of its own.
+function inherit(s, from, id, globs,   n, a, k) {
+  if ((s, from, id) in REACHED) return
+  REACHED[s, from, id] = 1
+  n = split(globs, a, " ")
+  for (k = 1; k <= n; k++) {
+    if ((s, id, a[k]) in OWNED) continue
+    OWNED[s, id, a[k]] = 1
+    GOVERNED[s, id] = GOVERNED[s, id] (GOVERNED[s, id] == "" ? "" : " ") a[k]
+  }
+  n = split(needed(s, id), a, " ")
+  for (k = 1; k <= n; k++) if (IN[s, a[k]] && a[k] != "core") inherit(s, from, a[k], globs)
+}
+
 function print_active(   check, s, j, k) {
   check = VALUE["check"]
   if (check == "null" || check == "~") check = ""
   print "check" T check
   for (s = 0; s <= napps; s++) {
-    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") print "active" T s T APP[s] T B[j] T GOVERNS[B[j]] T files_of(s, B[j])
+    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") inherit(s, B[j], B[j], GOVERNS[B[j]])
+    for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") print "active" T s T APP[s] T B[j] T GOVERNED[s, B[j]] T files_of(s, B[j])
     for (k = 1; k <= nlocal; k++) if (IN[s, LID[k]]) print "active" T s T APP[s] T LID[k] T LGOVERNS[k] T LPATH[k]
   }
 }
@@ -421,18 +463,17 @@ function files_of(s, id,   base, out, n, a, k) {
   n = split(chapters(s, id), a, " ")
   for (k = 1; k <= n; k++) out = out " " base a[k]
   n = split(WITH[id], a, " ")
-  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out " " base seam(a[k])
+  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out " " base seam(a[k]) ".md"
   return out
 }
 
-# The headlines are of domains, contexts and implementations, in the index's
-# order of layers.
-function print_headlines(   i, s) {
+# The reminders name the MUST rules of domains, contexts and implementations.
+function print_musts(   i, s) {
   for (i = 1; i <= nr; i++) {
     if (RLEVEL[i] != "MUST" || LAYER[RBLOCK[i]] == "core") continue
     for (s = 0; s <= napps; s++) if (active_rule(s, i)) break
     if (s > napps) continue
-    print "headline" T RBLOCK[i] T "- " R[i] ((R[i] in NOTE) ? " (" NOTE[R[i]] ")" : "") ": " RHEAD[i]
+    print "must" T RBLOCK[i] T R[i] ((R[i] in NOTE) ? " (" NOTE[R[i]] ")" : "")
   }
 }
 
@@ -506,6 +547,6 @@ END {
   for (c = 1; c <= n; c++) for (k = 1; k <= WARNINGS[codes[c]] + 0; k++) print "warning" T "- " codes[c] ": " WARNING[codes[c], k]
   print_blocks()
   print_overrides()
-  print_headlines()
+  print_musts()
   print_active()
 }

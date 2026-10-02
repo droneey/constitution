@@ -6,7 +6,7 @@ BEGIN {
   T = "\t"
   BUDGET = 9400
   WARNING_BUDGET = 1000
-  # Kept free for the lines that say what was left out.
+  # Kept free for the line that says what was left out.
   RESERVE = 200
 }
 
@@ -72,34 +72,6 @@ function index_lines(   k) {
   if (k > nindex) return
   if (k == 1) open_section()
   put((nindex - k + 1) (nindex - k + 1 == 1 ? " more line" : " more lines") " of the block list did not fit; constitution.yaml names every block.")
-  cut = 1
-}
-
-# Headlines go in by whole blocks, in index order, until one does not fit.
-function headlines(   k, g, end, cost, first, left) {
-  first = 1
-  left = 0
-  for (k = 1; k <= nheadlines; k = end + 1) {
-    for (end = k; end < nheadlines && HBLOCK[end + 1] == HBLOCK[k]; end++) ;
-    if (!cut) {
-      cost = first ? gap() + length("## MUST headlines") + 1 : 0
-      for (g = k; g <= end; g++) cost += length(HEADLINE[g]) + 1
-      if (fits(cost)) {
-        if (first) {
-          open_section()
-          put("## MUST headlines")
-          first = 0
-        }
-        for (g = k; g <= end; g++) put(HEADLINE[g])
-        continue
-      }
-      cut = 1
-    }
-    left++
-  }
-  if (!left) return
-  if (first) open_section()
-  put("The MUST headlines of " left (left == 1 ? " block were" : " blocks were") " left out; the block files hold them.")
 }
 
 function print_json(   k) {
@@ -116,10 +88,6 @@ $1 == "pin" { pin = text(1) }
 $1 == "count" { count = $2 }
 $1 == "warning" { WARNING[++nwarnings] = text(1) }
 $1 == "index" { INDEX[++nindex] = text(1) }
-$1 == "headline" {
-  HBLOCK[++nheadlines] = $2
-  HEADLINE[nheadlines] = text(2)
-}
 
 END {
   installed = ENVIRON["CONSTITUTION_INSTALLED"]
@@ -133,7 +101,6 @@ END {
     warnings()
     core()
     index_lines()
-    headlines()
   }
   print_json()
 }

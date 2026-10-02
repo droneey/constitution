@@ -15,7 +15,7 @@ The rule, when given: $ARGUMENTS
 
 ## What an override is
 
-An override lowers one constitution rule, for the whole repository or for one application, and records why. Every session's digest shows it, and the rule's headline carries its new level. It is the only way a repository departs from a rule, so it is written with the owner's explicit consent in this chat, for this override — never implied from a reason, a request to proceed, or consent to another override.
+An override lowers one constitution rule, for the whole repository or for one application, and records why. Every session's digest shows it, and the reminders mark the rule with its new level. It is the only way a repository departs from a rule, so it is written with the owner's explicit consent in this chat, for this override — never implied from a reason, a request to proceed, or consent to another override.
 
 If there is no `constitution.yaml` above, look for it at the repository root — the folder, going up from the project folder, that holds `.git`. If there is none, stop and suggest `/ratify`.
 
@@ -25,13 +25,13 @@ Handle one override at a time. When the owner asks for several, go through these
 
 ### 1. The rule
 
-Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, check, role, languages, tags, axis, parent, whether its level is stated, headline:
+Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, check, role, languages, tags, axis, parent, whether its level is stated:
 
 ```bash
 grep "^rule$(printf '\t')<slug>$(printf '\t')" "${CLAUDE_PLUGIN_ROOT}/digests/index.tsv"
 ```
 
-- Found: show the owner its block, its current level and its headline. Then find the rules that carry it out and state no level of their own — lines whose parent is this slug and whose stated field is `false`, and theirs in turn: an override lowers them too, so name them to the owner.
+- Found: show the owner its block, its current level and its statement, read from its file. Then find the rules that carry it out and state no level of their own — lines whose parent is this slug and whose stated field is `false`, and theirs in turn: an override lowers them too, so name them to the owner.
 - Not found: say so. When the owner describes the rule instead of naming it, search the rule lines for their words (`grep '^rule' … | grep -i '<word>'`) and offer the matches. Only a slug the index holds can be overridden; a rule of a local block is changed in the block's own file instead.
 
 ### 2. Add, change or remove

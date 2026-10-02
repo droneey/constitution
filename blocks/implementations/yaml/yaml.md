@@ -8,7 +8,7 @@ checks: []
 languages: []
 roles: []
 dictionary: []
-governs: []
+governs: ["**/adapters/**"]
 ---
 
 # yaml
