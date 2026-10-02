@@ -8,7 +8,7 @@ A third-party script is rendered as `<script async src>` where it is needed; no 
 | React dedupes and orders rendered scripts; a hand-inserted one runs twice or too early. | review | [performance] |
 
 ## document-metadata-rendered-by-its-owner · SHOULD
-`<title>`, `<meta>` and `<link>` are rendered as elements, which React hoists into the head; no head library, and no effect writing to the document head.
+Unless another active block claims the document's head, `<title>`, `<meta>` and `<link>` are rendered as elements, which React hoists into the head; no head library, and no effect writing to the document head.
 
 | Why | Check | Tags |
 |---|---|---|

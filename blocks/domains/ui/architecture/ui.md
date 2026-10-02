@@ -11,6 +11,13 @@ A screen owns its navigation state: it reads and validates it, loads the data it
 |---|---|---|
 | the screen is the one place that knows its address and its data, so every piece stays reusable and testable alone, and one loading point shows one loading state and one error instead of a page that fills in piece by piece. | review | [ux, performance] |
 
+## screens-imported-by-nothing-inside → screen-composes-the-page
+Nothing inside the application — a feature, `shared/`, `libs/`, `kernel/` — imports a screen or anything under the screens' folder; only the router does.
+
+| Why | Check | Tags |
+|---|---|---|
+| a screen is the outermost delivery unit, and a feature that imports one depends on the layer that depends on it. | review | [] |
+
 ## pieces-never-touch-navigation · MUST
 A presentational component or a screen's piece imports no navigation or route-parameter primitive.
 
@@ -90,6 +97,13 @@ A component in `components/` takes data and callbacks, performs no input or outp
 |---|---|---|
 | a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | review | [] |
 
+## components-never-import-widgets → components-dumb-widgets-smart
+A component never imports a widget; a widget composes components.
+
+| Why | Check | Tags |
+|---|---|---|
+| a component that holds a widget holds its logic too, and stops being dumb. | tool/imports | [] |
+
 ## components-import-no-adapter → components-dumb-widgets-smart
 A component in `components/` imports no adapter, no shared contract of `contracts/` and no application layer.
 
@@ -98,11 +112,18 @@ A component in `components/` imports no adapter, no shared contract of `contract
 | a component that reaches a mechanism can no longer be shown or tested with plain data. | tool/imports | [] |
 
 ## ui-layer-imports → dependencies-point-inward
-A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities as types, and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
+A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities — their types, enums and functions — and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool/imports | [] |
+| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | review | [] |
+
+## ui-reaches-no-mechanism-of-its-feature → ui-layer-imports
+A feature's `ui/` never imports its adapters, contracts or domain use-cases, nor `contracts/` or `adapters/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are the mechanisms the UI reaches only through its binding units. | tool/imports | [] |
 
 ## component-in-its-own-folder → file-carries-its-role-suffix
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.

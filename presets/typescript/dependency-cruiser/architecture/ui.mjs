@@ -28,15 +28,25 @@ export default {
       },
     },
     {
-      name: 'ui-takes-entities-as-types',
+      name: 'components-never-import-widgets',
       severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/ui/',
+        path: '/ui/components/',
       },
       to: {
-        path: '^src/features/$1/domain/entities/',
-        dependencyTypesNot: [
-          'type-only',
+        path: '/ui/widgets/',
+      },
+    },
+    {
+      name: 'binding-units-reach-no-adapter-or-ui',
+      severity: 'error',
+      from: {
+        path: '^src/features/([^/]+)/app/use-cases/',
+      },
+      to: {
+        path: [
+          '^src/features/[^/]+/(adapters|ui)/',
+          '^src/adapters/',
         ],
       },
     },

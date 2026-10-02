@@ -41,3 +41,24 @@ A component in `components/` imports no query library.
 | Why | Check | Tags |
 |---|---|---|
 | a component that queries can no longer be shown or tested with plain data. | tool/imports | [] |
+
+## read-declared-once-as-query-options → cache-keys-from-feature-factory
+Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its adapter as input; the hook, the loader and the guard all use it.
+
+| Why | Check | Tags |
+|---|---|---|
+| one declaration keeps the key, the function and the options of a read the same wherever it runs. | review | [] |
+
+## adapters-never-import-the-cache-library → one-reason-per-unit
+An adapter never imports the cache library; caching belongs to the binding units.
+
+| Why | Check | Tags |
+|---|---|---|
+| an adapter that caches mixes how data is fetched with how long it is kept, and two layers then hold the cache. | tool/imports | [] |
+
+## libs-import-no-query-library → libs-import-no-application-code
+`libs/` never imports the query library.
+
+| Why | Check | Tags |
+|---|---|---|
+| what `libs/` wraps is one vendor's client; the application's cached data stays out. | tool/imports | [] |

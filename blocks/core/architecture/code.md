@@ -86,6 +86,13 @@ One place reads the environment: `root/`, or the configuration provider a lower 
 |---|---|---|
 | a missing or malformed setting fails at start, not in the middle of a request, and no module depends on the process's environment. | review | [security] |
 
+## stateful-clients-built-by-the-root → one-explicit-composition-root
+A stateful client — a cache client, a store, a connection — is built by the composition root and handed down, never created at a module's top level.
+
+| Why | Check | Tags |
+|---|---|---|
+| a client built at import time is shared by every test and every render on the server, and cannot be replaced. | review | [] |
+
 ## Patterns and design
 
 ## decorators-applied-at-composition-root → canonical-patterns-by-need
@@ -94,3 +101,10 @@ A behaviour wrapped around an implementation is a decorator, applied at the comp
 | Why | Check | Tags |
 |---|---|---|
 | the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps. | review | [] |
+
+## ports-and-use-cases-answer-or-change → function-answers-or-changes-state · MUST
+A query port or use-case has no side effect, and a command takes its data as input and never calls a query.
+
+| Why | Check | Tags |
+|---|---|---|
+| a read that writes cannot be retried or cached, and a command that reads decides on data its caller never saw. | review | [] |

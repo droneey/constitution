@@ -16,6 +16,13 @@ A binding unit binds one operation: it takes its adapter from the providers and 
 |---|---|---|
 | each operation is bound once, and the screen never learns which adapter serves it. | review | [] |
 
+## binding-units-import-no-adapter-or-ui → binding-unit-composes-its-operation
+A binding unit imports neither an adapter, which the providers hand it, nor anything of `ui/`, which imports it.
+
+| Why | Check | Tags |
+|---|---|---|
+| an adapter imported directly bypasses the composition root, so a spec cannot replace its transport; a binding unit that imports UI points against the layers. | tool/imports | [] |
+
 ## configuration-provider-reads-environment → environment-read-once-at-boot
 The configuration provider is the application's one reader of the environment, and parses it once, at boot.
 

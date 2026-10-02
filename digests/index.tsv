@@ -59,7 +59,7 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md		typescript		false		types	typescript			tsconfig.json
@@ -151,6 +151,7 @@ rule	rules-held-by-tools	core	blocks/core/foundation/principles.md		MUST	review	
 rule	one-reason-per-unit	core	blocks/core/foundation/principles.md		MUST	review				foundation		true
 rule	numbers-in-text-from-data	core	blocks/core/foundation/principles.md		MUST	review			data	foundation		true
 rule	invariant-checked-at-construction	core	blocks/core/foundation/principles.md		SHOULD	review				foundation		true
+rule	one-writer-per-shared-resource	core	blocks/core/foundation/principles.md		MUST	review				foundation		true
 rule	no-secret-in-repository	core	blocks/core/foundation/security.md		MUST	tool	secrets		security	foundation		true
 rule	secret-never-in-url-or-artefact	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	leaked-secret-rotated-at-once	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
@@ -207,6 +208,7 @@ rule	protocol-between-artifacts-in-shared	core	blocks/core/architecture/anatomy.
 rule	feature-anatomy	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	feature-domain-holds-its-role-folders	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture	feature-anatomy	false
 rule	data-ports-split-by-reads-and-writes	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture		true
+rule	ports-named-by-aggregate-and-side	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture	data-ports-split-by-reads-and-writes	false
 rule	pipeline-stages-under-steps	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	contracts-know-no-vendor-or-other-contract	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
 rule	adapters-never-import-each-other-or-callers	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
@@ -241,7 +243,9 @@ rule	value-object-built-only-by-its-check	core	blocks/core/architecture/code.md	
 rule	boundary-builds-value-objects-through-the-domain	core	blocks/core/architecture/code.md		MUST	review			data	architecture	value-object-built-only-by-its-check	false
 rule	schema-derives-from-domain-types	core	blocks/core/architecture/code.md		MUST	review				architecture	domain-values-never-typed-again	false
 rule	environment-read-once-at-boot	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture		true
+rule	stateful-clients-built-by-the-root	core	blocks/core/architecture/code.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	decorators-applied-at-composition-root	core	blocks/core/architecture/code.md		SHOULD	review				architecture	canonical-patterns-by-need	false
+rule	ports-and-use-cases-answer-or-change	core	blocks/core/architecture/code.md		MUST	review				architecture	function-answers-or-changes-state	true
 rule	dependencies-point-inward	core	blocks/core/architecture/principles.md		MUST	tool	imports			architecture		true
 rule	inner-layers-declare-their-contracts	core	blocks/core/architecture/principles.md		MUST	review				architecture		true
 rule	domain-imports-only-itself-and-kernel	core	blocks/core/architecture/principles.md		MUST	tool	imports			architecture		true
@@ -260,6 +264,7 @@ rule	untrusted-input-parsed-at-edge	core	blocks/core/architecture/principles.md	
 rule	extension-by-addition	core	blocks/core/architecture/principles.md		MUST	review				architecture		true
 rule	duplication-across-contexts-by-default	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	entities-guarded-where-the-program-owns-them	core	blocks/core/architecture/principles.md		SHOULD	review			data	architecture		true
+rule	entity-behaviour-beside-entity	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	environment-names-declared-in-one-place	core	blocks/core/architecture/security.md		SHOULD	review			security	architecture		true
 rule	entry-point-declares-its-access	core	blocks/core/architecture/security.md		MUST	review			security	architecture	access-denied-unless-granted	false
 rule	spec-per-boundary-of-the-tree	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture	spec-per-boundary	false
@@ -420,6 +425,7 @@ rule	ui-styling-container-queries	ui	blocks/domains/ui/foundation/design-system.
 rule	ui-styling-cascading-variants	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux	foundation		true
 rule	ui-variant-map-types-props	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review				foundation		true
 rule	screen-composes-the-page	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux performance	architecture	delivery-units-stay-thin	false
+rule	screens-imported-by-nothing-inside	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux performance	architecture	screen-composes-the-page	false
 rule	pieces-never-touch-navigation	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture		true
 rule	navigation-passed-by-slot	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux	architecture		true
 rule	screen-private-pieces-beside-screen	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	delivery-unit-beside-what-it-serves	false
@@ -431,8 +437,10 @@ rule	component-home-by-knowledge	ui	blocks/domains/ui/architecture/ui.md		MUST	r
 rule	component-named-by-location	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	folder-named-for-purpose-or-role	false
 rule	widget-folder-ends-in-widget	ui	blocks/domains/ui/architecture/ui.md		SHOULD	tool	names			architecture	component-named-by-location	false
 rule	components-dumb-widgets-smart	ui	blocks/domains/ui/architecture/ui.md		MUST	review				architecture	side-effects-at-the-edges	false
+rule	components-never-import-widgets	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture	components-dumb-widgets-smart	false
 rule	components-import-no-adapter	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture	components-dumb-widgets-smart	false
-rule	ui-layer-imports	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture	dependencies-point-inward	false
+rule	ui-layer-imports	ui	blocks/domains/ui/architecture/ui.md		MUST	review				architecture	dependencies-point-inward	false
+rule	ui-reaches-no-mechanism-of-its-feature	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture	ui-layer-imports	false
 rule	component-in-its-own-folder	ui	blocks/domains/ui/architecture/ui.md		MUST	review				architecture	file-carries-its-role-suffix	false
 rule	component-folders-hold-their-files	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	names			architecture	component-in-its-own-folder	false
 rule	vendored-component-placed-by-its-home	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux	architecture	vendored-components-adapted-on-arrival	false
@@ -445,6 +453,7 @@ rule	input-driven-requests-debounced	ui	blocks/domains/ui/foundation/with/remote
 rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review				architecture	one-explicit-composition-root	false
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review				architecture		true
+rule	binding-units-import-no-adapter-or-ui	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	tool	imports			architecture	binding-unit-composes-its-operation	false
 rule	configuration-provider-reads-environment	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review			security	architecture	environment-read-once-at-boot	false
 rule	command-invalidates-in-its-binding-unit	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review			data	architecture		true
 rule	unauthorized-handled-once-in-cache	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review			errors security ux	architecture	one-error-handler-per-transport	false
@@ -779,16 +788,26 @@ rule	query-retry-only-transient	tanstack-query	blocks/implementations/tanstack-q
 rule	query-signal-reaches-the-request	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data errors performance	foundation	reads-cancellable-latest-wins	false
 rule	input-query-keyed-on-debounced-value	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	ux performance	foundation	input-driven-requests-debounced	false
 rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data performance	foundation	fast-source-updates-once-per-frame	false
+rule	write-pending-until-its-refresh-lands	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data	foundation	invalidation-in-on-settled	false
 rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript	data	architecture	binding-unit-composes-its-operation	false
 rule	query-functions-call-the-handed-adapter	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
 rule	key-factory-in-cache-utils	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	cache-keys-from-feature-factory	false
 rule	cache-is-the-only-home-of-server-data	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	server-owns-remote-data	false
 rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript	errors security ux	architecture	unauthorized-handled-once-in-cache	false
 rule	components-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
+rule	read-declared-once-as-query-options	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	cache-keys-from-feature-factory	false
+rule	adapters-never-import-the-cache-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	one-reason-per-unit	false
+rule	libs-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
 rule	layout-lives-in-route-file	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	error-component-per-route	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript	errors ux	foundation		true
 rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript	security	foundation		true
 rule	tanstack-router-file-names-kept	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	tool	names	typescript		foundation	kebab-case-file-names	false
+rule	links-name-typed-targets	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
+rule	loader-declares-the-search-it-reads	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
+rule	routes-split-automatically	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
+rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation	generated-files-not-committed	false
+rule	router-claims-the-head	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript		foundation	one-writer-per-shared-resource	false
+rule	search-falls-back-to-defaults	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	screens-are-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript		architecture		true
 rule	routes-folder-holds-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screens-are-file-routes	false
 rule	route-owns-its-url	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux performance	architecture	screen-composes-the-page	false
@@ -799,6 +818,13 @@ rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementation
 rule	screen-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screen-private-pieces-in-dash-folders	false
 rule	guard-reaches-features-outside-react	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	screen-guards-through-auth-surface	false
 rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux	architecture	document-metadata-owned-by-screen	false
+rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript		architecture	screen-private-pieces-beside-screen	false
+rule	libs-import-no-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
+rule	routes-imported-only-by-the-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript	ux performance	architecture	screens-imported-by-nothing-inside	false
+rule	screen-reads-start-in-the-loader	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux performance	architecture	route-owns-its-url	false
+rule	adapters-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	guard-reaches-features-outside-react	false
+rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	MAY	review		typescript		foundation		true
+rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript	errors ux	foundation	error-component-per-route	false
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript	data	architecture	one-home-per-datum	false
 rule	query-client-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	tool	imports	typescript		architecture	root-imported-only-by-entry-and-delivery-wiring	false
 rule	hashed-assets-immutable-html-revalidated	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		SHOULD	review		typescript	performance	foundation		true
@@ -813,6 +839,7 @@ rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
+rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	one-build-for-every-environment	vite	blocks/implementations/vite/architecture/vite.md		MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
 rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/foundation/with/tsc.md	tsc	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	errors	foundation	expected-failures-typed-with-codes	false

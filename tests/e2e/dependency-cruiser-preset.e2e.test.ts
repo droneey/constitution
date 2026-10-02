@@ -474,21 +474,6 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'ui-reaches-no-mechanism',
     },
     {
-      condition: 'a widget imports an entity as a value',
-      files: {
-        'src/features/orders/domain/entities/index.ts': exported('order'),
-        'src/features/orders/ui/widgets/orders.tsx': importing({
-          from: '../../domain/entities',
-          name: 'order',
-        }),
-      },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
-      ],
-      rule: 'ui-takes-entities-as-types',
-    },
-    {
       condition: 'a primitive imports the message library',
       files: {
         'src/libs/ui/button.tsx': importing({
@@ -588,6 +573,128 @@ describe('the dependency-cruiser layer set', () => {
       ],
       rule: 'yaml-only-at-the-edge',
     },
+    {
+      condition: 'a component imports a widget',
+      files: {
+        'src/features/orders/ui/widgets/orders-widget/index.ts':
+          exported('ordersWidget'),
+        'src/features/orders/ui/components/order-card.tsx': importing({
+          from: '../widgets/orders-widget',
+          name: 'ordersWidget',
+        }),
+      },
+      parts: [
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
+      ],
+      rule: 'components-never-import-widgets',
+    },
+    {
+      condition: 'a binding unit imports an adapter',
+      files: {
+        'src/features/orders/adapters/api/index.ts': exported('ordersAdapter'),
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+          importing({
+            from: '../../../../adapters/api',
+            name: 'ordersAdapter',
+          }),
+      },
+      parts: [
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
+      ],
+      rule: 'binding-units-reach-no-adapter-or-ui',
+    },
+    {
+      condition: 'a binding unit imports a component',
+      files: {
+        'src/features/orders/ui/components/order-card.tsx':
+          exported('orderCard'),
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+          importing({
+            from: '../../../../ui/components/order-card',
+            name: 'orderCard',
+          }),
+      },
+      parts: [
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
+      ],
+      rule: 'binding-units-reach-no-adapter-or-ui',
+    },
+    {
+      condition: 'an adapter imports the cache library',
+      files: {
+        'src/features/orders/adapters/api/orders.adapter.ts': importing({
+          from: '@tanstack/react-query',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/tanstack-query',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-never-cache',
+    },
+    {
+      condition: 'a library imports the cache library',
+      files: {
+        'src/libs/http/client.ts': importing({
+          from: '@tanstack/react-query',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/tanstack-query',
+        'typescript/architecture/core',
+      ],
+      rule: 'libs-never-cache',
+    },
+    {
+      condition: 'a library imports the router',
+      files: {
+        'src/libs/http/client.ts': importing({
+          from: '@tanstack/react-router',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/core',
+      ],
+      rule: 'libs-never-route',
+    },
+    {
+      condition: 'a feature imports a screen',
+      files: {
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx':
+          importing({
+            from: '../../../../../routes/orders',
+            name: 'route',
+          }),
+        'src/routes/orders.tsx': exported('route'),
+      },
+      parts: [
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/core',
+      ],
+      rule: 'routes-reached-only-from-the-router',
+    },
+    {
+      condition: 'a route piece imports its route file',
+      files: {
+        'src/routes/orders/-components/orders-table.tsx': importing({
+          from: '../index',
+          name: 'route',
+        }),
+        'src/routes/orders/index.tsx': exported('route'),
+      },
+      parts: [
+        'typescript/architecture/tanstack-router',
+        'typescript/architecture/core',
+      ],
+      rule: 'route-pieces-never-import-route-files',
+    },
   ])(
     'should report $rule when $condition and a project extends that part',
     ({ files, parts, rule }) => {
@@ -604,6 +711,31 @@ describe('the dependency-cruiser layer set', () => {
       expect(violations).toContain(rule);
     },
   );
+
+  it('should report no violation when a widget imports an enum of its entities at run time', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/domain/entities/index.ts':
+          "export enum OrderStatus {\n  Pending = 'pending',\n}\n",
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx':
+          importing({
+            from: '../../../domain/entities',
+            name: 'OrderStatus',
+          }),
+      },
+      parts: [
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
+      ],
+    };
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toStrictEqual([]);
+  });
 
   it('should report no violation when an application follows the rules of every part', () => {
     // Arrange

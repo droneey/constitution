@@ -1,7 +1,7 @@
 # TanStack Start
 
 ## spa-mode-without-server-logic → server-rendering-is-delivery-only
-The application runs in SPA mode: the root route renders on the client, and there is no server function, server route or data access, except the one configuration function below. Server rendering serves render speed only.
+The application runs in SPA mode: the root route renders on the client, and there is no server function, server route or data access, except the one configuration function below and the session proxy the browser allows. Server rendering serves render speed only.
 
 | Why | Check | Tags |
 |---|---|---|

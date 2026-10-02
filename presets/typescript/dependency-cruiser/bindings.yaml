@@ -78,11 +78,21 @@ architecture:
     package-knows-no-consumer:
       - package-knows-no-consumer
   tanstack-query:
+    adapters-never-import-the-cache-library:
+      - adapters-never-cache
     components-import-no-query-library:
       - components-never-query
+    libs-import-no-query-library:
+      - libs-never-cache
   tanstack-router:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-routes
+    libs-import-no-router:
+      - libs-never-route
+    route-pieces-reach-the-route-by-its-api:
+      - route-pieces-never-import-route-files
+    routes-imported-only-by-the-router:
+      - routes-reached-only-from-the-router
     query-client-through-router-context:
       - root-reached-only-from-entries
     root-imported-only-by-entry-and-delivery-wiring:
@@ -91,11 +101,14 @@ architecture:
       - router-primitives-only-in-screens-and-widgets
       - screen-pieces-never-navigate
   ui:
+    binding-units-import-no-adapter-or-ui:
+      - binding-units-reach-no-adapter-or-ui
     components-import-no-adapter:
       - components-take-data-and-callbacks
-    ui-layer-imports:
+    components-never-import-widgets:
+      - components-never-import-widgets
+    ui-reaches-no-mechanism-of-its-feature:
       - ui-reaches-no-mechanism
-      - ui-takes-entities-as-types
   yaml:
     yaml-only-at-the-edge:
       - yaml-only-at-the-edge

@@ -47,6 +47,43 @@ export default {
       },
     },
     {
+      name: 'routes-reached-only-from-the-router',
+      severity: 'error',
+      from: {
+        path: '^src/(features|shared|libs|kernel|contracts|composition)/',
+      },
+      to: {
+        path: '^src/routes/',
+      },
+    },
+    {
+      name: 'route-pieces-never-import-route-files',
+      severity: 'error',
+      from: {
+        path: [
+          '^src/routes/-(components|hooks)/',
+          '^src/routes/.*/-(components|hooks)/',
+        ],
+      },
+      to: {
+        path: '^src/routes/',
+        pathNot: [
+          '/-(components|hooks)/',
+          '(^|/)__tests__/',
+        ],
+      },
+    },
+    {
+      name: 'libs-never-route',
+      severity: 'error',
+      from: {
+        path: '^src/libs/',
+      },
+      to: {
+        path: ROUTER,
+      },
+    },
+    {
       name: 'screen-pieces-never-navigate',
       severity: 'error',
       from: {
