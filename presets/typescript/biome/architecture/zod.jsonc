@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    {
+      "path": "./.constitution/presets/typescript/biome/architecture/plugins/schema-never-brands.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

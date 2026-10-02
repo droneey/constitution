@@ -47,3 +47,10 @@ A project's semantic aliases live in one ambient `types.d.ts` at its source root
 | Why | Check | Tags |
 |---|---|---|
 | one file holds the program's vocabulary, and `libs/` stays free of a hidden dependency on it. | review | [] |
+
+## environment-read-only-in-root → environment-read-once-at-boot
+`process.env` is read only under `root/` and in the entry files; a spec may read it to drive the program.
+
+| Why | Check | Tags |
+|---|---|---|
+| a variable read deep in the program is a dependency no signature shows, and the typed configuration of the root is bypassed. | tool/lint | [] |

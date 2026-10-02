@@ -56,6 +56,20 @@ Defects travel to the boundary. Each transport has one handler that turns a fail
 
 ## Types
 
+## value-object-built-only-by-its-check → invariant-checked-at-construction · MUST
+A business value with an invariant — an email, an amount in its currency, a percentage — is a value object of the domain, built only by the domain's function that checks the invariant.
+
+| Why | Check | Tags |
+|---|---|---|
+| a value that exists is valid, so no caller checks it again, and the invariant has one home in the layer that owns its meaning. | review | [data] |
+
+## boundary-builds-value-objects-through-the-domain → value-object-built-only-by-its-check
+A boundary — an adapter's mapper, a form, a parser — gets a value object only through the domain's function that builds it, never through a mechanism of its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| a second way to make the value is a second definition of it, and the two drift. | review | [data] |
+
 ## schema-derives-from-domain-types → domain-values-never-typed-again
 A schema over a domain type or enum derives its values from it, so the edge depends on the domain and never restates it.
 

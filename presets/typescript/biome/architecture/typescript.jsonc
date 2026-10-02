@@ -1,4 +1,31 @@
 {
+  "linter": {
+    "rules": {
+      "style": {
+        "noProcessEnv": "error",
+      },
+    },
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/root/**",
+        "**/main.*",
+        "**/entrypoints/*/main.*",
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off",
+          },
+        },
+      },
+    },
+  ],
   "plugins": [
     {
       "path": "./.constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",

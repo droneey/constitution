@@ -92,6 +92,20 @@ A function takes at most three positional parameters.
 |---|---|---|
 | each position is an order the caller must remember. | tool/lint | [] |
 
+## no-boolean-positional-parameter · SHOULD
+A boolean is never a positional parameter: it travels as a named field of the call's object, or the function becomes two that each say what they do.
+
+| Why | Check | Tags |
+|---|---|---|
+| `save(user, true)` cannot be read at the call site; a named field or a function of its own says what the flag means. | review | [] |
+
+## same-type-parameters-told-apart · SHOULD
+Two or more parameters of one type travel as one named object, or are told apart by their types.
+
+| Why | Check | Tags |
+|---|---|---|
+| two values of one type in a row are swapped silently: `transfer(fromId, toId)` compiles either way round. | review | [] |
+
 ## Units
 
 ## function-does-one-thing · SHOULD
@@ -233,6 +247,27 @@ An expected failure is typed, carries a stable code `<MODULE>_<ENTITY>_<KIND>` a
 |---|---|---|
 | a caller that branches on a typed code keeps working when the message is reworded, and a failure that is part of the contract is handled by design. | review | [errors] |
 
+## failures-listed-beside-the-contract → expected-failures-typed-with-codes
+A contract that can fail lists the expected failures it throws as one named type beside it, each an error of the kit with its code.
+
+| Why | Check | Tags |
+|---|---|---|
+| the language cannot say what a function throws, so the list is where a caller and a spec find every failure to handle. | review | [errors] |
+
+## catch-narrows-and-rethrows · MUST
+A catch handles only the failures it recognises by code, through the error kit's guard, and rethrows every other.
+
+| Why | Check | Tags |
+|---|---|---|
+| a catch that handles everything turns a bug into a handled failure, and the bug is never seen. | review | [errors] |
+
+## only-errors-thrown · MUST
+Only errors are thrown or rejected — never a string, a plain object or another value.
+
+| Why | Check | Tags |
+|---|---|---|
+| a thrown value that is not an error has no stack and no code, so no catch can recognise it and no log can trace it. | review | [errors] |
+
 ## failure-shown-as-what-happened-and-what-next · SHOULD
 What a user sees of a failure says what happened and what to do next, never a stack trace or internals.
 
@@ -283,6 +318,20 @@ A set of values the program declares for its business is never typed out again. 
 | Why | Check | Tags |
 |---|---|---|
 | a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | review | [] |
+
+## invariant-values-are-plain-immutable-data → invariant-checked-at-construction · MUST
+A value that keeps an invariant is immutable, compared by value, and plain data, never a class instance.
+
+| Why | Check | Tags |
+|---|---|---|
+| plain data crosses a cache, a URL and storage, where a class instance loses its methods, and a value no one can change keeps its invariant. | review | [data] |
+
+## shapes-composed-of-small-shapes · SHOULD
+A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large base type by omitting or picking its fields.
+
+| Why | Check | Tags |
+|---|---|---|
+| a shape cut from a large one changes whenever the large one does, and hides which fields its consumer really needs. | review | [] |
 
 ## types-live-with-their-consumer · SHOULD
 A type lives beside the unit whose signature introduces it, and every other unit imports it from there. It moves to its own file when a second consumer appears, and never gets a second home through a re-export.

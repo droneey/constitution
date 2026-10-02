@@ -79,6 +79,8 @@ rule	file-is-one-semantic-unit	core	blocks/core/foundation/code.md		SHOULD	revie
 rule	booleans-read-as-predicates	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	at-most-three-positional-arguments	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	positional-parameters-at-most-three	core	blocks/core/foundation/code.md		SHOULD	tool	lint			foundation	at-most-three-positional-arguments	false
+rule	no-boolean-positional-parameter	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
+rule	same-type-parameters-told-apart	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	function-does-one-thing	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	function-file-and-complexity-limits	core	blocks/core/foundation/code.md		MUST	tool	lint			foundation		true
 rule	guard-clauses-first	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
@@ -98,11 +100,16 @@ rule	error-cause-preserved	core	blocks/core/foundation/code.md		MUST	tool	lint		
 rule	error-logged-once	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
 rule	retry-only-transient-failures	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
 rule	expected-failures-typed-with-codes	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
+rule	failures-listed-beside-the-contract	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation	expected-failures-typed-with-codes	false
+rule	catch-narrows-and-rethrows	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
+rule	only-errors-thrown	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
 rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/foundation/code.md		SHOULD	review			errors security ux	foundation		true
 rule	error-kit-carries-code-cause-and-details	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
 rule	guard-proves-every-property-it-claims	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	identifiers-branded-by-entity	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	domain-values-never-typed-again	core	blocks/core/foundation/code.md		MUST	review				foundation		true
+rule	invariant-values-are-plain-immutable-data	core	blocks/core/foundation/code.md		MUST	review			data	foundation	invariant-checked-at-construction	true
+rule	shapes-composed-of-small-shapes	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	types-live-with-their-consumer	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	immutable-by-default	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	async-work-awaited-or-deliberately-detached	core	blocks/core/foundation/code.md		MUST	tool	lint		errors	foundation		true
@@ -230,6 +237,8 @@ rule	diagnostics-through-the-logging-port	core	blocks/core/architecture/code.md	
 rule	wire-absence-mapped-at-boundary	core	blocks/core/architecture/code.md		MUST	review			data	architecture	absence-has-one-value	false
 rule	typed-failures-homed-by-layer	core	blocks/core/architecture/code.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
 rule	one-error-handler-per-transport	core	blocks/core/architecture/code.md		SHOULD	review			errors security ux	architecture	failure-shown-as-what-happened-and-what-next	false
+rule	value-object-built-only-by-its-check	core	blocks/core/architecture/code.md		MUST	review			data	architecture	invariant-checked-at-construction	true
+rule	boundary-builds-value-objects-through-the-domain	core	blocks/core/architecture/code.md		MUST	review			data	architecture	value-object-built-only-by-its-check	false
 rule	schema-derives-from-domain-types	core	blocks/core/architecture/code.md		MUST	review				architecture	domain-values-never-typed-again	false
 rule	environment-read-once-at-boot	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture		true
 rule	decorators-applied-at-composition-root	core	blocks/core/architecture/code.md		SHOULD	review				architecture	canonical-patterns-by-need	false
@@ -550,6 +559,7 @@ rule	names-in-the-case-of-their-kind	typescript	blocks/contexts/languages/typesc
 rule	type-names-undecorated	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation		true
 rule	undefined-is-the-only-absence	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript	data	foundation	absence-has-one-value	false
 rule	brand-is-an-intersection-or-unique-symbol	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	identifiers-branded-by-entity	false
+rule	invariant-value-is-a-branded-type	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	data	foundation	invariant-values-are-plain-immutable-data	false
 rule	semantic-alias-names-a-shared-meaning	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	enums-for-named-value-groups	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation		true
 rule	strict-equality-only	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation		true
@@ -562,6 +572,16 @@ rule	exhaustive-branching-over-unions	typescript	blocks/contexts/languages/types
 rule	switch-over-union-exhaustive	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	exhaustive-branching-over-unions	false
 rule	satisfies-to-check-conformance	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
+rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	immutable-by-default	false
+rule	type-parameter-appears-twice	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
+rule	text-made-deliberately	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
+rule	no-object-joined-into-text	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	text-made-deliberately	false
+rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
+rule	return-union-lists-only-returned-members	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	return-type-no-wider-than-returned	false
+rule	no-literal-thrown	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript	errors	foundation	only-errors-thrown	false
+rule	named-exports-only	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation		true
+rule	cancellation-by-abort-signal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript	errors performance	foundation	io-has-timeout-and-cancellation	false
+rule	resources-released-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	options-object-typed-as-function-input	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	at-most-three-positional-arguments	false
 rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	docs-only-for-non-obvious-public-entry	false
 rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	security	foundation		true
@@ -577,6 +597,7 @@ rule	null-mapped-to-undefined-at-boundary	typescript	blocks/contexts/languages/t
 rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
 rule	brands-set-at-the-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	identifiers-branded-by-entity	false
 rule	ambient-aliases-are-project-vocabulary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	semantic-alias-names-a-shared-meaning	false
+rule	environment-read-only-in-root	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript	security	architecture	environment-read-once-at-boot	false
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	configured-tool-is-a-peer-with-floor	false
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript		foundation		true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
@@ -803,6 +824,7 @@ rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/foundatio
 rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/foundation/zod.md		SHOULD	test		typescript	errors	foundation	expected-failures-typed-with-codes	false
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/architecture/zod.md		MUST	review		typescript		architecture	schema-derives-from-domain-types	false
+rule	schema-never-brands	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	lint	typescript	data	architecture	boundary-builds-value-objects-through-the-domain	false
 answer	bun	workspace-packages-linked-locally	yes
 answer	bun	publishing-with-provenance-supported	partly
 answer	bunli	command-framework-parses-flags-by-schema	yes

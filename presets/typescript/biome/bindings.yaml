@@ -112,6 +112,15 @@ foundation:
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
   typescript:
+    named-exports-only:
+      - noDefaultExport
+    return-union-lists-only-returned-members:
+      - noMisleadingReturnType
+    no-object-joined-into-text:
+      - noBaseToString
+      - noUnsafePlusOperands
+    no-literal-thrown:
+      - useThrowOnlyError
     enums-for-named-value-groups:
       - enums-for-named-value-groups.grit
       - useEnumInitializers
@@ -151,5 +160,10 @@ architecture:
     react-native-imported-from-its-entry:
       - noReactNativeDeepImports
   typescript:
+    environment-read-only-in-root:
+      - noProcessEnv
     surface-only-re-exports:
       - surface-only-re-exports.grit
+  zod:
+    schema-never-brands:
+      - schema-never-brands.grit
