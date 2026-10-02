@@ -1,5 +1,27 @@
 {
+  "overrides": [
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "domains": {
+          "test": "all",
+        },
+      },
+    },
+  ],
   "plugins": [
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-skipped-or-empty-tests.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
     {
       "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-module-mocks.grit",
       "includes": [

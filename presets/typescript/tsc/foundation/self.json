@@ -12,7 +12,6 @@
     "checkJs": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -22,7 +21,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noUncheckedSideEffectImports": true,
-    "removeComments": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   }

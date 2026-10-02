@@ -4,4 +4,4 @@ pre-commit:
     - name: biome
       glob: "*.{ts,tsx,js,jsx,json,md,yaml,yml}"
       stage_fixed: true
-      run: PATH="node_modules/.bin:$PATH" biome check --write --no-errors-on-unmatched {staged_files}
+      run: bunx --bun biome check --write --no-errors-on-unmatched {staged_files}

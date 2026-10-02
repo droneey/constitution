@@ -19,6 +19,8 @@ foundation:
   bun-test:
     no-module-mocks:
       - no-module-mocks.grit
+    no-skipped-or-empty-tests:
+      - no-skipped-or-empty-tests.grit
     strict-matcher-only:
       - strict-matcher-only.grit
   core:
@@ -50,7 +52,6 @@ foundation:
     no-secret-in-repository:
       - noSecrets
     no-skipped-or-empty-tests:
-      - no-skipped-or-empty-tests.grit
       - noConditionalExpect
       - noFocusedTests
       - noSkippedTests

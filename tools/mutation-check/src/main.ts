@@ -72,6 +72,7 @@ if (process.argv.includes('all')) {
       '-U0',
       '--no-color',
       '--diff-filter=ACMR',
+      '--merge-base',
       BASE,
     ]),
     exists: existsSync,

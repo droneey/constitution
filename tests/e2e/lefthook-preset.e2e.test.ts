@@ -18,7 +18,7 @@ describe('the lefthook biome part', () => {
         0,
         'run',
       ],
-      'PATH="node_modules/.bin:$PATH" biome check --write --no-errors-on-unmatched {staged_files}',
+      'bunx --bun biome check --write --no-errors-on-unmatched {staged_files}',
     );
   });
 });

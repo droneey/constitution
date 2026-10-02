@@ -16,6 +16,7 @@ import { describe, expect, test } from 'bun:test';
 interface Check {
   changes: Readonly<Record<string, string>>;
   config?: Readonly<Record<string, string>>;
+  mainline?: Readonly<Record<string, string>>;
   mode?: 'all';
 }
 
@@ -42,6 +43,55 @@ const CHANGE = {
 const git = (input: { args: readonly string[]; folder: string }): void => {
   spawnSync('git', input.args, {
     cwd: input.folder,
+  });
+};
+
+const commit = (folder: string): void => {
+  git({
+    args: [
+      'add',
+      '.',
+    ],
+    folder,
+  });
+  git({
+    args: [
+      '-c',
+      'user.name=test',
+      '-c',
+      'user.email=test@example.com',
+      'commit',
+      '--quiet',
+      '--no-verify',
+      '-m',
+      'change',
+    ],
+    folder,
+  });
+};
+
+const moveMainOn = (input: {
+  files: Readonly<Record<string, string>>;
+  folder: string;
+}): void => {
+  writeFiles(input);
+  commit(input.folder);
+  git({
+    args: [
+      'update-ref',
+      'refs/remotes/origin/main',
+      'HEAD',
+    ],
+    folder: input.folder,
+  });
+  git({
+    args: [
+      'reset',
+      '--quiet',
+      '--hard',
+      'HEAD~1',
+    ],
+    folder: input.folder,
   });
 };
 
@@ -75,27 +125,7 @@ const runCheck = (check: Check): Outcome => {
     ],
     folder,
   });
-  git({
-    args: [
-      'add',
-      '.',
-    ],
-    folder,
-  });
-  git({
-    args: [
-      '-c',
-      'user.name=test',
-      '-c',
-      'user.email=test@example.com',
-      'commit',
-      '--quiet',
-      '--no-verify',
-      '-m',
-      'base',
-    ],
-    folder,
-  });
+  commit(folder);
   git({
     args: [
       'update-ref',
@@ -104,6 +134,14 @@ const runCheck = (check: Check): Outcome => {
     ],
     folder,
   });
+
+  if (check.mainline !== undefined) {
+    moveMainOn({
+      files: check.mainline,
+      folder,
+    });
+  }
+
   writeFiles({
     files: check.changes,
     folder,
@@ -171,6 +209,23 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBe(
       'run --mutate src/line.utils.ts,src/order.utils.ts:2-2',
     );
+  });
+
+  test("should mutate only the branch's lines when the main line moved on after the branch began", () => {
+    // Arrange
+    const check = {
+      changes: CHANGE,
+      mainline: {
+        'src/order.utils.ts':
+          'export const total = 5;\nexport const count = 2;\n',
+      },
+    };
+
+    // Act
+    const { strykerArguments } = runCheck(check);
+
+    // Assert
+    expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
   });
 
   test('should mutate the changed line when the configuration is JSON', () => {

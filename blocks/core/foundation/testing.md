@@ -172,7 +172,7 @@ A case has three parts — Arrange, Act, Assert — each marked and present once
 | a reader sees at once what is set up, what is done and what is proven. | review | [testing] |
 
 ## no-skipped-or-empty-tests · MUST
-No test is skipped, pending, focused or without an assertion.
+No test is skipped, pending, focused, run only under a condition, expected to fail, or without an assertion.
 
 | Why | Check | Tags |
 |---|---|---|

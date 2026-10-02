@@ -263,11 +263,11 @@ A type guard checks every property of the type it claims. A guard that checks on
 **Example:**
 ```ts
 // bad: claims a User, checks only the id
-const isUser = (value: unknown): value is User =>
-  typeof value === 'object' && value !== null && 'id' in value;
+const isUser = (candidate: unknown): candidate is User =>
+  typeof candidate === 'object' && candidate !== null && 'id' in candidate;
 
 // good: the schema checks every property it claims
-const isUser = (value: unknown): value is User => userSchema.safeParse(value).success;
+const isUser = (candidate: unknown): candidate is User => userSchema.safeParse(candidate).success;
 ```
 
 ## identifiers-branded-by-entity · SHOULD

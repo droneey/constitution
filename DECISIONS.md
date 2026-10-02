@@ -623,3 +623,15 @@
 - **Decision.** `client-holds-nothing-hidden` names a variable the build inlines under a public prefix among what is shipped to the client. `expo-public-env-holds-no-secret` and `vite-public-env-holds-no-secret` are removed: each said the same of its own prefix, under `secret-never-in-url-or-artefact`, and neither held more.
 - **Rejected.** Keeping one child per bundler, which repeats the domain's rule once for every tool that inlines variables.
 - **Why.** That the client's user can read the bundle is a fact of the untrusted client, whatever builds it.
+
+## ADR-0105 — The tools hold what their rules claim
+**Date:** 2026-10-02 · **Status:** Accepted
+
+- **Decision.** Five rules change so that a tool holds what each says.
+  - `stryker-runs-on-node` is removed: Stryker 10 runs under Bun 1.4, JSX included, and `[run] bun = true` already ran it there.
+  - `trusted-dependencies-listed-by-name` requires `trustedDependencies` always declared, `[]` when no dependency may run a script, since without the field Bun runs the scripts of its own list of popular packages.
+  - `no-skipped-or-empty-tests` also refuses a case run only under a condition or expected to fail — Bun's `if`, `skipIf`, `todoIf` and `failing` — and Biome's test domain is turned on for `bun:test` specs, which it never detects by itself.
+  - `check-writes-no-snapshot` is new: the check runs `bun test` with `CI=1`, so a missing snapshot fails instead of being written.
+  - `integration-specs-run-apart` leaves out `tests/` as well, by `pathIgnorePatterns`, and names the integration run.
+- **Rejected.** A Stryker runner for Bun with per-test coverage: over 986 mutants it took 58 s against 52 s for the command runner, and it has one maintainer. The TypeScript checker: TypeScript 7.0 ships no compiler API until 7.1.
+- **Why.** A rule a tool claims to hold and does not is worse than a reviewed one: everyone trusts the check.

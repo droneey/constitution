@@ -576,6 +576,14 @@ describe('the Biome foundation parts', () => {
       },
       rule: 'useExpect',
     },
+    {
+      condition: 'a spec repeats a hook, which only the test domain catches',
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { beforeEach, describe, expect, test } from 'bun:test';\n\ndescribe('orders', () => {\n  beforeEach(() => {});\n  beforeEach(() => {});\n  test('should add totals when two are given', () => {\n    expect(1).toBe(1);\n  });\n});\n",
+      },
+      rule: 'noDuplicateTestHooks',
+    },
   ])('should report $rule when $condition', ({ files, rule }) => {
     // Arrange
     const project = {
@@ -679,7 +687,23 @@ describe('the Biome foundation parts', () => {
         'src/order.test.ts':
           "import { test } from 'bun:test';\n\ntest.todo('adds totals');\n",
       },
-      message: 'Write the case or leave it out',
+      message: 'Write the case so it runs every time',
+    },
+    {
+      condition: 'a spec runs a case only under a condition',
+      files: {
+        'src/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest.skipIf(process.platform === 'win32')('should add totals', () => {\n  expect(1).toBe(1);\n});\n",
+      },
+      message: 'Write the case so it runs every time',
+    },
+    {
+      condition: 'a spec expects a case to fail',
+      files: {
+        'src/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest.failing('should add totals', () => {\n  expect(1).toBe(2);\n});\n",
+      },
+      message: 'Write the case so it runs every time',
     },
     {
       condition: 'a type alias carries the Type suffix',

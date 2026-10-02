@@ -626,6 +626,7 @@ rule	version-written-to-every-manifest	bun	blocks/implementations/bun/workflow/w
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-intent-per-case	false
 rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-fake-per-contract	false
 rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-tested-against-the-real-engine	false
+rule	check-writes-no-snapshot	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript		foundation	check-only-checks	false
 rule	coverage-gate-on-loaded-files	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	tool	coverage	typescript	testing	foundation	coverage-holds-all-logic	false
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/foundation/bunli.md		SHOULD	test		typescript	testing	foundation	command-tested-through-its-command-line	false
 rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architecture/bunli.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
@@ -731,7 +732,6 @@ rule	stories-unreachable-from-production	storybook	blocks/implementations/storyb
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-runs-the-bun-test-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	stryker-drives-bun-test-by-command	false
-rule	stryker-runs-on-node	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	SHOULD	review		typescript		foundation	other-runtime-only-where-bun-cannot	false
 rule	versions-checked-and-manifests-formatted	syncpack	blocks/implementations/syncpack/foundation/syncpack.md		MUST	tool	versions	typescript		foundation	one-version-per-dependency	false
 rule	utilities-only-from-tokens	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	review		css typescript	ux	foundation	tokens-single-source-of-appearance	false
 rule	no-arbitrary-utility-value	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	utilities-only-from-tokens	false
