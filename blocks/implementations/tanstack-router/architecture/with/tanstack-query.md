@@ -14,4 +14,4 @@ The query client reaches loaders and guards through the router's context, never 
 
 | Why | Check | Tags |
 |---|---|---|
-| routes then depend on what the root hands them, and a spec hands them another client. | tool/architecture | [] |
+| routes then depend on what the root hands them, and a spec hands them another client. | tool/imports | [] |

@@ -16,7 +16,7 @@ A presentational component or a screen's piece imports no navigation or route-pa
 
 | Why | Check | Tags |
 |---|---|---|
-| a piece that navigates by itself works on one screen only, and its behaviour hides from the screen that composes it. | tool/architecture | [] |
+| a piece that navigates by itself works on one screen only, and its behaviour hides from the screen that composes it. | tool/imports | [] |
 
 ## navigation-passed-by-slot · SHOULD
 Navigation reaches a presentational component through a slot that renders the link — its children first, then the data; any other action reaches it through a callback.
@@ -95,14 +95,14 @@ A component in `components/` imports no adapter, no shared contract of `contract
 
 | Why | Check | Tags |
 |---|---|---|
-| a component that reaches a mechanism can no longer be shown or tested with plain data. | tool/architecture | [] |
+| a component that reaches a mechanism can no longer be shown or tested with plain data. | tool/imports | [] |
 
 ## ui-layer-imports → dependencies-point-inward
 A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities as types, and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool/architecture | [] |
+| the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | tool/imports | [] |
 
 ## component-in-its-own-folder → file-carries-its-role-suffix
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.

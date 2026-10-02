@@ -21,4 +21,4 @@ A feature never sends an event; the composing layer translates the feature's int
 
 | Why | Check | Tags |
 |---|---|---|
-| tracking is a concern of the product, not of any feature, and a feature that tracks knows the vocabulary of all of them. | tool/architecture | [] |
+| tracking is a concern of the product, not of any feature, and a feature that tracks knows the vocabulary of all of them. | tool/imports | [] |

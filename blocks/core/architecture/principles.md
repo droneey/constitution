@@ -25,7 +25,7 @@ Imports point inward, toward stability: an outer part imports an inner one, neve
 
 | Why | Check | Tags |
 |---|---|---|
-| an outward import lets a volatile detail break a stable rule. | tool/architecture | [] |
+| an outward import lets a volatile detail break a stable rule. | tool/imports | [] |
 
 ## inner-layers-declare-their-contracts · MUST
 The inner layer declares, in its own words, the contracts it needs; the outer layer implements them. Both depend on the contract, never the inner layer on the implementation.
@@ -39,7 +39,7 @@ The domain imports only itself and the shared kernel: no framework, no input or 
 
 | Why | Check | Tags |
 |---|---|---|
-| a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/architecture | [] |
+| a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/imports | [] |
 
 ## one-reason-to-change · MUST
 Each layer and each module has one reason to change.
@@ -60,7 +60,7 @@ A feature never imports another feature. Features are combined only by the layer
 
 | Why | Check | Tags |
 |---|---|---|
-| a feature that knows another cannot change, be tested or be removed alone. | tool/architecture | [] |
+| a feature that knows another cannot change, be tested or be removed alone. | tool/imports | [] |
 
 ## access-only-through-curated-surface · MUST
 A module is reached from outside only through its surface, and the surface is curated: it offers what a caller may couple to and nothing else. Its internals are private.
@@ -74,7 +74,7 @@ A module, a domain role folder and the kernel are reached from outside only thro
 
 | Why | Check | Tags |
 |---|---|---|
-| an import past the surface couples to an internal the module is free to change. | tool/architecture | [] |
+| an import past the surface couples to an internal the module is free to change. | tool/imports | [] |
 
 ## external-shapes-mapped-at-boundary · MUST
 An external shape — a response, a row, a message, a file format — is mapped to the inner model at the edge, in both directions. A wire shape never travels inward.
@@ -102,7 +102,7 @@ Where one operation reads and another writes, the read path and the write path n
 
 | Why | Check | Tags |
 |---|---|---|
-| reads and writes change for different reasons and scale differently; kept apart, each can change without the other. | tool/architecture | [] |
+| reads and writes change for different reasons and scale differently; kept apart, each can change without the other. | tool/imports | [] |
 
 ## code-lives-with-its-reason-to-change · MUST
 Code lives in the layer that owns its reason to change, beside its consumer when they share that reason, and lifts to the nearest common level only when a second consumer appears. A tool is placed by the same rule. Business rules stay in the domain even with a single consumer: their reason to change is the business, not the caller.

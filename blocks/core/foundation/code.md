@@ -141,7 +141,7 @@ Modules form no import cycle, direct or through a chain of modules.
 
 | Why | Check | Tags |
 |---|---|---|
-| a cycle ties two modules into one unit that can be neither tested nor changed apart. | tool/architecture | [] |
+| a cycle ties two modules into one unit that can be neither tested nor changed apart. | tool/imports | [] |
 
 ## Comments and leftovers
 

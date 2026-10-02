@@ -5,4 +5,4 @@ The primitive library imports no message catalog.
 
 | Why | Check | Tags |
 |---|---|---|
-| a catalog in the primitives puts one application's text into a library every application shares. | tool/architecture | [ux] |
+| a catalog in the primitives puts one application's text into a library every application shares. | tool/imports | [ux] |

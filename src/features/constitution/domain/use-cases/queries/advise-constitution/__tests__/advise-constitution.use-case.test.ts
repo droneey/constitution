@@ -128,7 +128,7 @@ describe('adviseConstitution', () => {
   it.each<Row>([
     {
       expected: [
-        'role coverage: typescript has no tool for unused, architecture',
+        'role coverage: typescript has no tool for unused, imports',
       ],
       name: 'MUST rules of blocks with no language need roles no tool checks, one of them twice',
       rules: {
@@ -140,7 +140,7 @@ describe('adviseConstitution', () => {
         ],
         [UI]: [
           {
-            check: 'tool/architecture',
+            check: 'tool/imports',
             slug: 'screens-hold-no-logic',
           },
           {
@@ -153,7 +153,7 @@ describe('adviseConstitution', () => {
     {
       expected: [
         'role coverage: python has no tool for lint',
-        'role coverage: typescript has no tool for architecture',
+        'role coverage: typescript has no tool for imports',
       ],
       name: 'a MUST rule sits in a with/ file named after typescript, its own block has no language and python has no tool',
       files: {
@@ -162,7 +162,7 @@ describe('adviseConstitution', () => {
       rules: {
         [BROWSER_WITH_TYPESCRIPT]: [
           {
-            check: 'tool/architecture',
+            check: 'tool/imports',
             slug: 'layers-import-downward',
           },
         ],
@@ -170,7 +170,7 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [
-        'role coverage: typescript has no tool for architecture',
+        'role coverage: typescript has no tool for imports',
       ],
       name: "a MUST rule sits in a with/ file that pairs typescript with css, whose roles leave the rule's role out",
       files: {
@@ -184,7 +184,7 @@ describe('adviseConstitution', () => {
       rules: {
         [TYPESCRIPT_WITH_CSS]: [
           {
-            check: 'tool/architecture',
+            check: 'tool/imports',
             slug: 'layers-import-downward',
           },
         ],
@@ -199,14 +199,14 @@ describe('adviseConstitution', () => {
         [CSS]: CSS_FILE,
         [PRETTIER]: prettierFile({
           checks: [
-            'architecture',
+            'imports',
           ],
         }),
       },
       rules: {
         [UI]: [
           {
-            check: 'tool/architecture',
+            check: 'tool/imports',
             slug: 'screens-hold-no-logic',
           },
         ],
@@ -283,7 +283,7 @@ describe('adviseConstitution', () => {
       rules: {
         [UI]: [
           {
-            check: 'tool/architecture',
+            check: 'tool/imports',
             level: 'SHOULD',
             slug: 'screens-hold-no-logic',
           },
@@ -433,7 +433,7 @@ describe('adviseConstitution', () => {
         ],
         [UI]: [
           {
-            check: 'tool/architecture',
+            check: 'tool/imports',
             slug: 'labels-from-catalogs',
             statement: STATEMENT,
           },
@@ -446,7 +446,7 @@ describe('adviseConstitution', () => {
 
     // Assert
     expect(advice).toStrictEqual([
-      'role coverage: typescript has no tool for architecture',
+      'role coverage: typescript has no tool for imports',
       'similar rules: labels-come-from-catalogs (i18n) and labels-from-catalogs (ui)',
     ]);
   });

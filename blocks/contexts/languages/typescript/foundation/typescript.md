@@ -198,7 +198,7 @@ Production code imports no development dependency.
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool imported by production code ships inside it. | tool/architecture | [security] |
+| a tool imported by production code ships inside it. | tool/imports | [security] |
 
 ## one-version-per-dependency · MUST
 Each dependency has one version across every manifest of the repository.

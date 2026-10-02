@@ -40,4 +40,4 @@ A component in `components/` imports no query library.
 
 | Why | Check | Tags |
 |---|---|---|
-| a component that queries can no longer be shown or tested with plain data. | tool/architecture | [] |
+| a component that queries can no longer be shown or tested with plain data. | tool/imports | [] |
