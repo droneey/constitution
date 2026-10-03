@@ -644,7 +644,7 @@
   - Expected failures are thrown as errors of the kit, not returned: a contract lists them as one type beside it, a `catch` narrows by code and rethrows the rest, and only errors are thrown.
   - A boolean is never positional; parameters of one type travel as one object or are told apart by their types.
   - Shared shapes are composed of small ones; domain types are `readonly`; a type parameter appears twice; cancellation travels as an `AbortSignal`; resources are held by `using`; a module exports by name; text is made deliberately; a return type is no wider than what is returned; `process.env` is read only in the root and the entry files.
-  - Biome holds what it can: `useThrowOnlyError` and `noDefaultExport` move from the tool's own part to the TypeScript part that holds the rules, and `noBaseToString`, `noUnsafePlusOperands`, `noMisleadingReturnType` and `noProcessEnv` are added. Oxlint is not adopted (ADR-0045 stands).
+  - Oxlint is not adopted (ADR-0045 stands); Biome holds what it can.
 - **Rejected.** A `Result` type for expected failures: the owner keeps the language's own `throw` and `catch`. A value object as a class: its instance loses its methods in a cache, a URL and storage.
 - **Why.** The rozumchik-web audit found value objects unstated and rules about failure, arguments and types missing; the best-practices audit of 2026 found the rest.
 
@@ -669,7 +669,6 @@
   - React: rendering is pure inside `StrictMode` (MUST), props are never assigned, components are named in PascalCase, a component that renders nothing returns `null` — a React variant of the GritQL rule on absence, over `.tsx` files only, allows `return null` — render errors are reported at the root, and memoisation's exception is a value an effect or a library the Compiler skips depends on.
   - Boolean props keep the names the platform and the primitive library give; an inline `style` is an object literal of custom properties only, held by GritQL instead of `noInlineStyles`; images declare their size, held in JSX by `useImageSize`; the Core Web Vitals are kept within budget. In the browser, a primitive passes its class and attributes through and marks its parts with `data-slot`.
   - CSS and Tailwind: `svh` by default, `w-screen` refused, a `max-*` breakpoint only after a minimum, cascading variants by `@custom-variant`, Tailwind's own layer order imported layer by layer, `!important` only in the reset layer, newly available features behind a feature query, `color-scheme` on the root, no hexadecimal colour outside the theme, the class merger configured with the theme's scales. The theme follows the system until the user chooses, lives in `libs/ui/theme/`, and its tokens are kept in the interchange format where a design tool or a second platform reads them. A component of `root/ui` is prefixed `root-`, held by ls-lint. `four-data-states` names only the states a view's data can have.
-  - Biome: `noImplicitBoolean` is dropped, `noReactPropAssignments`, `noDuplicatedSpreadProps`, `useImageSize` and `noHexColors` are added.
 - **Rejected.** Radix as the kit's base: shadcn generates on Base UI since July 2026, and the owner moves every project to it. `dvh` as the default height: it resizes while the toolbar moves.
 - **Why.** The rozumchik-web audit and the best-practices audit of 2026 found these unstated or contradicting current React, Tailwind and platform practice.
 
@@ -689,7 +688,7 @@
 
 - **Decision.**
   - Core: a flaky test is fixed or deleted, never retried; a case passes alone and in any order; a test never waits a fixed delay; a case holds no logic; a fixture builds a valid value and takes overrides; a property test's counterexample becomes a row; a unit case runs in milliseconds; captured responses of a vendor are checked against it by a contract run, which `tests-run-in-a-sandbox` now allows next to a person; on the workflow axis, that run is scheduled outside the check and opens an issue, and the whole program is mutated on a schedule and before each release.
-  - GritQL refuses a branch, loop or conditional expression in a case's body, for every runner. With `bun:test`, it refuses `retry` and `repeats`, `Bun.sleep` and a `setTimeout` inside a promise or from `node:timers/promises`; `bunfig.toml` randomizes the order and preloads a fixture that makes `fetch`, `WebSocket` and `Bun.connect` throw. `async-ui-awaited-with-find` becomes a child of the rule against fixed sleeps.
+  - A case holds no branch or loop, whatever the runner. With `bun:test`, no case retries or sleeps, the order is random, and a preload refuses the network. `async-ui-awaited-with-find` becomes a child of the rule against fixed sleeps.
   - `ui`: behaviour that depends on layout, visibility or real focus is proven on the platform, never only in a simulation. A TypeScript package's exported generic and conditional types get type cases.
   - A `playwright` block for end-to-end specs, on TypeScript: locators by role, label and text; waits only through locators and web-first assertions, held by Biome; web-first assertions awaited; no forced actions; retries off; a trace kept for each failure.
   - knip's production run is `--strict`.
@@ -715,3 +714,15 @@
   - Compose: a service runs with `no-new-privileges`, drops every capability it does not need, and runs on a read-only file system. The shared key order takes `cap_drop`, `cap_add` and `read_only` after `security_opt`.
   - Browser: every document carries HSTS, `nosniff`, a strict `Referrer-Policy` and `Cross-Origin-Opener-Policy`. A script from another origin is self-hosted or pinned by `integrity`. A redirect target from the address or a form is followed only to the program's own paths or an allowlist.
 - **Why.** The best-practices audit of 2026 found these protections unstated, against ASVS 5.0 and the Docker and CIS guidance.
+
+## ADR-0113 — Redundancy removed from the 2026 audit changes
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Rules that repeated a neighbour or a parent are removed or merged: `browser-checklist-before-shipping` into `interactive-checked-by-hand`; `boundary-builds-value-objects-through-the-domain` into `value-object-built-only-by-its-check`; `view-transitions-honour-reduced-motion` into `reduced-motion-honoured`; `screens-imported-by-nothing-inside` into `dependencies-point-inward`, which `routes-imported-only-by-the-router` now carries out, and so becomes a MUST. The line between a brand and an alias is drawn once, in `semantic-alias-names-a-shared-meaning`.
+  - `catch-narrows-and-rethrows` carries out `errors-surfaced-never-swallowed`, and lets a catch around a library's call map its exceptions to coded errors.
+  - `nothing-rendered-as-null` is reviewed: its plugin only allows `null`, and never refuses `undefined`. `query-client-through-router-context` is reviewed too: its import rule exempts the root route, which is where the client is mounted.
+  - `toolchain-pinned-and-locked` drops the `MISE_LOCKED=0` workaround, which loosened the lockfile rule for one machine.
+  - Installs wait three days for a new release, not seven: a hijacked release is pulled within a day or two, and a week would hold back fixes.
+  - Biome's version is pinned by the lockfile like any other, with a caret range in the manifest (`caret-ranges-lockfile-pins`); its nursery rules change only through a reviewed update.
+- **Why.** A review of the audit changes found rules that said one thing twice and intros that restated their own rules.

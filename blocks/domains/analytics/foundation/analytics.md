@@ -5,7 +5,7 @@ Nothing is tracked, and no identifier is stored, before the user consents; decli
 
 | Why | Check | Tags |
 |---|---|---|
-| tracking is the user's choice, and a product that tracks first and asks later has already taken it from them; a configuration a regulator exempts from consent is an override with its legal reason. | review | [security] |
+| tracking is the user's choice, and a product that tracks first and asks later has already taken it from them. | review | [security] |
 
 ## refusal-as-easy-as-consent → tracking-waits-for-consent · MUST
 Refusing sits beside accepting, on the first screen, with the same weight; every purpose is chosen on its own, and nothing is chosen in advance.

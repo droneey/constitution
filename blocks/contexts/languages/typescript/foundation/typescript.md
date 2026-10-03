@@ -63,14 +63,14 @@ Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefine
 | one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident. | tool/lint | [] |
 
 ## brand-is-an-intersection-or-unique-symbol → identifiers-branded-by-entity
-A brand — of an identifier, or of a value that keeps an invariant — is `string & { readonly __brand: 'OrderId' }` or a unique symbol. A vocabulary alias, which keeps no invariant, stays a plain name, never branded.
+A brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol.
 
 | Why | Check | Tags |
 |---|---|---|
-| one form of brand reads the same in every file, and a brand is a proof a value passed its check, which a mere name does not give. | review | [] |
+| one form of brand reads the same in every file. | review | [] |
 
 ## invariant-value-is-a-branded-type → invariant-values-are-plain-immutable-data
-A value that keeps an invariant is a branded type, built by `create<Name>`, which checks the invariant and throws the kit's error when it fails, and narrowed by `is<Name>`; never a class.
+A value that keeps an invariant is a branded type, built by `create<Name>`, which throws the kit's error when the invariant fails, and narrowed by `is<Name>`.
 
 ```ts
 type Email = string & { readonly __brand: 'Email' };
@@ -86,7 +86,7 @@ const createEmail = (text: string): Email => {
 | the brand is reachable only through the check, and the value stays a plain string every boundary can carry. | review | [] |
 
 ## semantic-alias-names-a-shared-meaning · SHOULD
-A semantic alias — `type ChatTitle = string` — names a meaning without an invariant — a value that keeps one is branded instead; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type.
+A semantic alias — `type ChatTitle = string` — names a meaning without an invariant and is never branded; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type.
 
 | Why | Check | Tags |
 |---|---|---|

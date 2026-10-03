@@ -1,7 +1,5 @@
 foundation:
   _react:
-    nothing-rendered-as-null:
-      - nothing-rendered-as-null.grit
     props-never-assigned:
       - noReactPropAssignments
     undefined-is-the-only-absence:

@@ -86,7 +86,7 @@ A route's private pieces reach its params and search through `getRouteApi('<rout
 |---|---|---|
 | what `libs/` wraps is one vendor's client; the application's navigation stays out. | tool/imports | [] |
 
-## routes-imported-only-by-the-router → screens-imported-by-nothing-inside
+## routes-imported-only-by-the-router → dependencies-point-inward
 Nothing under `features/`, `shared/`, `libs/`, `kernel/`, `contracts/` or `composition/` imports a file of `routes/`.
 
 | Why | Check | Tags |

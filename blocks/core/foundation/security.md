@@ -84,7 +84,7 @@ A dependency deprecated as a whole is replaced — by its successor, another pac
 | a deprecated package gets no more fixes, so its next vulnerability stays open. | review | [] |
 
 ## agent-extensions-vetted-as-dependencies → new-dependency-vetted
-A server, plugin or skill that extends an agent is added like a dependency: vetted, pinned to a version, and given only the access its job needs.
+A server, plugin or skill that extends an agent is a dependency, vetted as one and pinned to a version even when it runs outside the lockfile.
 
 | Why | Check | Tags |
 |---|---|---|

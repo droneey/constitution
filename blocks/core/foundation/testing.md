@@ -54,7 +54,7 @@ Variants of one behaviour are one table of cases, each row naming its condition.
 | a table shows at a glance which conditions are covered and which are missing, and a new variant is one row. | review | [testing] |
 
 ## no-logic-in-cases · SHOULD
-A case holds no branch, loop or computed expectation: variants are rows of a table, and an expected value is written as a literal.
+A case holds no branch, loop or computed expectation; an expected value is written as a literal.
 
 | Why | Check | Tags |
 |---|---|---|

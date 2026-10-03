@@ -93,8 +93,6 @@ architecture:
       - route-pieces-never-import-route-files
     routes-imported-only-by-the-router:
       - routes-reached-only-from-the-router
-    query-client-through-router-context:
-      - root-reached-only-from-entries
     root-imported-only-by-entry-and-delivery-wiring:
       - root-reached-only-from-entries
     router-primitives-only-in-screens-and-widgets:

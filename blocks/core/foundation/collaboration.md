@@ -49,7 +49,7 @@ An agent never force-pushes and never rewrites history others have.
 | history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | review | [] |
 
 ## agent-runs-with-least-privilege · SHOULD
-An agent runs without its permission checks only inside an isolated machine, never reads a secret file, and reaches the network only where the task needs it; the rules on consent hold either way.
+An agent runs without its permission checks only inside an isolated machine, never reads a secret file, and reaches the network only where the task needs it.
 
 | Why | Check | Tags |
 |---|---|---|
