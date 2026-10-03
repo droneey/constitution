@@ -1,4 +1,4 @@
-version: 0.62.5
+version: 0.62.6
 
 axes: [foundation, architecture, workflow]
 domains: [version-control]
