@@ -57,7 +57,7 @@ No code imports an entrypoint. An entrypoint composes features through their sur
 | an entrypoint is a separate artifact; importing it drags that artifact into another one. | tool/imports | [] |
 
 ## kernel-imports-only-itself · MUST
-`kernel/` imports only itself. It holds business types and values every feature shares — money, an email address, a date range — and structural contracts such as a paginated result.
+`kernel/` imports only itself. It holds business types and values every feature shares — money, an email address, a date range — and structural types such as a paginated result.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -128,7 +128,7 @@ A feature's `domain/` holds only the role folders of the tree and no file of its
 | a use-case, a port or an entity is found in the same place in every feature. | tool/names | [] |
 
 ## data-ports-split-by-reads-and-writes · SHOULD
-A data port is a repository per aggregate, one file per side: `repositories/queries/<aggregate>.repository` for reads and `repositories/commands/<aggregate>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name.
+A data port is a repository per aggregate, one file per side: `repositories/queries/<aggregate>.repository` for reads and `repositories/commands/<aggregate>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name, and `repositories/` has no surface that joins the two sides; a shape both sides use — the page a read returns and a write updates in the cache — is an entity.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -156,7 +156,7 @@ A contract — a port, its parameters and results — imports no vendor, no adap
 | a contract that knows a vendor ties every implementation to it, and the domain that declares it along with them. | tool/imports | [] |
 
 ## adapters-never-import-each-other-or-callers · MUST
-An adapter imports its contracts, `kernel/` and `libs/`, and never a feature's application layer, the delivery layer or another adapter. What two adapters share lives in `libs/`.
+An adapter imports its contracts, `kernel/`, `shared/` and `libs/`, and never a feature's application layer, the delivery layer or another adapter. What two adapters share lives in `libs/`, or in `shared/` when it knows the program.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -310,7 +310,7 @@ Files of one kind that arrive one at a time — one per vendor, command, rule or
 | adding a member is then adding a file, and no one has to tell members from machinery by their names. | review | [] |
 
 ## file-carries-its-role-suffix · MUST
-A file carries its role's suffix, whatever its folder: `entities/chat.entity`. No suffix on a surface or an entry, a file whose name a tool fixes, a component file named after its component in its own folder, a member of a set whose role has no suffix, and a registry. A spec keeps the role suffix of the file it proves — `chat.entity.test` — so a double suffix appears only in tests.
+A file carries its role's suffix, whatever its folder: `entities/chat.entity`. No suffix on a surface or an entry, a file whose name a tool fixes, a component file named after its component in its own folder, a member of a set whose role has no suffix, a registry, and a binding unit's plain form, named after its operation in its own folder. A spec keeps the role suffix of the file it proves — `chat.entity.test` — so a double suffix appears only in tests.
 
 | Why | Check | Tags |
 |---|---|---|

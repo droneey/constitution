@@ -100,9 +100,9 @@ A screen's reads start together in its route's loader, before it renders, never 
 |---|---|---|
 | reads started in a loader run in parallel and before the first paint; reads in components wait for each other. | review | [] |
 
-## adapters-reach-loaders-through-router-context → guard-reaches-features-outside-react
-The adapters the providers built reach loaders and guards through the router's context.
+## services-reach-loaders-through-router-context → one-explicit-composition-root
+Every service the providers build — the adapters, the cache client, analytics, the configuration — reaches loaders and guards through the router's context.
 
 | Why | Check | Tags |
 |---|---|---|
-| a loader then reads through the same adapters as the screens, and a spec replaces them in one place. | review | [] |
+| a loader then reads through the same services as the screens, and a spec replaces them in one place. | review | [] |

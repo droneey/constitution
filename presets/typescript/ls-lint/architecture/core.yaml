@@ -68,6 +68,7 @@ ls:
   src/*/**/repositories:
     <<: *role
     .dir: regex:^repositories$
+    .ts: exists:0
   "src/*/**/repositories/{queries,commands}":
     <<: *role
     .repository.ts: kebab-case
@@ -77,5 +78,11 @@ ls:
   "src/*/**/use-cases/{queries,commands}":
     <<: *role
     .dir: kebab-case | regex:^__tests__$
+    .*.ts: kebab-case
+    .*.*.ts: kebab-case
+  "src/features/*/app/use-cases/{queries,commands}/*":
+    <<: *role
+    .dir: kebab-case | regex:^__tests__$
+    .ts: regex:^(index|${0})$
     .*.ts: kebab-case
     .*.*.ts: kebab-case

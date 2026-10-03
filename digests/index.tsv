@@ -26,7 +26,7 @@ block	version-control	domain	Changes made atomically and checked; history and re
 block	browser	platform	Code that runs in a browser tab.	foundation/browser.md architecture/browser.md	foundation/a11y foundation/analytics foundation/i18n foundation/ui architecture/ui	untrusted-client unreliable-network		false						
 block	cli	platform	A program run from a command line, one command per invocation.	foundation/cli.md architecture/cli.md				false						**/cli/**
 block	mobile	platform	Code that runs as an application on a phone or tablet.	foundation/mobile.md architecture/mobile.md	foundation/a11y foundation/ui	untrusted-client unreliable-network		false						
-block	css	language	How stylesheets are layered, named and written.	foundation/css.md	foundation/a11y foundation/i18n foundation/ui architecture/ui			false				format lint names		**/*.css
+block	css	language	How stylesheets are layered, named and written.	foundation/css.md architecture/css.md	foundation/a11y foundation/i18n foundation/ui architecture/ui			false				format lint names		**/*.css
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/i18n foundation/package architecture/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json tsconfig.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
@@ -604,6 +604,7 @@ rule	stylesheet-classes-declared-and-used	css	blocks/contexts/languages/css/foun
 rule	classes-named-for-what-they-are	css	blocks/contexts/languages/css/foundation/css.md		SHOULD	review		css		foundation		true
 rule	components-adapt-by-container-queries	css	blocks/contexts/languages/css/foundation/css.md		SHOULD	review		css	ux	foundation		true
 rule	global-styles-only-in-the-entry	css	blocks/contexts/languages/css/foundation/css.md		SHOULD	review		css		foundation		true
+rule	module-stylesheet-surface	css	blocks/contexts/languages/css/architecture/css.md		MUST	review		css		architecture	access-only-through-curated-surface	false
 rule	focus-ring-from-design-system	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	focus-always-visible	false
 rule	type-sized-in-rem	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	wcag-aa-conformance	false
 rule	hover-styles-behind-hover-media	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y ux	foundation	hover-content-reachable-by-focus-and-tap	false
@@ -919,12 +920,11 @@ rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementati
 rule	libs-import-no-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
 rule	routes-imported-only-by-the-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	dependencies-point-inward	false
 rule	screen-reads-start-in-the-loader	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux performance	architecture	route-owns-its-url	false
-rule	adapters-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	guard-reaches-features-outside-react	false
+rule	services-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript		architecture	one-explicit-composition-root	false
 rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementations/tanstack-router/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y ux	foundation	navigation-moves-focus-to-the-view	false
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	MAY	review		typescript		foundation		true
 rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript	errors ux	foundation	error-component-per-route	false
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript	data	architecture	one-home-per-datum	false
-rule	query-client-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript		architecture	root-imported-only-by-entry-and-delivery-wiring	false
 rule	hashed-assets-immutable-html-revalidated	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		SHOULD	review		typescript	performance	foundation		true
 rule	content-security-policy-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		MUST	test		typescript	security	foundation	strict-content-security-policy	false
 rule	security-headers-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		SHOULD	test		typescript	security	foundation	documents-sent-with-security-headers	false
