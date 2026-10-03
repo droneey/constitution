@@ -780,6 +780,22 @@
   - TanStack Start sets the CSP and the other security headers in Nitro's `routeRules`, the shell's inline scripts allowed by hash, proved by a test — two rules, one under each browser rule.
 - **Why.** The audit of rozumchik-web against constitution 0.62 found each of these rules refusing correct code, or unmeetable, in a real application.
 
+## ADR-0118 — The architecture gaps a real application found
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - `file-carries-its-role-suffix` names a binding unit's plain form, named after its operation in its own folder, among its exceptions, and ls-lint allows it in an operation's folder of `app/`; a domain use-case keeps its `.use-case` suffix.
+  - `repositories/` has no surface joining its two sides, held by ls-lint, and a shape both sides use — the page a read returns and a write updates in the cache — is an entity, so an optimistic command imports the entity, never the read port.
+  - The kernel holds structural types, not contracts, which are the ports of `contracts/`.
+  - The shared mapper of transport failures lives in `shared/<transport>/`, and adapters may import `shared/` for what knows the program.
+  - A module that ships styles offers them through a stylesheet surface, `index.css`, beside its script surface, which the program's root imports by path (`module-stylesheet-surface`, CSS); the import rules already let any `index.*` through, so a path past it stays refused.
+  - `services-reach-loaders-through-router-context` replaces `adapters-reach-loaders-through-router-context` and carries out `one-explicit-composition-root`: every service the providers build reaches loaders and guards through the router's context. The query client's own rule in the seam with TanStack Query goes, since this one holds it, and `root-imported-only-by-entry-and-delivery-wiring` still keeps routes off `root/`.
+- **Rejected.**
+  - Letting a command import a read port's types: the shared shape belongs to the entities.
+  - Opening `root/ui` to route files: an application shell that knows no feature belongs in `shared/ui`.
+  - Kernel surfaces per role folder: the kernel stays one small module with one surface, and a project that lacks `kernel/index.ts` adds it.
+- **Why.** The audit of rozumchik-web against constitution 0.62 found these homes and rules missing or contradicting each other.
+
 ## ADR-0119 — The UI, i18n and analytics rules a real application found
 **Date:** 2026-10-03 · **Status:** Accepted
 
