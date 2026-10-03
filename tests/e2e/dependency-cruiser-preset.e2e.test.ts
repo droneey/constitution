@@ -341,6 +341,23 @@ describe('the dependency-cruiser layer set', () => {
       },
       rule: 'writes-never-reach-reads',
     },
+    {
+      condition: 'a write reaches a read through a surface that joins both',
+      files: {
+        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts':
+          importing({
+            from: '../../../../domain/contracts',
+            name: 'cancelOrder',
+          }),
+        'src/features/orders/domain/contracts/index.ts':
+          "export { cancelOrder } from './repositories/commands/order.repository';\nexport { listOrders } from './repositories/queries/order.repository';\n",
+        'src/features/orders/domain/contracts/repositories/commands/order.repository.ts':
+          exported('cancelOrder'),
+        'src/features/orders/domain/contracts/repositories/queries/order.repository.ts':
+          exported('listOrders'),
+      },
+      rule: 'writes-never-reach-reads',
+    },
   ])('should report $rule when $condition', ({ files, rule }) => {
     // Arrange
     const project = {

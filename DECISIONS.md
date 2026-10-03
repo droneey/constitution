@@ -23,7 +23,7 @@
 | Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103, ADR-0105 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
-| A real application | ADR-0116 – ADR-0119 |
+| A real application | ADR-0116 – ADR-0120 |
 
 ---
 
@@ -799,3 +799,13 @@
   - Matomo in a single-page application: the program pushes page views itself with the route's template, and the container's history trigger is off.
 - **Rejected.** An `aria-label` instead of a label for a single-field composer: a visually hidden label already meets the rule.
 - **Why.** The audit of rozumchik-web against constitution 0.62 found each of these where a real application met the rules.
+
+## ADR-0120 — The sides apart through every surface, and Lingui's macros in the build and the specs
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.**
+  - `reads-and-writes-apart` holds through a surface as well: a write never reaches a read through a barrel that re-exports both sides, such as a feature's `domain/contracts/index`. The import check follows such a surface.
+  - With Vite, Lingui's macros are expanded by Lingui's own plugin with `macroTransform`, never by another plugin's Babel options (`macros-expanded-by-the-lingui-plugin`).
+  - With Bun's test runner, a preload expands the macros and compiles an imported catalog (`macros-expanded-by-the-test-preload`); the archive carries the fixture.
+- **Rejected.** `bun --bun` in Lingui's scripts: the `[run] bun = true` that `bun` already sets keeps the command line on Bun.
+- **Why.** A command that reaches the read side through a barrel depends on it as surely as through a direct import. A check of Lingui 6.9 under Bun 1.4 and Vite 8 found the command line and the build sound without Node, but the React plugin dropping its Babel option without a warning, and `bun test` expanding no macro.
