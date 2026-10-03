@@ -86,11 +86,11 @@ A repository keeps at its root `constitution.yaml`, the blocks it follows and th
 | knowledge beside its module changes with it; one folder of everything drifts from the code it describes. | review | [] |
 
 ## generated-files-not-committed · SHOULD
-Generated files are not committed; the build produces them. An application that commits some of its generated files chooses which, and they stay marked as generated.
+Generated files are not committed; the build produces them. A file an author's step generates and the program's code imports — not a build output — is the exception, and is committed.
 
 | Why | Check | Tags |
 |---|---|---|
-| a committed copy of something the build produces drifts from its source and fills every diff. | review | [] |
+| a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, and the check may not generate them. | review | [] |
 
 ## kebab-case-file-names · MUST
 Files and folders are named in kebab-case. Root files that convention names in upper case — `README.md`, `LICENSE.md` — keep it, and the language block fixes the case of source files.

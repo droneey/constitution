@@ -10,11 +10,18 @@ The check lints every Dockerfile and every Compose file of the repository, and a
 ## Images
 
 ## images-pinned-to-a-version · MUST
-A base image in a Dockerfile and an image in a Compose file name a version tag, never `latest` and never none.
+A base image in a Dockerfile, an image in a Compose file and an image a script runs name the most specific version the image is published under — `major.minor.patch` where it has one — never `latest`, never a floating major or minor, never none.
 
 | Why | Check | Tags |
 |---|---|---|
-| an untagged image changes under the same name, so two builds of one commit run different code. | tool/lint | [security] |
+| a floating tag changes under the same name, so two builds of one commit run different code. | review | [security] |
+
+## image-never-untagged-or-latest → images-pinned-to-a-version
+No image in a Dockerfile or a Compose file is untagged or tagged `latest`.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are the floating forms the linters see; a floating major or minor is left to review. | tool/lint | [] |
 
 ## files-copied-never-added · MUST
 Local files and folders enter an image with `COPY`, never `ADD`.
@@ -75,7 +82,7 @@ A build takes a secret through a secret mount, `RUN --mount=type=secret`, never 
 ## Compose
 
 ## compose-keys-in-shared-order · MUST
-A Compose file lists its top-level keys as `name`, extensions (`x-*`), `services`, `networks`, `volumes`, and a service's keys as `image` or `build`, `container_name`, `extends`, `profiles`, `restart`, `command`, `depends_on`, `networks`, `ports`, `volumes`, `logging`, `healthcheck`, `security_opt`, `cap_drop`, `cap_add`, `read_only`, `labels`, `tmpfs`, `environment`.
+A Compose file lists its top-level keys as `name`, `include`, extensions (`x-*`), `services`, `networks`, `volumes`, and a service's keys as `image` or `build`, `container_name`, `extends`, `profiles`, `restart`, `command`, `depends_on`, `networks`, `ports`, `volumes`, `logging`, `healthcheck`, `security_opt`, `cap_drop`, `cap_add`, `read_only`, `labels`, `tmpfs`, `environment`.
 
 | Why | Check | Tags |
 |---|---|---|

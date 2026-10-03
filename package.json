@@ -1,6 +1,6 @@
 {
   "name": "@droneey/constitution",
-  "version": "0.62.0",
+  "version": "0.62.1",
   "private": true,
   "description": "The engineering constitution of droneey: blocks of rules a project declares in constitution.yaml.",
   "license": "SEE LICENSE IN LICENSE.md",
@@ -17,7 +17,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "lint:check": "biome check",
+    "lint:check": "biome check --error-on-warnings",
     "lint:fix": "biome check --write",
     "packages:check": "syncpack lint && syncpack format --check",
     "packages:fix": "syncpack fix && syncpack format",

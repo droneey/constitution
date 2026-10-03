@@ -753,6 +753,19 @@
 - **Rejected.** A wire type inferred from its schema: the model is declared without the schema library, and `schema-held-exactly-to-its-model` holds the schema to it, as nydra does.
 - **Why.** The review of the 2026 audits against the constitution found these accepted gaps unwritten.
 
+## ADR-0116 — What adopting the constitution in a real application ran into
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - A file an author's step generates and the program's code imports — not a build output — is committed; `route-tree-committed` carries that out for TanStack Router, whose guidance counts the route tree as part of the runtime.
+  - TanStack Start names its entry files (`src/router.tsx`, `src/client.tsx`) and its wiring (`__root.tsx`); its Stryker and knip parts leave them out of mutation and enter them for knip.
+  - Under `bun test`, React DOM specs get a DOM from a preload registered before the sandbox. A browser program's specs are type-checked by a config of their own that adds Bun's types.
+  - `bun build` is required only where no other active block owns the program's build.
+  - Images name the most specific version they are published under (`major.minor.patch` where there is one), including those a script runs; the linters hold the untagged and `latest` forms. Compose's top-level `include` takes its place after `name`.
+  - OFL-1.1 joins the licence allowlist: self-hosted fonts carry it, and it binds only redistribution of the fonts themselves.
+- **Rejected.** Making the check pass with no specs, a mutation mode for untested files, and a fixture that loads every file for coverage: a project without tests leaves `test:unit` and `mutation:check` out of its check until the first specs land, and changed lines are held by mutation.
+- **Why.** The audit of rozumchik-web against constitution 0.62 found these gaps where a real application meets the rules.
+
 ## ADR-0117 — The rules a real application found too strict
 **Date:** 2026-10-03 · **Status:** Accepted
 

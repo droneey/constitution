@@ -8,3 +8,13 @@ foundation:
     mutants-all-killed:
       - break
       - mutate
+  storybook:
+    mutants-all-killed:
+      - mutate
+  tanstack-start:
+    mutants-all-killed:
+      - mutate
+architecture:
+  tanstack-start:
+    mutants-all-killed:
+      - mutate

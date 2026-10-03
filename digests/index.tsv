@@ -50,7 +50,7 @@ block	mise	implementation	Pins the developer and CI toolchain to exact, locked v
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md		typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md		browser ui typescript		false						tests/e2e/** playwright.config.*
-block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y	browser	_react	false					_react	**/*.tsx
+block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y foundation/bun-test	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
@@ -63,7 +63,7 @@ block	tanstack-query	implementation	Server data in the TanStack Query cache — 
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
-block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md		typescript		false		types	typescript			tsconfig.json
+block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md architecture/vite.md	foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
@@ -743,7 +743,8 @@ rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/
 rule	dclint-over-the-whole-repository	dclint	blocks/implementations/dclint/foundation/dclint.md		MUST	tool	lint			foundation	docker-files-linted-in-the-check	false
 rule	dclint-suppression-names-rule-and-reason	dclint	blocks/implementations/dclint/foundation/dclint.md		MUST	review				foundation	suppression-states-its-reason	false
 rule	docker-files-linted-in-the-check	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint			foundation		true
-rule	images-pinned-to-a-version	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint		security	foundation		true
+rule	images-pinned-to-a-version	docker	blocks/implementations/docker/foundation/docker.md		MUST	review			security	foundation		true
+rule	image-never-untagged-or-latest	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint		security	foundation	images-pinned-to-a-version	false
 rule	files-copied-never-added	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint		security	foundation		true
 rule	downloads-verified-archives-unpacked	docker	blocks/implementations/docker/foundation/docker.md		MUST	review			security	foundation		true
 rule	commands-in-exec-form	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint		errors	foundation		true
@@ -832,6 +833,7 @@ rule	handlers-and-links-on-native-elements	react-dom	blocks/implementations/reac
 rule	jsx-controls-named	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	every-control-has-an-accessible-name	false
 rule	jsx-roles-and-aria-valid	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	native-semantics-first	false
 rule	jsx-viewport-never-blocks-zoom	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	viewport-never-blocks-zoom	false
+rule	dom-registered-before-the-sandbox	react-dom	blocks/implementations/react-dom/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing security	foundation	network-refused-by-the-test-preload	false
 rule	long-lists-virtualised	react-native	blocks/implementations/react-native/foundation/react-native.md		SHOULD	review		typescript	performance	foundation		true
 rule	no-literal-colour-in-a-style	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript	ux	foundation	tokens-single-source-of-appearance	false
 rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST	tool	lint	typescript		architecture	dependencies-imported-from-their-entries	false
@@ -936,6 +938,7 @@ rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/te
 rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
+rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	one-build-for-every-environment	vite	blocks/implementations/vite/architecture/vite.md		MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
