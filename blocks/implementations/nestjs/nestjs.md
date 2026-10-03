@@ -13,7 +13,7 @@ governs: ["nest-cli.json", ".swcrc"]
 
 # NestJS
 
-> Builds a server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive — `presets/typescript/tsc/foundation/nestjs.json`, `presets/typescript/biome/foundation/nestjs.jsonc` — and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
+> Builds a server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
 
 ## Requirements
 
