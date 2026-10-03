@@ -1,5 +1,6 @@
 [test]
 root = "."
+pathIgnorePatterns = ["tests/**"]
 preload = ["./templates/project/bun/src/__tests__/sandbox.fixtures.ts"]
 randomize = true
 coverage = true

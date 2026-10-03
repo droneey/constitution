@@ -22,7 +22,8 @@
     "packages:check": "syncpack lint && syncpack format --check",
     "packages:fix": "syncpack fix && syncpack format",
     "type:check": "tsc --noEmit",
-    "test:unit": "CI=1 bun test",
+    "test": "CI=1 bun test",
+    "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
     "build": "bun build --target=bun --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist",
@@ -33,7 +34,7 @@
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .constitution/presets/common/osv-scanner/foundation/core.txt)\" .",
     "names:check": "ls-lint --config .constitution/presets/common/ls-lint/foundation/self.yaml --config .constitution/presets/common/ls-lint/foundation/core.yaml --config .constitution/presets/typescript/ls-lint/foundation/typescript.yaml --config .constitution/presets/common/ls-lint/foundation/git.yaml --config .constitution/presets/common/ls-lint/foundation/mise.yaml --config .constitution/presets/common/ls-lint/foundation/stryker.yaml --config .constitution/presets/typescript/ls-lint/architecture/core.yaml --config .ls-lint.yaml",
-    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test:unit && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run audit:check"
+    "check": "bun run lint:check && bun run packages:check && bun run type:check && bun run architecture:check && bun run test && bun run test:e2e && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run audit:check"
   },
   "dependencies": {
     "yaml": "^2.8.1",
