@@ -706,3 +706,12 @@
   - MPL-2.0 joins the licence allowlist: its copyleft is per file and binds only changes to those files, and its packages here are build and test tools.
 - **Deferred.** The CI, forge and git-flow items of the audit — untrusted input in workflows, token permissions, protected tags, SHA pins, short-lived credentials, push protection, provenance, the version bump and branch lifetime — wait for the git and CI/CD pack.
 - **Why.** The best-practices audit of 2026 found no rule on where a browser keeps a credential, no runtime wall behind the XSS lint, and nothing on whose instructions an agent follows — the hole prompt injection and the npm worms of 2025 went through.
+
+## ADR-0112 — Image, Compose and browser hardening of the 2026 audit
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Images: with osv-scanner, the check scans each image the project builds or pulls, so a vulnerability in its system packages fails like one in a lockfile.
+  - Compose: a service runs with `no-new-privileges`, drops every capability it does not need, and runs on a read-only file system. The shared key order takes `cap_drop`, `cap_add` and `read_only` after `security_opt`.
+  - Browser: every document carries HSTS, `nosniff`, a strict `Referrer-Policy` and `Cross-Origin-Opener-Policy`. A script from another origin is self-hosted or pinned by `integrity`. A redirect target from the address or a form is followed only to the program's own paths or an allowlist.
+- **Why.** The best-practices audit of 2026 found these protections unstated, against ASVS 5.0 and the Docker and CIS guidance.

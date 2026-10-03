@@ -75,7 +75,7 @@ A build takes a secret through a secret mount, `RUN --mount=type=secret`, never 
 ## Compose
 
 ## compose-keys-in-shared-order · MUST
-A Compose file lists its top-level keys as `name`, extensions (`x-*`), `services`, `networks`, `volumes`, and a service's keys as `image` or `build`, `container_name`, `extends`, `profiles`, `restart`, `command`, `depends_on`, `networks`, `ports`, `volumes`, `logging`, `healthcheck`, `security_opt`, `labels`, `tmpfs`, `environment`.
+A Compose file lists its top-level keys as `name`, extensions (`x-*`), `services`, `networks`, `volumes`, and a service's keys as `image` or `build`, `container_name`, `extends`, `profiles`, `restart`, `command`, `depends_on`, `networks`, `ports`, `volumes`, `logging`, `healthcheck`, `security_opt`, `cap_drop`, `cap_add`, `read_only`, `labels`, `tmpfs`, `environment`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -94,6 +94,13 @@ Every mapping under `ports` is quoted and names the host interface it listens on
 | Why | Check | Tags |
 |---|---|---|
 | YAML can read an unquoted `22:22` as a number, and a mapping without an interface listens on every interface of the host, reachable from its network. | tool/lint | [security] |
+
+## services-drop-privileges · SHOULD
+A service's `security_opt` includes `no-new-privileges:true`, it sets `cap_drop: [ALL]`, adds back with `cap_add` only the capabilities it needs, and runs on a read-only file system, `read_only: true`, writing only to its volumes and `tmpfs`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a process broken into inside the container then cannot gain rights, reach the kernel's privileged calls or rewrite its own code. | review | [security] |
 
 ## repeated-settings-in-extension-fields · SHOULD
 Settings several services share — environment, logging, health checks, security options — are written once, as an `x-*` extension with an anchor.

@@ -42,6 +42,20 @@ The Content Security Policy requires Trusted Types for scripts, so a string reac
 |---|---|---|
 | the browser then refuses an unchecked string at every sink, in a library or behind a dynamic property no lint can see. | test | [security] |
 
+## documents-sent-with-security-headers · SHOULD
+Every document is served with `Strict-Transport-Security` of a year or more, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` or stricter, and `Cross-Origin-Opener-Policy: same-origin`, or `same-origin-allow-popups` where the program opens a window it talks to.
+
+| Why | Check | Tags |
+|---|---|---|
+| each closes one door the page would leave open: a first request over plain HTTP, a file read as a script, the full address sent to other sites, another window reaching into this one. | test | [security] |
+
+## scripts-from-other-origins-pinned · SHOULD
+A script from another origin is served from the program's own origin, or loaded with `integrity` and `crossorigin`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a script on another server changes when that server does; with its hash pinned, the browser refuses a replaced file. | review | [security] |
+
 ## bundle-size-budget · SHOULD
 Each bundle has a size budget the check holds, the embeddable one first.
 

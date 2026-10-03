@@ -21,6 +21,13 @@ A message from another window is accepted only from an expected origin, and pars
 |---|---|---|
 | any page can post a message to any window; without the origin check, any page can drive the program. | review | [] |
 
+## redirect-targets-allowlisted → untrusted-input-parsed-at-edge
+A redirect target taken from the address or a form — `returnTo`, `redirect`, `next` — is followed only when it is a path of the program's own or on an allowlist; anything else falls back to the home screen.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sign-in link that redirects anywhere sends the user, just signed in and trusting the page, to a lookalike site. | review | [security] |
+
 ## no-raw-html-injection → untrusted-input-parsed-at-edge
 No raw HTML reaches the DOM: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`. Untrusted markup goes through a sanitising renderer.
 
