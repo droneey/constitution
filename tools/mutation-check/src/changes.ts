@@ -16,7 +16,7 @@ interface Changes {
 const SECTION = /^diff --git /m;
 const FILE = /\+\+\+ b\/(.+)/;
 const HUNKS = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm;
-const SPEC = /\/__tests__\/[^/]+\.(?:test|spec)\.tsx?$/;
+const SPEC = /\/__tests__\/([^/]+?)(?:\.integration)?\.(?:test|spec)\.(tsx?)$/;
 const TESTS = '/__tests__/';
 
 const linesOf = (section: string): readonly Range[] =>
@@ -57,22 +57,25 @@ const loadedInBoundary = (input: {
   spec: string;
 }): readonly string[] => {
   const boundary = `${input.spec.slice(0, input.spec.indexOf(TESTS))}/`;
-  const loaded = new Set<string>();
+  const seen = new Set<string>();
   const pending = [
     input.spec,
   ];
 
   for (let path = pending.pop(); path !== undefined; path = pending.pop()) {
     for (const target of input.importsOf(path)) {
-      if (target.startsWith(boundary) && !loaded.has(target)) {
-        loaded.add(target);
+      if (!seen.has(target)) {
+        seen.add(target);
         pending.push(target);
       }
     }
   }
 
   return [
-    ...loaded,
+    input.spec.replace(SPEC, '/$1.$2'),
+    ...[
+      ...seen,
+    ].filter((path) => path.startsWith(boundary)),
   ];
 };
 

@@ -33,8 +33,17 @@ const IMPORTS: Readonly<Record<string, readonly string[]>> = {
   'src/__tests__/order.utils.test.ts.snap': [
     'src/order.utils.ts',
   ],
+  'src/__tests__/shop.fixtures.ts': [
+    'src/orders/orders.use-case.ts',
+  ],
   'src/orders/__tests__/order.fixtures.ts': [
     'src/orders/order.ts',
+  ],
+  'src/orders/__tests__/orders.use-case.test.ts': [
+    'src/__tests__/shop.fixtures.ts',
+  ],
+  'src/orders/orders.use-case.ts': [
+    'src/orders/steps/charge.ts',
   ],
   'src/orders/__tests__/order.test.ts': [
     'src/orders/order.ts',
@@ -180,6 +189,30 @@ describe('mutation targets', () => {
       targets: [
         'src/orders/order.ts',
         'src/orders/price.utils.ts',
+      ],
+    },
+    {
+      condition:
+        'a changed spec reaches its boundary through a fixture outside it',
+      diff: diffOf({
+        'src/orders/__tests__/orders.use-case.test.ts': [
+          '@@ -5 +5 @@',
+        ],
+      }),
+      targets: [
+        'src/orders/orders.use-case.ts',
+        'src/orders/steps/charge.ts',
+      ],
+    },
+    {
+      condition: 'a changed spec loads nothing the resolver reports',
+      diff: diffOf({
+        'src/__tests__/total.utils.test.ts': [
+          '@@ -5 +5 @@',
+        ],
+      }),
+      targets: [
+        'src/total.utils.ts',
       ],
     },
     {
