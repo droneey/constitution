@@ -245,6 +245,7 @@ export default {
       },
       to: {
         path: '/(use-cases|repositories)/commands/',
+        reachable: true,
       },
     },
     {
@@ -255,6 +256,7 @@ export default {
       },
       to: {
         path: '/(use-cases|repositories)/queries/',
+        reachable: true,
       },
     },
   ],

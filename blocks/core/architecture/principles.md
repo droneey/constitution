@@ -98,7 +98,7 @@ Concrete implementations are chosen and wired in one known place, the compositio
 | one place that names every concrete choice makes the program's shape readable and every choice replaceable, in production and in tests. | review | [] |
 
 ## reads-and-writes-apart · MUST
-Where one operation reads and another writes, the read path and the write path never import each other.
+Where one operation reads and another writes, the read path and the write path never import each other, directly or through a surface that joins them.
 
 | Why | Check | Tags |
 |---|---|---|
