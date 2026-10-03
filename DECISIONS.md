@@ -738,3 +738,17 @@
   - Native signals in place of state libraries: the TC39 proposal is still at Stage 1.
   - Waiting for `Temporal` to reach Baseline: Chrome and Firefox ship it, Bun has it, and the polyfill covers Safari until it does.
 - **Why.** In 2026 the platform covers what these libraries and scripts did: `Temporal` ships in Chrome 144 and Firefox 139, and anchor positioning is Baseline newly available since Firefox 147, so `baseline-features-only` admits a newly available feature the program polyfills, and the browser's CSS part lets the anchor-positioning properties through. A theme in OKLCH keeps contrast predictable across hues.
+
+## ADR-0115 — The gaps of the audit coverage review
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - `boolean-props-prefixed` drops the `as` prefix, which `polymorphism-through-render` forbids.
+  - TypeScript: no `export let` or `export var`, held by GritQL. Inside a `try`, a returned promise is awaited. Retired code is marked `@deprecated` with its replacement (`retired-code-marked-deprecated` in core), and Biome refuses an import of it.
+  - TanStack Router with accessibility: the root route moves focus to the new view's heading when a navigation resolves.
+  - A transport replaced by captured responses throws on a request none of them matches, in any spec (`unmatched-request-fails-the-spec`, core).
+  - The package domain's `deprecation-names-replacement-and-removal` now carries out `retired-code-marked-deprecated`, and adds the removing version.
+  - The theme writes no hexadecimal colour: the exemption that let it is dropped, and `noHexColors` now holds `theme-writes-no-hexadecimal-colour` as well (owner).
+  - A value object lives in `domain/value-objects/<name>.value-object`, held by ls-lint.
+- **Rejected.** A wire type inferred from its schema: the model is declared without the schema library, and `schema-held-exactly-to-its-model` holds the schema to it, as nydra does.
+- **Why.** The review of the 2026 audits against the constitution found these accepted gaps unwritten.

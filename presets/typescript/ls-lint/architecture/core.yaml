@@ -42,6 +42,9 @@ ls:
       .*.*.tsx: exists:0
       .yml: regex:^$
     .entity.ts: kebab-case
+  src/*/**/value-objects:
+    <<: *role
+    .value-object.ts: kebab-case
   src/*/**/errors:
     <<: *role
     .error.ts: kebab-case

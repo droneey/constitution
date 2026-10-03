@@ -173,6 +173,13 @@ Documentation of a public entry is written only where its use is not obvious fro
 |---|---|---|
 | documentation that repeats a signature adds reading and drifts; where the use is not obvious, it saves a caller from reading the implementation. | review | [] |
 
+## retired-code-marked-deprecated · SHOULD
+Code kept only for its old callers is marked deprecated where it is declared, naming what replaces it.
+
+| Why | Check | Tags |
+|---|---|---|
+| the mark stops new callers at the point of use, and the replacement it names is the way off. | review | [] |
+
 ## todo-names-its-issue · SHOULD
 A to-do comment names its issue: `TODO(#<issue>)`. A to-do without one is done, filed, or removed.
 

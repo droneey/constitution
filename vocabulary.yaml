@@ -55,6 +55,7 @@ architecture:
     - .repository
     - .sink
     - .use-case
+    - .value-object
     - .variants
 workflow:
   concepts:

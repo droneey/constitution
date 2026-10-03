@@ -53,6 +53,7 @@ architecture:
       - 'src/*/**/types'
       - 'src/*/**/use-cases/{queries,commands}'
       - 'src/*/**/utils'
+      - 'src/*/**/value-objects'
       - 'src/contracts'
     kebab-case-file-names:
       - '.*'
@@ -70,6 +71,7 @@ architecture:
       - 'src/*/**/types'
       - 'src/*/**/use-cases/{queries,commands}'
       - 'src/*/**/utils'
+      - 'src/*/**/value-objects'
       - 'src/contracts'
     yaml-files-end-in-yaml:
       - '.yml'

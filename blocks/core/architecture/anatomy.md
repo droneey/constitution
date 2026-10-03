@@ -104,6 +104,7 @@ A protocol two artifacts of one repository speak — the messages an embedded fr
 features/<f>/
 ├── domain/                pure
 │   ├── entities/          business types and enums
+│   ├── value-objects/     values with an invariant: <name>.value-object
 │   ├── contracts/         ports; data ports are repositories/{queries,commands}/<aggregate>.repository.*
 │   ├── use-cases/         business use-cases, only when the operation has business logic: {queries,commands}/<op>/
 │   └── errors/            typed errors with codes
@@ -285,7 +286,7 @@ A delivery unit — a screen, a command, a handler, a tool function — parses i
 - layers: `root`, `features`, `composition`, `contracts`, `adapters`, `kernel`, `shared`, `libs`, `entrypoints`, `domain`, `app`;
 - roles: `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `models` (wire and persistence shapes inside adapters), `providers` (framework providers and the instances they wire).
 
-**Suffixes of core's vocabulary:** `.entity`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is not a repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`. The language fixes the spelling. Each block names its own folders and suffixes in its chapter, and a project adds its own the same way.
+**Suffixes of core's vocabulary:** `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is not a repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`. The language fixes the spelling. Each block names its own folders and suffixes in its chapter, and a project adds its own the same way.
 
 ## folder-named-for-purpose-or-role · SHOULD
 A folder is named for its purpose, or by a role of the vocabulary of the project's active blocks. No other technical name: no `helpers`, `misc`, `stuff`, `magic`, or a singular `lib`. The layer names are fixed words, whatever their grammatical number.

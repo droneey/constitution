@@ -57,7 +57,6 @@
         "useErrorMessage": "error",
         "useNumberToFixedDigitsArgument": "error",
         "noConstantBinaryExpressions": "error",
-        "noDeprecatedImports": "error",
         "noMisplacedAssertion": "error",
         "noUnassignedVariables": "error",
         "noVar": "error",

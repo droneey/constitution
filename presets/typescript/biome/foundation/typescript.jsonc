@@ -12,6 +12,7 @@
   "linter": {
     "rules": {
       "suspicious": {
+        "noDeprecatedImports": "error",
         "noDoubleEquals": {
           "level": "error",
           "options": {
@@ -105,6 +106,7 @@
   },
   "plugins": [
     "./.constitution/presets/typescript/biome/foundation/plugins/type-names-undecorated.grit",
+    "./.constitution/presets/typescript/biome/foundation/plugins/no-mutable-export.grit",
     {
       "path": "./.constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
       "includes": [

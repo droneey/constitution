@@ -12,6 +12,8 @@ foundation:
       - noImportantStyles
     no-literal-colour-outside-the-theme:
       - noHexColors
+    theme-writes-no-hexadecimal-colour:
+      - noHexColors
     selectors-stay-shallow:
       - noExcessiveSelectorClasses
       - noDescendingSpecificity
