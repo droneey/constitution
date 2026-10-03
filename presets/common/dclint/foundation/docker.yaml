@@ -32,6 +32,9 @@ rules:
           - logging
           - healthcheck
           - security_opt
+          - cap_drop
+          - cap_add
+          - read_only
           - labels
           - tmpfs
           - environment

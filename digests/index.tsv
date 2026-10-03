@@ -48,7 +48,7 @@ block	ls-lint	implementation	Holds the names of files and folders in every langu
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md		typescript tsc		false						nest-cli.json .swcrc
-block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md				false		audit				osv-scanner.toml
+block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md		browser ui typescript		false						tests/e2e/** playwright.config.*
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
@@ -535,11 +535,14 @@ rule	bundle-reads-no-build-environment	browser	blocks/contexts/platforms/browser
 rule	no-credential-readable-by-script	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
 rule	strict-content-security-policy	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	test			security	foundation		true
 rule	trusted-types-required	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			security	foundation		true
+rule	documents-sent-with-security-headers	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			security	foundation		true
+rule	scripts-from-other-origins-pinned	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	review			security	foundation		true
 rule	bundle-size-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			performance	foundation		true
 rule	core-web-vitals-within-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	review			performance ux	foundation		true
 rule	server-rendering-is-delivery-only	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review				architecture		true
 rule	served-configuration-read-at-boot	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	environment-read-once-at-boot	true
 rule	cross-window-messages-check-origin	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	untrusted-input-parsed-at-edge	false
+rule	redirect-targets-allowlisted	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	untrusted-input-parsed-at-edge	false
 rule	no-raw-html-injection	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	tool	lint		security	architecture	untrusted-input-parsed-at-edge	false
 rule	native-html-elements-first	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			a11y	foundation	native-semantics-first	false
 rule	landmarks-and-skip-link	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	test			a11y	foundation	wcag-aa-conformance	false
@@ -745,6 +748,7 @@ rule	build-context-trimmed	docker	blocks/implementations/docker/foundation/docke
 rule	compose-keys-in-shared-order	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint			foundation		true
 rule	compose-without-version-field	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint			foundation		true
 rule	published-addresses-quoted-and-bound	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint		security	foundation		true
+rule	services-drop-privileges	docker	blocks/implementations/docker/foundation/docker.md		SHOULD	review			security	foundation		true
 rule	repeated-settings-in-extension-fields	docker	blocks/implementations/docker/foundation/docker.md		SHOULD	review				foundation		true
 rule	variants-extend-a-disabled-base	docker	blocks/implementations/docker/foundation/docker.md		SHOULD	review				foundation		true
 rule	dependencies-wait-until-healthy	docker	blocks/implementations/docker/foundation/docker.md		SHOULD	review			errors	foundation		true
@@ -798,6 +802,7 @@ rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv
 rule	licences-checked-against-the-shared-allowlist	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	licences-from-an-allowlist	false
 rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
 rule	licence-override-states-its-reason	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	licences-from-an-allowlist	false
+rule	images-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/with/docker.md	docker	MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
 rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	a11y testing	foundation	elements-found-by-role-label-text	false
 rule	waits-through-locators-and-assertions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	web-first-assertions-awaited	playwright	blocks/implementations/playwright/foundation/playwright.md		MUST	tool	lint	typescript	errors	foundation	async-work-awaited-or-deliberately-detached	false

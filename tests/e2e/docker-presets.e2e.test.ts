@@ -28,6 +28,10 @@ const COMPOSE = [
   '    ports:',
   "      - '127.0.0.1:3000:3000'",
   '    logging: *logging',
+  '    security_opt: [no-new-privileges:true]',
+  '    cap_drop: [ALL]',
+  '    read_only: true',
+  '    tmpfs: [/tmp]',
   '    environment:',
   '      NODE_ENV: production',
   '  api-development:',
@@ -160,9 +164,16 @@ describe('the dclint docker part', () => {
     },
     {
       condition: 'a service lists its environment before its ports',
-      from: "    ports:\n      - '127.0.0.1:3000:3000'\n    logging: *logging\n    environment:\n      NODE_ENV: production\n",
+      from: "    ports:\n      - '127.0.0.1:3000:3000'\n    logging: *logging\n    security_opt: [no-new-privileges:true]\n    cap_drop: [ALL]\n    read_only: true\n    tmpfs: [/tmp]\n    environment:\n      NODE_ENV: production\n",
       rule: 'service-keys-order',
       to: "    environment:\n      NODE_ENV: production\n    ports:\n      - '127.0.0.1:3000:3000'\n",
+    },
+    {
+      condition:
+        'a service sets a read-only file system before dropping capabilities',
+      from: '    cap_drop: [ALL]\n    read_only: true\n',
+      rule: 'service-keys-order',
+      to: '    read_only: true\n    cap_drop: [ALL]\n',
     },
     {
       condition: 'an image has no tag',
