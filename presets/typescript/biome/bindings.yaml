@@ -143,6 +143,8 @@ foundation:
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
   typescript:
+    no-date-library:
+      - noRestrictedImports
     named-exports-only:
       - noDefaultExport
     return-union-lists-only-returned-members:

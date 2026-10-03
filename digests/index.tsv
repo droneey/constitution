@@ -552,6 +552,7 @@ rule	viewport-never-blocks-zoom	browser	blocks/contexts/platforms/browser/founda
 rule	global-privacy-control-honoured	browser	blocks/contexts/platforms/browser/foundation/with/analytics.md	analytics	SHOULD	review			security	foundation		true
 rule	document-language-follows-locale	browser	blocks/contexts/platforms/browser/foundation/with/i18n.md	i18n	MUST	test			a11y ux	foundation		true
 rule	links-are-anchors	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation		true
+rule	popover-placed-by-anchor-positioning	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux performance	foundation		true
 rule	mobile-first-additive-breakpoints	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation	components-size-to-their-container	false
 rule	dynamic-viewport-units	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			ux	foundation	components-size-to-their-container	true
 rule	targets-at-least-24-css-px	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation	targets-meet-platform-minimum	false
@@ -612,6 +613,7 @@ rule	stylesheet-values-from-theme-properties	css	blocks/contexts/languages/css/f
 rule	custom-properties-spell-their-token	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	token-grammar-and-layers	false
 rule	color-scheme-declared-on-root	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	theme-follows-system-until-chosen	true
 rule	no-literal-colour-outside-the-theme	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	tool	lint	css	ux	foundation	stylesheet-values-from-theme-properties	false
+rule	theme-colours-in-oklch	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	SHOULD	review		css	ux a11y	foundation	light-and-dark-one-token-set	false
 rule	component-styles-in-its-folder	css	blocks/contexts/languages/css/architecture/with/ui.md	ui	MUST	review		css		architecture	component-in-its-own-folder	false
 rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation		true
 rule	file-named-after-its-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	file-is-one-semantic-unit	false
@@ -638,6 +640,8 @@ rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescr
 rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	immutable-by-default	false
 rule	type-parameter-appears-twice	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	text-made-deliberately	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
+rule	dates-through-temporal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	data	foundation		true
+rule	no-date-library	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript	data	foundation	dates-through-temporal	false
 rule	no-object-joined-into-text	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	text-made-deliberately	false
 rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	return-union-lists-only-returned-members	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	return-type-no-wider-than-returned	false

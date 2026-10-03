@@ -42,6 +42,28 @@
         },
         "noNonNullAssertion": "error",
         "useEnumInitializers": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "moment": "Use Temporal: date libraries wrap the Date it replaces",
+              "dayjs": "Use Temporal: date libraries wrap the Date it replaces",
+              "date-fns": "Use Temporal: date libraries wrap the Date it replaces",
+              "luxon": "Use Temporal: date libraries wrap the Date it replaces",
+            },
+            "patterns": [
+              {
+                "group": [
+                  "moment/**",
+                  "dayjs/**",
+                  "date-fns/**",
+                  "luxon/**",
+                ],
+                "message": "Use Temporal: date libraries wrap the Date it replaces",
+              },
+            ],
+          },
+        },
         "useImportType": {
           "level": "error",
           "options": {

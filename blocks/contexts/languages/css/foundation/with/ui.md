@@ -36,3 +36,10 @@ No hexadecimal colour is written outside the theme's stylesheet.
 | Why | Check | Tags |
 |---|---|---|
 | a literal colour is a value the next theme change misses. | tool/lint | [ux] |
+
+## theme-colours-in-oklch → light-and-dark-one-token-set
+The theme writes its colours as `oklch()`.
+
+| Why | Check | Tags |
+|---|---|---|
+| OKLCH is the colour space where one lightness reads as equally light in every hue, which the derivation by rule needs. | review | [ux, a11y] |

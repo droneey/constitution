@@ -157,12 +157,12 @@ A `switch` over a union of literals handles every member.
 
 **Example:**
 ```ts
-type Payment = { status: 'pending' } | { status: 'paid'; at: Date } | { status: 'failed'; reason: string };
+type Payment = { status: 'pending' } | { status: 'paid'; at: Temporal.Instant } | { status: 'failed'; reason: string };
 
 const label = (payment: Payment): string => {
   switch (payment.status) {
     case 'pending': return 'Waiting';
-    case 'paid': return `Paid ${payment.at.toISOString()}`;
+    case 'paid': return `Paid ${payment.at.toString()}`;
     case 'failed': return payment.reason;
     default: {
       const unreachable: never = payment;
@@ -206,6 +206,20 @@ A value becomes text through a function that names its form — a formatter, `St
 | Why | Check | Tags |
 |---|---|---|
 | `'Total: ' + order` prints `[object Object]`, and a number joined to a string is printed in no locale's form. | review | [] |
+
+## dates-through-temporal · MUST
+A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appears only where an API demands one, converted at that call; no date library is used. A runtime the program supports that lacks `Temporal` loads its polyfill once, in the entry file, before any code reads a date.
+
+| Why | Check | Tags |
+|---|---|---|
+| `Date` mixes an instant with the machine's time zone and mutates in place, which is where date bugs come from; `Temporal` keeps each meaning in its own immutable type. | review | [data] |
+
+## no-date-library → dates-through-temporal
+No module imports `moment`, `dayjs`, `date-fns` or `luxon`, or a path inside them.
+
+| Why | Check | Tags |
+|---|---|---|
+| each of them wraps the `Date` that `Temporal` replaces. | tool/lint | [] |
 
 ## no-object-joined-into-text → text-made-deliberately
 No object reaches text through its default `toString`, by `+` or in a template, and `+` never mixes a `bigint` with a `number`.

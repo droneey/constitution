@@ -1,0 +1,30 @@
+{
+  "linter": {
+    "rules": {
+      "nursery": {
+        "useBaseline": {
+          "level": "error",
+          "options": {
+            "allowProperties": [
+              "anchor-name",
+              "anchor-scope",
+              "position-anchor",
+              "position-area",
+              "position-try",
+              "position-try-fallbacks",
+              "position-try-order",
+              "position-visibility",
+            ],
+            "allowFunctions": [
+              "anchor",
+              "anchor-size",
+            ],
+            "allowAtRules": [
+              "position-try",
+            ],
+          },
+        },
+      },
+    },
+  },
+}
