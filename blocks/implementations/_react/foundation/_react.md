@@ -84,7 +84,7 @@ A component that renders nothing returns `null`, the one place internal code wri
 
 | Why | Check | Tags |
 |---|---|---|
-| React's own absence of output is `null`, and a component returning `undefined` reads as a forgotten return. | tool/lint | [] |
+| React's own absence of output is `null`, and a component returning `undefined` reads as a forgotten return. | review | [] |
 
 ## State and effects
 

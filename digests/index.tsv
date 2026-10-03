@@ -102,7 +102,7 @@ rule	error-logged-once	core	blocks/core/foundation/code.md		SHOULD	review			erro
 rule	retry-only-transient-failures	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
 rule	expected-failures-typed-with-codes	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
 rule	failures-listed-beside-the-contract	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation	expected-failures-typed-with-codes	false
-rule	catch-narrows-and-rethrows	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
+rule	catch-narrows-and-rethrows	core	blocks/core/foundation/code.md		MUST	review			errors	foundation	errors-surfaced-never-swallowed	false
 rule	only-errors-thrown	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
 rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/foundation/code.md		SHOULD	review			errors security ux	foundation		true
 rule	error-kit-carries-code-cause-and-details	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
@@ -255,7 +255,6 @@ rule	wire-absence-mapped-at-boundary	core	blocks/core/architecture/code.md		MUST
 rule	typed-failures-homed-by-layer	core	blocks/core/architecture/code.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
 rule	one-error-handler-per-transport	core	blocks/core/architecture/code.md		SHOULD	review			errors security ux	architecture	failure-shown-as-what-happened-and-what-next	false
 rule	value-object-built-only-by-its-check	core	blocks/core/architecture/code.md		MUST	review			data	architecture	invariant-checked-at-construction	true
-rule	boundary-builds-value-objects-through-the-domain	core	blocks/core/architecture/code.md		MUST	review			data	architecture	value-object-built-only-by-its-check	false
 rule	schema-derives-from-domain-types	core	blocks/core/architecture/code.md		MUST	review				architecture	domain-values-never-typed-again	false
 rule	environment-read-once-at-boot	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture		true
 rule	stateful-clients-built-by-the-root	core	blocks/core/architecture/code.md		MUST	review				architecture	one-explicit-composition-root	false
@@ -462,7 +461,6 @@ rule	ui-styling-container-queries	ui	blocks/domains/ui/foundation/design-system.
 rule	ui-styling-cascading-variants	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review			ux	foundation		true
 rule	ui-variant-map-types-props	ui	blocks/domains/ui/foundation/design-system.md		SHOULD	review				foundation		true
 rule	screen-composes-the-page	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux performance	architecture	delivery-units-stay-thin	false
-rule	screens-imported-by-nothing-inside	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux performance	architecture	screen-composes-the-page	false
 rule	pieces-never-touch-navigation	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture		true
 rule	navigation-passed-by-slot	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux	architecture		true
 rule	screen-private-pieces-beside-screen	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	delivery-unit-beside-what-it-serves	false
@@ -548,7 +546,6 @@ rule	native-html-elements-first	browser	blocks/contexts/platforms/browser/founda
 rule	landmarks-and-skip-link	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	test			a11y	foundation	wcag-aa-conformance	false
 rule	fields-declare-autocomplete	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			ux a11y	foundation	every-control-has-an-accessible-name	false
 rule	live-regions-polite-by-default	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			a11y ux	foundation	status-changes-announced	false
-rule	browser-checklist-before-shipping	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	SHOULD	review			a11y	foundation	interactive-checked-by-hand	false
 rule	navigation-moves-focus-to-the-view	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	test			a11y ux	foundation	status-changes-announced	false
 rule	live-region-mounted-before-message	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	test			a11y ux	foundation	status-changes-announced	false
 rule	viewport-never-blocks-zoom	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			a11y	foundation	wcag-aa-conformance	false
@@ -609,7 +606,6 @@ rule	type-sized-in-rem	css	blocks/contexts/languages/css/foundation/with/a11y.md
 rule	hover-styles-behind-hover-media	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y ux	foundation	hover-content-reachable-by-focus-and-tap	false
 rule	focus-ring-survives-forced-colors	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	focus-always-visible	true
 rule	sticky-content-reserves-scroll-padding	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	wcag-aa-conformance	false
-rule	view-transitions-honour-reduced-motion	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	reduced-motion-honoured	false
 rule	logical-properties-for-direction	css	blocks/contexts/languages/css/foundation/with/i18n.md	i18n	SHOULD	review		css	ux	foundation		true
 rule	cascading-variant-by-data-attribute	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	SHOULD	review		css	ux	foundation	cascading-variant-set-once-on-ancestor	false
 rule	stylesheet-values-from-theme-properties	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	tokens-single-source-of-appearance	false
@@ -681,7 +677,7 @@ rule	hooks-at-top-level	_react	blocks/implementations/_react/foundation/_react.m
 rule	no-component-defined-inside-component	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	errors performance	foundation		true
 rule	list-keys-from-identity	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	tool	lint	typescript	errors	foundation		true
 rule	components-named-in-pascal-case	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript		foundation	identifier-case-by-kind	false
-rule	nothing-rendered-as-null	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	data	foundation	absence-has-one-value	false
+rule	nothing-rendered-as-null	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	data	foundation	absence-has-one-value	false
 rule	effects-only-for-external-systems	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	effect-cleans-up-and-cancels	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	errors performance	foundation	io-has-timeout-and-cancellation	true
 rule	async-ui-state-through-actions	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation		true
@@ -908,13 +904,13 @@ rule	guard-reaches-features-outside-react	tanstack-router	blocks/implementations
 rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux	architecture	document-metadata-owned-by-screen	false
 rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript		architecture	screen-private-pieces-beside-screen	false
 rule	libs-import-no-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
-rule	routes-imported-only-by-the-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript	ux performance	architecture	screens-imported-by-nothing-inside	false
+rule	routes-imported-only-by-the-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	dependencies-point-inward	false
 rule	screen-reads-start-in-the-loader	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux performance	architecture	route-owns-its-url	false
 rule	adapters-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	guard-reaches-features-outside-react	false
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	MAY	review		typescript		foundation		true
 rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript	errors ux	foundation	error-component-per-route	false
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript	data	architecture	one-home-per-datum	false
-rule	query-client-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	tool	imports	typescript		architecture	root-imported-only-by-entry-and-delivery-wiring	false
+rule	query-client-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript		architecture	root-imported-only-by-entry-and-delivery-wiring	false
 rule	hashed-assets-immutable-html-revalidated	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		SHOULD	review		typescript	performance	foundation		true
 rule	spa-mode-without-server-logic	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST	review		typescript	security	architecture	server-rendering-is-delivery-only	false
 rule	runtime-config-from-one-server-function	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
@@ -939,7 +935,7 @@ rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/foundatio
 rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/foundation/zod.md		SHOULD	test		typescript	errors	foundation	expected-failures-typed-with-codes	false
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/architecture/zod.md		MUST	review		typescript		architecture	schema-derives-from-domain-types	false
-rule	schema-never-brands	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	lint	typescript	data	architecture	boundary-builds-value-objects-through-the-domain	false
+rule	schema-never-brands	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	lint	typescript	data	architecture	value-object-built-only-by-its-check	false
 answer	bun	workspace-packages-linked-locally	yes
 answer	bun	publishing-with-provenance-supported	partly
 answer	bunli	command-framework-parses-flags-by-schema	yes

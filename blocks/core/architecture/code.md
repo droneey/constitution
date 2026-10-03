@@ -57,18 +57,11 @@ Defects travel to the boundary. Each transport has one handler that turns a fail
 ## Types
 
 ## value-object-built-only-by-its-check → invariant-checked-at-construction · MUST
-A business value with an invariant — an email, an amount in its currency, a percentage — is a value object of the domain, built only by the domain's function that checks the invariant.
+A business value with an invariant — an email, an amount in its currency, a percentage — is a value object of the domain, and its check lives there; a boundary — an adapter's mapper, a form, a parser — gets one only through that check, never through a mechanism of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| a value that exists is valid, so no caller checks it again, and the invariant has one home in the layer that owns its meaning. | review | [data] |
-
-## boundary-builds-value-objects-through-the-domain → value-object-built-only-by-its-check
-A boundary — an adapter's mapper, a form, a parser — gets a value object only through the domain's function that builds it, never through a mechanism of its own.
-
-| Why | Check | Tags |
-|---|---|---|
-| a second way to make the value is a second definition of it, and the two drift. | review | [data] |
+| the invariant has one home, in the layer that owns its meaning, and a second way to make the value would be a second definition that drifts. | review | [data] |
 
 ## schema-derives-from-domain-types → domain-values-never-typed-again
 A schema over a domain type or enum derives its values from it, so the edge depends on the domain and never restates it.
@@ -87,7 +80,7 @@ One place reads the environment: `root/`, or the configuration provider a lower 
 | a missing or malformed setting fails at start, not in the middle of a request, and no module depends on the process's environment. | review | [security] |
 
 ## stateful-clients-built-by-the-root → one-explicit-composition-root
-A stateful client — a cache client, a store, a connection — is built by the composition root and handed down, never created at a module's top level.
+A stateful client — a cache client, a store, a connection — is never created at a module's top level.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -103,7 +96,7 @@ A behaviour wrapped around an implementation is a decorator, applied at the comp
 | the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps. | review | [] |
 
 ## ports-and-use-cases-answer-or-change → function-answers-or-changes-state · MUST
-A query port or use-case has no side effect, and a command takes its data as input and never calls a query.
+A port or use-case answers a question or changes state, never both, without exception.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -63,7 +63,8 @@ Where a design tool or a second platform reads the tokens, their source is the d
 
 | Why | Check | Tags |
 |---|---|---|
-| one source the design tool and every platform read keeps them the same; a project with one product and one platform may keep its tokens in the theme module alone. | review | [ux] |
+| one source the design tool and every platform read keeps them the same. | review | [ux] |
+
 ## Requirements for implementation
 
 What any styling library must provide.

@@ -30,10 +30,10 @@ A need is met by existing components first, then by extending a primitive, and o
 
 | Why | Check | Tags |
 |---|---|---|
-| each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | review | [ux] |
+| an existing component is already proven and known to its users; each new one is more code the team keeps and more for users to learn. | review | [ux] |
 
 ## primitive-markup-never-recreated → compose-before-authoring · MUST
-A primitive's markup is never re-created: a need it does not meet extends it, or a new primitive is composed beside it.
+A primitive's markup is never re-created.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -150,6 +150,7 @@ A refetch or a transition keeps the content already shown in place, and a first-
 | Why | Check | Tags |
 |---|---|---|
 | content that blinks to a skeleton on every refresh reads as a failure, and a late indicator that moves the layout makes the user lose their place. | review | [ux] |
+
 ## submit-busy-while-submitting · SHOULD
 A form never submits twice: while it submits, a repeat submit is ignored, and the button shows it is busy with `aria-disabled` and a busy label, keeping its focus.
 

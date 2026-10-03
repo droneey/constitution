@@ -29,7 +29,7 @@ No action passes `force: true`.
 | a forced action skips the checks a person's click meets — visible, enabled, not covered — so the spec passes on an element nobody can use. | tool/lint | [a11y] |
 
 ## retries-off-in-the-config → flaky-test-fixed-or-removed
-`playwright.config` sets `retries: 0`, so a case that fails once fails the run.
+`playwright.config` sets no retries — the scaffold's `CI ? 2 : 0` goes — so a case that fails once fails the run.
 
 | Why | Check | Tags |
 |---|---|---|

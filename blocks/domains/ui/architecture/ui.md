@@ -11,13 +11,6 @@ A screen owns its navigation state: it reads and validates it, loads the data it
 |---|---|---|
 | the screen is the one place that knows its address and its data, so every piece stays reusable and testable alone, and one loading point shows one loading state and one error instead of a page that fills in piece by piece. | review | [ux, performance] |
 
-## screens-imported-by-nothing-inside → screen-composes-the-page
-Nothing inside the application — a feature, `shared/`, `libs/`, `kernel/` — imports a screen or anything under the screens' folder; only the router does.
-
-| Why | Check | Tags |
-|---|---|---|
-| a screen is the outermost delivery unit, and a feature that imports one depends on the layer that depends on it. | review | [] |
-
 ## pieces-never-touch-navigation · MUST
 A presentational component or a screen's piece imports no navigation or route-parameter primitive.
 

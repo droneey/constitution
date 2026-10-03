@@ -254,8 +254,8 @@ A contract that can fail lists the expected failures it throws as one named type
 |---|---|---|
 | the language cannot say what a function throws, so the list is where a caller and a spec find every failure to handle. | review | [errors] |
 
-## catch-narrows-and-rethrows · MUST
-A catch handles only the failures it recognises by code, through the error kit's guard, and rethrows every other.
+## catch-narrows-and-rethrows → errors-surfaced-never-swallowed
+A catch handles only the failures it recognises by code, through the error kit's guard, and rethrows every other; a catch around a library's call maps that library's exceptions to the kit's coded errors.
 
 | Why | Check | Tags |
 |---|---|---|
