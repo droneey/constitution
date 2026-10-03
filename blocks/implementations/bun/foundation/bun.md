@@ -47,7 +47,7 @@ Another runtime or tool runs only where Bun cannot run it, with the reason writt
 | each exception is a second runtime to pin and keep; its reason says when it can go. | review | [] |
 
 ## programs-built-by-bun-build · SHOULD
-A program is built by `bun build`.
+A program whose build no other active block owns is built by `bun build`.
 
 | Why | Check | Tags |
 |---|---|---|

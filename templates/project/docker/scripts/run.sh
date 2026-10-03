@@ -42,7 +42,7 @@ compute_local_hash() {
 }
 
 read_volume_hash() {
-  docker run --rm -v "$NODE_MODULES_VOLUME":/vol alpine \
+  docker run --rm -v "$NODE_MODULES_VOLUME":/vol alpine:3.22.2 \
     cat /vol/.bun-lock-hash 2>/dev/null || echo ""
 }
 

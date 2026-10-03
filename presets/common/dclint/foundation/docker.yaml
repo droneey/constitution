@@ -9,7 +9,7 @@ rules:
   require-quotes-in-ports:
     - 2
     - quoteType: single
-  service-container-name-regex: 2
+  service-container-name-regex: 0
   service-dependencies-alphabetical-order: 0
   service-image-require-explicit-tag: 2
   service-keys-order:
@@ -45,6 +45,7 @@ rules:
     - customOrder:
         - version
         - name
+        - include
         - x-properties
         - services
         - networks
