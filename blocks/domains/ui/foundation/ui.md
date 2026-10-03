@@ -180,6 +180,13 @@ A spec finds elements by role, label and text, never by class or internal state.
 |---|---|---|
 | a spec that finds elements as a user does changes only when the behaviour does. | review | [a11y] |
 
+## layout-and-focus-proven-on-the-platform · SHOULD
+Behaviour that depends on layout, visibility or real focus is proven where the platform renders it — an end-to-end spec, or a component spec the platform's own engine runs — never only in a simulation of the platform.
+
+| Why | Check | Tags |
+|---|---|---|
+| a simulated screen computes no layout and fakes focus, so a spec there passes while the element is hidden, covered or unreachable. | review | [a11y, testing] |
+
 ## screenshots-only-where-look-is-contract → no-unreadable-snapshots
 Appearance is compared by screenshot only where the look is the contract: in the design system.
 

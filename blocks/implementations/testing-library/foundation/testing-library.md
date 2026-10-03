@@ -14,7 +14,7 @@ Interactions go through `userEvent`, never `fireEvent`.
 |---|---|---|
 | `userEvent` produces the whole sequence a person's action does — focus, keys, pointer — so the spec meets the bugs they would. | review | [testing] |
 
-## async-ui-awaited-with-find · SHOULD
+## async-ui-awaited-with-find → no-fixed-sleeps-in-tests
 What appears asynchronously is awaited with `findBy…` or `waitFor`, never a fixed sleep.
 
 | Why | Check | Tags |

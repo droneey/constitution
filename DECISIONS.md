@@ -683,3 +683,15 @@
   - Consent: refusing is as easy as accepting (MUST), consent is withdrawable and recorded (MUST), through a link on every screen where there is a user interface, Global Privacy Control counts as a refusal in the browser, a legally exempt configuration is an override with its reason; events are named object and past action.
 - **Rejected.** A disabled submit button: it drops focus and says nothing.
 - **Why.** The rozumchik-web audit and the best-practices audit of 2026 found these unstated, against WCAG 2.2, the EDPB's consent guidance and current i18n practice.
+
+## ADR-0110 — Testing rules of the 2026 audits and the Playwright block
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Core: a flaky test is fixed or deleted, never retried; a case passes alone and in any order; a test never waits a fixed delay; a case holds no logic; a fixture builds a valid value and takes overrides; a property test's counterexample becomes a row; a unit case runs in milliseconds; captured responses of a vendor are checked against it by a contract run, which `tests-run-in-a-sandbox` now allows next to a person; on the workflow axis, that run is scheduled outside the check and opens an issue, and the whole program is mutated on a schedule and before each release.
+  - GritQL refuses a branch, loop or conditional expression in a case's body, for every runner. With `bun:test`, it refuses `retry` and `repeats`, `Bun.sleep` and a `setTimeout` inside a promise or from `node:timers/promises`; `bunfig.toml` randomizes the order and preloads a fixture that makes `fetch`, `WebSocket` and `Bun.connect` throw. `async-ui-awaited-with-find` becomes a child of the rule against fixed sleeps.
+  - `ui`: behaviour that depends on layout, visibility or real focus is proven on the platform, never only in a simulation. A TypeScript package's exported generic and conditional types get type cases.
+  - A `playwright` block for end-to-end specs, on TypeScript: locators by role, label and text; waits only through locators and web-first assertions, held by Biome; web-first assertions awaited; no forced actions; retries off; a trace kept for each failure.
+  - knip's production run is `--strict`.
+- **Rejected.** A unit timeout in `bunfig.toml`: Bun ignores the key, so the speed of a unit case stays with review. Biome's `playwright` domain: it enables none of the nursery rules, so the part lists them.
+- **Why.** The best-practices audit of 2026 found flaky, order-dependent and sleeping tests unruled, the sandbox held only by review, captured responses never re-checked, and no tool behind `end-to-end-per-critical-scenario`.

@@ -1,5 +1,5 @@
 import { realpathSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
@@ -174,7 +174,7 @@ describe('the reminders of the post-tool-use hook', () => {
 
     // Act
     const reminder = touch({
-      filePath: path.startsWith('/') ? path : join(project, path),
+      filePath: resolve(project, path),
       session,
     });
 

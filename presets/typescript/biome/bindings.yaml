@@ -27,6 +27,10 @@ foundation:
       - no-module-mocks.grit
     no-skipped-or-empty-tests:
       - no-skipped-or-empty-tests.grit
+    no-sleep-in-specs:
+      - no-sleep-in-specs.grit
+    no-test-retries:
+      - no-test-retries.grit
     strict-matcher-only:
       - strict-matcher-only.grit
   core:
@@ -37,6 +41,8 @@ foundation:
       - useMaxParams
     case-reads-should-when:
       - cases-named-should-when.grit
+    no-branch-or-loop-in-a-case:
+      - no-branch-or-loop-in-a-case.grit
     error-cause-preserved:
       - useErrorCause
     catch-never-empty:
@@ -71,6 +77,16 @@ foundation:
   i18n:
     intl-calls-take-a-locale:
       - intl-calls-take-a-locale.grit
+  playwright:
+    no-forced-actions:
+      - noPlaywrightForceOption
+    waits-through-locators-and-assertions:
+      - noPlaywrightNetworkidle
+      - noPlaywrightWaitForNavigation
+      - noPlaywrightWaitForSelector
+      - noPlaywrightWaitForTimeout
+    web-first-assertions-awaited:
+      - noPlaywrightMissingAwait
   react-dom:
     aria-attributes-as-the-dom-spells-them:
       - noUnknownAttribute

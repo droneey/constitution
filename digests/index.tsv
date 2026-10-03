@@ -49,6 +49,7 @@ block	matomo	implementation	Matomo as one of the product's analytics services.	f
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md		typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md				false		audit				osv-scanner.toml
+block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md		browser ui typescript		false						tests/e2e/** playwright.config.*
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
@@ -174,21 +175,30 @@ rule	assert-what-a-caller-observes	core	blocks/core/foundation/testing.md		SHOUL
 rule	case-earns-its-place	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	one-intent-per-case	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	variants-in-one-table	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	no-logic-in-cases	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	fixtures-build-valid-defaults	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	no-unreadable-snapshots	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	every-declared-failure-has-a-case	core	blocks/core/foundation/testing.md		SHOULD	review			testing errors	foundation		true
 rule	edge-cases-by-risk	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	property-tests-where-they-pay	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	property-counterexample-kept-as-case	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	property-tests-where-they-pay	false
 rule	lifecycle-tested-to-final-state	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	one-contract-suite-per-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	tests-ship-with-the-behaviour	core	blocks/core/foundation/testing.md		MUST	review			testing	foundation		true
 rule	test-seen-failing	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	flaky-test-fixed-or-removed	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	specs-independent-of-order	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	no-fixed-sleeps-in-tests	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	unit-case-runs-in-milliseconds	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	tests-run-in-a-sandbox	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation		true
 rule	one-fake-per-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	integration-tested-against-the-real-engine	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	captured-responses-verified-against-the-vendor	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	end-to-end-per-critical-scenario	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	test-files-named-by-role	core	blocks/core/foundation/testing.md		MUST	review			testing	foundation		true
 rule	cases-named-should-when	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	case-reads-should-when	core	blocks/core/foundation/testing.md		SHOULD	tool	lint		testing	foundation	cases-named-should-when	false
+rule	no-branch-or-loop-in-a-case	core	blocks/core/foundation/testing.md		SHOULD	tool	lint		testing	foundation	no-logic-in-cases	false
 rule	arrange-act-assert-marked	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	no-skipped-or-empty-tests	core	blocks/core/foundation/testing.md		MUST	tool	lint		testing	foundation		true
 rule	test-code-unreachable-from-production	core	blocks/core/foundation/testing.md		MUST	tool	imports		testing	foundation		true
@@ -283,6 +293,8 @@ rule	dependencies-updated-by-bot	core	blocks/core/workflow/security.md		SHOULD	r
 rule	shared-tooling-from-pinned-packages	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow		true
 rule	tests-first-from-a-description	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	bug-fix-starts-with-failing-test	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	test-seen-failing	false
+rule	contract-run-scheduled-outside-the-check	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	captured-responses-verified-against-the-vendor	false
+rule	whole-program-mutated-periodically	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	wcag-aa-conformance	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
 rule	native-semantics-first	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
 rule	operable-by-every-input	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
@@ -424,6 +436,7 @@ rule	submit-busy-while-submitting	ui	blocks/domains/ui/foundation/ui.md		SHOULD	
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			ux testing	foundation	spec-per-boundary	false
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			a11y testing	foundation	spec-per-boundary	false
 rule	elements-found-by-role-label-text	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			a11y testing	foundation	assert-what-a-caller-observes	false
+rule	layout-and-focus-proven-on-the-platform	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			a11y testing	foundation		true
 rule	screenshots-only-where-look-is-contract	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux testing	foundation	no-unreadable-snapshots	false
 rule	ui-primitives-keyboard-and-focus	ui	blocks/domains/ui/foundation/ui.md		MUST	review			a11y	foundation		true
 rule	ui-primitives-unstyled	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
@@ -643,6 +656,7 @@ rule	environment-read-only-in-root	typescript	blocks/contexts/languages/typescri
 rule	intl-calls-take-a-locale	typescript	blocks/contexts/languages/typescript/foundation/with/i18n.md	i18n	MUST	tool	lint	typescript	ux	foundation	formatters-take-the-active-locale	false
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	configured-tool-is-a-peer-with-floor	false
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript		foundation		true
+rule	exported-types-have-type-tests	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation		true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
 rule	react-compiler-on	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	performance	foundation		true
 rule	render-is-pure	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
@@ -699,6 +713,10 @@ rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-tes
 rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-tested-against-the-real-engine	false
 rule	check-writes-no-snapshot	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript		foundation	check-only-checks	false
 rule	coverage-gate-on-loaded-files	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	tool	coverage	typescript	testing	foundation	coverage-holds-all-logic	false
+rule	no-test-retries	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	flaky-test-fixed-or-removed	false
+rule	test-order-randomized	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	specs-independent-of-order	false
+rule	no-sleep-in-specs	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
+rule	network-refused-by-the-test-preload	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript	testing security	foundation	tests-run-in-a-sandbox	false
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/foundation/bunli.md		SHOULD	test		typescript	testing	foundation	command-tested-through-its-command-line	false
 rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architecture/bunli.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
 rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
@@ -771,6 +789,12 @@ rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv
 rule	licences-checked-against-the-shared-allowlist	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	licences-from-an-allowlist	false
 rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
 rule	licence-override-states-its-reason	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	licences-from-an-allowlist	false
+rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	a11y testing	foundation	elements-found-by-role-label-text	false
+rule	waits-through-locators-and-assertions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
+rule	web-first-assertions-awaited	playwright	blocks/implementations/playwright/foundation/playwright.md		MUST	tool	lint	typescript	errors	foundation	async-work-awaited-or-deliberately-detached	false
+rule	no-forced-actions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	a11y testing	foundation	layout-and-focus-proven-on-the-platform	false
+rule	retries-off-in-the-config	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation	flaky-test-fixed-or-removed	false
+rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation		true
 rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	performance	foundation		true
 rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	ux	foundation		true
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation		true
@@ -883,7 +907,7 @@ rule	runtime-config-from-one-server-function	tanstack-start	blocks/implementatio
 rule	root-route-is-the-delivery-wiring	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST	review		typescript		architecture	root-imported-only-by-entry-and-delivery-wiring	false
 rule	queries-by-role-label-text	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	tool	lint	typescript	a11y testing	foundation	elements-found-by-role-label-text	true
 rule	interactions-through-user-event	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation		true
-rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation		true
+rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	spec-per-boundary	false
 rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false

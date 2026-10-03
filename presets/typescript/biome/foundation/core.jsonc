@@ -79,6 +79,14 @@
         "**/*.test.tsx",
       ],
     },
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-branch-or-loop-in-a-case.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
   ],
   "overrides": [
     {

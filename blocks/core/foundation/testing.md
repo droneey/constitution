@@ -53,6 +53,20 @@ Variants of one behaviour are one table of cases, each row naming its condition.
 |---|---|---|
 | a table shows at a glance which conditions are covered and which are missing, and a new variant is one row. | review | [testing] |
 
+## no-logic-in-cases · SHOULD
+A case holds no branch, loop or computed expectation: variants are rows of a table, and an expected value is written as a literal.
+
+| Why | Check | Tags |
+|---|---|---|
+| logic in a case can be as wrong as the code it checks, and a reader must run it in their head to know what the case expects. | review | [testing] |
+
+## fixtures-build-valid-defaults · SHOULD
+A fixture is a factory that returns a valid value and takes overrides; a case overrides only the fields its condition is about.
+
+| Why | Check | Tags |
+|---|---|---|
+| a case that states only what it is about shows its cause next to its effect, and a new required field changes one factory, not every case. | review | [testing] |
+
 ## no-unreadable-snapshots · SHOULD
 No snapshot of a structure a reader cannot check by eye. A generated format is compared with a golden file a reader can read.
 
@@ -80,6 +94,13 @@ An invariant is proven by a property test where one pays — the guard of a valu
 | Why | Check | Tags |
 |---|---|---|
 | a property test tries inputs no author thought of, where a few examples would miss the one that breaks. | review | [testing] |
+
+## property-counterexample-kept-as-case → property-tests-where-they-pay
+A counterexample a property test finds becomes a row of the unit's table of cases.
+
+| Why | Check | Tags |
+|---|---|---|
+| a property test draws new inputs each run, so only a row keeps the input that broke the code from coming back unseen. | review | [testing] |
 
 ## lifecycle-tested-to-final-state · SHOULD
 A lifecycle test takes an object made by its factory through every transition to its final state, and checks each step.
@@ -111,10 +132,38 @@ Every test has been seen failing for the right reason: written before the code, 
 |---|---|---|
 | a test never seen failing may test nothing. | review | [testing] |
 
+## flaky-test-fixed-or-removed · SHOULD
+A test that passes and fails on the same code is fixed or deleted in the next change; no retry, repeat or rerun hides it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a retried test hides the race it found, and a suite that fails at random teaches everyone to rerun instead of reading the failure. | review | [testing] |
+
+## specs-independent-of-order · SHOULD
+A case passes alone and in any order; no state survives from one case or one file to the next.
+
+| Why | Check | Tags |
+|---|---|---|
+| a case that leans on another passes or fails by the order the runner picks, and fails alone when someone runs it to find a bug. | review | [testing] |
+
+## no-fixed-sleeps-in-tests · SHOULD
+A test waits for a condition or advances a fake clock, never a fixed delay.
+
+| Why | Check | Tags |
+|---|---|---|
+| a fixed delay is too short on a slow machine and wasted on a fast one, so the test is both flaky and slow. | review | [testing] |
+
+## unit-case-runs-in-milliseconds · SHOULD
+A unit case finishes in milliseconds; a slower case reaches something outside its boundary and is an integration spec.
+
+| Why | Check | Tags |
+|---|---|---|
+| the unit suite runs on every change, and it is run often only while it is fast. | review | [testing] |
+
 ## The sandbox
 
 ## tests-run-in-a-sandbox · MUST
-Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person.
+Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person, or by a contract run outside the check.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -133,6 +182,13 @@ Each implementation of a contract over an external system is proven against its 
 | Why | Check | Tags |
 |---|---|---|
 | a fake proves the code that relies on the contract; only the real engine proves that the implementation keeps it. | review | [testing] |
+
+## captured-responses-verified-against-the-vendor · SHOULD
+Each captured response of a remote vendor is checked against the vendor by a contract run, which captures it again and reports any difference.
+
+| Why | Check | Tags |
+|---|---|---|
+| a vendor changes its answers without telling anyone, and a spec on an old capture keeps passing while the program breaks. | review | [testing] |
 
 ## end-to-end-per-critical-scenario · SHOULD
 Each critical scenario `PROJECT.md` names has one end-to-end test through the built program, the way its users reach it, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
@@ -163,6 +219,13 @@ A case reads `should <behaviour> when <condition>`.
 | Why | Check | Tags |
 |---|---|---|
 | a failing case then names what broke and under what condition. | tool/lint | [testing] |
+
+## no-branch-or-loop-in-a-case → no-logic-in-cases
+A case's body holds no branch, loop or conditional expression.
+
+| Why | Check | Tags |
+|---|---|---|
+| a branch in a case runs one path and skips the other, so the case may assert nothing on the path it took. | tool/lint | [testing] |
 
 ## arrange-act-assert-marked · SHOULD
 A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call.
