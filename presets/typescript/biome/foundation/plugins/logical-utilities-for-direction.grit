@@ -1,0 +1,14 @@
+language js
+
+or {
+  jsx_attribute(name=$name, value=$classes) where { $name <: r"className" },
+  or {
+    `cva($...)`,
+    `cn($...)`,
+    `clsx($...)`,
+    `twMerge($...)`
+  } as $classes where { $classes <: not within jsx_attribute() }
+} where {
+  $classes <: r"(?s)(?:.*[\s\x22\x27\x60:])?-?(?:m[lr]|p[lr]|left|right|text-(?:left|right)|border-[lr]|rounded-[lr]|rounded-[tb][lr]|scroll-m[lr]|scroll-p[lr])(?:-|\b).*",
+  register_diagnostic(span=$classes, message="Use the logical utility, such as ms-, pe-, start- or text-start: a physical side does not mirror for a right-to-left locale", severity="error")
+}

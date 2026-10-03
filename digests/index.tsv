@@ -14,7 +14,7 @@ role	audit	true
 role	commits	true
 block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/delivery.md workflow/security.md workflow/testing.md				false						
 block	a11y	domain	Accessibility outcomes, to WCAG 2.2 AA, for any user interface.	foundation/a11y.md				false						
-block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md				false						**/sinks/**
+block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md				false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
@@ -23,11 +23,11 @@ block	ui	domain	Screens, components and the design system of any user interface.
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
 block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md architecture/untrusted-client.md				false						
 block	version-control	domain	Changes made atomically and checked; history and release tags kept.	foundation/version-control.md workflow/version-control.md				false						
-block	browser	platform	Code that runs in a browser tab.	foundation/browser.md architecture/browser.md	foundation/a11y foundation/ui architecture/ui	untrusted-client unreliable-network		false						
+block	browser	platform	Code that runs in a browser tab.	foundation/browser.md architecture/browser.md	foundation/a11y foundation/analytics foundation/i18n foundation/ui architecture/ui	untrusted-client unreliable-network		false						
 block	cli	platform	A program run from a command line, one command per invocation.	foundation/cli.md architecture/cli.md				false						**/cli/**
 block	mobile	platform	Code that runs as an application on a phone or tablet.	foundation/mobile.md architecture/mobile.md	foundation/a11y foundation/ui	untrusted-client unreliable-network		false						
 block	css	language	How stylesheets are layered, named and written.	foundation/css.md	foundation/a11y foundation/i18n foundation/ui architecture/ui			false				format lint names		**/*.css
-block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/package architecture/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json tsconfig.json
+block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/i18n foundation/package architecture/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json tsconfig.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md workflow/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
@@ -43,7 +43,7 @@ block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	fou
 block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md		typescript		false		unused	typescript			knip.config.ts
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-data		false						**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks		git	false		commits			git	lefthook.yaml
-block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.	foundation/lingui.md	foundation/bun architecture/ui	i18n typescript		false						lingui.config.ts **/locales/**
+block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.	foundation/lingui.md	foundation/_react foundation/bun architecture/ui	i18n typescript		false						lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names				.ls-lint.yaml
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
@@ -53,10 +53,10 @@ block	react-dom	implementation	React in the browser — the DOM, the document, l
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
-block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md		_react		false						**/*.stories.tsx .storybook/**
+block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md	foundation/a11y	_react		false						**/*.stories.tsx .storybook/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.	foundation/stryker.md	foundation/bun-test	typescript		false		mutation	typescript			stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
-block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y	ui browser typescript css		false						**/*.css **/*.variants.ts
+block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
@@ -289,6 +289,8 @@ rule	operable-by-every-input	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	r
 rule	focus-always-visible	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
 rule	every-control-has-an-accessible-name	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
 rule	status-changes-announced	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y ux	foundation		true
+rule	failed-submit-focuses-the-first-error	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y ux	foundation	status-changes-announced	false
+rule	toast-never-the-only-copy	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y ux	foundation	status-changes-announced	false
 rule	information-not-by-colour-alone	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y ux	foundation		true
 rule	contrast-tested-over-token-pairs	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	test			a11y testing	foundation		true
 rule	hover-content-reachable-by-focus-and-tap	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y ux	foundation		true
@@ -296,14 +298,19 @@ rule	reduced-motion-honoured	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	t
 rule	headings-in-order	a11y	blocks/domains/a11y/foundation/a11y.md		SHOULD	test			a11y	foundation		true
 rule	ui-specs-scan-accessibility	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	test			a11y testing	foundation	spec-per-boundary	true
 rule	interactive-checked-by-hand	a11y	blocks/domains/a11y/foundation/a11y.md		SHOULD	review			a11y	foundation		true
+rule	paste-and-autofill-never-blocked	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y security	foundation	wcag-aa-conformance	true
+rule	accessibility-statement-published	a11y	blocks/domains/a11y/foundation/a11y.md		SHOULD	review			a11y	foundation		true
 rule	a11y-scan-inside-component-specs	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y testing	foundation		true
 rule	tracking-waits-for-consent	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
+rule	refusal-as-easy-as-consent	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security ux	foundation	tracking-waits-for-consent	true
+rule	consent-withdrawable-and-recorded	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
 rule	events-from-a-closed-vocabulary	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			data	foundation	illegal-states-unrepresentable	false
 rule	analytics-fault-isolated	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	no-personal-data-in-events	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
 rule	never-tracked-list-kept	analytics	blocks/domains/analytics/foundation/analytics.md		SHOULD	review			data	foundation		true
 rule	product-outcomes-tracked	analytics	blocks/domains/analytics/foundation/analytics.md		SHOULD	review			data	foundation		true
 rule	context-set-once-as-dimension	analytics	blocks/domains/analytics/foundation/analytics.md		SHOULD	review			data	foundation		true
+rule	event-names-object-action	analytics	blocks/domains/analytics/foundation/analytics.md		SHOULD	review			data	foundation		true
 rule	analytics-consent-first	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
 rule	analytics-anonymous-by-default	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
 rule	analytics-loads-without-blocking	analytics	blocks/domains/analytics/foundation/analytics.md		SHOULD	review			performance	foundation		true
@@ -311,6 +318,7 @@ rule	analytics-context-dimensions	analytics	blocks/domains/analytics/foundation/
 rule	sinks-behind-one-contract	analytics	blocks/domains/analytics/architecture/analytics.md		SHOULD	review				architecture	set-folder-holds-only-members	false
 rule	sinks-folder-holds-sink-files	analytics	blocks/domains/analytics/architecture/analytics.md		SHOULD	tool	names			architecture	sinks-behind-one-contract	false
 rule	features-never-track	analytics	blocks/domains/analytics/architecture/analytics.md		MUST	tool	imports			architecture	features-blind-to-each-other	false
+rule	consent-reachable-from-every-screen	analytics	blocks/domains/analytics/foundation/with/ui.md	ui	MUST	review			security ux	foundation	consent-withdrawable-and-recorded	false
 rule	section-optional-fields-required	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data	foundation	absence-has-one-value	false
 rule	secrets-are-references	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation		true
 rule	document-schema-strict	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data errors	foundation		true
@@ -336,6 +344,9 @@ rule	user-facing-text-from-catalog	i18n	blocks/domains/i18n/foundation/i18n.md		
 rule	messages-take-named-parameters	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
 rule	plural-forms-by-locale-rules	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
 rule	values-formatted-by-locale	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			ux	foundation		true
+rule	formatters-take-the-active-locale	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation	values-formatted-by-locale	true
+rule	pseudo-locale-in-development	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			ux	foundation		true
+rule	ambiguous-messages-carry-context	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			ux	foundation		true
 rule	i18n-typed-keys	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			ux	foundation		true
 rule	i18n-lazy-locales	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			performance	foundation		true
 rule	locale-reachable-without-props	i18n	blocks/domains/i18n/architecture/i18n.md		SHOULD	review				architecture		true
@@ -409,6 +420,7 @@ rule	targets-meet-platform-minimum	ui	blocks/domains/ui/foundation/ui.md		MUST	r
 rule	stateful-component-controllable-or-not	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	primitive-passes-its-element-through	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	loading-never-replaces-shown-content	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	submit-busy-while-submitting	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux a11y	foundation		true
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			ux testing	foundation	spec-per-boundary	false
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			a11y testing	foundation	spec-per-boundary	false
 rule	elements-found-by-role-label-text	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			a11y testing	foundation	assert-what-a-caller-observes	false
@@ -512,6 +524,11 @@ rule	landmarks-and-skip-link	browser	blocks/contexts/platforms/browser/foundatio
 rule	fields-declare-autocomplete	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			ux a11y	foundation	every-control-has-an-accessible-name	false
 rule	live-regions-polite-by-default	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			a11y ux	foundation	status-changes-announced	false
 rule	browser-checklist-before-shipping	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	SHOULD	review			a11y	foundation	interactive-checked-by-hand	false
+rule	navigation-moves-focus-to-the-view	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	test			a11y ux	foundation	status-changes-announced	false
+rule	live-region-mounted-before-message	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	test			a11y ux	foundation	status-changes-announced	false
+rule	viewport-never-blocks-zoom	browser	blocks/contexts/platforms/browser/foundation/with/a11y.md	a11y	MUST	review			a11y	foundation	wcag-aa-conformance	false
+rule	global-privacy-control-honoured	browser	blocks/contexts/platforms/browser/foundation/with/analytics.md	analytics	SHOULD	review			security	foundation		true
+rule	document-language-follows-locale	browser	blocks/contexts/platforms/browser/foundation/with/i18n.md	i18n	MUST	test			a11y ux	foundation		true
 rule	links-are-anchors	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation		true
 rule	mobile-first-additive-breakpoints	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation	components-size-to-their-container	false
 rule	dynamic-viewport-units	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			ux	foundation	components-size-to-their-container	true
@@ -565,6 +582,9 @@ rule	global-styles-only-in-the-entry	css	blocks/contexts/languages/css/foundatio
 rule	focus-ring-from-design-system	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	focus-always-visible	false
 rule	type-sized-in-rem	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	wcag-aa-conformance	false
 rule	hover-styles-behind-hover-media	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y ux	foundation	hover-content-reachable-by-focus-and-tap	false
+rule	focus-ring-survives-forced-colors	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	focus-always-visible	true
+rule	sticky-content-reserves-scroll-padding	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	wcag-aa-conformance	false
+rule	view-transitions-honour-reduced-motion	css	blocks/contexts/languages/css/foundation/with/a11y.md	a11y	MUST	review		css	a11y	foundation	reduced-motion-honoured	false
 rule	logical-properties-for-direction	css	blocks/contexts/languages/css/foundation/with/i18n.md	i18n	SHOULD	review		css	ux	foundation		true
 rule	cascading-variant-by-data-attribute	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	SHOULD	review		css	ux	foundation	cascading-variant-set-once-on-ancestor	false
 rule	stylesheet-values-from-theme-properties	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	tokens-single-source-of-appearance	false
@@ -620,6 +640,7 @@ rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/t
 rule	brands-set-at-the-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	identifiers-branded-by-entity	false
 rule	ambient-aliases-are-project-vocabulary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	semantic-alias-names-a-shared-meaning	false
 rule	environment-read-only-in-root	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript	security	architecture	environment-read-once-at-boot	false
+rule	intl-calls-take-a-locale	typescript	blocks/contexts/languages/typescript/foundation/with/i18n.md	i18n	MUST	tool	lint	typescript	ux	foundation	formatters-take-the-active-locale	false
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	configured-tool-is-a-peer-with-floor	false
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript		foundation		true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
@@ -730,6 +751,8 @@ rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/leftho
 rule	commit-scan-redacted	lefthook	blocks/implementations/lefthook/workflow/with/betterleaks.md	betterleaks	MUST	tool	secrets		security data	workflow	scanner-reports-redacted	false
 rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript	ux	foundation	messages-take-named-parameters	false
 rule	catalogs-compiled-strictly-in-check	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript		foundation	check-only-checks	false
+rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
+rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/foundation/with/_react.md	_react	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
 rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	SHOULD	review		typescript		foundation	other-runtime-only-where-bun-cannot	false
 rule	primitives-import-no-message-catalog	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	primitives-take-text-by-props	false
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/foundation/ls-lint.md		SHOULD	tool	names			foundation	yaml-files-end-in-yaml	false
@@ -763,6 +786,7 @@ rule	known-fields-declare-autocomplete	react-dom	blocks/implementations/react-do
 rule	handlers-and-links-on-native-elements	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	native-html-elements-first	false
 rule	jsx-controls-named	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	every-control-has-an-accessible-name	false
 rule	jsx-roles-and-aria-valid	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	native-semantics-first	false
+rule	jsx-viewport-never-blocks-zoom	react-dom	blocks/implementations/react-dom/foundation/with/a11y.md	a11y	MUST	tool	lint	typescript	a11y	foundation	viewport-never-blocks-zoom	false
 rule	long-lists-virtualised	react-native	blocks/implementations/react-native/foundation/react-native.md		SHOULD	review		typescript	performance	foundation		true
 rule	no-literal-colour-in-a-style	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript	ux	foundation	tokens-single-source-of-appearance	false
 rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST	tool	lint	typescript		architecture	dependencies-imported-from-their-entries	false
@@ -781,6 +805,7 @@ rule	stories-render-from-fixtures	storybook	blocks/implementations/storybook/fou
 rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storybook/foundation/storybook.md		SHOULD	review		typescript	ux testing	foundation	screenshots-only-where-look-is-contract	false
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	review		typescript	testing	foundation		true
 rule	stories-unreachable-from-production	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	tool	imports	typescript	testing	foundation	test-code-unreachable-from-production	false
+rule	stories-fail-on-a11y-violations	storybook	blocks/implementations/storybook/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-runs-the-bun-test-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	stryker-drives-bun-test-by-command	false
@@ -798,9 +823,10 @@ rule	tailwind-layers-are-the-order	tailwind	blocks/implementations/tailwind/foun
 rule	focus-shown-by-focusable-utility	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	review		css typescript	a11y	foundation	focus-always-visible	false
 rule	motion-tokens-honour-reduced-motion	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	review		css typescript	a11y	foundation	reduced-motion-honoured	false
 rule	type-tokens-in-rem	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	review		css typescript	a11y	foundation	type-sized-in-rem	false
+rule	no-outline-none-in-class-lists	tailwind	blocks/implementations/tailwind/foundation/with/a11y.md	a11y	MUST	tool	lint	css typescript	a11y	foundation	focus-shown-by-focusable-utility	false
+rule	logical-utilities-for-direction	tailwind	blocks/implementations/tailwind/foundation/with/i18n.md	i18n	SHOULD	tool	lint	css typescript	ux	foundation	logical-properties-for-direction	false
 rule	idempotency-key-per-intent	tanstack-form	blocks/implementations/tanstack-form/foundation/tanstack-form.md		SHOULD	review		typescript	data	foundation	operations-idempotent-by-design	false
 rule	form-validated-by-its-own-schema	tanstack-form	blocks/implementations/tanstack-form/foundation/tanstack-form.md		SHOULD	review		typescript	ux	foundation		true
-rule	submit-disabled-while-submitting	tanstack-form	blocks/implementations/tanstack-form/foundation/tanstack-form.md		SHOULD	review		typescript	ux	foundation		true
 rule	form-state-in-the-form-instance	tanstack-form	blocks/implementations/tanstack-form/architecture/tanstack-form.md		MUST	review		typescript	data	architecture	one-home-per-datum	false
 rule	form-submits-through-a-binding-unit	tanstack-form	blocks/implementations/tanstack-form/architecture/tanstack-form.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
 rule	query-for-reads-mutation-for-writes	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data	foundation		true

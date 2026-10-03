@@ -41,6 +41,7 @@
         "noNoninteractiveElementToInteractiveRole": "error",
       },
       "nursery": {
+        "noNonScalableViewport": "error",
         "useControlLabel": "error",
         "noInvalidFileInputAccept": "error",
       },

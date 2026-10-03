@@ -672,3 +672,14 @@
   - Biome: `noImplicitBoolean` is dropped, `noReactPropAssignments`, `noDuplicatedSpreadProps`, `useImageSize` and `noHexColors` are added.
 - **Rejected.** Radix as the kit's base: shadcn generates on Base UI since July 2026, and the owner moves every project to it. `dvh` as the default height: it resizes while the toolbar moves.
 - **Why.** The rozumchik-web audit and the best-practices audit of 2026 found these unstated or contradicting current React, Tailwind and platform practice.
+
+## ADR-0109 — Accessibility, i18n and consent rules of the 2026 audits
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Accessibility: after a navigation inside the program, focus moves to the new view's heading and the title names it (MUST); a live region is mounted before its message (MUST); a toast never holds the only copy; a failed submit focuses the first error; paste and password managers are never blocked (MUST); the viewport never blocks zoom; the focus ring survives forced-colors mode (MUST), `focusable` draws an outline and no class list writes `outline-none`; sticky content reserves its scroll padding; view transitions stop under reduced motion; contrast's 3:1 applies to what identifies a control; the hand check names its steps; `wcag-aa-conformance` names the 2.2 additions most often missed; a public product publishes an accessibility statement; the axe scan runs on WCAG 2.2 A and AA only, without contrast in a simulated DOM and with the landmark rule in screen specs; the stories fail on a violation.
+  - A form never submits twice, but its button is busy, not disabled: `submit-disabled-while-submitting` (tanstack-form) gives way to `submit-busy-while-submitting` in `ui`, since no form library is needed for it.
+  - i18n: the document's `lang` and `dir` follow the locale (MUST); formatters take the active locale (MUST), held for `toLocale*String` and `Intl` by GritQL; a sentence varying by a value uses a select; a pseudo-locale runs in development; ambiguous messages carry context; a right-to-left locale gets logical Tailwind utilities, held by GritQL; module-level Lingui text is a descriptor, and with React a component's `t` comes from `useLingui` (MUST).
+  - Consent: refusing is as easy as accepting (MUST), consent is withdrawable and recorded (MUST), through a link on every screen where there is a user interface, Global Privacy Control counts as a refusal in the browser, a legally exempt configuration is an override with its reason; events are named object and past action.
+- **Rejected.** A disabled submit button: it drops focus and says nothing.
+- **Why.** The rozumchik-web audit and the best-practices audit of 2026 found these unstated, against WCAG 2.2, the EDPB's consent guidance and current i18n practice.

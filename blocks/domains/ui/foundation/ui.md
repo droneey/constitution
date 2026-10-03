@@ -150,6 +150,13 @@ A refetch or a transition keeps the content already shown in place, and a first-
 | Why | Check | Tags |
 |---|---|---|
 | content that blinks to a skeleton on every refresh reads as a failure, and a late indicator that moves the layout makes the user lose their place. | review | [ux] |
+## submit-busy-while-submitting · SHOULD
+A form never submits twice: while it submits, a repeat submit is ignored, and the button shows it is busy with `aria-disabled` and a busy label, keeping its focus.
+
+| Why | Check | Tags |
+|---|---|---|
+| a disabled button drops focus to the page and says nothing; a busy one keeps both. | review | [ux, a11y] |
+
 ## How a user interface is proven
 
 ## screen-spec-proves-states-and-interactions → spec-per-boundary

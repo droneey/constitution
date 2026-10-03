@@ -5,7 +5,21 @@ Nothing is tracked, and no identifier is stored, before the user consents; decli
 
 | Why | Check | Tags |
 |---|---|---|
-| tracking is the user's choice, and a product that tracks first and asks later has already taken it from them. | review | [security] |
+| tracking is the user's choice, and a product that tracks first and asks later has already taken it from them; a configuration a regulator exempts from consent is an override with its legal reason. | review | [security] |
+
+## refusal-as-easy-as-consent → tracking-waits-for-consent · MUST
+Refusing sits beside accepting, on the first screen, with the same weight; every purpose is chosen on its own, and nothing is chosen in advance.
+
+| Why | Check | Tags |
+|---|---|---|
+| a refusal hidden behind a second screen is consent taken, not given. | review | [security, ux] |
+
+## consent-withdrawable-and-recorded · MUST
+Consent can be withdrawn at any time as easily as it was given, and each choice is recorded with its time and purposes.
+
+| Why | Check | Tags |
+|---|---|---|
+| the law asks both, and a record is the only proof the choice was the user's. | review | [security] |
 
 ## events-from-a-closed-vocabulary → illegal-states-unrepresentable
 Every event belongs to one closed vocabulary, each with its typed parameters; no free-form name or value is sent.
@@ -48,6 +62,13 @@ Context shared by every event — signed in or not, the mode — is set once, as
 | Why | Check | Tags |
 |---|---|---|
 | every event then carries it without every call passing it. | review | [data] |
+
+## event-names-object-action · SHOULD
+An event is named after its object and the action done to it, in the past tense — `order_placed` — and its parameters in the same case.
+
+| Why | Check | Tags |
+|---|---|---|
+| one grammar makes the vocabulary readable and its names predictable. | review | [data] |
 
 ## Requirements for implementation
 
