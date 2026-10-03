@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, extname, isAbsolute, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { mutateTargets } from './changes.ts';
@@ -13,6 +13,38 @@ const CONFIG_FILES = [
   'stryker.config.js',
   'stryker.config.json',
 ];
+
+const LOADERS = new Map<string, Bun.JavaScriptLoader>([
+  [
+    '.ts',
+    'ts',
+  ],
+  [
+    '.tsx',
+    'tsx',
+  ],
+]);
+
+const importsOf = (path: string): readonly string[] => {
+  const loader = LOADERS.get(extname(path));
+
+  if (loader === undefined) {
+    return [];
+  }
+
+  const from = resolve(path);
+
+  return new Bun.Transpiler({
+    loader,
+  })
+    .scanImports(readFileSync(from, 'utf8'))
+    .map(({ path: specifier }) => Bun.resolveSync(specifier, dirname(from)))
+    .filter(
+      (target) => isAbsolute(target) && !target.includes('/node_modules/'),
+    )
+    .map((target) => relative(process.cwd(), target))
+    .filter((target) => !target.startsWith('..'));
+};
 
 const git = (args: readonly string[]): string =>
   spawnSync('git', args, {
@@ -76,6 +108,7 @@ if (process.argv.includes('all')) {
       BASE,
     ]),
     exists: existsSync,
+    importsOf,
     mutate: mutatePatterns(await loadConfig()),
     untracked: git([
       'ls-files',

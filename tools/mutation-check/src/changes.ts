@@ -8,6 +8,7 @@ interface Range {
 interface Changes {
   diff: string;
   exists: (path: string) => boolean;
+  importsOf: (path: string) => readonly string[];
   mutate: readonly string[];
   untracked: readonly string[];
 }
@@ -16,6 +17,7 @@ const SECTION = /^diff --git /m;
 const FILE = /\+\+\+ b\/(.+)/;
 const HUNKS = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm;
 const SPEC = /\/__tests__\/([^/]+?)(?:\.integration)?\.(?:test|spec)\.(tsx?)$/;
+const TESTS = '/__tests__/';
 
 const linesOf = (section: string): readonly Range[] =>
   [
@@ -50,10 +52,45 @@ const changedLines = (diff: string): ReadonlyMap<string, readonly Range[]> =>
     }),
   );
 
-const provenFiles = (paths: readonly string[]): readonly string[] =>
-  paths
+const loadedInBoundary = (input: {
+  importsOf: (path: string) => readonly string[];
+  spec: string;
+}): readonly string[] => {
+  const boundary = `${input.spec.slice(0, input.spec.indexOf(TESTS))}/`;
+  const seen = new Set<string>();
+  const pending = [
+    input.spec,
+  ];
+
+  for (let path = pending.pop(); path !== undefined; path = pending.pop()) {
+    for (const target of input.importsOf(path)) {
+      if (!seen.has(target)) {
+        seen.add(target);
+        pending.push(target);
+      }
+    }
+  }
+
+  return [
+    input.spec.replace(SPEC, '/$1.$2'),
+    ...[
+      ...seen,
+    ].filter((path) => path.startsWith(boundary)),
+  ];
+};
+
+const provenFiles = (input: {
+  importsOf: (path: string) => readonly string[];
+  paths: readonly string[];
+}): readonly string[] =>
+  input.paths
     .filter((path) => SPEC.test(path))
-    .map((path) => path.replace(SPEC, '/$1.$2'));
+    .flatMap((spec) =>
+      loadedInBoundary({
+        importsOf: input.importsOf,
+        spec,
+      }),
+    );
 
 const isMutated = (input: {
   mutate: readonly string[];
@@ -71,10 +108,13 @@ const mutateTargets = (changes: Changes): readonly string[] => {
   const ranges = changedLines(changes.diff);
   const whole = new Set([
     ...changes.untracked,
-    ...provenFiles([
-      ...ranges.keys(),
-      ...changes.untracked,
-    ]),
+    ...provenFiles({
+      importsOf: changes.importsOf,
+      paths: [
+        ...ranges.keys(),
+        ...changes.untracked,
+      ],
+    }),
   ]);
   const mutated = (path: string): boolean =>
     changes.exists(path) &&
