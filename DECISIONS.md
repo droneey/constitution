@@ -726,3 +726,15 @@
   - Installs wait three days for a new release, not seven: a hijacked release is pulled within a day or two, and a week would hold back fixes.
   - Biome's version is pinned by the lockfile like any other, with a caret range in the manifest (`caret-ranges-lockfile-pins`); its nursery rules change only through a reviewed update.
 - **Why.** A review of the audit changes found rules that said one thing twice and intros that restated their own rules.
+
+## ADR-0114 — Temporal, anchor positioning and OKLCH
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Dates, times, durations and time zones are `Temporal` values. `Date` appears only where an API demands one, and no date library is used; Biome refuses `moment`, `dayjs`, `date-fns` and `luxon`. A runtime that lacks `Temporal` loads the polyfill once, in the entry file.
+  - In the browser, a native `popover` is placed by CSS anchor positioning, with the polyfill where a supported browser lacks it.
+  - The theme writes its colours as `oklch()`.
+- **Rejected.**
+  - Native signals in place of state libraries: the TC39 proposal is still at Stage 1.
+  - Waiting for `Temporal` to reach Baseline: Chrome and Firefox ship it, Bun has it, and the polyfill covers Safari until it does.
+- **Why.** In 2026 the platform covers what these libraries and scripts did: `Temporal` ships in Chrome 144 and Firefox 139, and anchor positioning is Baseline newly available since Firefox 147, so `baseline-features-only` admits a newly available feature the program polyfills, and the browser's CSS part lets the anchor-positioning properties through. A theme in OKLCH keeps contrast predictable across hues.

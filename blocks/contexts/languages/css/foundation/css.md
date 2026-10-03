@@ -54,7 +54,7 @@ A custom property is declared before it is read and read through `var()`, and a 
 | an undeclared property resolves to nothing, silently. | tool/lint | [] |
 
 ## baseline-features-only · SHOULD
-A stylesheet uses only features that are Baseline widely available, or newly available ones behind a feature query with a fallback.
+A stylesheet uses only features that are Baseline widely available, or newly available ones behind a feature query with a fallback or with a polyfill the program loads.
 
 | Why | Check | Tags |
 |---|---|---|

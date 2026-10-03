@@ -9,6 +9,13 @@ Navigation renders an anchor with a real `href`.
 |---|---|---|
 | a real link opens in a new tab, can be copied and is announced as a link; a click handler is none of these. | review | [a11y, ux] |
 
+## popover-placed-by-anchor-positioning · SHOULD
+A native `popover` is placed against its trigger by CSS anchor positioning — `anchor-name`, `position-anchor`, `position-area` — never by a script that measures; a supported browser that lacks it loads the anchor-positioning polyfill once, in the entry file.
+
+| Why | Check | Tags |
+|---|---|---|
+| the browser places it and flips it at the viewport's edge without a positioning library or a frame of the wrong position. | review | [ux, performance] |
+
 ## mobile-first-additive-breakpoints → components-size-to-their-container
 Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out, and every entry document declares the responsive viewport.
 

@@ -466,6 +466,22 @@ describe('the Biome foundation parts', () => {
       rule: 'useEnumInitializers',
     },
     {
+      condition: 'a module imports a date library',
+      files: {
+        'src/main.ts':
+          "import dayjs from 'dayjs';\n\nexport const today = (): string => dayjs().format();\n",
+      },
+      rule: 'noRestrictedImports',
+    },
+    {
+      condition: 'a module imports a path inside a date library',
+      files: {
+        'src/main.ts':
+          "import { addDays } from 'date-fns/addDays';\n\nexport const tomorrow = addDays;\n",
+      },
+      rule: 'noRestrictedImports',
+    },
+    {
       condition: 'a function returns undefined by name',
       files: {
         'src/main.ts':
@@ -1276,6 +1292,41 @@ describe('the Biome css part', () => {
 
       // Assert
       expect(rules.includes('noHexColors')).toBe(isReported);
+    },
+  );
+
+  it.each([
+    {
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'css/foundation/css',
+      ],
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'css/foundation/css',
+        'css/foundation/browser',
+      ],
+    },
+  ])(
+    'should report useBaseline $isReported when a popover is placed by anchor positioning and a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/theme.css': `${LAYERED}@layer components {\n  .card {\n    anchor-name: --trigger;\n  }\n\n  .title {\n    position-anchor: --trigger;\n    position-area: bottom;\n    top: anchor(bottom);\n  }\n}\n`,
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('useBaseline')).toBe(isReported);
     },
   );
 
