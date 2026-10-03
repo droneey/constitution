@@ -5,7 +5,7 @@ foundation:
       - top-level-properties-order
     compose-without-version-field:
       - no-version-field
-    images-pinned-to-a-version:
+    image-never-untagged-or-latest:
       - service-image-require-explicit-tag
     published-addresses-quoted-and-bound:
       - no-unbound-port-interfaces

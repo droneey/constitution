@@ -6,7 +6,7 @@ foundation:
       - failure-threshold
     files-copied-never-added:
       - failure-threshold
-    images-pinned-to-a-version:
+    image-never-untagged-or-latest:
       - failure-threshold
     shell-steps-fail-on-any-error:
       - failure-threshold
