@@ -14,7 +14,7 @@ The check compiles the catalogs in strict mode, failing on a missing translation
 |---|---|---|
 | a missing translation fails before release, and the check never rewrites what it checks. | review | [] |
 
-## module-level-messages-are-descriptors → messages-through-lingui-macros · MUST
+## module-level-messages-are-descriptors → module-level-text-holds-the-message
 Text defined outside a render — an option list, an enum's labels — is a `msg` descriptor rendered later.
 
 | Why | Check | Tags |

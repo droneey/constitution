@@ -1,11 +1,25 @@
 # Tailwind
 
 ## utilities-only-from-tokens → tokens-single-source-of-appearance
-`@theme` defines only the design system's tokens and resets Tailwind's default scales, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable stays legal.
+The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable stays legal.
 
 | Why | Check | Tags |
 |---|---|---|
 | with the default scales gone, a value outside the tokens cannot be written by accident. | review | [] |
+
+## theme-resets-every-default-scale → utilities-only-from-tokens
+Every `@theme` block but an `inline` one holds `--*: initial`.
+
+| Why | Check | Tags |
+|---|---|---|
+| one line resets the scales Tailwind adds in later versions too, where a list of namespaces misses the new ones. | tool/lint | [] |
+
+## no-important-modifier-in-class-lists → no-important-declarations
+No class list uses the important modifier, `px-0!` or `!px-0`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the modifier writes an `!important` declaration the stylesheet rule never sees. | tool/lint | [] |
 
 ## no-arbitrary-utility-value → utilities-only-from-tokens
 A class carries no arbitrary value; one that assigns a token's variable carries a suppression that states why.
@@ -57,7 +71,7 @@ Dark mode redefines the semantic tokens under one selector; a component writes `
 | components written against tokens switch theme without a line of their own. | review | [] |
 
 ## class-merger-knows-the-theme → utilities-only-from-tokens · MUST
-The class merger is configured with every scale the theme defines, and a spec proves that two classes of different groups both survive a merge.
+The class merger is configured with every scale the theme defines — `extendTailwindMerge` given the theme's namespaces — and a spec proves that two classes of different groups both survive a merge.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -1131,6 +1131,41 @@ describe('the Biome foundation parts', () => {
     },
   );
 
+  it.each([
+    {
+      condition: 'a class list negates a condition',
+      source:
+        "export const classes = (isOpen: boolean): string => cn('px-2', !isOpen && 'hidden');\n",
+    },
+    {
+      condition: 'a class list asserts a value is present',
+      source:
+        "export const classes = (size: string | undefined): string => cn(size!, 'px-2');\n",
+    },
+  ])(
+    'should report no important-modifier finding when $condition',
+    ({ source }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/panel.tsx': source,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'typescript/foundation/tailwind',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(
+        plugins.some((finding) => finding.startsWith('Win by a later layer')),
+      ).toBe(false);
+    },
+  );
+
   it('should report no plugin finding when formatting takes a locale and a project extends the i18n part', () => {
     // Arrange
     const project = {
@@ -1481,6 +1516,46 @@ describe('the Biome css part', () => {
 
       // Assert
       expect(rules.includes('useBaseline')).toBe(isReported);
+    },
+  );
+
+  it.each([
+    {
+      isReported: true,
+      theme: '@theme {\n  --color-text: oklch(20% 0 0);\n}\n',
+    },
+    {
+      isReported: false,
+      theme: '@theme {\n  --*: initial;\n  --color-text: oklch(20% 0 0);\n}\n',
+    },
+    {
+      isReported: false,
+      theme: '@theme inline {\n  --font-sans: var(--font-body);\n}\n',
+    },
+  ])(
+    'should report a plugin finding $isReported when the theme is $theme',
+    ({ isReported, theme }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/libs/ui/theme/theme.css': theme,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'css/foundation/css',
+          'css/foundation/tailwind',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(
+        plugins.some((finding) =>
+          finding.startsWith('Reset every default scale'),
+        ),
+      ).toBe(isReported);
     },
   );
 
@@ -2070,6 +2145,20 @@ describe('the Biome framework parts', () => {
         'src/panel.tsx': component("<div className='md:text-left' />"),
       },
       message: 'Use the logical utility',
+    },
+    {
+      condition: 'a class list marks a utility important after it',
+      files: {
+        'src/panel.tsx': component("<div className='px-0! text-sm' />"),
+      },
+      message: 'Win by a later layer',
+    },
+    {
+      condition: 'a class list marks a utility important before it',
+      files: {
+        'src/panel.tsx': component("<div className='!px-0 text-sm' />"),
+      },
+      message: 'Win by a later layer',
     },
     {
       condition: 'a class list removes the outline',

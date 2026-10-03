@@ -4,4 +4,12 @@
       "tailwindDirectives": true,
     },
   },
+  "plugins": [
+    {
+      "path": "./.constitution/presets/css/biome/foundation/plugins/theme-resets-every-default-scale.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+  ],
 }

@@ -361,6 +361,7 @@ rule	run-report-is-a-value	convergence	blocks/domains/convergence/architecture/c
 rule	engines-reached-through-a-port	convergence	blocks/domains/convergence/architecture/convergence.md		MUST	review				architecture		true
 rule	user-facing-text-from-catalog	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
 rule	messages-take-named-parameters	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
+rule	module-level-text-holds-the-message	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review				foundation		true
 rule	plural-forms-by-locale-rules	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
 rule	values-formatted-by-locale	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			ux	foundation		true
 rule	formatters-take-the-active-locale	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation	values-formatted-by-locale	true
@@ -790,7 +791,7 @@ rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/leftho
 rule	commit-scan-redacted	lefthook	blocks/implementations/lefthook/workflow/with/betterleaks.md	betterleaks	MUST	tool	secrets		security data	workflow	scanner-reports-redacted	false
 rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript	ux	foundation	messages-take-named-parameters	false
 rule	catalogs-compiled-strictly-in-check	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript		foundation	check-only-checks	false
-rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
+rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript		foundation	module-level-text-holds-the-message	false
 rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/foundation/with/_react.md	_react	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
 rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	SHOULD	review		typescript		foundation	other-runtime-only-where-bun-cannot	false
 rule	primitives-import-no-message-catalog	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	primitives-take-text-by-props	false
@@ -858,6 +859,8 @@ rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/f
 rule	stryker-runs-the-bun-test-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	stryker-drives-bun-test-by-command	false
 rule	versions-checked-and-manifests-formatted	syncpack	blocks/implementations/syncpack/foundation/syncpack.md		MUST	tool	versions	typescript		foundation	one-version-per-dependency	false
 rule	utilities-only-from-tokens	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	review		css typescript	ux	foundation	tokens-single-source-of-appearance	false
+rule	theme-resets-every-default-scale	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	utilities-only-from-tokens	false
+rule	no-important-modifier-in-class-lists	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript		foundation	no-important-declarations	false
 rule	no-arbitrary-utility-value	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	utilities-only-from-tokens	false
 rule	bare-utility-only-without-a-token	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript	ux	foundation		true
 rule	cascading-variants-in-utilities	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript	ux	foundation	cascading-variant-by-data-attribute	false
