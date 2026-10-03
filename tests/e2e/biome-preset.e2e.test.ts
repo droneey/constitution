@@ -772,6 +772,71 @@ describe('the Biome foundation parts', () => {
     },
   );
 
+  it.each([
+    {
+      condition: 'a date is formatted without a locale',
+      source:
+        'export const label = (at: Date): string => at.toLocaleDateString();\n',
+      message: 'Pass the active locale',
+    },
+    {
+      condition: 'a number formatter is built without a locale',
+      source: 'export const formatter = new Intl.NumberFormat();\n',
+      message: 'Pass the active locale',
+    },
+    {
+      condition: 'a date is formatted with undefined in place of the locale',
+      source:
+        "export const label = (at: Date): string =>\n  at.toLocaleDateString(undefined, { month: 'long' });\n",
+      message: 'Pass the active locale',
+    },
+    {
+      condition: 'a formatter is built without new and without a locale',
+      source: 'export const formatter = Intl.DateTimeFormat();\n',
+      message: 'Pass the active locale',
+    },
+  ])(
+    'should report a plugin finding when $condition and a project extends the i18n part',
+    ({ message, source }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/panel.tsx': source,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'typescript/foundation/i18n',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+    },
+  );
+
+  it('should report no plugin finding when formatting takes a locale and a project extends the i18n part', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/panel.tsx':
+          "export const label = (at: Date): string => at.toLocaleDateString('uk');\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/i18n',
+      ],
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins).toStrictEqual([]);
+  });
+
   it('should report a plugin finding when a response body is cast with .json<T>() and a project extends the ky part', () => {
     // Arrange
     const project = {
@@ -1296,6 +1361,13 @@ describe('the Biome framework parts', () => {
       rule: 'noReactPropAssignments',
     },
     {
+      condition: 'the viewport blocks zooming',
+      source: component(
+        "<meta content='width=device-width, user-scalable=no' name='viewport' />",
+      ),
+      rule: 'noNonScalableViewport',
+    },
+    {
       condition: 'an image declares no size',
       source: component("<img alt='Logo' src='/logo.svg' />"),
       rule: 'useImageSize',
@@ -1653,6 +1725,27 @@ describe('the Biome framework parts', () => {
       message: 'Size to the small viewport with h-svh',
     },
     {
+      condition: 'a class list sets a physical margin',
+      files: {
+        'src/panel.tsx': component("<div className='ml-4' />"),
+      },
+      message: 'Use the logical utility',
+    },
+    {
+      condition: 'a class list aligns text to the left',
+      files: {
+        'src/panel.tsx': component("<div className='md:text-left' />"),
+      },
+      message: 'Use the logical utility',
+    },
+    {
+      condition: 'a class list removes the outline',
+      files: {
+        'src/panel.tsx': component("<button className='outline-none' />"),
+      },
+      message: 'Show focus with focusable',
+    },
+    {
       condition: 'a class list sizes with w-screen',
       files: {
         'src/panel.tsx': component("<main className='w-screen' />"),
@@ -1753,6 +1846,14 @@ describe('the Biome framework parts', () => {
       condition: 'a max-* breakpoint bounds a range after a minimum',
       files: {
         'src/panel.tsx': component("<main className='md:max-lg:hidden' />"),
+      },
+    },
+    {
+      condition: 'a class list uses logical sides',
+      files: {
+        'src/panel.tsx': component(
+          "<div className='ms-4 text-start items-center' />",
+        ),
       },
     },
     {

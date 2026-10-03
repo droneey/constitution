@@ -13,10 +13,3 @@ The form validates through its schema, and maps the server's typed error onto it
 | Why | Check | Tags |
 |---|---|---|
 | the form refuses bad input before it is sent, and shows the server's refusal where the user can fix it. | review | [ux] |
-
-## submit-disabled-while-submitting · SHOULD
-A form's submit is disabled while it submits.
-
-| Why | Check | Tags |
-|---|---|---|
-| a double click never submits twice. | review | [ux] |

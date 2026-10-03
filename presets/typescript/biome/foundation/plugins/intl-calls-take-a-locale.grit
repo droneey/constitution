@@ -1,0 +1,16 @@
+language js
+
+or {
+  `$value.toLocaleString()`,
+  `$value.toLocaleDateString()`,
+  `$value.toLocaleTimeString()`,
+  `$value.toLocaleString(undefined, $...)`,
+  `$value.toLocaleDateString(undefined, $...)`,
+  `$value.toLocaleTimeString(undefined, $...)`,
+  `new Intl.$formatter()`,
+  `new Intl.$formatter(undefined, $...)`,
+  `Intl.$formatter()`,
+  `Intl.$formatter(undefined, $...)`
+} as $call where {
+  register_diagnostic(span=$call, message="Pass the active locale: without one the runtime's locale decides", severity="error")
+}

@@ -68,6 +68,9 @@ foundation:
   ky:
     ky-body-parsed-by-schema:
       - ky-body-parsed-by-schema.grit
+  i18n:
+    intl-calls-take-a-locale:
+      - intl-calls-take-a-locale.grit
   react-dom:
     aria-attributes-as-the-dom-spells-them:
       - noUnknownAttribute
@@ -103,6 +106,8 @@ foundation:
       - no-inline-style.grit
     jsx-images-declare-their-size:
       - useImageSize
+    jsx-viewport-never-blocks-zoom:
+      - noNonScalableViewport
   react-native:
     no-literal-colour-in-a-style:
       - noReactNativeLiteralColors
@@ -113,6 +118,10 @@ foundation:
       - mobile-first-breakpoints.grit
     no-arbitrary-utility-value:
       - noTailwindArbitraryValue
+    logical-utilities-for-direction:
+      - logical-utilities-for-direction.grit
+    no-outline-none-in-class-lists:
+      - no-outline-none-in-class-lists.grit
   tanstack-query:
     keys-only-from-the-key-factory:
       - keys-only-from-the-key-factory.grit
