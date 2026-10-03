@@ -43,6 +43,7 @@ const WELL_FORMED = [
   'src/features/orders/app/constants/pagination.constants.ts',
   'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts',
   'src/features/orders/app/use-cases/queries/list-orders/list-orders.types.ts',
+  'src/features/orders/app/use-cases/queries/list-orders/list-orders.ts',
   'tests/e2e/checkout.e2e.test.ts',
   'tests/e2e/shop.fixtures.ts',
 ];
@@ -130,10 +131,21 @@ describe('the ls-lint preset', () => {
       reported: 'src/contracts/mail.ts',
     },
     {
-      condition: 'a file of a use-case has no role suffix',
-      path: 'src/features/orders/app/use-cases/queries/list-orders/list-orders.ts',
+      condition: 'a file of a domain use-case has no role suffix',
+      path: 'src/features/orders/domain/use-cases/queries/list-orders/list-orders.ts',
       reported:
-        'src/features/orders/app/use-cases/queries/list-orders/list-orders.ts',
+        'src/features/orders/domain/use-cases/queries/list-orders/list-orders.ts',
+    },
+    {
+      condition: 'a binding unit holds a file not named after its operation',
+      path: 'src/features/orders/app/use-cases/queries/list-orders/helpers.ts',
+      reported:
+        'src/features/orders/app/use-cases/queries/list-orders/helpers.ts',
+    },
+    {
+      condition: 'a data port folder holds a surface joining both sides',
+      path: 'src/features/orders/domain/contracts/repositories/index.ts',
+      reported: 'src/features/orders/domain/contracts/repositories',
     },
     {
       condition: 'a test folder holds a helper',

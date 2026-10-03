@@ -1025,6 +1025,14 @@ describe('the dependency-cruiser foundation parts', () => {
       },
     },
     {
+      condition: "the root imports a library's stylesheet surface by path",
+      files: {
+        'src/libs/ui/index.css': '.card {\n  color: inherit;\n}\n',
+        'src/root/app.ts':
+          "import '../libs/ui/index.css';\n\nexport const app = 1;\n",
+      },
+    },
+    {
       condition: 'a spec imports a fixture and a development dependency',
       files: {
         'src/__tests__/order.fixtures.ts': 'export const anOrder = 1;\n',
