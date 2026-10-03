@@ -6,7 +6,24 @@ language js
     `$_ === null`,
     `$_ !== null`,
     `null === $_`,
-    `null !== $_`
+    `null !== $_`,
+    `useRef($...)`,
+    `useRef<$_>($...)`,
+    `RefObject<$_>`,
+    `Object.create(null)`,
+    JsPropertyObjectMember(value=`($...) => null`),
+    JsxExpressionAttributeValue(expression=`($...) => null`),
+    TsReturnTypeAnnotation(ty=TsUnionType(types=$alternatives)) where {
+      $alternatives <: some TsReferenceType(name=$type) where {
+        $type <: r".*ReactElement"
+      }
+    },
+    JsConditionalExpression(consequent=$shown, alternate=`null`) where {
+      $shown <: or {
+        JsxTagExpression(),
+        JsParenthesizedExpression(expression=JsxTagExpression())
+      }
+    }
   } ,
   register_diagnostic(span=$value, message="null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
 }

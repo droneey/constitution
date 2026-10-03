@@ -7,7 +7,11 @@ or {
   `const $name = ($_) => $_`,
   JsMethodClassMember(name=$name),
   JsMethodObjectMember(name=$name)
-} where {
+} as $function where {
+  $function <: not within or {
+    `new Proxy($...)`,
+    `const $_: ProxyHandler<$_> = $_`
+  } ,
   $name <: or {
     `handle`,
     `process`,

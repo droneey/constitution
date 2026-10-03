@@ -37,6 +37,15 @@
       ],
     },
     {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/enums-for-named-value-groups.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/adapters/**",
+        "!**/models/**",
+      ],
+    },
+    {
       "path": "./.constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
       "includes": [
         "**/index.ts",

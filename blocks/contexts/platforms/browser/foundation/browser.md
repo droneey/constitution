@@ -22,7 +22,7 @@ Browser code never reads `process.env`.
 | a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
 
 ## no-credential-readable-by-script · MUST
-A credential in the tab lives only in a cookie its script cannot read — `HttpOnly`, `Secure`, `SameSite`, named with the `__Host-` prefix — never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
+A credential in the tab lives only in a cookie its script cannot read — `HttpOnly`, `Secure`, `SameSite`, named `__Host-` when the program's own tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does — never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -50,7 +50,7 @@ Every document is served with `Strict-Transport-Security` of a year or more, `X-
 | each closes one door the page would leave open: a first request over plain HTTP, a file read as a script, the full address sent to other sites, another window reaching into this one. | test | [security] |
 
 ## scripts-from-other-origins-pinned · SHOULD
-A script from another origin is served from the program's own origin, or loaded with `integrity` and `crossorigin`.
+A script from another origin is served from the program's own origin, or loaded with `integrity` and `crossorigin`; a script that changes by design — a tag manager's container — loads only through a loader the Content Security Policy allows by nonce or hash with `strict-dynamic`, with the reason beside it.
 
 | Why | Check | Tags |
 |---|---|---|
