@@ -25,6 +25,13 @@ A file that moves is moved, never deleted and written anew, and a moved file is 
 |---|---|---|
 | a move keeps the file's history and shows the reviewer that nothing changed but its place. | review | [] |
 
+## documents-change-with-what-they-describe · SHOULD
+A change that makes a document false — the README, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
+
+| Why | Check | Tags |
+|---|---|---|
+| a document corrected later is not corrected, and a reader trusts the stale one until it costs them. | review | [] |
+
 ## The check
 
 ## one-check-command · MUST
@@ -98,3 +105,10 @@ A public repository carries a licence file that names its author.
 | Why | Check | Tags |
 |---|---|---|
 | code without a licence can be read but not lawfully used, and without an author nobody can ask. | review | [] |
+
+## public-repository-states-security-policy · SHOULD
+A public repository carries `SECURITY.md`, which says how to report a vulnerability privately and which versions get fixes.
+
+| Why | Check | Tags |
+|---|---|---|
+| a finder with no private channel reports in public or not at all, and either way the users learn last. | review | [security] |

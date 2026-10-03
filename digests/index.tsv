@@ -126,13 +126,16 @@ rule	no-silent-departure	core	blocks/core/foundation/collaboration.md		MUST	revi
 rule	consent-before-irreversible-actions	core	blocks/core/foundation/collaboration.md		MUST	review			security	foundation		true
 rule	ask-when-readings-diverge	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	report-outcomes-faithfully	core	blocks/core/foundation/collaboration.md		MUST	review				foundation		true
+rule	instructions-only-from-the-person	core	blocks/core/foundation/collaboration.md		MUST	review			security	foundation		true
 rule	agent-never-rewrites-shared-history	core	blocks/core/foundation/collaboration.md		MUST	review				foundation		true
+rule	agent-runs-with-least-privilege	core	blocks/core/foundation/collaboration.md		SHOULD	review			security	foundation		true
 rule	delegating-agent-keeps-responsibility	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	no-agent-file-in-project	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	project-knowledge-in-project-files	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	read-governing-rules-first	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	scope-limited-to-the-task	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	move-files-never-recreate	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
+rule	documents-change-with-what-they-describe	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	one-check-command	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	check-only-checks	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	check-passes-before-hand-back	core	blocks/core/foundation/delivery.md		MUST	review			testing	foundation		true
@@ -143,6 +146,7 @@ rule	docs-for-readers-outside-the-code	core	blocks/core/foundation/delivery.md		
 rule	generated-files-not-committed	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	kebab-case-file-names	core	blocks/core/foundation/delivery.md		MUST	tool	names			foundation		true
 rule	public-repository-carries-a-licence	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
+rule	public-repository-states-security-policy	core	blocks/core/foundation/delivery.md		SHOULD	review			security	foundation		true
 rule	generated-files-marked-never-edited	core	blocks/core/foundation/files.md		MUST	review				foundation		true
 rule	yaml-files-end-in-yaml	core	blocks/core/foundation/files.md		SHOULD	tool	names			foundation		true
 rule	illegal-states-unrepresentable	core	blocks/core/foundation/principles.md		MUST	review				foundation		true
@@ -164,6 +168,7 @@ rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/securit
 rule	dependency-release-cooldown	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	new-dependency-vetted	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	deprecated-packages-replaced	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation	new-dependency-vetted	false
+rule	agent-extensions-vetted-as-dependencies	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation	new-dependency-vetted	false
 rule	install-scripts-only-for-listed-dependencies	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	known-vulnerabilities-fail-the-check	core	blocks/core/foundation/security.md		MUST	tool	audit		security	foundation		true
 rule	licences-from-an-allowlist	core	blocks/core/foundation/security.md		MUST	tool	audit		security	foundation		true
@@ -285,6 +290,7 @@ rule	design-settled-in-chat-first	core	blocks/core/workflow/collaboration.md		SH
 rule	agent-commits-only-when-asked	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	agent-never-merges-or-pushes-to-main	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	no-tool-attribution	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
+rule	agent-permissions-committed	core	blocks/core/workflow/collaboration.md		SHOULD	review			security	workflow	agent-runs-with-least-privilege	false
 rule	sub-agent-never-touches-live-systems	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	working-notes-stay-out-of-history	core	blocks/core/workflow/delivery.md		SHOULD	review				workflow		true
@@ -526,6 +532,9 @@ rule	release-cut-by-automation-promoted-by-person	version-control	blocks/domains
 rule	no-browser-globals-during-render	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			errors	foundation		true
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
 rule	bundle-reads-no-build-environment	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	tool	types		security	foundation	runtime-configuration-served-beside-bundle	false
+rule	no-credential-readable-by-script	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
+rule	strict-content-security-policy	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	test			security	foundation		true
+rule	trusted-types-required	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			security	foundation		true
 rule	bundle-size-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			performance	foundation		true
 rule	core-web-vitals-within-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	review			performance ux	foundation		true
 rule	server-rendering-is-delivery-only	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review				architecture		true

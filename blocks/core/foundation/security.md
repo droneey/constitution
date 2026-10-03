@@ -83,6 +83,13 @@ A dependency deprecated as a whole is replaced — by its successor, another pac
 |---|---|---|
 | a deprecated package gets no more fixes, so its next vulnerability stays open. | review | [] |
 
+## agent-extensions-vetted-as-dependencies → new-dependency-vetted
+A server, plugin or skill that extends an agent is added like a dependency: vetted, pinned to a version, and given only the access its job needs.
+
+| Why | Check | Tags |
+|---|---|---|
+| an extension runs with the agent's rights over the code, the secrets and the network, so a bad one is a malicious package with a shell. | review | [security] |
+
 ## install-scripts-only-for-listed-dependencies · MUST
 A dependency's install scripts run only when the dependency is listed by name as allowed to run them.
 

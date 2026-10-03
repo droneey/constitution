@@ -46,6 +46,13 @@ Commits, pull requests and documents carry no attribution to the tool or model t
 |---|---|---|
 | the person who submits a change answers for it; an attribution line adds noise and no accountability. | review | [] |
 
+## agent-permissions-committed → agent-runs-with-least-privilege
+The project's permission settings for agents, deny rules included, are committed; only each person's own overrides stay local.
+
+| Why | Check | Tags |
+|---|---|---|
+| committed settings give every person's agent the same limits, and a change to them is reviewed like code. | review | [security] |
+
 ## Delegating
 
 ## sub-agent-never-touches-live-systems → consent-before-irreversible-actions

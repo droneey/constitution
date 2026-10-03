@@ -21,6 +21,27 @@ Browser code never reads `process.env`.
 |---|---|---|
 | a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
 
+## no-credential-readable-by-script · MUST
+A credential in the tab lives only in a cookie its script cannot read — `HttpOnly`, `Secure`, `SameSite`, named with the `__Host-` prefix — never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
+
+| Why | Check | Tags |
+|---|---|---|
+| any script that runs in the page — injected, or a compromised dependency — reads what the page's script can read and sends it away. | review | [security] |
+
+## strict-content-security-policy · MUST
+Every document is served with a Content Security Policy that allows scripts only by nonce, hash or the program's own origin, with no `unsafe-inline` and no `unsafe-eval`, and sets `object-src 'none'`, `base-uri 'none'` and `frame-ancestors`.
+
+| Why | Check | Tags |
+|---|---|---|
+| when a script slips into the page anyway, the browser refuses to run it; the policy is the last wall behind every check in the code. | test | [security] |
+
+## trusted-types-required · SHOULD
+The Content Security Policy requires Trusted Types for scripts, so a string reaches an HTML or script sink only through a policy the program defines.
+
+| Why | Check | Tags |
+|---|---|---|
+| the browser then refuses an unchecked string at every sink, in a library or behind a dynamic property no lint can see. | test | [security] |
+
 ## bundle-size-budget · SHOULD
 Each bundle has a size budget the check holds, the embeddable one first.
 
