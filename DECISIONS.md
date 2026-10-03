@@ -20,8 +20,10 @@
 | Code | ADR-0050 – ADR-0052 |
 | Core | ADR-0053 – ADR-0063 |
 | Blocks | ADR-0064 – ADR-0074, ADR-0092, ADR-0095 |
-| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103 |
+| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103, ADR-0105 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
+| The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
+| A real application | ADR-0116 – ADR-0119 |
 
 ---
 
@@ -101,7 +103,7 @@
 ## ADR-0013 — Rules: one format, global slugs
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A rule is a heading `## <slug> · MUST|SHOULD|MAY`, its statement, then the labels **Why**, **Check** and **Tags**, and **Example** and **Implements** where they are needed. A slug is kebab-case, unique across the whole constitution, carries no number and is never renamed once published; an outdated rule is marked deprecated, and its replacement gets a new slug. Blocks, labels and hook output are written in English.
+- **Decision.** A rule is a heading with its slug, its statement, and an **Example** where one is needed; ADR-0089 gives the heading and the table under the statement. A slug is kebab-case, unique across the whole constitution, carries no number and is never renamed once published; an outdated rule is marked deprecated, and its replacement gets a new slug. Blocks, labels and hook output are written in English.
 - **Rejected.** Numbered rules, which shift with every insertion.
 
 ## ADR-0014 — No rule above the implementations names a tool
@@ -111,15 +113,10 @@
 - **Rejected.** A rule that names its tool or its setting; the preset's `bindings.yaml`, ADR-0094, maps them instead.
 - **Why.** A tool can then be swapped without touching a rule.
 
-## ADR-0016 — Every rule carries a lens
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** Every rule has at least one tag from a closed list of lenses — `a11y`, `security`, `performance`, `ux` and the rest — so a review can run by lens across all layers at once.
-
 ## ADR-0017 — References obey the layers
 **Date:** 2026-09-24 · **Status:** Accepted
 
-- **Decision.** A rule refers to another only through its Implements line, and only to a rule of its own block, of a layer above, or of its closure. A block refers to another only through its front matter and its `with/` file names.
+- **Decision.** A rule refers to another only through the `→` of its heading, and only to a rule of its own block, of a layer above, or of its closure. A block refers to another only through its front matter and its `with/` file names.
 - **Why.** A reference is a dependency, and dependencies point up.
 
 ## ADR-0018 — Rules taken from an external review plugin
@@ -236,11 +233,6 @@
 **Date:** 2026-09-24 · **Status:** Accepted
 
 - **Decision.** The design-token grammar of the owner's reference web application is the standard of `ui`.
-
-## ADR-0043 — Python configs and tools live in devkit
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** The shared configurations of the Python tools live in devkit, under `packages/python/`, until a project needs them in the constitution's archive.
 
 ## ADR-0044 — The error and logging libraries get their own repository
 **Date:** 2026-09-24 · **Status:** Accepted

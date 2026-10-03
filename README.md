@@ -9,9 +9,9 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | 📂 Path | 🧩 Holds |
 |---|---|
 | `blocks/core` | What holds for any program, always active: `core.md`, how to use the constitution, and its chapters on each axis, `principles` first |
-| `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `api`, `version-control` |
-| `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli`, `server` |
-| `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `python` |
+| `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `remote-data`, `version-control` |
+| `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
+| `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block — with the languages its checks cover and the roles a language is held to — rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
@@ -140,7 +140,7 @@ The marketplace serves the plugin from the tag of its latest release: each relea
 ```bash
 mise trust && mise install   # bun
 bun install                  # installs the git hooks
-bun run check                # lint, package manifests, types, tests with the coverage gate, mutation, then the blocks check
+bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, blocks, secrets, names, unused code, vulnerabilities
 bun run digests:write        # regenerate digests/ after a change to a block
 bun run build                # build tools/mutation-check/dist/main.js, as the release does
 claude --plugin-dir .        # a session on the working tree's plugin instead of the installed release
@@ -148,7 +148,7 @@ claude --plugin-dir .        # a session on the working tree's plugin instead of
 
 The release commit writes the version into `package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand, and a session with `--plugin-dir .` runs the same version this repository pins.
 
-The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects; `HOOK_SHELL=/bin/bash bun test` runs it under the bash 3.2 macOS ships.
+The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
@@ -176,7 +176,7 @@ After the findings it prints advice that does not fail the check: the roles a la
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yaml` | pull request into `main` | Lint, types, tests with the hook under mawk and again under gawk, the blocks check, the build of `mutation-check`, the workflow lint; on macOS, the hook under `/bin/bash` 3.2 and the system awk |
+| `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of `mutation-check`, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
 | `cd-version.yaml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
 | `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds `mutation-check`, packs `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
