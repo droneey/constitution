@@ -5,7 +5,7 @@ or {
     `useContext($_)`,
     `React.useContext($_)`
   } as $call where {
-    register_diagnostic(span=$call, message="Read a context with use(Context): useContext is the legacy form", severity="error")
+    register_diagnostic(span=$call, message="Read a context with use(Context), which can be called conditionally", severity="error")
   },
   or {
     jsx_opening_element(name=$name),
