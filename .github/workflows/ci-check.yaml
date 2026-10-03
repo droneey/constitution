@@ -52,7 +52,7 @@ jobs:
           sudo apt-get install --yes gawk
           mkdir -p "${RUNNER_TEMP}/gawk"
           ln -s "$(command -v gawk)" "${RUNNER_TEMP}/gawk/awk"
-          PATH="${RUNNER_TEMP}/gawk:${PATH}" bun test
+          PATH="${RUNNER_TEMP}/gawk:${PATH}" bun run test
 
       - name: Lint the workflows
         run: actionlint -color
@@ -80,4 +80,4 @@ jobs:
       - name: Run the hook under bash 3.2 and the system awk
         env:
           HOOK_SHELL: /bin/bash
-        run: bun test
+        run: bun run test

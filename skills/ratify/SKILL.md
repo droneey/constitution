@@ -21,7 +21,7 @@ The project folder holds:
 ## What you write
 
 - **`constitution.yaml`** at the repository root: the blocks the repository follows, its applications, the one command that runs its checks, and its overrides. The session-start hook reads it and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
-- **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
+- **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **A local block** under `./rules/implementations/<id>.md` for each library the owner wants rules for that the plugin has no block for.
 
 The repository root is the folder, going up from the project folder, that holds `.git`. Core is always active and is never listed.
@@ -101,6 +101,7 @@ Ask one or two questions at a time, in the order of the sections of `${CLAUDE_PL
 - **Domains of the business.** What are the main areas of the product?
 - **Core entities and relationships.** What are the main business objects, and how do they relate?
 - **Boundaries.** What is out of scope — what will this product never do?
+- **Critical scenarios.** Which journeys must never break — the ones a user would leave over? Each one gets an end-to-end test.
 - **Glossary.** Which words does the business use, and what does each mean here?
 - **Non-functional notes.** Any hard constraint on scale, offline use, devices, compliance, performance or the systems it depends on?
 
