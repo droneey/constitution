@@ -1,5 +1,7 @@
 [test]
 root = "."
+preload = ["./templates/project/bun/src/__tests__/sandbox.fixtures.ts"]
+randomize = true
 coverage = true
 coverageReporter = ["text"]
 coverageSkipTestFiles = true

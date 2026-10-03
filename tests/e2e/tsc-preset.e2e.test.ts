@@ -43,15 +43,12 @@ describe('the tsconfig preset', () => {
       // Arrange
       const project = {
         main: EMPTY,
-        parts:
-          part === 'self'
-            ? [
-                part,
-              ]
-            : [
-                'self',
-                part,
-              ],
+        parts: [
+          ...new Set([
+            'self',
+            part,
+          ]),
+        ],
       };
 
       // Act

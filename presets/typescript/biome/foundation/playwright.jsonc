@@ -1,0 +1,21 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "tests/e2e/**",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noPlaywrightForceOption": "error",
+            "noPlaywrightMissingAwait": "error",
+            "noPlaywrightNetworkidle": "error",
+            "noPlaywrightWaitForNavigation": "error",
+            "noPlaywrightWaitForSelector": "error",
+            "noPlaywrightWaitForTimeout": "error",
+          },
+        },
+      },
+    },
+  ],
+}

@@ -598,6 +598,23 @@ describe('the Biome foundation parts', () => {
     expect(rules).toContain(rule);
   });
 
+  it('should report no plugin finding when a case configures a client that retries nothing', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should load orders when the cache is fresh', () => {\n  const options = { queries: { retry: false } };\n\n  expect(options).toStrictEqual({ queries: { retry: false } });\n});\n",
+      },
+      parts: TEST_PARTS,
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins).toStrictEqual([]);
+  });
+
   it('should report no cast when a value read from outside is narrowed by plain checks or held as a constant', () => {
     // Arrange
     const project = {
@@ -729,6 +746,70 @@ describe('the Biome foundation parts', () => {
       },
       message: 'Compare with toStrictEqual',
     },
+    {
+      condition: 'a case is retried',
+      files: {
+        'src/order.test.ts':
+          "import { expect, it, test } from 'bun:test';\n\ntest('should add totals when both are set', () => {\n  expect(1).toBe(1);\n}, { retry: 3 });\n",
+      },
+      message: 'Fix or delete a flaky case',
+    },
+    {
+      condition: 'a table of cases is repeated',
+      files: {
+        'src/order.test.ts':
+          "import { expect, it, test } from 'bun:test';\n\nit.each([1])('should keep %p when given', (value) => {\n  expect(value).toBe(1);\n}, { timeout: 100, repeats: 5 });\n",
+      },
+      message: 'Fix or delete a flaky case',
+    },
+    {
+      condition: 'a spec sleeps through Bun',
+      files: {
+        'src/order.test.ts':
+          "import { expect, it, test } from 'bun:test';\n\ntest('should save when the user stops typing', async () => {\n  await Bun.sleep(50);\n  expect(1).toBe(1);\n});\n",
+      },
+      message: 'Wait for a condition or advance a fake clock',
+    },
+    {
+      condition: 'a spec sleeps through a timer',
+      files: {
+        'src/order.test.ts':
+          "import { expect, it, test } from 'bun:test';\n\ntest('should save when the user stops typing', async () => {\n  await new Promise((resolve) => setTimeout(resolve, 50));\n  expect(1).toBe(1);\n});\n",
+      },
+      message: 'Wait for a condition or advance a fake clock',
+    },
+    {
+      condition: 'a spec sleeps through a timer inside a block',
+      files: {
+        'src/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should save when the user stops typing', async () => {\n  await new Promise((resolve) => {\n    setTimeout(resolve, 50);\n  });\n  expect(1).toBe(1);\n});\n",
+      },
+      message: 'Wait for a condition or advance a fake clock',
+    },
+    {
+      condition: 'a spec imports the promised timer',
+      files: {
+        'src/order.test.ts':
+          "import { setTimeout as wait } from 'node:timers/promises';\n\nexport const pause = wait;\n",
+      },
+      message: 'Wait for a condition or advance a fake clock',
+    },
+    {
+      condition: 'a case branches',
+      files: {
+        'src/order.test.ts':
+          "import { expect, it, test } from 'bun:test';\n\ntest('should add totals when both are set', () => {\n  if (Date.now() > 0) {\n    expect(1).toBe(1);\n  }\n});\n",
+      },
+      message: 'Keep logic out of a case',
+    },
+    {
+      condition: 'a row of a table computes its expectation',
+      files: {
+        'src/order.test.ts':
+          "import { expect, it, test } from 'bun:test';\n\nit.each([1])('should double %p when given', (value) => {\n  expect(value * 2).toBe(value > 0 ? 2 : 0);\n});\n",
+      },
+      message: 'Keep logic out of a case',
+    },
   ])('should report a plugin finding when $condition', ({ files, message }) => {
     // Arrange
     const project = {
@@ -814,6 +895,53 @@ describe('the Biome foundation parts', () => {
 
       // Assert
       expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'a spec waits a fixed time',
+      rule: 'noPlaywrightWaitForTimeout',
+      source:
+        "import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  await page.waitForTimeout(500);\n  await expect(page.getByRole('heading')).toBeVisible();\n});\n",
+    },
+    {
+      condition: 'a spec waits for a quiet network',
+      rule: 'noPlaywrightNetworkidle',
+      source:
+        "import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  await page.goto('/', { waitUntil: 'networkidle' });\n});\n",
+    },
+    {
+      condition: 'a spec forces a click',
+      rule: 'noPlaywrightForceOption',
+      source:
+        "import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  await page.getByRole('button').click({ force: true });\n});\n",
+    },
+    {
+      condition: 'a spec leaves an assertion unawaited',
+      rule: 'noPlaywrightMissingAwait',
+      source:
+        "import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  await page.goto('/');\n  expect(page.getByRole('heading')).toBeVisible();\n});\n",
+    },
+  ])(
+    'should report $rule when $condition and a project extends the playwright part',
+    ({ rule, source }) => {
+      // Arrange
+      const project = {
+        files: {
+          'tests/e2e/sign-in.e2e.test.ts': source,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'typescript/foundation/playwright',
+        ],
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules).toContain(rule);
     },
   );
 

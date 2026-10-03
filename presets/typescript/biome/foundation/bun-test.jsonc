@@ -38,5 +38,21 @@
         "**/*.test.tsx",
       ],
     },
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-test-retries.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/no-sleep-in-specs.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
   ],
 }

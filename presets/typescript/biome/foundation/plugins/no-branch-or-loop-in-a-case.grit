@@ -1,0 +1,22 @@
+language js
+
+`$runner($title, $body, $...)` where {
+  $runner <: or {
+    `test`,
+    `it`,
+    `$_.concurrent`,
+    `$_.each($_)`,
+    `$_.concurrent.each($_)`
+  },
+  $body <: contains or {
+    JsIfStatement(),
+    JsSwitchStatement(),
+    JsForStatement(),
+    JsForOfStatement(),
+    JsForInStatement(),
+    JsWhileStatement(),
+    JsDoWhileStatement(),
+    JsConditionalExpression()
+  } as $logic,
+  register_diagnostic(span=$logic, message="Keep logic out of a case: variants are rows of a table, expected values are literals", severity="error")
+}

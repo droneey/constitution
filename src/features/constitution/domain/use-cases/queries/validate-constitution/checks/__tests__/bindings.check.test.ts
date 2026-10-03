@@ -237,69 +237,81 @@ describe('bindingsCheck', () => {
 
   it.each([
     {
+      axis: 'foundation',
+      binding: `${HOOKS_BINDING}  browser:\n    four-data-states: [useHookAtTopLevel]\n`,
       name: 'the part of a platform holds a rule of a domain above it',
       part: 'browser',
       scope: 'typescript',
-      slug: 'four-data-states',
     },
     {
+      axis: 'architecture',
+      binding:
+        'architecture:\n  remote-data:\n    optimistic-writes-roll-back: [useHookAtTopLevel]\n',
       name: 'the part of a block holds a rule of its seam with it',
       part: 'remote-data',
       scope: 'common',
-      slug: 'optimistic-writes-roll-back',
     },
     {
+      axis: 'foundation',
+      binding: `${HOOKS_BINDING}  ui:\n    biome-runs-in-the-check: [useHookAtTopLevel]\n`,
       name: 'the part of a library holds a rule of the tool itself',
       part: 'ui',
       scope: 'typescript',
-      slug: 'biome-runs-in-the-check',
     },
     {
+      axis: 'foundation',
+      binding:
+        'foundation:\n  ui:\n    four-data-states: [useHookAtTopLevel]\n',
       name: 'a part of every language holds a rule of its block',
       part: 'ui',
       scope: 'common',
-      slug: 'four-data-states',
     },
     {
+      axis: 'foundation',
+      binding: `${HOOKS_BINDING}  i18n:\n    no-any: [useHookAtTopLevel]\n`,
       name: "a part of a language's scope holds a rule of its language",
       part: 'i18n',
       scope: 'typescript',
-      slug: 'no-any',
     },
     {
+      axis: 'foundation',
+      binding:
+        'foundation:\n  self:\n    four-data-states: [useHookAtTopLevel]\n',
       name: "the tool's own part holds a rule of a domain above the tool",
       part: 'self',
       scope: 'common',
-      slug: 'four-data-states',
     },
     {
+      axis: 'foundation',
+      binding:
+        'foundation:\n  nowhere:\n    four-data-states: [useHookAtTopLevel]\n',
       name: 'a part named after no block holds a rule',
       part: 'nowhere',
       scope: 'common',
-      slug: 'four-data-states',
     },
-  ])('should find no binding amiss when $name', ({ part, scope, slug }) => {
-    // Arrange
-    const axis =
-      slug === 'optimistic-writes-roll-back' ? 'architecture' : 'foundation';
-    const files = {
-      ...presetFiles(),
-      [BINDINGS]: HOOKS_BINDING,
-      [`presets/${scope}/biome/bindings.yaml`]: `${scope === 'typescript' ? HOOKS_BINDING : ''}${axis === 'foundation' && scope === 'typescript' ? '' : `${axis}:\n`}  ${part}:\n    ${slug}: [useHookAtTopLevel]\n`,
-      [`presets/${scope}/biome/${axis}/${part}.jsonc`]:
-        '{ "useHookAtTopLevel": "error" }\n',
-      'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
-        check: 'tool/lint',
-        slug: 'biome-runs-in-the-check',
-      })}`,
-    };
+  ])(
+    'should find no binding amiss when $name',
+    ({ axis, binding, part, scope }) => {
+      // Arrange
+      const files = {
+        ...presetFiles(),
+        [BINDINGS]: HOOKS_BINDING,
+        [`presets/${scope}/biome/bindings.yaml`]: binding,
+        [`presets/${scope}/biome/${axis}/${part}.jsonc`]:
+          '{ "useHookAtTopLevel": "error" }\n',
+        'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
+          check: 'tool/lint',
+          slug: 'biome-runs-in-the-check',
+        })}`,
+      };
 
-    // Act
-    const findings = findingsOf(files);
+      // Act
+      const findings = findingsOf(files);
 
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
+      // Assert
+      expect(findings).toStrictEqual([]);
+    },
+  );
 
   it('should report the binding when a part of every language holds a rule of a language', () => {
     // Arrange

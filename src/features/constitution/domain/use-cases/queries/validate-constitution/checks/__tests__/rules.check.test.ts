@@ -186,33 +186,32 @@ describe('rulesCheck', () => {
 
   it.each([
     {
+      child: {
+        parent: 'dependencies-point-inward',
+        slug: 'rules-bind',
+      },
       condition: 'a rule on workflow carries out a MUST rule on foundation',
-      level: undefined,
       parentLevel: 'MUST',
     },
     {
+      child: {
+        level: 'MUST',
+        parent: 'dependencies-point-inward',
+        slug: 'rules-bind',
+      },
       condition: 'a MUST rule carries out a SHOULD rule',
-      level: 'MUST',
       parentLevel: 'SHOULD',
     },
   ])(
     'should accept a parent when $condition in another file of the same block',
-    ({ level, parentLevel }) => {
+    ({ child, parentLevel }) => {
       // Arrange
       const files = validFiles();
       files[PRINCIPLES] = `# Principles\n\n${rule({
         level: parentLevel,
         slug: 'dependencies-point-inward',
       })}`;
-      files[WORKFLOW] = `# Workflow\n\n${rule({
-        ...(level === undefined
-          ? {}
-          : {
-              level,
-            }),
-        parent: 'dependencies-point-inward',
-        slug: 'rules-bind',
-      })}`;
+      files[WORKFLOW] = `# Workflow\n\n${rule(child)}`;
       const input = checkInputOf(files);
 
       // Act

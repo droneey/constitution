@@ -15,3 +15,10 @@ Wherever a consumer imports code, an entry of `exports` carries a `types` condit
 | Why | Check | Tags |
 |---|---|---|
 | a consumer's compiler finds the types of each entry, and nothing unlisted ships by accident. | review | [] |
+
+## exported-types-have-type-tests · SHOULD
+A package's exported generic and conditional types are proven by type cases the compiler checks.
+
+| Why | Check | Tags |
+|---|---|---|
+| a consumer relies on what such a type computes, and nothing else fails when a change computes something else. | review | [testing] |
