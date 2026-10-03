@@ -6,8 +6,7 @@ BEGIN {
   T = "\t"
   BUDGET = 9400
   WARNING_BUDGET = 1000
-  # Kept free for the line that says what was left out.
-  RESERVE = 200
+  LEFT_OUT_LINE_BUDGET = 200
 }
 
 function text(k,   s) {
@@ -34,7 +33,7 @@ function open_section() {
 }
 
 function fits(bytes) {
-  return used + bytes + RESERVE <= BUDGET
+  return used + bytes + LEFT_OUT_LINE_BUDGET <= BUDGET
 }
 
 function warnings(   k, bytes) {

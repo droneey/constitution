@@ -467,7 +467,6 @@ function files_of(s, id,   base, out, n, a, k) {
   return out
 }
 
-# The reminders name the MUST rules of domains, contexts and implementations.
 function print_musts(   i, s) {
   for (i = 1; i <= nr; i++) {
     if (RLEVEL[i] != "MUST" || LAYER[RBLOCK[i]] == "core") continue
