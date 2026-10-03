@@ -10,6 +10,12 @@ or {
   },
   TsUnionType(types=$members) as $union where {
     $members <: every TsStringLiteralType(),
+    $union <: not within or {
+      `Omit<$_, $_>`,
+      `Pick<$_, $_>`,
+      `Exclude<$_, $_>`,
+      `Extract<$_, $_>`
+    } ,
     register_diagnostic(span=$union, message="A closed set of named values is a string enum, not a union of string literals", severity="error")
   }
 }

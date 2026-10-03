@@ -56,7 +56,7 @@ A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` o
 ## Values and types
 
 ## undefined-is-the-only-absence → absence-has-one-value
-Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears only in a comparison with what a platform API returns, and in the type of an external format that uses it. The compiler runs with `exactOptionalPropertyTypes`.
+Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears only in a comparison with what a platform API returns, in the type of an external format that uses it, and where an API's types demand it — the language's `Object.create(null)`, a signature a library imposes. The compiler runs with `exactOptionalPropertyTypes`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -93,7 +93,7 @@ A semantic alias — `type ChatTitle = string` — names a meaning without an in
 | an alias names a meaning the program shares; one per string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. | review | [] |
 
 ## enums-for-named-value-groups · MUST
-A closed set of named values is a string `enum` — never a union of string literals, and never an `as const` array or object whose type names the set. Numbers another system defines — exit statuses, HTTP statuses — are a numeric `enum` with every value written, and an incoming number stays `number`, compared with the members. `as const` is for a single literal and for data that is not a set of names. A union's discriminant is an enum member when the enum owns the vocabulary, and a string literal otherwise.
+A closed set of named values is a string `enum` — never a union of string literals, and never an `as const` array or object whose type names the set. Numbers another system defines — exit statuses, HTTP statuses — are a numeric `enum` with every value written, and an incoming number stays `number`, compared with the members. `as const` is for a single literal and for data that is not a set of names. A union's discriminant is an enum member when the enum owns the vocabulary, and a string literal otherwise. A union of literals given to a key utility — `Omit<Props, 'onSubmit' | 'disabled'>`, `Pick`, `Exclude`, `Extract` — names keys, not a set, and a type that describes another system's data keeps that system's literals.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -264,7 +264,7 @@ Inside a `try`, a returned promise is awaited — `return await` — so its reje
 | without the `await`, the function has returned before the promise rejects, so its `catch` never runs and the raw failure passes unmapped. | review | [errors] |
 
 ## named-exports-only · MUST
-A module exports by name. A default export appears only in a configuration file a tool reads — `*.config.*`, `.*rc.*` — or where a framework reads one, and then its suppression says which.
+A module exports by name. A default export appears only in a configuration file a tool reads — `*.config.*`, `.*rc.*` — or where a framework or a tool reads one, and then its suppression, or the tool's part of the presets, says which.
 
 | Why | Check | Tags |
 |---|---|---|

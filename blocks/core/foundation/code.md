@@ -35,7 +35,7 @@ No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `val
 | an empty name makes the reader look up what it holds, every time. | tool/lint | [] |
 
 ## no-empty-verbs · SHOULD
-A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`.
+A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`. A name an interface the code implements imposes — a handler's `get` — is exempt; the lint sees a proxy's handler, and another such name takes a suppression that says so.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -100,7 +100,7 @@ A boolean is never a positional parameter: it travels as a named field of the ca
 | `save(user, true)` cannot be read at the call site; a named field or a function of its own says what the flag means. | review | [] |
 
 ## same-type-parameters-told-apart · SHOULD
-Two or more parameters of one type travel as one named object, or are told apart by their types.
+Two or more parameters of one type travel as one named object, or are told apart by their types; an operation whose two operands play one role — a comparison, a comparator, a combiner — takes them in order.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -116,7 +116,7 @@ A function does one thing, at one level of abstraction. If it needs a comment to
 | a function that does one thing can be named, tested and reused; one that does two is none of these. | review | [] |
 
 ## function-file-and-complexity-limits · MUST
-A function holds at most 100 lines, a file at most 500, and a function's cognitive complexity is at most 10. A spec has no line limit. A tool enforces the limits as errors.
+A function holds at most 100 lines, a file at most 500, and a function's cognitive complexity is at most 10. A spec has no line limit, and a function whose body is one markup literal — a drawing kept as a component — may lift the line limit by a suppression that says so. A tool enforces the limits as errors.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -218,7 +218,7 @@ Shipped code writes no debug output and stops at no breakpoint. What a command-l
 ## Absence
 
 ## absence-has-one-value · MUST
-Code spells absence with one value, which the language block names; another spelling appears only where an external format imposes it.
+Code spells absence with one value, which the language block names; another spelling appears only where an external format or an API the code calls imposes it.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -269,7 +269,7 @@ A catch handles only the failures it recognises by code, through the error kit's
 | a catch that handles everything turns a bug into a handled failure, and the bug is never seen. | review | [errors] |
 
 ## only-errors-thrown · MUST
-Only errors are thrown or rejected — never a string, a plain object or another value.
+Only errors are thrown or rejected — never a string, a plain object or another value — except the value a framework's contract has its callers throw to steer it, such as a router's redirect.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -320,7 +320,7 @@ An entity's identifier is a type of its own, branded by its entity, so an order'
 | two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | review | [] |
 
 ## domain-values-never-typed-again · MUST
-A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces.
+A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces. A vocabulary another party owns — an analytics report's, a wire format's — is not the program's: a total table maps the program's values to it, and the compiler checks the table.
 
 | Why | Check | Tags |
 |---|---|---|

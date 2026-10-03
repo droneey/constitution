@@ -978,6 +978,159 @@ describe('the Biome foundation parts', () => {
     },
   );
 
+  it.each([
+    {
+      condition: 'a component holds a ref object',
+      files: {
+        'src/panel.tsx':
+          "import { useRef } from 'react';\n\nexport function Panel(): React.ReactElement {\n  const box = useRef<HTMLDivElement>(null);\n\n  return <div ref={box} />;\n}\n",
+      },
+    },
+    {
+      condition: 'a component takes a ref object as a prop',
+      files: {
+        'src/panel.tsx':
+          "import type { RefObject } from 'react';\n\nexport function Panel({ box }: { box: RefObject<HTMLDivElement | null> }): React.ReactElement {\n  return <div ref={box} />;\n}\n",
+      },
+    },
+    {
+      condition: 'a component renders the null branch of a conditional',
+      files: {
+        'src/panel.tsx':
+          'export function Panel({ isOpen }: { isOpen: boolean }): React.ReactElement | null {\n  return isOpen ? <div /> : null;\n}\n',
+      },
+    },
+    {
+      condition: 'an override component renders nothing',
+      files: {
+        'src/panel.tsx': 'export const components = {\n  hr: () => null,\n};\n',
+      },
+    },
+    {
+      condition: 'a hook holds a ref object',
+      files: {
+        'src/panel.hooks.ts':
+          "import { useRef } from 'react';\n\nexport const useBox = (): unknown => useRef(null);\n",
+      },
+    },
+    {
+      condition: 'a module builds a dictionary with no prototype',
+      files: {
+        'src/registry.ts':
+          'export const registry: Record<string, number> = Object.create(null);\n',
+      },
+    },
+    {
+      condition: 'a type leaves keys out with a union',
+      files: {
+        'src/panel.types.ts':
+          "interface Props {\n  label: string;\n  onSubmit: () => void;\n  isDisabled: boolean;\n}\n\nexport type FieldProps = Omit<Props, 'onSubmit' | 'isDisabled'>;\n",
+      },
+    },
+    {
+      condition: 'a handler typed for a proxy names its trap',
+      files: {
+        'src/settings.ts':
+          'export const handler: ProxyHandler<object> = {\n  get(target, property) {\n    return Reflect.get(target, property);\n  },\n};\n',
+      },
+    },
+    {
+      condition: "a proxy's handler names its trap",
+      files: {
+        'src/settings.ts':
+          'export const settings = new Proxy(\n  {},\n  {\n    get(target, property) {\n      return Reflect.get(target, property);\n    },\n  },\n);\n',
+      },
+    },
+  ])('should report no plugin finding when $condition', ({ files }) => {
+    // Arrange
+    const project = {
+      files,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/_react',
+      ],
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'a conditional returns null beside a value that is no markup',
+      message: 'null outside the boundary',
+      source:
+        'export const countOf = (isShown: boolean): number | undefined => (isShown ? 1 : null) ?? undefined;\n',
+    },
+    {
+      condition: 'a callback that is no component returns null',
+      message: 'null outside the boundary',
+      source:
+        "export const blanks = (): readonly unknown[] => ['row'].map(() => null);\n",
+    },
+    {
+      condition: 'a state hook takes a union of literals',
+      message: 'A closed set of named values is a string enum',
+      source:
+        "import { useState } from 'react';\n\nexport const useMode = (): unknown => useState<'idle' | 'busy'>('idle');\n",
+    },
+  ])(
+    'should report a plugin finding when $condition',
+    ({ message, source }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/panel.tsx': source,
+        },
+        parts: [
+          ...FOUNDATION_PARTS,
+          'typescript/foundation/_react',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+    },
+  );
+
+  it.each([
+    {
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/storybook',
+      ],
+    },
+  ])(
+    'should report noDefaultExport $isReported when a story exports its meta by default and a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/panel.stories.tsx':
+            "const meta = { title: 'Panel' };\n\nexport default meta;\n",
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noDefaultExport')).toBe(isReported);
+    },
+  );
+
   it('should report no plugin finding when formatting takes a locale and a project extends the i18n part', () => {
     // Arrange
     const project = {

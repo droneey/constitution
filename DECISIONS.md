@@ -752,3 +752,17 @@
   - A value object lives in `domain/value-objects/<name>.value-object`, held by ls-lint.
 - **Rejected.** A wire type inferred from its schema: the model is declared without the schema library, and `schema-held-exactly-to-its-model` holds the schema to it, as nydra does.
 - **Why.** The review of the 2026 audits against the constitution found these accepted gaps unwritten.
+
+## ADR-0117 — The rules a real application found too strict
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Absence: core's `absence-has-one-value` admits another spelling where an external format or an API the code calls imposes it. `null` stays where an API's types demand it — React's `useRef<T>(null)` and `RefObject<T | null>`, a component's `ReactElement | null` return type, the `null` branch of a JSX conditional, an inline component `() => null`, the language's `Object.create(null)`; a signature a library imposes takes a reasoned suppression. The TypeScript absence plugin also knows `useRef` and `RefObject`, since a Biome plugin path is listed once per configuration and a React-only copy would be overridden: a tool limit, not a rule.
+  - A union of literals given to a key utility (`Omit`, `Pick`, `Exclude`, `Extract`) names keys, not a set, and a type of another system's data keeps that system's literals; the enum plugin skips both.
+  - A name an interface the code implements imposes, such as a handler's `get`, is no empty verb. A framework's control-flow throw, such as a router's redirect, is allowed beside errors.
+  - Another party's vocabulary (analytics reports, wire formats) is mapped from the program's values by a total table, not forbidden as a second typing.
+  - An operation whose two operands play one role takes them in order. A function whose body is one markup literal may lift the line limit by a suppression that says so. A story file may export its meta by default, through a storybook part of the presets.
+  - A credential cookie is `__Host-` when the program's tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does.
+  - A tag manager's container, which changes by design, loads through a loader the CSP allows by nonce or hash with `strict-dynamic`, with its reason — never by listing its host, which the strict policy forbids.
+  - TanStack Start sets the CSP and the other security headers in Nitro's `routeRules`, the shell's inline scripts allowed by hash, proved by a test — two rules, one under each browser rule.
+- **Why.** The audit of rozumchik-web against constitution 0.62 found each of these rules refusing correct code, or unmeetable, in a real application.
