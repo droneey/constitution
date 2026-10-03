@@ -14,6 +14,8 @@ import { z } from 'zod';
 enum Declaration {
   Production = 'production',
   Development = 'development',
+  Both = 'both',
+  PeerAndDevelopment = 'peer-and-development',
   None = 'none',
 }
 
@@ -80,6 +82,12 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   ky: {
     declaration: Declaration.Production,
   },
+  doubled: {
+    declaration: Declaration.Both,
+  },
+  configured: {
+    declaration: Declaration.PeerAndDevelopment,
+  },
   legacy: {
     declaration: Declaration.Production,
     deprecated: 'use kit',
@@ -111,10 +119,12 @@ const installedFiles = (): Readonly<Record<string, string>> =>
     ]),
   );
 
-const declared = (declaration: Declaration): Readonly<Record<string, string>> =>
+const declared = (
+  declarations: readonly Declaration[],
+): Readonly<Record<string, string>> =>
   Object.fromEntries(
     Object.entries(INSTALLED)
-      .filter(([, installed]) => installed.declaration === declaration)
+      .filter(([, installed]) => declarations.includes(installed.declaration))
       .map(([name]) => [
         name,
         '1.0.0',
@@ -143,9 +153,19 @@ const cruise = (project: Project): Cruise => {
       ],
     ),
     'package.json': JSON.stringify({
-      dependencies: declared(Declaration.Production),
-      devDependencies: declared(Declaration.Development),
+      dependencies: declared([
+        Declaration.Production,
+        Declaration.Both,
+      ]),
+      devDependencies: declared([
+        Declaration.Development,
+        Declaration.Both,
+        Declaration.PeerAndDevelopment,
+      ]),
       name: 'fixture',
+      peerDependencies: declared([
+        Declaration.PeerAndDevelopment,
+      ]),
       type: 'module',
     }),
   };
