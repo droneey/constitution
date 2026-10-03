@@ -71,8 +71,8 @@ Publishing skips a version the registry already holds, so a failed publish is re
 |---|---|---|
 | a publish that fails on a version already out cannot be rerun, and a half-published release stays half published. | review | [] |
 
-## deprecation-names-replacement-and-removal · MUST
-A deprecated entry names its replacement and the version that removes it.
+## deprecation-names-replacement-and-removal → retired-code-marked-deprecated · MUST
+A deprecated entry also names the version that removes it.
 
 | Why | Check | Tags |
 |---|---|---|

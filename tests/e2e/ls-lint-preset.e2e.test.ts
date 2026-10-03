@@ -27,6 +27,7 @@ const WELL_FORMED = [
   'src/features/orders/domain/entities/index.ts',
   'src/features/orders/domain/entities/order.entity.ts',
   'src/features/orders/domain/entities/__tests__/order.entity.test.ts',
+  'src/features/orders/domain/value-objects/email.value-object.ts',
   'src/features/orders/domain/errors/order-not-found.error.ts',
   'src/features/orders/domain/constants/limits.constants.ts',
   'src/features/orders/domain/contracts/clock.port.ts',
@@ -107,6 +108,11 @@ describe('the ls-lint preset', () => {
       condition: 'an entity has no role suffix',
       path: 'src/features/orders/domain/entities/order.ts',
       reported: 'src/features/orders/domain/entities/order.ts',
+    },
+    {
+      condition: 'a value object has no role suffix',
+      path: 'src/features/orders/domain/value-objects/email.ts',
+      reported: 'src/features/orders/domain/value-objects/email.ts',
     },
     {
       condition: "a role folder holds another role's file",

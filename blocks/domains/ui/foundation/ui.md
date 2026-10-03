@@ -61,7 +61,7 @@ The root of a compound owns the choreography of its animated regions and shares 
 | regions that animate on their own drift out of step; one owner keeps them in time. | review | [ux] |
 
 ## boolean-props-prefixed → booleans-read-as-predicates · MUST
-A boolean prop starts with `is` for a state, `has` for content, `with` for an opt-in part, `should` for a policy, or `as` for a polymorphic render; never a bare, mixed or negated name, except a name the platform's element or the primitive library already gives the same meaning — `disabled`, `open`, `checked`, `required`.
+A boolean prop starts with `is` for a state, `has` for content, `with` for an opt-in part, or `should` for a policy; never a bare, mixed or negated name, except a name the platform's element or the primitive library already gives the same meaning — `disabled`, `open`, `checked`, `required`.
 
 | Why | Check | Tags |
 |---|---|---|

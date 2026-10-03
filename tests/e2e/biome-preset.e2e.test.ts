@@ -482,6 +482,16 @@ describe('the Biome foundation parts', () => {
       rule: 'noRestrictedImports',
     },
     {
+      condition: 'a module imports an export marked deprecated',
+      files: {
+        'src/orders/order.ts':
+          '/** @deprecated Use createOrder. */\nexport const makeOrder = (): number => 1;\n\nexport const createOrder = (): number => 2;\n',
+        'src/main.ts':
+          "import { makeOrder } from './orders/order';\n\nexport const order = makeOrder();\n",
+      },
+      rule: 'noDeprecatedImports',
+    },
+    {
       condition: 'a function returns undefined by name',
       files: {
         'src/main.ts':
@@ -753,6 +763,13 @@ describe('the Biome foundation parts', () => {
           'export interface IOrder {\n  id: string;\n}\n',
       },
       message: 'A type is a noun, undecorated',
+    },
+    {
+      condition: 'a module exports a binding it can reassign',
+      files: {
+        'src/session.ts': 'export let current = 0;\n',
+      },
+      message: 'Export a const',
     },
     {
       condition: 'a spec compares with toEqual',
@@ -1260,40 +1277,24 @@ describe('the Biome css part', () => {
     expect(rules).toContain(rule);
   });
 
-  it.each([
-    {
-      isReported: true,
+  it('should report noHexColors when the theme writes a hexadecimal colour', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/libs/ui/theme/theme.css': `${LAYERED}@layer components {\n  .card {\n    color: #102030;\n  }\n}\n`,
+      },
       parts: [
         ...FOUNDATION_PARTS,
         'css/foundation/css',
       ],
-    },
-    {
-      isReported: false,
-      parts: [
-        ...FOUNDATION_PARTS,
-        'css/foundation/css',
-        'css/architecture/ui',
-      ],
-    },
-  ])(
-    'should report noHexColors $isReported when the theme writes a hexadecimal colour and a project extends $parts',
-    ({ isReported, parts }) => {
-      // Arrange
-      const project = {
-        files: {
-          'src/libs/ui/theme/theme.css': `${LAYERED}@layer components {\n  .card {\n    color: #102030;\n  }\n}\n`,
-        },
-        parts,
-      };
+    };
 
-      // Act
-      const { rules } = lintFindings(project);
+    // Act
+    const { rules } = lintFindings(project);
 
-      // Assert
-      expect(rules.includes('noHexColors')).toBe(isReported);
-    },
-  );
+    // Assert
+    expect(rules).toContain('noHexColors');
+  });
 
   it.each([
     {

@@ -169,6 +169,13 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 |---|---|---|
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
+## unmatched-request-fails-the-spec → tests-run-in-a-sandbox
+A transport replaced by captured responses throws on a request none of them matches, naming its method and address.
+
+| Why | Check | Tags |
+|---|---|---|
+| a request nobody captured otherwise gets an empty answer, and the spec passes on code that would fail against the real service. | review | [testing] |
+
 ## one-fake-per-contract · SHOULD
 Each faked contract has one fake, `<contract>.fake`, shared by every spec that needs it.
 

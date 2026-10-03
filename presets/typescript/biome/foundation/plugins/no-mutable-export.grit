@@ -1,0 +1,6 @@
+language js
+
+JsExport() as $export where {
+  $export <: r"(?s)export\s+(?:let|var)\s.*",
+  register_diagnostic(span=$export, message="Export a const: a module shares no binding it can reassign", severity="error")
+}

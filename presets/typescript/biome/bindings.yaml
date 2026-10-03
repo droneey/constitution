@@ -145,6 +145,10 @@ foundation:
   typescript:
     no-date-library:
       - noRestrictedImports
+    no-deprecated-import:
+      - noDeprecatedImports
+    no-mutable-export:
+      - no-mutable-export.grit
     named-exports-only:
       - noDefaultExport
     return-union-lists-only-returned-members:

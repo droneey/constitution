@@ -60,7 +60,7 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md		typescript		false		types	typescript			tsconfig.json
@@ -91,6 +91,7 @@ rule	pure-by-default	core	blocks/core/foundation/code.md		SHOULD	review				found
 rule	no-import-cycles	core	blocks/core/foundation/code.md		MUST	tool	imports			foundation		true
 rule	comments-explain-why	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	docs-only-for-non-obvious-public-entry	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
+rule	retired-code-marked-deprecated	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	todo-names-its-issue	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	no-commented-out-code	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	no-dead-code	core	blocks/core/foundation/code.md		MUST	tool	unused			foundation		true
@@ -196,6 +197,7 @@ rule	specs-independent-of-order	core	blocks/core/foundation/testing.md		SHOULD	r
 rule	no-fixed-sleeps-in-tests	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	unit-case-runs-in-milliseconds	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	tests-run-in-a-sandbox	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation		true
+rule	unmatched-request-fails-the-spec	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
 rule	one-fake-per-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	integration-tested-against-the-real-engine	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	captured-responses-verified-against-the-vendor	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
@@ -377,7 +379,7 @@ rule	every-package-ships-its-licence	package	blocks/domains/package/foundation/p
 rule	package-readme-shows-install-and-extends	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation	readme-is-the-front-door	false
 rule	breaking-change-ships-its-migration	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	publish-skips-published-versions	package	blocks/domains/package/foundation/package.md		SHOULD	review			data	foundation	operations-idempotent-by-design	false
-rule	deprecation-names-replacement-and-removal	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
+rule	deprecation-names-replacement-and-removal	package	blocks/domains/package/foundation/package.md		MUST	review				foundation	retired-code-marked-deprecated	true
 rule	publishing-by-workflow-identity	package	blocks/domains/package/foundation/package.md		MUST	review			security	foundation	least-privilege-credentials	true
 rule	workspace-packages-linked-locally	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	publishing-with-provenance-supported	package	blocks/domains/package/foundation/package.md		MUST	review			security	foundation		true
@@ -614,6 +616,7 @@ rule	custom-properties-spell-their-token	css	blocks/contexts/languages/css/found
 rule	color-scheme-declared-on-root	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	review		css	ux	foundation	theme-follows-system-until-chosen	true
 rule	no-literal-colour-outside-the-theme	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	MUST	tool	lint	css	ux	foundation	stylesheet-values-from-theme-properties	false
 rule	theme-colours-in-oklch	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	SHOULD	review		css	ux a11y	foundation	light-and-dark-one-token-set	false
+rule	theme-writes-no-hexadecimal-colour	css	blocks/contexts/languages/css/foundation/with/ui.md	ui	SHOULD	tool	lint	css	ux a11y	foundation	theme-colours-in-oklch	false
 rule	component-styles-in-its-folder	css	blocks/contexts/languages/css/architecture/with/ui.md	ui	MUST	review		css		architecture	component-in-its-own-folder	false
 rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation		true
 rule	file-named-after-its-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	file-is-one-semantic-unit	false
@@ -638,6 +641,7 @@ rule	switch-over-union-exhaustive	typescript	blocks/contexts/languages/typescrip
 rule	satisfies-to-check-conformance	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	immutable-by-default	false
+rule	no-mutable-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	immutable-by-default	false
 rule	type-parameter-appears-twice	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	text-made-deliberately	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	dates-through-temporal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	data	foundation		true
@@ -646,11 +650,14 @@ rule	no-object-joined-into-text	typescript	blocks/contexts/languages/typescript/
 rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	return-union-lists-only-returned-members	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	return-type-no-wider-than-returned	false
 rule	no-literal-thrown	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript	errors	foundation	only-errors-thrown	false
+rule	return-awaited-inside-try	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	errors	foundation	errors-surfaced-never-swallowed	false
 rule	named-exports-only	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation		true
 rule	cancellation-by-abort-signal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript	errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	resources-released-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	options-object-typed-as-function-input	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	at-most-three-positional-arguments	false
 rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	docs-only-for-non-obvious-public-entry	false
+rule	deprecated-by-jsdoc-tag	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	retired-code-marked-deprecated	false
+rule	no-deprecated-import	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	retired-code-marked-deprecated	false
 rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	security	foundation		true
 rule	production-imports-no-development-dependency	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	imports	typescript	security	foundation	tools-are-dev-dependencies	false
 rule	one-version-per-dependency	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	versions	typescript		foundation		true
@@ -911,6 +918,7 @@ rule	libs-import-no-router	tanstack-router	blocks/implementations/tanstack-route
 rule	routes-imported-only-by-the-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	dependencies-point-inward	false
 rule	screen-reads-start-in-the-loader	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux performance	architecture	route-owns-its-url	false
 rule	adapters-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	guard-reaches-features-outside-react	false
+rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementations/tanstack-router/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y ux	foundation	navigation-moves-focus-to-the-view	false
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	MAY	review		typescript		foundation		true
 rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript	errors ux	foundation	error-component-per-route	false
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript	data	architecture	one-home-per-datum	false

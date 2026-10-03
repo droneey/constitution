@@ -34,3 +34,4 @@ A screen's spec, and the spec of what loads or writes its data, run inside their
 | Why | Check | Tags |
 |---|---|---|
 | the spec then runs the real data bindings, the code that talks to the server and the mapping, and catches a response the mapping gets wrong, which a faked operation never sees. | test | [] |
+

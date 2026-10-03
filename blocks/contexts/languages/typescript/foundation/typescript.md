@@ -193,6 +193,13 @@ The fields of a type of the program's business data are `readonly`, its lists `r
 |---|---|---|
 | the compiler then refuses a mutation the domain never meant. | review | [] |
 
+## no-mutable-export → immutable-by-default
+No module declares an export with `export let` or `export var`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an exported binding that is reassigned is state every importer shares without seeing who changes it, and it leaks from one spec into the next. | tool/lint | [] |
+
 ## type-parameter-appears-twice · SHOULD
 A type parameter appears at least twice in its signature; one that appears once is its constraint written out.
 
@@ -249,6 +256,13 @@ No literal, template or object literal is thrown.
 |---|---|---|
 | these are the thrown non-errors the linter can see without types; a variable holding one is left to review. | tool/lint | [] |
 
+## return-awaited-inside-try → errors-surfaced-never-swallowed
+Inside a `try`, a returned promise is awaited — `return await` — so its rejection reaches the `catch`.
+
+| Why | Check | Tags |
+|---|---|---|
+| without the `await`, the function has returned before the promise rejects, so its `catch` never runs and the raw failure passes unmapped. | review | [errors] |
+
 ## named-exports-only · MUST
 A module exports by name. A default export appears only in a configuration file a tool reads — `*.config.*`, `.*rc.*` — or where a framework reads one, and then its suppression says which.
 
@@ -278,11 +292,25 @@ An object of values that travel together is typed by an interface named `<Functi
 | the interface names the whole the values make, and the call site reads each of them by name. | review | [] |
 
 ## jsdoc-only-for-non-obvious-public-entry → docs-only-for-non-obvious-public-entry
-JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter.
+JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter; a `@deprecated` tag aside.
 
 | Why | Check | Tags |
 |---|---|---|
 | JSDoc that repeats a signature drifts from it, and the editor already shows the types. | review | [] |
+
+## deprecated-by-jsdoc-tag → retired-code-marked-deprecated
+The mark is a JSDoc `@deprecated` tag that names the replacement.
+
+| Why | Check | Tags |
+|---|---|---|
+| editors strike the call through, and the tooling reads the tag. | review | [] |
+
+## no-deprecated-import → retired-code-marked-deprecated
+No module imports an export marked `@deprecated`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a new caller of retired code is the one the mark exists to stop. | tool/lint | [] |
 
 ## Dependencies
 

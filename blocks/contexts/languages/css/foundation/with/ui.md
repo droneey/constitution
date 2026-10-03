@@ -43,3 +43,10 @@ The theme writes its colours as `oklch()`.
 | Why | Check | Tags |
 |---|---|---|
 | OKLCH is the colour space where one lightness reads as equally light in every hue, which the derivation by rule needs. | review | [ux, a11y] |
+
+## theme-writes-no-hexadecimal-colour → theme-colours-in-oklch
+The theme writes no hexadecimal colour.
+
+| Why | Check | Tags |
+|---|---|---|
+| hexadecimal is the form a colour copied from a design tool arrives in, and the one the lint can see. | tool/lint | [] |
