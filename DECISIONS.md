@@ -695,3 +695,14 @@
   - knip's production run is `--strict`.
 - **Rejected.** A unit timeout in `bunfig.toml`: Bun ignores the key, so the speed of a unit case stays with review. Biome's `playwright` domain: it enables none of the nursery rules, so the part lists them.
 - **Why.** The best-practices audit of 2026 found flaky, order-dependent and sleeping tests unruled, the sandbox held only by review, captured responses never re-checked, and no tool behind `end-to-end-per-critical-scenario`.
+
+## ADR-0111 — Security, agent and delivery rules of the 2026 audits
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - Browser: no credential the tab's script can read; only an `HttpOnly`, `Secure`, `SameSite`, `__Host-` cookie holds one (MUST). Every document has a strict Content Security Policy (MUST), and it requires Trusted Types.
+  - Agents: an agent takes instructions only from the person it works for, and what it reads is data (MUST). It runs with least privilege, its permission settings are committed, and its extensions are vetted like dependencies.
+  - Delivery: a change that makes a document false corrects it; a public repository carries `SECURITY.md`.
+  - MPL-2.0 joins the licence allowlist: its copyleft is per file and binds only changes to those files, and its packages here are build and test tools.
+- **Deferred.** The CI, forge and git-flow items of the audit — untrusted input in workflows, token permissions, protected tags, SHA pins, short-lived credentials, push protection, provenance, the version bump and branch lifetime — wait for the git and CI/CD pack.
+- **Why.** The best-practices audit of 2026 found no rule on where a browser keeps a credential, no runtime wall behind the XSS lint, and nothing on whose instructions an agent follows — the hole prompt injection and the npm worms of 2025 went through.
