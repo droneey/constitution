@@ -1,30 +1,19 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { z } from 'zod';
-
 import { miseBinary } from './mise.fixtures';
-
-const REPORT = z.object({
-  results: z.array(
-    z.object({
-      packages: z.array(
-        z.object({
-          // biome-ignore lint/style/useNamingConvention: osv-scanner names the field license_violations
-          license_violations: z.array(z.string()).optional(),
-          package: z.object({
-            name: z.string(),
-          }),
-        }),
-      ),
-    }),
-  ),
-});
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const OSV_SCANNER = miseBinary('osv-scanner');
+const REFUSED = /not recognized as spdx: (?<ids>.+)$/m;
+const ACCEPTED = 'cannot retrieve licenses locally';
+
+interface Verdict {
+  accepted: boolean;
+  refused: readonly string[];
+}
 
 const ALLOWLIST = readFileSync(
   join(
@@ -38,45 +27,19 @@ const ALLOWLIST = readFileSync(
   'utf8',
 )
   .trim()
-  .split('\n')
-  .join(',');
+  .split('\n');
 
-const licenceViolations = (
-  packages: Readonly<Record<string, string>>,
-): readonly string[] => {
+// Offline, osv-scanner still validates the list, then stops at the licences it
+// would fetch from deps.dev; that stop shows the list was accepted.
+const verdictOn = (licences: readonly string[]): Verdict => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-osv-scanner-'));
-
-  writeFileSync(
-    join(folder, 'package-lock.json'),
-    JSON.stringify({
-      lockfileVersion: 3,
-      name: 'fixture',
-      packages: {
-        '': {
-          dependencies: packages,
-          name: 'fixture',
-        },
-        ...Object.fromEntries(
-          Object.entries(packages).map(([name, version]) => [
-            `node_modules/${name}`,
-            {
-              version,
-            },
-          ]),
-        ),
-      },
-      requires: true,
-    }),
-  );
-
   const scanning = spawnSync(
     OSV_SCANNER,
     [
       'scan',
       'source',
-      `--licenses=${ALLOWLIST}`,
-      '--format',
-      'json',
+      '--offline',
+      `--licenses=${licences.join(',')}`,
       '.',
     ],
     {
@@ -90,12 +53,10 @@ const licenceViolations = (
     recursive: true,
   });
 
-  return REPORT.parse(JSON.parse(scanning.stdout)).results.flatMap(
-    ({ packages: scanned }) =>
-      scanned
-        .filter(({ license_violations: found }) => (found ?? []).length > 0)
-        .map(({ package: { name } }) => name),
-  );
+  return {
+    accepted: scanning.stderr.includes(ACCEPTED),
+    refused: REFUSED.exec(scanning.stderr)?.groups?.ids?.split(',') ?? [],
+  };
 };
 
-export { licenceViolations };
+export { ALLOWLIST, verdictOn };

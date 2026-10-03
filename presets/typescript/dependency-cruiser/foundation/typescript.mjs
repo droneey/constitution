@@ -14,6 +14,7 @@ export default {
         ],
         dependencyTypesNot: [
           'type-only',
+          'npm-peer',
         ],
         pathNot: 'node_modules/@types/',
       },

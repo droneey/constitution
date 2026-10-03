@@ -30,9 +30,36 @@ export default {
         ],
       },
     },
+    {
+      name: 'no-duplicate-dep-types',
+      severity: 'error',
+      from: {},
+      to: {
+        moreThanOneDependencyType: true,
+        dependencyTypesNot: [
+          'type-only',
+          'npm-peer',
+        ],
+      },
+    },
+    {
+      name: 'no-deprecated-core',
+      severity: 'error',
+      from: {},
+      to: {
+        dependencyTypes: [
+          'core',
+        ],
+        path: '^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$',
+      },
+    },
   ],
   options: {
+    // dependency-cruiser deprecates swc, but its tsc parser needs the JS API
+    // that TypeScript 7.0 lacks.
+    // TODO(#186): move to tsc once TypeScript 7.1 ships.
     parser: 'swc',
+    skipAnalysisNotInRules: true,
     doNotFollow: {
       path: [
         'node_modules',

@@ -1,47 +1,38 @@
 import { describe, expect, it } from 'bun:test';
 
-import { licenceViolations } from './osv-scanner-preset.fixtures';
-
-// osv-scanner asks deps.dev for every licence, which a CI runner may take longer to answer.
-const NETWORK_TIMEOUT_MS = 60_000;
+import { ALLOWLIST, verdictOn } from './osv-scanner-preset.fixtures';
 
 describe('the osv-scanner licence allowlist', () => {
-  it(
-    'should report a package when its licence is not on the list',
-    () => {
-      // Arrange
-      const packages = {
-        'is-number': '7.0.0',
-        'left-pad': '1.3.0',
-      };
+  it('should hold only SPDX ids when osv-scanner reads it', () => {
+    // Arrange
+    const licences = ALLOWLIST;
 
-      // Act
-      const found = licenceViolations(packages);
+    // Act
+    const verdict = verdictOn(licences);
 
-      // Assert
-      expect(found).toStrictEqual([
-        'left-pad',
-      ]);
-    },
-    NETWORK_TIMEOUT_MS,
-  );
+    // Assert
+    expect(verdict).toStrictEqual({
+      accepted: true,
+      refused: [],
+    });
+  });
 
-  it(
-    'should report nothing when every licence is permissive',
-    () => {
-      // Arrange
-      const packages = {
-        'caniuse-lite': '1.0.30001812',
-        'is-number': '7.0.0',
-        typescript: '5.9.2',
-      };
+  it('should name the id osv-scanner refuses when the list holds one that is not SPDX', () => {
+    // Arrange
+    const licences = [
+      ...ALLOWLIST,
+      'Permissive',
+    ];
 
-      // Act
-      const found = licenceViolations(packages);
+    // Act
+    const verdict = verdictOn(licences);
 
-      // Assert
-      expect(found).toStrictEqual([]);
-    },
-    NETWORK_TIMEOUT_MS,
-  );
+    // Assert
+    expect(verdict).toStrictEqual({
+      accepted: false,
+      refused: [
+        'Permissive',
+      ],
+    });
+  });
 });

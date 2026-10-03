@@ -958,6 +958,22 @@ describe('the dependency-cruiser foundation parts', () => {
       },
       rule: 'no-development-dependency-in-production',
     },
+    {
+      condition: 'code imports a package the manifest declares twice',
+      files: {
+        'src/order.ts':
+          "import { doubled } from 'doubled';\nexport const order = doubled;\n",
+      },
+      rule: 'no-duplicate-dep-types',
+    },
+    {
+      condition: 'code imports a deprecated core module',
+      files: {
+        'src/order.ts':
+          "import { toASCII } from 'punycode';\nexport const order = toASCII;\n",
+      },
+      rule: 'no-deprecated-core',
+    },
   ])('should report $rule when $condition', ({ files, rule }) => {
     // Arrange
     const project = {
@@ -998,6 +1014,14 @@ describe('the dependency-cruiser foundation parts', () => {
         '.cache/order.ts':
           "import { line } from './line';\nexport const order = line;\n",
         'src/order.ts': 'export const order = 1;\n',
+      },
+    },
+    {
+      condition:
+        'code imports the tool a package configures, declared as a peer and for development',
+      files: {
+        'src/order.ts':
+          "import { configured } from 'configured';\nexport const order = configured;\n",
       },
     },
     {
