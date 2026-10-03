@@ -1,0 +1,20 @@
+language js
+
+or {
+  jsx_attribute(name=$name, value=$classes) where { $name <: r"className" },
+  or {
+    `cva($...)`,
+    `cn($...)`,
+    `clsx($...)`,
+    `twMerge($...)`
+  } as $classes where { $classes <: not within jsx_attribute() }
+} where {
+  $classes <: contains or {
+    JsStringLiteralExpression(),
+    JsxString(),
+    JsTemplateChunkElement()
+  } as $text where {
+    $text <: r"(?s).*(?:[\w\])]!(?:[\s\"'`]|$)|(?:^|[\s\"'`])![a-z]).*"
+  },
+  register_diagnostic(span=$text, message="Win by a later layer: the important modifier writes !important", severity="error")
+}

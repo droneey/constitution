@@ -4,6 +4,7 @@
     "./.constitution/presets/typescript/biome/foundation/plugins/mobile-first-breakpoints.grit",
     "./.constitution/presets/typescript/biome/foundation/plugins/no-outline-none-in-class-lists.grit",
     "./.constitution/presets/typescript/biome/foundation/plugins/logical-utilities-for-direction.grit",
+    "./.constitution/presets/typescript/biome/foundation/plugins/no-important-modifier-in-class-lists.grit",
   ],
   "linter": {
     "rules": {

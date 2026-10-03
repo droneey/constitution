@@ -136,6 +136,8 @@ foundation:
       - logical-utilities-for-direction.grit
     no-outline-none-in-class-lists:
       - no-outline-none-in-class-lists.grit
+    no-important-modifier-in-class-lists:
+      - no-important-modifier-in-class-lists.grit
   tanstack-query:
     keys-only-from-the-key-factory:
       - keys-only-from-the-key-factory.grit

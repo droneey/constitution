@@ -1,0 +1,8 @@
+language css
+
+CssAtRule() as $theme where {
+  $theme <: r"(?s)@theme\b.*",
+  $theme <: not r"(?s)@theme\s+inline\b.*",
+  $theme <: not r"(?s).*--\*\s*:\s*initial.*",
+  register_diagnostic(span=$theme, message="Reset every default scale: the theme's @theme holds --*: initial, and any other @theme is inline", severity="error")
+}

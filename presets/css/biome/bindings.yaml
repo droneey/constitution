@@ -1,4 +1,7 @@
 foundation:
+  tailwind:
+    theme-resets-every-default-scale:
+      - theme-resets-every-default-scale.grit
   css:
     baseline-features-only:
       - useBaseline

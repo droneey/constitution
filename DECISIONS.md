@@ -795,3 +795,15 @@
   - Opening `root/ui` to route files: an application shell that knows no feature belongs in `shared/ui`.
   - Kernel surfaces per role folder: the kernel stays one small module with one surface, and a project that lacks `kernel/index.ts` adds it.
 - **Why.** The audit of rozumchik-web against constitution 0.62 found these homes and rules missing or contradicting each other.
+
+## ADR-0119 — The UI, i18n and analytics rules a real application found
+**Date:** 2026-10-03 · **Status:** Accepted
+
+- **Decision.**
+  - An element, never a labelled control, that the root renders once and other code must know — a skip link's target, an SVG's shared `<defs>` — takes a constant id with a suppression that says so.
+  - A value kept from the previous render is the component's own state, set during its render behind a comparison, as React documents, never a ref.
+  - Tailwind's theme tokens are one `@theme` block holding `--*: initial`, and any other `@theme` block is `inline`, held by GritQL; no class list uses the important modifier, held by GritQL on the class strings; the class merger is built with `extendTailwindMerge` from the theme's namespaces.
+  - `module-level-text-holds-the-message` (MUST) moves into the i18n domain, since a translation taken when a module loads goes stale whatever the library; Lingui's descriptor rule carries it out.
+  - Matomo in a single-page application: the program pushes page views itself with the route's template, and the container's history trigger is off.
+- **Rejected.** An `aria-label` instead of a label for a single-field composer: a visually hidden label already meets the rule.
+- **Why.** The audit of rozumchik-web against constitution 0.62 found each of these where a real application met the rules.

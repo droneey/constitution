@@ -10,7 +10,7 @@ The build runs the React Compiler over every component and hook, except one the 
 | the Compiler memoises what is safe to memoise, so the code stays plain and fast without hand-written memoisation. | review | [performance] |
 
 ## render-is-pure · MUST
-A component or hook returns the same output for the same props, state and context: it changes nothing that existed before the render and reads no ref during it. The root renders inside `StrictMode`.
+A component or hook returns the same output for the same props, state and context: it changes nothing that existed before the render and reads no ref during it. A value kept from the previous render — an exiting route frozen for its animation — is the component's own state, set during its render behind a comparison with the kept value, as React documents, never a ref. The root renders inside `StrictMode`.
 
 | Why | Check | Tags |
 |---|---|---|
