@@ -75,3 +75,26 @@ Large binary files live outside the history, stored by reference.
 | Why | Check | Tags |
 |---|---|---|
 | a large file in history is downloaded by every clone forever, even after it is deleted. | review | [performance] |
+
+## Files
+
+## move-files-never-recreate · MUST
+A file that moves is moved, never deleted and written anew, and a moved file is not rewritten in the same step.
+
+| Why | Check | Tags |
+|---|---|---|
+| a move keeps the file's history and shows the reviewer that nothing changed but its place. | review | [] |
+
+## generated-files-not-committed · SHOULD
+Generated files are not committed; the build produces them. A file an author's step generates and the program's code imports — not a build output — is the exception, and is committed.
+
+| Why | Check | Tags |
+|---|---|---|
+| a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, and the check may not generate them. | review | [] |
+
+## local-environment-file-ignored · SHOULD
+The local environment file is ignored by version control; its committed example carries placeholders only.
+
+| Why | Check | Tags |
+|---|---|---|
+| the real values stay on the machine they belong to, and a real value never lands in the example. | review | [security] |

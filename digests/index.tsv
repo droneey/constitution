@@ -12,10 +12,10 @@ role	mutation	false
 role	secrets	true
 role	audit	true
 role	commits	true
-block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/delivery.md workflow/security.md workflow/testing.md				false						
+block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
 block	a11y	domain	Accessibility outcomes, to WCAG 2.2 AA, for any user interface.	foundation/a11y.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
-block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md				false						
+block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
 block	observability	domain	Log records: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
@@ -23,7 +23,7 @@ block	remote-data	domain	Data another system owns — cache keys, invalidation, 
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
 block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md architecture/untrusted-client.md				false						
-block	version-control	domain	Changes made atomically and checked; history and release tags kept.	foundation/version-control.md workflow/version-control.md				false						
+block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	foundation/version-control.md workflow/version-control.md				false						
 block	browser	platform	Code that runs in a browser tab.	foundation/browser.md architecture/browser.md	foundation/a11y foundation/analytics foundation/i18n foundation/ui architecture/ui	untrusted-client unreliable-network		false						
 block	cli	platform	A program run from a command line, one command per invocation.	foundation/cli.md architecture/cli.md				false						**/cli/**
 block	mobile	platform	Code that runs as an application on a phone or tablet.	foundation/mobile.md architecture/mobile.md	foundation/a11y foundation/ui	untrusted-client unreliable-network		false						
@@ -77,7 +77,7 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query foundation/version-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
@@ -158,14 +158,12 @@ rule	consent-before-irreversible-actions	core	blocks/core/foundation/collaborati
 rule	ask-when-readings-diverge	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	report-outcomes-faithfully	core	blocks/core/foundation/collaboration.md		MUST	review				foundation		true
 rule	instructions-only-from-the-person	core	blocks/core/foundation/collaboration.md		MUST	review			security	foundation		true
-rule	agent-never-rewrites-shared-history	core	blocks/core/foundation/collaboration.md		MUST	review				foundation		true
 rule	agent-runs-with-least-privilege	core	blocks/core/foundation/collaboration.md		SHOULD	review			security	foundation		true
 rule	delegating-agent-keeps-responsibility	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	no-agent-file-in-project	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	project-knowledge-in-project-files	core	blocks/core/foundation/collaboration.md		SHOULD	review				foundation		true
 rule	read-governing-rules-first	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	scope-limited-to-the-task	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
-rule	move-files-never-recreate	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	documents-change-with-what-they-describe	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	one-check-command	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	check-chains-one-entry-per-area	core	blocks/core/foundation/delivery.md		MUST	review				foundation	one-check-command	false
@@ -175,7 +173,6 @@ rule	review-against-active-rules-before-hand-back	core	blocks/core/foundation/de
 rule	project-files-at-root	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	readme-is-the-front-door	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	docs-for-readers-outside-the-code	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
-rule	generated-files-not-committed	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	kebab-case-file-names	core	blocks/core/foundation/delivery.md		MUST	tool	names			foundation		true
 rule	public-repository-carries-a-licence	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	public-repository-states-security-policy	core	blocks/core/foundation/delivery.md		SHOULD	review			security	foundation		true
@@ -193,7 +190,6 @@ rule	no-secret-in-repository	core	blocks/core/foundation/security.md		MUST	tool	
 rule	secret-never-in-url-or-artefact	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	leaked-secret-rotated-at-once	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	no-secret-or-personal-data-in-output	core	blocks/core/foundation/security.md		MUST	review			security data	foundation		true
-rule	local-environment-file-ignored	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	least-privilege-credentials	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	dependencies-pinned-by-lockfile	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
@@ -329,15 +325,8 @@ rule	effects-faked-through-ports	core	blocks/core/architecture/testing.md		SHOUL
 rule	consent-given-in-the-chat-per-action	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	consent-before-consequential-actions	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	design-settled-in-chat-first	core	blocks/core/workflow/collaboration.md		SHOULD	review				workflow		true
-rule	agent-commits-only-when-asked	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
-rule	agent-never-merges-or-pushes-to-main	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	no-tool-attribution	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
-rule	agent-permissions-committed	core	blocks/core/workflow/collaboration.md		SHOULD	review			security	workflow	agent-runs-with-least-privilege	false
 rule	sub-agent-never-touches-live-systems	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
-rule	sub-agent-only-does-the-work	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
-rule	working-notes-stay-out-of-history	core	blocks/core/workflow/delivery.md		SHOULD	review				workflow		true
-rule	secrets-scanned-before-each-commit	core	blocks/core/workflow/security.md		MUST	review			security	workflow	no-secret-in-repository	false
-rule	dependencies-updated-by-bot	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow		true
 rule	shared-tooling-from-pinned-packages	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow		true
 rule	tests-first-from-a-description	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	bug-fix-starts-with-failing-test	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	test-seen-failing	false
@@ -388,7 +377,6 @@ rule	init-writes-document-from-template	convergence	blocks/domains/convergence/f
 rule	plan-names-destroying-changes	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			security ux	foundation	irreversible-operations-behind-flag-and-human	false
 rule	second-run-changes-nothing	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			testing data	foundation	operations-idempotent-by-design	true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux errors	foundation		true
-rule	run-output-in-an-ignored-work-folder	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation	generated-files-not-committed	false
 rule	engines-pinned-by-version-and-checksum	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
 rule	developer-and-ci-run-the-tools-engines	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
 rule	schema-rejects-unknown-keys	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			data	foundation		true
@@ -400,6 +388,7 @@ rule	document-lives-in-composition	convergence	blocks/domains/convergence/archit
 rule	stages-validate-render-plan-apply	convergence	blocks/domains/convergence/architecture/convergence.md		SHOULD	review				architecture		true
 rule	run-report-is-a-value	convergence	blocks/domains/convergence/architecture/convergence.md		SHOULD	review				architecture	report-returned-as-a-value	false
 rule	engines-reached-through-a-port	convergence	blocks/domains/convergence/architecture/convergence.md		MUST	review				architecture		true
+rule	run-output-in-an-ignored-work-folder	convergence	blocks/domains/convergence/foundation/with/version-control.md	version-control	SHOULD	review				foundation	generated-files-not-committed	false
 rule	user-facing-text-from-catalog	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
 rule	messages-take-named-parameters	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
 rule	module-level-text-holds-the-message	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review				foundation		true
@@ -563,11 +552,15 @@ rule	working-copy-clean-at-hand-back	version-control	blocks/domains/version-cont
 rule	shared-history-never-rewritten	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	release-marked-by-immutable-tag	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	large-files-outside-history	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			performance	foundation		true
+rule	move-files-never-recreate	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
+rule	generated-files-not-committed	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
+rule	local-environment-file-ignored	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			security	foundation		true
 rule	commit-header-type-and-subject	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
 rule	commit-header-format	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	commit-header-type-and-subject	false
 rule	commit-body-empty-reason-in-pull-request	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	reason-for-change-recorded	true
 rule	commit-type-matches-the-diff	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow	refactor-apart-from-behaviour-change	false
 rule	check-run-by-hooks-and-ci	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			testing	workflow	every-commit-passes-the-check	false
+rule	secrets-scanned-before-each-commit	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	no-secret-in-repository	false
 rule	branch-named-type-issue-name	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow		true
 rule	branch-type-sets-version-bump	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow	release-cut-by-automation-promoted-by-person	false
 rule	merged-branch-deleted	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
@@ -580,6 +573,14 @@ rule	squash-merge-titled-in-commit-format	version-control	blocks/domains/version
 rule	pull-request-title-checked-in-ci	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	commit-header-type-and-subject	false
 rule	release-tags-named-by-semver	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	release-marked-by-immutable-tag	false
 rule	release-cut-by-automation-promoted-by-person	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
+rule	dependencies-updated-by-bot	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow		true
+rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
+rule	agent-commits-only-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
+rule	agent-never-merges-or-pushes-to-main	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
+rule	agent-never-rewrites-shared-history	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
+rule	sub-agent-only-does-the-work	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
+rule	agent-permissions-committed	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-runs-with-least-privilege	false
+rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	no-tool-attribution	false
 rule	no-browser-globals-during-render	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			errors	foundation		true
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
 rule	bundle-reads-no-build-environment	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	tool	types		security	foundation	runtime-configuration-served-beside-bundle	false
@@ -1086,7 +1087,6 @@ rule	link-targets-never-built	tanstack-router	blocks/implementations/tanstack-ro
 rule	routes-preload-on-intent	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	loader-declares-the-search-it-reads	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	routes-split-automatically	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
-rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation	generated-files-not-committed	false
 rule	router-claims-the-head	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript		foundation	one-writer-per-shared-resource	false
 rule	search-falls-back-to-defaults	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	screens-are-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript		architecture		true
@@ -1108,6 +1108,7 @@ rule	services-reach-loaders-through-router-context	tanstack-router	blocks/implem
 rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementations/tanstack-router/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y ux	foundation	navigation-moves-focus-to-the-view	false
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	MAY	review		typescript		foundation		true
 rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript		foundation		true
+rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/foundation/with/version-control.md	version-control	SHOULD	review		typescript		foundation	generated-files-not-committed	false
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript	data	architecture	one-home-per-datum	false
 rule	hashed-assets-immutable-html-revalidated	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		SHOULD	review		typescript	performance	foundation		true
 rule	content-security-policy-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		MUST	test		typescript	security	foundation	strict-content-security-policy	false

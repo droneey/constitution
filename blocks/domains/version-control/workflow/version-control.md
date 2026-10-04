@@ -37,6 +37,13 @@ The commit hooks run the check's fast part before each commit, and CI runs the s
 |---|---|---|
 | the hooks stop most failures before they are committed, and CI runs what is too slow for a hook, on a machine nobody set up by hand, so what passes locally passes in CI. | review | [] |
 
+## secrets-scanned-before-each-commit → no-secret-in-repository
+The commit hooks scan the staged changes for secrets before each commit.
+
+| Why | Check | Tags |
+|---|---|---|
+| a secret stopped before the commit never reaches history, where it is compromised for good. | review | [] |
+
 ## Branches
 
 ## branch-named-type-issue-name · MUST
@@ -126,3 +133,65 @@ Releases are cut by automation from the merged changes; a person promotes a pre-
 | Why | Check | Tags |
 |---|---|---|
 | automation makes every release the same way, and the person decides when one is ready. | review | [] |
+
+## Dependencies
+
+## dependencies-updated-by-bot · SHOULD
+Dependency updates arrive as pull requests from an update bot, each passing the check before it is merged.
+
+| Why | Check | Tags |
+|---|---|---|
+| updates that arrive on their own, small and checked, keep the project current without a risky update all at once. | review | [security] |
+
+## Files
+
+## working-notes-stay-out-of-history · SHOULD
+Specs, plans and working notes live in a `local/` folder that version control ignores.
+
+| Why | Check | Tags |
+|---|---|---|
+| working notes are true for a day; committed, they mislead every later reader. | review | [] |
+
+## Agents
+
+## agent-commits-only-when-asked · MUST
+Only a person decides what is committed. The main agent commits only when a person asks it to, on the working branch.
+
+| Why | Check | Tags |
+|---|---|---|
+| a commit records a decision under the person's name; the person makes it. | review | [] |
+
+## agent-never-merges-or-pushes-to-main · MUST
+An agent never merges and never pushes to the main line, even where its rights would pass the protection. It pushes a branch and opens a pull request only when a person asks.
+
+| Why | Check | Tags |
+|---|---|---|
+| merging is the decision that ships a change, and it belongs to the person who answers for it. | review | [] |
+
+## agent-never-rewrites-shared-history → shared-history-never-rewritten
+An agent never force-pushes, to any branch.
+
+| Why | Check | Tags |
+|---|---|---|
+| history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | review | [] |
+
+## sub-agent-only-does-the-work · MUST
+A sub-agent does the work it is given and nothing more: it never commits, never pushes and never merges.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |
+
+## agent-permissions-committed → agent-runs-with-least-privilege
+The project's permission settings for agents, deny rules included, are committed; only each person's own overrides stay local.
+
+| Why | Check | Tags |
+|---|---|---|
+| committed settings give every person's agent the same limits, and a change to them is reviewed like code. | review | [security] |
+
+## no-attribution-in-commits-or-pull-requests → no-tool-attribution
+No commit, its trailers included, and no pull request names the tool or model that helped write it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a trailer or a line added by a tool lands in the history for good, under the name of the person who answers for the change. | review | [] |

@@ -10,7 +10,7 @@ Consent is given in the chat, for that action alone, and never carries over to t
 | the chat is where the person who answers for an action sees it asked, and a go-ahead for one action says nothing of the next. | review | [] |
 
 ## consent-before-consequential-actions → consent-before-irreversible-actions
-An agent asks before adding a dependency, a pattern or an abstraction; before changing a public entry, a schema or a format; and before pushing to a shared branch. Consent is given as for an irreversible action.
+An agent asks before adding a dependency, a pattern or an abstraction, and before changing a public entry, a schema or a format. Consent is given as for an irreversible action.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -25,33 +25,12 @@ A design question is settled in the chat before code is written for it.
 
 ## Acting
 
-## agent-commits-only-when-asked · MUST
-Only a person decides what is committed. The main agent commits only when a person asks it to, on the working branch.
-
-| Why | Check | Tags |
-|---|---|---|
-| a commit records a decision under the person's name; the person makes it. | review | [] |
-
-## agent-never-merges-or-pushes-to-main · MUST
-An agent never merges and never pushes to the main line. It pushes its branch and opens the pull request only when a person asks.
-
-| Why | Check | Tags |
-|---|---|---|
-| merging is the decision that ships a change, and it belongs to the person who answers for it. | review | [] |
-
 ## no-tool-attribution · MUST
-Commits, pull requests and documents carry no attribution to the tool or model that helped write them.
+Nothing submitted under a person's name — a change, its description, a document — carries an attribution to the tool or model that helped write it.
 
 | Why | Check | Tags |
 |---|---|---|
 | the person who submits a change answers for it; an attribution line adds noise and no accountability. | review | [] |
-
-## agent-permissions-committed → agent-runs-with-least-privilege
-The project's permission settings for agents, deny rules included, are committed; only each person's own overrides stay local.
-
-| Why | Check | Tags |
-|---|---|---|
-| committed settings give every person's agent the same limits, and a change to them is reviewed like code. | review | [security] |
 
 ## Delegating
 
@@ -62,9 +41,3 @@ A sub-agent never runs a live system and never calls a real external service.
 |---|---|---|
 | a sub-agent acts without the person watching and has no chat in which to ask for consent, so these actions stay with the agent the person talks to. | review | [] |
 
-## sub-agent-only-does-the-work · MUST
-A sub-agent does the work it is given and nothing more: it never commits, never pushes and never merges.
-
-| Why | Check | Tags |
-|---|---|---|
-| a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |

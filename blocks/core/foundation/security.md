@@ -32,13 +32,6 @@ No secret and no personal data appear in logs, errors, test data or documents. A
 |---|---|---|
 | output is copied to places with weaker access than the data it came from. | review | [security, data] |
 
-## local-environment-file-ignored · SHOULD
-The local environment file is ignored by version control; its committed example carries placeholders only.
-
-| Why | Check | Tags |
-|---|---|---|
-| the real values stay on the machine they belong to, and a real value never lands in the example. | review | [security] |
-
 ## least-privilege-credentials · SHOULD
 A credential belongs to one identity and one purpose, per environment, with only the permissions its job needs, documented beside its use. Access is granted to people and services, never through a shared credential.
 

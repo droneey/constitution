@@ -18,13 +18,6 @@ A change does what the task asks and nothing else: no unrelated refactor, reform
 |---|---|---|
 | a change that does one thing is reviewed, reverted and understood as one thing. | review | [] |
 
-## move-files-never-recreate · MUST
-A file that moves is moved, never deleted and written anew, and a moved file is not rewritten in the same step.
-
-| Why | Check | Tags |
-|---|---|---|
-| a move keeps the file's history and shows the reviewer that nothing changed but its place. | review | [] |
-
 ## documents-change-with-what-they-describe · SHOULD
 A change that makes a document false — the README, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
 
@@ -91,13 +84,6 @@ A repository keeps at its root `constitution.yaml`, the blocks it follows and th
 | Why | Check | Tags |
 |---|---|---|
 | knowledge beside its module changes with it; one folder of everything drifts from the code it describes. | review | [] |
-
-## generated-files-not-committed · SHOULD
-Generated files are not committed; the build produces them. A file an author's step generates and the program's code imports — not a build output — is the exception, and is committed.
-
-| Why | Check | Tags |
-|---|---|---|
-| a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, and the check may not generate them. | review | [] |
 
 ## kebab-case-file-names · MUST
 Files and folders are named in kebab-case. Root files that convention names in upper case — `README.md`, `LICENSE.md` — keep it, and the language block fixes the case of source files.
