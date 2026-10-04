@@ -33,18 +33,18 @@ CI and every script install with `bun install --frozen-lockfile`.
 ## Running
 
 ## every-tool-runs-on-bun → tools-run-on-the-pinned-runtime
-`bunfig.toml` sets `[run] bun = true`, so every tool, one with a Node shebang included, runs on the pinned Bun.
+`bunfig.toml` sets `[run] bun = true`, so a tool with a Node shebang runs on the pinned Bun.
 
 | Why | Check | Tags |
 |---|---|---|
 | a tool with a Node shebang otherwise runs on whichever Node the machine finds, and one runtime for the program and its tools means one version to pin. | review | [] |
 
-## other-runtime-only-where-bun-cannot · SHOULD
-Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.
+## other-runtime-only-where-bun-cannot → tools-run-on-the-pinned-runtime
+Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception, and that runtime is pinned in the toolchain's file like Bun.
 
 | Why | Check | Tags |
 |---|---|---|
-| each exception is a second runtime to pin and keep; its reason says when it can go. | review | [] |
+| each exception is a second runtime to pin and keep; pinned, it runs in one version everywhere, and its reason says when it can go. | review | [] |
 
 ## programs-built-by-bun-build · SHOULD
 A program whose build no other active block owns is built by `bun build`.

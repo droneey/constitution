@@ -193,9 +193,9 @@ rule	leaked-secret-rotated-at-once	core	blocks/core/foundation/security.md		MUST
 rule	no-secret-or-personal-data-in-output	core	blocks/core/foundation/security.md		MUST	review			security data	foundation		true
 rule	least-privilege-credentials	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	dependencies-pinned-by-lockfile	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
-rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
-rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/security.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
+rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
+rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
 rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
@@ -812,7 +812,7 @@ rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/foundation/bun.
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	install-scripts-only-for-listed-dependencies	false
 rule	release-age-set-for-installs	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript	security	foundation	dependency-release-cooldown	false
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
-rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
+rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	check-chains-one-entry-per-area	false
 rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		MUST	review		typescript	security	architecture	environment-read-once-at-boot	false
@@ -926,7 +926,7 @@ rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/
 rule	t-never-at-module-level	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	tool	lint	typescript		foundation	module-level-messages-are-descriptors	false
 rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/foundation/with/_react.md	_react	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
 rule	macros-expanded-by-the-test-preload	lingui	blocks/implementations/lingui/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing ux	foundation	messages-through-lingui-macros	false
-rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	SHOULD	review		typescript		foundation	other-runtime-only-where-bun-cannot	false
+rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	MUST	review		typescript	security	foundation	other-runtime-only-where-bun-cannot	false
 rule	macros-expanded-by-the-lingui-plugin	lingui	blocks/implementations/lingui/foundation/with/vite.md	vite	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	false
 rule	primitives-import-no-message-catalog	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	primitives-take-text-by-props	false
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/foundation/ls-lint.md		SHOULD	tool	names			foundation	yaml-files-end-in-yaml	false
@@ -935,6 +935,7 @@ rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/foundat
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	performance	foundation		true
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST	review		typescript		architecture	sinks-behind-one-contract	true
 rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
+rule	toolchain-downloads-verified-by-the-lock	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false

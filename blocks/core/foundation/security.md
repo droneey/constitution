@@ -48,14 +48,7 @@ A language uses one package manager, and one lockfile, kept in the repository. I
 |---|---|---|
 | two package managers resolve differently, and an install that ignores the lockfile runs code nobody reviewed. | review | [security] |
 
-## tools-run-on-the-pinned-runtime → dependencies-pinned-by-lockfile
-Every tool runs on a runtime the repository pins, never on one a tool downloads or finds on the machine.
-
-| Why | Check | Tags |
-|---|---|---|
-| a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | review | [] |
-
-## downloads-pinned-by-version-and-checksum → dependencies-pinned-by-lockfile
+## downloads-pinned-by-version-and-checksum · MUST
 A file the program or its build downloads outside a package manager — a binary, an archive, an engine — is pinned to a version and checked against its checksum before it is used.
 
 | Why | Check | Tags |
@@ -68,6 +61,13 @@ Every build, test and lint tool is pinned to one exact version in a file of the 
 | Why | Check | Tags |
 |---|---|---|
 | a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change someone reviews, and a tool in the program's dependencies ships to every installation. | review | [security] |
+
+## tools-run-on-the-pinned-runtime → tools-pinned-exactly-by-the-repository
+Every tool runs on a runtime the repository pins, never on one a tool downloads or finds on the machine.
+
+| Why | Check | Tags |
+|---|---|---|
+| a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | review | [] |
 
 ## program-dependencies-ranged-lockfile-pins · SHOULD
 A dependency of the program is declared in the manifest by the range of versions it works with, and the lockfile pins the exact version installed.
