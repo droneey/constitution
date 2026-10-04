@@ -28,7 +28,7 @@
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 |
-| TypeScript configuration | ADR-0130, ADR-0131 |
+| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133 |
 
 ---
 
@@ -906,3 +906,10 @@
 - **Decision.** Under `specs-checked-by-their-own-config`, `tsconfig.json` extends `tsconfig.src.json` and keeps `files` and `include` empty, beside its references to both configurations. Amends ADR-0130.
 - **Rejected.** A `tsconfig.json` with references alone (ADR-0130): Bun's transpiler reads only `tsconfig.json` and follows no reference, so a spec run by `bun test` lost the program's transpiler options, such as its decorators.
 - **Why.** Extending the program's configuration gives Bun its options, while TypeScript still reads a file with no files of its own as a solution and opens each file with the configuration that holds it (verified on Bun 1.4.2 and TypeScript 7.0.2).
+
+## ADR-0133 — NestJS's decorator options are written where Bun reads them
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** `experimentalDecorators` and `emitDecoratorMetadata` are written in the `tsconfig.json` that `bun test` runs from, the root's in a repository of packages, besides the nestjs part it extends (`decorator-options-where-bun-reads`).
+- **Rejected.** A Bun built from the open fix (oven-sh/bun#43110), which no release carries; the options through the presets alone, which Bun 1.4.2 drops.
+- **Why.** Bun's transpiler ignores an `extends` array (oven-sh/bun#43097), so a spec fails at its first decorated member while tsc passes; an end-to-end spec shows the day Bun follows the array and the rule can go.
