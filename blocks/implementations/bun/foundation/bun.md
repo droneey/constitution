@@ -53,9 +53,10 @@ A program whose build no other active block owns is built by `bun build`.
 |---|---|---|
 | the build resolves modules as the runtime does, so what was run and tested is what ships. | review | [] |
 
-## check-chains-area-scripts → one-check-command
-Each area of the check — `format`, `lint`, `type`, `test`, `mutation`, `unused` and the rest — has one `<area>:check` script that only checks and runs every tool of that area, in each language of the repository, and an `<area>:fix` beside it where a tool can write; `check` chains the check scripts.
+## check-chains-area-scripts → check-chains-one-entry-per-area
+The entries are scripts of `package.json`, and `check` chains the check scripts with `&&`.
 
 | Why | Check | Tags |
 |---|---|---|
-| CI, the hooks and a person run the same script names, so the names stay stable, and a second language adds its tools to the areas rather than a second set of names. | review | [] |
+| `bun run` runs a script of `package.json` by its name, and `&&` stops the chain at the first script that fails. | review | [] |
+

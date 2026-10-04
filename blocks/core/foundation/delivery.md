@@ -41,6 +41,13 @@ One command runs every check of the repository — format, lint, types, tests, c
 |---|---|---|
 | one command means nobody has to know which checks exist, and everyone who runs it runs the same checks. | review | [] |
 
+## check-chains-one-entry-per-area → one-check-command
+Each area of the check — `format`, `lint`, `type`, `test`, `mutation`, `unused` and the rest — has one `<area>:check` entry of the repository's runner that only checks and runs every tool of that area, in each language of the repository, and an `<area>:fix` beside it where a tool can write; the check command chains the check entries.
+
+| Why | Check | Tags |
+|---|---|---|
+| CI, the hooks and a person run the same names, so the names stay stable, and a second language adds its tools to the areas rather than a second set of names. | review | [] |
+
 ## check-only-checks · MUST
 The check verifies and never changes a tracked file: it generates nothing, formats nothing and rewrites nothing. A tool's cache in an ignored folder is not a change.
 

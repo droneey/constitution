@@ -164,6 +164,7 @@ rule	scope-limited-to-the-task	core	blocks/core/foundation/delivery.md		SHOULD	r
 rule	move-files-never-recreate	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	documents-change-with-what-they-describe	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	one-check-command	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
+rule	check-chains-one-entry-per-area	core	blocks/core/foundation/delivery.md		MUST	review				foundation	one-check-command	false
 rule	check-only-checks	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	check-passes-before-hand-back	core	blocks/core/foundation/delivery.md		MUST	review			testing	foundation		true
 rule	review-against-active-rules-before-hand-back	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
@@ -220,12 +221,16 @@ rule	tests-ship-with-the-behaviour	core	blocks/core/foundation/testing.md		MUST	
 rule	test-seen-failing	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	flaky-test-fixed-or-removed	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	specs-independent-of-order	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	case-order-shuffled-with-a-seed	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	specs-independent-of-order	false
 rule	no-fixed-sleeps-in-tests	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	unit-case-runs-in-milliseconds	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	tests-run-in-a-sandbox	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation		true
+rule	network-refused-in-the-unit-run	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
 rule	unmatched-request-fails-the-spec	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
 rule	one-fake-per-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	effects-faked-never-mocked	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	one-fake-per-contract	false
 rule	integration-tested-against-the-real-engine	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
+rule	integration-specs-in-their-own-run	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	integration-tested-against-the-real-engine	false
 rule	captured-responses-verified-against-the-vendor	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	end-to-end-per-critical-scenario	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	test-files-named-by-role	core	blocks/core/foundation/testing.md		MUST	review			testing	foundation		true
@@ -778,7 +783,7 @@ rule	release-age-set-for-installs	bun	blocks/implementations/bun/foundation/bun.
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
-rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	one-check-command	false
+rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	check-chains-one-entry-per-area	false
 rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		SHOULD	review		typescript	security	architecture	environment-read-once-at-boot	false
 rule	bun-build-after-the-check	bun	blocks/implementations/bun/workflow/bun.md		SHOULD	review		typescript		workflow		true
 rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation	root-dogfoods-every-package	false
@@ -787,14 +792,14 @@ rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/foundation/w
 rule	workspaces-follow-the-package-layout	bun	blocks/implementations/bun/architecture/with/package.md	package	SHOULD	review		typescript		architecture	package-repository-layout	false
 rule	version-written-to-every-manifest	bun	blocks/implementations/bun/workflow/with/package.md	package	MUST	review		typescript		workflow	one-version-for-all-packages	false
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-intent-per-case	false
-rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-fake-per-contract	false
-rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-tested-against-the-real-engine	false
+rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	effects-faked-never-mocked	false
+rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-specs-in-their-own-run	false
 rule	check-writes-no-snapshot	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript		foundation	check-only-checks	false
 rule	coverage-gate-on-loaded-files	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	tool	coverage	typescript	testing	foundation	coverage-holds-all-logic	false
 rule	no-test-retries	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	flaky-test-fixed-or-removed	false
-rule	test-order-randomized	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	specs-independent-of-order	false
+rule	test-order-randomized	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	case-order-shuffled-with-a-seed	false
 rule	no-sleep-in-specs	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
-rule	network-refused-by-the-test-preload	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript	testing security	foundation	tests-run-in-a-sandbox	false
+rule	network-refused-by-the-test-preload	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript	testing security	foundation	network-refused-in-the-unit-run	false
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/foundation/bunli.md		SHOULD	test		typescript	testing	foundation	command-tested-through-its-command-line	false
 rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architecture/bunli.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
 rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
@@ -925,7 +930,7 @@ rule	retries-off-in-the-config	playwright	blocks/implementations/playwright/foun
 rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation		true
 rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	poe-only-without-a-script-runner	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		SHOULD	review		python		foundation		true
-rule	check-chains-area-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	one-check-command	false
+rule	check-chains-area-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	check-chains-one-entry-per-area	false
 rule	owned-documents-strict-vendor-answers-tolerant	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	test		python	data errors	foundation	document-schema-strict	false
 rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	test		python	data	foundation	published-schema-generated-from-code	false
 rule	validation-errors-become-error-details	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		SHOULD	review		python	errors security	foundation	expected-failures-typed-with-codes	false
@@ -937,11 +942,11 @@ rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/ar
 rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		SHOULD	review		python	security	architecture	environment-read-once-at-boot	false
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	tests	python	testing	foundation	tests-pass-in-check	false
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	coverage	python	testing	foundation	coverage-holds-all-logic	false
-rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	specs-independent-of-order	false
+rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	case-order-shuffled-with-a-seed	false
 rule	no-test-reruns	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	flaky-test-fixed-or-removed	false
-rule	integration-folder-runs-apart	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	integration-tested-against-the-real-engine	false
-rule	network-refused-by-the-conftest	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
-rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	one-fake-per-contract	false
+rule	integration-folder-runs-apart	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	integration-specs-in-their-own-run	false
+rule	network-refused-by-the-conftest	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	review		python	testing security	foundation	network-refused-in-the-unit-run	false
+rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	effects-faked-never-mocked	false
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
 rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/foundation/python-check.md		MUST	tool	lint	python		foundation	function-file-and-complexity-limits	false
 rule	relative-import-kept-in-its-module	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	tool	imports	python		architecture	relative-imports-stay-in-the-feature	false

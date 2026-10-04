@@ -7,9 +7,10 @@ Poe the Poet runs the tasks only in a repository with no JavaScript toolchain; w
 |---|---|---|
 | two task runners split the check command in two, and nobody knows which one runs everything. | review | [] |
 
-## check-chains-area-tasks → one-check-command
-Each area of the check — `format`, `lint`, `type`, `test`, `mutation`, `unused` and the rest — has one `<area>:check` task that only checks and runs every tool of that area, in each language of the repository, and an `<area>:fix` beside it where a tool can write; `check` is the sequence of the check tasks.
+## check-chains-area-tasks → check-chains-one-entry-per-area
+The entries are tasks of `[tool.poe.tasks]`, and `check` is the sequence of the check tasks.
 
 | Why | Check | Tags |
 |---|---|---|
-| CI, the hooks and a person run the same task names, so the names stay stable, and a second language adds its tools to the areas rather than a second set of names. | review | [] |
+| a sequence task stops at the first task that fails, as a chain of commands does. | review | [] |
+
