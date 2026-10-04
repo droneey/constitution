@@ -257,6 +257,21 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBeUndefined();
   });
 
+  test('should run no mutant when a change only reformats a mutated file', () => {
+    // Arrange
+    const check = {
+      changes: {
+        'src/order.utils.ts': 'export const total = 1;\n\nexport const count = 2;\n',
+      },
+    };
+
+    // Act
+    const { strykerArguments } = runCheck(check);
+
+    // Assert
+    expect(strykerArguments).toBeUndefined();
+  });
+
   test('should run no mutant when no mutated line changed', () => {
     // Arrange
     const check = {

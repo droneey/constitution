@@ -59,11 +59,13 @@ const IMPORTS: Readonly<Record<string, readonly string[]>> = {
 };
 
 const targetsOf = (input: {
+  codeChanged?: (path: string) => boolean;
   diff: string;
   mutate?: readonly string[];
   untracked?: readonly string[];
 }): readonly string[] =>
   mutateTargets({
+    codeChanged: input.codeChanged ?? (() => true),
     diff: input.diff,
     exists: (path) => !path.includes('missing'),
     importsOf: (path) => IMPORTS[path] ?? [],
@@ -308,5 +310,26 @@ describe('mutation targets', () => {
     expect(found).toStrictEqual([
       'src/order.utils.ts:1-1',
     ]);
+  });
+
+  test('should mutate nothing when a change only reformats a spec and the file it is named after', () => {
+    // Arrange
+    const changes = {
+      codeChanged: () => false,
+      diff: diffOf({
+        'src/__tests__/order.utils.test.ts': [
+          '@@ -1,3 +1 @@',
+        ],
+        'src/order.utils.ts': [
+          '@@ -1,3 +1 @@',
+        ],
+      }),
+    };
+
+    // Act
+    const found = targetsOf(changes);
+
+    // Assert
+    expect(found).toStrictEqual([]);
   });
 });

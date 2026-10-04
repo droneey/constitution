@@ -25,6 +25,40 @@ const LOADERS = new Map<string, Bun.JavaScriptLoader>([
   ],
 ]);
 
+const git = (args: readonly string[]): string =>
+  spawnSync('git', args, {
+    encoding: 'utf8',
+  }).stdout;
+
+const mergeBase = (): string =>
+  git([
+    'merge-base',
+    'HEAD',
+    BASE,
+  ]).trim();
+
+// A change that only reformats leaves the transpiled code as it was, so it gives no mutant.
+const codeChanged = (input: { base: string; path: string }): boolean => {
+  const loader = LOADERS.get(extname(input.path));
+
+  if (loader === undefined) {
+    return true;
+  }
+
+  const transpiler = new Bun.Transpiler({
+    loader,
+  });
+
+  return (
+    transpiler.transformSync(
+      git([
+        'show',
+        `${input.base}:${input.path}`,
+      ]),
+    ) !== transpiler.transformSync(readFileSync(input.path, 'utf8'))
+  );
+};
+
 const importsOf = (path: string): readonly string[] => {
   const loader = LOADERS.get(extname(path));
 
@@ -43,11 +77,6 @@ const importsOf = (path: string): readonly string[] => {
     .map((target) => relative(process.cwd(), target))
     .filter((target) => !target.startsWith('..'));
 };
-
-const git = (args: readonly string[]): string =>
-  spawnSync('git', args, {
-    encoding: 'utf8',
-  }).stdout;
 
 const mutatePatterns = (config: unknown): readonly string[] => {
   const mutate =
@@ -91,7 +120,13 @@ const runStryker = (args: readonly string[]): number =>
 if (process.argv.includes('all')) {
   process.exitCode = runStryker([]);
 } else {
+  const base = mergeBase();
   const targets = mutateTargets({
+    codeChanged: (path) =>
+      codeChanged({
+        base,
+        path,
+      }),
     diff: git([
       'diff',
       '-U0',

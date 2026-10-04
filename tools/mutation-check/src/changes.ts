@@ -6,6 +6,7 @@ interface Range {
 }
 
 interface Changes {
+  codeChanged: (path: string) => boolean;
   diff: string;
   exists: (path: string) => boolean;
   importsOf: (path: string) => readonly string[];
@@ -99,7 +100,11 @@ const isMutated = (input: { mutate: readonly string[]; path: string }): boolean 
   );
 
 const mutateTargets = (changes: Changes): readonly string[] => {
-  const ranges = changedLines(changes.diff);
+  const ranges = new Map(
+    [
+      ...changedLines(changes.diff),
+    ].filter(([path]) => changes.codeChanged(path)),
+  );
   const whole = new Set([
     ...changes.untracked,
     ...provenFiles({
