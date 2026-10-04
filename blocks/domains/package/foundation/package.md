@@ -48,13 +48,6 @@ A published package ships the types of every entry a consumer imports code from,
 
 ## Documents
 
-## every-package-ships-its-licence → public-repository-carries-a-licence
-Every package ships its licence file.
-
-| Why | Check | Tags |
-|---|---|---|
-| a package is used apart from its repository, and without the licence beside it nobody can lawfully use it. | review | [] |
-
 ## package-readme-shows-install-and-extends → readme-is-the-front-door
 A package's README shows the install line, the one-line extends and its options.
 
