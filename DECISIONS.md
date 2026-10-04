@@ -23,7 +23,7 @@
 | Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103, ADR-0105 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
-| A real application | ADR-0116 – ADR-0120 |
+| A real application | ADR-0116 – ADR-0120, ADR-0123 |
 
 ---
 
@@ -809,3 +809,19 @@
   - With Bun's test runner, a preload expands the macros and compiles an imported catalog (`macros-expanded-by-the-test-preload`); the archive carries the fixture.
 - **Rejected.** `bun --bun` in Lingui's scripts: the `[run] bun = true` that `bun` already sets keeps the command line on Bun.
 - **Why.** A command that reaches the read side through a barrel depends on it as surely as through a direct import. A check of Lingui 6.9 under Bun 1.4 and Vite 8 found the command line and the build sound without Node, but the React plugin dropping its Babel option without a warning, and `bun test` expanding no macro.
+
+## ADR-0123 — The TypeScript, UI and translation leftovers of the audit review
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.**
+  - A `ts-reset` block: an application loads it once, from `src/reset.d.ts`, so `JSON.parse` and a response body's `json()` return `unknown`, not `any` (`reset-loaded-in-applications`, carrying out `no-any`); a published package never loads it.
+  - Biome's `useExplicitReturnType` replaces `useExplicitType`: functions still declare their return type, and a constant checked by `satisfies` keeps its narrow type.
+  - A resource is released on every path (`resources-released-on-every-path`, core); `resources-released-by-using` carries it out, and `disposable-held-by-using` is the part Biome's `useDisposables` holds.
+  - Lingui's `t`, `plural`, `select` and `selectOrdinal` never run at a module's top level (`t-never-at-module-level`), held by GritQL.
+  - Zod 3's forms are refused (`zod-four-forms-only`, MUST), held by GritQL; `.strict()` is refused by choice, since Zod 4 only advises against it.
+  - The fields of a `*.entity.ts` or `*.value-object.ts` file are `readonly` (`domain-type-fields-readonly`), held by GritQL; lists and maps stay with review.
+  - End-to-end specs scan each screen with axe in the browser, on the WCAG 2.2 A and AA tags (`screens-scanned-in-the-browser`).
+  - With Tailwind, `noUndeclaredCustomProperties` is off; on plain stylesheets it stays.
+  - `noImpliedEval` and `noExtendNative` are on, as settings that hold no rule.
+- **Rejected.** `allowExpressions` on `useExplicitReturnType`, which changes nothing for the arrow functions a project writes; a refusal of `.refine` in a schema, which Zod 4 makes needless since it never narrows.
+- **Why.** Each item was run first: under TypeScript 7 ts-reset type-checks and turns `JSON.parse` and the browser's `json()` from `any` to `unknown`, which no lint sees; `useExplicitType` widened every `satisfies` constant; `useDisposables` was on and bound to nothing, and it cannot see a stream's reader; a module-level `t` froze rozumchik-web's labels in one language; Zod 4 marks its old forms deprecated and no rule caught them; the review-only readonly rule held 8 of 585 fields in a real application; axe in Playwright catches contrast and target size that happy-dom cannot, about 150 ms a screen; `noUndeclaredCustomProperties` flags every token of `@theme` and every variable a library sets.

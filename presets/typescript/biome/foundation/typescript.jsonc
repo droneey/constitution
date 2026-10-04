@@ -97,7 +97,8 @@
         "noUnsafeTypeAssertion": "error",
         "useExhaustiveSwitchCases": "error",
         "useNullishCoalescing": "error",
-        "useExplicitType": "error",
+        "useExplicitReturnType": "error",
+        "useDisposables": "error",
         "noUnsafePlusOperands": "error",
         "noBaseToString": "error",
         "noMisleadingReturnType": "error",
@@ -150,7 +151,7 @@
       "linter": {
         "rules": {
           "nursery": {
-            "useExplicitType": "off",
+            "useExplicitReturnType": "off",
           },
         },
       },
@@ -182,7 +183,7 @@
             "useConsistentMemberAccessibility": "off",
           },
           "nursery": {
-            "useExplicitType": "off",
+            "useExplicitReturnType": "off",
           },
         },
       },

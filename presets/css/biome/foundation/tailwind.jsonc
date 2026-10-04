@@ -4,6 +4,13 @@
       "tailwindDirectives": true,
     },
   },
+  "linter": {
+    "rules": {
+      "nursery": {
+        "noUndeclaredCustomProperties": "off",
+      },
+    },
+  },
   "plugins": [
     {
       "path": "./.constitution/presets/css/biome/foundation/plugins/theme-resets-every-default-scale.grit",

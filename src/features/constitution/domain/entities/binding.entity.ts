@@ -11,31 +11,31 @@ type BindingsDocument = Partial<Readonly<Record<Axis, AxisBindings>>>;
 
 type BindingsRead =
   | {
-      document: BindingsDocument;
-      status: 'parsed';
+      readonly document: BindingsDocument;
+      readonly status: 'parsed';
     }
   | {
-      reason: string;
-      status: 'not-yaml';
+      readonly reason: string;
+      readonly status: 'not-yaml';
     }
   | {
-      issues: readonly FieldIssue[];
-      status: 'mismatched';
+      readonly issues: readonly FieldIssue[];
+      readonly status: 'mismatched';
     };
 
 interface Binding {
-  axis: Axis;
-  file: string;
-  part: string;
-  rule: string;
-  scope: string;
-  setting: string;
-  tool: string;
+  readonly axis: Axis;
+  readonly file: string;
+  readonly part: string;
+  readonly rule: string;
+  readonly scope: string;
+  readonly setting: string;
+  readonly tool: string;
 }
 
 interface PresetFile {
-  path: string;
-  text: string;
+  readonly path: string;
+  readonly text: string;
 }
 
 export type { Binding, BindingsDocument, BindingsRead, PresetFile };

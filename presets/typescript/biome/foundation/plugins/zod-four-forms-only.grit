@@ -1,0 +1,53 @@
+language js
+
+or {
+  `z.nativeEnum($...)`,
+  or {
+    `$schema.passthrough()`,
+    `$schema.strict()`,
+    `$schema.merge($...)`
+  } where {
+    $schema <: or {
+      r"(?s)z\..*",
+      r"[A-Za-z_$][\w$]*Schema"
+    }
+  },
+  `$schema.$format($...)` where {
+    $schema <: r"(?s)z\.string\(.*",
+    $format <: or {
+      `email`,
+      `url`,
+      `uuid`,
+      `uuidv4`,
+      `uuidv6`,
+      `uuidv7`,
+      `guid`,
+      `cuid`,
+      `cuid2`,
+      `ulid`,
+      `nanoid`,
+      `emoji`,
+      `jwt`,
+      `base64`,
+      `base64url`,
+      `xid`,
+      `ksuid`,
+      `ipv4`,
+      `ipv6`,
+      `cidrv4`,
+      `cidrv6`,
+      `e164`,
+      `datetime`,
+      `date`,
+      `time`,
+      `duration`
+    }
+  }
+} as $call where {
+  $call <: within JsModule() as $module where {
+    $module <: contains JsImport() as $import where {
+      $import <: r"(?s).*['\"]zod(?:/v4)?['\"].*"
+    }
+  } ,
+  register_diagnostic(span=$call, message="Write the Zod 4 form: z.enum, z.strictObject, z.looseObject, A.extend(B.shape), and a format such as z.email() on its own", severity="error")
+}

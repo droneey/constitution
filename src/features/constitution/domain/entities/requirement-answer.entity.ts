@@ -5,12 +5,12 @@ enum Met {
 }
 
 interface RequirementAnswer {
-  block: string;
-  file: string;
-  how: string;
-  met: string;
-  requirement: string;
-  with: string | undefined;
+  readonly block: string;
+  readonly file: string;
+  readonly how: string;
+  readonly met: string;
+  readonly requirement: string;
+  readonly with: string | undefined;
 }
 
 export type { RequirementAnswer };

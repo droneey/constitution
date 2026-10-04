@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    {
+      "path": "./.constitution/presets/typescript/biome/foundation/plugins/zod-four-forms-only.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

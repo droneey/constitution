@@ -1,22 +1,22 @@
 import type { Axis, Level } from '#/kernel';
 
 interface StatedRule {
-  axis: Axis;
-  block: string;
-  check: string;
-  file: string;
-  ownTags: readonly string[];
-  parent: string | undefined;
-  slug: string;
-  statedLevel: Level | undefined;
-  statement: string;
-  why: string;
-  with: string | undefined;
+  readonly axis: Axis;
+  readonly block: string;
+  readonly check: string;
+  readonly file: string;
+  readonly ownTags: readonly string[];
+  readonly parent: string | undefined;
+  readonly slug: string;
+  readonly statedLevel: Level | undefined;
+  readonly statement: string;
+  readonly why: string;
+  readonly with: string | undefined;
 }
 
 interface Rule extends StatedRule {
-  level: Level;
-  tags: readonly string[];
+  readonly level: Level;
+  readonly tags: readonly string[];
 }
 
 export type { Rule, StatedRule };

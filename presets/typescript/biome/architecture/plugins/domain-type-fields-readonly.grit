@@ -1,0 +1,14 @@
+language js
+
+or {
+  TsPropertySignatureTypeMember(),
+  TsIndexSignatureTypeMember()
+} as $field where {
+  $field <: not r"(?s)readonly\s.*",
+  $field <: not within or {
+    `Readonly<$_>`,
+    JsFormalParameter(),
+    TsFunctionType()
+  } ,
+  register_diagnostic(span=$field, message="Declare a field of a domain type readonly: the object is shared and mutating it in place goes unseen", severity="error")
+}

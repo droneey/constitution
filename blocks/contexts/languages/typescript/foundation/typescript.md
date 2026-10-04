@@ -277,12 +277,19 @@ An operation that can be cancelled takes an `AbortSignal` in its options object 
 |---|---|---|
 | one signal from the caller stops all the work below it, and every API of the platform takes one. | review | [] |
 
-## resources-released-by-using · SHOULD
+## resources-released-by-using → resources-released-on-every-path
 A resource that must be released — a file handle, a lock, a subscription, a temporary folder — is held by `using` or `await using`, so it is released on every path.
 
 | Why | Check | Tags |
 |---|---|---|
 | a `finally` is forgotten on the next path added; `using` releases at the end of the scope whatever the path. | review | [] |
+
+## disposable-held-by-using → resources-released-by-using
+A value whose type implements `Disposable` or `AsyncDisposable` is declared with `using` or `await using`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the type says the value must be released, so the lint can hold it; a reader or a handle whose type says nothing stays with review. | tool/lint | [] |
 
 ## options-object-typed-as-function-input → at-most-three-positional-arguments
 An object of values that travel together is typed by an interface named `<Function>Input`.

@@ -1,9 +1,9 @@
 import type { Finding } from '#/kernel';
 
 interface Digests {
-  core: string;
-  findings: readonly Finding[];
-  index: string;
+  readonly core: string;
+  readonly findings: readonly Finding[];
+  readonly index: string;
 }
 
 export type { Digests };

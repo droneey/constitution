@@ -34,6 +34,13 @@ A value from beyond the boundary — `JSON.parse`, a response body, a file, a me
 |---|---|---|
 | a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
 
+## domain-type-fields-readonly → business-types-readonly
+A field of an interface or an object type declared in a `*.entity.ts` or `*.value-object.ts` file is `readonly`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the role suffix marks the business data, so the lint holds its fields; lists and maps stay with review. | tool/lint | [] |
+
 ## brands-set-at-the-boundary → identifiers-branded-by-entity
 An identifier's brand is set only in the mapper at the boundary.
 

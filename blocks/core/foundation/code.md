@@ -363,6 +363,13 @@ Asynchronous work is awaited, or detached on purpose with its failure handled.
 |---|---|---|
 | a forgotten promise fails where nobody listens, and the program carries on as if it succeeded. | tool/lint | [errors] |
 
+## resources-released-on-every-path · SHOULD
+A resource that must be released — a handle, a lock, a subscription, a stream's reader — is released on every path, a failure's included.
+
+| Why | Check | Tags |
+|---|---|---|
+| a release written only on the path that succeeds leaks on the first failure, and the leak shows far from its cause. | review | [] |
+
 ## io-has-timeout-and-cancellation · SHOULD
 Every call across a process boundary has a timeout and can be cancelled.
 

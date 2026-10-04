@@ -20,3 +20,10 @@ Text defined outside a render — an option list, an enum's labels — is a `msg
 | Why | Check | Tags |
 |---|---|---|
 | a module's text is evaluated once, before the locale is known. | review | [] |
+
+## t-never-at-module-level → module-level-messages-are-descriptors
+In a module that imports Lingui's core macros, `t`, `plural`, `select` and `selectOrdinal` are never called at the top level, outside every function.
+
+| Why | Check | Tags |
+|---|---|---|
+| the call runs once, when the module loads, before the locale is active, and the text never changes language. | tool/lint | [] |

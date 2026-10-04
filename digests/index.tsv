@@ -49,7 +49,7 @@ block	matomo	implementation	Matomo as one of the product's analytics services.	f
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md		typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
-block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md		browser ui typescript		false						tests/e2e/** playwright.config.*
+block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y foundation/bun-test	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
@@ -63,6 +63,7 @@ block	tanstack-query	implementation	Server data in the TanStack Query cache — 
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
+block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md architecture/vite.md	foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
@@ -115,6 +116,7 @@ rule	shapes-composed-of-small-shapes	core	blocks/core/foundation/code.md		SHOULD
 rule	types-live-with-their-consumer	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	immutable-by-default	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	async-work-awaited-or-deliberately-detached	core	blocks/core/foundation/code.md		MUST	tool	lint		errors	foundation		true
+rule	resources-released-on-every-path	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	io-has-timeout-and-cancellation	core	blocks/core/foundation/code.md		SHOULD	review			errors performance	foundation		true
 rule	structured-concurrency	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
 rule	operations-idempotent-by-design	core	blocks/core/foundation/code.md		SHOULD	test			data	foundation		true
@@ -655,7 +657,8 @@ rule	no-literal-thrown	typescript	blocks/contexts/languages/typescript/foundatio
 rule	return-awaited-inside-try	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	errors	foundation	errors-surfaced-never-swallowed	false
 rule	named-exports-only	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation		true
 rule	cancellation-by-abort-signal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript	errors performance	foundation	io-has-timeout-and-cancellation	false
-rule	resources-released-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
+rule	resources-released-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	resources-released-on-every-path	false
+rule	disposable-held-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	resources-released-by-using	false
 rule	options-object-typed-as-function-input	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	at-most-three-positional-arguments	false
 rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	docs-only-for-non-obvious-public-entry	false
 rule	deprecated-by-jsdoc-tag	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	retired-code-marked-deprecated	false
@@ -671,6 +674,7 @@ rule	hash-imports-leave-the-module	typescript	blocks/contexts/languages/typescri
 rule	typescript-role-and-surface-files	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	tool	names	typescript		architecture	file-carries-its-role-suffix	false
 rule	null-mapped-to-undefined-at-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	review		typescript	data	architecture	wire-absence-mapped-at-boundary	false
 rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
+rule	domain-type-fields-readonly	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript		architecture	business-types-readonly	false
 rule	brands-set-at-the-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	identifiers-branded-by-entity	false
 rule	ambient-aliases-are-project-vocabulary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	semantic-alias-names-a-shared-meaning	false
 rule	environment-read-only-in-root	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript	security	architecture	environment-read-once-at-boot	false
@@ -793,6 +797,7 @@ rule	commit-scan-redacted	lefthook	blocks/implementations/lefthook/workflow/with
 rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript	ux	foundation	messages-take-named-parameters	false
 rule	catalogs-compiled-strictly-in-check	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript		foundation	check-only-checks	false
 rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	review		typescript		foundation	module-level-text-holds-the-message	false
+rule	t-never-at-module-level	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	tool	lint	typescript		foundation	module-level-messages-are-descriptors	false
 rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/foundation/with/_react.md	_react	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
 rule	macros-expanded-by-the-test-preload	lingui	blocks/implementations/lingui/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing ux	foundation	messages-through-lingui-macros	false
 rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	SHOULD	review		typescript		foundation	other-runtime-only-where-bun-cannot	false
@@ -821,6 +826,7 @@ rule	web-first-assertions-awaited	playwright	blocks/implementations/playwright/f
 rule	no-forced-actions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	a11y testing	foundation	layout-and-focus-proven-on-the-platform	false
 rule	retries-off-in-the-config	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation	flaky-test-fixed-or-removed	false
 rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation		true
+rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	performance	foundation		true
 rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	ux	foundation		true
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation		true
@@ -942,6 +948,7 @@ rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-l
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	spec-per-boundary	false
 rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
+rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
@@ -956,6 +963,7 @@ rule	yamllint-strict-over-every-file	yamllint	blocks/implementations/yamllint/fo
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data errors	foundation	document-schema-strict	false
 rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/foundation/zod.md		SHOULD	test		typescript	errors	foundation	expected-failures-typed-with-codes	false
+rule	zod-four-forms-only	zod	blocks/implementations/zod/foundation/zod.md		MUST	tool	lint	typescript		foundation		true
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/architecture/zod.md		MUST	review		typescript		architecture	schema-derives-from-domain-types	false
 rule	schema-never-brands	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	lint	typescript	data	architecture	value-object-built-only-by-its-check	false
 answer	bun	workspace-packages-linked-locally	yes
