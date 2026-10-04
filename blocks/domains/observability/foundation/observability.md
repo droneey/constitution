@@ -1,9 +1,9 @@
 # Observability
 
-> How a program writes its log records, in any language: one pipeline masks, enriches and renders every record, and a record is an event with its values as fields.
+> How the program writes its log records, in any language: one pipeline masks, enriches and renders every record, and a record is an event with its values as fields.
 
 ## log-records-pass-one-pipeline → no-secret-or-personal-data-in-output
-In a program whose logs a collector reads, every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it; no second writer puts a record out.
+Every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -24,7 +24,7 @@ A log record's message is a fixed phrase that names what happened, and its value
 | a fixed message is counted and searched as one event and a field is filtered by its value, while a formatted message is a new string every time. | review | [] |
 
 ## log-output-structured-in-production · SHOULD
-A program whose logs a collector reads writes one structured object per log record in production, and readable lines in development, as a setting read at the program's start chooses, never a guess from the terminal.
+The program writes one structured object per log record in production, and readable lines in development, as a setting read at the program's start chooses, never a guess from the terminal.
 
 | Why | Check | Tags |
 |---|---|---|

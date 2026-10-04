@@ -18,7 +18,7 @@ block	access-control	domain	Callers with different rights: denied unless granted
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
-block	observability	domain	Log records: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
+block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	foundation/open-source			false						packages/**
