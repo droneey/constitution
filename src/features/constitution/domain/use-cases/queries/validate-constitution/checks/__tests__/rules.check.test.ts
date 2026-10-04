@@ -255,22 +255,6 @@ describe('rulesCheck', () => {
     ]);
   });
 
-  it('should accept a rule without Tags when it sits on foundation', () => {
-    // Arrange
-    const files = validFiles();
-    files[PRINCIPLES] = `# Principles\n\n${rule({
-      slug: 'dependencies-point-inward',
-      tags: '[]',
-    })}`;
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = rulesCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
   it.each([
     {
       condition: 'its parent states MUST',

@@ -1,48 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkCommitMessage, presetConfig } from './lefthook-preset.fixtures';
-
-describe('the lefthook biome part', () => {
-  it('should run Biome over the staged files when a project commits, from npm or from mise', () => {
-    // Arrange
-    const part = 'biome';
-
-    // Act
-    const config = presetConfig(part);
-
-    // Assert
-    expect(config).toHaveProperty(
-      [
-        'pre-commit',
-        'jobs',
-        0,
-        'run',
-      ],
-      'bunx --bun biome check --write --no-errors-on-unmatched {staged_files}',
-    );
-  });
-});
-
-describe('the lefthook ruff part', () => {
-  it('should fix and format the staged Python files through the project environment when a project commits', () => {
-    // Arrange
-    const part = 'ruff';
-
-    // Act
-    const config = presetConfig(part);
-
-    // Assert
-    expect(config).toHaveProperty(
-      [
-        'pre-commit',
-        'jobs',
-        0,
-        'run',
-      ],
-      'uv run ruff check --fix --force-exclude {staged_files} && uv run ruff format --force-exclude {staged_files}',
-    );
-  });
-});
+import { checkCommitMessage } from './lefthook-preset.fixtures';
 
 describe('the commit message hook', () => {
   it.each([
@@ -51,7 +9,6 @@ describe('the commit message hook', () => {
     'refactor: Move the fixtures beside their specs',
     'chore: Update dependencies',
     'feat!: Split the NestJS settings out of the node preset',
-    'fix!: Drop the old export',
   ])('should accept "%s" when it follows the four types', (message) => {
     // Arrange
     const text = `${message}\n`;

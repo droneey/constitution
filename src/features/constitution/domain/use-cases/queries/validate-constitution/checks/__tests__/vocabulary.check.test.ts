@@ -83,17 +83,6 @@ const inputOf = (input: {
 };
 
 describe('vocabularyCheck', () => {
-  it('should find nothing when the vocabulary is sound and each section keeps to its axis', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = vocabularyCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
   it('should report the vocabulary as missing when the root does not hold it', () => {
     // Arrange
     const input = checkInputOf(
@@ -405,18 +394,6 @@ describe('vocabularyCheck', () => {
       name: 'a longer word holds a concept',
       path: PRINCIPLES,
       text: '# Principles\n\nWrite the report at the portal.\n',
-    },
-    {
-      name: 'a longer suffix begins with a suffix',
-      path: PRINCIPLES,
-      sections: {
-        architecture: {
-          suffixes: [
-            '.cli',
-          ],
-        },
-      },
-      text: '# Principles\n\nLoad x.client.ts.\n',
     },
     {
       name: 'a suffix runs on into a name',

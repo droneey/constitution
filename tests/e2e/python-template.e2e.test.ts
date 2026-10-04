@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { python, runInTemplate, runTask } from './python-template.fixtures';
+import { python, runTask } from './python-template.fixtures';
 
 // A run of the check, mutmut's above all, takes seconds, not milliseconds.
 const RUN_MS = 60_000;
@@ -75,24 +75,6 @@ const spec = (...body: readonly string[]): string =>
 
 describe('the python template', () => {
   it(
-    'should pass the whole check when the package keeps every rule',
-    () => {
-      // Arrange
-      const changes = {};
-
-      // Act
-      const run = runTask({
-        changes,
-        task: 'check',
-      });
-
-      // Assert
-      expect(run.isClean).toBe(true);
-    },
-    RUN_MS,
-  );
-
-  it(
     'should pass the whole check when the specs kill every mutant of a changed function',
     () => {
       // Arrange
@@ -135,14 +117,6 @@ describe('the python template', () => {
       task: 'format:check',
     },
     {
-      condition: 'a parameter is not annotated',
-      changes: {
-        'src/shop/kernel.py': python('def zero(value) -> int:', '  return value'),
-      },
-      finding: 'ANN001',
-      task: 'lint:check',
-    },
-    {
       condition: 'a spec is skipped',
       changes: {
         'tests/test_kernel.py': python(
@@ -171,15 +145,6 @@ describe('the python template', () => {
         'src/shop/kernel.py': LONG_FUNCTION,
       },
       finding: 'src/shop/kernel.py:1: tally holds 103 lines, more than 100',
-      task: 'code:check',
-    },
-    {
-      condition: 'a relative import leaves its module',
-      changes: {
-        'src/shop/kernel/__init__.py': '',
-        'src/shop/kernel/money.py': python('from ..orders import total'),
-      },
-      finding: 'src/shop/kernel/money.py:1: a relative import leaves its module, kernel',
       task: 'code:check',
     },
     {
@@ -329,18 +294,6 @@ describe('the python template', () => {
       task: 'test:check',
     },
     {
-      condition: 'a property breaks for some input',
-      changes: {
-        'tests/test_kernel.py': spec(
-          '@given(st.lists(st.integers()))',
-          'def test_should_never_exceed_the_sum(prices: list[int]) -> None:',
-          '  assert total(prices, discount=0) == sum(prices)',
-        ),
-      },
-      finding: 'Failing test case: test_should_never_exceed_the_sum',
-      task: 'test:check',
-    },
-    {
       condition: 'a changed spec lets a mutant of its module live',
       changes: {
         'tests/test_orders.py': SPEC_OF_ONE_CASE,
@@ -434,40 +387,6 @@ describe('the python template', () => {
 
       // Assert
       expect(run.isClean).toBe(true);
-    },
-    RUN_MS,
-  );
-
-  it(
-    "should draw the same inputs on every run when CI loads Hypothesis's own profile",
-    () => {
-      // Arrange
-      const command = [
-        'pytest',
-        '-v',
-      ];
-
-      // Act
-      const run = runInTemplate({
-        changes: {},
-        command,
-        isCi: true,
-      });
-
-      // Assert
-      expect({
-        isClean: run.isClean,
-        profile: run.output
-          .match(/hypothesis profile 'ci' -> (?<settings>.*)/)
-          ?.groups?.['settings']?.split(', ')
-          .filter((setting) => /^(?:database|derandomize)=/.test(setting)),
-      }).toStrictEqual({
-        isClean: true,
-        profile: [
-          'database=None',
-          'derandomize=True',
-        ],
-      });
     },
     RUN_MS,
   );

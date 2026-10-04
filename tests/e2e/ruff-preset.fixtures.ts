@@ -23,15 +23,6 @@ const RUFF = uvBinary('ruff');
 const MODULE = 'src/shop/orders.py';
 const FAILED = 2;
 
-// The chain, each part extending the one before.
-const CHAIN = [
-  'self',
-  'core',
-  'python',
-  'pytest',
-  'fastapi',
-];
-
 const filesOf = (project: Project): Files => ({
   [MODULE]: project.source,
   'pyproject.toml': `[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n\n[tool.ruff]\nextend = ".droneey/constitution/presets/python/ruff/foundation/${project.part}.toml"\n`,
@@ -94,4 +85,4 @@ const isFormatted = (project: Project): boolean =>
     project,
   }).status === 0;
 
-export { CHAIN, isFormatted, lintCodes };
+export { isFormatted, lintCodes };

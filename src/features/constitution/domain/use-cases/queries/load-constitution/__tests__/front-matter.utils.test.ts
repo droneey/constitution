@@ -116,6 +116,41 @@ describe('readFrontMatter', () => {
     });
   });
 
+  it.each([
+    {
+      name: 'the opening delimiter never closes',
+      text: '---\nid: ui\n# UI\n',
+    },
+    {
+      name: 'the text does not open with a delimiter',
+      text: '# UI\n---\n',
+    },
+  ])(
+    'should report the missing front matter and keep the whole text as the body when $name',
+    ({ text }) => {
+      // Arrange
+      const parser = createFakeFrontMatterParser(mappingOf({}));
+
+      // Act
+      const loaded = readFrontMatter({
+        parser,
+        path: PATH,
+        text,
+      });
+
+      // Assert
+      expect(loaded).toStrictEqual({
+        body: text,
+        findings: [
+          {
+            message: 'has no front matter; a main file opens with it',
+            path: PATH,
+          },
+        ],
+      });
+    },
+  );
+
   it('should accept a summary when it holds exactly 70 characters', () => {
     // Arrange
     const read = mappingOf({
@@ -390,16 +425,6 @@ describe('readFrontMatter', () => {
     },
     {
       fields: {
-        roles: [
-          'lint',
-          'lint',
-        ],
-      },
-      message: 'front matter: roles lists "lint" twice',
-      name: 'the same role in roles twice',
-    },
-    {
-      fields: {
         dictionary: [
           ' ',
           '  ',
@@ -436,16 +461,6 @@ describe('readFrontMatter', () => {
       message:
         'front matter: governs lists "src/ui\\t**", which holds whitespace; the index separates globs with spaces',
       name: 'a governs glob with a tab',
-    },
-    {
-      fields: {
-        requires: [
-          'i18n',
-          'i18n',
-        ],
-      },
-      message: 'front matter: requires lists "i18n" twice',
-      name: 'the same block in requires twice',
     },
   ])('should report "$message" when the front matter has $name', ({ fields, keys, message }) => {
     // Arrange

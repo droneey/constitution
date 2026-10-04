@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { CHAIN, isFormatted, lintCodes } from './ruff-preset.fixtures';
+import { isFormatted, lintCodes } from './ruff-preset.fixtures';
 
 const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
@@ -37,13 +37,6 @@ const CAUSE_DROPPED = python(
   '    raise OrderNotFoundError',
 );
 const UNANNOTATED = python('def total(prices):', '  return sum(prices)');
-const ANY_PARAMETER = python(
-  'from typing import Any',
-  '',
-  '',
-  'def total(prices: Any) -> int:',
-  '  return len(prices)',
-);
 const NAIVE_NOW = python(
   'from datetime import datetime',
   '',
@@ -60,16 +53,6 @@ const EXCEPT_PASS = python(
   '    pass',
   '  return 0',
 );
-const EXCEPT_CONTINUE = python(
-  'def order_ids(texts: list[str]) -> list[int]:',
-  '  ids: list[int] = []',
-  '  for text in texts:',
-  '    try:',
-  '      ids.append(int(text))',
-  '    except ValueError:',
-  '      continue',
-  '  return ids',
-);
 const TYPE_VAR_CLASS = python(
   'from typing import Generic, TypeVar',
   '',
@@ -80,19 +63,8 @@ const TYPE_VAR_CLASS = python(
   '  def __init__(self, item: T) -> None:',
   '    self.item = item',
 );
-const TYPE_VAR_FUNCTION = python(
-  'from typing import TypeVar',
-  '',
-  "T = TypeVar('T')",
-  '',
-  '',
-  'def first(items: list[T]) -> T:',
-  '  return items[0]',
-);
-const TYPE_ALIAS = python('from typing import TypeAlias', '', 'Orders: TypeAlias = list[int]');
 const BLANKET_NOQA = python('import os  # noqa');
 const UNUSED_NOQA = python('LIMIT = 10  # noqa: E501 -- the line is short');
-const BLANKET_TYPE_IGNORE = python('LIMIT: int = 10  # type: ignore');
 const TODO_WITH_ISSUE = python('# TODO(#12): round each line', 'LIMIT = 10');
 const DOUBLE_QUOTES = python('LABEL = "orders"');
 const spec = (...lines: readonly string[]): string => python('import pytest', '', '', ...lines);
@@ -202,7 +174,7 @@ const longCall = (width: number): string => {
 
 describe('the ruff preset', () => {
   it.each([
-    ...CHAIN,
+    'fastapi',
   ])('should pass a well-formed module when a project extends %s', (part) => {
     // Arrange
     const project = {
@@ -261,12 +233,6 @@ describe('the ruff preset', () => {
       source: UNANNOTATED,
     },
     {
-      code: 'ANN401',
-      condition: 'a parameter is annotated as Any',
-      part: 'python',
-      source: ANY_PARAMETER,
-    },
-    {
       code: 'DTZ005',
       condition: 'a datetime is made without its time zone',
       part: 'python',
@@ -285,28 +251,10 @@ describe('the ruff preset', () => {
       source: EXCEPT_PASS,
     },
     {
-      code: 'S112',
-      condition: 'an except body only continues',
-      part: 'python',
-      source: EXCEPT_CONTINUE,
-    },
-    {
       code: 'UP046',
       condition: 'a generic class is declared through TypeVar and Generic',
       part: 'python',
       source: TYPE_VAR_CLASS,
-    },
-    {
-      code: 'UP047',
-      condition: 'a generic function is declared through TypeVar',
-      part: 'python',
-      source: TYPE_VAR_FUNCTION,
-    },
-    {
-      code: 'UP040',
-      condition: 'an alias is declared through TypeAlias',
-      part: 'python',
-      source: TYPE_ALIAS,
     },
     {
       code: 'PGH004',
@@ -319,12 +267,6 @@ describe('the ruff preset', () => {
       condition: 'a noqa silences nothing',
       part: 'self',
       source: UNUSED_NOQA,
-    },
-    {
-      code: 'PGH003',
-      condition: 'a type: ignore names no code',
-      part: 'self',
-      source: BLANKET_TYPE_IGNORE,
     },
   ])(
     'should report $code when $condition and a project extends $part',

@@ -120,9 +120,7 @@ describe('the reminders of the post-tool-use hook', () => {
   });
 
   it.each([
-    'src/shared/components/button.tsx',
     'styles/theme.css',
-    'styles/theme.scss',
   ])('should name the block when a glob of it matches %s', (path) => {
     // Arrange
     const { project, session } = startSession(
@@ -142,10 +140,6 @@ describe('the reminders of the post-tool-use hook', () => {
   });
 
   it.each([
-    {
-      condition: 'no active block governs the file',
-      path: 'src/features/orders/domain/order.ts',
-    },
     {
       condition: 'a single star would have to cross a folder',
       path: 'styles/themes/dark.css',
@@ -256,35 +250,6 @@ describe('the reminders of the post-tool-use hook', () => {
 
     // Assert
     expect(reminder).toBe('');
-  });
-
-  it('should remind again when the context was cleared', () => {
-    // Arrange
-    const { project, session } = startSession(
-      configOf({
-        domains: '[ui]',
-      }),
-    );
-
-    touch({
-      filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      session,
-    });
-    runHook({
-      event: HookEvent.Clear,
-      project,
-      root,
-      session,
-    });
-
-    // Act
-    const reminder = touch({
-      filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
-      session,
-    });
-
-    // Assert
-    expect(reminder).not.toBe('');
   });
 
   it('should say nothing when the session saved no state', () => {

@@ -673,4 +673,4 @@ const constitutionFiles = (): Files => ({
 });
 
 export type { Files };
-export { CORE_PART, constitutionFiles, syntheticId };
+export { CORE_PART, constitutionFiles };

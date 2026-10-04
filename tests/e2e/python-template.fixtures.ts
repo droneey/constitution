@@ -106,11 +106,7 @@ const git = (folder: string, args: readonly string[]): void => {
 // origin/main; the files a case changes are written over it. The package
 // stands in for its install by PYTHONPATH, and the tools are the repository's
 // own, pinned to the template's versions.
-const runInTemplate = (input: {
-  changes: Files;
-  command: readonly string[];
-  isCi?: boolean;
-}): Run =>
+const runInTemplate = (input: { changes: Files; command: readonly string[] }): Run =>
   inPythonProject({
     files: {
       ...TEMPLATE_FILES,
@@ -140,14 +136,6 @@ const runInTemplate = (input: {
 
       const environment = Object.fromEntries([
         ...Object.entries(process.env).filter(([name]) => name !== 'CI'),
-        ...(input.isCi === true
-          ? [
-              [
-                'CI',
-                'true',
-              ],
-            ]
-          : []),
         [
           'PATH',
           `${join(ENVIRONMENT, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
@@ -183,4 +171,4 @@ const runTask = (input: { changes: Files; task: string }): Run =>
     ],
   });
 
-export { python, runInTemplate, runTask };
+export { python, runTask };

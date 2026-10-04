@@ -5,6 +5,7 @@
     "": {
       "name": "@droneey/constitution",
       "dependencies": {
+        "@stryker-mutator/api": "^10.0.0",
         "yaml": "^2.8.1",
         "zod": "^4.1.13",
       },

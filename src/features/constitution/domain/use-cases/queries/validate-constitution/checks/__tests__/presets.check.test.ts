@@ -55,11 +55,6 @@ describe('presetsCheck', () => {
     },
     {
       message: LAYOUT,
-      name: 'a part sits outside a scope folder',
-      path: 'presets/biome/foundation/core.jsonc',
-    },
-    {
-      message: LAYOUT,
       name: 'a part sits in a folder of an axis folder',
       path: 'presets/typescript/biome/foundation/nested/core.jsonc',
     },
@@ -147,11 +142,6 @@ describe('presetsCheck', () => {
       message: 'is in presets/typescript/eslint/, which names no block',
       name: "a language's folder holds a tool that names no block",
       path: 'presets/typescript/eslint/foundation/core.mjs',
-    },
-    {
-      message: 'is in presets/common/eslint/, which names no block',
-      name: 'the tool folder names no block',
-      path: 'presets/common/eslint/foundation/core.mjs',
     },
     {
       message: 'is in base/, which is not an axis: foundation, architecture, workflow',

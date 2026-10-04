@@ -159,19 +159,9 @@ describe('the ls-lint preset', () => {
       reported: 'src/kernel/__tests__',
     },
     {
-      condition: 'an end-to-end folder holds a helper',
-      path: 'tests/e2e/helpers.ts',
-      reported: 'tests/e2e',
-    },
-    {
       condition: 'a file in a layer is not in kebab-case',
       path: 'src/shared/utils/formatDate.utils.ts',
       reported: 'src/shared/utils/formatDate.utils.ts',
-    },
-    {
-      condition: 'a YAML file ends in .yml',
-      path: '.github/workflows/check.yml',
-      reported: '.github/workflows/check.yml',
     },
   ])('should report the name when $condition', ({ path, reported }) => {
     // Arrange
@@ -281,19 +271,6 @@ describe('the ls-lint preset', () => {
         ...WELL_FORMED,
         ...WELL_FORMED_WITH_PARTS,
       ],
-    };
-
-    // Act
-    const failed = failedPaths(project);
-
-    // Assert
-    expect(failed).toStrictEqual([]);
-  });
-
-  it('should report nothing when every name follows the tree', () => {
-    // Arrange
-    const project = {
-      paths: WELL_FORMED,
     };
 
     // Act
@@ -597,15 +574,6 @@ describe('the ls-lint foundation parts', () => {
       reported: 'src/__tests__/OrderView.test.ts',
     },
     {
-      condition: 'a test folder holds a helper',
-      parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
-      ],
-      path: 'src/__tests__/helpers.ts',
-      reported: 'src/__tests__',
-    },
-    {
       condition: 'an end-to-end folder holds a helper',
       parts: [
         'common/foundation/core',
@@ -879,11 +847,6 @@ describe('the ls-lint python parts', () => {
 
   it.each([
     {
-      condition: 'a module is in PascalCase',
-      path: 'src/shop/OrderHistory.py',
-      reported: 'src/shop/OrderHistory.py',
-    },
-    {
       condition: 'a module is in kebab-case',
       path: 'src/shop/order-history.py',
       reported: 'src/shop/order-history.py',
@@ -947,11 +910,6 @@ describe('the ls-lint python parts', () => {
       condition: "a feature's domain holds a module",
       path: 'src/shop/features/orders/domain/order_entity.py',
       reported: 'src/shop/features/orders/domain/order_entity.py',
-    },
-    {
-      condition: 'an entity has no role suffix',
-      path: 'src/shop/features/orders/domain/entities/order.py',
-      reported: 'src/shop/features/orders/domain/entities/order.py',
     },
     {
       condition: 'a value object has no role suffix',

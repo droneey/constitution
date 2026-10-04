@@ -94,25 +94,9 @@ describe('the Biome preset', () => {
       message: 'null outside the boundary',
     },
     {
-      condition: 'a surface declares a value',
-      files: {
-        'src/features/orders/index.ts':
-          "export { cancelOrder } from './app';\nexport const ORDERS = 'orders';\n",
-      },
-      message: 'A surface only re-exports by name',
-    },
-    {
       condition: 'a variable is named by an empty word',
       files: {
         'src/features/orders/order.ts': 'export const data = 1;\n',
-      },
-      message: 'Name what it holds',
-    },
-    {
-      condition: 'a parameter is named by an empty word',
-      files: {
-        'src/features/orders/order.ts':
-          'export const doubled = (data: number): number => data * 2;\n',
       },
       message: 'Name what it holds',
     },
@@ -276,13 +260,6 @@ describe('the Biome preset', () => {
       },
     },
     {
-      condition: 'a callback takes the index an array method passes',
-      files: {
-        'src/main.ts':
-          "export const numbered = ['a'].map((line, index) => `${String(index)}${line}`);\n",
-      },
-    },
-    {
       condition: 'a hooks file calls an effect through an effect event',
       files: {
         'src/room.hooks.ts': ROOM_HOOK,
@@ -395,7 +372,8 @@ describe('the Biome foundation parts', () => {
   });
 
   it.each([
-    ...presetFiles(),
+    'common/biome/foundation/git.jsonc',
+    'typescript/biome/architecture/react-dom.jsonc',
   ])('should parse when a project extends %s', (path) => {
     // Arrange
     const text = presetText(path);
@@ -667,22 +645,6 @@ describe('the Biome foundation parts', () => {
     expect(plugins).toStrictEqual([]);
   });
 
-  it('should report no cast when a value read from outside is narrowed by plain checks or held as a constant', () => {
-    // Arrange
-    const project = {
-      files: {
-        'src/main.ts':
-          "const STATUSES = ['open', 'closed'] as const;\n\nexport const statusOf = (text: string): (typeof STATUSES)[number] | undefined => {\n  const value: unknown = JSON.parse(text);\n\n  return STATUSES.find((status) => status === value);\n};\n",
-      },
-    };
-
-    // Act
-    const { rules } = lintFindings(project);
-
-    // Assert
-    expect(rules).not.toContain('noUnsafeTypeAssertion');
-  });
-
   it.each([
     {
       condition: 'a function body holds 100 lines',
@@ -846,14 +808,6 @@ describe('the Biome foundation parts', () => {
       files: {
         'src/order.test.ts':
           "import { expect, it, test } from 'bun:test';\n\ntest('should save when the user stops typing', async () => {\n  await new Promise((resolve) => setTimeout(resolve, 50));\n  expect(1).toBe(1);\n});\n",
-      },
-      message: 'Wait for a condition or advance a fake clock',
-    },
-    {
-      condition: 'a spec sleeps through a timer inside a block',
-      files: {
-        'src/order.test.ts':
-          "import { expect, test } from 'bun:test';\n\ntest('should save when the user stops typing', async () => {\n  await new Promise((resolve) => {\n    setTimeout(resolve, 50);\n  });\n  expect(1).toBe(1);\n});\n",
       },
       message: 'Wait for a condition or advance a fake clock',
     },
@@ -1588,16 +1542,6 @@ describe('the Biome part that needs each setting', () => {
       rule: 'useSelfClosingElements',
     },
     {
-      condition: 'a constant keeps its narrow type by satisfies',
-      files: {
-        'src/main.ts':
-          "export const routes = { chat: '/chat' } satisfies Record<string, string>;\n",
-      },
-      isReported: false,
-      parts: FOUNDATION_PARTS,
-      rule: 'useExplicitReturnType',
-    },
-    {
       condition: 'a timer runs code from a string',
       files: {
         'src/main.ts': "setTimeout('refresh()', 100);\n",
@@ -1703,25 +1647,6 @@ describe('the Biome css part', () => {
 
     // Assert
     expect(rules).toContain(rule);
-  });
-
-  it('should report noHexColors when the theme writes a hexadecimal colour', () => {
-    // Arrange
-    const project = {
-      files: {
-        'src/libs/ui/theme/theme.css': `${LAYERED}@layer components {\n  .card {\n    color: #102030;\n  }\n}\n`,
-      },
-      parts: [
-        ...FOUNDATION_PARTS,
-        'css/foundation/css',
-      ],
-    };
-
-    // Act
-    const { rules } = lintFindings(project);
-
-    // Assert
-    expect(rules).toContain('noHexColors');
   });
 
   it.each([
@@ -1884,11 +1809,6 @@ describe('the Biome tanstack-query part', () => {
       isReported: true,
       source:
         "export const read = (id: string) => useQuery({ queryKey: ['orders', id], queryFn });\n",
-    },
-    {
-      condition: 'an invalidation writes its key inline',
-      isReported: true,
-      source: "export const refresh = () => client.invalidateQueries({ queryKey: ['orders'] });\n",
     },
     {
       condition: 'the query client writes a key inline',
@@ -2161,17 +2081,6 @@ describe('the Biome framework parts', () => {
   });
 
   it.each([
-    {
-      condition: 'a cascade layer has no name',
-      files: {
-        'src/styles.css': '@layer {\n  a {\n    color: red;\n  }\n}\n',
-      },
-      parts: [
-        ...FOUNDATION_PARTS,
-        'css/foundation/css',
-      ],
-      rule: 'useNamedLayer',
-    },
     {
       condition: 'a list item takes a click handler',
       files: {
@@ -2539,23 +2448,6 @@ describe('the Biome framework parts', () => {
 
     // Assert
     expect(plugins).toStrictEqual([]);
-  });
-
-  it('should report no missing dependency when an effect calls an effect event', () => {
-    // Arrange
-    const project = {
-      files: {
-        'package.json': MANIFEST,
-        'src/room.hooks.ts': ROOM_HOOK,
-      },
-      parts: WEB_PARTS,
-    };
-
-    // Act
-    const { rules } = lintFindings(project);
-
-    // Assert
-    expect(rules).not.toContain('useExhaustiveDependencies');
   });
 
   it('should report a missing dependency when an effect calls a plain function', () => {

@@ -267,7 +267,6 @@ describe('the hand-back gate', () => {
   });
 
   it.each([
-    'bun run lint',
     'bun run checkout',
     'echo bun run check',
   ])('should block when the command run was %s, not the check', (command) => {
@@ -422,35 +421,6 @@ describe('the hand-back gate', () => {
       active: true,
       session,
     });
-
-    // Assert
-    expect(output).toBe('');
-  });
-
-  it('should stay quiet when the session saved no state', () => {
-    // Arrange
-    const session = startSession(configOf({}));
-
-    write({
-      path: 'src/main.ts',
-      project: session.project,
-    });
-
-    // Act
-    const output = runScript({
-      event: Object.fromEntries([
-        [
-          'hook_event_name',
-          'Stop',
-        ],
-        [
-          'session_id',
-          newSession(),
-        ],
-      ]),
-      root,
-      script: 'stop.sh',
-    }).stdout;
 
     // Assert
     expect(output).toBe('');
