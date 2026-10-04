@@ -83,3 +83,33 @@ The order of the layers is Tailwind's — `theme, base, components, utilities` �
 | Why | Check | Tags |
 |---|---|---|
 | Tailwind declares its layers itself; a second order would fight it. | review | [] |
+
+## Accessibility
+
+## focus-shown-by-focusable-utility → focus-always-visible
+Focus is shown by the design system's `focusable` utility, which draws an outline, or `outline-hidden` beside a ring; only it removes an outline.
+
+| Why | Check | Tags |
+|---|---|---|
+| one utility draws the same visible ring everywhere, and no component removes focus without it. | review | [] |
+
+## motion-tokens-honour-reduced-motion → reduced-motion-honoured
+The motion tokens collapse under reduced motion, in the theme.
+
+| Why | Check | Tags |
+|---|---|---|
+| every animation reads the tokens, so one rule in the theme stops them all. | review | [] |
+
+## type-tokens-in-rem → type-sized-in-rem
+Font-size and line-height tokens are in `rem`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the user's text size then scales every text of the user interface. | review | [] |
+
+## no-outline-none-in-class-lists → focus-shown-by-focusable-utility
+No class list writes `outline-none`.
+
+| Why | Check | Tags |
+|---|---|---|
+| `outline-none` removes the outline outright, which only `focusable` may replace. | tool/lint | [] |

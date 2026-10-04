@@ -69,3 +69,12 @@ A route's search schema gives every param a default, so a malformed URL opens th
 | Why | Check | Tags |
 |---|---|---|
 | a shared or old link still opens the screen. | review | [] |
+
+## Accessibility
+
+## focus-moved-when-a-navigation-resolves → navigation-moves-focus-to-the-view
+The root route subscribes to the router's `onResolved` event and moves focus to the new view's main heading, unless only the view's search or parameters changed; the title comes from the route's `head`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the router changes the view without touching focus, so the one place that sees every resolved navigation does it for all of them. | review | [a11y] |

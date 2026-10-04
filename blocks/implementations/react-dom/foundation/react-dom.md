@@ -48,3 +48,54 @@ An `<img>` written in JSX declares `width` and `height`.
 | Why | Check | Tags |
 |---|---|---|
 | this is the form of the rule the linter sees in markup. | tool/lint | [performance] |
+
+## Accessibility
+
+## labels-bound-with-use-id → every-control-has-an-accessible-name
+A label names its control with `htmlFor`, and the id comes from `useId`, never typed by hand or random.
+
+| Why | Check | Tags |
+|---|---|---|
+| a typed id collides when the component renders twice, and a random one differs between server and client. | review | [] |
+
+## ids-from-use-id → labels-bound-with-use-id
+An id comes from `useId`, never typed by hand or random — except the id of an element, never a labelled control, that the root renders once and other code must know, a skip link's target or an SVG's shared `<defs>`, which is a constant with a suppression that says so.
+
+| Why | Check | Tags |
+|---|---|---|
+| a typed id collides when the component renders twice, and a random one differs between server and client. | tool/lint | [] |
+
+## known-fields-declare-autocomplete → fields-declare-autocomplete
+An email, telephone, password or URL input declares `autocomplete`, with a valid token.
+
+| Why | Check | Tags |
+|---|---|---|
+| the browser fills these fields only when told what they hold. | tool/lint | [ux] |
+
+## handlers-and-links-on-native-elements → native-html-elements-first
+A handler on a static element comes with a role, an element whose role HTML has an element for is that element, and an anchor has a real `href`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a native element brings its role, its keyboard and its announcement. | tool/lint | [a11y] |
+
+## jsx-controls-named → every-control-has-an-accessible-name
+A form control has a label, an image its `alt` text, an SVG and an iframe their title, and a link or a button content that names it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a screen reader announces a control by its name. | tool/lint | [a11y] |
+
+## jsx-roles-and-aria-valid → native-semantics-first
+An element's role and ARIA attributes are valid and fit it: no redundant role, no role that makes an interactive element static or a static one interactive, no handler on a non-interactive element, an interactive element focusable, and no `aria-hidden` on a focusable one.
+
+| Why | Check | Tags |
+|---|---|---|
+| a wrong role or attribute is worse than none. | tool/lint | [a11y] |
+
+## jsx-viewport-never-blocks-zoom → viewport-never-blocks-zoom
+A viewport `<meta>` written in JSX never sets `user-scalable=no`.
+
+| Why | Check | Tags |
+|---|---|---|
+| this is the part of the rule the linter sees in markup. | tool/lint | [a11y] |

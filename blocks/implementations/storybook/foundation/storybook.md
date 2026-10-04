@@ -34,3 +34,12 @@ Production code never imports a story.
 | Why | Check | Tags |
 |---|---|---|
 | a story in production ships fixtures and fakes to users. | tool/imports | [] |
+
+## Accessibility
+
+## stories-fail-on-a11y-violations → ui-specs-scan-accessibility
+The accessibility check of the stories is set to fail — `parameters.a11y.test: 'error'` — for the whole project.
+
+| Why | Check | Tags |
+|---|---|---|
+| Storybook's default runs no check, and a report nobody fails on is ignored. | review | [a11y] |

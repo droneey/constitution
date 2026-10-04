@@ -31,6 +31,7 @@
 | Scripts of the check | ADR-0132 |
 | Dependencies | ADR-0134 |
 | Levels | ADR-0135 |
+| Domains | ADR-0136, ADR-0137 |
 
 ---
 
@@ -65,7 +66,7 @@
 ## ADR-0005 — Seam rules live in with/ files
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A rule that needs two blocks lives in `<block>/<axis>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/architecture/with/remote-data.md`, `browser/foundation/with/a11y.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
+- **Decision.** A rule that needs two blocks lives in `<block>/<axis>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/architecture/with/remote-data.md`, `browser/foundation/with/ui.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
 - **Rejected.** Conditional sections inside a block's main file.
 - **Why.** A file per seam stays readable as seams multiply, and its name says when it applies.
 
@@ -713,3 +714,17 @@
 - **Decision.** A published package ships the types of every entry a consumer imports (`package-ships-its-types`), and only `root/`, the configuration provider a lower block names, the entry files and the specs read the environment (`environment-read-once-at-boot`); both are MUST.
 - **Rejected.** SHOULD, which TypeScript's `manifest-exports-with-types-condition` and core's `environment-read-once-at-boot` had, while Python's forms were already MUST: one meaning cannot bind one language and advise the other (owner).
 - **Why.** Each exception the SHOULD left room for is named in the rule — the entry files and the specs for the environment — so nothing reasonable is left outside it.
+
+## ADR-0136 — A rule stays in core only when no domain gives it its meaning
+**Date:** 2026-10-05 · **Status:** Accepted
+
+- **Decision.** Core keeps only rules that mean something with no domain active; a project lists the domains it has. The rules of logs a collector reads go to `observability`; of version control to `version-control`, where core keeps who decides what is recorded or shipped and version control the commit, push and merge forms; of callers who sign in with different rights to `access-control`; of a repository anyone can read to `open-source`; of aggregates to `owned-data`, with core's data ports named per entity; of a transport to another system, and of the vendor's captured answers in the specs, to `remote-service`, split from `remote-data`, which keeps the cache. `diagnostics-through-the-logging-port` and `ci-steps-pinned-to-immutable-references` stay in core.
+- **Rejected.** Keeping the rules in core so that existing projects keep them without listing a domain (owner: correctness over compatibility; the projects are updated). `public-repository` as the name of the domain (owner: `open-source`). The logging port in `observability`, since a program that keeps diagnostics needs a port whether or not a collector reads them (owner). The pin of CI steps in `version-control` (owner).
+- **Why.** A core rule binds every project, so one that needs an aspect a project lacks is noise there, and the project cannot tell which rules apply to it.
+
+## ADR-0137 — Accessibility is a chapter of the user interface
+**Date:** 2026-10-05 · **Status:** Accepted
+
+- **Decision.** The outcomes of accessibility are the chapter `a11y` of `ui` (`ui/foundation/a11y.md`). A platform states its mechanisms in its `with/ui.md`, and an implementation that requires the user interface keeps them in its own file. `a11y` stays a tag.
+- **Rejected.** A separate domain `a11y`, which a project with a user interface could leave out of its list and so drop WCAG without an override.
+- **Why.** Every user interface must be accessible, so leaving accessibility out must be a departure someone writes down, not a domain someone forgets.

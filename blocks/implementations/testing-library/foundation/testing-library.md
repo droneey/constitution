@@ -28,3 +28,11 @@ A hook that loads or writes data is proven through the screen or component that 
 |---|---|---|
 | the screen is the boundary a user meets, and a hook tested alone repeats what its screen's spec proves. | review | [] |
 
+## Accessibility
+
+## ui-specs-run-the-axe-scan → ui-specs-scan-accessibility
+Every screen and component spec runs the axe scan over what it rendered, on the WCAG 2.2 A and AA rules only, and passes with zero violations. Contrast, which a simulated DOM cannot judge, is turned off there and is the token-pair test's; the landmark rule runs in screen specs, not over a lone component.
+
+| Why | Check | Tags |
+|---|---|---|
+| the scan catches a third of the problems in every spec, on every change, for free. | test | [] |

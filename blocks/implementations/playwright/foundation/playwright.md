@@ -41,3 +41,12 @@ No action passes `force: true`.
 | Why | Check | Tags |
 |---|---|---|
 | a trace holds each step, the page and the network of the failed run, so the failure is read without running it again. | review | [testing] |
+
+## Accessibility
+
+## screens-scanned-in-the-browser → ui-specs-scan-accessibility
+Every end-to-end spec scans each screen it reaches with `@axe-core/playwright`, through one shared fixture, on the tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` and `wcag22aa`, and passes with zero violations.
+
+| Why | Check | Tags |
+|---|---|---|
+| only a real browser measures contrast over the real background and the size of a target; without `wcag22aa` the target size is never checked. | test | [a11y] |

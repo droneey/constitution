@@ -443,7 +443,7 @@ const REAL_WEB_APP: ProjectLayout = {
     'version: 1.0.0',
     'axes: [foundation, architecture, workflow]',
     '',
-    'domains: [ui, a11y, remote-data, remote-service, i18n, analytics, version-control,',
+    'domains: [ui, remote-data, remote-service, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript, css]',
