@@ -95,6 +95,52 @@ const UNUSED_NOQA = python('LIMIT = 10  # noqa: E501 -- the line is short');
 const BLANKET_TYPE_IGNORE = python('LIMIT: int = 10  # type: ignore');
 const TODO_WITH_ISSUE = python('# TODO(#12): round each line', 'LIMIT = 10');
 const DOUBLE_QUOTES = python('LABEL = "orders"');
+const spec = (...lines: readonly string[]): string => python('import pytest', '', '', ...lines);
+const SKIP_MARK = spec(
+  "@pytest.mark.skip(reason='later')",
+  'def test_should_count() -> None:',
+  '  assert pytest',
+);
+const SKIP_IF_MARK = spec(
+  "@pytest.mark.skipif(condition=True, reason='later')",
+  'def test_should_count() -> None:',
+  '  assert pytest',
+);
+const XFAIL_MARK = spec(
+  '@pytest.mark.xfail',
+  'def test_should_count() -> None:',
+  '  assert pytest',
+);
+const SKIP_CALL = spec('def test_should_count() -> None:', "  pytest.skip('later')");
+const XFAIL_CALL = spec('def test_should_count() -> None:', "  pytest.xfail('later')");
+const IMPORT_OR_SKIP = spec(
+  'def test_should_count() -> None:',
+  "  assert pytest.importorskip('yaml')",
+);
+const FLAKY_MARK = spec(
+  '@pytest.mark.flaky',
+  'def test_should_count() -> None:',
+  '  assert pytest',
+);
+const MOCK = python(
+  'from unittest import mock',
+  '',
+  '',
+  'def test_should_count() -> None:',
+  '  assert mock',
+);
+const PYTEST_ASYNCIO = python(
+  'import pytest_asyncio',
+  '',
+  '',
+  'def test_should_count() -> None:',
+  '  assert pytest_asyncio',
+);
+const BROAD_RAISES = spec(
+  'def test_should_refuse() -> None:',
+  '  with pytest.raises(ValueError):',
+  "    int('ten')",
+);
 const FOUR_SPACES = python('def total(prices: list[int]) -> int:', '    return sum(prices)');
 const longCall = (width: number): string => {
   const head = 'TOTAL = sum(';
@@ -295,6 +341,18 @@ describe('the ruff preset', () => {
       part: 'core',
       source: EXCEPT_PASS,
     },
+    {
+      code: 'TID251',
+      condition: 'a spec is marked to be skipped',
+      part: 'python',
+      source: SKIP_MARK,
+    },
+    {
+      code: 'PT011',
+      condition: 'a spec expects a broad exception without a match',
+      part: 'python',
+      source: BROAD_RAISES,
+    },
   ])(
     'should leave $code to a later part when $condition and a project extends only $part',
     ({ code, part, source }) => {
@@ -324,6 +382,79 @@ describe('the ruff preset', () => {
 
     // Assert
     expect(codes).toStrictEqual([]);
+  });
+});
+
+describe("the ruff preset's part of pytest", () => {
+  it.each([
+    {
+      condition: 'a spec is marked to be skipped',
+      source: SKIP_MARK,
+    },
+    {
+      condition: 'a spec is marked to be skipped under a condition',
+      source: SKIP_IF_MARK,
+    },
+    {
+      condition: 'a spec is marked to fail',
+      source: XFAIL_MARK,
+    },
+    {
+      condition: 'a spec skips itself',
+      source: SKIP_CALL,
+    },
+    {
+      condition: 'a spec marks itself as failing',
+      source: XFAIL_CALL,
+    },
+    {
+      condition: 'a spec skips itself when a module is missing',
+      source: IMPORT_OR_SKIP,
+    },
+    {
+      condition: 'a spec is marked to be run again',
+      source: FLAKY_MARK,
+    },
+    {
+      condition: 'a spec patches with unittest.mock',
+      source: MOCK,
+    },
+    {
+      condition: 'a spec imports pytest-asyncio',
+      source: PYTEST_ASYNCIO,
+    },
+    {
+      condition: "code changes sys.path, a ban of the python part's",
+      source: SYS_PATH,
+    },
+  ])('should report TID251 when $condition', ({ source }) => {
+    // Arrange
+    const project = {
+      part: 'pytest',
+      source,
+    };
+
+    // Act
+    const codes = lintCodes(project);
+
+    // Assert
+    expect(codes).toContain('TID251');
+  });
+
+  it('should report PT011 when a spec expects a broad exception without a match', () => {
+    // Arrange
+    const project = {
+      part: 'pytest',
+      source: BROAD_RAISES,
+    };
+
+    // Act
+    const codes = lintCodes(project);
+
+    // Assert
+    expect(codes).toStrictEqual([
+      'PT011',
+    ]);
   });
 });
 

@@ -5,6 +5,21 @@ ls:
     .*: kebab-case
   presets:
     .*: kebab-case | regex:^_[a-z0-9]+(-[a-z0-9]+)*$
+  tools/{python-check,mutmut-check}:
+    .py: snake_case
+    src:
+      .dir: snake_case
+      .py: snake_case
+      .*.pyc: snake_case
+    tests:
+      .dir: snake_case
+      .py: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures)$
+      .*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures)$
+      .*.*.*.*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$
 ignore:
   - local
   - .claude/worktrees
+  - tools/python-check/mutants
+  - tools/python-check/.pytest_cache
+  - tools/mutmut-check/mutants
+  - tools/mutmut-check/.pytest_cache
