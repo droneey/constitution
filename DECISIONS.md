@@ -24,7 +24,7 @@
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
 | A real application | ADR-0116 – ADR-0123 |
-| Tools beside the constitution | ADR-0124 |
+| Delivery of the constitution | ADR-0124 |
 
 ---
 
@@ -860,9 +860,9 @@
 - **Rejected.** `allowExpressions` on `useExplicitReturnType`, which changes nothing for the arrow functions a project writes; a refusal of `.refine` in a schema, which Zod 4 makes needless since it never narrows.
 - **Why.** Each item was run first: under TypeScript 7 ts-reset type-checks and turns `JSON.parse` and the browser's `json()` from `any` to `unknown`, which no lint sees; `useExplicitType` widened every `satisfies` constant; `useDisposables` was on and bound to nothing, and it cannot see a stream's reader; a module-level `t` froze rozumchik-web's labels in one language; Zod 4 marks its old forms deprecated and no rule caught them; the review-only readonly rule held 8 of 585 fields in a real application; axe in Playwright catches contrast and target size that happy-dom cannot, about 150 ms a screen; `noUndeclaredCustomProperties` flags every token of `@theme` and every variable a library sets.
 
-## ADR-0124 — The owner's tools live under one .droneey folder
+## ADR-0124 — No rule says where the constitution is installed
 **Date:** 2026-10-04 · **Status:** Accepted
 
-- **Decision.** A project links the constitution's archive as `.droneey/constitution`, not `.constitution`, and version control ignores `.droneey/`. The owner's other tools that a project installs the same way, such as the kit of runtime packages with their rule plugins, sit beside it.
-- **Rejected.** One hidden folder per tool at the root, which adds an ignore line and a root entry for each.
-- **Why.** A project that takes several of the owner's tools keeps them in one place and ignores them with one line.
+- **Decision.** The constitution's install guide links its archive at `.droneey/constitution`, beside the owner's other tools, and a project ignores `.droneey/`; no rule names that path. The mise rule that named the constitution's archive and its link gives way to `shared-configuration-archive-installed-by-mise`, which holds for any archive of shared tool configuration.
+- **Rejected.** A rule that says how the constitution itself is delivered: that is its install guide's business, and moving the folder then meant rewording a rule.
+- **Why.** The rules govern a project's engineering; where a tool's files land is the tool's own documentation.
