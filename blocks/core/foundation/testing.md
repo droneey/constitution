@@ -177,7 +177,7 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
 ## network-refused-in-the-unit-run → tests-run-in-a-sandbox
-The unit run replaces every call that opens a connection with one that throws, set once for all its specs; the integration run keeps the real calls.
+The unit run replaces every call that opens a connection with one that throws, set once for all its specs; the integration run keeps the real calls to engines inside the sandbox.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -190,7 +190,7 @@ Each faked contract has one fake, `<contract>.fake`, shared by every spec that n
 |---|---|---|
 | one fake per contract is kept in step with its real implementation once, not once per spec that writes its own. | review | [testing] |
 
-## effects-faked-never-mocked → one-fake-per-contract
+## effects-faked-never-mocked · SHOULD
 No spec mocks, patches or spies on a module of the program: an effect is replaced by the fake of its contract.
 
 | Why | Check | Tags |

@@ -10,7 +10,7 @@ Every data view shows loading, error and content, and the empty or not-found sta
 | an empty screen cannot otherwise be told from a slow one, and the user does not know what to do. | test | [ux, a11y] |
 
 ## state-messages-guide-the-user · SHOULD
-An error says what happened and what to do next. An empty state names the situation and offers an action; a state with no results repeats the query. A long load names what it is doing and shows progress when it is known.
+An empty state names the situation and offers an action; a state with no results repeats the query. A long load names what it is doing and shows progress when it is known.
 
 | Why | Check | Tags |
 |---|---|---|

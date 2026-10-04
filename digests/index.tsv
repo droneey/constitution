@@ -234,7 +234,7 @@ rule	unit-case-runs-in-milliseconds	core	blocks/core/foundation/testing.md		SHOU
 rule	tests-run-in-a-sandbox	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation		true
 rule	network-refused-in-the-unit-run	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
 rule	one-fake-per-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
-rule	effects-faked-never-mocked	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	one-fake-per-contract	false
+rule	effects-faked-never-mocked	core	blocks/core/foundation/testing.md		SHOULD	review				foundation		true
 rule	integration-tested-against-the-real-engine	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	integration-specs-in-their-own-run	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	integration-tested-against-the-real-engine	false
 rule	end-to-end-per-critical-scenario	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
@@ -833,7 +833,7 @@ rule	workspaces-follow-the-package-layout	bun	blocks/implementations/bun/archite
 rule	root-manifest-private	bun	blocks/implementations/bun/architecture/with/package.md	package	SHOULD	review		typescript		architecture	package-root-private	false
 rule	version-written-to-every-manifest	bun	blocks/implementations/bun/workflow/with/package.md	package	MUST	review		typescript		workflow	one-version-for-all-packages	false
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-intent-per-case	false
-rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	effects-faked-never-mocked	false
+rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript		foundation	effects-faked-never-mocked	false
 rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-specs-in-their-own-run	false
 rule	check-writes-no-snapshot	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript		foundation	check-only-checks	false
 rule	coverage-gate-on-loaded-files	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	tool	coverage	typescript	testing	foundation	coverage-holds-all-logic	false
@@ -995,7 +995,7 @@ rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pyte
 rule	no-test-reruns	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	flaky-test-fixed-or-removed	false
 rule	integration-folder-runs-apart	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	integration-specs-in-their-own-run	false
 rule	network-refused-by-the-conftest	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	review		python	testing security	foundation	network-refused-in-the-unit-run	false
-rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	effects-faked-never-mocked	false
+rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python		foundation	effects-faked-never-mocked	false
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
 rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/foundation/python-check.md		MUST	tool	lint	python		foundation	function-file-and-complexity-limits	false
 rule	relative-import-kept-in-its-module	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	tool	imports	python		architecture	relative-imports-stay-in-the-feature	false

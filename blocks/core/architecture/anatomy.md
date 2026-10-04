@@ -288,7 +288,7 @@ A delivery unit — a screen, a command, a handler, a tool function — parses i
 | business logic in a delivery unit cannot be reused by another transport or tested without it; kept out, it runs the same from a test, another command or another transport. | review | [] |
 
 ## report-returned-as-a-value → delivery-units-stay-thin
-What an operation reports is a value it returns, and the delivery unit presents it, as text or as data; the logic prints nothing along the way.
+What an operation reports is a value it returns — for a progressive report, a sequence of events — and the delivery unit presents it, as text or as data; the logic prints nothing along the way.
 
 | Why | Check | Tags |
 |---|---|---|

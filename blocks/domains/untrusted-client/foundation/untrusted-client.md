@@ -8,7 +8,7 @@ Nothing shipped to the client — code, configuration, a variable the build inli
 | the user controls the device, and every byte on it can be read and changed. | review | [security] |
 
 ## credentials-only-in-the-protected-store · MUST
-A credential the client holds for its user — a session, a token — lives only in the store the platform protects from other code on the device, never in storage the program's own code or anything else on the device can read.
+A credential the client holds for its user — a session, a token — lives only in the store the platform protects from other code on the device, never in storage that other code — another script, another app, a backup — can read.
 
 | Why | Check | Tags |
 |---|---|---|
