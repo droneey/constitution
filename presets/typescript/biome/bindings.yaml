@@ -141,9 +141,6 @@ foundation:
       - no-outline-none-in-class-lists.grit
     no-important-modifier-in-class-lists:
       - no-important-modifier-in-class-lists.grit
-  tanstack-query:
-    keys-only-from-the-key-factory:
-      - keys-only-from-the-key-factory.grit
   tanstack-router:
     link-targets-never-built:
       - link-targets-never-built.grit
@@ -210,6 +207,8 @@ architecture:
     react-native-imported-from-its-entry:
       - noReactNativeDeepImports
   tanstack-query:
+    keys-only-from-the-key-factory:
+      - keys-only-from-the-key-factory.grit
     query-client-built-by-the-root:
       - query-client-built-by-the-root.grit
     query-function-only-in-cache-utils:

@@ -14,12 +14,12 @@ A client is opened once, with `async with`, for as long as the program runs, and
 |---|---|---|
 | a client pools its connections, so a client per call pays for a new connection and handshake each time, and one never closed leaks its sockets. | review | [performance] |
 
-## response-body-parsed-by-its-model → no-any-annotation
-A response body is parsed by its model from `response.content`, after `raise_for_status()`; `response.json()`, whose result is `Any`, is never called.
+## response-body-parsed-by-its-model → response-body-parsed-never-cast
+A response body is parsed by its model from `response.content`, after `raise_for_status()`; `response.json()` is never called.
 
 | Why | Check | Tags |
 |---|---|---|
-| `Any` switches the type checker off for every value read from the body, and the model is the check the body must pass. | review | [] |
+| `response.json()` returns `Any`, which switches the type checker off for every value read from the body. | review | [] |
 
 ## mock-transport-refuses-unmatched → unmatched-request-fails-the-spec
 A spec gives the client an `httpx2.MockTransport` whose handler answers the requests the case expects and raises on any other, naming its method and URL; no library patches httpx2.

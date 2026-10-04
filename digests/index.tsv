@@ -445,6 +445,7 @@ rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/pac
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
 rule	stream-ends-with-terminal-event	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
+rule	response-body-parsed-never-cast	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			security	foundation		true
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
 rule	remote-data-cache-invalidates-by-prefix	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
 rule	remote-data-cache-cancels-reads	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
@@ -876,7 +877,7 @@ rule	hadolint-over-every-dockerfile	hadolint	blocks/implementations/hadolint/fou
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	review				foundation	suppression-silences-one-finding	false
 rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	errors performance	foundation	io-has-timeout-and-cancellation	true
 rule	client-open-for-the-program-life	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		SHOULD	review		python	performance	foundation	resources-released-on-every-path	false
-rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python		foundation	no-any-annotation	false
+rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	security	foundation	response-body-parsed-never-cast	false
 rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	testing security	foundation	unmatched-request-fails-the-spec	false
 rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python		architecture	remote-data-transport-built-by-the-root	false
 rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python	errors	architecture	transport-failures-mapped-once	true
@@ -890,8 +891,9 @@ rule	httpx2-kept-to-the-edge	import-linter	blocks/implementations/import-linter/
 rule	pydantic-kept-out-of-the-domain	import-linter	blocks/implementations/import-linter/architecture/with/pydantic.md	pydantic	MUST	tool	imports	python	security	architecture	pydantic-only-at-the-edge	false
 rule	structlog-imported-only-by-the-root	import-linter	blocks/implementations/import-linter/architecture/with/structlog.md	structlog	SHOULD	tool	imports	python	security	architecture	code-logs-through-the-standard-logger	false
 rule	unused-check-in-production-mode	knip	blocks/implementations/knip/foundation/knip.md		MUST	tool	unused	typescript		foundation	no-dead-code	false
-rule	ky-timeout-retry-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
-rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	no-unchecked-escape-hatches	false
+rule	ky-timeout-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	io-has-timeout-and-cancellation	false
+rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
+rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	response-body-parsed-never-cast	false
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		SHOULD	review		typescript		architecture	remote-data-transport-built-by-the-root	false
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript	errors	architecture	transport-failures-mapped-once	true
 rule	components-import-no-http-client	ky	blocks/implementations/ky/architecture/with/ui.md	ui	MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
@@ -1045,7 +1047,6 @@ rule	form-validated-by-its-own-schema	tanstack-form	blocks/implementations/tanst
 rule	form-state-in-the-form-instance	tanstack-form	blocks/implementations/tanstack-form/architecture/tanstack-form.md		MUST	review		typescript	data	architecture	one-home-per-datum	false
 rule	form-submits-through-a-binding-unit	tanstack-form	blocks/implementations/tanstack-form/architecture/tanstack-form.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
 rule	query-for-reads-mutation-for-writes	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data	foundation		true
-rule	keys-only-from-the-key-factory	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		MUST	tool	lint	typescript	data	foundation		true
 rule	query-result-returned-as-status-union	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		MUST	review		typescript	data ux	foundation	data-result-is-union-by-status	false
 rule	optimism-in-the-mutation-lifecycle	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		MUST	review		typescript	ux data	foundation	optimistic-lifecycle-safe-under-concurrency	false
 rule	invalidation-in-on-settled	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data	foundation		true
@@ -1057,6 +1058,7 @@ rule	write-pending-until-its-refresh-lands	tanstack-query	blocks/implementations
 rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript	data	architecture	binding-unit-composes-its-operation	false
 rule	query-functions-call-the-handed-adapter	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
 rule	key-factory-in-cache-utils	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	cache-keys-from-feature-factory	false
+rule	keys-only-from-the-key-factory	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript	data	architecture	cache-keys-from-feature-factory	false
 rule	cache-is-the-only-home-of-server-data	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	server-owns-remote-data	false
 rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript	errors security ux	architecture	unauthorized-handled-once-in-cache	false
 rule	components-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
@@ -1132,7 +1134,7 @@ rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/foun
 rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	review		python		foundation	suppression-states-its-reason	false
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	errors	foundation	parse-failure-is-one-coded-error	false
 rule	yaml-written-without-folding	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	data	foundation		true
-rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/architecture/yaml.md		MUST	tool	imports	typescript		architecture	domain-imports-only-itself-and-kernel	false
+rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/architecture/yaml.md		MUST	tool	imports	typescript	security	architecture	untrusted-input-parsed-at-edge	false
 rule	document-header-names-its-schema	yaml	blocks/implementations/yaml/foundation/with/convergence.md	convergence	SHOULD	review		typescript	ux	foundation	init-writes-document-from-template	false
 rule	yamllint-strict-over-every-file	yamllint	blocks/implementations/yamllint/foundation/yamllint.md		MUST	review				foundation	rules-held-by-tools	false
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	documents-strict-vendor-answers-tolerant	false

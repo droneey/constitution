@@ -21,6 +21,13 @@ Each feature's key factory lives in its `app/utils/cache.utils.ts`.
 |---|---|---|
 | every binding unit of the feature takes its keys from one known module, so a read and the invalidation that refreshes it build the same key. | review | [] |
 
+## keys-only-from-the-key-factory → cache-keys-from-feature-factory
+No key array is written inline — as a `queryKey`, or to the query client's `getQueryData`, `getQueryState` or `setQueryData`; every key comes from the key factory.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are the places a key is written, and an inline one drifts from the factory's, so an invalidation misses it. | tool/lint | [data] |
+
 ## cache-is-the-only-home-of-server-data → server-owns-remote-data
 Server data lives only in the cache: never copied into state, a context or a store.
 

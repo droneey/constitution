@@ -1919,7 +1919,7 @@ describe('the Biome tanstack-query part', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/foundation/tanstack-query',
+        'typescript/architecture/tanstack-query',
       ],
     };
 

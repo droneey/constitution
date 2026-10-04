@@ -1,5 +1,0 @@
-{
-  "plugins": [
-    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/keys-only-from-the-key-factory.grit",
-  ],
-}
