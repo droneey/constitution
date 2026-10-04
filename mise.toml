@@ -16,4 +16,6 @@ postinstall = [
 
 [settings]
 lockfile = true
+
+[tool_config]
 locked = true
