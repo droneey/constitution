@@ -5,18 +5,22 @@ export default {
       name: 'packages-blind-to-each-other',
       severity: 'error',
       from: {
-        path: '^packages/([^/]+)/libs/([^/]+)/',
+        path: '^packages/([^/]+)/([^/]+)/([^/]+)/',
+        pathNot: '^packages/[^/]+/common/',
       },
       to: {
         path: '^packages/',
-        pathNot: '^packages/$1/libs/$2/',
+        pathNot: [
+          '^packages/$1/$2/$3/',
+          '^packages/$1/common/',
+        ],
       },
     },
     {
       name: 'common-imports-nothing',
       severity: 'error',
       from: {
-        path: '^packages/common/',
+        path: '^packages/[^/]+/common/',
         pathNot: '/__tests__/',
       },
       to: {},

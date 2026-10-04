@@ -3,11 +3,11 @@
 ## Layout
 
 ## package-repository-layout → anatomy-top-level-by-concern
-A repository of packages keeps each package at `packages/<language>/libs/<name>/`, language-free files and hooks in `packages/common/`, and templates per language and in `common`. A new language is a new folder.
+A repository of packages keeps each product in `packages/<product>/`: its language-free files — specification, fixtures, hooks — in `packages/<product>/common/`, and each of its packages at `packages/<product>/<language>/<name>/`. A new language is a new folder in its product.
 
 | Why | Check | Tags |
 |---|---|---|
-| a reader finds every package of every repository in the same place, and a new language adds a folder without moving the others. | review | [] |
+| everything about a product — its contract, its fixtures and each language's package — is found in one folder and changes together, and a new language adds a folder without moving the others. | review | [] |
 
 ## package-root-private · SHOULD
 The root of a repository of packages is private: it holds only the workspace, the scripts of the check, and a README with one row per package.
@@ -24,7 +24,7 @@ A package holds its manifest, its README, its licence, its `configs/` or `src/`,
 | every package looks the same inside, so a reader and a tool know where each part is. | review | [] |
 
 ## package-dependency-matrix → dependencies-point-inward
-`common` imports nothing. A language package reaches only its peers, its declared dependencies and `common` at build time; no package imports another package's files.
+A product's `common` imports nothing. A language package reaches only its peers, its declared dependencies and its own product's `common`; no package imports another package's files.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -75,7 +75,7 @@ A consumer takes a package by the tool's own extends, else by a one-line module 
 | the closer to the tool's own mechanism, the less glue each consumer writes and keeps. | review | [] |
 
 ## language-free-file-lives-once-in-common → generated-copy-guarded-by-spec
-A language-free file lives once, in `common`; a language package that ships it holds only a copy generated from it.
+A language-free file lives once, in its product's `common`; a language package that ships it holds only a copy generated from it.
 
 | Why | Check | Tags |
 |---|---|---|
