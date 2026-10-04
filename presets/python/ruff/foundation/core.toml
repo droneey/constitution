@@ -1,0 +1,25 @@
+extend = "self.toml"
+
+[lint]
+extend-select = [
+  "ARG",
+  "B904",
+  "BLE",
+  "EM",
+  "ERA",
+  "F401",
+  "F841",
+  "FBT",
+  "FIX001",
+  "FIX003",
+  "FIX004",
+  "PLR0917",
+  "S",
+  "T10",
+  "T20",
+  "TD",
+  "TRY",
+]
+
+[lint.pylint]
+max-positional-args = 3

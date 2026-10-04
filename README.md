@@ -11,7 +11,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/core` | What holds for any program, always active: `core.md`, how to use the constitution, and its chapters on each axis, `principles` first |
 | `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `remote-data`, `version-control` |
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
-| `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css` |
+| `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
 | `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per role, block — with the languages its checks cover and the roles a language is held to — rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
@@ -68,7 +68,7 @@ A block refers only to the layers above it, through its front matter. The rules 
 ## 🧰 Presets
 
 A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*`:
-- the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
+- the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css`, `python` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
 - the tool folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `tsc` for the compiler;
 - the axis folder is the axis whose rules the part holds, so a project that leaves an axis out leaves out its parts;
 - a part is named after the block its settings need, the one without which they mean nothing: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s; settings that need no block beyond the tool sit in `core` when they hold a rule of core and in `self` when they are the tool's own; GritQL rules are `<axis>/plugins/<rule-slug>.grit`.
@@ -88,7 +88,7 @@ A project's configuration extends the parts of its active blocks on its axes, fo
 }
 ```
 
-A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists.
+A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists. Ruff, whose `extend` takes one file, chains its parts, each extending the one before; ty, which takes one `--config-file`, gets one part; a tool with neither starts from a template of `templates/project/<block>/`.
 
 Beside its parts, a preset holds `presets/<scope>/<tool>/bindings.yaml`: which setting of which part holds which rule, by axis, part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
 

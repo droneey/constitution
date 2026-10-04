@@ -1,0 +1,53 @@
+ls:
+  src/*/features/*/domain:
+    .dir: regex:^(domain|entities|value_objects|contracts|use_cases|errors|constants|types|utils|__pycache__)$
+    .*: kebab-case
+    .*.*: kebab-case
+    .py: regex:^__init__$
+    .pyi: regex:^$
+    .*.pyc: snake_case
+
+  src/*/*/**/entities:
+    <<: &role
+      .dir: snake_case
+      .*: kebab-case
+      .*.*: kebab-case
+      .py: regex:^__init__$
+      .pyi: regex:^$
+      .*.pyc: snake_case
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_entity$
+  src/*/*/**/value_objects:
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_value_object$
+  src/*/*/**/errors:
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_error$
+  src/*/*/**/constants:
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_constants$
+  src/*/*/**/types:
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_types$
+    .pyi: regex:^[a-z0-9_]+_types$
+  src/*/*/**/utils:
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_utils$
+  src/*/*/**/models:
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_model$
+  src/*/contracts: &contracts
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_port$
+  src/*/*/**/contracts: *contracts
+  src/*/*/**/repositories:
+    <<: *role
+    .dir: regex:^(repositories|__pycache__)$
+  "src/*/*/**/repositories/{queries,commands}":
+    <<: *role
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_repository$
+  src/*/*/**/use_cases:
+    <<: *role
+    .dir: regex:^(use_cases|__pycache__)$
+  "src/*/*/**/use_cases/{queries,commands}":
+    <<: *role
+    .py: snake_case

@@ -1,0 +1,7 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: ruff
+      glob: "*.{py,pyi}"
+      stage_fixed: true
+      run: uv run ruff check --fix --force-exclude {staged_files} && uv run ruff format --force-exclude {staged_files}

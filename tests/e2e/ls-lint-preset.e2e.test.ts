@@ -725,6 +725,21 @@ describe('the ls-lint parts of the tools that write folders', () => {
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },
+    {
+      part: 'common/foundation/uv',
+      path: '.venv/lib/python3.14/site-packages/orders.py',
+      reported: '.venv/lib/python3.14',
+    },
+    {
+      part: 'common/foundation/ruff',
+      path: '.ruff_cache/cache/orders.json',
+      reported: '.ruff_cache',
+    },
+    {
+      part: 'python/foundation/python',
+      path: 'scripts/__pycache__/seed.cpython-314.pyc',
+      reported: 'scripts/__pycache__',
+    },
   ])(
     'should skip the folder its tool writes only when a project extends $part',
     ({ part, path, reported }) => {
@@ -761,4 +776,221 @@ describe('the ls-lint parts of the tools that write folders', () => {
       });
     },
   );
+});
+
+const PYTHON_FOUNDATION_PARTS = [
+  'common/foundation/core',
+  'python/foundation/python',
+];
+
+const PYTHON_PARTS = [
+  ...PYTHON_FOUNDATION_PARTS,
+  'python/architecture/core',
+];
+
+const WELL_FORMED_PYTHON = [
+  'pyproject.toml',
+  'uv.lock',
+  'scripts/seed_orders.py',
+  'src/shop/__init__.py',
+  'src/shop/__main__.py',
+  'src/shop/main.py',
+  'src/shop/py.typed',
+  'src/shop/root/__init__.py',
+  'src/shop/root/wiring.py',
+  'src/shop/kernel/__init__.py',
+  'src/shop/kernel/money/money_types.py',
+  'src/shop/contracts/__init__.py',
+  'src/shop/contracts/mail_port.py',
+  'src/shop/shared/utils/format_utils.py',
+  'src/shop/libs/markdown/markdown_utils.py',
+  'src/shop/entrypoints/digests_write/main.py',
+  'src/shop/features/__init__.py',
+  'src/shop/features/order_history/__init__.py',
+  'src/shop/features/order_history/domain/__init__.py',
+  'src/shop/features/order_history/domain/entities/__init__.py',
+  'src/shop/features/order_history/domain/entities/order_entity.py',
+  'src/shop/features/order_history/domain/value_objects/email_value_object.py',
+  'src/shop/features/order_history/domain/errors/order_not_found_error.py',
+  'src/shop/features/order_history/domain/constants/limits_constants.py',
+  'src/shop/features/order_history/domain/contracts/clock_port.py',
+  'src/shop/features/order_history/domain/contracts/repositories/__init__.py',
+  'src/shop/features/order_history/domain/contracts/repositories/queries/orders_repository.py',
+  'src/shop/features/order_history/domain/contracts/repositories/commands/orders_repository.py',
+  'src/shop/features/order_history/domain/use_cases/commands/place_order/place_order_use_case.py',
+  'src/shop/features/order_history/adapters/json/json_adapter.py',
+  'src/shop/features/order_history/adapters/json/models/order_model.py',
+  'src/shop/features/order_history/app/use_cases/queries/list_orders/list_orders.py',
+  'tests/conftest.py',
+  'tests/test_orders.py',
+  'tests/clock_fake.py',
+  'tests/orders_fixtures.py',
+  'tests/integration/test_orders_repository.py',
+  'tests/e2e/test_checkout.py',
+];
+
+// The bytecode the interpreter and the test runner write beside the modules.
+const PYTHON_BYTECODE = [
+  'scripts/__pycache__/seed_orders.cpython-314.pyc',
+  'src/shop/__pycache__/__init__.cpython-314.pyc',
+  'src/shop/features/order_history/domain/__pycache__/__init__.cpython-314.pyc',
+  'src/shop/features/order_history/domain/entities/__pycache__/order_entity.cpython-314.pyc',
+  'src/shop/features/order_history/domain/contracts/repositories/__pycache__/__init__.cpython-314.pyc',
+  'src/shop/features/order_history/domain/use_cases/__pycache__/__init__.cpython-314.pyc',
+  'tests/__pycache__/clock_fake.cpython-314.pyc',
+  'tests/__pycache__/conftest.cpython-314-pytest-9.1.1.pyc',
+  'tests/__pycache__/test_orders.cpython-314-pytest-9.1.1.pyc',
+];
+
+describe('the ls-lint python parts', () => {
+  it('should report nothing when every name follows the python forms and the tree', () => {
+    // Arrange
+    const project = {
+      parts: PYTHON_PARTS,
+      paths: [
+        ...WELL_FORMED_PYTHON,
+        ...PYTHON_BYTECODE,
+      ],
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'a module is in PascalCase',
+      path: 'src/shop/OrderHistory.py',
+      reported: 'src/shop/OrderHistory.py',
+    },
+    {
+      condition: 'a module is in kebab-case',
+      path: 'src/shop/order-history.py',
+      reported: 'src/shop/order-history.py',
+    },
+    {
+      condition: 'a package of the source root is in kebab-case',
+      path: 'src/shop/order-history/orders.py',
+      reported: 'src/shop/order-history',
+    },
+    {
+      condition: 'a stub is in PascalCase',
+      path: 'src/shop/Orders.pyi',
+      reported: 'src/shop/Orders.pyi',
+    },
+    {
+      condition: 'a module outside the source root is in kebab-case',
+      path: 'scripts/seed-orders.py',
+      reported: 'scripts/seed-orders.py',
+    },
+    {
+      condition: 'a spec ends in _test',
+      path: 'tests/orders_test.py',
+      reported: 'tests/orders_test.py',
+    },
+    {
+      condition: 'a folder of the specs holds a helper of no form',
+      path: 'tests/integration/helpers.py',
+      reported: 'tests/integration/helpers.py',
+    },
+    {
+      condition: 'the specs are made a package',
+      path: 'tests/__init__.py',
+      reported: 'tests/__init__.py',
+    },
+  ])(
+    'should report $reported when $condition and a project follows only foundation',
+    ({ path, reported }) => {
+      // Arrange
+      const project = {
+        parts: PYTHON_FOUNDATION_PARTS,
+        paths: [
+          path,
+        ],
+      };
+
+      // Act
+      const failed = failedPaths(project);
+
+      // Assert
+      expect(failed).toContain(reported);
+    },
+  );
+
+  it.each([
+    {
+      condition: "a feature's domain holds a folder of no role",
+      path: 'src/shop/features/orders/domain/helpers/format_utils.py',
+      reported: 'src/shop/features/orders/domain/helpers',
+    },
+    {
+      condition: "a feature's domain holds a module",
+      path: 'src/shop/features/orders/domain/order_entity.py',
+      reported: 'src/shop/features/orders/domain/order_entity.py',
+    },
+    {
+      condition: 'an entity has no role suffix',
+      path: 'src/shop/features/orders/domain/entities/order.py',
+      reported: 'src/shop/features/orders/domain/entities/order.py',
+    },
+    {
+      condition: 'a value object has no role suffix',
+      path: 'src/shop/features/orders/domain/value_objects/email.py',
+      reported: 'src/shop/features/orders/domain/value_objects/email.py',
+    },
+    {
+      condition: "a role folder holds another role's module",
+      path: 'src/shop/features/orders/domain/entities/order_types.py',
+      reported: 'src/shop/features/orders/domain/entities/order_types.py',
+    },
+    {
+      condition: 'a repository sits outside its side',
+      path: 'src/shop/features/orders/domain/contracts/repositories/orders_repository.py',
+      reported:
+        'src/shop/features/orders/domain/contracts/repositories/orders_repository.py',
+    },
+    {
+      condition: 'a shared port has no role suffix',
+      path: 'src/shop/contracts/mail.py',
+      reported: 'src/shop/contracts/mail.py',
+    },
+    {
+      condition: 'a folder of use-cases holds a folder of no side',
+      path: 'src/shop/features/orders/domain/use_cases/other/place_order.py',
+      reported: 'src/shop/features/orders/domain/use_cases/other',
+    },
+  ])('should report $reported when $condition', ({ path, reported }) => {
+    // Arrange
+    const project = {
+      parts: PYTHON_PARTS,
+      paths: [
+        path,
+      ],
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toContain(reported);
+  });
+
+  it('should leave the role suffix to the architecture part when a project follows only foundation', () => {
+    // Arrange
+    const project = {
+      parts: PYTHON_FOUNDATION_PARTS,
+      paths: [
+        'src/shop/features/orders/domain/entities/order.py',
+      ],
+    };
+
+    // Act
+    const failed = failedPaths(project);
+
+    // Assert
+    expect(failed).toStrictEqual([]);
+  });
 });

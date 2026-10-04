@@ -1,0 +1,12 @@
+[dependency-groups]
+dev = [
+  "poethepoet==0.48.0",
+  "ruff==0.16.9",
+  "ty==0.0.84",
+]
+
+[tool.uv]
+exclude-newer = "3 days"
+no-build = true
+python-downloads = "never"
+python-preference = "only-system"

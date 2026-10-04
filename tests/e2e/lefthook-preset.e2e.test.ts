@@ -23,6 +23,27 @@ describe('the lefthook biome part', () => {
   });
 });
 
+describe('the lefthook ruff part', () => {
+  it('should fix and format the staged Python files through the project environment when a project commits', () => {
+    // Arrange
+    const part = 'ruff';
+
+    // Act
+    const config = presetConfig(part);
+
+    // Assert
+    expect(config).toHaveProperty(
+      [
+        'pre-commit',
+        'jobs',
+        0,
+        'run',
+      ],
+      'uv run ruff check --fix --force-exclude {staged_files} && uv run ruff format --force-exclude {staged_files}',
+    );
+  });
+});
+
 describe('the commit message hook', () => {
   it.each([
     'feat: Add the audit preset',
