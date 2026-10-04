@@ -1,9 +1,9 @@
-import architecture from './.constitution/presets/typescript/knip/architecture/core.mjs';
-import betterleaks from './.constitution/presets/typescript/knip/foundation/betterleaks.mjs';
-import core from './.constitution/presets/typescript/knip/foundation/core.mjs';
-import lsLint from './.constitution/presets/typescript/knip/foundation/ls-lint.mjs';
-import mise from './.constitution/presets/typescript/knip/foundation/mise.mjs';
-import osvScanner from './.constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
+import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
+import betterleaks from './.droneey/constitution/presets/typescript/knip/foundation/betterleaks.mjs';
+import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
+import lsLint from './.droneey/constitution/presets/typescript/knip/foundation/ls-lint.mjs';
+import mise from './.droneey/constitution/presets/typescript/knip/foundation/mise.mjs';
+import osvScanner from './.droneey/constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
 
 export default {
   entry: [

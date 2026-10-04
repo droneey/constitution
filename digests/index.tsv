@@ -810,7 +810,7 @@ rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/foundat
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	performance	foundation		true
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST	review		typescript		architecture	sinks-behind-one-contract	true
 rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
-rule	tool-configuration-from-the-constitution-archive	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
+rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true

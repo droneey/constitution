@@ -352,11 +352,11 @@ describe('the Biome preset', () => {
 });
 
 describe('the Biome foundation parts', () => {
-  it('should leave .constitution alone when a project lints its whole tree', () => {
+  it('should leave .droneey/constitution alone when a project lints its whole tree', () => {
     // Arrange
     const project = {
       files: {
-        '.constitution/probe.ts': 'export const data = null;\n',
+        '.droneey/constitution/probe.ts': 'export const data = null;\n',
         'src/order.ts': "export const orderKind = 'order';\n",
       },
       parts: FOUNDATION_PARTS,

@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./.constitution/presets/typescript/biome/architecture/plugins/schema-never-brands.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/schema-never-brands.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

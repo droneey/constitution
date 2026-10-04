@@ -46,7 +46,8 @@ const failedPaths = (project: Project): readonly string[] => {
     writeFileSync(join(folder, path), '');
   }
 
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
 
   const linting = spawnSync(
     LS_LINT,
@@ -55,7 +56,7 @@ const failedPaths = (project: Project): readonly string[] => {
       ...(project.parts ?? PARTS),
     ].flatMap((part) => [
       '--config',
-      `.constitution/presets/${part.replace('/', '/ls-lint/')}.yaml`,
+      `.droneey/constitution/presets/${part.replace('/', '/ls-lint/')}.yaml`,
     ]),
     {
       cwd: folder,

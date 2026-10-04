@@ -30,7 +30,7 @@
   },
   "plugins": [
     {
-      "path": "./.constitution/presets/css/biome/foundation/plugins/styles-never-target-ids.grit",
+      "path": "./.droneey/constitution/presets/css/biome/foundation/plugins/styles-never-target-ids.grit",
       "includes": [
         "**/*.css",
       ],

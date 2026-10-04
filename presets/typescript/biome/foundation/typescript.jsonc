@@ -106,17 +106,17 @@
     },
   },
   "plugins": [
-    "./.constitution/presets/typescript/biome/foundation/plugins/type-names-undecorated.grit",
-    "./.constitution/presets/typescript/biome/foundation/plugins/no-mutable-export.grit",
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/type-names-undecorated.grit",
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/no-mutable-export.grit",
     {
-      "path": "./.constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
         "!**/*.tsx",
       ],
     },
     {
-      "path": "./.constitution/presets/typescript/biome/foundation/plugins/enums-for-named-value-groups.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/enums-for-named-value-groups.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

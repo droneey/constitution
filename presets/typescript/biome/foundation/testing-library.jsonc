@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./.constitution/presets/typescript/biome/foundation/plugins/queries-by-role-label-text.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/queries-by-role-label-text.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",

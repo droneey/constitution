@@ -46,12 +46,12 @@ const REPORT = z.object({
 const configOf = (parts: readonly string[]): string => {
   const names = parts.map((_, index) => `part${index}`);
 
-  return `import architecture from './.constitution/presets/typescript/knip/architecture/core.mjs';
-import core from './.constitution/presets/typescript/knip/foundation/core.mjs';
+  return `import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
+import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
 ${parts
   .map(
     (part, index) =>
-      `import ${names[index]} from './.constitution/presets/${part.replace('/', '/knip/')}.mjs';`,
+      `import ${names[index]} from './.droneey/constitution/presets/${part.replace('/', '/knip/')}.mjs';`,
   )
   .join('\n')}
 
@@ -88,7 +88,8 @@ const unusedCode = (project: Project): Unused => {
     writeFileSync(join(folder, path), text);
   }
 
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
 
   const running = spawnSync(
     KNIP,

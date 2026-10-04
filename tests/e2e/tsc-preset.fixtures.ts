@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import {
+  mkdirSync,
   mkdtempSync,
   readdirSync,
   rmSync,
@@ -34,13 +35,14 @@ const presetParts = (): readonly string[] =>
 const typeChecks = (project: Project): boolean => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-tsconfig-'));
 
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
   writeFileSync(
     join(folder, 'tsconfig.json'),
     JSON.stringify({
       extends: project.parts.map(
         (part) =>
-          `./.constitution/presets/typescript/tsc/foundation/${part}.json`,
+          `./.droneey/constitution/presets/typescript/tsc/foundation/${part}.json`,
       ),
       compilerOptions: {
         typeRoots: [

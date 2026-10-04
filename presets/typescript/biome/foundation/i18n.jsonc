@@ -1,5 +1,5 @@
 {
   "plugins": [
-    "./.constitution/presets/typescript/biome/foundation/plugins/intl-calls-take-a-locale.grit",
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/intl-calls-take-a-locale.grit",
   ],
 }
