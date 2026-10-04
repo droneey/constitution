@@ -146,6 +146,13 @@ A case passes alone and in any order; no state survives from one case or one fil
 |---|---|---|
 | a case that leans on another passes or fails by the order the runner picks, and fails alone when someone runs it to find a bug. | review | [testing] |
 
+## case-order-shuffled-with-a-seed → specs-independent-of-order
+Every run of the specs shuffles the order of the cases and prints the seed that replays it; only a mutation tool's run of a single mutant keeps one order.
+
+| Why | Check | Tags |
+|---|---|---|
+| a case that leans on another fails in some order, and the seed lets anyone run that order again; a mutant's run must stop at the same failing case whichever mutant it tests. | review | [] |
+
 ## no-fixed-sleeps-in-tests · SHOULD
 A test waits for a condition or advances a fake clock, never a fixed delay.
 
@@ -169,6 +176,13 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 |---|---|---|
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
+## network-refused-in-the-unit-run → tests-run-in-a-sandbox
+The unit run replaces every call that opens a connection with one that throws, set once for all its specs; the integration run keeps the real calls.
+
+| Why | Check | Tags |
+|---|---|---|
+| a spec that reaches a server by mistake passes while the server answers and fails at random when it does not; refused at once, it fails where the mistake is. | review | [] |
+
 ## unmatched-request-fails-the-spec → tests-run-in-a-sandbox
 A transport replaced by captured responses throws on a request none of them matches, naming its method and address.
 
@@ -183,12 +197,26 @@ Each faked contract has one fake, `<contract>.fake`, shared by every spec that n
 |---|---|---|
 | one fake per contract is kept in step with its real implementation once, not once per spec that writes its own. | review | [testing] |
 
+## effects-faked-never-mocked → one-fake-per-contract
+No spec mocks, patches or spies on a module of the program: an effect is replaced by the fake of its contract.
+
+| Why | Check | Tags |
+|---|---|---|
+| a mocked module replaces code the spec claims to test, and breaks when the module moves. | review | [] |
+
 ## integration-tested-against-the-real-engine · SHOULD
 Each implementation of a contract over an external system is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each operation of the contract and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
 
 | Why | Check | Tags |
 |---|---|---|
 | a fake proves the code that relies on the contract; only the real engine proves that the implementation keeps it. | review | [testing] |
+
+## integration-specs-in-their-own-run → integration-tested-against-the-real-engine
+The unit run leaves the integration specs out, and they run as their own entry of the check.
+
+| Why | Check | Tags |
+|---|---|---|
+| the fast run stays fast, and the slower integration run fails on its own. | review | [] |
 
 ## captured-responses-verified-against-the-vendor · SHOULD
 Each captured response of a remote vendor is checked against the vendor by a contract run, which captures it again and reports any difference.

@@ -16,12 +16,12 @@ The check runs `pytest` with `strict = true`, `--import-mode=importlib` and `fil
 |---|---|---|
 | a branch no case takes is a behaviour nobody proved, though every line of it ran. | tool/coverage | [testing] |
 
-## test-order-randomized-by-pytest-randomly → specs-independent-of-order
-pytest-randomly shuffles the cases on every run and prints the seed that replays a failure; only the run of each mutant turns it off, with `-p no:randomly`.
+## test-order-randomized-by-pytest-randomly → case-order-shuffled-with-a-seed
+pytest-randomly shuffles the cases on every run and prints its seed; only the run of each mutant turns it off, with `-p no:randomly`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a case that leans on another fails in some order, and the seed lets anyone run that order again. | review | [] |
+| pytest runs the cases in the order it collects them, and the plugin, once installed, shuffles every run with no setting. | review | [] |
 
 ## no-test-reruns → flaky-test-fixed-or-removed
 No plugin that runs a case again — pytest-rerunfailures, flaky — is installed, and no case is marked `flaky`.
@@ -30,28 +30,28 @@ No plugin that runs a case again — pytest-rerunfailures, flaky — is installe
 |---|---|---|
 | a case run again passes on its second try and hides the race that failed the first. | review | [] |
 
-## integration-folder-runs-apart → integration-tested-against-the-real-engine
+## integration-folder-runs-apart → integration-specs-in-their-own-run
 The unit run leaves out `tests/integration/` and `tests/e2e/` by `norecursedirs`; integration specs run as their own task of the check, `pytest tests/integration`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the fast run stays fast, and the slower integration run fails on its own. | review | [] |
+| pytest collects every folder under `tests/`, so only `norecursedirs` keeps the integration specs out of the unit run. | review | [] |
 
 ## The sandbox
 
-## network-refused-by-the-conftest → tests-run-in-a-sandbox
-`tests/conftest.py` holds an autouse fixture that replaces `socket.getaddrinfo`, `socket.socket.connect` and `connect_ex` with functions that raise, so a unit spec that opens a connection fails; `tests/integration/conftest.py` overrides the fixture by its name.
+## network-refused-by-the-conftest → network-refused-in-the-unit-run
+`tests/conftest.py` holds an autouse fixture that replaces `socket.getaddrinfo`, `socket.socket.connect` and `connect_ex` with functions that raise; `tests/integration/conftest.py` overrides the fixture by its name.
 
 | Why | Check | Tags |
 |---|---|---|
-| a spec that reaches a server by mistake passes while the server answers and fails at random when it does not; refused at once, it fails where the mistake is. | review | [] |
+| the standard library's clients, and the libraries built on them, open a connection through these calls of `socket`, and an autouse fixture holds for every spec under its folder with no line in the spec. | review | [] |
 
-## no-module-patching → one-fake-per-contract
-No `unittest.mock`, and no `monkeypatch` over a module of the program: an effect is replaced by the fake of its contract, and `monkeypatch` changes only what the sandbox and the environment hold.
+## no-module-patching → effects-faked-never-mocked
+No `unittest.mock`, and no `monkeypatch` over a module of the program; `monkeypatch` changes only what the sandbox and the environment hold.
 
 | Why | Check | Tags |
 |---|---|---|
-| a patched module replaces code the spec claims to test, and breaks when the module moves. | review | [] |
+| these are pytest's and Python's ways to put another object in a module's place; the environment has no contract to fake, so `monkeypatch` stays for it. | review | [] |
 
 ## async-specs-by-anyio → structured-concurrency
 Async specs run on anyio's plugin, with `anyio_mode = "auto"`; pytest-asyncio is not installed.
