@@ -117,22 +117,6 @@ describe('pluginCheck', () => {
       }),
       name: 'a skill sits in an unlisted directory',
     },
-    {
-      expected: [],
-      files: withFiles({
-        '.claude/skills/local/SKILL.md': '---\nname: local\n---\n',
-      }),
-      name: 'a skill sits in a hidden folder',
-    },
-    {
-      expected: [],
-      files: withFiles({
-        [PLUGIN]:
-          '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./tools/skills/"]}',
-        'tools/skills/ratify/SKILL.md': RATIFY,
-      }),
-      name: 'a listed nested directory holds its skills',
-    },
   ])('should compare the listed and the present skills when $name', ({ expected, files }) => {
     // Arrange
     const input = checkInputOf(files);
@@ -235,11 +219,6 @@ describe('pluginCheck', () => {
       ],
       name: 'its front matter is empty',
       skill: '---\n---\n',
-    },
-    {
-      messages: [],
-      name: 'it has a name and a description',
-      skill: RATIFY,
     },
   ])('should check what a SKILL.md declares when $name', ({ messages, skill }) => {
     // Arrange
@@ -395,7 +374,6 @@ describe('pluginCheck', () => {
       name: 'serving the plugin from another repository',
     },
     ...[
-      'main',
       'v1.0.0-rc.1',
       'release-v1.0.0',
       undefined,

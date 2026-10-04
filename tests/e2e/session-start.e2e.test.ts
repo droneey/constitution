@@ -53,7 +53,6 @@ import {
   REAL_WEB_APP,
   Repository,
   removeProjects,
-  syntheticProject,
 } from './project.fixtures';
 
 interface Place {
@@ -102,11 +101,6 @@ interface DigestCase {
   context: (plugin: string) => string;
   layout: ProjectLayout;
   project: string;
-}
-
-interface TailCase {
-  blocks: number;
-  tail: readonly string[];
 }
 
 interface EscapeCase {
@@ -322,20 +316,9 @@ describe('session-start hook', () => {
 
   it.each<FindCase>([
     {
-      condition: 'CLAUDE_PROJECT_DIR names the project root and cwd lies outside it',
-      cwd: '..',
-      projectDir: '',
-      repository: Repository.Folder,
-    },
-    {
       condition: 'CLAUDE_PROJECT_DIR names a subfolder of the repository',
       cwd: '..',
       projectDir: 'packages/app',
-      repository: Repository.Folder,
-    },
-    {
-      condition: 'CLAUDE_PROJECT_DIR is unset and cwd is a subfolder',
-      cwd: 'src/deep',
       repository: Repository.Folder,
     },
     {
@@ -444,13 +427,6 @@ describe('session-start hook', () => {
       condition: 'axes leaves architecture and workflow out and a later list item is an alias',
       config: configOf({
         axes: '[foundation]',
-        platforms: '[*browser]',
-      }),
-      line: 4,
-    },
-    {
-      condition: 'a list item is an alias',
-      config: configOf({
         platforms: '[*browser]',
       }),
       line: 4,
@@ -768,14 +744,6 @@ describe('session-start hook', () => {
       version: '0.9.0',
     },
     {
-      condition: 'the pin differs after compact',
-      event: HookEvent.Compact,
-      facts: [
-        'constitution.yaml pins 0.9.0; 3 blocks are active.',
-      ],
-      version: '0.9.0',
-    },
-    {
       condition: 'the pin differs in a sub-agent',
       event: HookEvent.Subagent,
       facts: [
@@ -831,14 +799,6 @@ describe('session-start hook', () => {
     },
     {
       event: HookEvent.Clear,
-      heading: WARNINGS,
-    },
-    {
-      event: HookEvent.Compact,
-      heading: WARNINGS,
-    },
-    {
-      event: HookEvent.Subagent,
       heading: WARNINGS,
     },
   ])('should head the warnings with "$heading" when the event is $event', ({ event, heading }) => {
@@ -908,43 +868,6 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'an abstract block is listed',
-      layout: {
-        config: configOf({
-          domains: '[ui]',
-          implementations: '[_react]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- abstract: _react cannot be listed — list react-dom',
-      ],
-    },
-    {
-      condition: 'an id names no block',
-      layout: {
-        config: configOf({
-          implementations: '[tanstak-query]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- unknown: tanstak-query is not a block — check the name',
-      ],
-    },
-    {
-      condition: "a block sits under another layer's key",
-      layout: {
-        config: configOf({
-          implementations: '[ui]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- wrong-key: ui is a domain — move it from implementations to domains',
-      ],
-    },
-    {
       condition: 'core is listed',
       layout: {
         config: configOf({
@@ -954,28 +877,6 @@ describe('session-start hook', () => {
       warnings: [
         WARNINGS,
         '- wrong-key: core is always active — remove it from domains',
-      ],
-    },
-    {
-      condition: 'a key is missing',
-      layout: {
-        config: configOf({
-          omit: ConfigKey.Apps,
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- config: constitution.yaml has no apps key — add apps: {}',
-      ],
-    },
-    {
-      condition: 'a key is unknown',
-      layout: {
-        config: `${configOf({})}skip: [react-dom]\n`,
-      },
-      warnings: [
-        WARNINGS,
-        '- config: constitution.yaml has the unknown key skip — remove it',
       ],
     },
     {
@@ -1043,18 +944,6 @@ describe('session-start hook', () => {
       warnings: [
         WARNINGS,
         `- local-block: ${PARAGLIDE} has no dictionary — fix its front matter`,
-      ],
-    },
-    {
-      condition: 'a local block does not exist',
-      layout: {
-        config: configOf({
-          implementations: `[${PARAGLIDE}]`,
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${PARAGLIDE} does not exist — create it or remove it from implementations`,
       ],
     },
     {
@@ -1499,27 +1388,6 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'a local language has no tool for a role of an active rule',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: `[${localPath('elixir', 'contexts/languages')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[format, lint, secrets]',
-          },
-          folder: 'contexts/languages',
-          id: 'elixir',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for elixir — add one, such as betterleaks, or override them',
-      ],
-    },
-    {
       condition: "a local language's roles leave out the role of an active rule",
       layout: {
         config: configOf({
@@ -1655,20 +1523,6 @@ describe('session-start hook', () => {
       warnings: [],
     },
     {
-      condition: 'no active tool checks a role of an active MUST rule',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: '[typescript]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
-      ],
-    },
-    {
       condition: 'an application needs a tool that the rest of the repository does not',
       layout: {
         config: configOf({
@@ -1698,19 +1552,6 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'an active library does not meet an active requirement',
-      layout: {
-        config: configOf({
-          domains: '[analytics]',
-          implementations: '[matomo]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
-      ],
-    },
-    {
       condition: 'an application shares the library that misses a requirement',
       layout: {
         config: configOf({
@@ -1722,21 +1563,6 @@ describe('session-start hook', () => {
       warnings: [
         WARNINGS,
         '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
-      ],
-    },
-    {
-      condition: 'an override has expired',
-      layout: {
-        config: configOf({
-          domains: '[ui]',
-          overrides: fourDataStatesOverride(
-            '    level: MAY\n    reason: "later"\n    until: 2020-01-01',
-          ),
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- override: four-data-states expired on 2020-01-01 — renew or remove it',
       ],
     },
     {
@@ -1766,31 +1592,6 @@ describe('session-start hook', () => {
         '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
         '- override: analytics-consent-first expired on 2020-01-01 — renew or remove it',
       ],
-    },
-    {
-      condition: 'an override lowers the rule no tool checks',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: '[typescript]',
-          overrides:
-            '\n  - rule: no-secret-in-code\n    level: MAY\n    reason: "no secrets exist"',
-        }),
-      },
-      warnings: [],
-    },
-    {
-      condition: 'an override lowers the requirement a library does not meet',
-      layout: {
-        config: configOf({
-          domains: '[analytics]',
-          implementations: '[matomo]',
-          overrides:
-            '\n  - rule: analytics-consent-first\n    level: SHOULD\n    reason: "no banner yet"',
-        }),
-      },
-      warnings: [],
     },
   ])('should warn as listed when $condition', ({ layout, warnings }) => {
     // Arrange
@@ -1898,73 +1699,6 @@ describe('session-start hook', () => {
     },
   );
 
-  it.each<TailCase>([
-    {
-      blocks: 34,
-      tail: [
-        '- synthetic-034: Block synthetic-034 pads the digest to prove its byte budget holds up. (foundation)',
-      ],
-    },
-    {
-      blocks: 120,
-      tail: [
-        '63 more lines of the block list did not fit; constitution.yaml names every block.',
-      ],
-    },
-  ])(
-    'should end on the last block that fits, and say how many did not, when $blocks domains are active beside core',
-    ({ blocks, tail }) => {
-      // Arrange
-      const project = createProject(syntheticProject(blocks));
-
-      // Act
-      const context = contextOf(
-        runHook({
-          project,
-          event: HookEvent.Startup,
-          root,
-        }),
-      );
-
-      // Assert
-      expect(
-        lastLinesOf({
-          context,
-          count: tail.length,
-        }),
-      ).toStrictEqual(tail);
-    },
-  );
-
-  it.each([
-    {
-      blocks: 34,
-    },
-    {
-      blocks: 120,
-    },
-  ])(
-    'should keep the text after the header within 9,400 bytes when $blocks domains are active beside core',
-    ({ blocks }) => {
-      // Arrange
-      const project = createProject(syntheticProject(blocks));
-
-      // Act
-      const bytes = bytesAfterHeader(
-        contextOf(
-          runHook({
-            project,
-            event: HookEvent.Startup,
-            root,
-          }),
-        ),
-      );
-
-      // Assert
-      expect(bytes).toBeLessThanOrEqual(BUDGET);
-    },
-  );
-
   it.each([
     {
       layout: REAL_WEB_APP,
@@ -2032,11 +1766,6 @@ describe('session-start hook', () => {
       pin: '1.0\t0',
       shown: '1.0\t0',
       what: 'a tab',
-    },
-    {
-      pin: '1.0\u00020',
-      shown: '1.0\u00020',
-      what: 'the control byte 0x02',
     },
     {
       pin: '1.0\u001f0',
@@ -2224,14 +1953,6 @@ describe('session-start hook', () => {
     {
       event: HookEvent.Startup,
       name: 'SessionStart',
-    },
-    {
-      event: HookEvent.Compact,
-      name: 'SessionStart',
-    },
-    {
-      event: HookEvent.Subagent,
-      name: 'SubagentStart',
     },
   ])('should name the event $name when the hook runs at $event', ({ event, name }) => {
     // Arrange

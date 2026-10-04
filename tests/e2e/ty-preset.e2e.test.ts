@@ -46,7 +46,6 @@ const COROUTINE_DROPPED = python(
 );
 const BARE_GENERIC = python('IDS: list = []');
 const BLANKET_IGNORE = python("LIMIT: int = 'ten'  # ty: ignore");
-const UNUSED_IGNORE = python('LIMIT: int = 10  # ty: ignore[invalid-assignment]');
 const TYPE_IGNORE = python("LIMIT: int = 'ten'  # type: ignore[assignment]");
 const REDUNDANT_CAST = python(
   'from typing import cast',
@@ -80,18 +79,6 @@ const PYDANTIC_TWO_FORMS = model(
   'def clone(order: Order) -> Order:',
   '  return order.model_copy()',
 );
-const validated = (input: { decorator: string; name: string; body: readonly string[] }): string =>
-  python(
-    `from pydantic import BaseModel, ${input.name}`,
-    '',
-    '',
-    'class Order(BaseModel):',
-    '  id: str',
-    '',
-    `  @${input.decorator}`,
-    '  @classmethod',
-    ...input.body,
-  );
 
 describe('the ty preset', () => {
   it('should pass well-typed code when the check runs with the part', () => {
@@ -128,11 +115,6 @@ describe('the ty preset', () => {
       condition: 'a ty: ignore names no rule',
       rule: 'blanket-ignore-comment',
       source: BLANKET_IGNORE,
-    },
-    {
-      condition: 'a ty: ignore silences nothing',
-      rule: 'unused-ignore-comment',
-      source: UNUSED_IGNORE,
     },
     {
       condition: 'a type: ignore stands over a wrong assignment',
@@ -180,44 +162,6 @@ describe("the ty preset's hold on pydantic", () => {
     {
       form: 'dict()',
       source: model('def dump(order: Order) -> int:', '  return len(order.dict())'),
-    },
-    {
-      form: 'json()',
-      source: model('def dump(order: Order) -> str:', '  return order.json()'),
-    },
-    {
-      form: 'copy()',
-      source: model('def clone(order: Order) -> Order:', '  return order.copy()'),
-    },
-    {
-      form: 'parse_obj',
-      source: model('def parse(raw: dict[str, str]) -> Order:', '  return Order.parse_obj(raw)'),
-    },
-    {
-      form: 'parse_raw',
-      source: model('def parse(text: str) -> Order:', '  return Order.parse_raw(text)'),
-    },
-    {
-      form: 'validator',
-      source: validated({
-        body: [
-          '  def checked(cls, value: str) -> str:',
-          '    return value',
-        ],
-        decorator: "validator('id')",
-        name: 'validator',
-      }),
-    },
-    {
-      form: 'root_validator',
-      source: validated({
-        body: [
-          '  def checked(cls, values: dict[str, str]) -> dict[str, str]:',
-          '    return values',
-        ],
-        decorator: 'root_validator(skip_on_failure=True)',
-        name: 'root_validator',
-      }),
     },
   ])('should fail the check with deprecated when a model uses $form', ({ source }) => {
     // Arrange

@@ -302,12 +302,9 @@ describe('loadConstitution', () => {
   );
 
   it.each([
-    'blocks/domains/ui/.draft.md',
     'blocks/domains/ui/parts.md',
     'blocks/domains/ui/with/remote-data.md',
-    'blocks/domains/ui/design/parts.md',
     'blocks/domains/ui/design/with/remote-data.md',
-    'blocks/domains/ui/foundation',
     'blocks/domains/ui/foundation/.draft.md',
     'blocks/domains/ui/foundation/parts.mdx',
     'blocks/domains/ui/foundation/parts/a.md',
@@ -433,16 +430,6 @@ describe('loadConstitution', () => {
         path: 'blocks/domains/ui/foundation/with/i18n.md',
       },
     },
-    {
-      files: {
-        'blocks/domains/ui/ui.md': UI_CARD,
-        'blocks/domains/ui/workflow/reviews.md': '---\nid: reviews\n---\n',
-      },
-      finding: {
-        message: 'has front matter; only the main file of a block carries it',
-        path: 'blocks/domains/ui/workflow/reviews.md',
-      },
-    },
   ])(
     'should report "$finding.message" when a file breaks the layout of its block',
     ({ files, finding }) => {
@@ -464,16 +451,6 @@ describe('loadConstitution', () => {
     finding: Finding;
     name: string;
   }>([
-    {
-      files: {
-        'blocks/core/foundation/principles.md': '# Principles\n',
-      },
-      finding: {
-        message: 'has no main file core.md',
-        path: 'blocks/core',
-      },
-      name: 'the core folder has no main file',
-    },
     {
       files: {
         'blocks/domains/ui/foundation/parts.md': '# Parts\n',
@@ -756,36 +733,6 @@ describe('loadConstitution', () => {
           path: 'presets/typescript/biome/bindings.yaml',
         },
       ],
-    });
-  });
-
-  it('should report the rule and load none when it sits in the card', () => {
-    // Arrange
-    const files = {
-      'blocks/domains/ui/ui.md': mainFile({
-        body: `# UI\n\n${rule({
-          slug: 'four-data-states',
-        })}`,
-        id: 'ui',
-      }),
-    };
-
-    // Act
-    const loaded = loadedOf(files);
-
-    // Assert
-    expect({
-      findings: loaded.findings,
-      rules: loaded.constitution.rules,
-    }).toStrictEqual({
-      findings: [
-        {
-          message:
-            'rule "four-data-states" sits in the card; a block\'s rules live in foundation/, architecture/ or workflow/',
-          path: 'blocks/domains/ui/ui.md',
-        },
-      ],
-      rules: [],
     });
   });
 

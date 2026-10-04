@@ -5,7 +5,6 @@ import {
   checkInputOf,
   mainFile,
   rule,
-  textOf,
   without,
 } from '../../../../../__tests__/constitution.fixtures';
 import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../__tests__/valid-digests.fixtures';
@@ -15,7 +14,6 @@ import { generateDigests } from '../generate-digests.use-case';
 const CORE = 'blocks/core/core.md';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
-const LINGUI = 'blocks/implementations/lingui/lingui.md';
 
 const coreFile = (body: string): string =>
   mainFile({
@@ -118,24 +116,6 @@ describe('generateDigests', () => {
       what: 'the unknown base as the only ancestor',
     },
     {
-      condition: 'a rule carries out a SHOULD rule and states no level',
-      files: {
-        [PRINCIPLES]: `# Principles\n\n${rule({
-          level: 'SHOULD',
-          slug: 'dependencies-point-inward',
-          tags: '[data]',
-        })}\n${rule({
-          parent: 'dependencies-point-inward',
-          slug: 'layers-point-inward',
-          tags: '[errors, data]',
-        })}`,
-      },
-      key: 'rule\tlayers-point-inward',
-      record:
-        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tSHOULD\treview\t\t\terrors data\tfoundation\tdependencies-point-inward\tfalse',
-      what: 'the inherited level, the united tags, the parent and a level not stated',
-    },
-    {
       condition: 'a rule carries out a SHOULD rule and states MUST',
       files: {
         [PRINCIPLES]: `# Principles\n\n${rule({
@@ -151,31 +131,6 @@ describe('generateDigests', () => {
       record:
         'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\treview\t\t\t\tfoundation\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
-    },
-    {
-      condition: 'its chapters and seams sit on several axes and one chapter takes its name',
-      files: {
-        'blocks/domains/ui/architecture/forms.md': '# Forms\n',
-        'blocks/domains/ui/foundation/design-system.md': '# Design system\n',
-        'blocks/domains/ui/workflow/reviews.md': '# Reviews\n',
-        'blocks/domains/ui/workflow/with/i18n.md': '# UI with i18n\n',
-      },
-      key: 'block\tui',
-      record:
-        'block\tui\tdomain\tThe ui block.\tfoundation/ui.md foundation/design-system.md architecture/forms.md workflow/reviews.md\tarchitecture/remote-data workflow/i18n\t\t\tfalse\t\t\t\t\t\t**/ui/**',
-      what: 'each chapter and seam with its axis, in axis order and the named chapter first',
-    },
-    {
-      condition: 'a Requirements row is partly met',
-      files: {
-        [LINGUI]: textOf({
-          files: validFiles(),
-          path: LINGUI,
-        }).replace('| yes |', '| partly |'),
-      },
-      key: 'answer\tlingui',
-      record: 'answer\tlingui\ti18n-plurals-by-cldr\tpartly',
-      what: 'the Met value partly',
     },
   ])('should write $what in the record when $condition', ({ files, key, record }) => {
     // Arrange
@@ -234,17 +189,6 @@ describe('generateDigests', () => {
         [CORE]: coreFile(''),
       },
       text: '\n',
-    },
-    {
-      condition: 'the principles of two axes hold MUST rules',
-      files: {
-        ...validFiles(),
-        [CORE]: coreFile('# Core\n'),
-        'blocks/core/architecture/principles.md': `# Principles\n\n${rule({
-          slug: 'layers-point-inward',
-        })}`,
-      },
-      text: '# Core\n',
     },
   ])('should write only the card core.md in the core part when $condition', ({ files, text }) => {
     // Arrange

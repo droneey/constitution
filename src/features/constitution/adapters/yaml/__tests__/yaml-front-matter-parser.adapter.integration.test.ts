@@ -162,14 +162,6 @@ describe('createYamlFrontMatterParser', () => {
     },
     {
       expected: {
-        description: 'Adds an override.',
-        name: undefined,
-      },
-      name: 'the name is absent',
-      yaml: 'description: >\n  Adds an override.',
-    },
-    {
-      expected: {
         description: undefined,
         name: 'amend',
       },

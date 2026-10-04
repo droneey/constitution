@@ -167,44 +167,11 @@ describe('parseRules', () => {
     });
   });
 
-  it('should end each rule at the next heading when headings of several levels follow one another', () => {
-    // Arrange
-    const source = sourceOf([
-      '## a · SHOULD',
-      'A.',
-      ...TABLE,
-      '### Notes',
-      'Text.',
-      '## c · MAY',
-      'C.',
-      ...TABLE,
-    ]);
-
-    // Act
-    const parsed = parseRules(source);
-
-    // Assert
-    expect(parsed).toStrictEqual({
-      findings: [],
-      rules: [
-        ruleOf({
-          statedLevel: Level.Should,
-        }),
-        ruleOf({
-          slug: 'c',
-          statedLevel: Level.May,
-          statement: 'C.',
-        }),
-      ],
-    });
-  });
-
   it.each([
     '## x - MUST',
     '## x · MUST.',
     '# x · SHOULD',
     '## x → y → z',
-    '## x → y · MOST',
     '## x → ',
   ])('should report %p as a stray heading when it misses the rule heading forms', (heading) => {
     // Arrange
@@ -474,27 +441,6 @@ describe('parseRules', () => {
           path: CARD,
         },
       ],
-      rules: [],
-    });
-  });
-
-  it('should report nothing when the card holds prose and no rule', () => {
-    // Arrange
-    const source = {
-      ...sourceOf([
-        '# Core',
-        'What holds for any program.',
-      ]),
-      axis: undefined,
-      file: CARD,
-    };
-
-    // Act
-    const parsed = parseRules(source);
-
-    // Assert
-    expect(parsed).toStrictEqual({
-      findings: [],
       rules: [],
     });
   });

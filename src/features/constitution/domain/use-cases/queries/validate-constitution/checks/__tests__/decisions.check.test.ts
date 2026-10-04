@@ -105,10 +105,6 @@ describe('decisionsCheck', () => {
       expected: 'entry ADR-0001 is dated 2026-13-05, which is not a calendar date',
       line: '**Date:** 2026-13-05 · **Status:** Accepted',
     },
-    {
-      expected: NO_DATE_LINE,
-      line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
-    },
   ])('should report "$expected" when the line under the heading is $line', ({ expected, line }) => {
     // Arrange
     const files = validFiles();

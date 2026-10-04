@@ -72,4 +72,4 @@ const checkCommitMessage = (message: string): HookRun => {
   };
 };
 
-export { checkCommitMessage, Hook, jobRun, presetConfig };
+export { checkCommitMessage, Hook, jobRun };
