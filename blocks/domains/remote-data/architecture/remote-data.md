@@ -51,7 +51,7 @@ Events that build an entity are folded by a pure reducer of the domain before th
 |---|---|---|
 | the fold is tested without a network, and the transport can change without touching it. | review | [data] |
 
-## no-second-model-of-remote-data → entities-guarded-where-the-program-owns-them
+## no-second-model-of-remote-data · SHOULD
 Whoever decides whether a change is valid owns the data. Where another system decides, the program keeps no aggregates, domain events, event sourcing or specifications of its own for that data; what the program decides itself — a draft, an optimistic item, the folding of a stream, a grouping by period — it models in its domain.
 
 | Why | Check | Tags |

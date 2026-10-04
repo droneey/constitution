@@ -147,13 +147,6 @@ Across bounded contexts, duplication is the default and sharing the exception. A
 |---|---|---|
 | a type shared by two contexts must satisfy both, so every change to it is negotiated, and the contexts stop being able to change apart. | review | [] |
 
-## entities-guarded-where-the-program-owns-them · SHOULD
-Where the program owns the data it changes, every change goes through its aggregate's root, which keeps the aggregate consistent; an aggregate stays small, and a child with a life of its own becomes an aggregate referenced by identifier.
-
-| Why | Check | Tags |
-|---|---|---|
-| one entrance per aggregate means one place holds its invariants, and small aggregates keep a change from locking unrelated data. | review | [data] |
-
 ## entity-behaviour-beside-entity · SHOULD
 What concerns one entity alone — a predicate, a derived value, a transition of state the program owns — is a pure function in that entity's file, never a method and never repeated in use-cases or screens; a use-case orchestrates entities and ports.
 

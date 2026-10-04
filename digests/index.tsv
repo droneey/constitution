@@ -20,6 +20,7 @@ block	convergence	domain	A declared document converged by validate, render, plan
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
 block	observability	domain	Log records: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
+block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	foundation/open-source			false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
@@ -315,7 +316,6 @@ rule	contracts-shaped-by-role	core	blocks/core/architecture/principles.md		MUST	
 rule	untrusted-input-parsed-at-edge	core	blocks/core/architecture/principles.md		MUST	review			security	architecture		true
 rule	extension-by-addition	core	blocks/core/architecture/principles.md		MUST	review				architecture		true
 rule	duplication-across-contexts-by-default	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
-rule	entities-guarded-where-the-program-owns-them	core	blocks/core/architecture/principles.md		SHOULD	review			data	architecture		true
 rule	entity-behaviour-beside-entity	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	environment-names-declared-in-one-place	core	blocks/core/architecture/security.md		SHOULD	review			security	architecture		true
 rule	spec-per-boundary-of-the-tree	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture	spec-per-boundary	false
@@ -410,6 +410,7 @@ rule	diagnostics-through-the-logging-port	observability	blocks/domains/observabi
 rule	logging-configured-by-the-root	observability	blocks/domains/observability/architecture/observability.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review				foundation		true
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review			security	foundation		true
+rule	entities-guarded-where-the-program-owns-them	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture		true
 rule	package-named-scope-kit-language-name	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
@@ -457,7 +458,7 @@ rule	cache-keys-from-feature-factory	remote-data	blocks/domains/remote-data/arch
 rule	invalidation-stays-in-its-feature	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	features-blind-to-each-other	false
 rule	stream-as-async-iterable-of-domain-events	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	contracts-know-no-vendor-or-other-contract	false
 rule	stream-folded-by-domain-reducer	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review			data	architecture		true
-rule	no-second-model-of-remote-data	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review			data	architecture	entities-guarded-where-the-program-owns-them	false
+rule	no-second-model-of-remote-data	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review				architecture		true
 rule	remote-data-transport-built-by-the-root	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review				architecture		true
 rule	four-data-states	ui	blocks/domains/ui/foundation/ui.md		MUST	test			ux a11y	foundation		true
 rule	state-messages-guide-the-user	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
