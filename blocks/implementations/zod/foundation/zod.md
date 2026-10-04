@@ -20,3 +20,10 @@ Input is parsed with `safeParse`, and each issue becomes a detail of one coded e
 | Why | Check | Tags |
 |---|---|---|
 | the user sees every problem of the input at once, each pointing at its place. | test | [] |
+
+## zod-four-forms-only · MUST
+A schema uses Zod 4's forms — `z.enum`, `z.strictObject` and `z.looseObject`, `A.extend(B.shape)`, a format such as `z.email()` on its own — never `z.nativeEnum`, `.strict()`, `.passthrough()`, `.merge()` or a format chained on `z.string()`.
+
+| Why | Check | Tags |
+|---|---|---|
+| Zod 4 deprecates these forms and replaces `.strict()` with `z.strictObject`, and two spellings of one schema double what a reader must know. | tool/lint | [] |

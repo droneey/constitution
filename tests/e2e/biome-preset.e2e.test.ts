@@ -1336,6 +1336,113 @@ describe('the Biome foundation parts', () => {
 const ERROR_WITHOUT_CAUSE =
   "export const readOrder = (text: string): unknown => {\n  try {\n    return JSON.parse(text);\n  } catch (error) {\n    throw new Error('unreadable order');\n  }\n};\n";
 
+describe('the Biome parts of the libraries', () => {
+  it.each([
+    {
+      condition: 'a message is translated at the top level of a module',
+      files: {
+        'src/features/chat/ui/status.ts':
+          "import { t } from '@lingui/core/macro';\n\nexport const online = t`Online`;\n",
+      },
+      message: 'Declare a module-level message with msg',
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/lingui',
+      ],
+    },
+    {
+      condition: 'a schema chains a format on z.string()',
+      files: {
+        'src/features/chat/adapters/api/models/user.model.ts':
+          "import { z } from 'zod';\n\nexport const userModel = z.strictObject({ email: z.string().email() });\n",
+      },
+      message: 'Write the Zod 4 form',
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/zod',
+      ],
+    },
+    {
+      condition: "an entity's field is writable",
+      files: {
+        'src/features/chat/domain/entities/chat.entity.ts':
+          'export interface Chat {\n  title: string;\n}\n',
+      },
+      message: 'Declare a field of a domain type readonly',
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/typescript',
+      ],
+    },
+  ])(
+    'should report a plugin finding when $condition and a project extends the part that holds it',
+    ({ files, message, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'a module declares its message and a component translates it',
+      files: {
+        'src/features/chat/ui/status.ts':
+          "import { msg, t } from '@lingui/core/macro';\n\nexport const online = msg`Online`;\nexport const label = (): string => t`Away`;\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/lingui',
+      ],
+    },
+    {
+      condition: 'a schema takes a format on its own and merges by extend',
+      files: {
+        'src/features/chat/adapters/api/models/user.model.ts':
+          "import { z } from 'zod';\n\nconst baseSchema = z.strictObject({ id: z.string() });\n\nexport const userModel = baseSchema.extend({ email: z.email() });\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/zod',
+      ],
+    },
+    {
+      condition: "an entity's fields are readonly",
+      files: {
+        'src/features/chat/domain/entities/chat.entity.ts':
+          'export interface Chat {\n  readonly title: string;\n  rename(title: string): Chat;\n}\n',
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/typescript',
+      ],
+    },
+  ])(
+    'should report no plugin finding when $condition and a project extends the part that holds it',
+    ({ files, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins).toStrictEqual([]);
+    },
+  );
+});
+
 const UNTYPED_RETURN = 'export const next = (count: number) => count + 1;\n';
 
 describe('the Biome part that needs each setting', () => {
@@ -1351,7 +1458,7 @@ describe('the Biome part that needs each setting', () => {
         'typescript/foundation/self',
         'typescript/foundation/core',
       ],
-      rule: 'useExplicitType',
+      rule: 'useExplicitReturnType',
     },
     {
       condition: 'a function leaves its return type unwritten',
@@ -1360,7 +1467,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: FOUNDATION_PARTS,
-      rule: 'useExplicitType',
+      rule: 'useExplicitReturnType',
     },
     {
       condition: 'a catch block throws a new error without its cause',
@@ -1485,6 +1592,25 @@ describe('the Biome part that needs each setting', () => {
         'typescript/foundation/_react',
       ],
       rule: 'useSelfClosingElements',
+    },
+    {
+      condition: 'a constant keeps its narrow type by satisfies',
+      files: {
+        'src/main.ts':
+          "export const routes = { chat: '/chat' } satisfies Record<string, string>;\n",
+      },
+      isReported: false,
+      parts: FOUNDATION_PARTS,
+      rule: 'useExplicitReturnType',
+    },
+    {
+      condition: 'a timer runs code from a string',
+      files: {
+        'src/main.ts': "setTimeout('refresh()', 100);\n",
+      },
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      rule: 'noImpliedEval',
     },
   ])(
     'should report $rule $isReported when $condition and a project extends $parts',
@@ -1678,6 +1804,27 @@ describe('the Biome css part', () => {
       ).toBe(isReported);
     },
   );
+
+  it('should report no undeclared custom property when a project extends the tailwind part', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/theme.css':
+          '@theme {\n  --color-text: oklch(20% 0 0);\n}\n\n@layer components {\n  .card {\n    color: var(--color-text);\n  }\n}\n',
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'css/foundation/css',
+        'css/foundation/tailwind',
+      ],
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules.includes('noUndeclaredCustomProperties')).toBe(false);
+  });
 
   it('should report a plugin finding when a stylesheet styles an element by its id', () => {
     // Arrange

@@ -1,25 +1,25 @@
 type SkillFrontMatterRead =
   | {
-      description: string | undefined;
-      name: string | undefined;
-      status: 'parsed';
+      readonly description: string | undefined;
+      readonly name: string | undefined;
+      readonly status: 'parsed';
     }
   | {
-      reason: string;
-      status: 'not-yaml';
+      readonly reason: string;
+      readonly status: 'not-yaml';
     };
 
 interface Skill {
-  directory: string;
+  readonly directory: string;
   // undefined when the file does not open with a front matter
-  frontMatter: SkillFrontMatterRead | undefined;
-  path: string;
+  readonly frontMatter: SkillFrontMatterRead | undefined;
+  readonly path: string;
 }
 
 interface Agent {
-  file: string;
-  frontMatter: SkillFrontMatterRead | undefined;
-  path: string;
+  readonly file: string;
+  readonly frontMatter: SkillFrontMatterRead | undefined;
+  readonly path: string;
 }
 
 export type { Agent, Skill, SkillFrontMatterRead };

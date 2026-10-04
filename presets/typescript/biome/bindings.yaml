@@ -75,6 +75,9 @@ foundation:
   i18n:
     intl-calls-take-a-locale:
       - intl-calls-take-a-locale.grit
+  lingui:
+    t-never-at-module-level:
+      - t-never-at-module-level.grit
   playwright:
     no-forced-actions:
       - noPlaywrightForceOption
@@ -148,6 +151,8 @@ foundation:
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
   typescript:
+    disposable-held-by-using:
+      - useDisposables
     no-date-library:
       - noRestrictedImports
     no-deprecated-import:
@@ -185,6 +190,9 @@ foundation:
     undefined-is-the-only-absence:
       - noUselessUndefined
       - undefined-is-the-only-absence.grit
+  zod:
+    zod-four-forms-only:
+      - zod-four-forms-only.grit
 architecture:
   browser:
     no-raw-html-injection:
@@ -207,6 +215,8 @@ architecture:
     query-function-only-in-cache-utils:
       - query-function-only-in-cache-utils.grit
   typescript:
+    domain-type-fields-readonly:
+      - domain-type-fields-readonly.grit
     environment-read-only-in-root:
       - noProcessEnv
     surface-only-re-exports:

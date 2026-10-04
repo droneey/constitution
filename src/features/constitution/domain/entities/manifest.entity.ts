@@ -1,40 +1,40 @@
 interface FieldIssue {
-  field: string;
-  message: string;
+  readonly field: string;
+  readonly message: string;
 }
 
 interface PluginManifest {
-  name: string;
-  repository: string | undefined;
-  skills: readonly string[];
+  readonly name: string;
+  readonly repository: string | undefined;
+  readonly skills: readonly string[];
 }
 
 interface MarketplacePlugin {
-  name: string;
-  ref: string | undefined;
-  repo: string | undefined;
+  readonly name: string;
+  readonly ref: string | undefined;
+  readonly repo: string | undefined;
 }
 
 interface MarketplaceManifest {
-  plugins: readonly MarketplacePlugin[];
+  readonly plugins: readonly MarketplacePlugin[];
 }
 
 interface HooksManifest {
-  commands: readonly string[];
+  readonly commands: readonly string[];
 }
 
 type ManifestRead<T> =
   | {
-      status: 'parsed';
-      value: T;
+      readonly status: 'parsed';
+      readonly value: T;
     }
   | {
-      reason: string;
-      status: 'not-json';
+      readonly reason: string;
+      readonly status: 'not-json';
     }
   | {
-      issues: readonly FieldIssue[];
-      status: 'mismatched';
+      readonly issues: readonly FieldIssue[];
+      readonly status: 'mismatched';
     };
 
 export type {

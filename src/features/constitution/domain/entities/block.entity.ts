@@ -1,16 +1,16 @@
 import type { Axis, Layer, Role } from '#/kernel';
 
 interface FrontMatter {
-  abstract: boolean;
-  checks: readonly Role[];
-  dictionary: readonly string[];
-  extends: string | undefined;
-  governs: readonly string[];
-  id: string;
-  languages: readonly string[];
-  requires: readonly string[];
-  roles: readonly Role[];
-  summary: string;
+  readonly abstract: boolean;
+  readonly checks: readonly Role[];
+  readonly dictionary: readonly string[];
+  readonly extends: string | undefined;
+  readonly governs: readonly string[];
+  readonly id: string;
+  readonly languages: readonly string[];
+  readonly requires: readonly string[];
+  readonly roles: readonly Role[];
+  readonly summary: string;
 }
 
 enum BlockFileRole {
@@ -20,20 +20,20 @@ enum BlockFileRole {
 }
 
 interface BlockFile {
-  axis: Axis | undefined;
-  body: string;
-  lines: number;
-  path: string;
-  role: BlockFileRole;
-  with: string | undefined;
+  readonly axis: Axis | undefined;
+  readonly body: string;
+  readonly lines: number;
+  readonly path: string;
+  readonly role: BlockFileRole;
+  readonly with: string | undefined;
 }
 
 interface Block {
-  files: readonly BlockFile[];
-  frontMatter: FrontMatter;
-  id: string;
-  layer: Layer;
-  path: string;
+  readonly files: readonly BlockFile[];
+  readonly frontMatter: FrontMatter;
+  readonly id: string;
+  readonly layer: Layer;
+  readonly path: string;
 }
 
 export type { Block, BlockFile, FrontMatter };

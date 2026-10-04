@@ -1,28 +1,28 @@
 import type { FieldIssue } from './manifest.entity';
 
 interface VocabularySection {
-  concepts: readonly string[];
-  folders: readonly string[];
-  suffixes: readonly string[];
+  readonly concepts: readonly string[];
+  readonly folders: readonly string[];
+  readonly suffixes: readonly string[];
 }
 
 interface Vocabulary {
-  architecture: VocabularySection;
-  workflow: VocabularySection;
+  readonly architecture: VocabularySection;
+  readonly workflow: VocabularySection;
 }
 
 type VocabularyRead =
   | {
-      status: 'parsed';
-      vocabulary: Vocabulary;
+      readonly status: 'parsed';
+      readonly vocabulary: Vocabulary;
     }
   | {
-      reason: string;
-      status: 'not-yaml';
+      readonly reason: string;
+      readonly status: 'not-yaml';
     }
   | {
-      issues: readonly FieldIssue[];
-      status: 'mismatched';
+      readonly issues: readonly FieldIssue[];
+      readonly status: 'mismatched';
     };
 
 export type { Vocabulary, VocabularyRead, VocabularySection };

@@ -1,0 +1,31 @@
+language js
+
+or {
+  JsTemplateExpression(tag=$callee),
+  JsCallExpression(callee=$callee)
+} as $message where {
+  $callee <: or {
+    `t`,
+    `plural`,
+    `select`,
+    `selectOrdinal`
+  },
+  $message <: within JsModule() as $module where {
+    $module <: contains JsImport() as $import where {
+      $import <: r"(?s).*['\"]@lingui/core/macro['\"].*"
+    }
+  } ,
+  $message <: not within or {
+    JsFunctionDeclaration(),
+    JsFunctionExpression(),
+    JsArrowFunctionExpression(),
+    JsMethodClassMember(),
+    JsMethodObjectMember(),
+    JsGetterClassMember(),
+    JsGetterObjectMember(),
+    JsSetterClassMember(),
+    JsSetterObjectMember(),
+    JsConstructorClassMember()
+  } ,
+  register_diagnostic(span=$message, message="Declare a module-level message with msg and translate it where it renders: t at module level runs once, before the locale is active", severity="error")
+}

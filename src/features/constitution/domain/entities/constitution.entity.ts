@@ -12,28 +12,28 @@ import type { Agent, Skill } from './skill.entity';
 import type { VocabularyRead } from './vocabulary.entity';
 
 interface Documents {
-  agents: readonly Agent[];
-  decisions: string | undefined;
-  digests: {
-    core: string | undefined;
-    index: string | undefined;
+  readonly agents: readonly Agent[];
+  readonly decisions: string | undefined;
+  readonly digests: {
+    readonly core: string | undefined;
+    readonly index: string | undefined;
   };
-  hooks: ManifestRead<HooksManifest> | undefined;
-  marketplace: ManifestRead<MarketplaceManifest> | undefined;
-  plugin: ManifestRead<PluginManifest> | undefined;
-  readme: string | undefined;
-  skills: readonly Skill[];
-  vocabulary: VocabularyRead | undefined;
+  readonly hooks: ManifestRead<HooksManifest> | undefined;
+  readonly marketplace: ManifestRead<MarketplaceManifest> | undefined;
+  readonly plugin: ManifestRead<PluginManifest> | undefined;
+  readonly readme: string | undefined;
+  readonly skills: readonly Skill[];
+  readonly vocabulary: VocabularyRead | undefined;
 }
 
 interface Constitution {
-  bindings: readonly Binding[];
-  blocks: readonly Block[];
-  documents: Documents;
-  paths: ReadonlySet<string>;
-  presets: readonly PresetFile[];
-  requirementAnswers: readonly RequirementAnswer[];
-  rules: readonly Rule[];
+  readonly bindings: readonly Binding[];
+  readonly blocks: readonly Block[];
+  readonly documents: Documents;
+  readonly paths: ReadonlySet<string>;
+  readonly presets: readonly PresetFile[];
+  readonly requirementAnswers: readonly RequirementAnswer[];
+  readonly rules: readonly Rule[];
 }
 
 export type { Constitution, Documents };
