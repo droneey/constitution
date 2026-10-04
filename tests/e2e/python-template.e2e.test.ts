@@ -53,6 +53,11 @@ const ORDERS_WITH_LABEL = (comment: string): string =>
     'def label() -> str:',
     `  return 'orders'${comment}`,
   );
+// A feature's folders, as the anatomy lays them out, before a case adds a layer.
+const FEATURE = {
+  'src/shop/features/__init__.py': '',
+  'src/shop/features/orders/__init__.py': '',
+};
 const spec = (...body: readonly string[]): string =>
   python(
     'import socket',
@@ -216,6 +221,45 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: "a feature's domain imports pydantic",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/domain/__init__.py': '',
+        'src/shop/features/orders/domain/order_entity.py': 'from pydantic import BaseModel\n',
+      },
+      finding: 'pydantic-kept-out-of-the-domain BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the kernel reads its settings through pydantic-settings',
+      changes: {
+        'src/shop/kernel/__init__.py': '',
+        'src/shop/kernel/limits.py': 'from pydantic_settings import BaseSettings\n',
+      },
+      finding: 'pydantic-kept-out-of-the-domain BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'a feature imports structlog',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_logs.py': 'import structlog\n',
+      },
+      finding: 'structlog-imported-only-by-the-root BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: "a feature's application layer imports httpx2",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_client.py': 'import httpx2\n',
+      },
+      finding: 'httpx2-kept-to-the-edge BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a feature imports the root',
       changes: {
         'src/shop/features/__init__.py': '',
@@ -346,6 +390,28 @@ describe('the python template', () => {
         ),
       },
       task: 'test:check',
+    },
+    {
+      condition: 'an adapter parses with pydantic and calls through httpx2',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': '',
+        'src/shop/features/orders/adapters/http/orders_adapter.py': python(
+          'import httpx2',
+          'from pydantic import BaseModel',
+        ),
+      },
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the root configures structlog and reads the settings through pydantic-settings',
+      changes: {
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/logs.py': 'import structlog\n',
+        'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
+      },
+      task: 'architecture:check',
     },
     {
       condition: 'the only mutants of a new line are marked equivalent',

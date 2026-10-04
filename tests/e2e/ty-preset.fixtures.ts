@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 import { inPythonProject } from './python-project.fixtures';
-import { uvBinary } from './uv.fixtures';
+import { ENVIRONMENT, uvBinary } from './uv.fixtures';
 
 interface CheckOutcome {
   isClean: boolean;
@@ -14,7 +14,8 @@ const FAILED = 2;
 const FINDING = /^[^:\n]+:\d+:\d+: (?:error|warning)\[(?<rule>[a-z-]+)\]/gm;
 
 // A project with no [tool.ty] of its own takes its version from
-// requires-python, as a project under the part's --config-file does.
+// requires-python, as a project under the part's --config-file does, and
+// resolves its imports in the repository's environment, which holds pydantic.
 const PYPROJECT = '[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n';
 
 const typeCheck = (source: string): CheckOutcome =>
@@ -30,6 +31,8 @@ const typeCheck = (source: string): CheckOutcome =>
           'check',
           '--config-file',
           PART,
+          '--python',
+          ENVIRONMENT,
           '--output-format',
           'concise',
         ],

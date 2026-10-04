@@ -81,11 +81,12 @@ type_check_command = ["ty", "check", "--output-format", "gitlab"]
 # import-linter: core's import rules, by the folders of its anatomy
 [tool.importlinter]
 root_packages = ["<package>"]
+include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "no-import-cycles"
 type = "acyclic_siblings"
-ancestors = ["*"]
+ancestors = ["<package>"]
 
 [[tool.importlinter.contracts]]
 name = "kernel-imports-only-itself"
@@ -149,6 +150,30 @@ allowed_importers = []
 name = "nothing-imports-an-entrypoint"
 type = "independence"
 modules = ["*.entrypoints.*"]
+
+# pydantic: the models kept out of the domain
+[[tool.importlinter.contracts]]
+name = "pydantic-kept-out-of-the-domain"
+type = "forbidden"
+source_modules = ["*.contracts", "*.features.*.domain", "*.kernel"]
+forbidden_modules = ["pydantic", "pydantic_settings"]
+allow_indirect_imports = true
+
+# structlog: configured by the root alone
+[[tool.importlinter.contracts]]
+name = "structlog-imported-only-by-the-root"
+type = "forbidden"
+source_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["structlog"]
+allow_indirect_imports = true
+
+# httpx2: the client kept to the edge
+[[tool.importlinter.contracts]]
+name = "httpx2-kept-to-the-edge"
+type = "forbidden"
+source_modules = ["*.composition", "*.contracts", "*.features.*.app", "*.features.*.domain", "*.kernel"]
+forbidden_modules = ["httpx2"]
+allow_indirect_imports = true
 
 # vulture: the code nothing in src/ uses
 [tool.vulture]
