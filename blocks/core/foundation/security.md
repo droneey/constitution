@@ -83,6 +83,13 @@ Each dependency has one version across every manifest of the repository.
 |---|---|---|
 | two versions of one dependency behave differently in two places, and the difference is found in production. | review | [] |
 
+## ci-steps-pinned-to-immutable-references · MUST
+A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
+
+| Why | Check | Tags |
+|---|---|---|
+| a moving reference lets its owner, or an attacker who owns it, change the code the pipeline runs with its secrets. | review | [security] |
+
 ## dependency-release-cooldown · SHOULD
 A new release of a dependency is adopted only after a cooldown of some days. A fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, and the exemption leaves at the next update.
 

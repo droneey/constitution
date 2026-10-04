@@ -105,12 +105,3 @@ The local environment file is ignored by version control; its committed example 
 | Why | Check | Tags |
 |---|---|---|
 | the real values stay on the machine they belong to, and a real value never lands in the example. | review | [security] |
-
-## CI
-
-## ci-steps-pinned-to-immutable-references · MUST
-A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
-
-| Why | Check | Tags |
-|---|---|---|
-| a moving reference lets its owner, or an attacker who owns it, change the code the pipeline runs with its secrets. | review | [security] |

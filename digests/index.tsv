@@ -198,6 +198,7 @@ rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/securi
 rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
+rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	dependency-release-cooldown	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	new-dependency-vetted	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	deprecated-packages-replaced	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation	new-dependency-vetted	false
@@ -562,7 +563,6 @@ rule	large-files-outside-history	version-control	blocks/domains/version-control/
 rule	move-files-never-recreate	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	generated-files-not-committed	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	local-environment-file-ignored	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			security	foundation		true
-rule	ci-steps-pinned-to-immutable-references	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			security	foundation		true
 rule	commit-header-type-and-subject	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
 rule	commit-header-format	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	commit-header-type-and-subject	false
 rule	commit-body-empty-reason-in-pull-request	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	reason-for-change-recorded	true
