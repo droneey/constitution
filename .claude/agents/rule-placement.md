@@ -14,7 +14,7 @@ A git range, `origin/main...HEAD` unless you are given another. Read the rules i
 ## What to read first
 
 - `blocks/core/core.md`, above all "Where a rule goes" and "Precedence": the two questions are your test.
-- `DECISIONS.md` ADR-0088 to ADR-0090: what architecture and workflow mean here, and the tie-breakers.
+- `DECISIONS.md` ADR-0088, ADR-0089 and ADR-0093: what architecture and workflow mean here, and the tie-breakers.
 - For each rule, its whole file and the card of its block: the block's `requires`, `extends` and summary tell you what the block is.
 
 ## The two questions, asked for each rule
