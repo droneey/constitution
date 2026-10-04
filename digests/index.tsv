@@ -290,6 +290,7 @@ rule	file-carries-its-role-suffix	core	blocks/core/architecture/anatomy.md		MUST
 rule	role-folder-files-carry-its-suffix	core	blocks/core/architecture/anatomy.md		MUST	tool	names			architecture	file-carries-its-role-suffix	false
 rule	domain-names-free-of-vendor-and-storage	core	blocks/core/architecture/code.md		SHOULD	review				architecture		true
 rule	deep-modules-no-pass-through	core	blocks/core/architecture/code.md		SHOULD	review				architecture	module-hides-much-behind-small-public-entry	false
+rule	diagnostics-through-the-logging-port	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture	no-debug-output-in-shipped-code	false
 rule	wire-absence-mapped-at-boundary	core	blocks/core/architecture/code.md		MUST	review			data	architecture	absence-has-one-value	false
 rule	typed-failures-homed-by-layer	core	blocks/core/architecture/code.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
 rule	one-error-handler-per-transport	core	blocks/core/architecture/code.md		SHOULD	review			errors security ux	architecture	failure-shown-as-what-happened-and-what-next	false
@@ -406,7 +407,6 @@ rule	log-secrets-masked-by-key	observability	blocks/domains/observability/founda
 rule	log-record-is-an-event-with-fields	observability	blocks/domains/observability/foundation/observability.md		SHOULD	review				foundation		true
 rule	log-output-structured-in-production	observability	blocks/domains/observability/foundation/observability.md		SHOULD	review				foundation		true
 rule	log-records-carry-the-trace-id	observability	blocks/domains/observability/foundation/observability.md		SHOULD	review				foundation		true
-rule	diagnostics-through-the-logging-port	observability	blocks/domains/observability/architecture/observability.md		SHOULD	review			security	architecture	no-debug-output-in-shipped-code	false
 rule	logging-configured-by-the-root	observability	blocks/domains/observability/architecture/observability.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review				foundation		true
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review			security	foundation		true

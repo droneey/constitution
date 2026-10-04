@@ -20,6 +20,15 @@ A layer that only passes a call through to the next one is removed. A domain use
 |---|---|---|
 | a pass-through adds a place to read and change without hiding anything. | review | [] |
 
+## Comments and leftovers
+
+## diagnostics-through-the-logging-port → no-debug-output-in-shipped-code
+Diagnostics a program keeps on purpose go through the logging port, never straight to the console or a stream.
+
+| Why | Check | Tags |
+|---|---|---|
+| a port decides in one place where diagnostics go and what they may carry, and a test replaces it without touching the code. | review | [] |
+
 ## Absence
 
 ## wire-absence-mapped-at-boundary → absence-has-one-value
