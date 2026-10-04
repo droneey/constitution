@@ -403,6 +403,13 @@ No value, parameter, return or type argument has the type that switches the type
 |---|---|---|
 | that type switches the type checker off for everything it touches, and it spreads. | review | [] |
 
+## instants-carry-their-zone · MUST
+An instant carries its zone or offset, and is kept apart from a calendar date or a wall time, which carry none; no time value is read in the machine's zone by default.
+
+| Why | Check | Tags |
+|---|---|---|
+| an instant without its zone names a different moment on each machine, and a default zone changes with the machine the program runs on. | review | [data] |
+
 ## Async
 
 ## async-work-awaited-or-deliberately-detached · MUST

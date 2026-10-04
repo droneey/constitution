@@ -228,7 +228,7 @@ A value becomes text through a function that names its form — a formatter, `St
 |---|---|---|
 | `'Total: ' + order` prints `[object Object]`, and a number joined to a string is printed in no locale's form. | review | [] |
 
-## dates-through-temporal · MUST
+## dates-through-temporal → instants-carry-their-zone
 A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appears only where an API demands one, converted at that call; no date library is used. A runtime the program supports that lacks `Temporal` loads its polyfill once, in the entry file, before any code reads a date.
 
 | Why | Check | Tags |

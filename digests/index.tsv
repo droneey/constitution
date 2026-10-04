@@ -146,6 +146,7 @@ rule	types-live-with-their-consumer	core	blocks/core/foundation/code.md		SHOULD	
 rule	immutable-by-default	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	documents-strict-vendor-answers-tolerant	core	blocks/core/foundation/code.md		MUST	review			data	foundation		true
 rule	no-any-type	core	blocks/core/foundation/code.md		MUST	review				foundation		true
+rule	instants-carry-their-zone	core	blocks/core/foundation/code.md		MUST	review			data	foundation		true
 rule	async-work-awaited-or-deliberately-detached	core	blocks/core/foundation/code.md		MUST	tool	lint		errors	foundation		true
 rule	resources-released-on-every-path	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	io-has-timeout-and-cancellation	core	blocks/core/foundation/code.md		SHOULD	review			errors performance	foundation		true
@@ -697,7 +698,7 @@ rule	signatures-annotated-without-any	python	blocks/contexts/languages/python/fo
 rule	generics-written-with-their-arguments	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	types	python		foundation	no-any-annotation	false
 rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python	security	foundation	outside-values-untyped-until-parsed	false
 rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	tool	lint	python		foundation		true
-rule	aware-datetimes-only	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	lint	python	data	foundation		true
+rule	aware-datetimes-only	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	lint	python	data	foundation	instants-carry-their-zone	false
 rule	overrides-marked-by-decorator	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	types	python		foundation	override-marked-where-declared	false
 rule	business-types-frozen-dataclasses	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation	immutable-by-default	false
 rule	keyword-only-past-three	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation	at-most-three-positional-arguments	false
@@ -743,7 +744,7 @@ rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/fou
 rule	no-mutable-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	immutable-by-default	false
 rule	type-parameter-appears-twice	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	text-made-deliberately	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
-rule	dates-through-temporal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	data	foundation		true
+rule	dates-through-temporal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	data	foundation	instants-carry-their-zone	false
 rule	no-date-library	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript	data	foundation	dates-through-temporal	false
 rule	no-object-joined-into-text	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	text-made-deliberately	false
 rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
