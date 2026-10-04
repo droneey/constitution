@@ -105,7 +105,7 @@ features/<f>/
 ├── domain/                pure
 │   ├── entities/          business types and enums
 │   ├── value-objects/     values with an invariant: <name>.value-object
-│   ├── contracts/         ports; data ports are repositories/{queries,commands}/<aggregate>.repository.*
+│   ├── contracts/         ports; data ports are repositories/{queries,commands}/<entity>.repository.*
 │   ├── use-cases/         business use-cases, only when the operation has business logic: {queries,commands}/<op>/
 │   └── errors/            typed errors with codes
 ├── adapters/<system>/     this feature's contracts over one external system (wire ↔ domain)
@@ -135,18 +135,18 @@ A feature's `domain/` holds only the role folders of the tree and no file of its
 | a use-case, a port or an entity is found in the same place in every feature. | tool/names | [] |
 
 ## data-ports-split-by-reads-and-writes · SHOULD
-A data port is a repository per aggregate, one file per side: `repositories/queries/<aggregate>.repository` for reads and `repositories/commands/<aggregate>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name, and `repositories/` has no surface that joins the two sides; a shape both sides use — the page a read returns and a write updates in the cache — is an entity.
+A data port is a repository per entity, one file per side: `repositories/queries/<entity>.repository` for reads and `repositories/commands/<entity>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name, and `repositories/` has no surface that joins the two sides; a shape both sides use — the page a read returns and a write updates in the cache — is an entity.
 
 | Why | Check | Tags |
 |---|---|---|
 | reads and writes change apart, and a caller that only reads cannot reach a write. | tool/names | [] |
 
-## ports-named-by-aggregate-and-side → data-ports-split-by-reads-and-writes
-A data port's contract is named after its aggregate and its side: `<Aggregate>QueryRepository` for reads, `<Aggregate>CommandRepository` for writes.
+## ports-named-by-entity-and-side → data-ports-split-by-reads-and-writes
+A data port's contract is named after its entity and its side: `<Entity>QueryRepository` for reads, `<Entity>CommandRepository` for writes.
 
 | Why | Check | Tags |
 |---|---|---|
-| the name alone tells two ports of one aggregate apart, wherever they are imported. | review | [] |
+| the name alone tells two ports of one entity apart, wherever they are imported. | review | [] |
 
 ## pipeline-stages-under-steps · SHOULD
 A pipeline use-case keeps its stages under `steps/`, in the order the use-case calls them; a stage never calls another.
@@ -199,7 +199,7 @@ A layer folder — `domain/`, `app/`, `adapters/`, `src/`, `features/`, `libs/` 
 
 | Why | Check | Tags |
 |---|---|---|
-| an import then names the role it couples to, and no aggregate hides an edge the layer rules forbid. | review | [] |
+| an import then names the role it couples to, and no surface that gathers several roles hides an edge the layer rules forbid. | review | [] |
 
 ## layer-folder-never-imported → layer-folder-has-no-surface
 A layer folder is never an import target, and a feature's `domain/` has no surface.

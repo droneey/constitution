@@ -138,7 +138,7 @@ A new kind of thing — a vendor, a command, a format, a rule — is added as a 
 - **A feature is a bounded context.** One word may mean different things in two features.
 - **Ports and adapters.** A port names what the domain needs, in the domain's words. An adapter implements it over one external system.
 - **Entities, value objects, use-cases.** Business types with identity; small values that guard an invariant; the operations that carry business rules. Their form is the language's.
-- **Aggregates and domain events** where the program owns the data it changes: an aggregate is the unit a change keeps consistent, reached through its root; a domain event records, in the past tense, what the domain decided.
+- **Domain events.** A domain event records, in the past tense, what happened, in the domain's words.
 
 ## duplication-across-contexts-by-default · SHOULD
 Across bounded contexts, duplication is the default and sharing the exception. A context that needs another's entity keeps its own narrow view of it, such as a reference by identifier. The shared kernel stays small and holds only what is universal and stable.

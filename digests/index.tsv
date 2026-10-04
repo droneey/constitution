@@ -262,7 +262,7 @@ rule	feature-anatomy	core	blocks/core/architecture/anatomy.md		SHOULD	review				
 rule	feature-root-holds-its-layers	core	blocks/core/architecture/anatomy.md		SHOULD	tool	imports			architecture	feature-anatomy	false
 rule	feature-domain-holds-its-role-folders	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture	feature-anatomy	false
 rule	data-ports-split-by-reads-and-writes	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture		true
-rule	ports-named-by-aggregate-and-side	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture	data-ports-split-by-reads-and-writes	false
+rule	ports-named-by-entity-and-side	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture	data-ports-split-by-reads-and-writes	false
 rule	pipeline-stages-under-steps	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	contracts-know-no-vendor-or-other-contract	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
 rule	adapters-never-import-each-other-or-callers	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
