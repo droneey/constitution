@@ -16,12 +16,19 @@ CI and every script install with `uv sync --locked`, which fails when `uv.lock` 
 |---|---|---|
 | an install that may update the lockfile runs code nobody reviewed. | review | [] |
 
-## exclude-newer-sets-the-cooldown → dependency-release-cooldown
-`exclude-newer = "3 days"` under `[tool.uv]` sets the cooldown for new releases. A fix for a known vulnerability that cannot wait enters `exclude-newer-package` by name, with its advisory in a comment, and leaves it at the next update.
+## one-lock-for-the-workspace → one-version-per-dependency
+`uv.lock` resolves one version of each dependency for the root and every member of its workspace.
 
 | Why | Check | Tags |
 |---|---|---|
-| the resolver then holds the cooldown on every lock, not only the bot; an exception left behind lifts the cooldown of its package for good. | review | [] |
+| uv resolves the workspace as one whole, so a second version of a dependency cannot enter while every manifest is a member. | review | [] |
+
+## exclude-newer-sets-the-cooldown → dependency-release-cooldown
+`exclude-newer = "3 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
+
+| Why | Check | Tags |
+|---|---|---|
+| the resolver then holds the cooldown on every lock, not only the bot. | review | [] |
 
 ## sdists-never-built → install-scripts-only-for-listed-dependencies
 `no-build = true` under `[tool.uv]`: uv installs wheels only and builds no source distribution.
@@ -30,9 +37,10 @@ CI and every script install with `uv sync --locked`, which fails when `uv.lock` 
 |---|---|---|
 | building a source distribution runs its build code with the developer's rights; a wheel is only unpacked. | review | [] |
 
-## python-never-downloaded-by-uv → dependencies-pinned-by-lockfile
+## python-never-downloaded-by-uv → tools-run-on-the-pinned-runtime
 `python-downloads = "never"` and `python-preference = "only-system"` under `[tool.uv]`, so uv runs the interpreter the repository's toolchain pins.
 
 | Why | Check | Tags |
 |---|---|---|
-| an interpreter uv downloads on its own is one the toolchain neither pinned nor verified. | review | [] |
+| uv otherwise downloads an interpreter of its own, or picks another it finds, which the toolchain neither pinned nor verified. | review | [] |
+

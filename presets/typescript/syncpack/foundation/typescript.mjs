@@ -29,10 +29,16 @@ export default {
   ],
   semverGroups: [
     {
-      label: 'Use caret ranges for the dependencies of the project',
-      range: '^',
+      label: 'Pin the tools exactly',
+      range: '',
       dependencyTypes: [
         'dev',
+      ],
+    },
+    {
+      label: 'Use caret ranges for the dependencies of the program',
+      range: '^',
+      dependencyTypes: [
         'prod',
       ],
     },

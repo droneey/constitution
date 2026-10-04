@@ -24,20 +24,20 @@ CI and every script install with `bun install --frozen-lockfile`.
 | an install script runs with the developer's rights; listing each package keeps that a decision, not a default. | review | [] |
 
 ## release-age-set-for-installs → dependency-release-cooldown
-`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases. A fix for a known vulnerability that cannot wait enters `minimumReleaseAgeExcludes` by name, with any new dependency it brings and its advisory in a comment, and leaves it at the next update.
+`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases, and `minimumReleaseAgeExcludes` holds the exemptions, each with any new dependency it brings.
 
 | Why | Check | Tags |
 |---|---|---|
-| the package manager then holds the cooldown on every install, not only the bot; an exclusion holds for every later release of its name, so one left behind lifts the cooldown for good. | review | [] |
+| the package manager then holds the cooldown on every install, not only the bot, and a dependency the fix brings is a new release too. | review | [] |
 
 ## Running
 
-## every-tool-runs-on-bun · SHOULD
+## every-tool-runs-on-bun → tools-run-on-the-pinned-runtime
 `bunfig.toml` sets `[run] bun = true`, so every tool, one with a Node shebang included, runs on the pinned Bun.
 
 | Why | Check | Tags |
 |---|---|---|
-| one runtime for the program and its tools means one version to pin and one behaviour to trust. | review | [] |
+| a tool with a Node shebang otherwise runs on whichever Node the machine finds, and one runtime for the program and its tools means one version to pin. | review | [] |
 
 ## other-runtime-only-where-bun-cannot · SHOULD
 Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.

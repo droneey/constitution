@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 interface Manifest {
+  dependencies?: Readonly<Record<string, string>>;
   devDependencies?: Readonly<Record<string, string>>;
   name: string;
   peerDependencies?: Readonly<Record<string, string>>;

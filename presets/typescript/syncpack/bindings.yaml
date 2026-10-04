@@ -7,6 +7,8 @@ foundation:
       - semverGroups
     manifest-fields-in-shared-order:
       - sortFirst
+    tools-pinned-without-a-range:
+      - semverGroups
 workflow:
   package:
     one-version-for-all-packages:

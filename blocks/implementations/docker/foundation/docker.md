@@ -30,12 +30,12 @@ Local files and folders enter an image with `COPY`, never `ADD`.
 |---|---|---|
 | `COPY` does one visible thing; `ADD` also fetches addresses and unpacks archives, unseen. | tool/lint | [security] |
 
-## downloads-verified-archives-unpacked · MUST
-A file from the network is downloaded in a `RUN` step at a pinned version and checked against its checksum, and an archive is unpacked with `tar`; `ADD` never fetches an address or unpacks an archive.
+## downloads-verified-archives-unpacked → downloads-pinned-by-version-and-checksum
+A file from the network is downloaded in a `RUN` step that checks its checksum, and an archive is unpacked with `tar`; `ADD` never fetches an address or unpacks an archive.
 
 | Why | Check | Tags |
 |---|---|---|
-| an unverified download runs whatever the address serves that day, inside the image. | review | [security] |
+| a `RUN` step shows the version, the checksum and the unpacking in one place, while `ADD` unpacks a local archive without saying so. | review | [security] |
 
 ## commands-in-exec-form · MUST
 `CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.

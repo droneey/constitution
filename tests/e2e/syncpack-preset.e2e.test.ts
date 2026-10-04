@@ -32,24 +32,62 @@ describe('the syncpack typescript part', () => {
     });
   });
 
-  it('should ask for caret ranges on the project dependencies only when the versions are linted', () => {
+  it.each([
+    {
+      condition: 'a tool takes a caret range',
+      manifest: {
+        devDependencies: {
+          tool: '^1.0.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    },
+    {
+      condition: 'a dependency of the program is pinned exactly',
+      manifest: {
+        dependencies: {
+          library: '1.0.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    },
+  ])('should report SemverRangeMismatch when $condition', ({ manifest }) => {
     // Arrange
-    const caretRanges = {
-      label: 'Use caret ranges for the dependencies of the project',
-      range: '^',
-      dependencyTypes: [
-        'dev',
-        'prod',
-      ],
-    };
+    const repository = [
+      manifest,
+    ];
 
     // Act
-    const groups = typescript.semverGroups;
+    const found = versionIssues(repository);
 
     // Assert
-    expect(groups).toStrictEqual([
-      caretRanges,
+    expect(found).toStrictEqual([
+      'SemverRangeMismatch',
     ]);
+  });
+
+  it("should report nothing when the tools are pinned exactly and the program's dependencies take caret ranges", () => {
+    // Arrange
+    const repository = [
+      {
+        dependencies: {
+          library: '^1.0.0',
+        },
+        devDependencies: {
+          tool: '1.0.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    ];
+
+    // Act
+    const found = versionIssues(repository);
+
+    // Assert
+    expect(found).toStrictEqual([]);
   });
 });
 

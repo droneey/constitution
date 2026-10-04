@@ -55,6 +55,41 @@ A language uses one package manager, and one lockfile, committed. Installs, in C
 |---|---|---|
 | two package managers resolve differently, and an install that ignores the lockfile runs code nobody reviewed. | review | [security] |
 
+## tools-run-on-the-pinned-runtime → dependencies-pinned-by-lockfile
+Every tool runs on a runtime the repository pins, never on one a tool downloads or finds on the machine.
+
+| Why | Check | Tags |
+|---|---|---|
+| a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | review | [] |
+
+## downloads-pinned-by-version-and-checksum → dependencies-pinned-by-lockfile
+A file the program or its build downloads outside a package manager — a binary, an archive, an engine — is pinned to a version and checked against its checksum before it is used.
+
+| Why | Check | Tags |
+|---|---|---|
+| an unverified download runs whatever the address serves that day, and a swapped file fails its checksum. | review | [security] |
+
+## tools-are-pinned-development-dependencies · MUST
+Build, test and lint tools are development dependencies of the repository, each pinned in the manifest to one exact version, never installed globally, and production code imports none of them.
+
+| Why | Check | Tags |
+|---|---|---|
+| a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change of the manifest that someone reviews, and a tool in the program's dependencies ships to every installation. | review | [security] |
+
+## program-dependencies-ranged-lockfile-pins · SHOULD
+A dependency of the program is declared in the manifest by the range of versions it works with, and the lockfile pins the exact version installed.
+
+| Why | Check | Tags |
+|---|---|---|
+| the manifest says what is compatible, the lockfile what is installed, so an update within the range touches the lockfile alone. | review | [security] |
+
+## one-version-per-dependency · MUST
+Each dependency has one version across every manifest of the repository.
+
+| Why | Check | Tags |
+|---|---|---|
+| two versions of one dependency behave differently in two places, and the difference is found in production. | review | [] |
+
 ## ci-steps-pinned-to-immutable-references · MUST
 A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
 
@@ -63,11 +98,11 @@ A third-party step of CI is pinned to an immutable reference, never to a moving 
 | a moving reference lets its owner, or an attacker who owns it, change the code the pipeline runs with its secrets. | review | [security] |
 
 ## dependency-release-cooldown · SHOULD
-A new release of a dependency is adopted only after a cooldown of some days, except a fix for a known vulnerability.
+A new release of a dependency is adopted only after a cooldown of some days. A fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, and the exemption leaves at the next update.
 
 | Why | Check | Tags |
 |---|---|---|
-| most hijacked releases are found and pulled within days; waiting lets others find them first. | review | [security] |
+| most hijacked releases are found and pulled within days, and waiting lets others find them first; an exemption holds for every later release of its name, so one left behind lifts the cooldown for good. | review | [security] |
 
 ## new-dependency-vetted · SHOULD
 A new dependency is a decision: it needs a reason it cannot be a few lines of the project's own, and it is checked against the risk signs of a new package — a name one typo from a popular one, younger than thirty days, under a hundred weekly downloads, a recent change of owner, no source repository, obfuscated code.

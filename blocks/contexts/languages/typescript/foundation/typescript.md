@@ -321,12 +321,19 @@ No module imports an export marked `@deprecated`.
 
 ## Dependencies
 
-## tools-are-dev-dependencies · MUST
-Build, test and lint tools are development dependencies, and production code imports none of them.
+## tools-are-dev-dependencies → tools-are-pinned-development-dependencies
+The tools are `devDependencies` of `package.json`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool in production dependencies ships to every installation, and one imported by production code ships inside it. | review | [security] |
+| a package's `devDependencies` are installed in its repository and never with the package. | review | [] |
+
+## tools-pinned-without-a-range → tools-are-dev-dependencies
+Every entry of `devDependencies` is an exact version, with no range.
+
+| Why | Check | Tags |
+|---|---|---|
+| a range lets the lockfile move a tool to a new version without a change to the manifest. | tool/versions | [] |
 
 ## production-imports-no-development-dependency → tools-are-dev-dependencies
 Production code imports no development dependency.
@@ -335,19 +342,12 @@ Production code imports no development dependency.
 |---|---|---|
 | a tool imported by production code ships inside it. | tool/imports | [security] |
 
-## one-version-per-dependency · MUST
-Each dependency has one version across every manifest of the repository.
+## caret-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
+The range of a dependency of the program is a caret range.
 
 | Why | Check | Tags |
 |---|---|---|
-| two versions of one dependency behave differently in two places, and the difference is found in production. | tool/versions | [] |
-
-## caret-ranges-lockfile-pins · SHOULD
-A manifest's ranges are caret ranges; the lockfile pins the exact versions.
-
-| Why | Check | Tags |
-|---|---|---|
-| the manifest says what is compatible, the lockfile what is installed; pinning in both makes every update touch two files. | tool/versions | [security] |
+| a caret takes every release of the same major, which promises to keep the dependency compatible. | tool/versions | [] |
 
 ## shared-state-packages-once-in-lockfile · SHOULD
 A package that holds state or types across the program — the schema engine, the user-interface framework — resolves to one version in the lockfile.

@@ -29,6 +29,7 @@
 | Python | ADR-0127 – ADR-0129 |
 | TypeScript configuration | ADR-0131, ADR-0133 |
 | Scripts of the check | ADR-0132 |
+| Dependencies | ADR-0134 |
 
 ---
 
@@ -498,7 +499,7 @@
   - `nothing-rendered-as-null` is reviewed: its plugin only allows `null`, and never refuses `undefined`. `query-client-through-router-context` is reviewed too: its import rule exempts the root route, which is where the client is mounted.
   - `toolchain-pinned-and-locked` drops the `MISE_LOCKED=0` workaround, which loosened the lockfile rule for one machine.
   - Installs wait three days for a new release, not seven: a hijacked release is pulled within a day or two, and a week would hold back fixes.
-  - Biome's version is pinned by the lockfile like any other, with a caret range in the manifest (`caret-ranges-lockfile-pins`); its nursery rules change only through a reviewed update.
+  - Biome's nursery rules change only through a reviewed update.
 - **Why.** A review of the audit changes found rules that said one thing twice and intros that restated their own rules.
 
 ## ADR-0114 — Temporal, anchor positioning and OKLCH
@@ -697,3 +698,10 @@
 - **Decision.** `experimentalDecorators` and `emitDecoratorMetadata` are written in the `tsconfig.json` that `bun test` runs from, the root's in a repository of packages, besides the nestjs part it extends (`decorator-options-where-bun-reads`).
 - **Rejected.** A Bun built from the open fix (oven-sh/bun#43110), which no release carries; the options through the presets alone, which Bun 1.4.2 drops.
 - **Why.** Bun's transpiler ignores an `extends` array (oven-sh/bun#43097), so a spec fails at its first decorated member while tsc passes; the rule goes with the Bun release that follows the array.
+
+## ADR-0134 — Tools pinned exactly in both languages
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** A build, test or lint tool is a development dependency pinned in the manifest to one exact version, in TypeScript as in Python (`tools-are-pinned-development-dependencies`): Syncpack's `typescript` part asks for exact versions in `devDependencies` and caret ranges in `dependencies` only. The program's dependencies keep their ranges, and the lockfile pins what is installed.
+- **Rejected.** Caret ranges for the tools, which TypeScript had: an update inside the range moves a tool through the lockfile alone, and a new version of a linter or a type checker changes what the check reports, so it belongs in the manifest where a reviewer sees it (owner).
+- **Why.** Python already pinned its tools with `==`; one meaning in both languages lets one core rule state it.

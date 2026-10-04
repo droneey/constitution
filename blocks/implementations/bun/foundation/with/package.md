@@ -9,16 +9,17 @@ The root installs the repository's own packages as `workspace:*` development dep
 |---|---|---|
 | the root then uses each package as a consumer does, from the working tree. | review | [] |
 
-## own-packages-at-workspace-version → own-packages-as-workspace-dependencies
+## own-packages-at-workspace-version → workspace-packages-linked-locally
 An own package is required at `workspace:*`.
 
 | Why | Check | Tags |
 |---|---|---|
 | the root then takes the working tree, never a published copy. | tool/versions | [] |
 
-## workspaces-declared-in-the-root · SHOULD
-The root `package.json` is `private` and declares the repository's packages in `workspaces`.
+## workspaces-declared-in-the-root → workspace-packages-linked-locally
+The root `package.json` declares the repository's packages in `workspaces`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the workspace links every package from the working tree, and the private root can never be published. | review | [] |
+| Bun links a package from the working tree only when the root's `workspaces` lists it. | review | [] |
+

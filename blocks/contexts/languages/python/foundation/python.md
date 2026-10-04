@@ -136,12 +136,12 @@ A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608
 
 ## Dependencies
 
-## tools-in-the-dev-group · MUST
-Build, test and lint tools are pinned exactly, with `==`, in the `dev` group of `[dependency-groups]` in `pyproject.toml`, never installed globally, and production code imports none of them.
+## tools-in-the-dev-group → tools-are-pinned-development-dependencies
+The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `pyproject.toml`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool installed globally runs in another version on every machine, and one in the program's dependencies ships to every installation. | review | [security] |
+| a dependency group is installed in the repository and never published with a package built from it. | review | [] |
 
 ## requires-python-at-the-pinned-minor · SHOULD
 `requires-python` in `[project]` is a floor at the minor of the interpreter the repository pins: `>=3.14`.
@@ -150,9 +150,10 @@ Build, test and lint tools are pinned exactly, with `==`, in the `dev` group of 
 |---|---|---|
 | the linter and the type checker read the language's version from it, and hold the code to an older language when the floor is lower. | review | [] |
 
-## floor-ranges-lockfile-pins · SHOULD
-A dependency of the program is declared with a `>=` floor and capped only with the reason beside the cap; the lockfile pins the exact versions.
+## floor-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
+The range is a `>=` floor, capped only with the reason beside the cap.
 
 | Why | Check | Tags |
 |---|---|---|
-| the manifest says what is compatible, the lockfile what is installed; a cap with no reason blocks every later fix. | review | [security] |
+| a floor takes every later release, so a cap is a decision, and one with no reason blocks every later fix. | review | [] |
+

@@ -76,12 +76,12 @@ What a run produces lands in one work folder that version control ignores.
 
 ## Engines
 
-## engines-pinned-by-version-and-checksum → dependencies-pinned-by-lockfile
-Engines the program drives are not vendored: each is downloaded per release into the program's home, pinned by version and checksum.
+## engines-pinned-by-version-and-checksum → downloads-pinned-by-version-and-checksum
+Engines the program drives are not vendored: each is downloaded per release into the program's home.
 
 | Why | Check | Tags |
 |---|---|---|
-| a pinned, verified engine behaves the same on every machine, and a swapped binary fails its checksum. | review | [] |
+| a vendored engine grows the repository with every release, while a download per release keeps every machine on the engine the release names. | review | [] |
 
 ## developer-and-ci-run-the-tools-engines · SHOULD
 Developers and CI run exactly the engines the program installed, linked into one directory of its home.
