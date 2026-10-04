@@ -7,3 +7,4 @@ ls:
     .*: kebab-case | regex:^_[a-z0-9]+(-[a-z0-9]+)*$
 ignore:
   - local
+  - .claude/worktrees
