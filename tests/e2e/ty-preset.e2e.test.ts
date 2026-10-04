@@ -46,9 +46,7 @@ const COROUTINE_DROPPED = python(
 );
 const BARE_GENERIC = python('IDS: list = []');
 const BLANKET_IGNORE = python("LIMIT: int = 'ten'  # ty: ignore");
-const UNUSED_IGNORE = python(
-  'LIMIT: int = 10  # ty: ignore[invalid-assignment]',
-);
+const UNUSED_IGNORE = python('LIMIT: int = 10  # ty: ignore[invalid-assignment]');
 const TYPE_IGNORE = python("LIMIT: int = 'ten'  # type: ignore[assignment]");
 const REDUNDANT_CAST = python(
   'from typing import cast',

@@ -7,13 +7,7 @@ import { inPythonProject, REPOSITORY } from './python-project.fixtures';
 import { ENVIRONMENT, uvBinary } from './uv.fixtures';
 
 const POE = uvBinary('poe');
-const TEMPLATE = join(
-  REPOSITORY,
-  'templates',
-  'project',
-  'python',
-  'pyproject.toml',
-);
+const TEMPLATE = join(REPOSITORY, 'templates', 'project', 'python', 'pyproject.toml');
 
 // The template's tasks run the tools of the project's environment, which here
 // is the repository's own, holding the same pinned tools.
@@ -21,10 +15,7 @@ const checkTemplate = (files: Files): boolean =>
   inPythonProject({
     files: {
       ...files,
-      'pyproject.toml': readFileSync(TEMPLATE, 'utf8').replace(
-        '<name>',
-        'shop',
-      ),
+      'pyproject.toml': readFileSync(TEMPLATE, 'utf8').replace('<name>', 'shop'),
     },
     run: (folder) =>
       spawnSync(

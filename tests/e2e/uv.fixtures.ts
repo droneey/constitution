@@ -10,9 +10,7 @@ const uvBinary = (tool: string): string => {
   const binary = join(ENVIRONMENT, 'bin', tool);
 
   if (!existsSync(binary)) {
-    throw new Error(
-      `${tool} is not installed: run \`mise install\` in a trusted checkout`,
-    );
+    throw new Error(`${tool} is not installed: run \`mise install\` in a trusted checkout`);
   }
 
   return binary;

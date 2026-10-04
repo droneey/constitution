@@ -24,10 +24,7 @@ describe('the python template', () => {
   it.each([
     {
       condition: 'a module is laid out in four spaces',
-      source: python(
-        'def total(prices: list[int]) -> int:',
-        '    return sum(prices)',
-      ),
+      source: python('def total(prices: list[int]) -> int:', '    return sum(prices)'),
     },
     {
       condition: 'a parameter is not annotated',

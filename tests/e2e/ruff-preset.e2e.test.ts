@@ -18,19 +18,12 @@ const WELL_FORMED = python(
   "  return f'{label} {datetime.now(tz=UTC).isoformat()}'",
 );
 const DEBUG_PRINT = python('def show(label: str) -> None:', '  print(label)');
-const BREAKPOINT = python(
-  'def show(label: str) -> None:',
-  '  breakpoint()',
-  '  _ = label',
-);
+const BREAKPOINT = python('def show(label: str) -> None:', '  breakpoint()', '  _ = label');
 const FOUR_POSITIONAL = python(
   'def total(price: int, count: int, tax: int, fee: int) -> int:',
   '  return price * count + tax + fee',
 );
-const UNUSED_ARGUMENT = python(
-  'def total(price: int, count: int) -> int:',
-  '  return price',
-);
+const UNUSED_ARGUMENT = python('def total(price: int, count: int) -> int:', '  return price');
 const UNUSED_IMPORT = python('import os');
 const CAUSE_DROPPED = python(
   'class OrderNotFoundError(Exception):',
@@ -96,20 +89,13 @@ const TYPE_VAR_FUNCTION = python(
   'def first(items: list[T]) -> T:',
   '  return items[0]',
 );
-const TYPE_ALIAS = python(
-  'from typing import TypeAlias',
-  '',
-  'Orders: TypeAlias = list[int]',
-);
+const TYPE_ALIAS = python('from typing import TypeAlias', '', 'Orders: TypeAlias = list[int]');
 const BLANKET_NOQA = python('import os  # noqa');
 const UNUSED_NOQA = python('LIMIT = 10  # noqa: E501 -- the line is short');
 const BLANKET_TYPE_IGNORE = python('LIMIT: int = 10  # type: ignore');
 const TODO_WITH_ISSUE = python('# TODO(#12): round each line', 'LIMIT = 10');
 const DOUBLE_QUOTES = python('LABEL = "orders"');
-const FOUR_SPACES = python(
-  'def total(prices: list[int]) -> int:',
-  '    return sum(prices)',
-);
+const FOUR_SPACES = python('def total(prices: list[int]) -> int:', '    return sum(prices)');
 const longCall = (width: number): string => {
   const head = 'TOTAL = sum(';
   const tail = ')';
@@ -120,9 +106,7 @@ const longCall = (width: number): string => {
     () => '1',
   ).join('');
 
-  return python(
-    `${head}[${items.slice(0, width - head.length - tail.length - 2)}]${tail}`,
-  );
+  return python(`${head}[${items.slice(0, width - head.length - tail.length - 2)}]${tail}`);
 };
 
 describe('the ruff preset', () => {
@@ -370,20 +354,17 @@ describe('the ruff formatter', () => {
       isAccepted: false,
       source: FOUR_SPACES,
     },
-  ])(
-    'should hold the layout of self when $condition',
-    ({ isAccepted, source }) => {
-      // Arrange
-      const project = {
-        part: 'self',
-        source,
-      };
+  ])('should hold the layout of self when $condition', ({ isAccepted, source }) => {
+    // Arrange
+    const project = {
+      part: 'self',
+      source,
+    };
 
-      // Act
-      const isClean = isFormatted(project);
+    // Act
+    const isClean = isFormatted(project);
 
-      // Assert
-      expect(isClean).toBe(isAccepted);
-    },
-  );
+    // Assert
+    expect(isClean).toBe(isAccepted);
+  });
 });

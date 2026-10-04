@@ -15,8 +15,7 @@ const FINDING = /^[^:\n]+:\d+:\d+: (?:error|warning)\[(?<rule>[a-z-]+)\]/gm;
 
 // A project with no [tool.ty] of its own takes its version from
 // requires-python, as a project under the part's --config-file does.
-const PYPROJECT =
-  '[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n';
+const PYPROJECT = '[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n';
 
 const typeCheck = (source: string): CheckOutcome =>
   inPythonProject({

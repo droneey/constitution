@@ -35,10 +35,7 @@ const filesOf = (project: Project): Files => ({
   'pyproject.toml': `[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n\n[tool.ruff]\nextend = ".droneey/constitution/presets/python/ruff/foundation/${project.part}.toml"\n`,
 });
 
-const ruffRun = (input: {
-  args: readonly string[];
-  project: Project;
-}): SpawnSyncReturns<string> =>
+const ruffRun = (input: { args: readonly string[]; project: Project }): SpawnSyncReturns<string> =>
   inPythonProject({
     files: filesOf(input.project),
     run: (folder) => {
