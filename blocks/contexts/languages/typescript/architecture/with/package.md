@@ -13,3 +13,10 @@
 | Why | Check | Tags |
 |---|---|---|
 | without the list, every file the ignore rules leave in is packed, and ships by accident. | review | [] |
+
+## root-manifest-private → package-root-private
+The root `package.json` is `"private": true`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a package manager refuses to publish a manifest marked private, so the root can never be published by mistake. | review | [] |
