@@ -181,7 +181,7 @@ Code kept only for its old callers is marked deprecated where it is declared, na
 | the mark stops new callers at the point of use, and the replacement it names is the way off. | review | [] |
 
 ## deprecated-forms-never-used · MUST
-Code calls nothing its dependency or the program marks deprecated, and uses no legacy form a library keeps beside the one that replaces it.
+New code calls nothing a dependency or the program marks deprecated, and uses no form a dependency has deprecated in favour of another.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -327,7 +327,7 @@ The mark is a JSDoc `@deprecated` tag that names the replacement.
 | editors strike the call through, and the tooling reads the tag. | review | [] |
 
 ## no-deprecated-import → deprecated-forms-never-used
-No module imports an export marked `@deprecated`.
+No new import names an export marked `@deprecated`.
 
 | Why | Check | Tags |
 |---|---|---|
