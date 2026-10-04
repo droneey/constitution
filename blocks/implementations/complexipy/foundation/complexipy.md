@@ -1,0 +1,8 @@
+# complexipy
+
+## cognitive-complexity-held-at-ten → function-file-and-complexity-limits
+complexipy fails on a function whose cognitive complexity passes 10, with `max-complexity-allowed = 10`, and the check never writes its snapshot, which would let the functions over the limit pass.
+
+| Why | Check | Tags |
+|---|---|---|
+| the linter measures only the cyclomatic complexity, which counts branches and not how deep they nest. | tool/lint | [] |

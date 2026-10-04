@@ -28,6 +28,20 @@ foundation:
     sys-path-never-touched:
       - TID251
       - sys.path
+  pytest:
+    flaky-mark-banned:
+      - pytest.mark.flaky
+    pytest-asyncio-banned:
+      - pytest_asyncio
+    skips-and-expected-failures-banned:
+      - pytest.importorskip
+      - pytest.mark.skip
+      - pytest.mark.skipif
+      - pytest.mark.xfail
+      - pytest.skip
+      - pytest.xfail
+    unittest-mock-banned:
+      - unittest.mock
   self:
     noqa-names-its-codes:
       - PGH

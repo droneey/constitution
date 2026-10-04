@@ -13,9 +13,20 @@ build-backend = "uv_build"
 # uv: the tools, pinned exactly
 [dependency-groups]
 dev = [
+  "anyio==4.15.1",
+  "complexipy==8.0.1",
+  "deptry==0.25.1",
+  "hypothesis==6.168.3",
+  "import-linter==2.15",
+  "mutmut==3.8.0",
   "poethepoet==0.48.0",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "pytest-randomly==5.0.0",
+  "pytest-timeout==2.4.0",
   "ruff==0.16.9",
   "ty==0.0.84",
+  "vulture==2.16",
 ]
 
 # uv: installs
@@ -27,7 +38,126 @@ python-preference = "only-system"
 
 # ruff: the constitution's chain of parts
 [tool.ruff]
-extend = ".droneey/constitution/presets/python/ruff/foundation/python.toml"
+extend = ".droneey/constitution/presets/python/ruff/foundation/pytest.toml"
+
+# ruff: what the specs lift
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**" = [
+  "INP001",
+  "S101",
+]
+
+# pytest: the specs, strict and offline, in a random order
+[tool.pytest]
+minversion = "9.1"
+strict = true
+testpaths = ["tests"]
+pythonpath = ["tests"]
+norecursedirs = ["integration", "e2e"]
+addopts = ["-ra", "--import-mode=importlib"]
+filterwarnings = ["error"]
+anyio_mode = "auto"
+timeout = "10"
+
+# pytest: the coverage gate, with branches
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = ["**/main.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
+
+# mutmut: the mutants, each one killed
+[tool.mutmut]
+source_paths = ["src"]
+do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py"]
+pytest_add_cli_args = ["-p", "no:randomly"]
+type_check_command = ["ty", "check", "--output-format", "gitlab"]
+
+# import-linter: core's import rules, by the folders of its anatomy
+[tool.importlinter]
+root_packages = ["<package>"]
+
+[[tool.importlinter.contracts]]
+name = "no-import-cycles"
+type = "acyclic_siblings"
+ancestors = ["*"]
+
+[[tool.importlinter.contracts]]
+name = "kernel-imports-only-itself"
+type = "forbidden"
+source_modules = ["*.kernel"]
+forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.libs", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "libs-import-no-application-code"
+type = "forbidden"
+source_modules = ["*.libs"]
+forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "shared-imports-no-feature-or-root"
+type = "forbidden"
+source_modules = ["*.shared"]
+forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.root"]
+
+[[tool.importlinter.contracts]]
+name = "contracts-know-no-vendor-or-other-contract"
+type = "forbidden"
+source_modules = ["*.contracts"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "domain-imports-only-itself-and-kernel"
+type = "forbidden"
+source_modules = ["*.features.*.domain"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.libs", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "features-blind-to-each-other"
+type = "independence"
+modules = ["*.features.*"]
+
+[[tool.importlinter.contracts]]
+name = "adapters-never-import-each-other-or-callers"
+type = "independence"
+modules = ["*.adapters.*", "*.features.*.adapters.*"]
+
+[[tool.importlinter.contracts]]
+name = "adapters-never-import-each-other-or-callers"
+type = "forbidden"
+source_modules = ["*.adapters", "*.features.*.adapters"]
+forbidden_modules = ["*.composition", "*.entrypoints", "*.features.*.app", "*.root"]
+
+[[tool.importlinter.contracts]]
+name = "root-imported-only-by-entry-and-delivery-wiring"
+type = "protected"
+protected_modules = ["*.root"]
+allowed_importers = ["*.main", "*.entrypoints.*.main"]
+
+[[tool.importlinter.contracts]]
+name = "nothing-imports-an-entrypoint"
+type = "protected"
+protected_modules = ["*.entrypoints"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "nothing-imports-an-entrypoint"
+type = "independence"
+modules = ["*.entrypoints.*"]
+
+# vulture: the code nothing in src/ uses
+[tool.vulture]
+paths = ["src"]
+min_confidence = 60
+
+# complexipy: the cognitive complexity of a function
+[tool.complexipy]
+max-complexity-allowed = 10
 
 # poethepoet: the check
 [tool.poe.tasks]
@@ -36,4 +166,23 @@ extend = ".droneey/constitution/presets/python/ruff/foundation/python.toml"
 "lint:check" = "ruff check"
 "lint:fix" = "ruff check --fix"
 "type:check" = "ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml"
-check = ["format:check", "lint:check", "type:check"]
+"code:check" = "python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests"
+"complexity:check" = "complexipy src tests"
+"architecture:check" = "lint-imports --no-logo"
+"dependencies:check" = "deptry src"
+"unused:check" = "vulture"
+"test:check" = "pytest --cov"
+"mutation:check" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz"
+"mutation:all" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz all"
+check = [
+  "format:check",
+  "lint:check",
+  "type:check",
+  "code:check",
+  "complexity:check",
+  "architecture:check",
+  "dependencies:check",
+  "unused:check",
+  "test:check",
+  "mutation:check",
+]

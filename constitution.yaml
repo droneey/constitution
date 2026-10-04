@@ -3,8 +3,8 @@ version: 0.63.0
 axes: [foundation, architecture, workflow]
 domains: [version-control]
 platforms: []
-languages: [typescript]
-implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner]
+languages: [typescript, python]
+implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner, uv, ruff, ty, pytest, mutmut, deptry, vulture, complexipy, python-check]
 apps: {}
 check: bun run check
 overrides:
