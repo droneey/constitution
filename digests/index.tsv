@@ -12,11 +12,12 @@ role	mutation	false
 role	secrets	true
 role	audit	true
 role	commits	true
-block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/logs.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/delivery.md workflow/security.md workflow/testing.md				false						
+block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/delivery.md workflow/security.md workflow/testing.md				false						
 block	a11y	domain	Accessibility outcomes, to WCAG 2.2 AA, for any user interface.	foundation/a11y.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md				false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
+block	observability	domain	Log records: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
@@ -58,7 +59,7 @@ block	mise	implementation	Pins the developer and CI toolchain to exact, locked v
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test foundation/pino	typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
-block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md architecture/pino.md		typescript		false						**/root/**
+block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md architecture/pino.md		typescript observability		false						**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
 block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	foundation/pydantic.md architecture/pydantic.md		python		false						**/models/** **/adapters/** **/root/**
@@ -70,7 +71,7 @@ block	renovate	implementation	Dependency updates proposed by a bot on a schedule
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/fastapi foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md	foundation/a11y	_react		false						**/*.stories.tsx .storybook/**
-block	structlog	implementation	structlog renders the records of Python's logging as events.	foundation/structlog.md architecture/structlog.md		python		false						**/root/**
+block	structlog	implementation	structlog renders the records of Python's logging as events.	foundation/structlog.md architecture/structlog.md		python observability		false						**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.	foundation/stryker.md	foundation/bun-test	typescript		false		mutation	typescript			stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
@@ -180,11 +181,6 @@ rule	public-repository-carries-a-licence	core	blocks/core/foundation/delivery.md
 rule	public-repository-states-security-policy	core	blocks/core/foundation/delivery.md		SHOULD	review			security	foundation		true
 rule	generated-files-marked-never-edited	core	blocks/core/foundation/files.md		MUST	review				foundation		true
 rule	yaml-files-end-in-yaml	core	blocks/core/foundation/files.md		SHOULD	tool	names			foundation		true
-rule	log-records-pass-one-pipeline	core	blocks/core/foundation/logs.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
-rule	log-secrets-masked-by-key	core	blocks/core/foundation/logs.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
-rule	log-record-is-an-event-with-fields	core	blocks/core/foundation/logs.md		SHOULD	review				foundation		true
-rule	log-output-structured-in-production	core	blocks/core/foundation/logs.md		SHOULD	review				foundation		true
-rule	log-records-carry-the-trace-id	core	blocks/core/foundation/logs.md		SHOULD	review				foundation		true
 rule	illegal-states-unrepresentable	core	blocks/core/foundation/principles.md		MUST	review				foundation		true
 rule	errors-surfaced-never-swallowed	core	blocks/core/foundation/principles.md		MUST	review			errors	foundation		true
 rule	catch-never-empty	core	blocks/core/foundation/principles.md		MUST	tool	lint		errors	foundation	errors-surfaced-never-swallowed	false
@@ -298,8 +294,6 @@ rule	file-carries-its-role-suffix	core	blocks/core/architecture/anatomy.md		MUST
 rule	role-folder-files-carry-its-suffix	core	blocks/core/architecture/anatomy.md		MUST	tool	names			architecture	file-carries-its-role-suffix	false
 rule	domain-names-free-of-vendor-and-storage	core	blocks/core/architecture/code.md		SHOULD	review				architecture		true
 rule	deep-modules-no-pass-through	core	blocks/core/architecture/code.md		SHOULD	review				architecture	module-hides-much-behind-small-public-entry	false
-rule	diagnostics-through-the-logging-port	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture	no-debug-output-in-shipped-code	false
-rule	logging-configured-by-the-root	core	blocks/core/architecture/code.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	wire-absence-mapped-at-boundary	core	blocks/core/architecture/code.md		MUST	review			data	architecture	absence-has-one-value	false
 rule	typed-failures-homed-by-layer	core	blocks/core/architecture/code.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
 rule	one-error-handler-per-transport	core	blocks/core/architecture/code.md		SHOULD	review			errors security ux	architecture	failure-shown-as-what-happened-and-what-next	false
@@ -418,6 +412,13 @@ rule	i18n-typed-keys	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review	
 rule	i18n-lazy-locales	i18n	blocks/domains/i18n/foundation/i18n.md		SHOULD	review			performance	foundation		true
 rule	locale-reachable-without-props	i18n	blocks/domains/i18n/architecture/i18n.md		SHOULD	review				architecture		true
 rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md		MUST	tool	imports			architecture	domain-imports-only-itself-and-kernel	false
+rule	log-records-pass-one-pipeline	observability	blocks/domains/observability/foundation/observability.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
+rule	log-secrets-masked-by-key	observability	blocks/domains/observability/foundation/observability.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
+rule	log-record-is-an-event-with-fields	observability	blocks/domains/observability/foundation/observability.md		SHOULD	review				foundation		true
+rule	log-output-structured-in-production	observability	blocks/domains/observability/foundation/observability.md		SHOULD	review				foundation		true
+rule	log-records-carry-the-trace-id	observability	blocks/domains/observability/foundation/observability.md		SHOULD	review				foundation		true
+rule	diagnostics-through-the-logging-port	observability	blocks/domains/observability/architecture/observability.md		SHOULD	review			security	architecture	no-debug-output-in-shipped-code	false
+rule	logging-configured-by-the-root	observability	blocks/domains/observability/architecture/observability.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	package-named-scope-kit-language-name	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true

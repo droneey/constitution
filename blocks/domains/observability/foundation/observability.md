@@ -1,4 +1,4 @@
-# Logs
+# Observability
 
 > How a program writes its log records, in any language: one pipeline masks, enriches and renders every record, and a record is an event with its values as fields.
 

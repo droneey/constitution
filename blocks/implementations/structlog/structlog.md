@@ -1,7 +1,7 @@
 ---
 id: structlog
 summary: structlog renders the records of Python's logging as events.
-requires: [python]
+requires: [python, observability]
 extends: null
 abstract: false
 checks: []

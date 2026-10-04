@@ -248,11 +248,11 @@ A mapped error keeps its cause.
 | the cause is what finds the bug. | tool/lint | [errors] |
 
 ## error-logged-once · SHOULD
-An error is logged once, where it is handled, never at every level it passes.
+An error is reported once, where it is handled, never at every level it passes.
 
 | Why | Check | Tags |
 |---|---|---|
-| a failure logged at every level looks like several. | review | [errors] |
+| a failure reported at every level looks like several. | review | [errors] |
 
 ## retry-only-transient-failures · SHOULD
 Only a transient failure — a timeout, a dropped connection, a rate limit — is retried, with backoff and a limit.

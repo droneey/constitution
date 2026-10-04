@@ -31,4 +31,4 @@ Hold it to the rules of the project's domains and language and their requirement
 
 ## Reading order
 
-This file, then the `principles` of `foundation/` and `architecture/`, then the chapters of the task: `anatomy` before structure changes, `code` before code is written, `logs` before it writes a log record, `testing` with every behaviour, `security` for dependencies and secrets, `delivery` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.
+This file, then the `principles` of `foundation/` and `architecture/`, then the chapters of the task: `anatomy` before structure changes, `code` before code is written, `testing` with every behaviour, `security` for dependencies and secrets, `delivery` for every change, `collaboration` when working with people and agents. Then the active blocks, from domains to implementations.

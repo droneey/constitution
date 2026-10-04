@@ -1,7 +1,7 @@
 ---
 id: pino
 summary: pino writes the program's log records as JSON lines.
-requires: [typescript]
+requires: [typescript, observability]
 extends: null
 abstract: false
 checks: []
