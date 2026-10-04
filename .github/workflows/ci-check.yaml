@@ -14,8 +14,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    # A changed spec mutates the files it proves in full: up to about 3,000 mutants, about 30 minutes here.
-    timeout-minutes: 45
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
