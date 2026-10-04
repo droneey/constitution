@@ -7,6 +7,6 @@ or {
   `it.each($_)($title, $_)`
 } where {
   $title <: string(),
-  not $title <: r"[\x27\x22`]should .+ when .+[\x27\x22`]",
-  register_diagnostic(span=$title, message="A case reads 'should <behaviour> when <condition>'", severity="error")
+  not $title <: r"[\x27\x22`]should .+[\x27\x22`]",
+  register_diagnostic(span=$title, message="A case reads 'should <behaviour>', with 'when <condition>' where it has one", severity="error")
 }

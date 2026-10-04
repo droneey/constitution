@@ -27,3 +27,10 @@ A package whose licence the registry names wrongly is a `[[PackageOverrides]]` e
 | Why | Check | Tags |
 |---|---|---|
 | an override corrects the data; used to let a licence through, it hides an obligation the project took on. | review | [] |
+
+## development-tool-licence-ignored-with-reason → licences-from-an-allowlist
+A tool that only builds, tests or checks the program and whose licence is off the allowlist is a `[[PackageOverrides]]` entry by name with `license.ignore = true` and a `reason` saying it never ships.
+
+| Why | Check | Tags |
+|---|---|---|
+| the scanner then skips its licence and still checks its vulnerabilities, and the reason is the only record that it never ships. | review | [] |

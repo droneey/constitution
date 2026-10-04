@@ -1,5 +1,12 @@
 language js
 
-`$_.toEqual($_)` as $call where {
-  register_diagnostic(span=$call, message="Compare with toStrictEqual: toEqual ignores undefined fields and class types", severity="error")
+or {
+  `$_.toEqual($_)`,
+  `$_.toMatchObject($_)`,
+  `expect.objectContaining($_)`,
+  `expect.arrayContaining($_)`,
+  `$_.toBeTruthy()`,
+  `$_.toBeFalsy()`
+} as $call where {
+  register_diagnostic(span=$call, message="Compare the whole outcome with toStrictEqual: toEqual, toMatchObject, objectContaining, arrayContaining, toBeTruthy and toBeFalsy pass on a partial or loose match", severity="error")
 }
