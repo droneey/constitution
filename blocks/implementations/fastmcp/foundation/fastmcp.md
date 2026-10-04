@@ -7,12 +7,12 @@ Every tool has a docstring that says what it does and when to call it, and every
 |---|---|---|
 | a model knows a tool only by its description, so to the model no tool is an obvious entry. | review | [] |
 
-## program-raises-no-tool-error → expected-failures-typed-with-codes
+## program-raises-no-tool-error → framework-errors-never-raised
 The program raises the error kit's errors, never `ToolError`; the middleware turns each into what the model reads.
 
 | Why | Check | Tags |
 |---|---|---|
-| a `ToolError` carries a message and no code, so nothing can branch on it. | review | [errors] |
+| a `ToolError` carries a message and no code. | review | [errors] |
 
 ## validation-inside-a-tool-is-internal · SHOULD
 A validation error that a tool's own code raises — on parsing a vendor's answer, say — is an unexpected failure and is masked; only a failure of the tool's arguments is the caller's.

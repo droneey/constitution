@@ -13,3 +13,10 @@ The compiler's options set `experimentalDecorators` and `emitDecoratorMetadata`.
 | Why | Check | Tags |
 |---|---|---|
 | without them the injector reads no constructor types and wires nothing. | tool/types | [] |
+
+## program-throws-no-http-exception → framework-errors-never-raised
+The program throws the error kit's errors, never `HttpException` or one of its subclasses; one exception filter gives each code its status.
+
+| Why | Check | Tags |
+|---|---|---|
+| an `HttpException` carries a status and no code, and ties the code that throws it to HTTP. | review | [errors] |

@@ -32,12 +32,12 @@ What the app keeps open — clients, pools, connections — is opened and closed
 
 ## Failures
 
-## program-raises-no-http-exception → expected-failures-typed-with-codes
+## program-raises-no-http-exception → framework-errors-never-raised
 The program raises the error kit's errors, never `HTTPException`; the error handlers give each code its status.
 
 | Why | Check | Tags |
 |---|---|---|
-| an `HTTPException` carries a status and no code, so no caller can branch on it, and the code that raises it is tied to HTTP. | review | [errors] |
+| an `HTTPException` carries a status and no code, and ties the code that raises it to HTTP. | review | [errors] |
 
 ## unexpected-error-logged-once → error-logged-once
 The handler of an unexpected failure logs it, and a filter on the `uvicorn.error` logger drops the record of the same exception, which Starlette raises again after the handler has answered.

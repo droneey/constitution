@@ -16,7 +16,7 @@ A secret in the document is a reference by name to the environment. Validation l
 |---|---|---|
 | the document can then be committed and reviewed, and a missing secret fails before anything is applied. | review | [security] |
 
-## document-schema-strict · MUST
+## document-schema-strict → documents-strict-vendor-answers-tolerant
 Each section of the document has a strict schema: unions selected by a discriminant field, and unknown keys rejected.
 
 | Why | Check | Tags |

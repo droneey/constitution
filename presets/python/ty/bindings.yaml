@@ -2,6 +2,8 @@ foundation:
   self:
     awaitable-never-dropped:
       - all
+    deprecated-calls-fail-the-types:
+      - all
     deprecated-pydantic-forms-fail-the-types:
       - all
     generics-written-with-their-arguments:

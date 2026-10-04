@@ -39,12 +39,12 @@ Code spells absence as `None`, typed `T | None`; no sentinel object of the code'
 |---|---|---|
 | a second spelling of absence needs a second check, and an annotation that names `None` makes the type checker ask for the first. | review | [] |
 
-## no-any-annotation · MUST
-No `Any`: not in an annotation, a `cast` or a generic's arguments — `dict[str, Any]` — in specs too. An unannotated parameter or return is `Any` as well, and so is the argument a generic is written without.
+## no-any-annotation → no-any-type
+No `Any`: not in an annotation, a `cast` or a generic's arguments — `dict[str, Any]`. An unannotated parameter or return is `Any` as well, and so is the argument a generic is written without.
 
 | Why | Check | Tags |
 |---|---|---|
-| `Any` switches the type checker off for everything it touches, and it spreads. | review | [] |
+| these are the places `Any` enters a Python program, the last two without the word written. | review | [] |
 
 ## signatures-annotated-without-any → no-any-annotation
 Every parameter and return of a function is annotated, and never as `Any`.
@@ -74,12 +74,12 @@ A `datetime` carries its time zone: `now`, `fromtimestamp` and the constructor a
 |---|---|---|
 | a naive `datetime` is read in the machine's zone by one function and in UTC by the next, and the two compare as if they were the same instant. | tool/lint | [data] |
 
-## overrides-marked-by-decorator · MUST
+## overrides-marked-by-decorator → override-marked-where-declared · MUST
 A method that overrides one of a base class is marked `@override`, `__init__`, `__new__`, `__init_subclass__` and `__post_init__` aside.
 
 | Why | Check | Tags |
 |---|---|---|
-| the type checker then fails when an override stops overriding anything, or a new method overrides one by accident. | tool/types | [] |
+| `@override` is the mark the type checker reads, and the methods aside are ones every class has, which no mark would make clearer. | tool/types | [] |
 
 ## business-types-frozen-dataclasses → immutable-by-default
 A type of the program's business data is a dataclass with `frozen=True, slots=True, kw_only=True`, its sequences tuples and its maps typed `Mapping`.

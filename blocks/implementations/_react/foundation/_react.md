@@ -30,12 +30,12 @@ No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effe
 |---|---|---|
 | hand-written memoisation is noise the Compiler makes useless, and it hides the real dependencies of the code. | tool/lint | [performance] |
 
-## modern-react-api-only · MUST
+## modern-react-api-only → deprecated-forms-never-used
 Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup, actions. The legacy form of each is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|
-| two forms of one thing double what a reader must know, and the legacy forms are on their way out. | review | [] |
+| React keeps each legacy form beside its replacement only until it removes it. | review | [] |
 
 ## legacy-react-api-refused → modern-react-api-only
 No `useContext`, `Context.Provider`, `forwardRef`, `defaultProps`, `createRef` or string ref.

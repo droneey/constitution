@@ -120,12 +120,12 @@ A default for an absent value is given with `??`, not `||`.
 |---|---|---|
 | a logical or also replaces `0`, an empty string and `false`, which are values, not absence. | tool/lint | [] |
 
-## no-any · MUST
-No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, in tests too; `noImplicitAny` is never turned off.
+## no-any → no-any-type
+No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`; `noImplicitAny` is never turned off.
 
 | Why | Check | Tags |
 |---|---|---|
-| `any` switches the type checker off for everything it touches, and it spreads. | tool/lint | [] |
+| these are the places `any` is written, and `noImplicitAny` refuses the parameter left without a type. | tool/lint | [] |
 
 ## no-unchecked-escape-hatches → suppression-states-its-reason
 No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@ts-nocheck`. `@ts-expect-error` and any other exception carry a suppression that states why.
@@ -133,6 +133,13 @@ No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@
 | Why | Check | Tags |
 |---|---|---|
 | each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | review | [] |
+
+## overrides-marked-by-keyword → override-marked-where-declared · MUST
+A method that overrides one of its base class carries `override`.
+
+| Why | Check | Tags |
+|---|---|---|
+| `noImplicitOverride` makes the compiler refuse an override without the keyword, and the keyword on a method that overrides nothing. | tool/types | [] |
 
 ## casts-and-assertions-refused → no-unchecked-escape-hatches
 No `as` cast except `as const`, no `!` non-null assertion and no `@ts-ignore`.
@@ -312,12 +319,12 @@ The mark is a JSDoc `@deprecated` tag that names the replacement.
 |---|---|---|
 | editors strike the call through, and the tooling reads the tag. | review | [] |
 
-## no-deprecated-import → retired-code-marked-deprecated
+## no-deprecated-import → deprecated-forms-never-used
 No module imports an export marked `@deprecated`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a new caller of retired code is the one the mark exists to stop. | tool/lint | [] |
+| the tag is where TypeScript marks a deprecated export, and the linter reads it at the import. | tool/lint | [] |
 
 ## Dependencies
 

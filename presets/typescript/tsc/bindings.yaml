@@ -26,5 +26,7 @@ foundation:
     no-dead-code:
       - noUnusedLocals
       - noUnusedParameters
+    overrides-marked-by-keyword:
+      - noImplicitOverride
     undefined-is-the-only-absence:
       - exactOptionalPropertyTypes

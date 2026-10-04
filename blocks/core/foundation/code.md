@@ -180,6 +180,13 @@ Code kept only for its old callers is marked deprecated where it is declared, na
 |---|---|---|
 | the mark stops new callers at the point of use, and the replacement it names is the way off. | review | [] |
 
+## deprecated-forms-never-used · MUST
+Code calls nothing its dependency or the program marks deprecated, and uses no legacy form a library keeps beside the one that replaces it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a deprecated form is removed in a later release, and two spellings of one thing double what a reader must know. | review | [] |
+
 ## todo-names-its-issue · SHOULD
 A to-do comment names its issue: `TODO(#<issue>)`. A to-do without one is done, filed, or removed.
 
@@ -261,6 +268,20 @@ An expected failure is typed, carries a stable code `<MODULE>_<ENTITY>_<KIND>` a
 |---|---|---|
 | a caller that branches on a typed code keeps working when the message is reworded, and a failure that is part of the contract is handled by design. | review | [errors] |
 
+## parse-failure-is-one-coded-error → expected-failures-typed-with-codes
+A parser's failure becomes one coded error of the kit, with its cause, and each problem the parser reports becomes one of its details, with the path to where it was found and never the value it rejected.
+
+| Why | Check | Tags |
+|---|---|---|
+| the caller handles one error type and sees every problem of the input at once, each pointing at its place. | review | [errors] |
+
+## framework-errors-never-raised → expected-failures-typed-with-codes
+Code raises the error kit's errors, never the error type of the framework that serves it, which carries a status or a message but no code; one error handler of the framework turns each code into its answer.
+
+| Why | Check | Tags |
+|---|---|---|
+| a framework's error carries no code, so no caller can branch on it, and the code that raises it is tied to that framework. | review | [errors] |
+
 ## failures-listed-beside-the-contract → expected-failures-typed-with-codes
 A contract that can fail lists the expected failures it throws as one named type beside it, each an error of the kit with its code.
 
@@ -299,43 +320,6 @@ An error library gives every error a stable code, its cause and structured detai
 | Why | Check | Tags |
 |---|---|---|
 | without these, the rules on failure above cannot be followed through the library. | review | [errors] |
-
-## Logs
-
-## log-records-pass-one-pipeline → no-secret-or-personal-data-in-output
-Every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it; no second writer puts a record out.
-
-| Why | Check | Tags |
-|---|---|---|
-| a record that bypasses the pipeline skips the mask and the trace id, and lands in a second format nobody parses. | review | [security] |
-
-## log-secrets-masked-by-key → no-secret-or-personal-data-in-output
-The log pipeline replaces the value of every key the project lists as secret — such as `password`, `token`, `authorization`, `cookie` and `secret` — compared without case and at any depth, before any output.
-
-| Why | Check | Tags |
-|---|---|---|
-| a secret passed as a field by mistake is masked whichever code wrote it, while a mask of exact paths misses the key that arrives in another case or one level deeper. | review | [security] |
-
-## log-record-is-an-event-with-fields · SHOULD
-A log record's message is a fixed phrase that names what happened, and its values travel as fields beside it; nothing is formatted into the message.
-
-| Why | Check | Tags |
-|---|---|---|
-| a fixed message is counted and searched as one event and a field is filtered by its value, while a formatted message is a new string every time. | review | [] |
-
-## log-output-structured-in-production · SHOULD
-A program whose logs a collector reads writes one structured object per log record in production, and readable lines in development, as a setting read at the program's start chooses, never a guess from the terminal.
-
-| Why | Check | Tags |
-|---|---|---|
-| a collector parses one object per record and a person reads lines; a guess from the terminal picks wrongly when a person pipes the output or a container gives the program a terminal. | review | [] |
-
-## log-records-carry-the-trace-id · SHOULD
-Every log record a unit of work — a request, a task, a message — writes carries its trace id: the caller's, or a new one, bound once at the unit's start through the runtime's context and never passed down by hand.
-
-| Why | Check | Tags |
-|---|---|---|
-| the records of one unit are then found together, across every function and library it passes through, while an id passed by hand is lost at the first call that does not take it. | review | [] |
 
 ## Types
 
@@ -398,6 +382,20 @@ Values are immutable by default; a change makes a new value. Mutation is local a
 |---|---|---|
 | a value no one can change can be shared and reasoned about without tracing who else holds it. | review | [] |
 
+## documents-strict-vendor-answers-tolerant · MUST
+A document the program owns is parsed strictly: an unknown key or a value of another type fails. An answer a vendor owns is parsed tolerantly: a field the vendor adds is ignored, not fatal.
+
+| Why | Check | Tags |
+|---|---|---|
+| the program's own document must carry nothing the program does not know, while a vendor may add fields at any time. | review | [data] |
+
+## no-any-type · MUST
+No value, parameter, return or type argument has the type that switches the type checker off, in specs too; one the language reads as that type because it is left unannotated counts as well.
+
+| Why | Check | Tags |
+|---|---|---|
+| that type switches the type checker off for everything it touches, and it spreads. | review | [] |
+
 ## Async
 
 ## async-work-awaited-or-deliberately-detached · MUST
@@ -445,6 +443,13 @@ Behaviour is composed from small units. Inheritance is used only for error types
 | Why | Check | Tags |
 |---|---|---|
 | inheritance couples a child to its parent's internals and resists every change the hierarchy did not foresee. | review | [] |
+
+## override-marked-where-declared → inheritance-only-for-errors-and-framework-points
+A method that overrides one of its base class carries the language's mark of an override where it is declared, so the type checker fails on a mark that overrides nothing and on an override without one.
+
+| Why | Check | Tags |
+|---|---|---|
+| an override that stops overriding, or a new method that overrides one by accident, then fails the check instead of changing behaviour silently. | review | [] |
 
 ## canonical-patterns-by-need · SHOULD
 A pattern answers a present problem, and then the canonical one: strategy plus registry for vendors and kinds, reducer for transitions, transition table for state machines, builder for test data.
