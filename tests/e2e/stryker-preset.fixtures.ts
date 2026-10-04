@@ -18,10 +18,10 @@ interface Mutation {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const STRYKER = join(REPOSITORY, 'node_modules', '.bin', 'stryker');
 
-const CONFIG = `import bunTest from './.constitution/presets/typescript/stryker/foundation/bun-test.mjs';
-import core from './.constitution/presets/typescript/stryker/foundation/core.mjs';
-import mise from './.constitution/presets/typescript/stryker/foundation/mise.mjs';
-import self from './.constitution/presets/typescript/stryker/foundation/self.mjs';
+const CONFIG = `import bunTest from './.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
+import core from './.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
+import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
+import self from './.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
 
 export default {
   ...self,
@@ -59,7 +59,8 @@ const mutationOf = (spec: string): Mutation => {
     writeFileSync(join(folder, path), text);
   }
 
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
   symlinkSync(join(REPOSITORY, 'node_modules'), join(folder, 'node_modules'));
 
   const running = spawnSync(

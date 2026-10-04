@@ -67,7 +67,7 @@ A block refers only to the layers above it, through its front matter. The rules 
 
 ## 🧰 Presets
 
-A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*`:
+A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*`:
 - the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
 - the tool folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `tsc` for the compiler;
 - the axis folder is the axis whose rules the part holds, so a project that leaves an axis out leaves out its parts;
@@ -78,12 +78,12 @@ A project's configuration extends the parts of its active blocks on its axes, fo
 ```json
 {
   "extends": [
-    "./.constitution/presets/common/biome/foundation/self.jsonc",
-    "./.constitution/presets/typescript/biome/foundation/typescript.jsonc",
-    "./.constitution/presets/typescript/biome/foundation/self.jsonc",
-    "./.constitution/presets/typescript/biome/foundation/core.jsonc",
-    "./.constitution/presets/typescript/biome/foundation/react-dom.jsonc",
-    "./.constitution/presets/typescript/biome/architecture/core.jsonc"
+    "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/react-dom.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc"
   ]
 }
 ```

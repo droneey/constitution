@@ -78,22 +78,24 @@ const writeFiles = (
   }
 };
 
-// .constitution is a folder of its own, so a case can put a file beside the
+// .droneey/constitution is a folder of its own, so a case can put a file beside the
 // presets it links.
 const lintFindings = (project: Project): Findings => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
 
-  mkdirSync(join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey', 'constitution'), {
+    recursive: true,
+  });
   symlinkSync(
     join(REPOSITORY, 'presets'),
-    join(folder, '.constitution', 'presets'),
+    join(folder, '.droneey/constitution', 'presets'),
   );
   writeFiles(folder, {
     ...project.files,
     'biome.json': JSON.stringify({
       extends: (project.parts ?? PARTS).map(
         (part) =>
-          `./.constitution/presets/${part.replace('/', '/biome/')}.jsonc`,
+          `./.droneey/constitution/presets/${part.replace('/', '/biome/')}.jsonc`,
       ),
       vcs: {
         enabled: false,

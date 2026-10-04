@@ -7,7 +7,7 @@ abstract: false
 checks: []
 languages: []
 roles: []
-dictionary: [mise, mise.toml, mise.lock, mise.local.toml, mise-action, .constitution]
+dictionary: [mise, mise.toml, mise.lock, mise.local.toml, mise-action, .droneey/constitution]
 governs: ["mise.toml", "mise.lock"]
 ---
 

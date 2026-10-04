@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./.constitution/presets/typescript/biome/architecture/plugins/query-client-built-by-the-root.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/query-client-built-by-the-root.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
@@ -15,7 +15,7 @@
       ],
     },
     {
-      "path": "./.constitution/presets/typescript/biome/architecture/plugins/query-function-only-in-cache-utils.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/query-function-only-in-cache-utils.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

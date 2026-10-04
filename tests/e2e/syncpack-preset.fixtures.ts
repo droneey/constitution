@@ -19,11 +19,11 @@ interface Manifest {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const SYNCPACK = join(REPOSITORY, 'node_modules', '.bin', 'syncpack');
 
-const CONFIG = `import bun from './.constitution/presets/typescript/syncpack/foundation/bun.mjs';
-import packageDependencies from './.constitution/presets/typescript/syncpack/foundation/package.mjs';
-import self from './.constitution/presets/typescript/syncpack/foundation/self.mjs';
-import typescript from './.constitution/presets/typescript/syncpack/foundation/typescript.mjs';
-import packageVersions from './.constitution/presets/typescript/syncpack/workflow/package.mjs';
+const CONFIG = `import bun from './.droneey/constitution/presets/typescript/syncpack/foundation/bun.mjs';
+import packageDependencies from './.droneey/constitution/presets/typescript/syncpack/foundation/package.mjs';
+import self from './.droneey/constitution/presets/typescript/syncpack/foundation/self.mjs';
+import typescript from './.droneey/constitution/presets/typescript/syncpack/foundation/typescript.mjs';
+import packageVersions from './.droneey/constitution/presets/typescript/syncpack/workflow/package.mjs';
 
 export default {
   ...self,
@@ -65,7 +65,8 @@ const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
     });
     writeFileSync(join(folder, path), JSON.stringify(manifest));
   }
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
   writeFileSync(join(folder, '.syncpackrc.mjs'), CONFIG);
 
   const linting = spawnSync(

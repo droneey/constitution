@@ -28,7 +28,7 @@
   ],
   "plugins": [
     {
-      "path": "./.constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
         "!**/adapters/**",
@@ -37,7 +37,7 @@
       ],
     },
     {
-      "path": "./.constitution/presets/typescript/biome/foundation/plugins/enums-for-named-value-groups.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/enums-for-named-value-groups.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
@@ -46,14 +46,14 @@
       ],
     },
     {
-      "path": "./.constitution/presets/typescript/biome/architecture/plugins/domain-type-fields-readonly.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/domain-type-fields-readonly.grit",
       "includes": [
         "**/*.entity.ts",
         "**/*.value-object.ts",
       ],
     },
     {
-      "path": "./.constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
       "includes": [
         "**/index.ts",
       ],

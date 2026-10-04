@@ -138,7 +138,7 @@ const configOf = (parts: readonly string[]): string =>
       ...parts,
     ].map(
       (part) =>
-        `./.constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
+        `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
     ),
   )},\n};\n`;
 
@@ -177,7 +177,8 @@ const cruise = (project: Project): Cruise => {
     writeFileSync(join(folder, path), text);
   }
 
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
 
   const cruising = spawnSync(
     DEPCRUISE,

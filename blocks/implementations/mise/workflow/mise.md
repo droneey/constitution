@@ -1,7 +1,7 @@
 # mise
 
 ## tool-configuration-from-the-constitution-archive → shared-tooling-from-pinned-packages
-Shared tool configuration comes from the constitution's release archive, `constitution.tar.gz`, for the tools of every language: its presets, its starter files and its built tools. mise installs it through its `github` backend, pinned by version, with `asset_pattern` naming the archive and `strip_components = 0` so the archive keeps its folders; `mise.lock` holds the checksum GitHub publishes for it. A `postinstall` hook links it as `.constitution`, which version control ignores. The same hook installs the commit hooks, never a package manager's install script.
+Shared tool configuration comes from the constitution's release archive, `constitution.tar.gz`, for the tools of every language: its presets, its starter files and its built tools. mise installs it through its `github` backend, pinned by version, with `asset_pattern` naming the archive and `strip_components = 0` so the archive keeps its folders; `mise.lock` holds the checksum GitHub publishes for it. A `postinstall` hook links it as `.droneey/constitution`; version control ignores `.droneey/`. The same hook installs the commit hooks, never a package manager's install script.
 
 | Why | Check | Tags |
 |---|---|---|

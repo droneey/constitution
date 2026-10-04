@@ -9,7 +9,8 @@ osv-scanner = "2.6.0"
 
 [hooks]
 postinstall = [
-  "ln -sfn . .constitution",
+  "mkdir -p .droneey",
+  "ln -sfn .. .droneey/constitution",
   "lefthook install",
 ]
 

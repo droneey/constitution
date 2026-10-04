@@ -1,6 +1,12 @@
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -53,10 +59,11 @@ const scanStaged = (project: Project): Scan => {
     'init',
     '--quiet',
   ]);
-  symlinkSync(REPOSITORY, join(folder, '.constitution'));
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
   writeFileSync(
     join(folder, '.betterleaks.toml'),
-    '[extend]\npath = ".constitution/presets/common/betterleaks/foundation/core.toml"\n',
+    '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/foundation/core.toml"\n',
   );
 
   for (const [path, text] of Object.entries(project.files)) {
