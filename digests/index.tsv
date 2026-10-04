@@ -58,6 +58,7 @@ block	mise	implementation	Pins the developer and CI toolchain to exact, locked v
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test	typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
+block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md		typescript		false						**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
 block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	foundation/pydantic.md architecture/pydantic.md		python		false						**/models/** **/adapters/** **/root/**
@@ -126,6 +127,11 @@ rule	catch-narrows-and-rethrows	core	blocks/core/foundation/code.md		MUST	review
 rule	only-errors-thrown	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
 rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/foundation/code.md		SHOULD	review			errors security ux	foundation		true
 rule	error-kit-carries-code-cause-and-details	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
+rule	log-records-pass-one-pipeline	core	blocks/core/foundation/code.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
+rule	log-secrets-masked-by-key	core	blocks/core/foundation/code.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
+rule	log-record-is-an-event-with-fields	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
+rule	log-output-structured-in-production	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
+rule	log-records-carry-the-trace-id	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	guard-proves-every-property-it-claims	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	identifiers-branded-by-entity	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	domain-values-never-typed-again	core	blocks/core/foundation/code.md		MUST	review				foundation		true
@@ -906,6 +912,11 @@ rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implemen
 rule	licence-override-states-its-reason	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	licences-from-an-allowlist	false
 rule	development-tool-licence-ignored-with-reason	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	licences-from-an-allowlist	false
 rule	images-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/with/docker.md	docker	MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
+rule	one-instance-writes-every-record	pino	blocks/implementations/pino/foundation/pino.md		MUST	review		typescript	security data	foundation	log-records-pass-one-pipeline	false
+rule	secret-keys-masked-in-the-finished-line	pino	blocks/implementations/pino/foundation/pino.md		MUST	review		typescript	security data	foundation	log-secrets-masked-by-key	false
+rule	json-lines-to-stdout-in-production	pino	blocks/implementations/pino/foundation/pino.md		SHOULD	review		typescript		foundation	log-output-structured-in-production	false
+rule	trace-id-added-by-mixin	pino	blocks/implementations/pino/foundation/pino.md		SHOULD	review		typescript		foundation	log-records-carry-the-trace-id	false
+rule	fields-first-message-second	pino	blocks/implementations/pino/foundation/pino.md		SHOULD	review		typescript		foundation	log-record-is-an-event-with-fields	false
 rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	a11y testing	foundation	elements-found-by-role-label-text	false
 rule	waits-through-locators-and-assertions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	web-first-assertions-awaited	playwright	blocks/implementations/playwright/foundation/playwright.md		MUST	tool	lint	typescript	errors	foundation	async-work-awaited-or-deliberately-detached	false
@@ -981,11 +992,11 @@ rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storyboo
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	review		typescript	testing	foundation		true
 rule	stories-unreachable-from-production	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	tool	imports	typescript	testing	foundation	test-code-unreachable-from-production	false
 rule	stories-fail-on-a11y-violations	storybook	blocks/implementations/storybook/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
-rule	one-chain-for-every-record	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
-rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
-rule	json-in-production-console-in-development	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation		true
-rule	trace-id-bound-through-contextvars	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation		true
-rule	record-is-an-event-with-fields	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation		true
+rule	one-chain-for-every-record	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	log-records-pass-one-pipeline	false
+rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	log-secrets-masked-by-key	false
+rule	json-in-production-console-in-development	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-output-structured-in-production	false
+rule	trace-id-bound-through-contextvars	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-records-carry-the-trace-id	false
+rule	fields-passed-in-extra	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-record-is-an-event-with-fields	false
 rule	logging-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	one-explicit-composition-root	false
 rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/architecture/structlog.md		SHOULD	review		python	security	architecture	diagnostics-through-the-logging-port	false
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript	testing	foundation	mutants-all-killed	false
