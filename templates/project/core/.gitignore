@@ -1,34 +1,34 @@
-# The constitution, unpacked by mise
+# core: the constitution, unpacked by mise
 /.droneey
 
-# OS
+# core: OS
 .DS_Store
 
-# Environment
+# core: environment
 .env*
 !.env.example
 mise.local.toml
 
-# Runtime
+# core: runtime
 pids
 *.pid
 *.seed
 *.pid.lock
 
-# Temporary
+# core: temporary
 .temp/
 .tmp/
 
-# Logs
+# core: logs
 **/logs/
 *.log
 
-# Build
+# core: build
 **/dist/
 **/build/
 **/coverage/
 
-# IDE
+# core: IDE
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -44,10 +44,10 @@ pids
 .settings/
 *.sublime-workspace
 
-# Diagnostic
+# core: diagnostic
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Keys and credentials
+# core: keys and credentials
 ssl/
 acme.json
 *.pem
@@ -61,5 +61,5 @@ id_rsa
 *.secrets
 .htpasswd
 
-# Working notes
+# core: working notes
 /local/
