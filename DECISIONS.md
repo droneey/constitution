@@ -2,33 +2,32 @@
 
 > A journal of the decisions behind the constitution and the reasoning behind them. **Not a rulebook** — the blocks say *how things are*; this log records *why it was decided and what was rejected*.
 >
-> **Conventions:** one entry per decision, numbered, and only decisions in force. A new decision is a new entry; the entry it replaces is deleted, and one it changes in part loses that part. Statuses: `Accepted` · `Proposed`.
+> **Conventions:** one entry per choice between real alternatives — one a later reader could propose again — naming what was rejected and why; a rule placed by the constitution's own instructions needs no entry. Entries are numbered, and only decisions in force are kept. A new decision is a new entry; the entry it replaces is deleted, and one it changes in part loses that part. Statuses: `Accepted` · `Proposed`.
 >
 > Its entries record the decisions of the constitution 1.0 in theme order, each with the date it was taken.
 
 | Theme | Entries |
 |---|---|
 | Scope | ADR-0001 |
-| Blocks and layers | ADR-0002 – ADR-0008 |
-| Project files | ADR-0009 – ADR-0012, ADR-0102 |
-| Rules and roles | ADR-0013 – ADR-0018 |
-| Overrides and precedence | ADR-0019 – ADR-0020 |
-| Delivery | ADR-0021 – ADR-0027 |
-| The anatomy | ADR-0028 – ADR-0036 |
-| The rest | ADR-0037 – ADR-0045 |
+| Blocks and layers | ADR-0002 – ADR-0005 |
+| Project files | ADR-0009, ADR-0010, ADR-0102 |
+| Rules and roles | ADR-0013, ADR-0014 |
+| Overrides and precedence | ADR-0020 |
+| The anatomy | ADR-0032, ADR-0036 |
+| The rest | ADR-0045 |
 | Testing | ADR-0046 – ADR-0048 |
-| Code | ADR-0050 – ADR-0052 |
-| Core | ADR-0053 – ADR-0063 |
-| Blocks | ADR-0064 – ADR-0074, ADR-0092, ADR-0095 |
-| Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103, ADR-0105 |
-| Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
-| The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
-| A real application | ADR-0116 – ADR-0123 |
+| Code | ADR-0050, ADR-0052 |
+| Core | ADR-0053 – ADR-0055, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
+| Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095 |
+| Tools and tests | ADR-0077 – ADR-0081, ADR-0083, ADR-0084, ADR-0086, ADR-0096, ADR-0099, ADR-0101, ADR-0103, ADR-0105 |
+| Axes | ADR-0088, ADR-0089, ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
+| The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
+| A real application | ADR-0116, ADR-0118 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129 |
-| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133 |
+| TypeScript configuration | ADR-0131, ADR-0133 |
 | Scripts of the check | ADR-0132 |
 
 ---
@@ -37,12 +36,14 @@
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** The constitution is versioned as a whole, and it is written for Claude Code alone.
+- **Rejected.** Versions per block, which multiply the combinations a project must reconcile; rules for other AI tools, which no project uses yet.
 - **Why.** Neither has a present consumer.
 
 ## ADR-0002 — Four layers: core, domains, contexts, implementations
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** Blocks sit in four layers, from the most abstract down: `core`, true for any program; domains, an aspect a project has or has not whatever its technology — `ui`, `api`, `i18n`; contexts, where the code runs (a platform such as `browser` or `cli`) or what it is written in (a language such as `typescript`); and implementations, a framework, library or tool — `react-dom`, `bun`, `git`. There is no `web` block: a browser application is `browser` plus `ui`. Implementations carry no framework, library or tool tag.
+- **Rejected.** A `web` block: a browser program is `browser` plus `ui`, and a block bundling both would repeat each for a program that has one without the other.
 - **Why.** Each layer combines freely with every element of the others and reduces to none of them; a combination lives in the more specific block or in a seam file.
 
 ## ADR-0003 — Two links between blocks: requires and extends
@@ -66,45 +67,17 @@
 - **Rejected.** Conditional sections inside a block's main file.
 - **Why.** A file per seam stays readable as seams multiply, and its name says when it applies.
 
-## ADR-0006 — A block owns its brand, language and file names
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** A block lists in `dictionary` the words that belong to it: `_react` owns "React"; `typescript` owns "TypeScript", `.ts` and `index.ts`. A word appears only in its owner, in the blocks that depend on it, and in the `with/` files named after one of these; fenced code is exempt. A standard such as HTTP, JSON or WCAG belongs to no block.
-- **Rejected.** Two lists, `brands` and `forms`, for one purpose.
-- **Why.** Core and the domains stay free of any language or brand, which is what lets a project in any language follow them.
-
-## ADR-0007 — Every schema is complete
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** A block's front matter declares every field of the schema, in the schema's order, with `[]`, `null` or `false` where it has nothing to say; the constitution's check rejects a missing or extra field. `constitution.yaml` lists every key the same way, with `[]` or `{}` where empty, and the hook warns about a missing one.
-- **Why.** No reader, hook or check has to guess whether an absent field means empty or forgotten.
-
-## ADR-0008 — Where a rule goes
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** A rule goes to the layer found by asking what must disappear for it to lose its meaning: nothing → core; the project has no UI → `ui`; the code does not run in a browser → `browser`; the code is not React → `_react`. Rules alike across siblings are lifted to a domain or to core when their result and their "how" match, and a property the platforms share becomes a domain they require. A new layer is added only when the new entity combines freely with every element of every existing layer.
-- **Why.** Each rule then lives in exactly one block.
-
 ## ADR-0009 — A project keeps constitution.yaml and PROJECT.md
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** A project declares the blocks it follows, its applications, its check command and its overrides in `constitution.yaml`, and describes the product — what it is, for whom, its domains, entities and glossary — in `PROJECT.md`. A project keeps no `DECISIONS.md`: a departure is an override, and git history keeps its record.
+- **Rejected.** A `DECISIONS.md` or ADR log in each project: a departure is an override with its reason, and git history keeps the record.
 
 ## ADR-0010 — A project pins a released version
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** `constitution.yaml` pins a released version; until 1.0.0 it pins the current 0.x one. The plugin delivers the rules of its installed version and says so when the pin differs.
 - **Rejected.** Delivering the rules of the pinned line, deferred until a need arises.
-
-## ADR-0011 — A project names its check command
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** `constitution.yaml` names the one command that runs every check of the repository — `check: bun run check` — and the key is required. `/check` runs it, and the hand-back gate waits for it to pass.
-
-## ADR-0012 — Local blocks
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** A project may keep blocks under `./rules/` with the same contract as a constitution block and name them in `constitution.yaml` by path. A local block moves into the constitution when a second project needs it.
 
 ## ADR-0013 — Rules: one format, global slugs
 **Date:** 2026-09-25 · **Status:** Accepted
@@ -119,136 +92,31 @@
 - **Rejected.** A rule that names its tool or its setting; the preset's `bindings.yaml`, ADR-0094, maps them instead.
 - **Why.** A tool can then be swapped without touching a rule.
 
-## ADR-0017 — References obey the layers
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** A rule refers to another only through the `→` of its heading, and only to a rule of its own block, of a layer above, or of its closure. A block refers to another only through its front matter and its `with/` file names.
-- **Why.** A reference is a dependency, and dependencies point up.
-
-## ADR-0018 — Rules taken from an external review plugin
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** The rules of an installed review plugin were inventoried one by one. Those marked to take, or to take in part, and one adapted rule are written into the blocks they belong to, in this constitution's format.
-
-## ADR-0019 — Precedence
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** A project's override is stronger than any rule. Otherwise the more specific layer wins — implementations, then contexts, then domains, then core — and a block only tightens what is above it. A clash between a platform and a language means the rule is misplaced, and it moves to an implementation or to the project. A request against a MUST is answered with the conflict and an alternative, never obeyed silently.
-
 ## ADR-0020 — Overrides: any rule, with consent and a reason
 **Date:** 2026-09-25 · **Status:** Accepted
 
 - **Decision.** An override lowers one rule to SHOULD or MAY — any rule, core MUST included. It is added only with the user's explicit consent in the chat, for that override; `reason` is required and `until` is optional. Written under an application in `apps:`, it applies to that application's files.
 - **Rejected.** Rules no override may lower; blanket waivers.
 
-## ADR-0021 — The run time is a shell hook and markdown skills
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** The plugin runs only a shell hook and markdown skills. Everything the hook reads is generated here, committed, and verified by regeneration. The plugin installs nothing into a project: no TypeScript, no Bun, no generated configuration.
-
-## ADR-0022 — The run time is language-agnostic
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** The hook reads only `constitution.yaml`, the committed index and the front matter of the local blocks the file names. It scans no manifest of any language; `/ratify` lets the agent look at the repository instead.
-- **Rejected.** Detecting a project's technology from its files, and a `skip:` key for blocks detected but not declared.
-- **Why.** A project in any language, R included, can follow the constitution.
-
-## ADR-0023 — Files, not chapters, in the output
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** The digest and the reminders name the files to read, and the agent reads them. No whole chapter passes through the output of a hook or a skill.
-
-## ADR-0024 — The digest is an index
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** At session start and in every sub-agent the hook prints, within Claude Code's 10,000-character cap: a header naming the plugin root, the warnings, core's part, the active blocks grouped by layer — one line each, the path derived from the root, the layer and the id — and the active overrides. It carries no rule's text: the agent reads the block files it names, and the reminders name the MUST rules of the blocks that govern a file, a lowered one marked as such.
-- **Rejected.** MUST headlines while space lasts: a real web project's take about 36 KB against a budget of 9.4 KB, so only the smallest blocks that came first fitted, and a partial list read as if the rest mattered less.
-- **Why.** Every agent receives the rules, sub-agents and sessions after compaction included.
-
-## ADR-0025 — Warnings: one header, one line each
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** Warnings come under one header, `⚠️ Warnings`, one line each in a fixed form, `- <code>: <fact> — <fix>`, with a closed list of codes. Only at `startup` does the header ask the agent to tell the user.
-- **Rejected.** An emoji on every line.
-
-## ADR-0027 — Three skills and one agent
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** The plugin ships `/ratify`, `/amend` and `/check [all|edits] [lens]`, and one agent, `reviewer`. The model may invoke `/check` as well as the user. `/upgrade` comes after 1.0.
-- **Rejected.** Recipe skills, a skill per block or per lens, and separate commands for the hand-back and for conformance.
-
-## ADR-0028 — root/, adapters/, libs/ and the feature surface
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** `root/` is the composition root, `adapters/` holds port implementations, `libs/` holds project-agnostic code, and a feature's surface is the index at the feature's root.
-
-## ADR-0030 — Role folders and suffixes follow the reference applications
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** The folders named for a role and the file suffixes — `.entity`, `.port`, `.use-case`, `.utils` and the rest — follow the owner's reference web application and API.
-
-## ADR-0031 — composition/ replaces integrations/
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** The only code that knows several features lives in `composition/`, and only once a second consumer needs it; until then it lives in the delivery unit that needs it.
-
 ## ADR-0032 — What dead code is
 **Date:** 2026-09-24 · **Status:** Accepted
 
 - **Decision.** Dead code means unused files, dependencies and internal code. An unused export of a surface is not dead code: a surface offers what its consumers may use.
-
-## ADR-0034 — Lint limits are errors
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** A function holds at most 100 lines, a file 500, and cognitive complexity stays at 10 or below; the linter reports each as an error. Specs have no line limit.
+- **Rejected.** Counting a surface's unused exports as dead code, as knip does by default: a surface offers what its consumers may use.
 
 ## ADR-0036 — Vendor libraries stay out of the domain
 **Date:** 2026-09-26 · **Status:** Accepted
 
 - **Context.** The first validator of this repository parsed YAML and checked schemas with a validation engine inside its domain code, reading the purity law as "no side effects".
 - **Decision.** No vendor library is imported under `domain/`, a pure one included. Parsing a format and checking its wire shape happen in an adapter behind a port, with the wire shapes as that adapter's models, and the domain checks its own rules on the parsed data.
+- **Rejected.** A pure vendor library — a YAML parser, a validator — in `domain/`, read as allowed because it has no side effects.
 - **Why.** The core imports only itself and the shared kernel, so a vendor's types and upgrades never reach it.
-
-## ADR-0037 — Language and tool specifics live in their blocks
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** What depends on a language lives in that language's block, and what depends on a tool lives in the tool's block. Core states each rule once, by concern.
-
-## ADR-0038 — Failure categories and idempotency apply everywhere
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** The two categories of failure and idempotency hold for every application. problem+json belongs to the domain `api`, and expand/contract migrations to `persistence`.
-
-## ADR-0039 — Version control is a domain; git and git flows are implementations
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** The domain `version-control` is the base any git flow follows. The implementation `git` carries git's specifics; `lefthook` extends `git`, and so do git-flow frameworks. CI design and the major-bump mechanism stay the owner's separate work.
-- **Rejected.** Leaving version control out of the constitution altogether.
-
-## ADR-0040 — Agents are a domain on top of llm
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** `agents` is a domain. Its rules about the model sit in `agents/with/llm.md`, and `langgraph` requires `agents`.
-
-## ADR-0041 — Lingui is a block; Paraglide stays local
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** `lingui` is the i18n implementation of the constitution. A project that uses Paraglide keeps it as a local block, with no override, until a second project needs it.
-
-## ADR-0042 — One token grammar for ui
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** The design-token grammar of the owner's reference web application is the standard of `ui`.
-
-## ADR-0044 — The error and logging libraries get their own repository
-**Date:** 2026-09-24 · **Status:** Accepted
-
-- **Decision.** The owner's error and logging libraries, first written inside one API, move to a separate repository of runtime libraries.
 
 ## ADR-0045 — oxlint is not adopted now
 **Date:** 2026-09-24 · **Status:** Accepted
 
-- **Decision.** oxlint is not adopted now; the current linter keeps holding the lint rules.
+- **Decision.** oxlint is not adopted now; Biome keeps holding the lint rules, as far as it can.
+- **Rejected.** oxlint beside or instead of Biome: a second linter splits one role between two tools and two configurations.
 
 ## ADR-0046 — A spec proves the behaviour of a boundary
 **Date:** 2026-09-26 · **Status:** Accepted
@@ -278,12 +146,6 @@
 - **Rejected.** Holding the rule by review alone; banning every `null`, comparisons included.
 - **Why.** Two spellings of absence make every check ask twice, and a rule held only by review slips.
 
-## ADR-0051 — A file carries its role's suffix
-**Date:** 2026-09-26 · **Status:** Accepted
-
-- **Decision.** A file carries its role's suffix, whatever its folder: `.entity`, `.error`, `.repository`, `.port`, `.adapter` for a port's implementation that is not a repository, `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`, the suffixes a block adds, and those a project adds for its own roles. A surface, the entry, a name a framework or tool fixes, a component file named after its component, a member of a set whose role has no suffix and a registry carry none. In `__tests__/` a spec is named after the file it proves plus `.test`, beside `<port>.fake` and `<name>.fixtures`.
-- **Why.** The name tells the role before the file is opened, and a tool can check it.
-
 ## ADR-0052 — A layer folder is a container without a surface
 **Date:** 2026-09-26 · **Status:** Accepted
 
@@ -312,16 +174,11 @@
 - **Rejected.** Dropping mechanical enforcement as a mechanism rather than a law.
 - **Why.** Each of the added three was already required by several blocks; as laws they are stated once and bind everywhere.
 
-## ADR-0056 — version-control holds what is true of any version control
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** The domain `version-control` holds only the rules that hold for any version control: an atomic change, a change that passes the checks before it is integrated, a protected main line, the formats of commits, branches and release tags. Everything only git has — staging, ignores, annotated tags, LFS, worktrees, its commands — belongs to the implementation `git`.
-- **Why.** A rule that names a git concept loses its meaning without git, so it belongs to the git block.
-
 ## ADR-0057 — A block never cites the decision log
 **Date:** 2026-09-27 · **Status:** Accepted
 
 - **Decision.** A block states its rules, with their reasons, without citing an entry of this log; the constitution's check reports a citation.
+- **Rejected.** Citing an entry of the log from a rule, as many rulebooks do.
 - **Why.** A rule must stand on its own when a project reads it, and the log explains the constitution's history, not a project's duty.
 
 ## ADR-0058 — Placement lifts on the second consumer, abstraction waits for the third
@@ -331,24 +188,12 @@
 - **Rejected.** One threshold for both, which either shares code too late or abstracts it too early.
 - **Why.** Moving code changes where it lives, not what it means; an abstraction commits to an axis of variation, which two cases cannot yet show.
 
-## ADR-0059 — The wiring file is root/wiring
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** The one file of `root/` that instantiates and binds what an application shares is named `wiring`, with the language's extension.
-- **Why.** One name in every repository lets a reader, a coverage exclusion and a layer rule find it without asking.
-
 ## ADR-0060 — A YAML file ends in .yaml
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** A YAML file ends in `.yaml`, never `.yml`, in every repository; the `names` role holds it.
+- **Decision.** A YAML file ends in `.yaml`, never `.yml`, in every repository; the `names` role holds it. A file a tool reads only by a fixed name keeps that name: GitHub reads issue forms in `.github/ISSUE_TEMPLATE/` only as `.yml`.
+- **Rejected.** `.yml`, the shorter spelling many tools write by default; renaming the issue forms too, which switches them off.
 - **Why.** One spelling of one format lets every glob, tool and reader find all of them.
-
-## ADR-0061 — How a UI is tested belongs to the interface blocks
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** Core's `testing` counts a screen and a reusable component among the boundaries and holds the UI to the coverage gate. How a screen and a component are proven — the data states, finding elements by role, label and text, screenshots only where the look is the contract — is stated by `ui`, and the accessibility scan with zero violations by `a11y`.
-- **Rejected.** Stating them in core, which would give a program with no interface rules about screens.
-- **Why.** A rule that loses its meaning without an interface belongs to the block of the interface.
 
 ## ADR-0062 — Generated files are not committed by default, and the check only checks
 **Date:** 2026-09-27 · **Status:** Accepted
@@ -370,13 +215,6 @@
 - **Decision.** Every change reaches the main line through a reviewed pull request, except the release automation's version commit and its tag, which it pushes after a merge.
 - **Rejected.** A pull request for every version bump, which a person would approve without reading.
 - **Why.** The version commit holds only what the merged, reviewed changes already decided.
-
-## ADR-0065 — Three rules of the review plugin hold in any language
-**Date:** 2026-09-27 · **Status:** Accepted
-
-- **Decision.** A value with a unit carries it in its name; code and dependencies that only tests reach are unused; a dependency deprecated as a whole is replaced. They are core rules, not rules of one language.
-- **Rejected.** Keeping them in the language block until a second language repeats them.
-- **Why.** What must disappear for them to lose their meaning is nothing, so by the placement question they belong to core.
 
 ## ADR-0066 — An adapter receives its transport
 **Date:** 2026-09-27 · **Status:** Accepted
@@ -462,13 +300,6 @@
 - **Rejected.** `bun audit --audit-level=high`, which checks no licence, reads only Bun's lockfile and keeps an accepted advisory as a bare `--ignore` flag with no reason or expiry; running both tools, since osv-scanner fails on a medium vulnerability all the same and each one would be recorded twice.
 - **Why.** One tool and one configuration hold vulnerabilities and licences in every language, and every exception carries its reason and date. osv-scanner has no severity floor, so the rule takes the stricter line rather than a second tool.
 
-## ADR-0082 — A YAML name a tool fixes keeps its extension
-**Date:** 2026-09-28 · **Status:** Accepted
-
-- **Decision.** `yaml-files-end-in-yaml` excepts a file a tool reads only by a fixed name: GitHub reads issue forms and their `config.yml` in `.github/ISSUE_TEMPLATE/` only with `.yml`. The ls-lint base leaves that folder out.
-- **Rejected.** Renaming them, which switches the forms off; leaving the rule without the exception, which every repository with issue forms would break.
-- **Why.** A name the reading tool fixes is not the project's to choose, as `file-carries-its-role-suffix` already says of other fixed names.
-
 ## ADR-0083 — At most three positional arguments; a whole travels as one object
 **Date:** 2026-09-28 · **Status:** Accepted
 
@@ -483,25 +314,12 @@
 - **Rejected.** Stryker's incremental report: with the command runner Stryker cannot tell which tests meet a mutant, so a cached result hid a survivor in one run and kept a killed mutant as surviving in another.
 - **Why.** A result is trusted only when it was run; mutating the changed lines keeps the run short without a cache.
 
-## ADR-0085 — No Vitest block until a project needs one
-**Date:** 2026-09-28 · **Status:** Accepted
-
-- **Decision.** The `vitest` block is removed. Every droneey project runs its specs with `bun test`; a Vitest block and its preset come back together when a project needs them.
-- **Rejected.** Keeping the block while its preset does not exist, which states checks no tool performs.
-- **Why.** A block that names a preset nobody ships describes a check that never runs.
-
 ## ADR-0086 — zod is kept out of the domain by the domain law alone
 **Date:** 2026-09-28 · **Status:** Accepted
 
 - **Decision.** `zod-only-at-the-edge` and its dependency-cruiser part are deleted. A schema is written wherever input crosses a boundary — an adapter's models, a route's search parameters, a form — and `domain-imports-only-itself-and-kernel` keeps zod, like every vendor, out of `domain/`.
 - **Rejected.** Widening the rule's list of edges to routes and forms, which names the router's and the form library's folders in zod's block.
 - **Why.** The rule forbade the schemas `search-params-validated-by-schema` and the form rules require, while what it protected — a domain free of the schema library — the law already holds. Router and form libraries take any Standard Schema validator, so a schema at the delivery layer is the boundary, not a leak.
-
-## ADR-0087 — The formats of commits, branches and release tags belong to version-control
-**Date:** 2026-09-28 · **Status:** Accepted
-
-- **Decision.** The rules on the commit header, the empty body, the commit type, the subject, placeholder subjects, the branch name, the version bump, the squash merge, the pull request's title and the release tag's name move from `git` to `version-control`. `git` keeps what only git has; `release-tags-annotated-semver` splits into `release-tags-named-by-semver` in the domain and `release-tags-annotated` in `git`.
-- **Why.** The formats hold for any version control: Jujutsu or Mercurial would take `feat: Subject`, `feature/12-name` and `v1.2.0` unchanged, so they do not lose their meaning without git.
 
 ## ADR-0088 — Every block lays its rules out on three axes
 **Date:** 2026-09-28 · **Status:** Accepted
@@ -516,13 +334,6 @@
 - **Decision.** Every rule that bundled two axes is split into one rule per axis; the half on `architecture/` or `workflow/` may carry out the half on `foundation/`, and where one half repeated another rule it was dropped instead. A rule that carries out another names it in its heading, `## <slug> → <rule>`, instead of a level: it takes that rule's level and tags, may state a stricter level, `→ <rule> · MUST`, never a looser one, and carries out one rule at most. An override of a rule lowers every rule under it that states no level of its own. A rule on `foundation/` carries out only `foundation/`, and `architecture/` and `workflow/` never each other; `blocks:check` reports any other reference, a looser stated level, a cycle and a missing rule. A rule's Why, Check and Tags are one table under its statement, the same columns in every rule, and a list written as in the front matter, `[]` when empty. The tags are the lenses that cross every axis — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — optional, since a full review reads every rule. Twelve duplicates are merged into the rule that keeps their meaning, `fast-source-updates-once-per-frame` moves to ui, `pipeline-stages-under-steps` and `dependencies-imported-from-their-entries` to core, and an abstraction waits for its third occurrence in the principles as in ADR-0058.
 - **Rejected.** A level stated again on every rule that carries out another, which lets the two drift and keeps an override from reaching them; the Implements label beside the heading; labels on consecutive lines, which render as one run-on paragraph; lenses that name a chapter's topic — design, naming, types, process — or an axis.
 - **Why.** The force of a rule is set in one place and reaches every rule that carries it out, and a lens is worth filtering by only when it crosses the axes.
-
-## ADR-0090 — Each axis keeps its words, and process choices sit on workflow
-**Date:** 2026-09-29 · **Status:** Accepted
-
-- **Decision.** `vocabulary.yaml` lists the words the `architecture` and `workflow` axes own; `blocks:check` reports an architecture word outside `architecture/`, a workflow word outside `workflow/`, and either in a card. The check catches the plain leak; placing a rule stays with the two axis questions. A review by meaning then moved what plain words had hidden. To `workflow/`: `changes-reach-main-line-through-review`, `required-check-blocks-integration`, `one-integration-strategy-no-work-in-progress`, `small-reviewable-change-requests`, `merged-branch-deleted`, `hook-rewrites-only-staged-files`, `bug-fix-starts-with-failing-test`, `sub-agent-never-touches-live-systems` and `ci-runs-the-pinned-toolchain`; split, with the choice as a child of the outcome: `main-line-protected` (`main-line-takes-no-direct-push`), `every-commit-passes-the-check` (`check-run-by-hooks-and-ci`, which takes over from `one-check-command` that CI runs the check), `no-secret-in-repository` (`secrets-scanned-before-each-commit`) and `consent-before-irreversible-actions` (`consent-given-in-the-chat-per-action`). To `architecture/`: `adapter-built-by-factory-or-module-object`; split: `spec-per-boundary` (`spec-per-boundary-of-the-tree`) and `query-for-reads-mutation-for-writes` (`query-hooks-only-in-binding-units`); the suffix clause of `test-files-named-by-role` joins `file-carries-its-role-suffix`. Foundation slugs that named the architecture are renamed to their statements: `invariant-checked-at-construction`, `one-contract-suite-per-contract`, `one-fake-per-contract`, `absence-has-one-value`, `integration-tested-against-the-real-engine`, `query-for-reads-mutation-for-writes`, `keys-only-from-the-key-factory`, `query-signal-reaches-the-request` and `data-result-is-union-by-status`. Each sense keeps one word: what a fake or a contract suite stands in for is a contract, a module's API is its public entry, and a user interface is never a bare "interface"; the slugs follow.
-- **Rejected.** Picking the words out of a markdown glossary by its file name; the words alone as the judge of an axis.
-- **Why.** A team with another architecture or workflow takes foundation as it is, so foundation must neither speak our words nor state our choices in plain ones.
 
 ## ADR-0091 — The constitution's archive carries every tool configuration, laid out by axis
 **Date:** 2026-09-29 · **Status:** Accepted
@@ -566,13 +377,6 @@
 - **Rejected.** Coverage through `requires`, which took every language for a programming language: a project with CSS was told its stylesheets had no test runner, and Biome, which lints CSS, counted only for TypeScript; `biome` requiring `css`, which would bring CSS into every Biome project; exempting CSS by name, which the next such language would need again.
 - **Why.** What a tool reads and what a language is held to are facts of the tool and of the language, not of what either depends on: stated where they belong, a stylesheet is held only to what can be checked in it, and a tool counts for every language it really checks.
 
-## ADR-0097 — A tool-checked rule claims only what its tool holds
-**Date:** 2026-09-29 · **Status:** Accepted
-
-- **Decision.** A rule that a tool holds only in part is split into the part a tool holds and the part that is reviewed: `files-copied-never-added` keeps local files in `COPY` and `downloads-verified-archives-unpacked` reviews downloads and archives; the Biome suppression rule becomes `biome-suppression-states-its-reason`, held, and `biome-suppression-names-one-rule`, reviewed; `dependencies-imported-from-their-entries` is reviewed, and `react-native-imported-from-its-entry` holds it for React Native; `typescript-file-forms` holds the forms, and `tsx-only-where-markup-is-written` is reviewed. Where a setting holds a rule or its half, that half says so: `error-cause-preserved` (a MUST now that `useErrorCause` holds it) and `error-logged-once`; `consumers-import-package-entries` under `package-entries-curated`; `bundle-reads-no-build-environment` under `runtime-configuration-served-beside-bundle`. A rule that bundled two axes is split: `no-import-cycles` on core's foundation and `dependencies-point-inward` on its architecture; `test-code-unreachable-from-production` and `stories-unreachable-from-production` move to foundation, with their dependency-cruiser rules. `tanstack-router-file-names-kept` joins `expo-router-file-names-kept`. A branch's name holds no digit but its issue's number.
-- **Rejected.** A Check that names a tool for a whole rule the tool holds in part, which hides the part nobody checks; a rule kept whole on its stricter axis, which denies a team the half it would take.
-- **Why.** A Check says who holds the rule; when it says a tool, the tool must hold all of it.
-
 ## ADR-0098 — Presets are laid out by scope first, and the compiler gets its block
 **Date:** 2026-09-29 · **Status:** Accepted
 
@@ -587,24 +391,17 @@
 - **Rejected.** A schema for every value from outside, which brings a dependency into a small tool that reads one field; casts left in specs, which let a spec pass on data in a shape the tool never gave.
 - **Why.** A cast over data nobody read promises a shape nobody checked; a schema or a narrowing check reads it, and the first unexpected field fails where it enters.
 
-## ADR-0100 — Raw HTML is refused in the browser, and React's own door in react-dom
-**Date:** 2026-09-29 · **Status:** Accepted
-
-- **Decision.** `no-raw-html-injection` moves from `react-dom` to `browser`: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`, held by a GritQL rule in the browser's part. `react-dom` keeps `no-dangerously-set-inner-html`, held by `noDangerouslySetInnerHtml`.
-- **Rejected.** Keeping the whole rule in `react-dom`, where it named DOM APIs a program without React uses as well, and held only React's door.
-- **Why.** The DOM takes markup through its own calls in any browser program; each block now forbids the door it owns, and the parent says what both mean.
-
 ## ADR-0101 — A rule a tool holds in part is reviewed, and a child says what the tool holds
 **Date:** 2026-09-29 · **Status:** Accepted
 
 - **Decision.** Where a tool holds only part of a rule, the rule keeps its slug and its statement and becomes `review`, and a child `→` it states exactly what the tool holds, with the tool's Check and its bindings. So it is for 39 rules: among them `access-only-through-curated-surface` (`surface-is-the-only-way-in`), `commit-header-type-and-subject` (`commit-header-format`), `coverage-holds-all-logic` (`coverage-gate-on-loaded-files` in `bun-test`), `every-control-has-an-accessible-name` and `native-semantics-first` (`jsx-controls-named`, `jsx-roles-and-aria-valid` in `react-dom`'s seam with `a11y`, which `labels-bound-with-use-id` joins, so a React Native project claims no setting it lacks), `tokens-single-source-of-appearance` (one child each in `react-dom`, `react-native` and, under `utilities-only-from-tokens`, `tailwind`), `components-dumb-widgets-smart` (a child in `ui`, and one in each of `ky` and `tanstack-query` for the library it keeps out), and `primitives-take-text-by-props` (`primitives-import-no-message-catalog` in `lingui`'s seam with `ui`). `side-effects-at-the-edges`, `suppression-states-its-reason` and `folder-named-for-purpose-or-role` become `review`, their held parts already held by children. The same holds where a binding sat on a reviewed rule: `commit-scan-redacted` (`lefthook` with `betterleaks`) and `stryker-runs-the-bun-test-command` take theirs, and a setting that wires a hook, which no role checks, holds no rule. Three statements lose a clause another rule holds: `yaml-only-at-the-edge` the `unknown` result (`boundary-values-unknown-until-parsed`), `known-vulnerabilities-fail-the-check` the accepted vulnerability (`accepted-vulnerability-states-reason-and-expiry`), and `no-dead-code` the unreached branch (`coverage-holds-all-logic`) for the unreachable statement the compiler refuses.
-- **Rejected.** Narrowing each rule to what its tool holds, which would drop the judgement half a reviewer still needs; siblings beside each rule, as ADR-0097 did, which name two rules where one carries out the other.
+- **Rejected.** Narrowing each rule to what its tool holds, which would drop the judgement half a reviewer still needs; a sibling rule beside each rule for what the tool holds, which name two rules where one carries out the other.
 - **Why.** A Check says who holds a rule. A child that states only what its setting refuses keeps that true, and the rule above it stays whole for the review.
 
 ## ADR-0102 — A project without a check command writes check: null
 **Date:** 2026-09-29 · **Status:** Accepted
 
-- **Decision.** `check` stays a required key of `constitution.yaml`; a project with no command that runs its checks writes `check: null`, and the hook asks for nothing more. The hand-back gate of step 5 then has no command to require and only reminds of the review.
+- **Decision.** Every schema is complete: a block's front matter declares every field in the schema's order, and `constitution.yaml` every key, with `[]`, `{}`, `null` or `false` where there is nothing to say. `check` stays a required key of `constitution.yaml`; a project with no command that runs its checks writes `check: null`, and the hook asks for nothing more. The hand-back gate of step 5 then has no command to require and only reminds of the review.
 - **Rejected.** Dropping the key when there is no command, which a missing key cannot tell apart from one forgotten; an empty value, which the hook already reads as unfinished.
 - **Why.** A project the constitution governs may have no checks yet, and saying so is different from not having answered.
 
@@ -642,7 +439,6 @@
   - Expected failures are thrown as errors of the kit, not returned: a contract lists them as one type beside it, a `catch` narrows by code and rethrows the rest, and only errors are thrown.
   - A boolean is never positional; parameters of one type travel as one object or are told apart by their types.
   - Shared shapes are composed of small ones; domain types are `readonly`; a type parameter appears twice; cancellation travels as an `AbortSignal`; resources are held by `using`; a module exports by name; text is made deliberately; a return type is no wider than what is returned; `process.env` is read only in the root and the entry files.
-  - Oxlint is not adopted (ADR-0045 stands); Biome holds what it can.
 - **Rejected.** A `Result` type for expected failures: the owner keeps the language's own `throw` and `catch`. A value object as a class: its instance loses its methods in a cache, a URL and storage.
 - **Why.** The rozumchik-web audit found value objects unstated and rules about failure, arguments and types missing; the best-practices audit of 2026 found the rest.
 
@@ -692,26 +488,6 @@
   - knip's production run is `--strict`.
 - **Rejected.** A unit timeout in `bunfig.toml`: Bun ignores the key, so the speed of a unit case stays with review. Biome's `playwright` domain: it enables none of the nursery rules, so the part lists them.
 - **Why.** The best-practices audit of 2026 found flaky, order-dependent and sleeping tests unruled, the sandbox held only by review, captured responses never re-checked, and no tool behind `end-to-end-per-critical-scenario`.
-
-## ADR-0111 — Security, agent and delivery rules of the 2026 audits
-**Date:** 2026-10-03 · **Status:** Accepted
-
-- **Decision.**
-  - Browser: no credential the tab's script can read; only an `HttpOnly`, `Secure`, `SameSite`, `__Host-` cookie holds one (MUST). Every document has a strict Content Security Policy (MUST), and it requires Trusted Types.
-  - Agents: an agent takes instructions only from the person it works for, and what it reads is data (MUST). It runs with least privilege, its permission settings are committed, and its extensions are vetted like dependencies.
-  - Delivery: a change that makes a document false corrects it; a public repository carries `SECURITY.md`.
-  - MPL-2.0 joins the licence allowlist: its copyleft is per file and binds only changes to those files, and its packages here are build and test tools.
-- **Deferred.** The CI, forge and git-flow items of the audit — untrusted input in workflows, token permissions, protected tags, SHA pins, short-lived credentials, push protection, provenance, the version bump and branch lifetime — wait for the git and CI/CD pack.
-- **Why.** The best-practices audit of 2026 found no rule on where a browser keeps a credential, no runtime wall behind the XSS lint, and nothing on whose instructions an agent follows — the hole prompt injection and the npm worms of 2025 went through.
-
-## ADR-0112 — Image, Compose and browser hardening of the 2026 audit
-**Date:** 2026-10-03 · **Status:** Accepted
-
-- **Decision.**
-  - Images: with osv-scanner, the check scans each image the project builds or pulls, so a vulnerability in its system packages fails like one in a lockfile.
-  - Compose: a service runs with `no-new-privileges`, drops every capability it does not need, and runs on a read-only file system. The shared key order takes `cap_drop`, `cap_add` and `read_only` after `security_opt`.
-  - Browser: every document carries HSTS, `nosniff`, a strict `Referrer-Policy` and `Cross-Origin-Opener-Policy`. A script from another origin is self-hosted or pinned by `integrity`. A redirect target from the address or a form is followed only to the program's own paths or an allowlist.
-- **Why.** The best-practices audit of 2026 found these protections unstated, against ASVS 5.0 and the Docker and CIS guidance.
 
 ## ADR-0113 — Redundancy removed from the 2026 audit changes
 **Date:** 2026-10-03 · **Status:** Accepted
@@ -763,20 +539,6 @@
   - OFL-1.1 joins the licence allowlist: self-hosted fonts carry it, and it binds only redistribution of the fonts themselves.
 - **Rejected.** Making the check pass with no specs, a mutation mode for untested files, and a fixture that loads every file for coverage: a project without tests leaves `test:unit` and `mutation:check` out of its check until the first specs land, and changed lines are held by mutation.
 - **Why.** The audit of rozumchik-web against constitution 0.62 found these gaps where a real application meets the rules.
-
-## ADR-0117 — The rules a real application found too strict
-**Date:** 2026-10-03 · **Status:** Accepted
-
-- **Decision.**
-  - Absence: core's `absence-has-one-value` admits another spelling where an external format or an API the code calls imposes it. `null` stays where an API's types demand it — React's `useRef<T>(null)` and `RefObject<T | null>`, a component's `ReactElement | null` return type, the `null` branch of a JSX conditional, an inline component `() => null`, the language's `Object.create(null)`; a signature a library imposes takes a reasoned suppression. The TypeScript absence plugin also knows `useRef` and `RefObject`, since a Biome plugin path is listed once per configuration and a React-only copy would be overridden: a tool limit, not a rule.
-  - A union of literals given to a key utility (`Omit`, `Pick`, `Exclude`, `Extract`) names keys, not a set, and a type of another system's data keeps that system's literals; the enum plugin skips both.
-  - A name an interface the code implements imposes, such as a handler's `get`, is no empty verb. A framework's control-flow throw, such as a router's redirect, is allowed beside errors.
-  - Another party's vocabulary (analytics reports, wire formats) is mapped from the program's values by a total table, not forbidden as a second typing.
-  - An operation whose two operands play one role takes them in order. A function whose body is one markup literal may lift the line limit by a suppression that says so. A story file may export its meta by default, through a storybook part of the presets.
-  - A credential cookie is `__Host-` when the program's tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does.
-  - A tag manager's container, which changes by design, loads through a loader the CSP allows by nonce or hash with `strict-dynamic`, with its reason — never by listing its host, which the strict policy forbids.
-  - TanStack Start sets the CSP and the other security headers in Nitro's `routeRules`, the shell's inline scripts allowed by hash, proved by a test — two rules, one under each browser rule.
-- **Why.** The audit of rozumchik-web against constitution 0.62 found each of these rules refusing correct code, or unmeetable, in a real application.
 
 ## ADR-0118 — The architecture gaps a real application found
 **Date:** 2026-10-03 · **Status:** Accepted
@@ -884,7 +646,8 @@
 
 - **Decision.**
   - Biome formats at a line width of 100, not 80, in the common part every project extends.
-  - The licence allowlist gains `PSF-2.0` and `MIT-0`.
+  - The licence allowlist gains `PSF-2.0` and `MIT-0`, as it gained MPL-2.0 before: its copyleft is per file and binds only changes to those files, and its packages here are build and test tools.
+- **Rejected.** A line width of 80, Biome's default.
 - **Why.** At 80 a typed signature or a call of a few arguments breaks over lines that each say little; at 100 this repository's code is about a thousand lines shorter (owner). Both licences are permissive and ask no more than `MIT` or `Python-2.0`, already on the list; `typing-extensions` is `PSF-2.0` and `cffi` is `MIT-0`, and FastAPI and MCP applications load both at runtime (owner).
 
 ## ADR-0127 — Python is a language, with uv, Ruff, ty and Poe the Poet
@@ -914,18 +677,11 @@
 - **Rejected.** `protected` contracts listing where a library may be imported, which fail when the library is absent from the graph; Ruff's `FAST001`, which reports nothing under Python 3.14's lazy annotations; a Ruff part for FastMCP, whose chain would then run through FastAPI's part; the libraries' bans in `extend-banned-api` without the specs' bans repeated, since a part's `extend-banned-api` replaces the one it extends; structlog's own logger API in the program, for the standard logger every library already writes to.
 - **Why.** The kit's Python packages and the owner's APIs are built on these libraries; each gets the rules its practice settled on, held by the tools the language block already runs, so the edge, the network and the logs are kept as in TypeScript.
 
-## ADR-0130 — An editor finds the specs' own TypeScript configuration
-**Date:** 2026-10-04 · **Status:** Accepted
-
-- **Decision.** Where specs need Bun's types and the program does not, the program's configuration is `tsconfig.src.json`, the specs' is `tsconfig.test.json`, and `tsconfig.json` holds no files and references both (`specs-checked-by-their-own-config`).
-- **Rejected.** The program's configuration as `tsconfig.json` with the specs left out: an editor reads only `tsconfig.json`, so it opened every spec without the `ESNext` lib, Bun's types or the decorator options and reported errors the check never saw.
-- **Why.** The solution-style configuration, as Vite's templates use it, gives each file its own configuration in the editor and in the check alike (found in droneey/kit).
-
 ## ADR-0131 — Bun takes the program's options from tsconfig.json
 **Date:** 2026-10-04 · **Status:** Accepted
 
-- **Decision.** Under `specs-checked-by-their-own-config`, `tsconfig.json` extends `tsconfig.src.json` and keeps `files` and `include` empty, beside its references to both configurations. Amends ADR-0130.
-- **Rejected.** A `tsconfig.json` with references alone (ADR-0130): Bun's transpiler reads only `tsconfig.json` and follows no reference, so a spec run by `bun test` lost the program's transpiler options, such as its decorators.
+- **Decision.** Where specs need Bun's types and the program does not, the program's configuration is `tsconfig.src.json`, the specs' is `tsconfig.test.json`, and `tsconfig.json` extends `tsconfig.src.json`, keeps `files` and `include` empty and references both (`specs-checked-by-their-own-config`).
+- **Rejected.** The program's configuration as `tsconfig.json` with the specs left out: an editor reads only `tsconfig.json`, so it opened every spec without the `ESNext` lib, Bun's types or the decorator options and reported errors the check never saw. A `tsconfig.json` with references alone: Bun's transpiler reads only `tsconfig.json` and follows no reference, so a spec run by `bun test` lost the program's transpiler options, such as its decorators.
 - **Why.** Extending the program's configuration gives Bun its options, while TypeScript still reads a file with no files of its own as a solution and opens each file with the configuration that holds it (verified on Bun 1.4.2 and TypeScript 7.0.2).
 
 ## ADR-0132 — One script for each area of the check, whatever the language
