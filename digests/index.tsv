@@ -56,9 +56,9 @@ block	ls-lint	implementation	Holds the names of files and folders in every langu
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
-block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test	typescript tsc		false						nest-cli.json .swcrc
+block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test foundation/pino	typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
-block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md		typescript		false						**/root/**
+block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md architecture/pino.md		typescript		false						**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
 block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	foundation/pydantic.md architecture/pydantic.md		python		false						**/models/** **/adapters/** **/root/**
@@ -298,6 +298,7 @@ rule	role-folder-files-carry-its-suffix	core	blocks/core/architecture/anatomy.md
 rule	domain-names-free-of-vendor-and-storage	core	blocks/core/architecture/code.md		SHOULD	review				architecture		true
 rule	deep-modules-no-pass-through	core	blocks/core/architecture/code.md		SHOULD	review				architecture	module-hides-much-behind-small-public-entry	false
 rule	diagnostics-through-the-logging-port	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture	no-debug-output-in-shipped-code	false
+rule	logging-configured-by-the-root	core	blocks/core/architecture/code.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	wire-absence-mapped-at-boundary	core	blocks/core/architecture/code.md		MUST	review			data	architecture	absence-has-one-value	false
 rule	typed-failures-homed-by-layer	core	blocks/core/architecture/code.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
 rule	one-error-handler-per-transport	core	blocks/core/architecture/code.md		SHOULD	review			errors security ux	architecture	failure-shown-as-what-happened-and-what-next	false
@@ -933,6 +934,7 @@ rule	compiler-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foun
 rule	program-throws-no-http-exception	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	errors	foundation	framework-errors-never-raised	false
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	decorator-options-where-bun-reads	nestjs	blocks/implementations/nestjs/foundation/with/bun-test.md	bun-test	MUST	review		typescript	errors	foundation	compiler-keeps-decorator-metadata	false
+rule	nest-logs-through-the-pino-instance	nestjs	blocks/implementations/nestjs/foundation/with/pino.md	pino	MUST	review		typescript	security data	foundation	one-instance-writes-every-record	false
 rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	known-vulnerabilities-fail-the-check	false
 rule	licences-checked-against-the-shared-allowlist	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	licences-from-an-allowlist	false
 rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
@@ -944,6 +946,8 @@ rule	secret-keys-masked-in-the-finished-line	pino	blocks/implementations/pino/fo
 rule	json-lines-to-stdout-in-production	pino	blocks/implementations/pino/foundation/pino.md		SHOULD	review		typescript		foundation	log-output-structured-in-production	false
 rule	trace-id-added-by-mixin	pino	blocks/implementations/pino/foundation/pino.md		SHOULD	review		typescript		foundation	log-records-carry-the-trace-id	false
 rule	fields-first-message-second	pino	blocks/implementations/pino/foundation/pino.md		SHOULD	review		typescript		foundation	log-record-is-an-event-with-fields	false
+rule	pino-configured-by-the-root	pino	blocks/implementations/pino/architecture/pino.md		MUST	review		typescript		architecture	logging-configured-by-the-root	false
+rule	code-logs-through-the-port	pino	blocks/implementations/pino/architecture/pino.md		SHOULD	review		typescript	security	architecture	diagnostics-through-the-logging-port	false
 rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	a11y testing	foundation	elements-found-by-role-label-text	false
 rule	waits-through-locators-and-assertions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	web-first-assertions-awaited	playwright	blocks/implementations/playwright/foundation/playwright.md		MUST	tool	lint	typescript	errors	foundation	async-work-awaited-or-deliberately-detached	false
@@ -1025,7 +1029,7 @@ rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlo
 rule	json-in-production-console-in-development	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-output-structured-in-production	false
 rule	trace-id-bound-through-contextvars	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-records-carry-the-trace-id	false
 rule	fields-passed-in-extra	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-record-is-an-event-with-fields	false
-rule	logging-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	one-explicit-composition-root	false
+rule	structlog-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	logging-configured-by-the-root	false
 rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/architecture/structlog.md		SHOULD	review		python	security	architecture	diagnostics-through-the-logging-port	false
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript		foundation	suppression-silences-one-finding	false
 rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing	foundation	mutants-all-killed	false

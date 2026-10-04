@@ -1,7 +1,7 @@
 # pino
 
 ## one-instance-writes-every-record → log-records-pass-one-pipeline
-The pipeline is one pino instance, created at the program's start: pino-http takes it as `logger`, and so does nestjs-pino's `LoggerModule.forRoot({ pinoHttp: { logger } })`. Code logs through that instance or its children; no second instance writes a record.
+The pipeline is one pino instance, created at the program's start, and pino-http takes it as `logger`. Code logs through that instance or its children; no second instance writes a record.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -7,7 +7,7 @@ abstract: false
 checks: []
 languages: []
 roles: []
-dictionary: [NestJS, Nest, "@nestjs", nest-cli.json, .swcrc]
+dictionary: [NestJS, Nest, "@nestjs", nestjs-pino, nest-cli.json, .swcrc]
 governs: ["nest-cli.json", ".swcrc"]
 ---
 

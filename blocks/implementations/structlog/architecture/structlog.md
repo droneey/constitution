@@ -1,11 +1,11 @@
 # structlog
 
-## logging-configured-by-the-root → one-explicit-composition-root
-`root/` configures logging once, at boot — `structlog.configure` and the root logger's handler — and builds the middleware that binds the trace id; no other code configures logging, and a library adds no handler and calls no `logging.basicConfig`.
+## structlog-configured-by-the-root → logging-configured-by-the-root
+`root/` calls `structlog.configure`, sets the root logger's handler and builds the middleware that binds the trace id; no other code adds a handler or calls `logging.basicConfig`.
 
 | Why | Check | Tags |
 |---|---|---|
-| where records go and what they carry is one choice, made where every other concrete choice is. | review | [] |
+| a handler added elsewhere writes records past the chain, and `logging.basicConfig` adds one. | review | [] |
 
 ## code-logs-through-the-standard-logger → diagnostics-through-the-logging-port
 Code logs through `logging.getLogger(__name__)`, the logger every library writes to; only `root/` imports structlog.

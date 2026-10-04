@@ -3,7 +3,7 @@
 > How a program writes its log records, in any language: one pipeline masks, enriches and renders every record, and a record is an event with its values as fields.
 
 ## log-records-pass-one-pipeline → no-secret-or-personal-data-in-output
-Every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it; no second writer puts a record out.
+In a program whose logs a collector reads, every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it; no second writer puts a record out.
 
 | Why | Check | Tags |
 |---|---|---|
