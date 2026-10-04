@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  mainFile,
-  without,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile, without } from '../../../../../../__tests__/constitution.fixtures';
 import { GOLDEN_INDEX } from '../../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { digestsCheck } from '../digests.check';
@@ -108,8 +104,7 @@ describe('digestsCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message:
-          'makes a core part of 3509 bytes; the digest holds at most 3500 of core',
+        message: 'makes a core part of 3509 bytes; the digest holds at most 3500 of core',
         path: 'blocks/core/core.md',
       },
       {

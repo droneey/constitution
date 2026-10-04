@@ -1,11 +1,4 @@
-import {
-  copyFileSync,
-  mkdirSync,
-  mkdtempSync,
-  readdirSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -69,9 +62,7 @@ const copyHook = (root: string): void => {
   mkdirSync(join(root, LIBRARY), {
     recursive: true,
   });
-  for (const name of readdirSync(join(REPOSITORY, HOOKS)).filter((file) =>
-    file.endsWith('.sh'),
-  )) {
+  for (const name of readdirSync(join(REPOSITORY, HOOKS)).filter((file) => file.endsWith('.sh'))) {
     copyFileSync(join(REPOSITORY, HOOKS, name), join(root, HOOKS, name));
   }
 
@@ -82,10 +73,7 @@ const copyHook = (root: string): void => {
 
 // The digests come from this repository's own generator, so the hook reads what
 // a release ships.
-const writeDigestsOf = (input: {
-  files: Readonly<Files>;
-  root: string;
-}): void => {
+const writeDigestsOf = (input: { files: Readonly<Files>; root: string }): void => {
   const prepared = prepareDigests({
     bindingsParser: createYamlBindingsParser(),
     frontMatterParser: createYamlFrontMatterParser(),
@@ -165,8 +153,7 @@ const corePartOfBytes = (bytes: number): string =>
     {
       length: Math.ceil(bytes / LINE_BYTES),
     },
-    (_, index) =>
-      `${'x'.repeat(Math.min(LINE_BYTES, bytes - index * LINE_BYTES) - 1)}\n`,
+    (_, index) => `${'x'.repeat(Math.min(LINE_BYTES, bytes - index * LINE_BYTES) - 1)}\n`,
   ).join('');
 
 const removePluginRoots = (): void => {
@@ -175,11 +162,4 @@ const removePluginRoots = (): void => {
   }
 };
 
-export {
-  Breakage,
-  corePartOfBytes,
-  createPluginRoot,
-  INSTALLED,
-  removeFolder,
-  removePluginRoots,
-};
+export { Breakage, corePartOfBytes, createPluginRoot, INSTALLED, removeFolder, removePluginRoots };

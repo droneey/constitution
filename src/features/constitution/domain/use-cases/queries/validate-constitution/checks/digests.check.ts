@@ -19,15 +19,10 @@ const staleMessage = (input: {
     return `is missing; ${RUN}`;
   }
 
-  return input.committed === input.generated
-    ? undefined
-    : `differs from its regeneration; ${RUN}`;
+  return input.committed === input.generated ? undefined : `differs from its regeneration; ${RUN}`;
 };
 
-const digestsCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const digestsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
   const generated = generateDigests({
     byId,
     constitution,

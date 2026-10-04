@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { requiresCheck } from '../requires.check';
 
@@ -94,22 +91,19 @@ describe('requiresCheck', () => {
       },
       field: 'extends',
     },
-  ])(
-    'should leave the field to the front-matter check when a domain fills $field',
-    ({ block }) => {
-      // Arrange
-      const input = checkInputOf({
-        ...validFiles(),
-        'blocks/domains/i18n/i18n.md': mainFile(block),
-      });
+  ])('should leave the field to the front-matter check when a domain fills $field', ({ block }) => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/domains/i18n/i18n.md': mainFile(block),
+    });
 
-      // Act
-      const findings = requiresCheck(input);
+    // Act
+    const findings = requiresCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 
   it.each([
     {
@@ -122,31 +116,27 @@ describe('requiresCheck', () => {
     },
     {
       base: 'ui',
-      expected:
-        'extends ui, a domain block; a block extends only an implementation',
+      expected: 'extends ui, a domain block; a block extends only an implementation',
     },
-  ])(
-    'should report "$expected" when an implementation extends $base',
-    ({ base, expected }) => {
-      // Arrange
-      const files = validFiles();
-      files[BIOME] = mainFile({
-        body: '# Biome\n',
-        extends: base,
-        id: 'biome',
-      });
-      const input = checkInputOf(files);
+  ])('should report "$expected" when an implementation extends $base', ({ base, expected }) => {
+    // Arrange
+    const files = validFiles();
+    files[BIOME] = mainFile({
+      body: '# Biome\n',
+      extends: base,
+      id: 'biome',
+    });
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = requiresCheck(input);
+    // Act
+    const findings = requiresCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: BIOME,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: BIOME,
+      },
+    ]);
+  });
 });

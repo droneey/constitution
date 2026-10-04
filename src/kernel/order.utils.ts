@@ -10,7 +10,6 @@ const compareText = (left: string, right: string): number => {
 };
 
 const compareFindings = (left: Finding, right: Finding): number =>
-  compareText(left.path, right.path) ||
-  compareText(left.message, right.message);
+  compareText(left.path, right.path) || compareText(left.message, right.message);
 
 export { compareFindings, compareText };

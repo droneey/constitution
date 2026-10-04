@@ -27,8 +27,7 @@ const SYNTHETIC_BLOCKS = 120;
 const SYNTHETIC_RULES = 3;
 const NUMBER_WIDTH = 3;
 
-const list = (items: readonly string[] | undefined): string =>
-  `[${(items ?? []).join(', ')}]`;
+const list = (items: readonly string[] | undefined): string => `[${(items ?? []).join(', ')}]`;
 
 const mainFile = (block: BlockFixture): string =>
   [
@@ -64,10 +63,8 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
-const section = (input: {
-  rules: readonly RuleFixture[];
-  title: string;
-}): string => `# ${input.title}\n\n${input.rules.map(rule).join('\n')}`;
+const section = (input: { rules: readonly RuleFixture[]; title: string }): string =>
+  `# ${input.title}\n\n${input.rules.map(rule).join('\n')}`;
 
 const blockFiles = (
   input: BlockFixture & {
@@ -162,11 +159,7 @@ const coreFiles = (): Files =>
     summary: 'The laws for any program.',
   });
 
-const rulesFile = (input: {
-  axis?: Axis;
-  id: string;
-  rules: readonly RuleFixture[];
-}): Files => ({
+const rulesFile = (input: { axis?: Axis; id: string; rules: readonly RuleFixture[] }): Files => ({
   [`${input.axis ?? Axis.Foundation}/${input.id}.md`]: section({
     rules: input.rules,
     title: input.id,
@@ -213,8 +206,7 @@ const domainFiles = (): Files => ({
         rules: [
           {
             slug: 'optimistic-writes-roll-back',
-            statement:
-              'An optimistic write rolls back when the server refuses it.',
+            statement: 'An optimistic write rolls back when the server refuses it.',
           },
         ],
         title: 'UI with remote data',

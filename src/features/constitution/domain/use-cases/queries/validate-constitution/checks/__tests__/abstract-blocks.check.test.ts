@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { abstractBlocksCheck } from '../abstract-blocks.check';
 
@@ -59,39 +56,33 @@ describe('abstractBlocksCheck', () => {
           body: '# React\n',
           summary: 'The base of react-dom.',
         }),
-        'blocks/implementations/_react/foundation/with/browser.md':
-          '# React in the browser\n',
+        'blocks/implementations/_react/foundation/with/browser.md': '# React in the browser\n',
       },
       name: 'its summary, which its other files do not repeat',
     },
-  ])(
-    'should report the heir at the card when the base names it in $name',
-    ({ files }) => {
-      // Arrange
-      const input = checkInputOf({
-        ...validFiles(),
-        ...files,
-      });
+  ])('should report the heir at the card when the base names it in $name', ({ files }) => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      ...files,
+    });
 
-      // Act
-      const findings = abstractBlocksCheck(input);
+    // Act
+    const findings = abstractBlocksCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message:
-            'names its heir react-dom; a base knows nothing of its heirs',
-          path: REACT,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'names its heir react-dom; a base knows nothing of its heirs',
+        path: REACT,
+      },
+    ]);
+  });
 
   it('should report a with/ file of the base when it is named after an heir', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/implementations/_react/architecture/with/react-dom.md'] =
-      '# Seam\n\nPortals.\n';
+    files['blocks/implementations/_react/architecture/with/react-dom.md'] = '# Seam\n\nPortals.\n';
     const input = checkInputOf(files);
 
     // Act
@@ -110,22 +101,19 @@ describe('abstractBlocksCheck', () => {
   it.each([
     'react-dom-extra',
     'x-react-dom',
-  ])(
-    'should accept a base when it names %p, which only holds the id of its heir',
-    (id) => {
-      // Arrange
-      const files = validFiles();
-      files[REACT] = reactBase({
-        body: `# React\n\nUnlike ${id}, a base knows no renderer.\n`,
-        summary: 'The React base.',
-      });
-      const input = checkInputOf(files);
+  ])('should accept a base when it names %p, which only holds the id of its heir', (id) => {
+    // Arrange
+    const files = validFiles();
+    files[REACT] = reactBase({
+      body: `# React\n\nUnlike ${id}, a base knows no renderer.\n`,
+      summary: 'The React base.',
+    });
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = abstractBlocksCheck(input);
+    // Act
+    const findings = abstractBlocksCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 });

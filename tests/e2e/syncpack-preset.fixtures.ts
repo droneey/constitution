@@ -1,11 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -37,9 +31,7 @@ export default {
 };
 `;
 
-const workspace = (
-  packages: readonly Manifest[],
-): Readonly<Record<string, Manifest | object>> => ({
+const workspace = (packages: readonly Manifest[]): Readonly<Record<string, Manifest | object>> => ({
   'package.json': {
     name: 'root',
     private: true,

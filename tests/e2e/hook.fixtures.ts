@@ -1,13 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import {
-  chmodSync,
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -114,9 +107,7 @@ const inputOf = (input: {
   const placeholder = bytes.indexOf(PLACEHOLDER);
 
   if (placeholder >= 0) {
-    bytes[placeholder] = input.nonUtf8Byte
-      ? NOT_UTF8
-      : PLACEHOLDER.charCodeAt(0);
+    bytes[placeholder] = input.nonUtf8Byte ? NOT_UTF8 : PLACEHOLDER.charCodeAt(0);
   }
 
   return bytes;
@@ -215,9 +206,7 @@ const outputOf = (run: HookRun): HookOutput => {
     typeof inner['additionalContext'] !== 'string' ||
     typeof inner['hookEventName'] !== 'string'
   ) {
-    throw new Error(
-      `The hook printed no hookSpecificOutput object: ${run.stdout}`,
-    );
+    throw new Error(`The hook printed no hookSpecificOutput object: ${run.stdout}`);
   }
 
   return {
@@ -228,14 +217,12 @@ const outputOf = (run: HookRun): HookOutput => {
 
 const contextOf = (run: HookRun): string => outputOf(run).context;
 
-const linesOf = (context: string): readonly string[] =>
-  context.replace(/\n$/, '').split('\n');
+const linesOf = (context: string): readonly string[] => context.replace(/\n$/, '').split('\n');
 
 const headerOf = (context: string): readonly string[] =>
   linesOf(context.slice(0, context.indexOf('\n\n')));
 
-const factsOf = (context: string): readonly string[] =>
-  headerOf(context).slice(1);
+const factsOf = (context: string): readonly string[] => headerOf(context).slice(1);
 
 const blockListOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
@@ -265,10 +252,8 @@ const warningsOf = (context: string): readonly string[] => {
 const bytesAfterHeader = (context: string): number =>
   Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
 
-const lastLinesOf = (input: {
-  context: string;
-  count: number;
-}): readonly string[] => linesOf(input.context).slice(-input.count);
+const lastLinesOf = (input: { context: string; count: number }): readonly string[] =>
+  linesOf(input.context).slice(-input.count);
 
 const runScript = (call: {
   event: Readonly<Record<string, unknown>>;
@@ -325,11 +310,7 @@ const newSession = (): string => {
 };
 
 const stateFolderOf = (session: string): string =>
-  join(
-    '/tmp',
-    `droneey-constitution-${String(process.getuid?.() ?? 0)}`,
-    session,
-  );
+  join('/tmp', `droneey-constitution-${String(process.getuid?.() ?? 0)}`, session);
 
 const mustsOf = (session: string): readonly string[] =>
   readFileSync(join(stateFolderOf(session), 'active.tsv'), 'utf8')

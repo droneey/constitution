@@ -5,13 +5,7 @@ import { dirname, join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import type { HookRun } from './hook.fixtures';
-import {
-  HookEvent,
-  newSession,
-  removeSessions,
-  runHook,
-  runScript,
-} from './hook.fixtures';
+import { HookEvent, newSession, removeSessions, runHook, runScript } from './hook.fixtures';
 import { createPluginRoot, removePluginRoots } from './plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from './project.fixtures';
 
@@ -32,8 +26,7 @@ const BLOCKED = JSON.stringify({
     "The tree changed since the check last passed. Run the project's check, `bun run check`, and hand back only when it passes.",
 });
 const REVIEW = JSON.stringify({
-  systemMessage:
-    'Changed files fall under ui; /check edits reviews them against the rules.',
+  systemMessage: 'Changed files fall under ui; /check edits reviews them against the rules.',
 });
 
 let root = '';
@@ -150,11 +143,7 @@ const ran = (input: { command: string; session: Session }): HookRun =>
     session: input.session,
   });
 
-const stop = (input: {
-  active?: boolean;
-  event?: StopEvent;
-  session: Session;
-}): string =>
+const stop = (input: { active?: boolean; event?: StopEvent; session: Session }): string =>
   fire({
     event: input.event ?? StopEvent.Stop,
     fields: Object.fromEntries([

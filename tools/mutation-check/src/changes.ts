@@ -6,6 +6,7 @@ interface Range {
 }
 
 interface Changes {
+  codeChanged: (path: string) => boolean;
   diff: string;
   exists: (path: string) => boolean;
   importsOf: (path: string) => readonly string[];
@@ -92,20 +93,18 @@ const provenFiles = (input: {
       }),
     );
 
-const isMutated = (input: {
-  mutate: readonly string[];
-  path: string;
-}): boolean =>
-  input.mutate.some(
-    (pattern) => !pattern.startsWith('!') && matchesGlob(input.path, pattern),
-  ) &&
+const isMutated = (input: { mutate: readonly string[]; path: string }): boolean =>
+  input.mutate.some((pattern) => !pattern.startsWith('!') && matchesGlob(input.path, pattern)) &&
   !input.mutate.some(
-    (pattern) =>
-      pattern.startsWith('!') && matchesGlob(input.path, pattern.slice(1)),
+    (pattern) => pattern.startsWith('!') && matchesGlob(input.path, pattern.slice(1)),
   );
 
 const mutateTargets = (changes: Changes): readonly string[] => {
-  const ranges = changedLines(changes.diff);
+  const ranges = new Map(
+    [
+      ...changedLines(changes.diff),
+    ].filter(([path]) => changes.codeChanged(path)),
+  );
   const whole = new Set([
     ...changes.untracked,
     ...provenFiles({
@@ -131,9 +130,7 @@ const mutateTargets = (changes: Changes): readonly string[] => {
       ...ranges,
     ]
       .filter(([path]) => !whole.has(path) && mutated(path))
-      .flatMap(([path, lines]) =>
-        lines.map(({ end, start }) => `${path}:${start}-${end}`),
-      ),
+      .flatMap(([path, lines]) => lines.map(({ end, start }) => `${path}:${start}-${end}`)),
   ];
 };
 

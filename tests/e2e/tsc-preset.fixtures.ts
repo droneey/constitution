@@ -1,12 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  readdirSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -17,13 +10,7 @@ interface Project {
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const TSC = join(REPOSITORY, 'node_modules', '.bin', 'tsc');
-const PRESETS_FOLDER = join(
-  REPOSITORY,
-  'presets',
-  'typescript',
-  'tsc',
-  'foundation',
-);
+const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'typescript', 'tsc', 'foundation');
 
 const presetParts = (): readonly string[] =>
   readdirSync(PRESETS_FOLDER)
@@ -41,8 +28,7 @@ const typeChecks = (project: Project): boolean => {
     join(folder, 'tsconfig.json'),
     JSON.stringify({
       extends: project.parts.map(
-        (part) =>
-          `./.droneey/constitution/presets/typescript/tsc/foundation/${part}.json`,
+        (part) => `./.droneey/constitution/presets/typescript/tsc/foundation/${part}.json`,
       ),
       compilerOptions: {
         typeRoots: [

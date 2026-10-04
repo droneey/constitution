@@ -37,19 +37,16 @@ describe('localLinkTargets', () => {
       name: 'only external links and anchors',
       text: '[a](https://a.dev) [b](HTTPS://b.dev) [c](mailto:x@y.z) [d](git+https://d.dev) [e](//e.dev) [f](#f) [g](tel:+100) [h](s3://bucket/key)',
     },
-  ])(
-    'should return the local targets when the text holds $name',
-    ({ expected, text }) => {
-      // Arrange
-      const input = text;
+  ])('should return the local targets when the text holds $name', ({ expected, text }) => {
+    // Arrange
+    const input = text;
 
-      // Act
-      const targets = localLinkTargets(input);
+    // Act
+    const targets = localLinkTargets(input);
 
-      // Assert
-      expect(targets).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(targets).toStrictEqual(expected);
+  });
 });
 
 describe('rewriteLocalLinks', () => {

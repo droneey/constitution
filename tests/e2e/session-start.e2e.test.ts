@@ -177,13 +177,10 @@ const unknownIds = (count: number): readonly string[] =>
     },
     (_, index) => `u${String(index + 1).padStart(3, '0')}`,
   );
-const unknownWarning = (id: string): string =>
-  `- unknown: ${id} is not a block — check the name`;
+const unknownWarning = (id: string): string => `- unknown: ${id} is not a block — check the name`;
 
-const CORE_FILES =
-  "Core's files, under blocks/core/ and named without .md: core";
-const KEY =
-  "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
+const CORE_FILES = "Core's files, under blocks/core/ and named without .md: core";
+const KEY = "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const AXIS_DOMAINS = '[ui, remote-data, version-control]';
 const REMOTE_DATA = '- remote-data: Data another system owns.';
@@ -325,8 +322,7 @@ describe('session-start hook', () => {
 
   it.each<FindCase>([
     {
-      condition:
-        'CLAUDE_PROJECT_DIR names the project root and cwd lies outside it',
+      condition: 'CLAUDE_PROJECT_DIR names the project root and cwd lies outside it',
       cwd: '..',
       projectDir: '',
       repository: Repository.Folder,
@@ -348,14 +344,12 @@ describe('session-start hook', () => {
       repository: Repository.Worktree,
     },
     {
-      condition:
-        'no repository holds the start folder and constitution.yaml lies in it',
+      condition: 'no repository holds the start folder and constitution.yaml lies in it',
       cwd: '',
       repository: Repository.None,
     },
     {
-      condition:
-        'CLAUDE_PROJECT_DIR is a symbolic link to a subfolder of the repository',
+      condition: 'CLAUDE_PROJECT_DIR is a symbolic link to a subfolder of the repository',
       cwd: '..',
       projectDir: '../link',
       repository: Repository.Folder,
@@ -391,8 +385,7 @@ describe('session-start hook', () => {
       spawnOutside: true,
     },
     {
-      condition:
-        'the event holds a byte that is not UTF-8 and the locale is UTF-8',
+      condition: 'the event holds a byte that is not UTF-8 and the locale is UTF-8',
       cwd: '',
       nonUtf8Byte: true,
       repository: Repository.Folder,
@@ -448,8 +441,7 @@ describe('session-start hook', () => {
       line: 1,
     },
     {
-      condition:
-        'axes leaves architecture and workflow out and a later list item is an alias',
+      condition: 'axes leaves architecture and workflow out and a later list item is an alias',
       config: configOf({
         axes: '[foundation]',
         platforms: '[*browser]',
@@ -572,32 +564,29 @@ describe('session-start hook', () => {
       }),
       line: 9,
     },
-  ])(
-    'should name the line and give only core when $condition',
-    ({ config, line }) => {
-      // Arrange
-      const project = createProject({
-        config,
-      });
+  ])('should name the line and give only core when $condition', ({ config, line }) => {
+    // Arrange
+    const project = createProject({
+      config,
+    });
 
-      // Act
-      const context = contextOf(
-        runHook({
-          project,
-          event: HookEvent.Startup,
-          root,
-        }),
-      );
+    // Act
+    const context = contextOf(
+      runHook({
+        project,
+        event: HookEvent.Startup,
+        root,
+      }),
+    );
 
-      // Assert
-      expect(context).toBe(
-        unparsedContext({
-          line,
-          root,
-        }),
-      );
-    },
-  );
+    // Assert
+    expect(context).toBe(
+      unparsedContext({
+        line,
+        root,
+      }),
+    );
+  });
 
   it.each<ReadCase>([
     {
@@ -680,29 +669,26 @@ describe('session-start hook', () => {
         'constitution.yaml pins 1.0.0; 2 blocks are active.',
       ],
     },
-  ])(
-    'should read constitution.yaml when it holds $condition',
-    ({ config, facts }) => {
-      // Arrange
-      const project = createProject({
-        config,
-      });
+  ])('should read constitution.yaml when it holds $condition', ({ config, facts }) => {
+    // Arrange
+    const project = createProject({
+      config,
+    });
 
-      // Act
-      const printed = factsOf(
-        contextOf(
-          runHook({
-            event: HookEvent.Subagent,
-            project,
-            root,
-          }),
-        ),
-      );
+    // Act
+    const printed = factsOf(
+      contextOf(
+        runHook({
+          event: HookEvent.Subagent,
+          project,
+          root,
+        }),
+      ),
+    );
 
-      // Assert
-      expect(printed).toStrictEqual(facts);
-    },
-  );
+    // Assert
+    expect(printed).toStrictEqual(facts);
+  });
 
   it('should take the nearest constitution.yaml when two lie on the way up', () => {
     // Arrange
@@ -813,33 +799,30 @@ describe('session-start hook', () => {
       ],
       version: '',
     },
-  ])(
-    'should state the header facts when $condition',
-    ({ event, facts, version }) => {
-      // Arrange
-      const project = createProject({
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          version,
+  ])('should state the header facts when $condition', ({ event, facts, version }) => {
+    // Arrange
+    const project = createProject({
+      config: configOf({
+        domains: '[version-control]',
+        implementations: '[git]',
+        version,
+      }),
+    });
+
+    // Act
+    const printed = factsOf(
+      contextOf(
+        runHook({
+          event,
+          project,
+          root,
         }),
-      });
+      ),
+    );
 
-      // Act
-      const printed = factsOf(
-        contextOf(
-          runHook({
-            event,
-            project,
-            root,
-          }),
-        ),
-      );
-
-      // Assert
-      expect(printed).toStrictEqual(facts);
-    },
-  );
+    // Assert
+    expect(printed).toStrictEqual(facts);
+  });
 
   it.each<HeadingCase>([
     {
@@ -858,34 +841,31 @@ describe('session-start hook', () => {
       event: HookEvent.Subagent,
       heading: WARNINGS,
     },
-  ])(
-    'should head the warnings with "$heading" when the event is $event',
-    ({ event, heading }) => {
-      // Arrange
-      const project = createProject({
-        config: configOf({
-          domains: '[tanstak-query]',
+  ])('should head the warnings with "$heading" when the event is $event', ({ event, heading }) => {
+    // Arrange
+    const project = createProject({
+      config: configOf({
+        domains: '[tanstak-query]',
+      }),
+    });
+
+    // Act
+    const warnings = warningsOf(
+      contextOf(
+        runHook({
+          project,
+          event,
+          root,
         }),
-      });
+      ),
+    );
 
-      // Act
-      const warnings = warningsOf(
-        contextOf(
-          runHook({
-            project,
-            event,
-            root,
-          }),
-        ),
-      );
-
-      // Assert
-      expect(warnings).toStrictEqual([
-        heading,
-        '- unknown: tanstak-query is not a block — check the name',
-      ]);
-    },
-  );
+    // Assert
+    expect(warnings).toStrictEqual([
+      heading,
+      '- unknown: tanstak-query is not a block — check the name',
+    ]);
+  });
 
   it.each<WarningCase>([
     {
@@ -1040,9 +1020,7 @@ describe('session-start hook', () => {
       layout: {
         config: configOf({
           domains: '[ui]',
-          overrides: fourDataStatesOverride(
-            '    level: MUST\n    reason: "kept"',
-          ),
+          overrides: fourDataStatesOverride('    level: MUST\n    reason: "kept"'),
         }),
       },
       warnings: [
@@ -1092,8 +1070,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'a local block requires a local block active only in an application',
+      condition: 'a local block requires a local block active only in an application',
       layout: {
         config: configOf({
           apps: `\n  packages/x:\n    implementations: [${localPath('beta')}]`,
@@ -1120,8 +1097,7 @@ describe('session-start hook', () => {
       condition: 'a local tool names a language it does not require',
       layout: {
         config: configOf({
-          domains:
-            '[ui, untrusted-client, unreliable-network, version-control]',
+          domains: '[ui, untrusted-client, unreliable-network, version-control]',
           implementations: `[react-dom, git, betterleaks, ${localPath('lint-tool')}]`,
           languages: '[typescript]',
           platforms: '[browser]',
@@ -1167,8 +1143,7 @@ describe('session-start hook', () => {
       condition: 'a local tool requires its language but names none',
       layout: {
         config: configOf({
-          domains:
-            '[ui, untrusted-client, unreliable-network, version-control]',
+          domains: '[ui, untrusted-client, unreliable-network, version-control]',
           implementations: `[react-dom, git, ${localPath('lint-tool')}]`,
           languages: '[typescript]',
           platforms: '[browser]',
@@ -1281,8 +1256,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'an application adds nothing the repository lacks for a missing block',
+      condition: 'an application adds nothing the repository lacks for a missing block',
       layout: {
         config: configOf({
           apps: '\n  web:\n    domains: [i18n]',
@@ -1362,9 +1336,7 @@ describe('session-start hook', () => {
       layout: {
         config: configOf({
           domains: '[ui]',
-          overrides: fourDataStatesOverride(
-            '    level: MAY\n    reason: "later"\n    until: soon',
-          ),
+          overrides: fourDataStatesOverride('    level: MAY\n    reason: "later"\n    until: soon'),
         }),
       },
       warnings: [
@@ -1548,8 +1520,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        "a local language's roles leave out the role of an active rule",
+      condition: "a local language's roles leave out the role of an active rule",
       layout: {
         config: configOf({
           domains: '[version-control]',
@@ -1603,8 +1574,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'two languages are active and a rule of the role holds for one',
+      condition: 'two languages are active and a rule of the role holds for one',
       layout: {
         config: configOf({
           domains: '[version-control]',
@@ -1621,8 +1591,7 @@ describe('session-start hook', () => {
       condition: 'the first tool of the role in the index is abstract',
       layout: {
         config: configOf({
-          domains:
-            '[ui, untrusted-client, unreliable-network, version-control]',
+          domains: '[ui, untrusted-client, unreliable-network, version-control]',
           implementations: '[react-dom, git, betterleaks]',
           languages: '[typescript]',
           platforms: '[browser]',
@@ -1634,8 +1603,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'an application needs a role that a top-level local tool checks',
+      condition: 'an application needs a role that a top-level local tool checks',
       layout: {
         config: configOf({
           apps: '\n  web:\n    domains: [ui, untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
@@ -1667,8 +1635,7 @@ describe('session-start hook', () => {
       warnings: [],
     },
     {
-      condition:
-        "an application's override lowers the rule no tool checks there",
+      condition: "an application's override lowers the rule no tool checks there",
       layout: {
         config: configOf({
           apps: '\n  web:\n    languages: [typescript]\n    overrides:\n      - rule: no-secret-in-code\n        level: MAY\n        reason: "none yet"',
@@ -1679,8 +1646,7 @@ describe('session-start hook', () => {
       warnings: [],
     },
     {
-      condition:
-        "an application's override lowers the requirement its library does not meet",
+      condition: "an application's override lowers the requirement its library does not meet",
       layout: {
         config: configOf({
           apps: '\n  web:\n    domains: [analytics]\n    implementations: [matomo]\n    overrides:\n      - rule: analytics-consent-first\n        level: SHOULD\n        reason: "no banner yet"',
@@ -1703,8 +1669,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'an application needs a tool that the rest of the repository does not',
+      condition: 'an application needs a tool that the rest of the repository does not',
       layout: {
         config: configOf({
           apps: '\n  web:\n    languages: [typescript]',
@@ -1778,8 +1743,7 @@ describe('session-start hook', () => {
       condition: 'an override names no rule',
       layout: {
         config: configOf({
-          overrides:
-            '\n  - rule: four-states\n    level: MAY\n    reason: "later"',
+          overrides: '\n  - rule: four-states\n    level: MAY\n    reason: "later"',
         }),
       },
       warnings: [
@@ -1865,31 +1829,28 @@ describe('session-start hook', () => {
         'and 1 more',
       ],
     },
-  ])(
-    'should print warnings up to 1,000 bytes when $condition',
-    ({ domains, warnings }) => {
-      // Arrange
-      const project = createProject({
-        config: configOf({
-          domains,
+  ])('should print warnings up to 1,000 bytes when $condition', ({ domains, warnings }) => {
+    // Arrange
+    const project = createProject({
+      config: configOf({
+        domains,
+      }),
+    });
+
+    // Act
+    const printed = warningsOf(
+      contextOf(
+        runHook({
+          project,
+          event: HookEvent.Subagent,
+          root,
         }),
-      });
+      ),
+    );
 
-      // Act
-      const printed = warningsOf(
-        contextOf(
-          runHook({
-            project,
-            event: HookEvent.Subagent,
-            root,
-          }),
-        ),
-      );
-
-      // Assert
-      expect(printed).toStrictEqual(warnings);
-    },
-  );
+    // Assert
+    expect(printed).toStrictEqual(warnings);
+  });
 
   it.each<DigestCase>([
     {
@@ -2147,9 +2108,7 @@ describe('session-start hook', () => {
       config: configOf({
         apps: '\n  web:\n    overrides:\n      - rule: four-data-states\n        level: SHOULD\n        reason: "the kit decides"',
         domains: '[ui]',
-        overrides: fourDataStatesOverride(
-          '    level: MAY\n    reason: "a prototype"',
-        ),
+        overrides: fourDataStatesOverride('    level: MAY\n    reason: "a prototype"'),
       }),
     });
 
@@ -2172,8 +2131,7 @@ describe('session-start hook', () => {
   // heading 85 and a synthetic domain's line 101.
   it.each<EdgeCase>([
     {
-      condition:
-        'the last line of the block list ends on the budget, reserve kept',
+      condition: 'the last line of the block list ends on the budget, reserve kept',
       corePart: 8834,
       domains: '[synthetic-001]',
       tail: [
@@ -2181,8 +2139,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition:
-        'the last line of the block list passes the budget by one byte',
+      condition: 'the last line of the block list passes the budget by one byte',
       corePart: 8835,
       domains: '[synthetic-001]',
       tail: [
@@ -2208,37 +2165,34 @@ describe('session-start hook', () => {
         '3 more lines of the block list did not fit; constitution.yaml names every block.',
       ],
     },
-  ])(
-    'should cut where the budget ends when $condition',
-    ({ corePart, domains, tail }) => {
-      // Arrange
-      const plugin = createPluginRoot({
-        corePart: corePartOfBytes(corePart),
-      });
-      const project = createProject({
-        config: configOf({
-          domains,
-        }),
-      });
+  ])('should cut where the budget ends when $condition', ({ corePart, domains, tail }) => {
+    // Arrange
+    const plugin = createPluginRoot({
+      corePart: corePartOfBytes(corePart),
+    });
+    const project = createProject({
+      config: configOf({
+        domains,
+      }),
+    });
 
-      // Act
-      const context = contextOf(
-        runHook({
-          event: HookEvent.Startup,
-          project,
-          root: plugin,
-        }),
-      );
+    // Act
+    const context = contextOf(
+      runHook({
+        event: HookEvent.Startup,
+        project,
+        root: plugin,
+      }),
+    );
 
-      // Assert
-      expect(
-        lastLinesOf({
-          context,
-          count: tail.length,
-        }),
-      ).toStrictEqual(tail);
-    },
-  );
+    // Assert
+    expect(
+      lastLinesOf({
+        context,
+        count: tail.length,
+      }),
+    ).toStrictEqual(tail);
+  });
 
   it('should fill the budget to its last byte when the last line of the block list ends on it', () => {
     // Arrange
@@ -2279,25 +2233,22 @@ describe('session-start hook', () => {
       event: HookEvent.Subagent,
       name: 'SubagentStart',
     },
-  ])(
-    'should name the event $name when the hook runs at $event',
-    ({ event, name }) => {
-      // Arrange
-      const project = createProject(CLI);
+  ])('should name the event $name when the hook runs at $event', ({ event, name }) => {
+    // Arrange
+    const project = createProject(CLI);
 
-      // Act
-      const output = outputOf(
-        runHook({
-          project,
-          event,
-          root,
-        }),
-      );
+    // Act
+    const output = outputOf(
+      runHook({
+        project,
+        event,
+        root,
+      }),
+    );
 
-      // Assert
-      expect(output.event).toBe(name);
-    },
-  );
+    // Assert
+    expect(output.event).toBe(name);
+  });
 
   it.each<FailureCase>([
     {
@@ -2311,15 +2262,13 @@ describe('session-start hook', () => {
       breakage: Breakage.DigestCore,
       condition: 'the plugin root lacks digests/core.md',
       layout: CLI,
-      stderr: ({ plugin }): string =>
-        `constitution hook: cannot read ${plugin}/digests/core.md\n`,
+      stderr: ({ plugin }): string => `constitution hook: cannot read ${plugin}/digests/core.md\n`,
     },
     {
       breakage: Breakage.Version,
       condition: "the plugin's package.json has no version",
       layout: CLI,
-      stderr: ({ plugin }): string =>
-        `constitution hook: ${plugin}/package.json has no version\n`,
+      stderr: ({ plugin }): string => `constitution hook: ${plugin}/package.json has no version\n`,
     },
     {
       breakage: Breakage.Resolve,
@@ -2372,8 +2321,7 @@ describe('session-start hook', () => {
 
   it.each<BlockListCase>([
     {
-      condition:
-        "a top-level block's with/ file is active only in an application",
+      condition: "a top-level block's with/ file is active only in an application",
       layout: {
         config: configOf({
           apps: '\n  packages/web:\n    domains: [remote-data]',
@@ -2389,27 +2337,24 @@ describe('session-start hook', () => {
         '- ui (domains): Also: architecture/with/remote-data',
       ],
     },
-  ])(
-    'should list the active blocks as given when $condition',
-    ({ layout, lines }) => {
-      // Arrange
-      const project = createProject(layout);
+  ])('should list the active blocks as given when $condition', ({ layout, lines }) => {
+    // Arrange
+    const project = createProject(layout);
 
-      // Act
-      const list = blockListOf(
-        contextOf(
-          runHook({
-            event: HookEvent.Subagent,
-            project,
-            root,
-          }),
-        ),
-      );
+    // Act
+    const list = blockListOf(
+      contextOf(
+        runHook({
+          event: HookEvent.Subagent,
+          project,
+          root,
+        }),
+      ),
+    );
 
-      // Assert
-      expect(list).toStrictEqual(lines);
-    },
-  );
+    // Assert
+    expect(list).toStrictEqual(lines);
+  });
 
   it.each<AxesCase>([
     {
@@ -2583,9 +2528,7 @@ describe('session-start hook', () => {
         'skeleton-matches-content (SHOULD via four-data-states)',
         'error-state-offers-retry',
       ],
-      overrides: fourDataStatesOverride(
-        '    level: SHOULD\n    reason: "Early screens"',
-      ),
+      overrides: fourDataStatesOverride('    level: SHOULD\n    reason: "Early screens"'),
     },
     {
       condition: 'an override lowers a rule in the middle of a chain',
@@ -2595,8 +2538,7 @@ describe('session-start hook', () => {
         'skeleton-matches-content (MAY via loading-state-shown)',
         'error-state-offers-retry',
       ],
-      overrides:
-        '\n  - rule: loading-state-shown\n    level: MAY\n    reason: "No spinner yet"',
+      overrides: '\n  - rule: loading-state-shown\n    level: MAY\n    reason: "No spinner yet"',
     },
   ])(
     'should lower the rules below that state no level of their own when $condition',

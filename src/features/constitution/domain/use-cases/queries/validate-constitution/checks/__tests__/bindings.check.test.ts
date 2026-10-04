@@ -3,10 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import type { Finding } from '#/kernel';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  rule,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { bindingsCheck } from '../bindings.check';
 
@@ -15,8 +12,7 @@ const HOOKS = 'blocks/implementations/_react/foundation/hooks.md';
 const PART = 'presets/typescript/biome/foundation/_react.jsonc';
 const UNHELD =
   'says a tool holds hooks-at-top-level (tool/lint), but no binding holds it, nor a rule that carries it out';
-const HOOKS_BINDING =
-  'foundation:\n  _react:\n    hooks-at-top-level: [useHookAtTopLevel]\n';
+const HOOKS_BINDING = 'foundation:\n  _react:\n    hooks-at-top-level: [useHookAtTopLevel]\n';
 
 const presetFiles = (): Files => ({
   [PART]: '{ "useHookAtTopLevel": "error" }\n',
@@ -76,15 +72,12 @@ describe('bindingsCheck', () => {
     // Arrange
     const files = {
       ...presetFiles(),
-      [BINDINGS]:
-        'foundation:\n  _react:\n    hooks-in-components: [useHookAtTopLevel]\n',
-      'blocks/implementations/_react/foundation/components.md': `# Components\n\n${rule(
-        {
-          check: 'tool/lint',
-          parent: 'hooks-at-top-level',
-          slug: 'hooks-in-components',
-        },
-      )}`,
+      [BINDINGS]: 'foundation:\n  _react:\n    hooks-in-components: [useHookAtTopLevel]\n',
+      'blocks/implementations/_react/foundation/components.md': `# Components\n\n${rule({
+        check: 'tool/lint',
+        parent: 'hooks-at-top-level',
+        slug: 'hooks-in-components',
+      })}`,
     };
 
     // Act
@@ -98,14 +91,11 @@ describe('bindingsCheck', () => {
     // Arrange
     const files = {
       ...presetFiles(),
-      [BINDINGS]:
-        'foundation:\n  _react:\n    hooks-in-components: [useHookAtTopLevel]\n',
-      'blocks/implementations/_react/foundation/components.md': `# Components\n\n${rule(
-        {
-          parent: 'hooks-at-top-level',
-          slug: 'hooks-in-components',
-        },
-      )}`,
+      [BINDINGS]: 'foundation:\n  _react:\n    hooks-in-components: [useHookAtTopLevel]\n',
+      'blocks/implementations/_react/foundation/components.md': `# Components\n\n${rule({
+        parent: 'hooks-at-top-level',
+        slug: 'hooks-in-components',
+      })}`,
     };
 
     // Act
@@ -171,8 +161,7 @@ describe('bindingsCheck', () => {
       yaml: '    hooks-anywhere: [useHookAtTopLevel]\n',
     },
     {
-      message:
-        'binds reads-are-cancellable, a rule of architecture, under foundation',
+      message: 'binds reads-are-cancellable, a rule of architecture, under foundation',
       name: 'the rule sits on another axis',
       yaml: '    reads-are-cancellable: [useHookAtTopLevel]\n',
     },
@@ -260,8 +249,7 @@ describe('bindingsCheck', () => {
     },
     {
       axis: 'foundation',
-      binding:
-        'foundation:\n  ui:\n    four-data-states: [useHookAtTopLevel]\n',
+      binding: 'foundation:\n  ui:\n    four-data-states: [useHookAtTopLevel]\n',
       name: 'a part of every language holds a rule of its block',
       part: 'ui',
       scope: 'common',
@@ -275,43 +263,37 @@ describe('bindingsCheck', () => {
     },
     {
       axis: 'foundation',
-      binding:
-        'foundation:\n  self:\n    four-data-states: [useHookAtTopLevel]\n',
+      binding: 'foundation:\n  self:\n    four-data-states: [useHookAtTopLevel]\n',
       name: "the tool's own part holds a rule of a domain above the tool",
       part: 'self',
       scope: 'common',
     },
     {
       axis: 'foundation',
-      binding:
-        'foundation:\n  nowhere:\n    four-data-states: [useHookAtTopLevel]\n',
+      binding: 'foundation:\n  nowhere:\n    four-data-states: [useHookAtTopLevel]\n',
       name: 'a part named after no block holds a rule',
       part: 'nowhere',
       scope: 'common',
     },
-  ])(
-    'should find no binding amiss when $name',
-    ({ axis, binding, part, scope }) => {
-      // Arrange
-      const files = {
-        ...presetFiles(),
-        [BINDINGS]: HOOKS_BINDING,
-        [`presets/${scope}/biome/bindings.yaml`]: binding,
-        [`presets/${scope}/biome/${axis}/${part}.jsonc`]:
-          '{ "useHookAtTopLevel": "error" }\n',
-        'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
-          check: 'tool/lint',
-          slug: 'biome-runs-in-the-check',
-        })}`,
-      };
+  ])('should find no binding amiss when $name', ({ axis, binding, part, scope }) => {
+    // Arrange
+    const files = {
+      ...presetFiles(),
+      [BINDINGS]: HOOKS_BINDING,
+      [`presets/${scope}/biome/bindings.yaml`]: binding,
+      [`presets/${scope}/biome/${axis}/${part}.jsonc`]: '{ "useHookAtTopLevel": "error" }\n',
+      'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
+        check: 'tool/lint',
+        slug: 'biome-runs-in-the-check',
+      })}`,
+    };
 
-      // Act
-      const findings = findingsOf(files);
+    // Act
+    const findings = findingsOf(files);
 
-      // Assert
-      expect(findings).toStrictEqual([]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 
   it('should report the binding when a part of every language holds a rule of a language', () => {
     // Arrange
@@ -320,8 +302,7 @@ describe('bindingsCheck', () => {
       ...presetFiles(),
       [BINDINGS]: HOOKS_BINDING,
       [bindings]: 'foundation:\n  i18n:\n    no-any: [useHookAtTopLevel]\n',
-      'presets/common/biome/foundation/i18n.jsonc':
-        '{ "useHookAtTopLevel": "error" }\n',
+      'presets/common/biome/foundation/i18n.jsonc': '{ "useHookAtTopLevel": "error" }\n',
     };
 
     // Act

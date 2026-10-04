@@ -75,10 +75,7 @@ const SEAM_FOLDER = 'with';
 const CHAPTER_DEPTH = 2;
 const SEAM_DEPTH = 3;
 
-const startsWith = (input: {
-  prefix: readonly string[];
-  segments: readonly string[];
-}): boolean =>
+const startsWith = (input: { prefix: readonly string[]; segments: readonly string[] }): boolean =>
   input.prefix.every((segment, index) => input.segments[index] === segment);
 
 const coreFolder = (segments: readonly string[]): Folder | undefined => {
@@ -125,18 +122,14 @@ const layerFolder = (segments: readonly string[]): Folder | undefined => {
       };
 };
 
-const axisOf = (segment: string): Axis | undefined =>
-  AXES.find((axis) => axis === segment);
+const axisOf = (segment: string): Axis | undefined => AXES.find((axis) => axis === segment);
 
 const fileOf = (folder: Folder): PathInBlock => {
   // Stryker disable next-line StringLiteral: a length check guards every read
   const [first = '', second = '', third = ''] = folder.rest;
   const axis = axisOf(first);
 
-  if (
-    folder.rest.length === 1 &&
-    first === `${folder.id}${MARKDOWN_EXTENSION}`
-  ) {
+  if (folder.rest.length === 1 && first === `${folder.id}${MARKDOWN_EXTENSION}`) {
     return {
       axis: undefined,
       file: BlockPathFile.Main,
@@ -145,11 +138,7 @@ const fileOf = (folder: Folder): PathInBlock => {
     };
   }
 
-  if (
-    axis !== undefined &&
-    folder.rest.length === CHAPTER_DEPTH &&
-    MARKDOWN.test(second)
-  ) {
+  if (axis !== undefined && folder.rest.length === CHAPTER_DEPTH && MARKDOWN.test(second)) {
     return {
       axis,
       file: BlockPathFile.Chapter,

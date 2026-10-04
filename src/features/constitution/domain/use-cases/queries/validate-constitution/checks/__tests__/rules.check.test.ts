@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  rule,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { rulesCheck } from '../rules.check';
 
@@ -56,8 +53,7 @@ describe('rulesCheck', () => {
         path: PRINCIPLES,
       },
       {
-        message:
-          'rule "not_Kebab" names the role "spelling", which is not a role',
+        message: 'rule "not_Kebab" names the role "spelling", which is not a role',
         path: PRINCIPLES,
       },
       {
@@ -65,8 +61,7 @@ describe('rulesCheck', () => {
         path: PRINCIPLES,
       },
       {
-        message:
-          'rule "b" has the check "by eye"; a check is test, review or tool/<role>',
+        message: 'rule "b" has the check "by eye"; a check is test, review or tool/<role>',
         path: PRINCIPLES,
       },
       {
@@ -116,34 +111,30 @@ describe('rulesCheck', () => {
       parent: 'i18n-plurals-by-cldr',
     },
     {
-      expected:
-        'rule "i18n-plurals-by-cldr" carries out "plurals-by-icu", which is not a rule',
+      expected: 'rule "i18n-plurals-by-cldr" carries out "plurals-by-icu", which is not a rule',
       parent: 'plurals-by-icu',
     },
-  ])(
-    'should report "$expected" when a rule carries out $parent',
-    ({ expected, parent }) => {
-      // Arrange
-      const files = validFiles();
-      files[I18N] = `# i18n\n\n${rule({
-        parent,
-        slug: 'i18n-plurals-by-cldr',
-        tags: '[ux]',
-      })}`;
-      const input = checkInputOf(files);
+  ])('should report "$expected" when a rule carries out $parent', ({ expected, parent }) => {
+    // Arrange
+    const files = validFiles();
+    files[I18N] = `# i18n\n\n${rule({
+      parent,
+      slug: 'i18n-plurals-by-cldr',
+      tags: '[ux]',
+    })}`;
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = rulesCheck(input);
+    // Act
+    const findings = rulesCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: I18N,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: I18N,
+      },
+    ]);
+  });
 
   it('should report each rule of a cycle and no rule that only leads into it when parents come back around', () => {
     // Arrange
@@ -243,29 +234,26 @@ describe('rulesCheck', () => {
         'rule "layers-point-inward" carries out "rules-bind" on workflow, which a rule on architecture may not refer to',
       parent: 'rules-bind',
     },
-  ])(
-    'should report the reference when $condition',
-    ({ child, expected, parent }) => {
-      // Arrange
-      const files = validFiles();
-      files[child.file] = `# Chapter\n\n${rule({
-        parent,
-        slug: child.slug,
-      })}`;
-      const input = checkInputOf(files);
+  ])('should report the reference when $condition', ({ child, expected, parent }) => {
+    // Arrange
+    const files = validFiles();
+    files[child.file] = `# Chapter\n\n${rule({
+      parent,
+      slug: child.slug,
+    })}`;
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = rulesCheck(input);
+    // Act
+    const findings = rulesCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: child.file,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: child.file,
+      },
+    ]);
+  });
 
   it('should accept a rule without Tags when it sits on foundation', () => {
     // Arrange
@@ -304,30 +292,27 @@ describe('rulesCheck', () => {
         }),
       ],
     },
-  ])(
-    'should report a rule that states a looser level when $condition',
-    ({ principles }) => {
-      // Arrange
-      const files = validFiles();
-      files[PRINCIPLES] = `# Principles\n\n${principles.join('\n')}`;
-      files[WORKFLOW] = `# Workflow\n\n${rule({
-        level: 'SHOULD',
-        parent: 'dependencies-point-inward',
-        slug: 'rules-bind',
-      })}`;
-      const input = checkInputOf(files);
+  ])('should report a rule that states a looser level when $condition', ({ principles }) => {
+    // Arrange
+    const files = validFiles();
+    files[PRINCIPLES] = `# Principles\n\n${principles.join('\n')}`;
+    files[WORKFLOW] = `# Workflow\n\n${rule({
+      level: 'SHOULD',
+      parent: 'dependencies-point-inward',
+      slug: 'rules-bind',
+    })}`;
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = rulesCheck(input);
+    // Act
+    const findings = rulesCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message:
-            'rule "rules-bind" is SHOULD while it carries out the MUST rule "dependencies-point-inward"; a rule is never looser than the rule it carries out',
-          path: WORKFLOW,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "rules-bind" is SHOULD while it carries out the MUST rule "dependencies-point-inward"; a rule is never looser than the rule it carries out',
+        path: WORKFLOW,
+      },
+    ]);
+  });
 });

@@ -4,14 +4,10 @@ const requirableBy = (layer: Layer): readonly Layer[] =>
   LAYERS.filter(
     (target) =>
       target !== Layer.Core &&
-      (LAYER_RANK[target] < LAYER_RANK[layer] ||
-        layer === Layer.Implementation),
+      (LAYER_RANK[target] < LAYER_RANK[layer] || layer === Layer.Implementation),
   );
 
 const pairableBy = (layer: Layer): readonly Layer[] =>
-  LAYERS.filter(
-    (target) =>
-      target !== Layer.Core && LAYER_RANK[target] <= LAYER_RANK[layer],
-  );
+  LAYERS.filter((target) => target !== Layer.Core && LAYER_RANK[target] <= LAYER_RANK[layer]);
 
 export { pairableBy, requirableBy };

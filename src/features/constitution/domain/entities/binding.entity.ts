@@ -3,9 +3,7 @@ import type { Axis } from '#/kernel';
 import type { FieldIssue } from './manifest.entity';
 
 // part → rule → the settings that hold it
-type AxisBindings = Readonly<
-  Record<string, Readonly<Record<string, readonly string[]>>>
->;
+type AxisBindings = Readonly<Record<string, Readonly<Record<string, readonly string[]>>>>;
 
 type BindingsDocument = Partial<Readonly<Record<Axis, AxisBindings>>>;
 

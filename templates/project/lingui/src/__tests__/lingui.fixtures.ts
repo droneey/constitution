@@ -3,11 +3,7 @@ import { basename, relative } from 'node:path';
 
 import { plugin } from 'bun';
 
-import {
-  createCompiledCatalog,
-  getCatalogForFile,
-  getCatalogs,
-} from '@lingui/cli/api';
+import { createCompiledCatalog, getCatalogForFile, getCatalogs } from '@lingui/cli/api';
 import { getConfig } from '@lingui/conf';
 import { mapMacroOptions, transform } from '@lingui/native-tools';
 
@@ -18,9 +14,7 @@ const macroPackages = [
 ];
 
 const importsMacro = (source: string): boolean =>
-  macroPackages.some(
-    (name) => source.includes(`'${name}'`) || source.includes(`"${name}"`),
-  );
+  macroPackages.some((name) => source.includes(`'${name}'`) || source.includes(`"${name}"`));
 
 const SOURCE_LOADERS = [
   'js',
@@ -63,10 +57,7 @@ plugin({
         filter: /\.po$/,
       },
       async ({ path }) => {
-        const found = getCatalogForFile(
-          relative(config.rootDir, path),
-          await getCatalogs(config),
-        );
+        const found = getCatalogForFile(relative(config.rootDir, path), await getCatalogs(config));
         if (!found) {
           throw new Error(`${path} belongs to no catalog of lingui.config.ts`);
         }

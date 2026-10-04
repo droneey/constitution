@@ -11,8 +11,6 @@ jsx_self_closing_element(name=$name, attributes=$attributes) as $field where {
       r".*\burl\b.*"
     }
   },
-  $attributes <: not contains jsx_attribute(name=$declared) where {
-    $declared <: r"autoComplete"
-  },
+  $attributes <: not contains jsx_attribute(name=$declared) where { $declared <: r"autoComplete" },
   register_diagnostic(span=$field, message="A field for the user's own data declares its purpose with autoComplete", severity="error")
 }

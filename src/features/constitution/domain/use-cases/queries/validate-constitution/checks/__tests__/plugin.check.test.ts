@@ -3,10 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import type { Finding } from '#/kernel';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  without,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { pluginCheck } from '../plugin.check';
 
@@ -31,8 +28,7 @@ const GITHUB = {
 const HOOKS = 'hooks/hooks.json';
 const LISTING_SKILLS =
   '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./skills/"]}';
-const RATIFY =
-  '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n';
+const RATIFY = '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n';
 const SESSION_START_HOOK =
   '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}';
 
@@ -50,8 +46,7 @@ const withFiles = (extra: Readonly<Files>): Files => ({
 describe('pluginCheck', () => {
   it.each([
     {
-      expected:
-        'is missing; the constitution ships as a plugin and needs its manifest',
+      expected: 'is missing; the constitution ships as a plugin and needs its manifest',
       files: without({
         files: validFiles(),
         path: PLUGIN,
@@ -66,8 +61,7 @@ describe('pluginCheck', () => {
       name: 'not JSON',
     },
     {
-      expected:
-        'does not match its schema: <root>: Invalid input: expected object, received array',
+      expected: 'does not match its schema: <root>: Invalid input: expected object, received array',
       files: withFiles({
         [PLUGIN]: '[]',
       }),
@@ -101,8 +95,7 @@ describe('pluginCheck', () => {
     {
       expected: [
         {
-          message:
-            'lists the skills directory "./skills/", which holds no <skill>/SKILL.md',
+          message: 'lists the skills directory "./skills/", which holds no <skill>/SKILL.md',
           path: PLUGIN,
         },
       ],
@@ -140,19 +133,16 @@ describe('pluginCheck', () => {
       }),
       name: 'a listed nested directory holds its skills',
     },
-  ])(
-    'should compare the listed and the present skills when $name',
-    ({ expected, files }) => {
-      // Arrange
-      const input = checkInputOf(files);
+  ])('should compare the listed and the present skills when $name', ({ expected, files }) => {
+    // Arrange
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = pluginCheck(input);
+    // Act
+    const findings = pluginCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
 
   it.each<ManifestCase>([
     {
@@ -194,19 +184,16 @@ describe('pluginCheck', () => {
       }),
       name: 'the skills directory also holds a hidden folder, a loose file and references',
     },
-  ])(
-    'should report a skill folder without SKILL.md when $name',
-    ({ expected, files }) => {
-      // Arrange
-      const input = checkInputOf(files);
+  ])('should report a skill folder without SKILL.md when $name', ({ expected, files }) => {
+    // Arrange
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = pluginCheck(input);
+    // Act
+    const findings = pluginCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
 
   it.each<{
     messages: readonly string[];
@@ -254,29 +241,26 @@ describe('pluginCheck', () => {
       name: 'it has a name and a description',
       skill: RATIFY,
     },
-  ])(
-    'should check what a SKILL.md declares when $name',
-    ({ messages, skill }) => {
-      // Arrange
-      const input = checkInputOf(
-        withFiles({
-          [PLUGIN]: LISTING_SKILLS,
-          'skills/ratify/SKILL.md': skill,
-        }),
-      );
+  ])('should check what a SKILL.md declares when $name', ({ messages, skill }) => {
+    // Arrange
+    const input = checkInputOf(
+      withFiles({
+        [PLUGIN]: LISTING_SKILLS,
+        'skills/ratify/SKILL.md': skill,
+      }),
+    );
 
-      // Act
-      const findings = pluginCheck(input);
+    // Act
+    const findings = pluginCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual(
-        messages.map((message) => ({
-          message,
-          path: 'skills/ratify/SKILL.md',
-        })),
-      );
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(
+      messages.map((message) => ({
+        message,
+        path: 'skills/ratify/SKILL.md',
+      })),
+    );
+  });
 
   it.each<{
     agent: string;
@@ -323,28 +307,25 @@ describe('pluginCheck', () => {
       messages: [],
       name: 'it is named after its file and says what it does',
     },
-  ])(
-    'should check what an agent declares when $name',
-    ({ agent, messages }) => {
-      // Arrange
-      const input = checkInputOf(
-        withFiles({
-          'agents/reviewer.md': agent,
-        }),
-      );
+  ])('should check what an agent declares when $name', ({ agent, messages }) => {
+    // Arrange
+    const input = checkInputOf(
+      withFiles({
+        'agents/reviewer.md': agent,
+      }),
+    );
 
-      // Act
-      const findings = pluginCheck(input);
+    // Act
+    const findings = pluginCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual(
-        messages.map((message) => ({
-          message,
-          path: 'agents/reviewer.md',
-        })),
-      );
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(
+      messages.map((message) => ({
+        message,
+        path: 'agents/reviewer.md',
+      })),
+    );
+  });
 
   it.each([
     'templates/PROJECT.md',
@@ -375,8 +356,7 @@ describe('pluginCheck', () => {
     {
       expected: [
         {
-          message:
-            'is missing; the constitution ships as a plugin and needs its marketplace',
+          message: 'is missing; the constitution ships as a plugin and needs its marketplace',
           path: MARKETPLACE,
         },
       ],

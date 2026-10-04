@@ -19,9 +19,7 @@ const miseBinary = (tool: string): string => {
   ).stdout.trim();
 
   if (binary === '') {
-    throw new Error(
-      `${tool} is not installed: run \`mise install\` in a trusted checkout`,
-    );
+    throw new Error(`${tool} is not installed: run \`mise install\` in a trusted checkout`);
   }
 
   return binary;

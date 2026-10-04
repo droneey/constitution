@@ -49,12 +49,7 @@ const vocabularyOf = (sections: Sections): string =>
     '',
   ].join('\n');
 
-const used = (input: {
-  path: string;
-  place: string;
-  section: string;
-  word: string;
-}): Finding => ({
+const used = (input: { path: string; place: string; section: string; word: string }): Finding => ({
   message: `uses "${input.word}", a word of the ${input.section}; ${input.place} holds whatever the ${input.section}`,
   path: input.path,
 });
@@ -113,9 +108,7 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed(
-        'is missing; the constitution keeps the words of its architecture and workflow here',
-      ),
+      listed('is missing; the constitution keeps the words of its architecture and workflow here'),
     ]);
   });
 
@@ -139,8 +132,7 @@ describe('vocabularyCheck', () => {
   it('should report every issue at its field when the vocabulary holds an unknown key and lacks a list', () => {
     // Arrange
     const files = validFiles();
-    files[VOCABULARY] =
-      'architecture:\n  concepts: []\n  suffixes: []\nlayers: []\n';
+    files[VOCABULARY] = 'architecture:\n  concepts: []\n  suffixes: []\nlayers: []\n';
     const input = checkInputOf(files);
 
     // Act
@@ -212,18 +204,10 @@ describe('vocabularyCheck', () => {
       listed(
         'lists the concept "Squash" of the workflow, which is not lower-case words separated by spaces or "-"',
       ),
-      listed(
-        'lists the folder "adapters" of the architecture, which does not end in "/"',
-      ),
-      listed(
-        'lists the folder "feature" of the workflow, which does not end in "/"',
-      ),
-      listed(
-        'lists the suffix "port" of the architecture, which does not start with "."',
-      ),
-      listed(
-        'lists the suffix "patch" of the workflow, which does not start with "."',
-      ),
+      listed('lists the folder "adapters" of the architecture, which does not end in "/"'),
+      listed('lists the folder "feature" of the workflow, which does not end in "/"'),
+      listed('lists the suffix "port" of the architecture, which does not start with "."'),
+      listed('lists the suffix "patch" of the workflow, which does not start with "."'),
       listed('lists ".port" twice in the architecture'),
       listed('lists "merge" twice in the workflow'),
       listed('lists "sink" in both the architecture and the workflow'),
@@ -396,23 +380,20 @@ describe('vocabularyCheck', () => {
       path: WORKFLOW_PORTS,
       text: '# Ports\n\nA squash merge touches one port.\n',
     },
-  ])(
-    'should report each word when $name',
-    ({ expected, path, sections, text }) => {
-      // Arrange
-      const input = inputOf({
-        path,
-        sections,
-        text,
-      });
+  ])('should report each word when $name', ({ expected, path, sections, text }) => {
+    // Arrange
+    const input = inputOf({
+      path,
+      sections,
+      text,
+    });
 
-      // Act
-      const findings = vocabularyCheck(input);
+    // Act
+    const findings = vocabularyCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
 
   it.each<{
     name: string;

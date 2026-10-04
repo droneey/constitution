@@ -32,8 +32,7 @@ const SOURCE = {
 };
 
 const CONFIG = {
-  'stryker.config.mjs':
-    "export default { mutate: ['src/**/*.ts', '!src/**/__tests__/**'] };\n",
+  'stryker.config.mjs': "export default { mutate: ['src/**/*.ts', '!src/**/__tests__/**'] };\n",
 };
 
 const CHANGE = {
@@ -70,10 +69,7 @@ const commit = (folder: string): void => {
   });
 };
 
-const moveMainOn = (input: {
-  files: Readonly<Record<string, string>>;
-  folder: string;
-}): void => {
+const moveMainOn = (input: { files: Readonly<Record<string, string>>; folder: string }): void => {
   writeFiles(input);
   commit(input.folder);
   git({
@@ -95,10 +91,7 @@ const moveMainOn = (input: {
   });
 };
 
-const writeFiles = (input: {
-  files: Readonly<Record<string, string>>;
-  folder: string;
-}): void => {
+const writeFiles = (input: { files: Readonly<Record<string, string>>; folder: string }): void => {
   for (const [path, text] of Object.entries(input.files)) {
     mkdirSync(dirname(join(input.folder, path)), {
       recursive: true,
@@ -147,10 +140,7 @@ const runCheck = (check: Check): Outcome => {
     folder,
   });
   mkdirSync(bin);
-  writeFileSync(
-    join(bin, 'stryker'),
-    '#!/bin/sh\nprintf "%s " "$@" > "$PWD/.stryker-arguments"\n',
-  );
+  writeFileSync(join(bin, 'stryker'), '#!/bin/sh\nprintf "%s " "$@" > "$PWD/.stryker-arguments"\n');
   chmodSync(join(bin, 'stryker'), 0o755);
 
   const env: NodeJS.ProcessEnv = {
@@ -176,9 +166,7 @@ const runCheck = (check: Check): Outcome => {
     },
   );
   const recorded = join(folder, '.stryker-arguments');
-  const strykerArguments = existsSync(recorded)
-    ? readFileSync(recorded, 'utf8').trim()
-    : undefined;
+  const strykerArguments = existsSync(recorded) ? readFileSync(recorded, 'utf8').trim() : undefined;
 
   rmSync(folder, {
     force: true,
@@ -197,8 +185,7 @@ describe('mutation-check', () => {
     const check = {
       changes: {
         'src/line.utils.ts': 'export const line = 1;\n',
-        'src/order.utils.ts':
-          'export const total = 1;\nexport const count = 3;\n',
+        'src/order.utils.ts': 'export const total = 1;\nexport const count = 3;\n',
       },
     };
 
@@ -206,9 +193,7 @@ describe('mutation-check', () => {
     const { strykerArguments } = runCheck(check);
 
     // Assert
-    expect(strykerArguments).toBe(
-      'run --mutate src/line.utils.ts,src/order.utils.ts:2-2',
-    );
+    expect(strykerArguments).toBe('run --mutate src/line.utils.ts,src/order.utils.ts:2-2');
   });
 
   test("should mutate only the branch's lines when the main line moved on after the branch began", () => {
@@ -216,8 +201,7 @@ describe('mutation-check', () => {
     const check = {
       changes: CHANGE,
       mainline: {
-        'src/order.utils.ts':
-          'export const total = 5;\nexport const count = 2;\n',
+        'src/order.utils.ts': 'export const total = 5;\nexport const count = 2;\n',
       },
     };
 
@@ -263,6 +247,21 @@ describe('mutation-check', () => {
       changes: CHANGE,
       config: {
         'stryker.config.mjs': config,
+      },
+    };
+
+    // Act
+    const { strykerArguments } = runCheck(check);
+
+    // Assert
+    expect(strykerArguments).toBeUndefined();
+  });
+
+  test('should run no mutant when a change only reformats a mutated file', () => {
+    // Arrange
+    const check = {
+      changes: {
+        'src/order.utils.ts': 'export const total = 1;\n\nexport const count = 2;\n',
       },
     };
 

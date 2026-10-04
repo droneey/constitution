@@ -3,6 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import {
   blockCode,
   FOUNDATION_PARTS,
+  formattedText,
   lintFindings,
   presetFiles,
   presetText,
@@ -72,6 +73,12 @@ const THREE_PARAMETERS =
   "export const joinAll = (head: string, middle: string, tail: string): string =>\n  [head, middle, tail].join('');\n";
 const FOUR_PARAMETERS =
   "export const joinAll = (head: string, middle: string, tail: string, end: string): string =>\n  [head, middle, tail, end].join('');\n";
+
+// The line without its literal's letters.
+const LINE = "export const label = '';";
+
+const lineOf = (width: number): string =>
+  `export const label = '${'a'.repeat(width - LINE.length)}';\n`;
 
 const component = (markup: string): string =>
   `export function Panel(): React.ReactElement {\n  return (\n    ${markup}\n  );\n}\n`;
@@ -189,8 +196,7 @@ describe('the Biome preset', () => {
         'src/features/orders/domain/order-status.ts':
           "export type OrderStatus = 'open' | 'closed';\n",
       },
-      message:
-        'A closed set of named values is a string enum, not a union of string literals',
+      message: 'A closed set of named values is a string enum, not a union of string literals',
     },
   ])('should report a plugin finding when $condition', ({ files, message }) => {
     // Arrange
@@ -285,8 +291,7 @@ describe('the Biome preset', () => {
     {
       condition: 'a union mixes a string literal with another type',
       files: {
-        'src/features/orders/domain/limit.ts':
-          "export type Limit = 'none' | number;\n",
+        'src/features/orders/domain/limit.ts': "export type Limit = 'none' | number;\n",
       },
     },
     {
@@ -299,8 +304,7 @@ describe('the Biome preset', () => {
     {
       condition: 'an object type has a string literal property',
       files: {
-        'src/features/orders/domain/opened.ts':
-          "export interface Opened {\n  status: 'open';\n}\n",
+        'src/features/orders/domain/opened.ts': "export interface Opened {\n  status: 'open';\n}\n",
       },
     },
   ])('should report no plugin finding when $condition', ({ files }) => {
@@ -330,11 +334,7 @@ describe('the Biome preset', () => {
     const { plugins } = lintFindings(project);
 
     // Assert
-    expect(
-      plugins.some((finding) =>
-        finding.startsWith('null outside the boundary'),
-      ),
-    ).toBe(true);
+    expect(plugins.some((finding) => finding.startsWith('null outside the boundary'))).toBe(true);
   });
 
   it('should name only folders, files and suffixes the blocks write when the preset scopes its rules', () => {
@@ -370,6 +370,28 @@ describe('the Biome foundation parts', () => {
       ...plugins,
       ...rules,
     ]).toStrictEqual([]);
+  });
+
+  it('should keep a line of 100 characters when a project formats its code', () => {
+    // Arrange
+    const source = lineOf(100);
+
+    // Act
+    const text = formattedText(source);
+
+    // Assert
+    expect(text).toBe(source);
+  });
+
+  it('should wrap a line of 101 characters when a project formats its code', () => {
+    // Arrange
+    const source = lineOf(101);
+
+    // Act
+    const text = formattedText(source);
+
+    // Assert
+    expect(text).toBe(`export const label =\n  '${'a'.repeat(101 - LINE.length)}';\n`);
   });
 
   it.each([
@@ -501,8 +523,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a function returns undefined by name',
       files: {
-        'src/main.ts':
-          'export const settle = (): undefined => {\n  return undefined;\n};\n',
+        'src/main.ts': 'export const settle = (): undefined => {\n  return undefined;\n};\n',
       },
       rule: 'noUselessUndefined',
     },
@@ -541,8 +562,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'the code shows an alert',
       files: {
-        'src/main.ts':
-          "export const warn = (): void => {\n  alert('saved');\n};\n",
+        'src/main.ts': "export const warn = (): void => {\n  alert('saved');\n};\n",
       },
       rule: 'noAlert',
     },
@@ -572,8 +592,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a type error is ignored',
       files: {
-        'src/main.ts':
-          "// @ts-ignore: legacy\nexport const total: number = 'one';\n",
+        'src/main.ts': "// @ts-ignore: legacy\nexport const total: number = 'one';\n",
       },
       rule: 'noTsIgnore',
     },
@@ -718,8 +737,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a function is named by an empty verb',
       files: {
-        'src/features/orders/order.ts':
-          'export const process = (): number => 1;\n',
+        'src/features/orders/order.ts': 'export const process = (): number => 1;\n',
       },
       message: 'Name what the function does',
     },
@@ -734,8 +752,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a spec leaves a case to do',
       files: {
-        'src/order.test.ts':
-          "import { test } from 'bun:test';\n\ntest.todo('adds totals');\n",
+        'src/order.test.ts': "import { test } from 'bun:test';\n\ntest.todo('adds totals');\n",
       },
       message: 'Write the case so it runs every time',
     },
@@ -758,16 +775,14 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a type alias carries the Type suffix',
       files: {
-        'src/features/orders/order.ts':
-          'export type OrderType = {\n  id: string;\n};\n',
+        'src/features/orders/order.ts': 'export type OrderType = {\n  id: string;\n};\n',
       },
       message: 'A type is a noun, undecorated',
     },
     {
       condition: 'an interface carries the I prefix',
       files: {
-        'src/features/orders/order.ts':
-          'export interface IOrder {\n  id: string;\n}\n',
+        'src/features/orders/order.ts': 'export interface IOrder {\n  id: string;\n}\n',
       },
       message: 'A type is a noun, undecorated',
     },
@@ -902,9 +917,7 @@ describe('the Biome foundation parts', () => {
 
       // Assert
       expect(
-        plugins.some((finding) =>
-          finding.startsWith('Build the value object through the domain'),
-        ),
+        plugins.some((finding) => finding.startsWith('Build the value object through the domain')),
       ).toBe(true);
     },
   );
@@ -912,8 +925,7 @@ describe('the Biome foundation parts', () => {
   it.each([
     {
       condition: 'a date is formatted without a locale',
-      source:
-        'export const label = (at: Date): string => at.toLocaleDateString();\n',
+      source: 'export const label = (at: Date): string => at.toLocaleDateString();\n',
       message: 'Pass the active locale',
     },
     {
@@ -1039,8 +1051,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a module builds a dictionary with no prototype',
       files: {
-        'src/registry.ts':
-          'export const registry: Record<string, number> = Object.create(null);\n',
+        'src/registry.ts': 'export const registry: Record<string, number> = Object.create(null);\n',
       },
     },
     {
@@ -1091,8 +1102,7 @@ describe('the Biome foundation parts', () => {
     {
       condition: 'a callback that is no component returns null',
       message: 'null outside the boundary',
-      source:
-        "export const blanks = (): readonly unknown[] => ['row'].map(() => null);\n",
+      source: "export const blanks = (): readonly unknown[] => ['row'].map(() => null);\n",
     },
     {
       condition: 'a state hook takes a union of literals',
@@ -1100,27 +1110,24 @@ describe('the Biome foundation parts', () => {
       source:
         "import { useState } from 'react';\n\nexport const useMode = (): unknown => useState<'idle' | 'busy'>('idle');\n",
     },
-  ])(
-    'should report a plugin finding when $condition',
-    ({ message, source }) => {
-      // Arrange
-      const project = {
-        files: {
-          'src/panel.tsx': source,
-        },
-        parts: [
-          ...FOUNDATION_PARTS,
-          'typescript/foundation/_react',
-        ],
-      };
+  ])('should report a plugin finding when $condition', ({ message, source }) => {
+    // Arrange
+    const project = {
+      files: {
+        'src/panel.tsx': source,
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/_react',
+      ],
+    };
 
-      // Act
-      const { plugins } = lintFindings(project);
+    // Act
+    const { plugins } = lintFindings(project);
 
-      // Assert
-      expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
-    },
-  );
+    // Assert
+    expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+  });
 
   it.each([
     {
@@ -1140,8 +1147,7 @@ describe('the Biome foundation parts', () => {
       // Arrange
       const project = {
         files: {
-          'src/panel.stories.tsx':
-            "const meta = { title: 'Panel' };\n\nexport default meta;\n",
+          'src/panel.stories.tsx': "const meta = { title: 'Panel' };\n\nexport default meta;\n",
         },
         parts,
       };
@@ -1162,32 +1168,26 @@ describe('the Biome foundation parts', () => {
     },
     {
       condition: 'a class list asserts a value is present',
-      source:
-        "export const classes = (size: string | undefined): string => cn(size!, 'px-2');\n",
+      source: "export const classes = (size: string | undefined): string => cn(size!, 'px-2');\n",
     },
-  ])(
-    'should report no important-modifier finding when $condition',
-    ({ source }) => {
-      // Arrange
-      const project = {
-        files: {
-          'src/panel.tsx': source,
-        },
-        parts: [
-          ...FOUNDATION_PARTS,
-          'typescript/foundation/tailwind',
-        ],
-      };
+  ])('should report no important-modifier finding when $condition', ({ source }) => {
+    // Arrange
+    const project = {
+      files: {
+        'src/panel.tsx': source,
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/tailwind',
+      ],
+    };
 
-      // Act
-      const { plugins } = lintFindings(project);
+    // Act
+    const { plugins } = lintFindings(project);
 
-      // Assert
-      expect(
-        plugins.some((finding) => finding.startsWith('Win by a later layer')),
-      ).toBe(false);
-    },
-  );
+    // Assert
+    expect(plugins.some((finding) => finding.startsWith('Win by a later layer'))).toBe(false);
+  });
 
   it('should report no plugin finding when formatting takes a locale and a project extends the i18n part', () => {
     // Arrange
@@ -1228,9 +1228,7 @@ describe('the Biome foundation parts', () => {
     // Assert
     expect(
       plugins.some((finding) =>
-        finding.startsWith(
-          'A response body is unknown until a schema parses it',
-        ),
+        finding.startsWith('A response body is unknown until a schema parses it'),
       ),
     ).toBe(true);
   });
@@ -1302,8 +1300,7 @@ describe('the Biome foundation parts', () => {
       ],
     },
     {
-      condition:
-        'the cache utilities declare a read and the root builds the client',
+      condition: 'the cache utilities declare a read and the root builds the client',
       files: {
         'src/features/orders/app/utils/cache.utils.ts':
           "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
@@ -1518,8 +1515,7 @@ describe('the Biome part that needs each setting', () => {
     {
       condition: 'a bigint is added to a number',
       files: {
-        'src/main.ts':
-          'export const total = (count: number): bigint => 1n + count;\n',
+        'src/main.ts': 'export const total = (count: number): bigint => 1n + count;\n',
       },
       isReported: true,
       parts: FOUNDATION_PARTS,
@@ -1538,8 +1534,7 @@ describe('the Biome part that needs each setting', () => {
     {
       condition: 'a declared return type is wider than what is returned',
       files: {
-        'src/main.ts':
-          'export const rank = (isFirst: boolean): number => (isFirst ? 0 : 1);\n',
+        'src/main.ts': 'export const rank = (isFirst: boolean): number => (isFirst ? 0 : 1);\n',
       },
       isReported: true,
       parts: FOUNDATION_PARTS,
@@ -1548,8 +1543,7 @@ describe('the Biome part that needs each setting', () => {
     {
       condition: 'a string is thrown',
       files: {
-        'src/main.ts':
-          "export const fail = (): never => {\n  throw 'broken';\n};\n",
+        'src/main.ts': "export const fail = (): never => {\n  throw 'broken';\n};\n",
       },
       isReported: true,
       parts: FOUNDATION_PARTS,
@@ -1797,11 +1791,9 @@ describe('the Biome css part', () => {
       const { plugins } = lintFindings(project);
 
       // Assert
-      expect(
-        plugins.some((finding) =>
-          finding.startsWith('Reset every default scale'),
-        ),
-      ).toBe(isReported);
+      expect(plugins.some((finding) => finding.startsWith('Reset every default scale'))).toBe(
+        isReported,
+      );
     },
   );
 
@@ -1842,11 +1834,7 @@ describe('the Biome css part', () => {
     const { plugins } = lintFindings(project);
 
     // Assert
-    expect(
-      plugins.some((finding) =>
-        finding.startsWith('Style by class or attribute'),
-      ),
-    ).toBe(true);
+    expect(plugins.some((finding) => finding.startsWith('Style by class or attribute'))).toBe(true);
   });
 
   it.each([
@@ -1900,14 +1888,12 @@ describe('the Biome tanstack-query part', () => {
     {
       condition: 'an invalidation writes its key inline',
       isReported: true,
-      source:
-        "export const refresh = () => client.invalidateQueries({ queryKey: ['orders'] });\n",
+      source: "export const refresh = () => client.invalidateQueries({ queryKey: ['orders'] });\n",
     },
     {
       condition: 'the query client writes a key inline',
       isReported: true,
-      source:
-        "export const reset = () => client.setQueryData(['orders'], []);\n",
+      source: "export const reset = () => client.setQueryData(['orders'], []);\n",
     },
     {
       condition: 'the query client reads a key inline',
@@ -1917,8 +1903,7 @@ describe('the Biome tanstack-query part', () => {
     {
       condition: 'the query client reads a key from the factory',
       isReported: false,
-      source:
-        'export const cached = (id: string) => client.getQueryData(orderKeys.detail(id));\n',
+      source: 'export const cached = (id: string) => client.getQueryData(orderKeys.detail(id));\n',
     },
     {
       condition: 'a query takes its key from the factory',
@@ -1926,31 +1911,26 @@ describe('the Biome tanstack-query part', () => {
       source:
         'export const read = (id: string) => useQuery({ queryKey: orderKeys.detail(id), queryFn });\n',
     },
-  ])(
-    'should report an inline key $isReported when $condition',
-    ({ isReported, source }) => {
-      // Arrange
-      const project = {
-        files: {
-          'src/features/orders/orders.hooks.ts': source,
-        },
-        parts: [
-          ...FOUNDATION_PARTS,
-          'typescript/foundation/tanstack-query',
-        ],
-      };
+  ])('should report an inline key $isReported when $condition', ({ isReported, source }) => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/orders.hooks.ts': source,
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/tanstack-query',
+      ],
+    };
 
-      // Act
-      const { plugins } = lintFindings(project);
+    // Act
+    const { plugins } = lintFindings(project);
 
-      // Assert
-      expect(
-        plugins.some((finding) =>
-          finding.startsWith('Take the key from the key factory'),
-        ),
-      ).toBe(isReported);
-    },
-  );
+    // Assert
+    expect(plugins.some((finding) => finding.startsWith('Take the key from the key factory'))).toBe(
+      isReported,
+    );
+  });
 });
 
 describe('the Biome browser part', () => {
@@ -1967,8 +1947,7 @@ describe('the Biome browser part', () => {
     },
     {
       condition: 'markup is written into the document',
-      source:
-        'export const show = (markup: string): void => {\n  document.write(markup);\n};\n',
+      source: 'export const show = (markup: string): void => {\n  document.write(markup);\n};\n',
     },
   ])('should report raw HTML when $condition', ({ source }) => {
     // Arrange
@@ -1987,9 +1966,7 @@ describe('the Biome browser part', () => {
 
     // Assert
     expect(
-      plugins.some((finding) =>
-        finding.startsWith('Render markup through a sanitising renderer'),
-      ),
+      plugins.some((finding) => finding.startsWith('Render markup through a sanitising renderer')),
     ).toBe(true);
   });
 });
@@ -2024,9 +2001,7 @@ describe('the Biome framework parts', () => {
     },
     {
       condition: 'raw HTML is injected beside children',
-      source: component(
-        "<div dangerouslySetInnerHTML={{ __html: '' }}>text</div>",
-      ),
+      source: component("<div dangerouslySetInnerHTML={{ __html: '' }}>text</div>"),
       rule: 'noDangerouslySetInnerHtmlWithChildren',
     },
     {
@@ -2037,9 +2012,7 @@ describe('the Biome framework parts', () => {
     },
     {
       condition: 'the viewport blocks zooming',
-      source: component(
-        "<meta content='width=device-width, user-scalable=no' name='viewport' />",
-      ),
+      source: component("<meta content='width=device-width, user-scalable=no' name='viewport' />"),
       rule: 'noNonScalableViewport',
     },
     {
@@ -2054,9 +2027,7 @@ describe('the Biome framework parts', () => {
     },
     {
       condition: 'a list keys its items by index',
-      source: component(
-        '<ul>{items.map((item, index) => <li key={index}>{item}</li>)}</ul>',
-      ),
+      source: component('<ul>{items.map((item, index) => <li key={index}>{item}</li>)}</ul>'),
       rule: 'noArrayIndexKey',
     },
     {
@@ -2134,9 +2105,7 @@ describe('the Biome framework parts', () => {
     },
     {
       condition: 'a focusable element is hidden from assistive technology',
-      source: component(
-        "<button type='button' aria-hidden='true'>Save</button>",
-      ),
+      source: component("<button type='button' aria-hidden='true'>Save</button>"),
       rule: 'noAriaHiddenOnFocusable',
     },
     {
@@ -2521,8 +2490,7 @@ describe('the Biome framework parts', () => {
     {
       condition: 'a component renders nothing',
       files: {
-        'src/panel.tsx':
-          'export function Panel(): React.ReactNode {\n  return null;\n}\n',
+        'src/panel.tsx': 'export function Panel(): React.ReactNode {\n  return null;\n}\n',
       },
     },
     {
@@ -2540,9 +2508,7 @@ describe('the Biome framework parts', () => {
     {
       condition: 'a class list uses logical sides',
       files: {
-        'src/panel.tsx': component(
-          "<div className='ms-4 text-start items-center' />",
-        ),
+        'src/panel.tsx': component("<div className='ms-4 text-start items-center' />"),
       },
     },
     {
@@ -2695,9 +2661,7 @@ describe('the Biome architecture parts', () => {
 
       // Assert
       expect(
-        plugins.some((finding) =>
-          finding.startsWith('A surface only re-exports by name'),
-        ),
+        plugins.some((finding) => finding.startsWith('A surface only re-exports by name')),
       ).toBe(isReported);
     },
   );

@@ -73,17 +73,14 @@ describe('checkOf', () => {
       },
       name: 'a tool naming two roles',
     },
-  ])(
-    'should read $expected.kind when the check is $name',
-    ({ check, expected }) => {
-      // Arrange
-      const rule = ruleWith(check);
+  ])('should read $expected.kind when the check is $name', ({ check, expected }) => {
+    // Arrange
+    const rule = ruleWith(check);
 
-      // Act
-      const read = checkOf(rule);
+    // Act
+    const read = checkOf(rule);
 
-      // Assert
-      expect(read).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(read).toStrictEqual(expected);
+  });
 });

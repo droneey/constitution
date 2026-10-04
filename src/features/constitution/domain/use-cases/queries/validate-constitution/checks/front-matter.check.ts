@@ -46,18 +46,14 @@ const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {
     Layer.Language,
     Layer.Implementation,
   ],
-  [LayerField.Requires]: LAYERS.filter(
-    (layer) => requirableBy(layer).length > 0,
-  ),
+  [LayerField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
   [LayerField.Roles]: [
     Layer.Language,
   ],
 };
 
 const isEmpty = (field: FrontMatter[LayerField]): boolean =>
-  field === undefined ||
-  field === false ||
-  (Array.isArray(field) && field.length === 0);
+  field === undefined || field === false || (Array.isArray(field) && field.length === 0);
 
 const identityFindings = (block: Block): readonly Finding[] =>
   block.frontMatter.id === block.id
@@ -71,11 +67,7 @@ const identityFindings = (block: Block): readonly Finding[] =>
 
 const layerFindings = (block: Block): readonly Finding[] =>
   LAYER_FIELDS.filter(
-    (field) =>
-      !(
-        FILLED_ON[field].includes(block.layer) ||
-        isEmpty(block.frontMatter[field])
-      ),
+    (field) => !(FILLED_ON[field].includes(block.layer) || isEmpty(block.frontMatter[field])),
   ).map((field) => ({
     message: `sets "${field}", which ${aBlock(block.layer)} leaves empty`,
     path: block.path,
@@ -84,10 +76,7 @@ const layerFindings = (block: Block): readonly Finding[] =>
 // A tool's languages are those whose files its checks cover, so a block that
 // checks nothing covers none. A layer that leaves the field empty is reported
 // by layerFindings alone.
-const languageFindings = (input: {
-  block: Block;
-  byId: BlocksById;
-}): readonly Finding[] => {
+const languageFindings = (input: { block: Block; byId: BlocksById }): readonly Finding[] => {
   const { frontMatter, layer } = input.block;
 
   if (!FILLED_ON[LayerField.Languages].includes(layer)) {
@@ -126,10 +115,7 @@ const flagFindings = (block: Block): readonly Finding[] => {
       ];
 };
 
-const frontMatterCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] =>
+const frontMatterCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] =>
   constitution.blocks.flatMap((block) => [
     ...identityFindings(block),
     ...layerFindings(block),

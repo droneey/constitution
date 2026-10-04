@@ -67,10 +67,7 @@ const firstBySlug = (rules: readonly Rule[]): ReadonlyMap<string, Rule> => {
   return first;
 };
 
-const parentOf = (input: {
-  rule: Rule;
-  slugs: ReadonlyMap<string, Rule>;
-}): Rule | undefined =>
+const parentOf = (input: { rule: Rule; slugs: ReadonlyMap<string, Rule> }): Rule | undefined =>
   // Stryker disable next-line StringLiteral: no rule has an empty slug
   input.slugs.get(input.rule.parent ?? '');
 
@@ -139,10 +136,7 @@ const parentMessage = (input: {
     : undefined;
 };
 
-const rulesCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const rulesCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
   const slugs = firstBySlug(constitution.rules);
 
   return constitution.rules.flatMap((rule) => {

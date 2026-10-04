@@ -66,10 +66,7 @@ const PARTS: readonly string[] = [
   'typescript/architecture/_react',
 ];
 
-const writeFiles = (
-  folder: string,
-  files: Readonly<Record<string, string>>,
-): void => {
+const writeFiles = (folder: string, files: Readonly<Record<string, string>>): void => {
   for (const [path, text] of Object.entries(files)) {
     mkdirSync(dirname(join(folder, path)), {
       recursive: true,
@@ -80,22 +77,18 @@ const writeFiles = (
 
 // .droneey/constitution is a folder of its own, so a case can put a file beside the
 // presets it links.
-const lintFindings = (project: Project): Findings => {
+const inProject = <T>(project: Project, run: (folder: string) => T): T => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
 
   mkdirSync(join(folder, '.droneey', 'constitution'), {
     recursive: true,
   });
-  symlinkSync(
-    join(REPOSITORY, 'presets'),
-    join(folder, '.droneey/constitution', 'presets'),
-  );
+  symlinkSync(join(REPOSITORY, 'presets'), join(folder, '.droneey/constitution', 'presets'));
   writeFiles(folder, {
     ...project.files,
     'biome.json': JSON.stringify({
       extends: (project.parts ?? PARTS).map(
-        (part) =>
-          `./.droneey/constitution/presets/${part.replace('/', '/biome/')}.jsonc`,
+        (part) => `./.droneey/constitution/presets/${part.replace('/', '/biome/')}.jsonc`,
       ),
       vcs: {
         enabled: false,
@@ -103,24 +96,31 @@ const lintFindings = (project: Project): Findings => {
     }),
   });
 
-  const linting = spawnSync(
-    BIOME,
-    [
-      'lint',
-      '--reporter=json',
-      '.',
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
+  const outcome = run(folder);
 
   rmSync(folder, {
     force: true,
     recursive: true,
   });
 
+  return outcome;
+};
+
+const lintFindings = (project: Project): Findings => {
+  const linting = inProject(project, (folder) =>
+    spawnSync(
+      BIOME,
+      [
+        'lint',
+        '--reporter=json',
+        '.',
+      ],
+      {
+        cwd: folder,
+        encoding: 'utf8',
+      },
+    ),
+  );
   const { diagnostics } = REPORT.parse(JSON.parse(linting.stdout));
 
   return {
@@ -133,6 +133,33 @@ const lintFindings = (project: Project): Findings => {
   };
 };
 
+// Biome rewrites the file in place; the case reads back what it wrote.
+const formattedText = (source: string): string =>
+  inProject(
+    {
+      files: {
+        'src/order.ts': source,
+      },
+      parts: FOUNDATION_PARTS,
+    },
+    (folder) => {
+      spawnSync(
+        BIOME,
+        [
+          'format',
+          '--write',
+          'src',
+        ],
+        {
+          cwd: folder,
+          encoding: 'utf8',
+        },
+      );
+
+      return readFileSync(join(folder, 'src', 'order.ts'), 'utf8');
+    },
+  );
+
 const presetFiles = (): readonly string[] =>
   readdirSync(PRESETS_FOLDER, {
     recursive: true,
@@ -141,14 +168,11 @@ const presetFiles = (): readonly string[] =>
     .filter((path) => path.split('/')[1] === 'biome' && path.endsWith('.jsonc'))
     .toSorted((left, right) => left.localeCompare(right));
 
-const presetText = (path: string): string =>
-  readFileSync(join(PRESETS_FOLDER, path), 'utf8');
+const presetText = (path: string): string => readFileSync(join(PRESETS_FOLDER, path), 'utf8');
 
 const presetWords = (): readonly string[] => {
   const segments = presetFiles()
-    .flatMap(
-      (path) => PRESET.parse(Bun.JSONC.parse(presetText(path))).plugins ?? [],
-    )
+    .flatMap((path) => PRESET.parse(Bun.JSONC.parse(presetText(path))).plugins ?? [])
     .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
     .flatMap((glob) => glob.replace(/^!/, '').split('/'))
     .filter((segment) => segment !== '**')
@@ -175,6 +199,7 @@ const blockCode = (): readonly string[] =>
 export {
   blockCode,
   FOUNDATION_PARTS,
+  formattedText,
   lintFindings,
   presetFiles,
   presetText,

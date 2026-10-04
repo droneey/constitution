@@ -26,9 +26,7 @@ const fenceOf = (line: string): Fence | undefined => {
 const openingOf = (line: string): Fence | undefined => {
   const fence = fenceOf(line);
 
-  return fence?.character === BACKTICK && fence.info.includes(BACKTICK)
-    ? undefined
-    : fence;
+  return fence?.character === BACKTICK && fence.info.includes(BACKTICK) ? undefined : fence;
 };
 
 const closes = (input: { fence: Fence; line: string }): boolean => {

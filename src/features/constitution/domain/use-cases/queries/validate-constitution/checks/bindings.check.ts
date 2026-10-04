@@ -1,19 +1,9 @@
 import type { Finding } from '#/kernel';
 import { Axis } from '#/kernel';
 
-import type {
-  Binding,
-  Constitution,
-  PresetFile,
-  Rule,
-} from '../../../../entities';
+import type { Binding, Constitution, PresetFile, Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import {
-  checkOf,
-  mayReferTo,
-  PresetFileKind,
-  presetPathOf,
-} from '../../../../utils';
+import { checkOf, mayReferTo, PresetFileKind, presetPathOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const partOf = (input: {
@@ -39,11 +29,7 @@ const COMMON = 'common';
 // when they also need that language — and holds rules of those blocks, of the
 // blocks above them, of a seam with them, or of the tool itself; self is the
 // tool's own.
-const isAbove = (input: {
-  binding: Binding;
-  byId: BlocksById;
-  rule: Rule;
-}): boolean => {
+const isAbove = (input: { binding: Binding; byId: BlocksById; rule: Rule }): boolean => {
   const owners = [
     input.binding.part === SELF ? input.binding.tool : input.binding.part,
     ...(input.binding.scope === COMMON
@@ -155,9 +141,7 @@ const unheldFindings = (input: {
 }): readonly Finding[] => {
   const { bindings, blocks, presets, rules } = input.constitution;
   const bound = new Set(bindings.map((binding) => binding.rule));
-  const toolsWithPresets = new Set(
-    presets.map((preset) => presetPathOf(preset.path)?.tool),
-  );
+  const toolsWithPresets = new Set(presets.map((preset) => presetPathOf(preset.path)?.tool));
   const presetRoles = new Set<string>(
     blocks
       .filter((block) => toolsWithPresets.has(block.id))
@@ -171,10 +155,7 @@ const unheldFindings = (input: {
     !presetRoles.has(role) ||
     checksOf(rule.block).includes(role) ||
     rules.some(
-      (child) =>
-        child.parent === rule.slug &&
-        roleOf(child) === role &&
-        isHeld(child, role),
+      (child) => child.parent === rule.slug && roleOf(child) === role && isHeld(child, role),
     );
 
   return rules.flatMap((rule) => {
@@ -192,10 +173,7 @@ const unheldFindings = (input: {
   });
 };
 
-const bindingsCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => [
+const bindingsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => [
   ...bindingFindings({
     byId,
     constitution,

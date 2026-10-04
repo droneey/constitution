@@ -1,17 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { cyclesCheck } from '../cycles.check';
 
-const requiring = (input: {
-  id: string;
-  requires: readonly string[];
-}): Files => ({
+const requiring = (input: { id: string; requires: readonly string[] }): Files => ({
   [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
     body: `# ${input.id}\n`,
     id: input.id,
@@ -62,27 +56,24 @@ describe('cyclesCheck', () => {
       },
       name: 'another implementation requires a block of the loop',
     },
-  ])(
-    'should report the cycle once, at its first block, when $name',
-    ({ files }) => {
-      // Arrange
-      const input = checkInputOf({
-        ...validFiles(),
-        ...files,
-      });
+  ])('should report the cycle once, at its first block, when $name', ({ files }) => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      ...files,
+    });
 
-      // Act
-      const findings = cyclesCheck(input);
+    // Act
+    const findings = cyclesCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: 'is part of a dependency cycle: biome → lingui → biome',
-          path: 'blocks/implementations/biome/biome.md',
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'is part of a dependency cycle: biome → lingui → biome',
+        path: 'blocks/implementations/biome/biome.md',
+      },
+    ]);
+  });
 
   it.each([
     {

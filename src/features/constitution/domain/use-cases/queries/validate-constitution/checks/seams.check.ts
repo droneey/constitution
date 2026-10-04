@@ -80,10 +80,7 @@ const chapterFindings = (subject: Subject): readonly Finding[] =>
         : [];
     });
 
-const seamsCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] =>
+const seamsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] =>
   constitution.blocks.flatMap((block) => [
     ...pairingFindings({
       block,

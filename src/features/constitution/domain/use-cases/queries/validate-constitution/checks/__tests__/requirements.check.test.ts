@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  rule,
-  textOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import type { CheckInput } from '../../check.types';
 import { requirementsCheck } from '../requirements.check';
@@ -86,13 +82,11 @@ describe('requirementsCheck', () => {
       row: '| `no-such-rule` | x | yes |',
     },
     {
-      expected:
-        'answers "portals-for-overlays" of react-dom, which its block may not refer to',
+      expected: 'answers "portals-for-overlays" of react-dom, which its block may not refer to',
       row: '| `portals-for-overlays` | x | yes |',
     },
     {
-      expected:
-        'answers "i18n-plurals-by-cldr" with Met "met"; Met is yes, partly or no',
+      expected: 'answers "i18n-plurals-by-cldr" with Met "met"; Met is yes, partly or no',
       row: '| `i18n-plurals-by-cldr` | ICU plural | met |',
     },
     {
@@ -104,26 +98,23 @@ describe('requirementsCheck', () => {
       expected: 'answers "i18n-plurals-by-cldr" without saying how',
       row: '| `i18n-plurals-by-cldr` |  | yes |',
     },
-  ])(
-    'should report "$expected" when a row breaks its rule',
-    ({ expected, row }) => {
-      // Arrange
-      const input = answering([
-        row,
-      ]);
+  ])('should report "$expected" when a row breaks its rule', ({ expected, row }) => {
+    // Arrange
+    const input = answering([
+      row,
+    ]);
 
-      // Act
-      const findings = requirementsCheck(input);
+    // Act
+    const findings = requirementsCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: LINGUI,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: LINGUI,
+      },
+    ]);
+  });
 
   it('should report the second answer when a block answers one requirement twice', () => {
     // Arrange
@@ -153,10 +144,9 @@ describe('requirementsCheck', () => {
     })
       .replace('chapters: []', 'chapters: ["workflow/catalogs.md"]')
       .replace(ANSWER, `${ANSWER}\n| \`catalogs-compile\` | the CLI | yes |`);
-    files['blocks/implementations/lingui/workflow/catalogs.md'] =
-      `# Catalogs\n\n${rule({
-        slug: 'catalogs-compile',
-      })}`;
+    files['blocks/implementations/lingui/workflow/catalogs.md'] = `# Catalogs\n\n${rule({
+      slug: 'catalogs-compile',
+    })}`;
     const input = checkInputOf(files);
 
     // Act

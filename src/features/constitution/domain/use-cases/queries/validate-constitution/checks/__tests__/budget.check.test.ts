@@ -35,19 +35,16 @@ describe('budgetCheck', () => {
       ],
       lines: 501,
     },
-  ])(
-    'should hold a file to 500 lines when it has $lines',
-    ({ expected, lines }) => {
-      // Arrange
-      const files = validFiles();
-      files[PRINCIPLES] = linesOf(lines);
-      const input = checkInputOf(files);
+  ])('should hold a file to 500 lines when it has $lines', ({ expected, lines }) => {
+    // Arrange
+    const files = validFiles();
+    files[PRINCIPLES] = linesOf(lines);
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = budgetCheck(input);
+    // Act
+    const findings = budgetCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
 });

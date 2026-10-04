@@ -1,12 +1,7 @@
 import type { Finding } from '#/kernel';
 
 import type { Block, BlockFile, Rule } from '../../../../entities';
-import {
-  directoryOf,
-  inlineCodeSpans,
-  resolveLink,
-  withoutCodeFences,
-} from '../../../../utils';
+import { directoryOf, inlineCodeSpans, resolveLink, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { linkTargetsOf } from '../link-targets.utils';
 
@@ -14,17 +9,11 @@ const TABLE_ROW = /^\s*\|/;
 const FOLDER_SEPARATOR = '/';
 const DECISION = /\bADR-\d{4}\b/g;
 
-const ownerOf = (input: {
-  blocks: readonly Block[];
-  target: string;
-}): Block | undefined =>
+const ownerOf = (input: { blocks: readonly Block[]; target: string }): Block | undefined =>
   input.blocks.find((block) => {
     const folder = directoryOf(block.path);
 
-    return (
-      input.target === folder ||
-      input.target.startsWith(`${folder}${FOLDER_SEPARATOR}`)
-    );
+    return input.target === folder || input.target.startsWith(`${folder}${FOLDER_SEPARATOR}`);
   });
 
 const linkFindings = (input: {
@@ -85,9 +74,7 @@ const decisionFindings = (file: BlockFile): readonly Finding[] =>
     path: file.path,
   }));
 
-const referencesCheck: Check = ({
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const referencesCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
   const slugs = new Map(
     constitution.rules.map((rule) => [
       rule.slug,

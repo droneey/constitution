@@ -1,11 +1,6 @@
 import { LANGUAGE_FREE_ROLES, ROLES } from '#/kernel';
 
-import type {
-  Block,
-  Constitution,
-  RequirementAnswer,
-  Rule,
-} from '../../../entities';
+import type { Block, Constitution, RequirementAnswer, Rule } from '../../../entities';
 import { BlockFileRole } from '../../../entities';
 import type { BlocksById } from '../../../utils';
 import { checkOf, fileNameOf, ruleLanguagesOf } from '../../../utils';
@@ -103,10 +98,7 @@ const answerRecord = (answer: RequirementAnswer): string =>
     answer.met,
   ]);
 
-const indexOf = (input: {
-  byId: BlocksById;
-  constitution: Constitution;
-}): string =>
+const indexOf = (input: { byId: BlocksById; constitution: Constitution }): string =>
   `${[
     HEADER,
     ...roleRecords(),

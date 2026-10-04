@@ -1,8 +1,4 @@
-import {
-  localLinkTargets,
-  withoutCodeFences,
-  withoutInlineCode,
-} from '../../../utils';
+import { localLinkTargets, withoutCodeFences, withoutInlineCode } from '../../../utils';
 
 const ROOT = '/';
 const HERE = '.';
@@ -20,9 +16,7 @@ const foldersOf = (paths: ReadonlySet<string>): ReadonlySet<string> =>
       path
         .split(ROOT)
         .slice(0, -1)
-        .map((_segment, index, segments) =>
-          segments.slice(0, index + 1).join(ROOT),
-        ),
+        .map((_segment, index, segments) => segments.slice(0, index + 1).join(ROOT)),
     ),
   ]);
 

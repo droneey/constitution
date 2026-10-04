@@ -73,9 +73,7 @@ const configOf = (config: Config): string =>
     .map((key) => {
       const setting = config[key] ?? DEFAULTS[key];
 
-      return setting.startsWith('\n')
-        ? `${key}:${setting}`
-        : `${key}: ${setting}`;
+      return setting.startsWith('\n') ? `${key}:${setting}` : `${key}: ${setting}`;
     })
     .join('\n')
     .concat('\n');
@@ -89,10 +87,7 @@ const write = (input: { path: string; text: string }): void => {
 
 const NO_ACCESS = 0o000;
 
-const initRepository = (input: {
-  repository: ProjectLayout['repository'];
-  root: string;
-}): void => {
+const initRepository = (input: { repository: ProjectLayout['repository']; root: string }): void => {
   if (input.repository === Repository.Worktree) {
     write({
       path: join(input.root, '.git'),
@@ -137,11 +132,7 @@ const writeLayout = (input: { layout: ProjectLayout; root: string }): void => {
   }
 };
 
-const writeSpecials = (input: {
-  above: string;
-  layout: ProjectLayout;
-  root: string;
-}): void => {
+const writeSpecials = (input: { above: string; layout: ProjectLayout; root: string }): void => {
   const { above, layout, root } = input;
 
   for (const pipe of layout.namedPipes ?? []) {
@@ -202,8 +193,7 @@ const localBlock = (fields: Readonly<Record<string, string>>): string =>
 
 const IMPLEMENTATIONS = 'implementations';
 
-const rulesFolder = (folder: string): string =>
-  folder === '' ? 'rules' : `rules/${folder}`;
+const rulesFolder = (folder: string): string => (folder === '' ? 'rules' : `rules/${folder}`);
 
 const localBlockFiles = (input: {
   fields?: Readonly<Record<string, string>>;
@@ -211,24 +201,23 @@ const localBlockFiles = (input: {
   id: string;
   omit?: string;
 }): Files => ({
-  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]:
-    localBlock(
-      Object.fromEntries(
-        Object.entries({
-          id: input.id,
-          summary: `The local ${input.id} block.`,
-          requires: '[]',
-          extends: 'null',
-          abstract: 'false',
-          checks: '[]',
-          languages: '[]',
-          roles: '[]',
-          dictionary: '[]',
-          governs: '[]',
-          ...input.fields,
-        }).filter(([key]) => key !== input.omit),
-      ),
+  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]: localBlock(
+    Object.fromEntries(
+      Object.entries({
+        id: input.id,
+        summary: `The local ${input.id} block.`,
+        requires: '[]',
+        extends: 'null',
+        abstract: 'false',
+        checks: '[]',
+        languages: '[]',
+        roles: '[]',
+        dictionary: '[]',
+        governs: '[]',
+        ...input.fields,
+      }).filter(([key]) => key !== input.omit),
     ),
+  ),
 });
 
 const localPath = (id: string, folder: string = IMPLEMENTATIONS): string =>

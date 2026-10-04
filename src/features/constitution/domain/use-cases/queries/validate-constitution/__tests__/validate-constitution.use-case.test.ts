@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  rule,
-  sourceOf,
-  textOf,
-} from '../../../../../__tests__/constitution.fixtures';
+import { rule, sourceOf, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 

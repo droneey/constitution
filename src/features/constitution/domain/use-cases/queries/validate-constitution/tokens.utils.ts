@@ -22,13 +22,10 @@ const WORD_PATTERNS: Readonly<Record<WordKind, (word: string) => string>> = {
   [WordKind.Suffix]: (word: string): string => `${word}${NO_NAME_AFTER}`,
 };
 
-const collapseWhitespace = (text: string): string =>
-  text.replaceAll(WHITESPACE, ' ');
+const collapseWhitespace = (text: string): string => text.replaceAll(WHITESPACE, ' ');
 
 const containsId = (input: { id: string; text: string }): boolean =>
-  new RegExp(`(?<![\\w.-])${RegExp.escape(input.id)}(?![\\w-])`).test(
-    input.text,
-  );
+  new RegExp(`(?<![\\w.-])${RegExp.escape(input.id)}(?![\\w-])`).test(input.text);
 
 // A hyphen continues a block id, so "react-dom-extra" is not react-dom, but it
 // ends an owned word, so "React-based" names React.
@@ -38,26 +35,13 @@ const ownedWordMatcher = (word: string): ((text: string) => boolean) => {
     `${normalized.startsWith(DOT) ? '' : WORD_START}${RegExp.escape(normalized)}${WORD_END}`,
   );
 
-  return (text: string): boolean =>
-    text.includes(normalized) && pattern.test(text);
+  return (text: string): boolean => text.includes(normalized) && pattern.test(text);
 };
 
-const wordMatcher = (input: {
-  kind: WordKind;
-  word: string;
-}): ((text: string) => boolean) => {
-  const pattern = new RegExp(
-    WORD_PATTERNS[input.kind](RegExp.escape(input.word)),
-    ANY_CASE,
-  );
+const wordMatcher = (input: { kind: WordKind; word: string }): ((text: string) => boolean) => {
+  const pattern = new RegExp(WORD_PATTERNS[input.kind](RegExp.escape(input.word)), ANY_CASE);
 
   return (text: string): boolean => pattern.test(text);
 };
 
-export {
-  collapseWhitespace,
-  containsId,
-  ownedWordMatcher,
-  WordKind,
-  wordMatcher,
-};
+export { collapseWhitespace, containsId, ownedWordMatcher, WordKind, wordMatcher };

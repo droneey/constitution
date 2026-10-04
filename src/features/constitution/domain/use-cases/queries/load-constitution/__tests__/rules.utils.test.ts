@@ -206,53 +206,45 @@ describe('parseRules', () => {
     '## x → y → z',
     '## x → y · MOST',
     '## x → ',
-  ])(
-    'should report %p as a stray heading when it misses the rule heading forms',
-    (heading) => {
-      // Arrange
-      const source = sourceOf([
-        heading,
-        'Text.',
-      ]);
+  ])('should report %p as a stray heading when it misses the rule heading forms', (heading) => {
+    // Arrange
+    const source = sourceOf([
+      heading,
+      'Text.',
+    ]);
 
-      // Act
-      const parsed = parseRules(source);
+    // Act
+    const parsed = parseRules(source);
 
-      // Assert
-      expect(parsed).toStrictEqual({
-        findings: [
-          found(
-            `heading "${heading}" looks like a rule but is not ${HEADING_FORMS}`,
-          ),
-        ],
-        rules: [],
-      });
-    },
-  );
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [
+        found(`heading "${heading}" looks like a rule but is not ${HEADING_FORMS}`),
+      ],
+      rules: [],
+    });
+  });
 
   it.each([
     '## MUST, SHOULD and MAY in practice',
     '## levels · MUST in practice',
     '## Components',
-  ])(
-    'should neither read nor report the heading %p when it is no rule',
-    (heading) => {
-      // Arrange
-      const source = sourceOf([
-        heading,
-        'Text.',
-      ]);
+  ])('should neither read nor report the heading %p when it is no rule', (heading) => {
+    // Arrange
+    const source = sourceOf([
+      heading,
+      'Text.',
+    ]);
 
-      // Act
-      const parsed = parseRules(source);
+    // Act
+    const parsed = parseRules(source);
 
-      // Assert
-      expect(parsed).toStrictEqual({
-        findings: [],
-        rules: [],
-      });
-    },
-  );
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [],
+    });
+  });
 
   it.each<{
     lines: readonly string[];

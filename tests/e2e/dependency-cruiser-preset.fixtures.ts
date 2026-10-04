@@ -1,11 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -119,9 +113,7 @@ const installedFiles = (): Readonly<Record<string, string>> =>
     ]),
   );
 
-const declared = (
-  declarations: readonly Declaration[],
-): Readonly<Record<string, string>> =>
+const declared = (declarations: readonly Declaration[]): Readonly<Record<string, string>> =>
   Object.fromEntries(
     Object.entries(INSTALLED)
       .filter(([, installed]) => declarations.includes(installed.declaration))
@@ -137,8 +129,7 @@ const configOf = (parts: readonly string[]): string =>
       ...FOUNDATION_PARTS,
       ...parts,
     ].map(
-      (part) =>
-        `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
+      (part) => `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
     ),
   )},\n};\n`;
 

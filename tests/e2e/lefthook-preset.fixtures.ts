@@ -30,21 +30,14 @@ const PRESET = z.record(
 );
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESETS_FOLDER = join(
-  REPOSITORY,
-  'presets',
-  'common',
-  'lefthook',
-  'workflow',
-);
+const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'common', 'lefthook', 'workflow');
 
 const presetConfig = (part: string): unknown =>
   YAML.parse(readFileSync(join(PRESETS_FOLDER, `${part}.yaml`), 'utf8'));
 
 const jobRun = (input: { hook: Hook; job: string; part: string }): string =>
-  PRESET.parse(presetConfig(input.part))[input.hook]?.jobs.find(
-    ({ name }) => name === input.job,
-  )?.run ?? 'exit 99';
+  PRESET.parse(presetConfig(input.part))[input.hook]?.jobs.find(({ name }) => name === input.job)
+    ?.run ?? 'exit 99';
 
 // lefthook passes the message file as {1} and runs the job under sh.
 const checkCommitMessage = (message: string): HookRun => {
