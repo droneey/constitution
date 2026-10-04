@@ -7,7 +7,7 @@
 |---|---|---|
 | a rule left at a warning or off is a rule the type checker sees broken and lets pass. | tool/types | [] |
 
-## ty-ignore-names-its-rule → suppression-names-its-code-and-reason
+## ty-ignore-names-its-rule → suppression-silences-one-finding
 A `# ty: ignore` names its rule and silences a finding the check would report, and a `# type: ignore` silences nothing.
 
 | Why | Check | Tags |

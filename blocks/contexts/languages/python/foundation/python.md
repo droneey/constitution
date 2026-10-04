@@ -134,7 +134,7 @@ A docstring documents only a public entry whose use is not obvious, in the Googl
 |---|---|---|
 | a docstring that repeats a signature drifts from it, and the editor already shows the annotations. | review | [] |
 
-## suppression-names-its-code-and-reason → suppression-silences-one-finding
+## suppression-names-its-code-and-reason → suppression-states-its-reason
 A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608 -- the table name comes from an enum`.
 
 | Why | Check | Tags |

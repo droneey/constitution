@@ -121,7 +121,7 @@ rule	todo-names-its-issue	core	blocks/core/foundation/code.md		SHOULD	review				
 rule	no-commented-out-code	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	no-dead-code	core	blocks/core/foundation/code.md		MUST	tool	unused			foundation		true
 rule	suppression-states-its-reason	core	blocks/core/foundation/code.md		MUST	review				foundation		true
-rule	suppression-silences-one-finding	core	blocks/core/foundation/code.md		MUST	review				foundation	suppression-states-its-reason	false
+rule	suppression-silences-one-finding	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	no-debug-output-in-shipped-code	core	blocks/core/foundation/code.md		SHOULD	tool	lint		security	foundation		true
 rule	absence-has-one-value	core	blocks/core/foundation/code.md		MUST	tool	lint		data	foundation		true
 rule	error-cause-preserved	core	blocks/core/foundation/code.md		MUST	tool	lint		errors	foundation		true
@@ -698,7 +698,7 @@ rule	awaitable-never-dropped	python	blocks/contexts/languages/python/foundation/
 rule	concurrency-by-task-groups	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
 rule	except-never-only-passes	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	lint	python	errors	foundation	catch-never-empty	false
 rule	docstring-only-for-non-obvious-public-entry	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation	docs-only-for-non-obvious-public-entry	false
-rule	suppression-names-its-code-and-reason	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python		foundation	suppression-silences-one-finding	false
+rule	suppression-names-its-code-and-reason	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python		foundation	suppression-states-its-reason	false
 rule	tools-in-the-dev-group	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python	security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	requires-python-at-the-pinned-minor	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation		true
 rule	floor-ranges-lockfile-pins	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python	security	foundation	program-dependencies-ranged-lockfile-pins	false
@@ -1017,7 +1017,7 @@ rule	toolchain-pins-updated-by-bot	renovate	blocks/implementations/renovate/work
 rule	ruff-format-is-the-formatter	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	tool	format	python		foundation	rules-held-by-tools	false
 rule	rule-families-selected-by-name	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	review		python		foundation		true
 rule	preview-rules-only-by-code	ruff	blocks/implementations/ruff/foundation/ruff.md		SHOULD	review		python		foundation		true
-rule	noqa-names-its-codes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	tool	lint	python		foundation	suppression-names-its-code-and-reason	false
+rule	noqa-names-its-codes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	tool	lint	python		foundation	suppression-silences-one-finding	false
 rule	ruff-check-never-fixes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	review		python		foundation	check-only-checks	false
 rule	http-exception-banned	ruff	blocks/implementations/ruff/foundation/with/fastapi.md	fastapi	SHOULD	tool	lint	python	errors	foundation	program-raises-no-http-exception	false
 rule	skips-and-expected-failures-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	MUST	tool	lint	python	testing	foundation	no-skipped-or-empty-tests	false
@@ -1135,7 +1135,7 @@ rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/found
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	ty-is-the-type-gate	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	rules-held-by-tools	false
-rule	ty-ignore-names-its-rule	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	suppression-names-its-code-and-reason	false
+rule	ty-ignore-names-its-rule	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	suppression-silences-one-finding	false
 rule	deprecated-calls-fail-the-types	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	deprecated-forms-never-used	false
 rule	deprecated-pydantic-forms-fail-the-types	ty	blocks/implementations/ty/foundation/with/pydantic.md	pydantic	MUST	tool	types	python		foundation	pydantic-two-forms-only	false
 rule	uv-is-the-only-python-package-manager	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	dependencies-pinned-by-lockfile	false

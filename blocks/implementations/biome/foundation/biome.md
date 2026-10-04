@@ -8,7 +8,7 @@ A `biome-ignore` comment states its reason after the colon.
 | Biome refuses a suppression without a reason, so every silenced finding says why. | tool/lint | [] |
 
 ## biome-suppression-names-one-rule → suppression-silences-one-finding
-A suppression is `// biome-ignore lint/<group>/<rule>: <reason>`; never a group alone, `biome-ignore-all` or `biome-ignore-start`.
+A suppression names one rule, `// biome-ignore lint/<group>/<rule>`; never a group alone, `biome-ignore-all` or `biome-ignore-start`.
 
 | Why | Check | Tags |
 |---|---|---|

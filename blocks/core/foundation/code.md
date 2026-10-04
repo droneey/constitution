@@ -215,7 +215,7 @@ Silencing a check — a lint rule, a type error, a mutant, a deliberately ignore
 |---|---|---|
 | the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | review | [] |
 
-## suppression-silences-one-finding → suppression-states-its-reason
+## suppression-silences-one-finding · MUST
 A suppression silences one finding: it sits on the finding's line or the line above, or names the finding itself, and names the one rule, code or mutator it silences wherever the tool's form can name one; never a group of rules, a whole tool, a range or a whole file. A suppression that silences no finding the check would report is removed.
 
 | Why | Check | Tags |
