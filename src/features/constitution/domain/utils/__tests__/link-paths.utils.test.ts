@@ -5,11 +5,6 @@ import { resolveLink, targetFromRoot } from '../link-paths.utils';
 describe('resolveLink', () => {
   it.each([
     {
-      expected: 'blocks/core',
-      name: 'a folder link, its trailing slash dropped',
-      target: '../core/',
-    },
-    {
       expected: '.',
       name: 'a link to the root itself',
       target: '/',

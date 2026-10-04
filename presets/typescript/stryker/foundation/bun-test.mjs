@@ -1,8 +1,8 @@
 // biome-ignore lint/style/noDefaultExport: Stryker reads a configuration's default export
 export default {
-  testRunner: 'command',
+  testRunner: 'bun-specs',
+  plugins: [
+    './.droneey/constitution/tools/mutation-check/dist/runner.js',
+  ],
   coverageAnalysis: 'off',
-  commandRunner: {
-    command: 'bun --config=./bunfig.mutation.toml test --bail',
-  },
 };

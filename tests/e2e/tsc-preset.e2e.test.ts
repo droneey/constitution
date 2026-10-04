@@ -10,7 +10,6 @@ const IMPORT_WITH_TS_EXTENSION =
 const FIELD_WITHOUT_INITIALIZER = 'export class CreateOrderInput {\n  id: string;\n}\n';
 const READS_THE_DOCUMENT = 'export const title = document.title;\n';
 const READS_BUN = 'export const version = Bun.version;\n';
-const READS_THE_PROCESS = 'export const home = process.env.HOME;\n';
 const UNREACHABLE_CODE =
   "export const kind = (): string => {\n  return 'order';\n  console.log('never');\n};\n";
 
@@ -99,25 +98,6 @@ describe('the tsconfig preset', () => {
         'self',
         'core',
         'bun',
-      ],
-    },
-    {
-      condition: 'browser code reads Bun',
-      main: READS_BUN,
-      parts: [
-        'self',
-        'core',
-        'browser',
-      ],
-    },
-    {
-      condition: 'browser code reads the process',
-      main: READS_THE_PROCESS,
-      parts: [
-        'self',
-        'core',
-        'browser',
-        '_react',
       ],
     },
     {

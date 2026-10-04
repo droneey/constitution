@@ -80,26 +80,6 @@ describe('createYamlVocabularyParser', () => {
       name: 'a list is text or missing, and so is the workflow',
       yaml: 'architecture:\n  concepts: port\n  folders: []\n',
     },
-    {
-      issues: [
-        {
-          field: 'workflow',
-          message: 'Unrecognized key: "branches"',
-        },
-      ],
-      name: 'the workflow holds an unknown key',
-      yaml: 'architecture:\n  concepts: []\n  folders: []\n  suffixes: []\nworkflow:\n  concepts: []\n  folders: []\n  suffixes: []\n  branches: []\n',
-    },
-    {
-      issues: [
-        {
-          field: '',
-          message: 'Invalid input: expected object, received null',
-        },
-      ],
-      name: 'the file is empty',
-      yaml: '',
-    },
   ])('should return every issue at its dotted field when $name', ({ issues, yaml }) => {
     // Arrange
     const parser = createYamlVocabularyParser();

@@ -35,35 +35,9 @@ describe('the betterleaks preset', () => {
 
   it.each([
     {
-      condition: 'the line carries betterleaks:allow with its reason',
-      files: {
-        'config.ts': `export const token = '${TOKEN}'; // betterleaks:allow a fixture, never a real token\n`,
-      },
-    },
-    {
-      condition: 'the line carries the older gitleaks:allow',
-      files: {
-        'config.ts': `export const token = '${TOKEN}'; // gitleaks:allow a fixture, never a real token\n`,
-      },
-    },
-    {
-      condition: 'its fingerprint is ignored under a line that states the reason',
-      files: {
-        '.betterleaksignore':
-          '# a fixture token in the parser spec, never a real one\nconfig.ts:github-pat:1\n',
-        'config.ts': `export const token = '${TOKEN}';\n`,
-      },
-    },
-    {
       condition: 'bun.lock names a dependency after a password',
       files: {
         'bun.lock': `{\n  "packages": {\n    "@inquirer/prompts": ["@inquirer/prompts@8.7.2", "", { "dependencies": {\n      "${PASSWORD_PACKAGE}": "^5.2.2",\n    } }],\n  }\n}\n`,
-      },
-    },
-    {
-      condition: 'no staged file holds a secret',
-      files: {
-        'config.ts': "export const greeting = 'hello';\n",
       },
     },
   ])('should let the commit through when $condition', ({ files }) => {

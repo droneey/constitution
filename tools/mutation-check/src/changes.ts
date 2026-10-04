@@ -1,5 +1,7 @@
 import { matchesGlob } from 'node:path';
 
+import { loadedBy } from './loaded.ts';
+
 interface Range {
   end: number;
   start: number;
@@ -58,24 +60,14 @@ const loadedInBoundary = (input: {
   spec: string;
 }): readonly string[] => {
   const boundary = `${input.spec.slice(0, input.spec.indexOf(TESTS))}/`;
-  const seen = new Set<string>();
-  const pending = [
-    input.spec,
-  ];
-
-  for (let path = pending.pop(); path !== undefined; path = pending.pop()) {
-    for (const target of input.importsOf(path)) {
-      if (!seen.has(target)) {
-        seen.add(target);
-        pending.push(target);
-      }
-    }
-  }
 
   return [
     input.spec.replace(SPEC, '/$1.$2'),
     ...[
-      ...seen,
+      ...loadedBy({
+        importsOf: input.importsOf,
+        path: input.spec,
+      }).keys(),
     ].filter((path) => path.startsWith(boundary)),
   ];
 };

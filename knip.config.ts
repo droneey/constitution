@@ -4,6 +4,7 @@ import core from './.droneey/constitution/presets/typescript/knip/foundation/cor
 import lsLint from './.droneey/constitution/presets/typescript/knip/foundation/ls-lint.mjs';
 import mise from './.droneey/constitution/presets/typescript/knip/foundation/mise.mjs';
 import osvScanner from './.droneey/constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
+import stryker from './.droneey/constitution/presets/typescript/knip/foundation/stryker.mjs';
 import uv from './.droneey/constitution/presets/typescript/knip/foundation/uv.mjs';
 
 export default {
@@ -11,6 +12,7 @@ export default {
     ...core.entry,
     ...architecture.entry,
     'tools/mutation-check/src/main.ts!',
+    'tools/mutation-check/src/runner.ts!',
   ],
   project: [
     ...core.project,
@@ -27,7 +29,7 @@ export default {
     'stryker',
   ],
   ignoreDependencies: [
-    '@stryker-mutator/command-runner',
+    ...stryker.ignoreDependencies,
     'dclint',
     '@swc/core',
   ],

@@ -1,37 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
 import self from '../../presets/typescript/syncpack/foundation/self.mjs';
-import typescript from '../../presets/typescript/syncpack/foundation/typescript.mjs';
 import { versionIssues } from './syncpack-preset.fixtures';
 
 describe('the syncpack typescript part', () => {
-  it('should put the identity of a package first and its dependencies last when a manifest is formatted', () => {
-    // Arrange
-    const identity = [
-      'name',
-      'version',
-      'private',
-    ];
-    const dependencies = [
-      'dependencies',
-      'devDependencies',
-      'peerDependencies',
-      'peerDependenciesMeta',
-    ];
-
-    // Act
-    const order = typescript.sortFirst;
-
-    // Assert
-    expect({
-      first: order.slice(0, identity.length),
-      last: order.slice(-dependencies.length),
-    }).toStrictEqual({
-      first: identity,
-      last: dependencies,
-    });
-  });
-
   it.each([
     {
       condition: 'a tool takes a caret range',

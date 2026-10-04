@@ -11,6 +11,7 @@ interface Mutation {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const STRYKER = join(REPOSITORY, 'node_modules', '.bin', 'stryker');
 
+// The runner's source stands in for the archive's build, which the check makes later.
 const CONFIG = `import bunTest from './.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
 import core from './.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
 import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
@@ -21,6 +22,9 @@ export default {
   ...mise,
   ...bunTest,
   ...core,
+  plugins: [
+    '${join(REPOSITORY, 'tools', 'mutation-check', 'src', 'runner.ts')}',
+  ],
 };
 `;
 
@@ -57,8 +61,10 @@ const mutationOf = (spec: string): Mutation => {
   symlinkSync(join(REPOSITORY, 'node_modules'), join(folder, 'node_modules'));
 
   const running = spawnSync(
-    STRYKER,
+    'bun',
     [
+      '--bun',
+      STRYKER,
       'run',
     ],
     {

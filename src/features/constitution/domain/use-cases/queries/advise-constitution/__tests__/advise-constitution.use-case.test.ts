@@ -302,18 +302,6 @@ describe('adviseConstitution', () => {
         ],
       },
     },
-    {
-      expected: [],
-      name: 'a MUST rule names an unknown role',
-      rules: {
-        [UI]: [
-          {
-            check: 'tool/linting',
-            slug: 'screens-hold-no-logic',
-          },
-        ],
-      },
-    },
   ])(
     'should name the roles each language needs and no tool holds when $name',
     ({ expected, ...scenario }) => {

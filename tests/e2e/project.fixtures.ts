@@ -12,7 +12,6 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import type { Files } from './constitution.fixtures';
-import { syntheticId } from './constitution.fixtures';
 import { INSTALLED, removeFolder } from './plugin-root.fixtures';
 
 enum ConfigKey {
@@ -476,17 +475,6 @@ const REAL_CLI: ProjectLayout = {
   ].join('\n'),
 };
 
-const syntheticProject = (blocks: number): ProjectLayout => ({
-  config: configOf({
-    domains: `[${Array.from(
-      {
-        length: blocks,
-      },
-      (_, index) => syntheticId(index + 1),
-    ).join(', ')}]`,
-  }),
-});
-
 export type { ProjectLayout };
 export {
   BROWSER_APP,
@@ -506,5 +494,4 @@ export {
   REAL_WEB_APP,
   Repository,
   removeProjects,
-  syntheticProject,
 };

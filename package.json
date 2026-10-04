@@ -1,6 +1,6 @@
 {
   "name": "@droneey/constitution",
-  "version": "0.65.4",
+  "version": "0.65.5",
   "private": true,
   "description": "The engineering constitution of droneey: blocks of rules a project declares in constitution.yaml.",
   "license": "SEE LICENSE IN LICENSE.md",
@@ -27,7 +27,7 @@
     "test": "bun run test:unit && bun run test:e2e && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. pytest --cov || exit 1; done",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
-    "build": "bun build --target=bun --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist && mkdir -p tools/python-check/dist tools/mutmut-check/dist && python3 -m zipapp tools/python-check/src -m python_check.main:main -o tools/python-check/dist/python-check.pyz && python3 -m zipapp tools/mutmut-check/src -m mutmut_check.main:main -o tools/mutmut-check/dist/mutmut-check.pyz",
+    "build": "bun build --target=bun --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist && bun build --target=bun ./tools/mutation-check/src/runner.ts --outdir tools/mutation-check/dist && mkdir -p tools/python-check/dist tools/mutmut-check/dist && python3 -m zipapp tools/python-check/src -m python_check.main:main -o tools/python-check/dist/python-check.pyz && python3 -m zipapp tools/mutmut-check/src -m mutmut_check.main:main -o tools/mutmut-check/dist/mutmut-check.pyz",
     "mutation:check": "bun tools/mutation-check/src/main.ts && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. mutmut-check || exit 1; done",
     "mutation:all": "bun tools/mutation-check/src/main.ts all && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. mutmut-check all || exit 1; done",
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
@@ -43,6 +43,7 @@
     "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run dependencies:check && bun run audit:check"
   },
   "dependencies": {
+    "@stryker-mutator/api": "^10.0.0",
     "yaml": "^2.8.1",
     "zod": "^4.1.13"
   },

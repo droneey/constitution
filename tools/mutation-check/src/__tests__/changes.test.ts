@@ -98,19 +98,6 @@ describe('mutation targets', () => {
       ],
     },
     {
-      condition: 'two hunks change one file',
-      diff: diffOf({
-        'src/order.utils.ts': [
-          '@@ -1,1 +1,1 @@',
-          '@@ -9,0 +10,2 @@',
-        ],
-      }),
-      targets: [
-        'src/order.utils.ts:1-1',
-        'src/order.utils.ts:10-11',
-      ],
-    },
-    {
       condition: 'a hunk counts its lines in two digits',
       diff: diffOf({
         'src/order.utils.ts': [

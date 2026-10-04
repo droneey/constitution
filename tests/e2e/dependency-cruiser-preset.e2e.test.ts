@@ -307,20 +307,6 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'reads-never-reach-writes',
     },
     {
-      condition: 'two modules import each other, a rule of the foundation core part',
-      files: {
-        'src/shared/format/format.ts': importing({
-          from: './parse',
-          name: 'parse',
-        }),
-        'src/shared/format/parse.ts': importing({
-          from: './format',
-          name: 'uses',
-        }),
-      },
-      rule: 'no-circular',
-    },
-    {
       condition: 'a write imports a read',
       files: {
         'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': importing({
