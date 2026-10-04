@@ -27,8 +27,9 @@
 | Delivery of the constitution | ADR-0124 |
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
-| Python | ADR-0127 |
+| Python | ADR-0127 – ADR-0128 |
 | TypeScript configuration | ADR-0130, ADR-0131, ADR-0133 |
+| Scripts of the check | ADR-0132 |
 
 ---
 
@@ -893,6 +894,13 @@
 - **Rejected.** Pyrefly, the reviews' choice, for ty, from the makers of uv and Ruff, though it is in beta (owner); double quotes and four spaces, the experts' choice, for single quotes and two, as in TypeScript (owner); `ban-relative-imports = "all"` (`TID252`), which forbids the relative imports a feature keeps inside itself (owner) — a small AST check will hold them, and the 100 and 500 line limits, from the archive's `tools/`; mise tasks for the check of a repository without JavaScript, for Poe the Poet in `pyproject.toml` (owner); an architecture part for Ruff, whose only candidate — `os.environ` banned outside `root/` — needs per-file ignores that resolve against the part's own folder, or match any path with a `root` in it; a glob in ls-lint's `ignore` for `__pycache__`, which makes ls-lint walk every link of the project, for rules that admit the bytecode's names.
 - **Why.** A second language takes the same rules as the first in its own forms, held by the tools its practice has settled on, so a product written in TypeScript and Python is reviewed and checked the same way in both.
 
+## ADR-0128 — Python is tested by pytest, Hypothesis and mutmut, and checked by import-linter, deptry, vulture, complexipy and python-check
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** Seven implementations, each held to core's testing and code rules in Python. `pytest` — strict, `importlib`, warnings as errors, a coverage gate of 100 percent of lines and branches through pytest-cov with `--cov` in the check and never in `addopts`, pytest-randomly's order, no rerun plugin, `tests/integration/` and `tests/e2e/` left out of the unit run by `norecursedirs`, the network refused by an autouse fixture of `tests/conftest.py` that the integration folder overrides, no `unittest.mock` and no patched module, async specs on anyio's plugin; run in each package with `pythonpath = ["tests"]`. Ruff's part `pytest.toml` extends `python.toml` as the last link of the chain, with `PT` and the bans of skips, expected failures, the `flaky` mark, `unittest.mock` and `pytest_asyncio`, and a project lifts only `S101` and `INP001` in `tests/`. `hypothesis` — properties written with `@given`, counterexamples kept by `@example`, and under `CI` its own `ci` profile, which already derandomizes and keeps no database. `mutmut` — every mutant killed, an equivalent one marked on its line by `# pragma: no mutate -- <reason>`, each mutant run without randomness or coverage; its gate is the archive's `tools/mutmut-check`, which clears `mutants/`, mutates the functions a change touches, a new module whole and the module a changed spec is named after with those it imports, and fails on every mutant not killed — survivor, untested or timed out. `import-linter` — core's import rules as contracts named after them, written over wildcards (`*.kernel`, `*.features.*`) so one template fits any package. `deptry` — unused dependencies and dev tools imported by the program. `vulture` — unused code from a confidence of 60, over `src` alone so code only the specs reach is dead, names a framework reaches in `ignore_names` with a reason. `complexipy` — cognitive complexity at most 10. `python-check`, the constitution's own Python tool in the archive's `tools/`, holds a function of at most 100 lines and a file of at most 500 outside `tests/`, and a relative import kept inside its module — a feature, a top-level folder, or the package root — with a feature never importing its own absolute path. The settings of the tools without `extends` start from `templates/project/python/pyproject.toml`, its check a sequence of Poe the Poet tasks, and `tests/conftest.py` beside it; ls-lint's parts skip the folders the tools write. Both Python tools are members of this repository's uv workspace and are held by its check — format, lint, types, their own limits, coverage, mutation and unused code — and the release builds them as `.pyz` archives the project's interpreter runs.
+- **Rejected.** Extending `tools/mutation-check` to drive mutmut, which would make a repository without JavaScript install Bun to run one gate; a threshold below every mutant, which core forbids; `mutate_only_covered_lines`, which hides the mutants no spec reaches; a profile of the project's own for CI, which Hypothesis already ships; a whitelist module for vulture, which Ruff then flags as a module of useless expressions outside a package; vulture at 80, which reports no unused function or class; per-file ignores in a Ruff part, which resolve against the part's own folder; a Python tool installed from the archive as a package, which a project would have to build, for a zip archive the interpreter runs as it is.
+- **Why.** Python's specs are measured as TypeScript's are — by coverage of every branch and by every mutant killed — and its imports and sizes are held by tools, not by review, so a package written in both languages meets the same bar in each.
+
 ## ADR-0130 — An editor finds the specs' own TypeScript configuration
 **Date:** 2026-10-04 · **Status:** Accepted
 
@@ -906,6 +914,13 @@
 - **Decision.** Under `specs-checked-by-their-own-config`, `tsconfig.json` extends `tsconfig.src.json` and keeps `files` and `include` empty, beside its references to both configurations. Amends ADR-0130.
 - **Rejected.** A `tsconfig.json` with references alone (ADR-0130): Bun's transpiler reads only `tsconfig.json` and follows no reference, so a spec run by `bun test` lost the program's transpiler options, such as its decorators.
 - **Why.** Extending the program's configuration gives Bun its options, while TypeScript still reads a file with no files of its own as a solution and opens each file with the configuration that holds it (verified on Bun 1.4.2 and TypeScript 7.0.2).
+
+## ADR-0132 — One script for each area of the check, whatever the language
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** Each area of the check has one `<area>:check` script, or Poe task, that runs every tool of that area in each language of the repository: `lint:check` runs Biome and Ruff, `type:check` tsc and ty, `test` both runners (`check-chains-area-scripts`, `check-chains-area-tasks`, which replace `check-chains-tool-scripts` and `check-chains-tool-tasks`).
+- **Rejected.** A prefix for the second language, `python:lint:check`: two families of names, and `lint:check` would quietly check one language.
+- **Why.** A person, CI and the hooks run one name per area, and a language added later joins the areas instead of adding names.
 
 ## ADR-0133 — NestJS's decorator options are written where Bun reads them
 **Date:** 2026-10-04 · **Status:** Accepted

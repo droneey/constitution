@@ -1,8 +1,21 @@
 [dependency-groups]
 dev = [
+  "anyio==4.15.1",
+  "complexipy==8.0.1",
+  "deptry==0.25.1",
+  "hypothesis==6.168.3",
+  "import-linter==2.15",
+  "mutmut==3.8.0",
+  "mutmut-check",
   "poethepoet==0.48.0",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "pytest-randomly==5.0.0",
+  "pytest-timeout==2.4.0",
+  "python-check",
   "ruff==0.16.9",
   "ty==0.0.84",
+  "vulture==2.16",
 ]
 
 [tool.uv]
@@ -10,3 +23,19 @@ exclude-newer = "3 days"
 no-build = true
 python-downloads = "never"
 python-preference = "only-system"
+
+[tool.uv.sources]
+mutmut-check = { workspace = true }
+python-check = { workspace = true }
+
+[tool.uv.workspace]
+members = ["tools/mutmut-check", "tools/python-check"]
+
+[tool.ruff]
+extend = ".droneey/constitution/presets/python/ruff/foundation/pytest.toml"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tools/*/tests/**" = [
+  "INP001",
+  "S101",
+]

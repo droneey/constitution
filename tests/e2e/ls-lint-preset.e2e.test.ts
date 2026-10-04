@@ -732,6 +732,31 @@ describe('the ls-lint parts of the tools that write folders', () => {
       path: 'scripts/__pycache__/seed.cpython-314.pyc',
       reported: 'scripts/__pycache__',
     },
+    {
+      part: 'common/foundation/pytest',
+      path: '.pytest_cache/v/cache/lastfailed',
+      reported: '.pytest_cache',
+    },
+    {
+      part: 'common/foundation/hypothesis',
+      path: '.hypothesis/unicode_data/charmap.json.gz',
+      reported: '.hypothesis/unicode_data',
+    },
+    {
+      part: 'common/foundation/mutmut',
+      path: 'mutants/src/shop/__init__.py',
+      reported: 'mutants/src/shop/__init__.py',
+    },
+    {
+      part: 'common/foundation/complexipy',
+      path: '.complexipy_cache/cache.json',
+      reported: '.complexipy_cache',
+    },
+    {
+      part: 'common/foundation/import-linter',
+      path: '.import_linter_cache/a1b2c3.meta.json',
+      reported: '.import_linter_cache',
+    },
   ])(
     'should skip the folder its tool writes only when a project extends $part',
     ({ part, path, reported }) => {

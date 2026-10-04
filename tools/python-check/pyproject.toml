@@ -1,0 +1,48 @@
+[project]
+name = "python-check"
+version = "0.0.0"
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+python-check = "python_check.main:main"
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+[tool.pytest]
+minversion = "9.1"
+strict = true
+testpaths = ["tests"]
+pythonpath = ["tests"]
+addopts = ["-ra", "--import-mode=importlib"]
+filterwarnings = ["error"]
+anyio_mode = "auto"
+timeout = "10"
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = ["**/main.py"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true
+
+[tool.mutmut]
+source_paths = ["src"]
+do_not_mutate = ["*/main.py"]
+pytest_add_cli_args = ["-p", "no:randomly"]
+type_check_command = ["ty", "check", "--output-format", "gitlab"]
+
+[tool.vulture]
+paths = ["src"]
+ignore_names = [
+  "main", # the entry of the zipapp in the archive and of the console script
+]
+min_confidence = 60
+
+[tool.complexipy]
+max-complexity-allowed = 10

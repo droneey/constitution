@@ -18,3 +18,33 @@ name = "is-core-module"
 ecosystem = "npm"
 license.override = ["MIT"]
 reason = "deps.dev reports no licence for is-core-module; its package.json declares MIT"
+
+[[PackageOverrides]]
+name = "colorama"
+ecosystem = "PyPI"
+license.override = ["BSD-3-Clause"]
+reason = "deps.dev reports a non-standard licence for colorama; its LICENSE.txt is BSD-3-Clause"
+
+[[PackageOverrides]]
+name = "libcst"
+ecosystem = "PyPI"
+license.override = ["MIT", "PSF-2.0", "Apache-2.0"]
+reason = "deps.dev reports a non-standard licence for libcst; its LICENSE is MIT, with files from CPython under PSF-2.0 and from typeshed under Apache-2.0"
+
+[[PackageOverrides]]
+name = "vulture"
+ecosystem = "PyPI"
+license.override = ["MIT"]
+reason = "deps.dev reports a non-standard licence for vulture; its LICENSE.txt is MIT"
+
+[[PackageOverrides]]
+name = "mutmut-check"
+ecosystem = "PyPI"
+license.ignore = true
+reason = "this repository's own gate for mutmut, a member of its uv workspace that only checks code and never ships in a program"
+
+[[PackageOverrides]]
+name = "python-check"
+ecosystem = "PyPI"
+license.ignore = true
+reason = "this repository's own check of Python, a member of its uv workspace that only checks code and never ships in a program"

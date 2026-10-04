@@ -4,6 +4,7 @@ import core from './.droneey/constitution/presets/typescript/knip/foundation/cor
 import lsLint from './.droneey/constitution/presets/typescript/knip/foundation/ls-lint.mjs';
 import mise from './.droneey/constitution/presets/typescript/knip/foundation/mise.mjs';
 import osvScanner from './.droneey/constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
+import uv from './.droneey/constitution/presets/typescript/knip/foundation/uv.mjs';
 
 export default {
   entry: [
@@ -21,6 +22,7 @@ export default {
     ...lsLint.ignoreBinaries,
     ...mise.ignoreBinaries,
     ...osvScanner.ignoreBinaries,
+    ...uv.ignoreBinaries,
     'mkfifo',
     'stryker',
   ],

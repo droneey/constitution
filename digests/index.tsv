@@ -35,12 +35,16 @@ block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rul
 block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package architecture/package workflow/package	typescript		false	bun-test					bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md			bun	false		tests coverage	typescript		bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
+block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.	foundation/complexipy.md		python		false		lint	python			
 block	dclint	implementation	Lints Docker Compose files.	foundation/dclint.md		docker		false		lint				.dclintrc
 block	dependency-cruiser	implementation	Holds the import rules between layers, modules and packages.	architecture/dependency-cruiser.md		typescript		false		imports	typescript			.dependency-cruiser.mjs
+block	deptry	implementation	deptry checks the dependencies a Python package declares and imports.	foundation/deptry.md		python		false		unused	python			
 block	docker	implementation	Container images and the services Docker Compose runs from them.	foundation/docker.md				false						**/Dockerfile **/*.Dockerfile **/.dockerignore **/compose.yaml **/compose.*.yaml
 block	expo	implementation	Expo on React Native — app config, native builds, secure storage.	foundation/expo.md architecture/expo.md			react-native	false					react-native _react	app.config.ts eas.json
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.	foundation/git.md		version-control		false	lefthook					.gitignore .gitattributes
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	foundation/hadolint.md		docker		false		lint				.hadolint.yaml
+block	hypothesis	implementation	Hypothesis writes Python's property tests.	foundation/hypothesis.md		python		false						
+block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md		python		false		imports	python			
 block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md		typescript		false		unused	typescript			knip.config.ts
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-data		false						**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks		git	false		commits			git	lefthook.yaml
@@ -48,14 +52,17 @@ block	lingui	implementation	Lingui for messages — ICU catalogs compiled per lo
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names				.ls-lint.yaml
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
+block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test	typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
+block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	foundation/pytest.md architecture/pytest.md		python		false		tests coverage	python			**/tests/**
+block	python-check	implementation	The constitution's own check of what no Python tool holds.	foundation/python-check.md architecture/python-check.md		python		false		lint imports	python			
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y foundation/bun-test	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
-block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md		python		false		format lint	python			pyproject.toml ruff.toml
+block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md	foundation/a11y	_react		false						**/*.stories.tsx .storybook/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.	foundation/stryker.md	foundation/bun-test	typescript		false		mutation	typescript			stryker.config.mjs
@@ -71,6 +78,7 @@ block	tsc	implementation	The TypeScript compiler checks the types.	foundation/ts
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
 block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package workflow/package	python		false						pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md architecture/vite.md	foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
+block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md architecture/zod.md		typescript		false						**/models/** **/adapters/**
@@ -759,7 +767,7 @@ rule	release-age-set-for-installs	bun	blocks/implementations/bun/foundation/bun.
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
-rule	check-chains-tool-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	one-check-command	false
+rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	one-check-command	false
 rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		SHOULD	review		typescript	security	architecture	environment-read-once-at-boot	false
 rule	bun-build-after-the-check	bun	blocks/implementations/bun/workflow/bun.md		SHOULD	review		typescript		workflow		true
 rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation	root-dogfoods-every-package	false
@@ -780,8 +788,11 @@ rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/foundation
 rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architecture/bunli.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
 rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
 rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	review		typescript	errors ux	architecture	exit-codes-from-one-map	false
+rule	cognitive-complexity-held-at-ten	complexipy	blocks/implementations/complexipy/foundation/complexipy.md		MUST	tool	lint	python		foundation	function-file-and-complexity-limits	false
 rule	dclint-over-the-whole-repository	dclint	blocks/implementations/dclint/foundation/dclint.md		MUST	tool	lint			foundation	docker-files-linted-in-the-check	false
 rule	dclint-suppression-names-rule-and-reason	dclint	blocks/implementations/dclint/foundation/dclint.md		MUST	review				foundation	suppression-states-its-reason	false
+rule	unused-dependency-fails	deptry	blocks/implementations/deptry/foundation/deptry.md		MUST	tool	unused	python	security	foundation	no-dead-code	false
+rule	dev-tool-never-imported-by-the-program	deptry	blocks/implementations/deptry/foundation/deptry.md		MUST	tool	unused	python	security	foundation	tools-in-the-dev-group	false
 rule	docker-files-linted-in-the-check	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint			foundation		true
 rule	images-pinned-to-a-version	docker	blocks/implementations/docker/foundation/docker.md		MUST	review			security	foundation		true
 rule	image-never-untagged-or-latest	docker	blocks/implementations/docker/foundation/docker.md		MUST	tool	lint		security	foundation	images-pinned-to-a-version	false
@@ -816,6 +827,10 @@ rule	release-tags-annotated	git	blocks/implementations/git/foundation/git.md		MU
 rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/foundation/git.md		SHOULD	review			performance	foundation	large-files-outside-history	false
 rule	hadolint-over-every-dockerfile	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	tool	lint			foundation	docker-files-linted-in-the-check	false
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	review				foundation	suppression-states-its-reason	false
+rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-tests-where-they-pay	false
+rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-counterexample-kept-as-case	false
+rule	ci-profile-left-to-hypothesis	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	specs-independent-of-order	false
+rule	contract-named-after-its-rule	import-linter	blocks/implementations/import-linter/foundation/import-linter.md		SHOULD	review		python		foundation		true
 rule	unused-check-in-production-mode	knip	blocks/implementations/knip/foundation/knip.md		MUST	tool	unused	typescript		foundation	no-dead-code	false
 rule	ky-timeout-retry-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	no-unchecked-escape-hatches	false
@@ -846,6 +861,8 @@ rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/foundation/mis
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false
+rule	equivalent-mutant-marked-by-pragma	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
+rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true
 rule	compiler-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
@@ -864,7 +881,17 @@ rule	retries-off-in-the-config	playwright	blocks/implementations/playwright/foun
 rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation		true
 rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	poe-only-without-a-script-runner	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		SHOULD	review		python		foundation		true
-rule	check-chains-tool-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	one-check-command	false
+rule	check-chains-area-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	one-check-command	false
+rule	pytest-runs-strict	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	tests	python	testing	foundation	tests-pass-in-check	false
+rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	coverage	python	testing	foundation	coverage-holds-all-logic	false
+rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	specs-independent-of-order	false
+rule	no-test-reruns	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	flaky-test-fixed-or-removed	false
+rule	integration-folder-runs-apart	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	integration-tested-against-the-real-engine	false
+rule	network-refused-by-the-conftest	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
+rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	one-fake-per-contract	false
+rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
+rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/foundation/python-check.md		MUST	tool	lint	python		foundation	function-file-and-complexity-limits	false
+rule	relative-import-kept-in-its-module	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	tool	imports	python		architecture	relative-imports-stay-in-the-feature	false
 rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	performance	foundation		true
 rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	ux	foundation		true
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation		true
@@ -896,6 +923,11 @@ rule	rule-families-selected-by-name	ruff	blocks/implementations/ruff/foundation/
 rule	preview-rules-only-by-code	ruff	blocks/implementations/ruff/foundation/ruff.md		SHOULD	review		python		foundation		true
 rule	noqa-names-its-codes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	tool	lint	python		foundation	suppression-names-its-code-and-reason	false
 rule	ruff-check-never-fixes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	review		python		foundation	check-only-checks	false
+rule	skips-and-expected-failures-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	MUST	tool	lint	python	testing	foundation	no-skipped-or-empty-tests	false
+rule	flaky-mark-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	tool	lint	python	testing	foundation	no-test-reruns	false
+rule	unittest-mock-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	tool	lint	python	testing	foundation	no-module-patching	false
+rule	pytest-asyncio-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	tool	lint	python	testing errors	foundation	async-specs-by-anyio	false
+rule	specs-lift-only-assert-and-package-rules	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	review		python	testing	foundation		true
 rule	complex-widgets-on-base-ui	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	a11y ux	foundation	complex-patterns-on-accessible-primitives	false
 rule	polymorphism-through-render	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		SHOULD	review		css typescript		foundation		true
 rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	ux	foundation	vendored-components-adapted-on-arrival	true
@@ -1012,6 +1044,8 @@ rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	one-build-for-every-environment	vite	blocks/implementations/vite/architecture/vite.md		MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
 rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/foundation/with/tsc.md	tsc	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
+rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	tool	unused	python		foundation	no-dead-code	false
+rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	review		python		foundation	suppression-states-its-reason	false
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	errors	foundation	expected-failures-typed-with-codes	false
 rule	yaml-written-without-folding	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	data	foundation		true
 rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/architecture/yaml.md		MUST	tool	imports	typescript		architecture	domain-imports-only-itself-and-kernel	false

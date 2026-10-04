@@ -28,6 +28,7 @@ const CHAIN = [
   'self',
   'core',
   'python',
+  'pytest',
 ];
 
 const filesOf = (project: Project): Files => ({

@@ -107,6 +107,10 @@ describe('the knip preset', () => {
       part: 'typescript/foundation/osv-scanner',
     },
     {
+      binary: 'uv',
+      part: 'typescript/foundation/uv',
+    },
+    {
       binary: 'lefthook',
       part: 'typescript/workflow/lefthook',
     },
