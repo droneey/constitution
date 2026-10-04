@@ -62,6 +62,13 @@ History others have is never rewritten.
 |---|---|---|
 | a rewritten shared history breaks every copy built on it and can lose others' work. | review | [] |
 
+## no-secret-in-history → no-secret-in-repository
+No commit of the history holds a secret, even one a later commit removed it from, and the secret scanner reads the whole history.
+
+| Why | Check | Tags |
+|---|---|---|
+| a secret removed from the working tree stays in every clone of the history. | review | [security] |
+
 ## release-marked-by-immutable-tag · MUST
 A release is marked by a tag of its version on the commit it was built from, and a tag never moves.
 
@@ -98,3 +105,12 @@ The local environment file is ignored by version control; its committed example 
 | Why | Check | Tags |
 |---|---|---|
 | the real values stay on the machine they belong to, and a real value never lands in the example. | review | [security] |
+
+## CI
+
+## ci-steps-pinned-to-immutable-references · MUST
+A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
+
+| Why | Check | Tags |
+|---|---|---|
+| a moving reference lets its owner, or an attacker who owns it, change the code the pipeline runs with its secrets. | review | [security] |

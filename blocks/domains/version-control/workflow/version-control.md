@@ -154,19 +154,40 @@ Specs, plans and working notes live in a `local/` folder that version control ig
 
 ## Agents
 
-## agent-commits-only-when-asked · MUST
-Only a person decides what is committed. The main agent commits only when a person asks it to, on the working branch.
+## agent-commits-only-when-asked → person-decides-what-is-recorded-or-shipped
+The main agent commits only when a person asks it to, on the working branch.
 
 | Why | Check | Tags |
 |---|---|---|
 | a commit records a decision under the person's name; the person makes it. | review | [] |
 
-## agent-never-merges-or-pushes-to-main · MUST
-An agent never merges and never pushes to the main line, even where its rights would pass the protection. It pushes a branch and opens a pull request only when a person asks.
+## agent-never-merges → person-decides-what-is-recorded-or-shipped
+An agent never merges a pull request. It pushes a branch, its own or one others share, and opens a pull request only when a person asks.
 
 | Why | Check | Tags |
 |---|---|---|
-| merging is the decision that ships a change, and it belongs to the person who answers for it. | review | [] |
+| merging is the decision that ships a change, and pushing shares it; both belong to the person who answers for it. | review | [] |
+
+## agent-never-pushes-to-the-main-line → main-line-takes-no-direct-push
+An agent never pushes to the main line, even where its rights would pass the protection.
+
+| Why | Check | Tags |
+|---|---|---|
+| a holder of admin rights may pass the protection, so an agent that holds them is the last guard against the push. | review | [] |
+
+## sub-agent-never-commits-pushes-or-merges → sub-agent-only-does-the-work
+A sub-agent never commits, never pushes and never merges.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |
+
+## agent-permissions-committed → agent-permissions-kept-with-the-project
+The project's permission settings for agents are committed, and only each person's own overrides are ignored.
+
+| Why | Check | Tags |
+|---|---|---|
+| committed settings are the same in every clone, and a change to them is reviewed like code. | review | [security] |
 
 ## agent-never-rewrites-shared-history → shared-history-never-rewritten
 An agent never force-pushes, to any branch.
@@ -174,20 +195,6 @@ An agent never force-pushes, to any branch.
 | Why | Check | Tags |
 |---|---|---|
 | history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | review | [] |
-
-## sub-agent-only-does-the-work · MUST
-A sub-agent does the work it is given and nothing more: it never commits, never pushes and never merges.
-
-| Why | Check | Tags |
-|---|---|---|
-| a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |
-
-## agent-permissions-committed → agent-runs-with-least-privilege
-The project's permission settings for agents, deny rules included, are committed; only each person's own overrides stay local.
-
-| Why | Check | Tags |
-|---|---|---|
-| committed settings give every person's agent the same limits, and a change to them is reviewed like code. | review | [security] |
 
 ## no-attribution-in-commits-or-pull-requests → no-tool-attribution
 No commit, its trailers included, and no pull request names the tool or model that helped write it.

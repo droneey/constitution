@@ -5,7 +5,7 @@
 ## Secrets
 
 ## no-secret-in-repository · MUST
-No secret is committed — not in code, documents, tests, fixtures or history. A secret scanner runs on every change, through the check.
+No secret is written into the repository — not in code, documents, tests or fixtures. A secret scanner runs on every change, through the check.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -42,7 +42,7 @@ A credential belongs to one identity and one purpose, per environment, with only
 ## Dependencies
 
 ## dependencies-pinned-by-lockfile · MUST
-A language uses one package manager, and one lockfile, committed. Installs, in CI and locally, follow the lockfile exactly and fail when it drifts from the manifest.
+A language uses one package manager, and one lockfile, kept in the repository. Installs, in CI and locally, follow the lockfile exactly and fail when it drifts from the manifest.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -63,7 +63,7 @@ A file the program or its build downloads outside a package manager — a binary
 | an unverified download runs whatever the address serves that day, and a swapped file fails its checksum. | review | [security] |
 
 ## tools-pinned-exactly-by-the-repository · MUST
-Every build, test and lint tool is pinned to one exact version in a file the repository commits — a development dependency of the manifest, or the toolchain's file for a tool outside the package manager — never installed globally, and production code imports none of them.
+Every build, test and lint tool is pinned to one exact version in a file of the repository — a development dependency of the manifest, or the toolchain's file for a tool outside the package manager — never installed globally, and production code imports none of them.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -82,13 +82,6 @@ Each dependency has one version across every manifest of the repository.
 | Why | Check | Tags |
 |---|---|---|
 | two versions of one dependency behave differently in two places, and the difference is found in production. | review | [] |
-
-## ci-steps-pinned-to-immutable-references · MUST
-A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
-
-| Why | Check | Tags |
-|---|---|---|
-| a moving reference lets its owner, or an attacker who owns it, change the code the pipeline runs with its secrets. | review | [security] |
 
 ## dependency-release-cooldown · SHOULD
 A new release of a dependency is adopted only after a cooldown of some days. A fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, and the exemption leaves at the next update.

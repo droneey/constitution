@@ -198,7 +198,6 @@ rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/securi
 rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
-rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	dependency-release-cooldown	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	new-dependency-vetted	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	deprecated-packages-replaced	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation	new-dependency-vetted	false
@@ -324,7 +323,10 @@ rule	effects-faked-through-ports	core	blocks/core/architecture/testing.md		SHOUL
 rule	consent-given-in-the-chat-per-action	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	consent-before-consequential-actions	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	design-settled-in-chat-first	core	blocks/core/workflow/collaboration.md		SHOULD	review				workflow		true
+rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
+rule	agent-permissions-kept-with-the-project	core	blocks/core/workflow/collaboration.md		SHOULD	review			security	workflow	agent-runs-with-least-privilege	false
 rule	no-tool-attribution	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
+rule	sub-agent-only-does-the-work	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	sub-agent-never-touches-live-systems	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	shared-tooling-from-pinned-packages	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow		true
 rule	tests-first-from-a-description	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
@@ -378,6 +380,7 @@ rule	init-writes-document-from-template	convergence	blocks/domains/convergence/f
 rule	plan-names-destroying-changes	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			security ux	foundation	irreversible-operations-behind-flag-and-human	false
 rule	second-run-changes-nothing	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			testing data	foundation	operations-idempotent-by-design	true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux errors	foundation		true
+rule	run-output-in-one-work-folder	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
 rule	engines-pinned-by-version-and-checksum	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
 rule	developer-and-ci-run-the-tools-engines	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
 rule	schema-rejects-unknown-keys	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			data	foundation		true
@@ -553,11 +556,13 @@ rule	no-placeholder-commit-subjects	version-control	blocks/domains/version-contr
 rule	main-line-protected	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			security	foundation		true
 rule	working-copy-clean-at-hand-back	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	shared-history-never-rewritten	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
+rule	no-secret-in-history	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			security	foundation	no-secret-in-repository	false
 rule	release-marked-by-immutable-tag	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	large-files-outside-history	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			performance	foundation		true
 rule	move-files-never-recreate	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	generated-files-not-committed	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	local-environment-file-ignored	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			security	foundation		true
+rule	ci-steps-pinned-to-immutable-references	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			security	foundation		true
 rule	commit-header-type-and-subject	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
 rule	commit-header-format	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	commit-header-type-and-subject	false
 rule	commit-body-empty-reason-in-pull-request	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow	reason-for-change-recorded	true
@@ -578,11 +583,12 @@ rule	release-tags-named-by-semver	version-control	blocks/domains/version-control
 rule	release-cut-by-automation-promoted-by-person	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
 rule	dependencies-updated-by-bot	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow		true
 rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
-rule	agent-commits-only-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
-rule	agent-never-merges-or-pushes-to-main	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
+rule	agent-commits-only-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
+rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
+rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-takes-no-direct-push	false
+rule	sub-agent-never-commits-pushes-or-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	sub-agent-only-does-the-work	false
+rule	agent-permissions-committed	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-permissions-kept-with-the-project	false
 rule	agent-never-rewrites-shared-history	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
-rule	sub-agent-only-does-the-work	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
-rule	agent-permissions-committed	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-runs-with-least-privilege	false
 rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	no-tool-attribution	false
 rule	no-browser-globals-during-render	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			errors	foundation		true
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true

@@ -67,6 +67,13 @@ A run reports each stage as skipped with its reason, unchanged, changed, ran or 
 |---|---|---|
 | the user sees what happened to each part, and where a failed run stopped. | review | [ux, errors] |
 
+## run-output-in-one-work-folder · SHOULD
+What a run produces lands in one work folder, apart from the document.
+
+| Why | Check | Tags |
+|---|---|---|
+| rendered files and state never mix with the document, and one folder is cleared or ignored as a whole. | review | [] |
+
 ## Engines
 
 ## engines-pinned-by-version-and-checksum → downloads-pinned-by-version-and-checksum
