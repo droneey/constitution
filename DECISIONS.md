@@ -28,7 +28,7 @@
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129 |
-| TypeScript configuration | ADR-0130, ADR-0131 |
+| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133 |
 | Scripts of the check | ADR-0132 |
 
 ---
@@ -934,3 +934,10 @@
 - **Decision.** Each area of the check has one `<area>:check` script, or Poe task, that runs every tool of that area in each language of the repository: `lint:check` runs Biome and Ruff, `type:check` tsc and ty, `test` both runners (`check-chains-area-scripts`, `check-chains-area-tasks`, which replace `check-chains-tool-scripts` and `check-chains-tool-tasks`).
 - **Rejected.** A prefix for the second language, `python:lint:check`: two families of names, and `lint:check` would quietly check one language.
 - **Why.** A person, CI and the hooks run one name per area, and a language added later joins the areas instead of adding names.
+
+## ADR-0133 — NestJS's decorator options are written where Bun reads them
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** `experimentalDecorators` and `emitDecoratorMetadata` are written in the `tsconfig.json` that `bun test` runs from, the root's in a repository of packages, besides the nestjs part it extends (`decorator-options-where-bun-reads`).
+- **Rejected.** A Bun built from the open fix (oven-sh/bun#43110), which no release carries; the options through the presets alone, which Bun 1.4.2 drops.
+- **Why.** Bun's transpiler ignores an `extends` array (oven-sh/bun#43097), so a spec fails at its first decorated member while tsc passes; an end-to-end spec shows the day Bun follows the array and the rule can go.

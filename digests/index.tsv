@@ -56,7 +56,7 @@ block	ls-lint	implementation	Holds the names of files and folders in every langu
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
-block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md		typescript tsc		false						nest-cli.json .swcrc
+block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test	typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
@@ -899,6 +899,7 @@ rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/foundati
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true
 rule	compiler-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
+rule	decorator-options-where-bun-reads	nestjs	blocks/implementations/nestjs/foundation/with/bun-test.md	bun-test	MUST	review		typescript	errors	foundation	compiler-keeps-decorator-metadata	false
 rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	known-vulnerabilities-fail-the-check	false
 rule	licences-checked-against-the-shared-allowlist	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	licences-from-an-allowlist	false
 rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
