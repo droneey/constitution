@@ -21,7 +21,7 @@ block	i18n	domain	Messages, plurals and locale for text a person reads.	foundati
 block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
-block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	foundation/open-source			false						packages/**
+block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
@@ -421,6 +421,7 @@ rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/packa
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
 rule	generated-copy-guarded-by-spec	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	generated-files-marked-never-edited	false
 rule	package-ships-its-types	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
+rule	every-package-ships-its-licence	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	package-readme-shows-install-and-extends	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation	readme-is-the-front-door	false
 rule	breaking-change-ships-its-migration	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	publish-skips-published-versions	package	blocks/domains/package/foundation/package.md		SHOULD	review			data	foundation	operations-idempotent-by-design	false
@@ -443,7 +444,6 @@ rule	one-version-for-all-packages	package	blocks/domains/package/workflow/packag
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
 rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
-rule	every-package-ships-its-licence	package	blocks/domains/package/foundation/with/open-source.md	open-source	SHOULD	review				foundation	public-repository-carries-a-licence	false
 rule	stream-ends-with-terminal-event	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
