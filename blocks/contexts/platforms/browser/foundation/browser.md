@@ -1,12 +1,5 @@
 # Browser
 
-## no-browser-globals-during-render · MUST
-Code that can render on a server reads no browser global while it renders.
-
-| Why | Check | Tags |
-|---|---|---|
-| on the server the global does not exist, and the render fails or differs from the one in the tab. | review | [errors] |
-
 ## runtime-configuration-served-beside-bundle · MUST
 One bundle serves every environment: its configuration is served beside it, and no environment value is baked into the bundle.
 
@@ -63,9 +56,3 @@ Each bundle has a size budget the check holds, the embeddable one first.
 |---|---|---|
 | size grows one dependency at a time, and only a budget notices the one that crosses the line. | test | [performance] |
 
-## core-web-vitals-within-budget · SHOULD
-Largest Contentful Paint stays within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1 at the 75th percentile, measured in the field.
-
-| Why | Check | Tags |
-|---|---|---|
-| these are what users feel of speed; a bundle budget is only a proxy for them. | review | [performance, ux] |

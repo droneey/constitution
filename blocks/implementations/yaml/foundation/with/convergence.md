@@ -2,7 +2,7 @@
 
 > The document a convergence program reads, written in YAML.
 
-## document-header-names-its-schema → init-writes-document-from-template
+## document-header-names-its-schema → document-points-editors-at-the-schema
 The document's first line is `# yaml-language-server: $schema=<published schema URL>`.
 
 | Why | Check | Tags |

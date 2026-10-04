@@ -64,3 +64,24 @@ An image declares its width and height.
 | Why | Check | Tags |
 |---|---|---|
 | the page reserves the image's space before it loads, so nothing moves when it arrives. | review | [performance] |
+
+## core-web-vitals-within-budget · SHOULD
+Largest Contentful Paint stays within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1 at the 75th percentile, measured in the field.
+
+| Why | Check | Tags |
+|---|---|---|
+| these are what users feel of speed; a bundle budget is only a proxy for them. | review | [performance, ux] |
+
+## no-browser-globals-during-render · MUST
+Code that can render on a server reads no browser global while it renders.
+
+| Why | Check | Tags |
+|---|---|---|
+| on the server the global does not exist, and the render fails or differs from the one in the tab. | review | [errors] |
+
+## busy-submit-marked-aria-disabled → submit-busy-while-submitting
+A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps its focus.
+
+| Why | Check | Tags |
+|---|---|---|
+| a `disabled` button loses focus to the page and is skipped by assistive technology, while `aria-disabled` keeps it in reach and says why it does nothing. | review | [a11y] |

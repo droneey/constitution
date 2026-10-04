@@ -23,13 +23,6 @@ A binding unit imports neither an adapter, which the providers hand it, nor anyt
 |---|---|---|
 | an adapter imported directly bypasses the composition root, so a spec cannot replace its transport; a binding unit that imports UI points against the layers. | tool/imports | [] |
 
-## configuration-provider-reads-environment → environment-read-once-at-boot
-The configuration provider is the application's one reader of the environment, and parses it once, at boot.
-
-| Why | Check | Tags |
-|---|---|---|
-| a missing setting fails at start, and no component reads the environment on its own. | review | [] |
-
 ## command-invalidates-in-its-binding-unit · SHOULD
 After a write, invalidation happens in the command's binding unit, through the feature's key factory.
 

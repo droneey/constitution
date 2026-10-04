@@ -37,12 +37,12 @@ The schema published for editors is generated from the code's schema, never writ
 |---|---|---|
 | a schema written twice drifts, and editors then accept documents the program rejects. | test | [data] |
 
-## init-writes-document-from-template · SHOULD
-An `init` command writes one document from a template, named after the program, pointing editors at the published schema.
+## document-points-editors-at-the-schema · SHOULD
+The document points editors at the published schema.
 
 | Why | Check | Tags |
 |---|---|---|
-| a user starts from a valid document with completion in the editor, not from a blank page. | review | [ux] |
+| the editor then checks and completes the document as it is written. | review | [ux] |
 
 ## The stages
 

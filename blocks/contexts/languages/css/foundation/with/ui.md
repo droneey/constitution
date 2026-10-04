@@ -50,3 +50,17 @@ The theme writes no hexadecimal colour.
 | Why | Check | Tags |
 |---|---|---|
 | hexadecimal is the form a colour copied from a design tool arrives in, and the one the lint can see. | tool/lint | [] |
+
+## components-adapt-by-container-queries · SHOULD
+A component adapts to the space its container gives it with a container query; a media query adapts the page's layout and follows the user's preferences.
+
+| Why | Check | Tags |
+|---|---|---|
+| a component placed in a sidebar and in the main column then fits both, while the viewport says nothing about the space it was given. | review | [ux] |
+
+## global-styles-only-in-the-entry · SHOULD
+Only the entry stylesheet and the theme it imports style elements and the document globally; every other stylesheet is scoped to one component.
+
+| Why | Check | Tags |
+|---|---|---|
+| a global rule in a component's stylesheet reaches every screen and changes whenever that component is loaded. | review | [] |

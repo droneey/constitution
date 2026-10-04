@@ -8,7 +8,7 @@ Nothing is tracked, and no identifier is stored, before the user consents; decli
 | tracking is the user's choice, and a product that tracks first and asks later has already taken it from them. | review | [security] |
 
 ## refusal-as-easy-as-consent → tracking-waits-for-consent · MUST
-Refusing sits beside accepting, on the first screen, with the same weight; every purpose is chosen on its own, and nothing is chosen in advance.
+Refusing sits beside accepting, where consent is first asked, with the same weight; every purpose is chosen on its own, and nothing is chosen in advance.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -89,7 +89,7 @@ Addresses are anonymised, and no user identifier is sent unless configured.
 | a library that identifies users by default leaks personal data on its first event. | review | [security] |
 
 ## analytics-loads-without-blocking · SHOULD
-The library loads and sends without delaying rendering.
+The library loads and sends without delaying what the user waits for: a render, a response, a command.
 
 | Why | Check | Tags |
 |---|---|---|
