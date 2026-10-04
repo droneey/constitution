@@ -1,7 +1,7 @@
 # User interface with remote data
 
 ## data-result-is-union-by-status → illegal-states-unrepresentable
-What a screen or a component calls to load or write data returns a union keyed by `status`. The data exists only in the success state, or beside the error when a refetch of data already shown fails, so the screen keeps showing it; the error state carries a typed error; no default is invented — no empty list for "not loaded yet". The union has only the states its operation has, and every consumer handles every state.
+What a screen or a component calls to load or write data returns a union keyed by `status`. The data exists only in the success state, or beside the error when a refetch of data already shown fails, so the screen keeps showing it; the error state carries a typed error; no default is invented — no empty list for "not loaded yet". The union has only the states its operation has, and every consumer handles every state, or the read suspends and the boundary above it handles the pending and failed states.
 
 | Why | Check | Tags |
 |---|---|---|

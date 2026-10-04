@@ -23,7 +23,7 @@
 | Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103, ADR-0105 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
-| A real application | ADR-0116 – ADR-0120 |
+| A real application | ADR-0116 – ADR-0121 |
 
 ---
 
@@ -809,3 +809,17 @@
   - With Bun's test runner, a preload expands the macros and compiles an imported catalog (`macros-expanded-by-the-test-preload`); the archive carries the fixture.
 - **Rejected.** `bun --bun` in Lingui's scripts: the `[run] bun = true` that `bun` already sets keeps the command line on Bun.
 - **Why.** A command that reaches the read side through a barrel depends on it as surely as through a direct import. A check of Lingui 6.9 under Bun 1.4 and Vite 8 found the command line and the build sound without Node, but the React plugin dropping its Babel option without a warning, and `bun test` expanding no macro.
+
+## ADR-0121 — The leftovers of the audit review: licences, case names, consent and states
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.**
+  - The licence allowlist binds what the program ships or loads at runtime. A tool that only builds, tests or checks it stays off the list as an osv-scanner override by name, `license.ignore` with a reason (`development-tool-licence-ignored-with-reason`); the scanner still checks its vulnerabilities.
+  - A case reads `should <behaviour>`, and `when <condition>` only where the behaviour depends on one.
+  - `irreversible-operations-behind-flag-and-human` covers what a person or an agent runs against a system — a script, a command line, a migration, a deployment — not the product's own actions.
+  - A read that suspends satisfies `data-result-is-union-by-status`, its boundary handling the pending and failed states, and its failure is thrown to that boundary.
+  - The client's few global concerns live in small stores the root builds; whether a session exists is one of them, the session's data stays in the cache.
+  - A recorded refusal is not asked again for about six months, or until the purposes change.
+  - `strict-matcher-only` also refuses `toMatchObject`, `expect.objectContaining`, `expect.arrayContaining`, `toBeTruthy` and `toBeFalsy`.
+- **Rejected.** Scoping the licence exception by the dependency's group: osv-scanner 2.6.0 does not read the group from `bun.lock`.
+- **Why.** A check of each item against its tool and its sources: aikit already ignores a tool's licence outside the rules; a condition invented to fill a case name says nothing; a delete button behind a flag is absurd; the allowed suspending read broke two rules as written; one store with the session's data copied into it goes stale; CNIL (2020-092, §37–39) and the ICO advise keeping a refusal and not asking again for about six months; a partial matcher lets the rest of the outcome change unseen.
