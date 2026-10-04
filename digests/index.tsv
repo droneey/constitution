@@ -767,7 +767,7 @@ rule	release-age-set-for-installs	bun	blocks/implementations/bun/foundation/bun.
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
-rule	check-chains-tool-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	one-check-command	false
+rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	one-check-command	false
 rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		SHOULD	review		typescript	security	architecture	environment-read-once-at-boot	false
 rule	bun-build-after-the-check	bun	blocks/implementations/bun/workflow/bun.md		SHOULD	review		typescript		workflow		true
 rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation	root-dogfoods-every-package	false
@@ -880,7 +880,7 @@ rule	retries-off-in-the-config	playwright	blocks/implementations/playwright/foun
 rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	testing	foundation		true
 rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	poe-only-without-a-script-runner	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		SHOULD	review		python		foundation		true
-rule	check-chains-tool-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	one-check-command	false
+rule	check-chains-area-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	one-check-command	false
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	tests	python	testing	foundation	tests-pass-in-check	false
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	coverage	python	testing	foundation	coverage-holds-all-logic	false
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	specs-independent-of-order	false
