@@ -58,7 +58,7 @@ block	lefthook	implementation	Git hooks that check branch names, messages and st
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.	foundation/lingui.md	foundation/_react foundation/bun-test foundation/bun foundation/vite architecture/ui	i18n typescript		false						lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names				.ls-lint.yaml
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
-block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence			false						mise.toml mise.lock
+block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence foundation/version-control			false						mise.toml mise.lock
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
 block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test foundation/pino	typescript tsc		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
@@ -415,6 +415,7 @@ rule	logging-configured-by-the-root	observability	blocks/domains/observability/a
 rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review				foundation		true
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review			security	foundation		true
 rule	entities-guarded-where-the-program-owns-them	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture		true
+rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture	data-ports-split-by-reads-and-writes	false
 rule	package-named-scope-kit-language-name	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
@@ -558,6 +559,7 @@ rule	main-line-protected	version-control	blocks/domains/version-control/foundati
 rule	working-copy-clean-at-hand-back	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	shared-history-never-rewritten	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	no-secret-in-history	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			security	foundation	no-secret-in-repository	false
+rule	secret-in-history-rotated-not-rewritten	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			security	foundation	leaked-secret-rotated-at-once	false
 rule	release-marked-by-immutable-tag	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
 rule	large-files-outside-history	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review			performance	foundation		true
 rule	move-files-never-recreate	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review				foundation		true
@@ -789,7 +791,7 @@ rule	async-ui-state-through-actions	_react	blocks/implementations/_react/foundat
 rule	fast-source-batched-in-its-hook	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	performance	foundation	fast-source-updates-once-per-frame	false
 rule	compound-parts-share-the-root-context	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation	compound-root-owns-choreography	false
 rule	data-failures-rendered-as-state	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	errors ux	foundation		true
-rule	handler-and-effect-failures-handled-where-they-happen	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	errors ux	foundation		true
+rule	handler-and-effect-failures-handled-where-they-happen	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	errors ux	foundation		true
 rule	hidden-state-kept-by-activity	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation		true
 rule	controllable-props-named-value-default-change	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation	stateful-component-controllable-or-not	false
 rule	derived-state-computed-in-render	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript	performance data	architecture	one-home-per-datum	false
@@ -940,6 +942,7 @@ rule	toolchain-downloads-verified-by-the-lock	mise	blocks/implementations/mise/f
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false
+rule	personal-toolchain-overrides-ignored	mise	blocks/implementations/mise/foundation/with/version-control.md	version-control	SHOULD	review			security	foundation	local-environment-file-ignored	false
 rule	equivalent-mutant-marked-by-pragma	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python		foundation	suppression-silences-one-finding	false
 rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true

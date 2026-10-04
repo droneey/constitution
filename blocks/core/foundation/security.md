@@ -9,7 +9,7 @@ No secret is written into the repository — not in code, documents, tests or fi
 
 | Why | Check | Tags |
 |---|---|---|
-| a committed secret is readable by everyone who ever clones the repository, long after it is deleted. | tool/secrets | [security] |
+| a secret in the repository is readable by everyone who can read the repository, and by every copy made of it. | tool/secrets | [security] |
 
 ## secret-never-in-url-or-artefact · MUST
 A secret never travels in a URL, and never reaches a build artefact: an image layer, a client bundle, a variable baked in at build time.
@@ -19,11 +19,11 @@ A secret never travels in a URL, and never reaches a build artefact: an image la
 | URLs are logged by every proxy and browser, and whatever ships in an artefact is readable by whoever receives it. | review | [security] |
 
 ## leaked-secret-rotated-at-once · MUST
-A secret that leaked — into a commit, a log, a message — is rotated at once, and the access made with it while it was exposed is checked. Rewriting the history does not undo a leak into a commit.
+A secret that leaked — into the repository, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.
 
 | Why | Check | Tags |
 |---|---|---|
-| a leaked secret is compromised whether or not the leak is undone — every clone and every cache already holds it — and only its access log says whether it was used. | review | [security] |
+| a leaked secret is compromised whether or not the leak is undone — every copy and every cache already holds it — and only its access log says whether it was used. | review | [security] |
 
 ## no-secret-or-personal-data-in-output · MUST
 No secret and no personal data appear in logs, errors, test data or documents. An error carries identifiers, not the values it rejected.

@@ -69,6 +69,13 @@ No commit of the history holds a secret, even one a later commit removed it from
 |---|---|---|
 | a secret removed from the working tree stays in every clone of the history. | review | [security] |
 
+## secret-in-history-rotated-not-rewritten → leaked-secret-rotated-at-once
+A secret that reached a commit is rotated like any other leak; rewriting the history does not undo it.
+
+| Why | Check | Tags |
+|---|---|---|
+| every clone made before the rewrite still holds the secret, and the rewrite only hides that it leaked. | review | [security] |
+
 ## release-marked-by-immutable-tag · MUST
 A release is marked by a tag of its version on the commit it was built from, and a tag never moves.
 

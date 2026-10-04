@@ -132,7 +132,7 @@ A failure a data hook returns as a state is rendered where the data would be, no
 |---|---|---|
 | an expected failure is then shown where it belongs, and the boundary is left for what nobody expected. | review | [errors, ux] |
 
-## handler-and-effect-failures-handled-where-they-happen · SHOULD
+## handler-and-effect-failures-handled-where-they-happen · MUST
 A failure in an event handler or an effect is handled where it happens: it never reaches an error boundary.
 
 | Why | Check | Tags |

@@ -26,7 +26,7 @@ A design question is settled in the chat before code is written for it.
 ## Acting
 
 ## person-decides-what-is-recorded-or-shipped · MUST
-Only a person decides what of an agent's work is recorded, shared or shipped: the agent records or shares work only when the person asks, and never takes the step that ships it.
+Only a person decides what of an agent's work is recorded, shared or shipped: the agent records, shares or ships work only when the person asks.
 
 | Why | Check | Tags |
 |---|---|---|
