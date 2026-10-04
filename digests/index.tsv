@@ -14,13 +14,14 @@ role	audit	true
 role	commits	true
 block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
 block	a11y	domain	Accessibility outcomes, to WCAG 2.2 AA, for any user interface.	foundation/a11y.md				false						
+block	access-control	domain	Callers with different rights: denied unless granted, per entry point.	foundation/access-control.md architecture/access-control.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
 block	observability	domain	Log records: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md				false						
-block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
+block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
 block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md architecture/untrusted-client.md				false						
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	foundation/version-control.md workflow/version-control.md				false						
@@ -77,7 +78,7 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query foundation/version-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query foundation/version-control architecture/access-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
@@ -205,7 +206,6 @@ rule	agent-extensions-vetted-as-dependencies	core	blocks/core/foundation/securit
 rule	install-scripts-only-for-listed-dependencies	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	known-vulnerabilities-fail-the-check	core	blocks/core/foundation/security.md		MUST	tool	audit		security	foundation		true
 rule	licences-from-an-allowlist	core	blocks/core/foundation/security.md		MUST	tool	audit		security	foundation		true
-rule	access-denied-unless-granted	core	blocks/core/foundation/security.md		MUST	test			security	foundation		true
 rule	irreversible-operations-behind-flag-and-human	core	blocks/core/foundation/security.md		MUST	review			security ux	foundation		true
 rule	spec-per-boundary	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	constant-tested-only-as-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
@@ -319,7 +319,6 @@ rule	duplication-across-contexts-by-default	core	blocks/core/architecture/princi
 rule	entities-guarded-where-the-program-owns-them	core	blocks/core/architecture/principles.md		SHOULD	review			data	architecture		true
 rule	entity-behaviour-beside-entity	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	environment-names-declared-in-one-place	core	blocks/core/architecture/security.md		SHOULD	review			security	architecture		true
-rule	entry-point-declares-its-access	core	blocks/core/architecture/security.md		MUST	review			security	architecture	access-denied-unless-granted	false
 rule	spec-per-boundary-of-the-tree	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture	spec-per-boundary	false
 rule	effects-faked-through-ports	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture		true
 rule	consent-given-in-the-chat-per-action	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
@@ -350,6 +349,8 @@ rule	interactive-checked-by-hand	a11y	blocks/domains/a11y/foundation/a11y.md		SH
 rule	paste-and-autofill-never-blocked	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y security	foundation	wcag-aa-conformance	true
 rule	accessibility-statement-published	a11y	blocks/domains/a11y/foundation/a11y.md		SHOULD	review			a11y	foundation		true
 rule	a11y-scan-inside-component-specs	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y testing	foundation		true
+rule	access-denied-unless-granted	access-control	blocks/domains/access-control/foundation/access-control.md		MUST	test			security	foundation		true
+rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	review			security	architecture	access-denied-unless-granted	false
 rule	tracking-waits-for-consent	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
 rule	refusal-as-easy-as-consent	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security ux	foundation	tracking-waits-for-consent	true
 rule	consent-withdrawable-and-recorded	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
@@ -505,7 +506,6 @@ rule	screen-composes-the-page	ui	blocks/domains/ui/architecture/ui.md		SHOULD	re
 rule	pieces-never-touch-navigation	ui	blocks/domains/ui/architecture/ui.md		MUST	tool	imports			architecture		true
 rule	navigation-passed-by-slot	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			ux	architecture		true
 rule	screen-private-pieces-beside-screen	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	delivery-unit-beside-what-it-serves	false
-rule	screen-guards-through-auth-surface	ui	blocks/domains/ui/architecture/ui.md		MUST	review			security	architecture	access-denied-unless-granted	false
 rule	error-boundary-per-screen	ui	blocks/domains/ui/architecture/ui.md		MUST	review			errors security ux	architecture	one-error-handler-per-transport	true
 rule	view-state-homes	ui	blocks/domains/ui/architecture/ui.md		MUST	review			data	architecture	one-home-per-datum	false
 rule	form-reuses-domain-predicates	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review			data	architecture	invariant-checked-at-construction	false
@@ -529,6 +529,7 @@ rule	optimistic-writes-in-rollback-lifecycle	ui	blocks/domains/ui/foundation/wit
 rule	optimistic-lifecycle-safe-under-concurrency	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			data	foundation		true
 rule	input-driven-requests-debounced	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	SHOULD	review			ux performance	foundation	fast-source-updates-once-per-frame	false
 rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
+rule	screen-guards-through-auth-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	review			security	architecture	access-denied-unless-granted	false
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review				architecture	one-explicit-composition-root	false
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review				architecture		true
 rule	binding-units-import-no-adapter-or-ui	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	tool	imports			architecture	binding-unit-composes-its-operation	false
@@ -541,7 +542,7 @@ rule	user-input-survives-connection-loss	unreliable-network	blocks/domains/unrel
 rule	network-failures-have-cases	unreliable-network	blocks/domains/unreliable-network/foundation/unreliable-network.md		SHOULD	test			testing errors	foundation	every-declared-failure-has-a-case	false
 rule	client-holds-nothing-hidden	untrusted-client	blocks/domains/untrusted-client/foundation/untrusted-client.md		MUST	review			security	foundation		true
 rule	credentials-only-in-the-protected-store	untrusted-client	blocks/domains/untrusted-client/foundation/untrusted-client.md		MUST	review			security	foundation		true
-rule	client-checks-repeated-on-server	untrusted-client	blocks/domains/untrusted-client/architecture/untrusted-client.md		MUST	review			security	architecture	access-denied-unless-granted	false
+rule	client-checks-repeated-on-server	untrusted-client	blocks/domains/untrusted-client/architecture/untrusted-client.md		MUST	review				architecture		true
 rule	commit-is-one-logical-change	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	refactor-apart-from-behaviour-change	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	every-commit-passes-the-check	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			testing	foundation		true
@@ -1097,7 +1098,6 @@ rule	search-params-validated-by-schema	tanstack-router	blocks/implementations/ta
 rule	search-params-merged-on-write	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	ux data	architecture	url-holds-shareable-view-state	false
 rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript		architecture	screen-private-pieces-beside-screen	false
 rule	screen-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screen-private-pieces-in-dash-folders	false
-rule	guard-reaches-features-outside-react	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	screen-guards-through-auth-surface	false
 rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux	architecture	document-metadata-owned-by-screen	false
 rule	error-component-per-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	errors ux security	architecture	error-boundary-per-screen	false
 rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript		architecture	screen-private-pieces-beside-screen	false
@@ -1109,6 +1109,7 @@ rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementatio
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	MAY	review		typescript		foundation		true
 rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/foundation/with/tanstack-query.md	tanstack-query	SHOULD	review		typescript		foundation		true
 rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/foundation/with/version-control.md	version-control	SHOULD	review		typescript		foundation	generated-files-not-committed	false
+rule	guard-reaches-features-outside-react	tanstack-router	blocks/implementations/tanstack-router/architecture/with/access-control.md	access-control	MUST	review		typescript	security	architecture	screen-guards-through-auth-surface	false
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/architecture/with/tanstack-query.md	tanstack-query	MUST	review		typescript	data	architecture	one-home-per-datum	false
 rule	hashed-assets-immutable-html-revalidated	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		SHOULD	review		typescript	performance	foundation		true
 rule	content-security-policy-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/foundation/tanstack-start.md		MUST	test		typescript	security	foundation	strict-content-security-policy	false

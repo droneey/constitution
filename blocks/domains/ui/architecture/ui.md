@@ -32,13 +32,6 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 |---|---|---|
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | review | [] |
 
-## screen-guards-through-auth-surface → access-denied-unless-granted
-Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.
-
-| Why | Check | Tags |
-|---|---|---|
-| access is decided before the screen renders, in one layer, and no feature reaches into the session's internals. | review | [] |
-
 ## error-boundary-per-screen → one-error-handler-per-transport · MUST
 Every screen sits inside an error boundary of its own, and one boundary in `root/` catches what the screens do not.
 

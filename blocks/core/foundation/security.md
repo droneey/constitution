@@ -139,14 +139,7 @@ Every dependency the program ships or loads at runtime has a licence on the proj
 |---|---|---|
 | a licence the project cannot honour is a legal obligation it took on without knowing; a tool that never ships passes no obligation on. | tool/audit | [security] |
 
-## Operations and access
-
-## access-denied-unless-granted · MUST
-Access is denied unless a rule grants it, and a test proves the access of each operation a caller outside the program can reach: a route, an endpoint, a command.
-
-| Why | Check | Tags |
-|---|---|---|
-| access open by default is open wherever someone forgot a rule, and only a test notices the operation that forgot. | test | [security] |
+## Operations
 
 ## irreversible-operations-behind-flag-and-human · MUST
 An operation a person or an agent runs against a system — a script, a command line, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.

@@ -1,6 +1,6 @@
 # Untrusted client
 
-## client-checks-repeated-on-server → access-denied-unless-granted
+## client-checks-repeated-on-server · MUST
 Every check on the client — validation, permission, limit, price — is repeated where the client cannot reach it.
 
 | Why | Check | Tags |

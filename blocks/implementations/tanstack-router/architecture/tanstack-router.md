@@ -58,13 +58,6 @@ A screen's private folders beside its route are `-components/` and `-hooks/`: `-
 |---|---|---|
 | the dash keeps them out of the route tree. | tool/names | [] |
 
-## guard-reaches-features-outside-react → screen-guards-through-auth-surface
-A route's guard reaches the feature that decides access through the feature's composition outside React, never through the UI layer.
-
-| Why | Check | Tags |
-|---|---|---|
-| `beforeLoad` runs before any component renders, so a guard that needs a hook or a component's context has nothing to read. | review | [] |
-
 ## document-head-declared-by-route → document-metadata-owned-by-screen
 A route declares its document metadata in `head`.
 
