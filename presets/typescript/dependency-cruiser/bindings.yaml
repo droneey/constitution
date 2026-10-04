@@ -17,6 +17,8 @@ architecture:
   cli:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-commands
+    dependencies-point-inward:
+      - commands-reached-only-from-entries
   core:
     surface-is-the-only-way-in:
       - domain-role-reached-through-its-surface
@@ -37,6 +39,8 @@ architecture:
       - shared-knows-no-feature-or-root
     domain-imports-only-itself-and-kernel:
       - domain-reaches-only-itself-and-kernel
+    feature-root-holds-its-layers:
+      - feature-root-reached-only-through-its-layers
     features-blind-to-each-other:
       - features-blind-to-each-other
     own-surface-never-imported:
@@ -61,6 +65,8 @@ architecture:
   expo:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-routes
+    dependencies-point-inward:
+      - routes-reached-only-from-expo-router
   ky:
     components-import-no-http-client:
       - components-never-fetch
@@ -105,6 +111,8 @@ architecture:
       - components-take-data-and-callbacks
     components-never-import-widgets:
       - components-never-import-widgets
+    feature-root-holds-its-layers:
+      - feature-root-reached-only-through-its-layers
     ui-reaches-no-mechanism-of-its-feature:
       - ui-reaches-no-mechanism
   yaml:

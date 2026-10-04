@@ -33,7 +33,7 @@ const WELL_FORMED = {
       name: 'countOrders',
     }),
   'src/features/orders/domain/use-cases/queries/count-orders/count-orders.use-case.ts':
-    exported('countOrders'),
+    "import type { Mail } from '../../../../../../contracts/mail';\nexport const countOrders = (mail: Mail): Mail => mail;\n",
   'src/features/orders/domain/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts':
@@ -342,6 +342,29 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'writes-never-reach-reads',
     },
     {
+      condition: 'a shared helper imports an adapter',
+      files: {
+        'src/adapters/api/index.ts': exported('fetchOrders'),
+        'src/shared/http/index.ts': importing({
+          from: '../../adapters/api',
+          name: 'fetchOrders',
+        }),
+      },
+      rule: 'shared-knows-no-feature-or-root',
+    },
+    {
+      condition: "a module loose at a feature's root is imported",
+      files: {
+        'src/features/orders/app/use-cases/queries/list/list.use-case.ts':
+          importing({
+            from: '../../../../utils',
+            name: 'format',
+          }),
+        'src/features/orders/utils.ts': exported('format'),
+      },
+      rule: 'feature-root-reached-only-through-its-layers',
+    },
+    {
       condition: 'a write reaches a read through a surface that joins both',
       files: {
         'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts':
@@ -430,6 +453,36 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/core',
       ],
       rule: 'adapters-know-no-routes',
+    },
+    {
+      condition: 'a shared module imports a mobile screen',
+      files: {
+        'src/routes/orders.tsx': exported('OrdersScreen'),
+        'src/shared/navigation/index.ts': importing({
+          from: '../../routes/orders',
+          name: 'OrdersScreen',
+        }),
+      },
+      parts: [
+        'typescript/architecture/expo',
+        'typescript/architecture/core',
+      ],
+      rule: 'routes-reached-only-from-expo-router',
+    },
+    {
+      condition: 'a shared module imports a command',
+      files: {
+        'src/cli/sync.cli.ts': exported('sync'),
+        'src/shared/jobs/index.ts': importing({
+          from: '../../cli/sync.cli',
+          name: 'sync',
+        }),
+      },
+      parts: [
+        'typescript/architecture/cli',
+        'typescript/architecture/core',
+      ],
+      rule: 'commands-reached-only-from-entries',
     },
     {
       condition: 'an adapter imports a command',
@@ -728,6 +781,30 @@ describe('the dependency-cruiser layer set', () => {
       expect(violations).toContain(rule);
     },
   );
+
+  it("should report no violation when a feature's surface re-exports its widget and a project extends the ui part", () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/index.ts':
+          "export { ordersWidget } from './ui/widgets/orders-widget';\n",
+        'src/features/orders/ui/widgets/orders-widget/index.ts':
+          "export { ordersWidget } from './orders-widget';\n",
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx':
+          exported('ordersWidget'),
+      },
+      parts: [
+        'typescript/architecture/ui',
+        'typescript/architecture/core',
+      ],
+    };
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toStrictEqual([]);
+  });
 
   it('should report no violation when a widget imports an enum of its entities at run time', () => {
     // Arrange

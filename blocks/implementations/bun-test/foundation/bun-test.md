@@ -1,11 +1,11 @@
 # Bun test
 
 ## strict-matcher-only → one-intent-per-case
-A case compares with `toStrictEqual`, never `toEqual`.
+A case compares with `toStrictEqual`, never `toEqual`, `toMatchObject`, `expect.objectContaining`, `expect.arrayContaining`, `toBeTruthy` or `toBeFalsy`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `toEqual` ignores undefined fields and class types, so a case passes on an outcome that differs. | tool/lint | [] |
+| these pass on a partial or loose match — `toEqual` ignores undefined fields and class types, the others whole parts of the outcome — so a case passes on an outcome that differs. | tool/lint | [] |
 
 ## no-module-mocks → one-fake-per-contract
 No `mock.module` and no `spyOn` over a real module: an effect is replaced by the fake of its contract.

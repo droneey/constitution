@@ -1,0 +1,10 @@
+language js
+
+or {
+  JsPropertyObjectMember(name=$name),
+  JsShorthandPropertyObjectMember(name=$name),
+  JsMethodObjectMember(name=$name)
+} as $member where {
+  $name <: r"queryFn",
+  register_diagnostic(span=$member, message="Declare the read once as queryOptions in cache.utils.ts: an inline queryFn is a second declaration of it", severity="error")
+}

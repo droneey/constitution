@@ -4,7 +4,6 @@ import core from './.constitution/presets/typescript/knip/foundation/core.mjs';
 import lsLint from './.constitution/presets/typescript/knip/foundation/ls-lint.mjs';
 import mise from './.constitution/presets/typescript/knip/foundation/mise.mjs';
 import osvScanner from './.constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
-import lefthook from './.constitution/presets/typescript/knip/workflow/lefthook.mjs';
 
 export default {
   entry: [
@@ -22,7 +21,6 @@ export default {
     ...lsLint.ignoreBinaries,
     ...mise.ignoreBinaries,
     ...osvScanner.ignoreBinaries,
-    ...lefthook.ignoreBinaries,
     'mkfifo',
     'stryker',
   ],

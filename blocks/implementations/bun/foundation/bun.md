@@ -24,11 +24,11 @@ CI and every script install with `bun install --frozen-lockfile`.
 | an install script runs with the developer's rights; listing each package keeps that a decision, not a default. | review | [] |
 
 ## release-age-set-for-installs → dependency-release-cooldown
-`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases.
+`minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases. A fix for a known vulnerability that cannot wait enters `minimumReleaseAgeExcludes` by name, with any new dependency it brings and its advisory in a comment, and leaves it at the next update.
 
 | Why | Check | Tags |
 |---|---|---|
-| the package manager then holds the cooldown on every install, not only the bot. | review | [] |
+| the package manager then holds the cooldown on every install, not only the bot; an exclusion holds for every later release of its name, so one left behind lifts the cooldown for good. | review | [] |
 
 ## Running
 

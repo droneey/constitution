@@ -4,6 +4,16 @@ import { ADAPTERS } from './core.mjs';
 export default {
   forbidden: [
     {
+      name: 'commands-reached-only-from-entries',
+      severity: 'error',
+      from: {
+        path: '^src/(features|shared|libs|kernel|contracts|composition)/',
+      },
+      to: {
+        path: '^src/cli/',
+      },
+    },
+    {
       name: 'adapters-know-no-commands',
       severity: 'error',
       from: {

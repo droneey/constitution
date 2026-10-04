@@ -144,6 +144,9 @@ foundation:
   tanstack-query:
     keys-only-from-the-key-factory:
       - keys-only-from-the-key-factory.grit
+  tanstack-router:
+    link-targets-never-built:
+      - link-targets-never-built.grit
   testing-library:
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
@@ -206,6 +209,11 @@ architecture:
   react-native:
     react-native-imported-from-its-entry:
       - noReactNativeDeepImports
+  tanstack-query:
+    query-client-built-by-the-root:
+      - query-client-built-by-the-root.grit
+    query-function-only-in-cache-utils:
+      - query-function-only-in-cache-utils.grit
   typescript:
     domain-type-fields-readonly:
       - domain-type-fields-readonly.grit

@@ -167,7 +167,7 @@ A comment states a constraint, a workaround or a decision the code cannot show. 
 | the code already says what it does; a narrating comment only repeats it and drifts from it. | review | [] |
 
 ## docs-only-for-non-obvious-public-entry · SHOULD
-Documentation of a public entry is written only where its use is not obvious from its names and types.
+Documentation of a public entry states only what its names and types cannot — a precondition, a unit, a failure it throws, an effect, a bound — and never restates them.
 
 | Why | Check | Tags |
 |---|---|---|
