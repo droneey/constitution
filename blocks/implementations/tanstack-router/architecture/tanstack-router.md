@@ -66,11 +66,18 @@ A route declares its document metadata in `head`.
 | the metadata changes with the route that owns it. | review | [ux] |
 
 ## error-component-per-route → error-boundary-per-screen
-Each route that loads data declares its error component; the root declares the not-found one.
+Each route that renders a screen declares its error component.
 
 | Why | Check | Tags |
 |---|---|---|
 | a route's error component is the boundary of its screen, so a failed loader costs its route, with its own message, not the whole application. | review | [errors, ux] |
+
+## not-found-declared-by-the-root → error-boundary-per-screen
+The root route declares the not-found component, which shows an address no route matches.
+
+| Why | Check | Tags |
+|---|---|---|
+| an address no screen answers then still gets a page of the application, not a blank one. | review | [ux] |
 
 ## route-pieces-reach-the-route-by-its-api → screen-private-pieces-beside-screen
 A route's private pieces reach its params and search through `getRouteApi('<route id>')`, never by importing the route file.

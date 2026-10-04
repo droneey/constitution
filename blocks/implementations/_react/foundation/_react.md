@@ -132,6 +132,13 @@ A failure a data hook returns as a state is rendered where the data would be, no
 |---|---|---|
 | an expected failure is then shown where it belongs, and the boundary is left for what nobody expected. | review | [errors, ux] |
 
+## handler-and-effect-failures-handled-where-they-happen · SHOULD
+A failure in an event handler or an effect is handled where it happens: it never reaches an error boundary.
+
+| Why | Check | Tags |
+|---|---|---|
+| React sends a boundary only the errors of rendering, so a handler's failure left to a boundary is never caught. | review | [errors, ux] |
+
 ## hidden-state-kept-by-activity · SHOULD
 A hidden part that must keep its state — a tab panel, a step, a view the user comes back to — is wrapped in `<Activity mode="hidden">`, neither unmounted nor hidden by a style alone.
 
