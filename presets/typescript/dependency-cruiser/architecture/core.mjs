@@ -27,7 +27,16 @@ export default {
         pathNot: [
           '^src/features/$1/domain/',
           '^src/kernel/',
+          '^src/contracts/',
         ],
+      },
+    },
+    {
+      name: 'feature-root-reached-only-through-its-layers',
+      severity: 'error',
+      from: {},
+      to: {
+        path: '^src/features/[^/]+/(?!(?:domain|app|adapters|__tests__)/|index\\.[^/]+$)',
       },
     },
     {
@@ -62,7 +71,7 @@ export default {
       },
       to: {
         path: [
-          '^src/(features|root|composition|entrypoints)/',
+          '^src/(features|contracts|adapters|root|composition|entrypoints)/',
           ENTRY,
         ],
       },

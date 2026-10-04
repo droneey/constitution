@@ -29,11 +29,25 @@ Beside kebab-case, a route keeps the names TanStack Router reads: `__root.tsx`, 
 | the router builds its tree from these names alone. | tool/names | [] |
 
 ## links-name-typed-targets · SHOULD
-A link names its route by typed `to` and `params`, never a path built from strings.
+A link names its route by typed `to` and `params`, never a path built from strings; link data handed to another component is built with `linkOptions`.
 
 | Why | Check | Tags |
 |---|---|---|
 | a typed target fails the type check when the route moves; a built string fails in the user's hands. | review | [] |
+
+## link-targets-never-built → links-name-typed-targets
+A route's `to` is never a template with a substitution or a concatenation that starts with a path.
+
+| Why | Check | Tags |
+|---|---|---|
+| the type check accepts a concatenated string, so only the lint sees a target that escapes the route types. | tool/lint | [] |
+
+## routes-preload-on-intent · SHOULD
+The router is created with `defaultPreload: 'intent'`, so hovering, focusing or touching a link starts its route's loader.
+
+| Why | Check | Tags |
+|---|---|---|
+| the data is on its way before the click; it costs a request for a link hovered and not followed. | review | [] |
 
 ## loader-declares-the-search-it-reads · SHOULD
 A loader that reads search params declares them in `loaderDeps`.

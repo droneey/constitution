@@ -5,5 +5,28 @@ ls:
     .tsx: kebab-case | regex:^(__root|_[a-z0-9-]+|[a-z0-9-]+_|\$[a-zA-Z0-9]*)$
     .*.ts: kebab-case | regex:^\$[a-zA-Z0-9]*$
     .*.tsx: kebab-case | regex:^(_[a-z0-9-]+|[a-z0-9-]+_|\$[a-zA-Z0-9]*)$
+  src/routes/**/-components:
+    .dir: regex:^-components$
+    .*: exists:0
+    .ts: regex:^index$
+    .tsx: exists:0
+    .*.ts: exists:0
+    .*.tsx: exists:0
+  src/routes/**/-components/[!_]*:
+    .dir: kebab-case | regex:^__tests__$
+    .*: regex:^${0}$
+    .*.*: regex:^${0}$
+    .ts: regex:^index$
+    .tsx: regex:^${0}$
+    .*.ts: regex:^${0}$
+    .*.tsx: regex:^${0}$
+  src/routes/**/-hooks:
+    .dir: regex:^-hooks$
+    .*: exists:0
+    .ts: regex:^index$
+    .tsx: exists:0
+    .*.ts: exists:0
+    .*.tsx: exists:0
+    .hooks.ts: kebab-case
 ignore:
   - src/routeTree.gen.ts

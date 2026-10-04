@@ -91,20 +91,23 @@ architecture:
       - 'src/routes'
     screen-pieces-in-dash-folders:
       - 'src/routes'
+      - 'src/routes/**/-components'
+      - 'src/routes/**/-components/[!_]*'
+      - 'src/routes/**/-hooks'
     routes-folder-holds-file-routes:
       - 'src/routes'
   ui:
     component-folders-hold-their-files:
       - 'src/*/**/components'
-      - 'src/{features,shared,libs,composition,entrypoints}/**/components/*'
-      - 'src/root/**/components/*'
+      - 'src/{features,shared,libs,composition,entrypoints}/**/components/[!_]*'
+      - 'src/root/**/components/[!_]*'
       - 'src/*/**/widgets'
-      - 'src/*/**/widgets/*'
+      - 'src/*/**/widgets/[!_]*'
     widget-folder-ends-in-widget:
-      - 'src/*/**/widgets/*'
+      - 'src/*/**/widgets/[!_]*'
     root-components-prefixed:
-      - 'src/root/**/components/*'
+      - 'src/root/**/components/[!_]*'
     kebab-case-file-names:
       - 'src/*/**/assets'
-      - 'src/{features,shared,libs,composition,entrypoints}/**/components/*'
-      - 'src/root/**/components/*'
+      - 'src/{features,shared,libs,composition,entrypoints}/**/components/[!_]*'
+      - 'src/root/**/components/[!_]*'

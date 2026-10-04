@@ -223,6 +223,7 @@ rule	kernel-or-shared-by-meaning	core	blocks/core/architecture/anatomy.md		SHOUL
 rule	composition-on-the-second-consumer	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	protocol-between-artifacts-in-shared	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	feature-anatomy	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
+rule	feature-root-holds-its-layers	core	blocks/core/architecture/anatomy.md		SHOULD	tool	imports			architecture	feature-anatomy	false
 rule	feature-domain-holds-its-role-folders	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture	feature-anatomy	false
 rule	data-ports-split-by-reads-and-writes	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture		true
 rule	ports-named-by-aggregate-and-side	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture	data-ports-split-by-reads-and-writes	false
@@ -899,13 +900,17 @@ rule	cache-is-the-only-home-of-server-data	tanstack-query	blocks/implementations
 rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript	errors security ux	architecture	unauthorized-handled-once-in-cache	false
 rule	components-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
 rule	read-declared-once-as-query-options	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	cache-keys-from-feature-factory	false
+rule	query-function-only-in-cache-utils	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript	data	architecture	read-declared-once-as-query-options	false
 rule	adapters-never-import-the-cache-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	one-reason-per-unit	false
 rule	libs-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
+rule	query-client-built-by-the-root	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript		architecture	stateful-clients-built-by-the-root	false
 rule	layout-lives-in-route-file	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	error-component-per-route	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript	errors ux	foundation		true
 rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript	security	foundation		true
 rule	tanstack-router-file-names-kept	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	tool	names	typescript		foundation	kebab-case-file-names	false
 rule	links-name-typed-targets	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
+rule	link-targets-never-built	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	tool	lint	typescript		foundation	links-name-typed-targets	false
+rule	routes-preload-on-intent	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	loader-declares-the-search-it-reads	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	routes-split-automatically	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation	generated-files-not-committed	false
