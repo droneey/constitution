@@ -29,6 +29,7 @@
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129 |
 | TypeScript configuration | ADR-0130, ADR-0131 |
+| Scripts of the check | ADR-0132 |
 
 ---
 
@@ -926,3 +927,10 @@
 - **Decision.** Under `specs-checked-by-their-own-config`, `tsconfig.json` extends `tsconfig.src.json` and keeps `files` and `include` empty, beside its references to both configurations. Amends ADR-0130.
 - **Rejected.** A `tsconfig.json` with references alone (ADR-0130): Bun's transpiler reads only `tsconfig.json` and follows no reference, so a spec run by `bun test` lost the program's transpiler options, such as its decorators.
 - **Why.** Extending the program's configuration gives Bun its options, while TypeScript still reads a file with no files of its own as a solution and opens each file with the configuration that holds it (verified on Bun 1.4.2 and TypeScript 7.0.2).
+
+## ADR-0132 — One script for each area of the check, whatever the language
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** Each area of the check has one `<area>:check` script, or Poe task, that runs every tool of that area in each language of the repository: `lint:check` runs Biome and Ruff, `type:check` tsc and ty, `test` both runners (`check-chains-area-scripts`, `check-chains-area-tasks`, which replace `check-chains-tool-scripts` and `check-chains-tool-tasks`).
+- **Rejected.** A prefix for the second language, `python:lint:check`: two families of names, and `lint:check` would quietly check one language.
+- **Why.** A person, CI and the hooks run one name per area, and a language added later joins the areas instead of adding names.
