@@ -14,7 +14,7 @@ role	audit	true
 role	commits	true
 block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
 block	a11y	domain	Accessibility outcomes, to WCAG 2.2 AA, for any user interface.	foundation/a11y.md				false						
-block	access-control	domain	Callers with different rights: denied unless granted, per entry point.	foundation/access-control.md architecture/access-control.md				false						
+block	access-control	domain	Callers who sign in with different rights: identity, sessions, access.	foundation/access-control.md architecture/access-control.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md				false						
