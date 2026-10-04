@@ -13,7 +13,7 @@
       "source": {
         "source": "github",
         "repo": "droneey/constitution",
-        "ref": "v0.62.9"
+        "ref": "v0.62.10"
       },
       "description": "The rules every droneey repository is built by, declared per project in constitution.yaml."
     }
