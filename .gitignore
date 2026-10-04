@@ -8,6 +8,10 @@
 **/dist/
 **/coverage/
 
+# core: IDE
+.claude/settings.local.json
+.claude/worktrees/
+
 # core: working notes
 /local/
 

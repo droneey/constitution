@@ -27,6 +27,7 @@
 | Delivery of the constitution | ADR-0124 |
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
+| TypeScript configuration | ADR-0130 |
 
 ---
 
@@ -883,3 +884,10 @@
   - Biome formats at a line width of 100, not 80, in the common part every project extends.
   - The licence allowlist gains `PSF-2.0` and `MIT-0`.
 - **Why.** At 80 a typed signature or a call of a few arguments breaks over lines that each say little; at 100 this repository's code is about a thousand lines shorter (owner). Both licences are permissive and ask no more than `MIT` or `Python-2.0`, already on the list; `typing-extensions` is `PSF-2.0` and `cffi` is `MIT-0`, and FastAPI and MCP applications load both at runtime (owner).
+
+## ADR-0130 — An editor finds the specs' own TypeScript configuration
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** Where specs need Bun's types and the program does not, the program's configuration is `tsconfig.src.json`, the specs' is `tsconfig.test.json`, and `tsconfig.json` holds no files and references both (`specs-checked-by-their-own-config`).
+- **Rejected.** The program's configuration as `tsconfig.json` with the specs left out: an editor reads only `tsconfig.json`, so it opened every spec without the `ESNext` lib, Bun's types or the decorator options and reported errors the check never saw.
+- **Why.** The solution-style configuration, as Vite's templates use it, gives each file its own configuration in the editor and in the check alike (found in droneey/kit).
