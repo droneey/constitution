@@ -33,7 +33,7 @@
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
     "architecture:check": "depcruise src tests tools --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. vulture || exit 1; done",
-    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/foundation/core.txt)\" .",
+    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/foundation/core.txt)\" --no-ignore .",
     "names:check": "ls-lint --config .droneey/constitution/presets/common/ls-lint/foundation/self.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/core.yaml --config .droneey/constitution/presets/typescript/ls-lint/foundation/typescript.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/git.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/mise.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/uv.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/ruff.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/complexipy.yaml --config .droneey/constitution/presets/common/ls-lint/foundation/stryker.yaml --config .droneey/constitution/presets/typescript/ls-lint/architecture/core.yaml --config .ls-lint.yaml",
     "format:check": "uv run --locked ruff format --check tools",
     "format:fix": "uv run --locked ruff format tools",
