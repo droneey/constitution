@@ -82,7 +82,7 @@ block	tanstack-form	implementation	Forms with TanStack Form — one form state, 
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data remote-service		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/tanstack-query foundation/version-control architecture/access-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
-block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/remote-service	_react		false						**/__tests__/**/*.test.tsx
+block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/remote-data foundation/remote-service	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md	foundation/pydantic	python		false		types	python			ty.toml
@@ -437,6 +437,7 @@ rule	cache-keys-from-feature-factory	remote-data	blocks/domains/remote-data/arch
 rule	invalidation-stays-in-its-feature	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	features-blind-to-each-other	false
 rule	no-second-model-of-remote-data	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review				architecture		true
 rule	stream-folded-by-domain-reducer	remote-data	blocks/domains/remote-data/architecture/with/remote-service.md	remote-service	SHOULD	review			data	architecture		true
+rule	unauthorized-acted-on-once-by-the-cache	remote-data	blocks/domains/remote-data/architecture/with/remote-service.md	remote-service	SHOULD	review			errors	architecture	transport-failures-mapped-once	false
 rule	stream-ends-with-terminal-event	remote-service	blocks/domains/remote-service/foundation/remote-service.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	remote-vendor-proven-by-captured-responses	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			testing	foundation		true
 rule	captured-responses-verified-against-the-vendor	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			testing	foundation		true
@@ -947,7 +948,7 @@ rule	toolchain-downloads-verified-by-the-lock	mise	blocks/implementations/mise/f
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false
-rule	personal-toolchain-overrides-ignored	mise	blocks/implementations/mise/foundation/with/version-control.md	version-control	SHOULD	review			security	foundation	local-environment-file-ignored	false
+rule	personal-toolchain-overrides-ignored	mise	blocks/implementations/mise/foundation/with/version-control.md	version-control	MUST	review			security	foundation	local-environment-file-ignored	true
 rule	equivalent-mutant-marked-by-pragma	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python		foundation	suppression-silences-one-finding	false
 rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true
@@ -1142,6 +1143,7 @@ rule	interactions-through-user-event	testing-library	blocks/implementations/test
 rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	spec-per-boundary	false
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
+rule	spec-cache-client-fresh-without-retries	testing-library	blocks/implementations/testing-library/foundation/with/remote-data.md	remote-data	MUST	review		typescript	testing	foundation	specs-independent-of-order	true
 rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/with/remote-service.md	remote-service	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false

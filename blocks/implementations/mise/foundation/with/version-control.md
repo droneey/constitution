@@ -2,7 +2,7 @@
 
 > The toolchain's files in the history.
 
-## personal-toolchain-overrides-ignored → local-environment-file-ignored
+## personal-toolchain-overrides-ignored → local-environment-file-ignored · MUST
 Version control ignores `mise.local.toml`.
 
 | Why | Check | Tags |
