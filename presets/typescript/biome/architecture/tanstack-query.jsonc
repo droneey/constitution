@@ -1,0 +1,30 @@
+{
+  "plugins": [
+    {
+      "path": "./.constitution/presets/typescript/biome/architecture/plugins/query-client-built-by-the-root.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/src/root/**",
+        "!**/main.*",
+        "!**/entrypoints/*/main.*",
+        "!**/src/router.tsx",
+        "!**/__tests__/**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.constitution/presets/typescript/biome/architecture/plugins/query-function-only-in-cache-utils.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/cache.utils.ts",
+        "!**/src/root/**",
+        "!**/__tests__/**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+  ],
+}

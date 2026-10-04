@@ -2,6 +2,14 @@
 export default {
   forbidden: [
     {
+      name: 'feature-root-reached-only-through-its-layers',
+      severity: 'error',
+      from: {},
+      to: {
+        path: '^src/features/[^/]+/(?!(?:domain|app|adapters|ui|__tests__)/|index\\.[^/]+$)',
+      },
+    },
+    {
       name: 'components-take-data-and-callbacks',
       severity: 'error',
       from: {

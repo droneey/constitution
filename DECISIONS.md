@@ -23,7 +23,7 @@
 | Tools and tests | ADR-0077 – ADR-0087, ADR-0096 – ADR-0097, ADR-0099 – ADR-0101, ADR-0103, ADR-0105 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093 – ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0115 |
-| A real application | ADR-0116 – ADR-0121 |
+| A real application | ADR-0116 – ADR-0122 |
 
 ---
 
@@ -823,3 +823,22 @@
   - `strict-matcher-only` also refuses `toMatchObject`, `expect.objectContaining`, `expect.arrayContaining`, `toBeTruthy` and `toBeFalsy`.
 - **Rejected.** Scoping the licence exception by the dependency's group: osv-scanner 2.6.0 does not read the group from `bun.lock`.
 - **Why.** A check of each item against its tool and its sources: aikit already ignores a tool's licence outside the rules; a condition invented to fill a case name says nothing; a delete button behind a flag is absurd; the allowed suspending read broke two rules as written; one store with the session's data copied into it goes stale; CNIL (2020-092, §37–39) and the ICO advise keeping a refusal and not asking again for about six months; a partial matcher lets the rest of the outcome change unseen.
+
+## ADR-0122 — The architecture leftovers of the audit review
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.**
+  - The domain imports the shared ports of `contracts/` as well as itself and the kernel: `contracts/` is a shared kernel of ports, on the same inner ring, and the constitution's own lifting rule puts a feature's port there.
+  - `shared/` imports no adapter or contract.
+  - A feature's root holds only its layers, its `__tests__/` and its surface (`feature-root-holds-its-layers`), held by the import check; a block that adds a layer, such as a UI's, restates the check with it.
+  - With Expo and with the command line, nothing below the delivery layer imports a screen or a command; the import check holds it under `dependencies-point-inward`.
+  - A route's `to` is never built from strings (`link-targets-never-built`), held by GritQL; the type check accepts a concatenated string.
+  - The router preloads on intent (`routes-preload-on-intent`, SHOULD), as TanStack's own guides do.
+  - A read's `queryFn` is written only in `cache.utils.ts` (`query-function-only-in-cache-utils`), and `new QueryClient` only in the root, the program's entry files and specs (`query-client-built-by-the-root`), both held by GritQL.
+  - A route's `-components/` holds component folders and `-hooks/` hooks files, as their UI counterparts do.
+  - Loaders read a `queryOptions` through the query client; the rule no longer names `ensureQueryData`, which TanStack Query 5.104 deprecates.
+- **Rejected.**
+  - A check that a route's dash folders are private to it: dependency-cruiser refuses a repeated group as an unsafe expression and inserts a route's `$id` or `(group)` into the pattern unescaped, so it took nine nested segments and still erred; review holds `screen-private-pieces-beside-screen`.
+  - The feature root's folders held by ls-lint: its overlapping keys resolve at random.
+  - Preloading on intent as a MUST: it costs a request for a link hovered and not followed.
+- **Why.** Each item was run against its tool before it was written: the domain could not import a port the lifting rule had lifted; a loose `utils.ts` or `hooks/` at a feature's root passed every check; `shared/` and the layers below Expo's and the CLI's delivery reached adapters, screens and commands unchecked; a `'/orders/' + id` passed the type check; inline query options and a module-level client are the libraries' own examples.

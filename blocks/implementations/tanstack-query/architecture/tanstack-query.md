@@ -49,6 +49,13 @@ Each read is declared once as `queryOptions`, beside the key factory in `cache.u
 |---|---|---|
 | one declaration keeps the key, the function and the options of a read the same wherever it runs. | review | [] |
 
+## query-function-only-in-cache-utils → read-declared-once-as-query-options
+A `queryFn` is written only in `cache.utils.ts`, inside the read's `queryOptions`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an inline `queryFn` is a second declaration of the read, and its options drift from the loader's. | tool/lint | [] |
+
 ## adapters-never-import-the-cache-library → one-reason-per-unit
 An adapter never imports the cache library; caching belongs to the binding units.
 
@@ -62,3 +69,10 @@ An adapter never imports the cache library; caching belongs to the binding units
 | Why | Check | Tags |
 |---|---|---|
 | what `libs/` wraps is one vendor's client; the application's cached data stays out. | tool/imports | [] |
+
+## query-client-built-by-the-root → stateful-clients-built-by-the-root
+`new QueryClient` is written only in `root/`, in the program's entry files and in specs.
+
+| Why | Check | Tags |
+|---|---|---|
+| the library's own examples build the client at a module's top level, where it is shared by every request on the server and every spec. | tool/lint | [] |

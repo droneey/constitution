@@ -71,7 +71,7 @@ No code imports an entrypoint. An entrypoint composes features through their sur
 | code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool/imports | [] |
 
 ## shared-imports-no-feature-or-root · MUST
-`shared/` imports no feature and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
+`shared/` imports no feature, adapter or contract and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -119,6 +119,13 @@ A feature is laid out as `domain/`, `adapters/<system>/` and `app/` with the rol
 | Why | Check | Tags |
 |---|---|---|
 | a use-case, a port or an adapter is found in the same place in every feature. | review | [] |
+
+## feature-root-holds-its-layers → feature-anatomy
+A feature's root holds only its layer folders, its `__tests__/` and its surface; nothing is imported from anywhere else in it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a file or folder left loose beside the layers belongs to none of them, and the layer rules never see it. | tool/imports | [] |
 
 ## feature-domain-holds-its-role-folders → feature-anatomy
 A feature's `domain/` holds only the role folders of the tree and no file of its own.

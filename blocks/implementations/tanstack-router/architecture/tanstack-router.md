@@ -52,7 +52,7 @@ A screen's private pieces live beside its route in `-components/`, its private b
 | the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run. | review | [] |
 
 ## screen-pieces-in-dash-folders → screen-private-pieces-in-dash-folders
-A screen's private folders beside its route are `-components/` and `-hooks/`.
+A screen's private folders beside its route are `-components/` and `-hooks/`: `-components/` holds component folders and a surface, as `components/` does, and `-hooks/` holds hooks files and a surface.
 
 | Why | Check | Tags |
 |---|---|---|

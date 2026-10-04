@@ -35,7 +35,7 @@ The inner layer declares, in its own words, the contracts it needs; the outer la
 | the business rules then choose what they need, and a vendor or engine can be replaced without touching them. | review | [] |
 
 ## domain-imports-only-itself-and-kernel · MUST
-The domain imports only itself and the shared kernel: no framework, no input or output, no vendor library, however pure. A tool's types stop at its boundary; a validation engine conforms to the domain's types and never declares them.
+The domain imports only itself, the shared kernel and the shared ports of `contracts/`: no framework, no input or output, no vendor library, however pure. A tool's types stop at its boundary; a validation engine conforms to the domain's types and never declares them.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -1,0 +1,5 @@
+language js
+
+`new QueryClient($...)` as $client where {
+  register_diagnostic(span=$client, message="Build the QueryClient in the root, once per app or request: a module-level client is shared between requests and specs", severity="error")
+}

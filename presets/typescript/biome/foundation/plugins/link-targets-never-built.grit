@@ -1,0 +1,15 @@
+language js
+
+or {
+  JsxAttribute(name=$name, initializer=JsxAttributeInitializerClause(value=JsxExpressionAttributeValue(expression=$target))) where {
+    $name <: r"to"
+  },
+  JsPropertyObjectMember(name=r"to", value=$target)
+} where {
+  $target <: or {
+    JsTemplateExpression(elements=contains JsTemplateElement()),
+    `$_ + $_`
+  },
+  $target <: r"(?s)['\"`]/.*",
+  register_diagnostic(span=$target, message="Name the route by its typed path and params: a path built from strings escapes the route types", severity="error")
+}

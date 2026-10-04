@@ -11,7 +11,7 @@ ls:
     <<: *holder
     .dir: regex:^widgets$
 
-  src/{features,shared,libs,composition,entrypoints}/**/components/*:
+  src/{features,shared,libs,composition,entrypoints}/**/components/[!_]*:
     <<: &component
       .dir: kebab-case | regex:^__tests__$
       .*: regex:^${0}$
@@ -20,10 +20,10 @@ ls:
       .tsx: regex:^${0}$
       .*.ts: regex:^${0}$
       .*.tsx: regex:^${0}$
-  src/*/**/widgets/*:
+  src/*/**/widgets/[!_]*:
     <<: *component
     .dir: regex:^[a-z0-9]+(-[a-z0-9]+)*-widget$ | regex:^__tests__$
-  src/root/**/components/*:
+  src/root/**/components/[!_]*:
     <<: *component
     .dir: regex:^root-[a-z0-9]+(-[a-z0-9]+)*$ | regex:^__tests__$
 

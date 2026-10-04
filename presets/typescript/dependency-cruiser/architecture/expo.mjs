@@ -4,6 +4,16 @@ import { ADAPTERS } from './core.mjs';
 export default {
   forbidden: [
     {
+      name: 'routes-reached-only-from-expo-router',
+      severity: 'error',
+      from: {
+        path: '^src/(features|shared|libs|kernel|contracts|composition)/',
+      },
+      to: {
+        path: '^src/routes/',
+      },
+    },
+    {
       name: 'adapters-know-no-routes',
       severity: 'error',
       from: {

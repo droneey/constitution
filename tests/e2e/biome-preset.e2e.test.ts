@@ -1234,6 +1234,103 @@ describe('the Biome foundation parts', () => {
       ),
     ).toBe(true);
   });
+
+  it.each([
+    {
+      condition: 'a link target is concatenated',
+      files: {
+        'src/features/orders/ui/widgets/order-link.ts':
+          "export const target = (id: string): { to: string } => ({ to: '/orders/' + id });\n",
+      },
+      message: 'Name the route by its typed path and params',
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/tanstack-router',
+      ],
+    },
+    {
+      condition: 'a hook writes its read inline',
+      files: {
+        'src/features/orders/app/use-cases/queries/list/list.hooks.ts':
+          "export const options = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
+      },
+      message: 'Declare the read once as queryOptions in cache.utils.ts',
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/tanstack-query',
+      ],
+    },
+    {
+      condition: 'a module builds the query client at its top level',
+      files: {
+        'src/shared/query/client.ts':
+          "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
+      },
+      message: 'Build the QueryClient in the root',
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/tanstack-query',
+      ],
+    },
+  ])(
+    'should report a plugin finding when $condition and a project extends its part',
+    ({ files, message, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.some((finding) => finding.startsWith(message))).toBe(true);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'a link names its route by path and params',
+      files: {
+        'src/features/orders/ui/widgets/order-link.ts':
+          "export const target = { to: '/orders/$orderId' };\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/tanstack-router',
+      ],
+    },
+    {
+      condition:
+        'the cache utilities declare a read and the root builds the client',
+      files: {
+        'src/features/orders/app/utils/cache.utils.ts':
+          "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
+        'src/root/query-client.ts':
+          "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
+      },
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/tanstack-query',
+      ],
+    },
+  ])(
+    'should report no plugin finding when $condition and a project extends its part',
+    ({ files, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins).toStrictEqual([]);
+    },
+  );
 });
 
 const ERROR_WITHOUT_CAUSE =
