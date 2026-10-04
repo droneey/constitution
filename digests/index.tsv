@@ -41,10 +41,13 @@ block	dependency-cruiser	implementation	Holds the import rules between layers, m
 block	deptry	implementation	deptry checks the dependencies a Python package declares and imports.	foundation/deptry.md		python		false		unused	python			
 block	docker	implementation	Container images and the services Docker Compose runs from them.	foundation/docker.md				false						**/Dockerfile **/*.Dockerfile **/.dockerignore **/compose.yaml **/compose.*.yaml
 block	expo	implementation	Expo on React Native — app config, native builds, secure storage.	foundation/expo.md architecture/expo.md			react-native	false					react-native _react	app.config.ts eas.json
+block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicorn.	foundation/fastapi.md architecture/fastapi.md	foundation/structlog	python pydantic		false						
+block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	foundation/fastmcp.md architecture/fastmcp.md	foundation/structlog	python pydantic		false						
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.	foundation/git.md		version-control		false	lefthook					.gitignore .gitattributes
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	foundation/hadolint.md		docker		false		lint				.hadolint.yaml
+block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	foundation/httpx2.md architecture/httpx2.md		python remote-data		false						**/adapters/** **/root/**
 block	hypothesis	implementation	Hypothesis writes Python's property tests.	foundation/hypothesis.md		python		false						
-block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md		python		false		imports	python			
+block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md	architecture/httpx2 architecture/pydantic architecture/structlog	python		false		imports	python			
 block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md		typescript		false		unused	typescript			knip.config.ts
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-data		false						**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks		git	false		commits			git	lefthook.yaml
@@ -57,14 +60,16 @@ block	nestjs	implementation	NestJS — modules, providers and the injector that 
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
+block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	foundation/pydantic.md architecture/pydantic.md		python		false						**/models/** **/adapters/** **/root/**
 block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	foundation/pytest.md architecture/pytest.md		python		false		tests coverage	python			**/tests/**
 block	python-check	implementation	The constitution's own check of what no Python tool holds.	foundation/python-check.md architecture/python-check.md		python		false		lint imports	python			
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y foundation/bun-test	browser	_react	false					_react	**/*.tsx
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
-block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
+block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/fastapi foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md	foundation/a11y	_react		false						**/*.stories.tsx .storybook/**
+block	structlog	implementation	structlog renders the records of Python's logging as events.	foundation/structlog.md architecture/structlog.md		python		false						**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.	foundation/stryker.md	foundation/bun-test	typescript		false		mutation	typescript			stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
@@ -75,7 +80,7 @@ block	tanstack-start	implementation	The TanStack app shell — SPA mode, root sh
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
-block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
+block	ty	implementation	ty checks the types of Python.	foundation/ty.md	foundation/pydantic	python		false		types	python			ty.toml
 block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package workflow/package	python		false						pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md architecture/vite.md	foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
@@ -816,6 +821,23 @@ rule	native-projects-generated-by-prebuild	expo	blocks/implementations/expo/foun
 rule	native-modules-at-sdk-versions	expo	blocks/implementations/expo/foundation/expo.md		SHOULD	review		typescript		foundation		true
 rule	expo-router-file-names-kept	expo	blocks/implementations/expo/foundation/expo.md		MUST	tool	names	typescript		foundation	kebab-case-file-names	false
 rule	expo-router-root-is-routes	expo	blocks/implementations/expo/architecture/expo.md		SHOULD	tool	names	typescript		architecture	anatomy-top-level-by-concern	false
+rule	dependencies-declared-in-annotated	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	tool	lint	python		foundation		true
+rule	path-parameters-read-by-the-handler	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	tool	lint	python		foundation		true
+rule	async-handlers-never-block	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	performance	foundation		true
+rule	lifespan-opens-and-closes	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python		foundation	resources-released-on-every-path	false
+rule	program-raises-no-http-exception	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	errors	foundation	expected-failures-typed-with-codes	false
+rule	unexpected-error-logged-once	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	errors	foundation	error-logged-once	false
+rule	specs-through-the-asgi-transport	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
+rule	app-assembled-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST	review		python	testing	architecture	one-explicit-composition-root	false
+rule	error-kit-handlers-registered-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-per-transport	false
+rule	uvicorn-records-join-the-chain	fastapi	blocks/implementations/fastapi/foundation/with/structlog.md	structlog	MUST	review		python	security data	foundation	one-chain-for-every-record	false
+rule	tool-described-for-the-model	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python		foundation	docs-only-for-non-obvious-public-entry	true
+rule	program-raises-no-tool-error	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors	foundation	expected-failures-typed-with-codes	false
+rule	validation-inside-a-tool-is-internal	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors security	foundation		true
+rule	specs-through-the-in-memory-client	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
+rule	tool-arguments-bounded-by-their-annotations	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
+rule	tool-failures-answered-by-one-middleware	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-per-transport	false
+rule	fastmcp-records-join-the-chain	fastmcp	blocks/implementations/fastmcp/foundation/with/structlog.md	structlog	MUST	review		python	security data	foundation	one-chain-for-every-record	false
 rule	move-with-git-mv	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation	move-files-never-recreate	false
 rule	stage-by-name-and-read-staged-diff	git	blocks/implementations/git/foundation/git.md		MUST	review			security	foundation		true
 rule	worktree-one-branch-own-dependencies	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation		true
@@ -827,10 +849,21 @@ rule	release-tags-annotated	git	blocks/implementations/git/foundation/git.md		MU
 rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/foundation/git.md		SHOULD	review			performance	foundation	large-files-outside-history	false
 rule	hadolint-over-every-dockerfile	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	tool	lint			foundation	docker-files-linted-in-the-check	false
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	review				foundation	suppression-states-its-reason	false
+rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	errors performance	foundation	io-has-timeout-and-cancellation	true
+rule	client-open-for-the-program-life	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		SHOULD	review		python	performance	foundation	resources-released-on-every-path	false
+rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python		foundation	no-any-annotation	false
+rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	testing security	foundation	unmatched-request-fails-the-spec	false
+rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python		architecture	remote-data-transport-built-by-the-root	false
+rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python	errors	architecture	transport-failures-mapped-once	true
+rule	retries-written-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python	errors	architecture	retry-only-transient-failures	false
+rule	httpx2-only-at-the-edge	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python		architecture	side-effects-at-the-edges	false
 rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-tests-where-they-pay	false
 rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-counterexample-kept-as-case	false
 rule	ci-profile-left-to-hypothesis	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	specs-independent-of-order	false
 rule	contract-named-after-its-rule	import-linter	blocks/implementations/import-linter/foundation/import-linter.md		SHOULD	review		python		foundation		true
+rule	httpx2-kept-to-the-edge	import-linter	blocks/implementations/import-linter/architecture/with/httpx2.md	httpx2	MUST	tool	imports	python		architecture	httpx2-only-at-the-edge	false
+rule	pydantic-kept-out-of-the-domain	import-linter	blocks/implementations/import-linter/architecture/with/pydantic.md	pydantic	MUST	tool	imports	python	security	architecture	pydantic-only-at-the-edge	false
+rule	structlog-imported-only-by-the-root	import-linter	blocks/implementations/import-linter/architecture/with/structlog.md	structlog	SHOULD	tool	imports	python	security	architecture	code-logs-through-the-standard-logger	false
 rule	unused-check-in-production-mode	knip	blocks/implementations/knip/foundation/knip.md		MUST	tool	unused	typescript		foundation	no-dead-code	false
 rule	ky-timeout-retry-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	no-unchecked-escape-hatches	false
@@ -882,6 +915,15 @@ rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/foundati
 rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	poe-only-without-a-script-runner	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		SHOULD	review		python		foundation		true
 rule	check-chains-area-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	one-check-command	false
+rule	owned-documents-strict-vendor-answers-tolerant	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	test		python	data errors	foundation	document-schema-strict	false
+rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	test		python	data	foundation	published-schema-generated-from-code	false
+rule	validation-errors-become-error-details	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		SHOULD	review		python	errors security	foundation	expected-failures-typed-with-codes	false
+rule	models-frozen	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		SHOULD	review		python		foundation	immutable-by-default	false
+rule	secrets-typed-secret-str	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
+rule	pydantic-two-forms-only	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	review		python		foundation		true
+rule	pydantic-only-at-the-edge	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
+rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	data	architecture	external-shapes-mapped-at-boundary	false
+rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		SHOULD	review		python	security	architecture	environment-read-once-at-boot	false
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	tests	python	testing	foundation	tests-pass-in-check	false
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	coverage	python	testing	foundation	coverage-holds-all-logic	false
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	specs-independent-of-order	false
@@ -923,6 +965,7 @@ rule	rule-families-selected-by-name	ruff	blocks/implementations/ruff/foundation/
 rule	preview-rules-only-by-code	ruff	blocks/implementations/ruff/foundation/ruff.md		SHOULD	review		python		foundation		true
 rule	noqa-names-its-codes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	tool	lint	python		foundation	suppression-names-its-code-and-reason	false
 rule	ruff-check-never-fixes	ruff	blocks/implementations/ruff/foundation/ruff.md		MUST	review		python		foundation	check-only-checks	false
+rule	http-exception-banned	ruff	blocks/implementations/ruff/foundation/with/fastapi.md	fastapi	SHOULD	tool	lint	python	errors	foundation	program-raises-no-http-exception	false
 rule	skips-and-expected-failures-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	MUST	tool	lint	python	testing	foundation	no-skipped-or-empty-tests	false
 rule	flaky-mark-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	tool	lint	python	testing	foundation	no-test-reruns	false
 rule	unittest-mock-banned	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	tool	lint	python	testing	foundation	no-module-patching	false
@@ -938,6 +981,13 @@ rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storyboo
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	review		typescript	testing	foundation		true
 rule	stories-unreachable-from-production	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	tool	imports	typescript	testing	foundation	test-code-unreachable-from-production	false
 rule	stories-fail-on-a11y-violations	storybook	blocks/implementations/storybook/foundation/with/a11y.md	a11y	MUST	review		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
+rule	one-chain-for-every-record	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
+rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
+rule	json-in-production-console-in-development	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation		true
+rule	trace-id-bound-through-contextvars	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation		true
+rule	record-is-an-event-with-fields	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation		true
+rule	logging-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	one-explicit-composition-root	false
+rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/architecture/structlog.md		SHOULD	review		python	security	architecture	diagnostics-through-the-logging-port	false
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-runs-the-bun-test-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	stryker-drives-bun-test-by-command	false
@@ -1032,6 +1082,7 @@ rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md	
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	ty-is-the-type-gate	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	rules-held-by-tools	false
 rule	ty-ignore-names-its-rule	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	suppression-names-its-code-and-reason	false
+rule	deprecated-pydantic-forms-fail-the-types	ty	blocks/implementations/ty/foundation/with/pydantic.md	pydantic	MUST	tool	types	python		foundation	pydantic-two-forms-only	false
 rule	uv-is-the-only-python-package-manager	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	dependencies-pinned-by-lockfile	false
 rule	installs-follow-uv-lock	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	dependencies-pinned-by-lockfile	false
 rule	exclude-newer-sets-the-cooldown	uv	blocks/implementations/uv/foundation/uv.md		SHOULD	review		python	security	foundation	dependency-release-cooldown	false
@@ -1062,6 +1113,17 @@ answer	bun	publishing-with-provenance-supported	partly
 answer	bunli	command-framework-parses-flags-by-schema	yes
 answer	bunli	command-framework-leaves-exits-to-the-handler	partly
 answer	bunli	command-framework-runs-in-a-test-sandbox	partly
+answer	fastapi	untrusted-input-parsed-at-edge	yes
+answer	fastapi	one-error-handler-per-transport	yes
+answer	fastapi	error-kit-carries-code-cause-and-details	no
+answer	fastapi	resources-released-on-every-path	yes
+answer	fastmcp	untrusted-input-parsed-at-edge	yes
+answer	fastmcp	one-error-handler-per-transport	yes
+answer	fastmcp	error-kit-carries-code-cause-and-details	no
+answer	fastmcp	tests-run-in-a-sandbox	yes
+answer	httpx2	remote-data-transport-timeout-and-cancel	yes
+answer	httpx2	remote-data-transport-typed-failures	yes
+answer	httpx2	remote-data-transport-retries-only-transient	partly
 answer	ky	remote-data-transport-timeout-and-cancel	yes
 answer	ky	remote-data-transport-typed-failures	yes
 answer	ky	remote-data-transport-retries-only-transient	yes
@@ -1075,6 +1137,9 @@ answer	matomo	analytics-loads-without-blocking	yes
 answer	matomo	analytics-context-dimensions	yes
 answer	nestjs	one-explicit-composition-root	partly
 answer	nestjs	compiler-is-the-type-gate	partly
+answer	pydantic	schema-rejects-unknown-keys	yes
+answer	pydantic	schema-discriminated-unions	yes
+answer	pydantic	schema-exports-json-schema	yes
 answer	shadcn	ui-primitives-keyboard-and-focus	yes
 answer	shadcn	ui-primitives-unstyled	yes
 answer	shadcn	primitives-take-text-by-props	partly

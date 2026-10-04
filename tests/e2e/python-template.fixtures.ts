@@ -26,7 +26,7 @@ const TEMPLATE_FILES: Files = {
   '.gitignore': `${readFileSync(join(TEMPLATES, '.gitignore'), 'utf8')}/.droneey\n`,
   'pyproject.toml': readFileSync(join(TEMPLATES, 'pyproject.toml'), 'utf8')
     .replace('<name>', 'shop')
-    .replace('<package>', 'shop'),
+    .replaceAll('<package>', 'shop'),
   'tests/conftest.py': readFileSync(join(TEMPLATES, 'tests', 'conftest.py'), 'utf8'),
 };
 
