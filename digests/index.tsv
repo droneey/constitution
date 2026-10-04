@@ -989,8 +989,8 @@ rule	record-is-an-event-with-fields	structlog	blocks/implementations/structlog/f
 rule	logging-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	one-explicit-composition-root	false
 rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/architecture/structlog.md		SHOULD	review		python	security	architecture	diagnostics-through-the-logging-port	false
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript	testing	foundation	mutants-all-killed	false
-rule	stryker-drives-bun-test-by-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing	foundation	mutants-all-killed	false
-rule	stryker-runs-the-bun-test-command	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	stryker-drives-bun-test-by-command	false
+rule	stryker-runs-each-mutant-against-the-specs-that-load-it	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing	foundation	mutants-all-killed	false
+rule	stryker-runs-the-archive-runner	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	stryker-runs-each-mutant-against-the-specs-that-load-it	false
 rule	versions-checked-and-manifests-formatted	syncpack	blocks/implementations/syncpack/foundation/syncpack.md		MUST	tool	versions	typescript		foundation	one-version-per-dependency	false
 rule	utilities-only-from-tokens	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	review		css typescript	ux	foundation	tokens-single-source-of-appearance	false
 rule	theme-resets-every-default-scale	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	utilities-only-from-tokens	false

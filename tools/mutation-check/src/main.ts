@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, extname, isAbsolute, relative, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { mutateTargets } from './changes.ts';
+import { importsOf, loaderOf } from './imports.ts';
 
 const BASE = 'origin/main';
 
@@ -13,17 +14,6 @@ const CONFIG_FILES = [
   'stryker.config.js',
   'stryker.config.json',
 ];
-
-const LOADERS = new Map<string, Bun.JavaScriptLoader>([
-  [
-    '.ts',
-    'ts',
-  ],
-  [
-    '.tsx',
-    'tsx',
-  ],
-]);
 
 const git = (args: readonly string[]): string =>
   spawnSync('git', args, {
@@ -39,7 +29,7 @@ const mergeBase = (): string =>
 
 // A change that only reformats leaves the transpiled code as it was, so it gives no mutant.
 const codeChanged = (input: { base: string; path: string }): boolean => {
-  const loader = LOADERS.get(extname(input.path));
+  const loader = loaderOf(input.path);
 
   if (loader === undefined) {
     return true;
@@ -57,25 +47,6 @@ const codeChanged = (input: { base: string; path: string }): boolean => {
       ]),
     ) !== transpiler.transformSync(readFileSync(input.path, 'utf8'))
   );
-};
-
-const importsOf = (path: string): readonly string[] => {
-  const loader = LOADERS.get(extname(path));
-
-  if (loader === undefined) {
-    return [];
-  }
-
-  const from = resolve(path);
-
-  return new Bun.Transpiler({
-    loader,
-  })
-    .scanImports(readFileSync(from, 'utf8'))
-    .map(({ path: specifier }) => Bun.resolveSync(specifier, dirname(from)))
-    .filter((target) => isAbsolute(target) && !target.includes('/node_modules/'))
-    .map((target) => relative(process.cwd(), target))
-    .filter((target) => !target.startsWith('..'));
 };
 
 const mutatePatterns = (config: unknown): readonly string[] => {

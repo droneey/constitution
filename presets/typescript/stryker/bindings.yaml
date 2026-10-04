@@ -1,8 +1,8 @@
 foundation:
   bun-test:
-    stryker-runs-the-bun-test-command:
-      - command
+    stryker-runs-the-archive-runner:
       - coverageAnalysis
+      - plugins
       - testRunner
   core:
     mutants-all-killed:

@@ -14,9 +14,9 @@ export default {
     ...mise.ignorePatterns,
     ...uv.ignorePatterns,
   ],
-  commandRunner: {
-    command: `${bunTest.commandRunner.command} ./src ./tools`,
-  },
+  plugins: [
+    './tools/mutation-check/src/runner.ts',
+  ],
   mutate: [
     ...core.mutate,
     ...architecture.mutate,

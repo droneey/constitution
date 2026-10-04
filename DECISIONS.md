@@ -19,7 +19,7 @@
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053 – ADR-0055, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
 | Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095 |
-| Tools and tests | ADR-0077 – ADR-0081, ADR-0083, ADR-0084, ADR-0086, ADR-0096, ADR-0099, ADR-0101, ADR-0103, ADR-0105 |
+| Tools and tests | ADR-0077 – ADR-0081, ADR-0083, ADR-0084, ADR-0086, ADR-0096, ADR-0099, ADR-0101, ADR-0103, ADR-0105, ADR-0138 |
 | Axes | ADR-0088, ADR-0089, ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
 | A real application | ADR-0116, ADR-0118 – ADR-0123 |
@@ -311,7 +311,7 @@
 **Date:** 2026-09-28 · **Status:** Accepted
 
 - **Decision.** `mutants-all-killed` runs over the lines a change touches, every new file and every file whose spec a change touches, and no longer reuses earlier results.
-- **Rejected.** Stryker's incremental report: with the command runner Stryker cannot tell which tests meet a mutant, so a cached result hid a survivor in one run and kept a killed mutant as surviving in another.
+- **Rejected.** Stryker's incremental report: with no test reported per mutant Stryker cannot tell which tests meet it, so a cached result hid a survivor in one run and kept a killed mutant as surviving in another.
 - **Why.** A result is trusted only when it was run; mutating the changed lines keeps the run short without a cache.
 
 ## ADR-0086 — zod is kept out of the domain by the domain law alone
@@ -394,7 +394,7 @@
 ## ADR-0101 — A rule a tool holds in part is reviewed, and a child says what the tool holds
 **Date:** 2026-09-29 · **Status:** Accepted
 
-- **Decision.** Where a tool holds only part of a rule, the rule keeps its slug and its statement and becomes `review`, and a child `→` it states exactly what the tool holds, with the tool's Check and its bindings. So it is for 39 rules: among them `access-only-through-curated-surface` (`surface-is-the-only-way-in`), `commit-header-type-and-subject` (`commit-header-format`), `coverage-holds-all-logic` (`coverage-gate-on-loaded-files` in `bun-test`), `every-control-has-an-accessible-name` and `native-semantics-first` (`jsx-controls-named`, `jsx-roles-and-aria-valid` in `react-dom`'s seam with `a11y`, which `labels-bound-with-use-id` joins, so a React Native project claims no setting it lacks), `tokens-single-source-of-appearance` (one child each in `react-dom`, `react-native` and, under `utilities-only-from-tokens`, `tailwind`), `components-dumb-widgets-smart` (a child in `ui`, and one in each of `ky` and `tanstack-query` for the library it keeps out), and `primitives-take-text-by-props` (`primitives-import-no-message-catalog` in `lingui`'s seam with `ui`). `side-effects-at-the-edges`, `suppression-states-its-reason` and `folder-named-for-purpose-or-role` become `review`, their held parts already held by children. The same holds where a binding sat on a reviewed rule: `commit-scan-redacted` (`lefthook` with `betterleaks`) and `stryker-runs-the-bun-test-command` take theirs, and a setting that wires a hook, which no role checks, holds no rule. Three statements lose a clause another rule holds: `yaml-only-at-the-edge` the `unknown` result (`boundary-values-unknown-until-parsed`), `known-vulnerabilities-fail-the-check` the accepted vulnerability (`accepted-vulnerability-states-reason-and-expiry`), and `no-dead-code` the unreached branch (`coverage-holds-all-logic`) for the unreachable statement the compiler refuses.
+- **Decision.** Where a tool holds only part of a rule, the rule keeps its slug and its statement and becomes `review`, and a child `→` it states exactly what the tool holds, with the tool's Check and its bindings. So it is for 39 rules: among them `access-only-through-curated-surface` (`surface-is-the-only-way-in`), `commit-header-type-and-subject` (`commit-header-format`), `coverage-holds-all-logic` (`coverage-gate-on-loaded-files` in `bun-test`), `every-control-has-an-accessible-name` and `native-semantics-first` (`jsx-controls-named`, `jsx-roles-and-aria-valid` in `react-dom`'s seam with `a11y`, which `labels-bound-with-use-id` joins, so a React Native project claims no setting it lacks), `tokens-single-source-of-appearance` (one child each in `react-dom`, `react-native` and, under `utilities-only-from-tokens`, `tailwind`), `components-dumb-widgets-smart` (a child in `ui`, and one in each of `ky` and `tanstack-query` for the library it keeps out), and `primitives-take-text-by-props` (`primitives-import-no-message-catalog` in `lingui`'s seam with `ui`). `side-effects-at-the-edges`, `suppression-states-its-reason` and `folder-named-for-purpose-or-role` become `review`, their held parts already held by children. The same holds where a binding sat on a reviewed rule: `commit-scan-redacted` (`lefthook` with `betterleaks`) and `stryker-runs-the-archive-runner` take theirs, and a setting that wires a hook, which no role checks, holds no rule. Three statements lose a clause another rule holds: `yaml-only-at-the-edge` the `unknown` result (`boundary-values-unknown-until-parsed`), `known-vulnerabilities-fail-the-check` the accepted vulnerability (`accepted-vulnerability-states-reason-and-expiry`), and `no-dead-code` the unreached branch (`coverage-holds-all-logic`) for the unreachable statement the compiler refuses.
 - **Rejected.** Narrowing each rule to what its tool holds, which would drop the judgement half a reviewer still needs; a sibling rule beside each rule for what the tool holds, which name two rules where one carries out the other.
 - **Why.** A Check says who holds a rule. A child that states only what its setting refuses keeps that true, and the rule above it stays whole for the review.
 
@@ -428,7 +428,7 @@
   - `no-skipped-or-empty-tests` also refuses a case run only under a condition or expected to fail — Bun's `if`, `skipIf`, `todoIf` and `failing` — and Biome's test domain is turned on for `bun:test` specs, which it never detects by itself.
   - `check-writes-no-snapshot` is new: the check runs `bun test` with `CI=1`, so a missing snapshot fails instead of being written.
   - `integration-specs-run-apart` leaves out `tests/` as well, by `pathIgnorePatterns`, and names the integration run.
-- **Rejected.** A Stryker runner for Bun with per-test coverage: over 986 mutants it took 58 s against 52 s for the command runner, and it has one maintainer. The TypeScript checker: TypeScript 7.0 ships no compiler API until 7.1.
+- **Rejected.** The TypeScript checker: TypeScript 7.0 ships no compiler API until 7.1.
 - **Why.** A rule a tool claims to hold and does not is worse than a reviewed one: everyone trusts the check.
 
 ## ADR-0106 — Value objects, thrown failures and the TypeScript rules of the 2026 audits
@@ -697,3 +697,10 @@
 - **Decision.** `experimentalDecorators` and `emitDecoratorMetadata` are written in the `tsconfig.json` that `bun test` runs from, the root's in a repository of packages, besides the nestjs part it extends (`decorator-options-where-bun-reads`).
 - **Rejected.** A Bun built from the open fix (oven-sh/bun#43110), which no release carries; the options through the presets alone, which Bun 1.4.2 drops.
 - **Why.** Bun's transpiler ignores an `extends` array (oven-sh/bun#43097), so a spec fails at its first decorated member while tsc passes; the rule goes with the Bun release that follows the array.
+
+## ADR-0138 — Each mutant runs against the specs that load its file
+**Date:** 2026-10-05 · **Status:** Accepted
+
+- **Decision.** Stryker runs `bun test` through the archive's runner `bun-specs` (`tools/mutation-check/dist/runner.js`), which runs each mutant against only the specs whose imports reach its file, the nearest first; a mutant in a file no spec loads survives (`stryker-runs-each-mutant-against-the-specs-that-load-it`).
+- **Rejected.** Stryker's command runner, which ran every spec for every mutant: a run cost its mutants times the whole suite, and a change to 24 specs ran 2,416 mutants past CI's 15 minutes. The specs in the `__tests__/` folders above the file, which left 119 mutants of this repository alive in helpers proven through the specs of the boundaries that use them, as `spec-per-boundary` asks. A community runner for Bun with per-test coverage, which over 986 mutants took 58 s against 52 s for the command runner and has one maintainer.
+- **Why.** The full run of this repository, about 3,500 mutants, took 1 min 3 s against 5 min 25 s and left alive no mutant the command runner killed; the cost of a mutant follows the specs that prove its file, not the size of the program.
