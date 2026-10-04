@@ -815,6 +815,7 @@ rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv
 rule	licences-checked-against-the-shared-allowlist	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	licences-from-an-allowlist	false
 rule	accepted-vulnerability-states-reason-and-expiry	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
 rule	licence-override-states-its-reason	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	licences-from-an-allowlist	false
+rule	development-tool-licence-ignored-with-reason	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	review			security	foundation	licences-from-an-allowlist	false
 rule	images-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/with/docker.md	docker	MUST	review			security	foundation	known-vulnerabilities-fail-the-check	false
 rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	review		typescript	a11y testing	foundation	elements-found-by-role-label-text	false
 rule	waits-through-locators-and-assertions	playwright	blocks/implementations/playwright/foundation/playwright.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false

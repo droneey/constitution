@@ -103,7 +103,7 @@ A counterexample a property test finds becomes a row of the unit's table of case
 | a property test draws new inputs each run, so only a row keeps the input that broke the code from coming back unseen. | review | [testing] |
 
 ## lifecycle-tested-to-final-state · SHOULD
-A lifecycle test takes an object made by its factory through every transition to its final state, and checks each step.
+A lifecycle test takes an object made by its factory through every transition to its final state, and checks each step. The path is one intent, so its steps are checked in one case.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -214,14 +214,14 @@ A file in `__tests__/` or in `tests/` is a spec named after the file or scenario
 | a spec named otherwise would not run, and a helper named like a spec would. | review | [testing] |
 
 ## cases-named-should-when · SHOULD
-A suite is named after its boundary, and a case reads `should <behaviour> when <condition>`, in the language's spelling.
+A suite is named after its boundary, and a case reads `should <behaviour>`, with `when <condition>` where the behaviour depends on one, in the language's spelling.
 
 | Why | Check | Tags |
 |---|---|---|
-| a failing case then says which behaviour broke and under what condition, without opening it. | review | [testing] |
+| a failing case then says which behaviour broke and under what condition, without opening it; a condition invented to fill the pattern says nothing. | review | [testing] |
 
 ## case-reads-should-when → cases-named-should-when
-A case reads `should <behaviour> when <condition>`.
+A case reads `should <behaviour>`, and `when <condition>` follows where it has one.
 
 | Why | Check | Tags |
 |---|---|---|

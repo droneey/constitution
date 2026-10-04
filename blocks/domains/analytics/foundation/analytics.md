@@ -15,11 +15,11 @@ Refusing sits beside accepting, on the first screen, with the same weight; every
 | a refusal hidden behind a second screen is consent taken, not given. | review | [security, ux] |
 
 ## consent-withdrawable-and-recorded · MUST
-Consent can be withdrawn at any time as easily as it was given, and each choice is recorded with its time and purposes.
+Consent can be withdrawn at any time as easily as it was given, and each choice is recorded with its time and purposes. A recorded refusal is not asked again for about six months, or until the purposes change.
 
 | Why | Check | Tags |
 |---|---|---|
-| the law asks both, and a record is the only proof the choice was the user's. | review | [security] |
+| the law asks both, and a record is the only proof the choice was the user's; asking again after a refusal wears the user down into a consent that is not free. | review | [security] |
 
 ## events-from-a-closed-vocabulary → illegal-states-unrepresentable
 Every event belongs to one closed vocabulary, each with its typed parameters; no free-form name or value is sent.

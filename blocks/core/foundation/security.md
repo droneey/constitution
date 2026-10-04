@@ -105,11 +105,11 @@ A known vulnerability of any severity in any dependency, development dependencie
 | a vulnerability found by the check is fixed before release; one accepted without an expiry is accepted forever. | tool/audit | [security] |
 
 ## licences-from-an-allowlist · MUST
-Every dependency's licence is on the project's allowlist.
+Every dependency the program ships or loads at runtime has a licence on the project's allowlist; a tool that only builds, tests or checks it may stay off the list, named with its reason.
 
 | Why | Check | Tags |
 |---|---|---|
-| a licence the project cannot honour is a legal obligation it took on without knowing. | tool/audit | [security] |
+| a licence the project cannot honour is a legal obligation it took on without knowing; a tool that never ships passes no obligation on. | tool/audit | [security] |
 
 ## Operations and access
 
@@ -121,7 +121,7 @@ Access is denied unless a rule grants it, and a test proves the access of each o
 | access open by default is open wherever someone forgot a rule, and only a test notices the operation that forgot. | test | [security] |
 
 ## irreversible-operations-behind-flag-and-human · MUST
-An operation that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
+An operation a person or an agent runs against a system — a script, a command line, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
 
 | Why | Check | Tags |
 |---|---|---|

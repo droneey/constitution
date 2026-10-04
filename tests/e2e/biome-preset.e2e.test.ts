@@ -118,12 +118,12 @@ describe('the Biome preset', () => {
       message: 'Name what it holds',
     },
     {
-      condition: 'a case does not read should … when …',
+      condition: 'a case does not read should …',
       files: {
         'src/__tests__/order.test.ts':
           "import { expect, test } from 'bun:test';\n\ntest('adds totals', () => {\n  expect(1).toBe(1);\n});\n",
       },
-      message: "A case reads 'should <behaviour> when <condition>'",
+      message: "A case reads 'should <behaviour>'",
     },
     {
       condition: 'a spec replaces a module',
@@ -287,6 +287,13 @@ describe('the Biome preset', () => {
       files: {
         'src/features/orders/domain/limit.ts':
           "export type Limit = 'none' | number;\n",
+      },
+    },
+    {
+      condition: 'a case reads should without a condition',
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  expect(1).toBe(1);\n});\n",
       },
     },
     {
@@ -777,7 +784,23 @@ describe('the Biome foundation parts', () => {
         'src/order.test.ts':
           "import { expect, test } from 'bun:test';\n\ntest('adds totals', () => {\n  expect(1).toEqual(1);\n});\n",
       },
-      message: 'Compare with toStrictEqual',
+      message: 'Compare the whole outcome with toStrictEqual',
+    },
+    {
+      condition: 'a spec compares part of the outcome',
+      files: {
+        'src/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  expect({ total: 1 }).toMatchObject({ total: 1 });\n});\n",
+      },
+      message: 'Compare the whole outcome with toStrictEqual',
+    },
+    {
+      condition: 'a spec asks only for a truthy outcome',
+      files: {
+        'src/order.test.ts':
+          "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  expect(1).toBeTruthy();\n});\n",
+      },
+      message: 'Compare the whole outcome with toStrictEqual',
     },
     {
       condition: 'a case is retried',

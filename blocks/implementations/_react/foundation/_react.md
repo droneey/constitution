@@ -126,7 +126,7 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
 
 ## error-boundary-catches-render-errors · SHOULD
-A screen's error boundary catches the render errors below it and shows the screen's error state, and the failure is reported once. A failure a data hook returns as a state is rendered, not thrown.
+A screen's error boundary catches the render errors below it and shows the screen's error state, and the failure is reported once. A failure a data hook returns as a state is rendered, not thrown; a suspending read's failure is thrown to the error boundary above it.
 
 | Why | Check | Tags |
 |---|---|---|
