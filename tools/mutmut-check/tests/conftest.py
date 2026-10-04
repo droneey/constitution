@@ -1,4 +1,3 @@
-# pytest: no spec reaches the network
 import socket
 
 import pytest

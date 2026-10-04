@@ -16,7 +16,6 @@ SEPARATOR = 'ǁ'
 class Changes:
   # the lines each tracked file changed, from a diff against the base
   lines: Mapping[Path, tuple[range, ...]]
-  # the files git does not track yet
   untracked: tuple[Path, ...]
   # every Python file under src/
   sources: tuple[Path, ...]

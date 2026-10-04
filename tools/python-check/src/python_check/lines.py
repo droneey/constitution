@@ -13,7 +13,6 @@ def _function_lines(node: ast.FunctionDef | ast.AsyncFunctionDef) -> int:
 
 
 def line_findings(*, path: Path, tree: ast.Module, lines: int) -> tuple[Finding, ...]:
-  # The specs and their helpers in tests/ have no line limit.
   if TESTS in path.parts:
     return ()
 
