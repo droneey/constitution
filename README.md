@@ -19,7 +19,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold the tool-checked rules, `presets/<scope>/<tool>/<axis>/<block>.*` |
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
-| `tools` | Programs the release archive carries, such as `mutation-check`, which mutates only the lines a change touches |
+| `tools` | Programs the release archive carries: `mutation-check`, which mutates only the lines a change touches; for Python, `mutmut-check`, its twin over mutmut, and `python-check`, which holds the lengths of functions and files and where a relative import may reach — each a member of the repository's uv workspace with its own specs |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
 | `DECISIONS.md` | The constitution's own decision log |
@@ -138,11 +138,11 @@ The marketplace serves the plugin from the tag of its latest release: each relea
 ## 🛠️ Development
 
 ```bash
-mise trust && mise install   # bun
+mise trust && mise install   # bun, Python and uv, and the Python tools of the dev group
 bun install                  # installs the git hooks
-bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, blocks, secrets, names, unused code, vulnerabilities
+bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, the Python tools' own checks, blocks, secrets, names, unused code, vulnerabilities
 bun run digests:write        # regenerate digests/ after a change to a block
-bun run build                # build tools/mutation-check/dist/main.js, as the release does
+bun run build                # build tools/mutation-check/dist/main.js and the Python tools' .pyz, as the release does
 claude --plugin-dir .        # a session on the working tree's plugin instead of the installed release
 ```
 
@@ -176,9 +176,9 @@ After the findings it prints advice that does not fail the check: the roles a la
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of `mutation-check`, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
+| `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of the archive's tools, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
 | `cd-version.yaml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds `mutation-check`, packs `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, packs `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
 ## 🛠️ Changing it
 

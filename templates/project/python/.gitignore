@@ -4,3 +4,19 @@ __pycache__/
 
 # python: build
 *.egg-info/
+
+# pytest: caches and coverage
+.pytest_cache/
+.coverage
+
+# hypothesis: the inputs that failed
+.hypothesis/
+
+# mutmut: the mutants
+mutants/
+
+# import-linter: caches
+.import_linter_cache/
+
+# complexipy: caches
+.complexipy_cache/

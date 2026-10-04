@@ -24,5 +24,18 @@
 # stryker
 .stryker-tmp/
 
+# python: bytecode
+__pycache__/
+
+# pytest: caches and coverage
+.pytest_cache/
+.coverage
+
+# complexipy
+.complexipy_cache/
+
+# mutmut
+mutants/
+
 # mise
 mise.local.toml
