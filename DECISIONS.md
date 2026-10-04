@@ -27,7 +27,7 @@
 | Delivery of the constitution | ADR-0124 |
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
-| TypeScript configuration | ADR-0130 |
+| TypeScript configuration | ADR-0130, ADR-0131 |
 
 ---
 
@@ -891,3 +891,10 @@
 - **Decision.** Where specs need Bun's types and the program does not, the program's configuration is `tsconfig.src.json`, the specs' is `tsconfig.test.json`, and `tsconfig.json` holds no files and references both (`specs-checked-by-their-own-config`).
 - **Rejected.** The program's configuration as `tsconfig.json` with the specs left out: an editor reads only `tsconfig.json`, so it opened every spec without the `ESNext` lib, Bun's types or the decorator options and reported errors the check never saw.
 - **Why.** The solution-style configuration, as Vite's templates use it, gives each file its own configuration in the editor and in the check alike (found in droneey/kit).
+
+## ADR-0131 — Bun takes the program's options from tsconfig.json
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** Under `specs-checked-by-their-own-config`, `tsconfig.json` extends `tsconfig.src.json` and keeps `files` and `include` empty, beside its references to both configurations. Amends ADR-0130.
+- **Rejected.** A `tsconfig.json` with references alone (ADR-0130): Bun's transpiler reads only `tsconfig.json` and follows no reference, so a spec run by `bun test` lost the program's transpiler options, such as its decorators.
+- **Why.** Extending the program's configuration gives Bun its options, while TypeScript still reads a file with no files of its own as a solution and opens each file with the configuration that holds it (verified on Bun 1.4.2 and TypeScript 7.0.2).
