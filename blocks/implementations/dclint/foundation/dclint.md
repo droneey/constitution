@@ -7,9 +7,10 @@ The check runs dclint with `--recursive` over the repository and the archive's `
 |---|---|---|
 | a recursive run finds every Compose file, and a rule left at a warning passes the check unfixed. | tool/lint | [] |
 
-## dclint-suppression-names-rule-and-reason → suppression-states-its-reason
-A suppression is `# dclint disable-line <rule>` or `# dclint disable-next-line <rule>`, with the reason beside it; never a rule disabled for the whole file.
+## dclint-suppression-names-rule-and-reason → suppression-silences-one-finding
+A suppression is `# dclint disable-line <rule>` or `# dclint disable-next-line <rule>`, with the reason beside it.
 
 | Why | Check | Tags |
 |---|---|---|
-| a suppression at its line can be judged there; one for the whole file silences the rule for every service. | review | [] |
+| dclint's other comments disable a rule for the whole file, which silences it for every service. | review | [] |
+

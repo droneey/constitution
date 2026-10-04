@@ -21,9 +21,10 @@ Every scan passes `--redact`: a report shows a finding by its rule, file and lin
 |---|---|---|
 | a report that prints the secret leaks it again, into the CI log. | review | [] |
 
-## allowlisted-finding-states-its-reason → suppression-states-its-reason
+## allowlisted-finding-states-its-reason → suppression-silences-one-finding
 A false positive is allowed on its line by `betterleaks:allow` followed by its reason, or by its fingerprint in `.betterleaksignore` under a `#` line that states the reason; never by disabling a rule.
 
 | Why | Check | Tags |
 |---|---|---|
-| a disabled rule stops finding the real secrets too. | review | [security] |
+| `betterleaks:allow` names no rule, so its line bounds it, and a fingerprint names one finding; a disabled rule stops finding the real secrets too. | review | [security] |
+

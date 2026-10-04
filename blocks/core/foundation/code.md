@@ -208,6 +208,13 @@ Silencing a check — a lint rule, a type error, a mutant, a deliberately ignore
 |---|---|---|
 | the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | review | [] |
 
+## suppression-silences-one-finding → suppression-states-its-reason
+A suppression silences one finding: it sits on the finding's line or the line above, or names the finding itself, and names the one rule, code or mutator it silences wherever the tool's form can name one; never a group of rules, a whole tool, a range or a whole file. A suppression that silences no finding the check would report is removed.
+
+| Why | Check | Tags |
+|---|---|---|
+| a suppression of one rule on one line can be judged where it stands; a broad one silences rules and lines nobody meant to, and one that silences nothing outlives the finding it was for. | review | [] |
+
 ## no-debug-output-in-shipped-code · SHOULD
 Shipped code writes no debug output and stops at no breakpoint. What a command-line program writes for its user — its results, prompts and messages — is its output, not debug.
 
