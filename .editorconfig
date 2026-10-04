@@ -1,5 +1,6 @@
 root = true
 
+# core
 [*]
 charset = utf-8
 end_of_line = lf
@@ -8,6 +9,7 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 
+# local
 [*.md]
 trim_trailing_whitespace = false
 

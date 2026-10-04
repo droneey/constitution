@@ -1,18 +1,24 @@
-# OS
+# core: OS
 .DS_Store
 
-# Local-only specs and plans
+# core: the constitution, unpacked by mise
+/.droneey
+
+# core: build
+**/dist/
+**/coverage/
+
+# core: working notes
 /local/
 
-# JS
-**/dist/
+# typescript: dependencies
 **/node_modules/
-**/coverage/
+
+# typescript: caches
 *.tsbuildinfo
 
-# Stryker
+# stryker
 .stryker-tmp/
 
 # mise
 mise.local.toml
-/.droneey
