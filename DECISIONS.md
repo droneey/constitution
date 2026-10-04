@@ -940,4 +940,4 @@
 
 - **Decision.** `experimentalDecorators` and `emitDecoratorMetadata` are written in the `tsconfig.json` that `bun test` runs from, the root's in a repository of packages, besides the nestjs part it extends (`decorator-options-where-bun-reads`).
 - **Rejected.** A Bun built from the open fix (oven-sh/bun#43110), which no release carries; the options through the presets alone, which Bun 1.4.2 drops.
-- **Why.** Bun's transpiler ignores an `extends` array (oven-sh/bun#43097), so a spec fails at its first decorated member while tsc passes; an end-to-end spec shows the day Bun follows the array and the rule can go.
+- **Why.** Bun's transpiler ignores an `extends` array (oven-sh/bun#43097), so a spec fails at its first decorated member while tsc passes; the rule goes with the Bun release that follows the array.
