@@ -22,8 +22,9 @@ block	observability	domain	Logs a collector reads: one pipeline, events with fie
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
 block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
-block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md				false						
-block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
+block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md	architecture/remote-service			false						
+block	remote-service	domain	Another system the program calls: transport, failures, streams, specs.	foundation/remote-service.md architecture/remote-service.md workflow/remote-service.md				false						
+block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/design-system.md architecture/ui.md	foundation/remote-data foundation/remote-service architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
 block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md architecture/untrusted-client.md				false						
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	foundation/version-control.md workflow/version-control.md				false						
@@ -49,11 +50,11 @@ block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicor
 block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	foundation/fastmcp.md architecture/fastmcp.md	foundation/structlog	python pydantic		false						
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.	foundation/git.md		version-control		false	lefthook					.gitignore .gitattributes
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	foundation/hadolint.md		docker		false		lint				.hadolint.yaml
-block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	foundation/httpx2.md architecture/httpx2.md		python remote-data		false						**/adapters/** **/root/**
+block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	foundation/httpx2.md architecture/httpx2.md		python remote-service		false						**/adapters/** **/root/**
 block	hypothesis	implementation	Hypothesis writes Python's property tests.	foundation/hypothesis.md		python		false						
 block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md	architecture/httpx2 architecture/pydantic architecture/structlog	python		false		imports	python			
 block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md		typescript		false		unused	typescript			knip.config.ts
-block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-data		false						**/providers/** **/adapters/**
+block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-service		false						**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks		git	false		commits			git	lefthook.yaml
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.	foundation/lingui.md	foundation/_react foundation/bun-test foundation/bun foundation/vite architecture/ui	i18n typescript		false						lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names				.ls-lint.yaml
@@ -79,10 +80,10 @@ block	stryker	implementation	Stryker measures the tests by the mutants they kill
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
-block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
+block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data remote-service		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query foundation/version-control architecture/access-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
-block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y foundation/remote-data	_react		false						**/__tests__/**/*.test.tsx
+block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y foundation/remote-service	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md	foundation/pydantic	python		false		types	python			ty.toml
@@ -231,12 +232,10 @@ rule	no-fixed-sleeps-in-tests	core	blocks/core/foundation/testing.md		SHOULD	rev
 rule	unit-case-runs-in-milliseconds	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	tests-run-in-a-sandbox	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation		true
 rule	network-refused-in-the-unit-run	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
-rule	unmatched-request-fails-the-spec	core	blocks/core/foundation/testing.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
 rule	one-fake-per-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	effects-faked-never-mocked	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	one-fake-per-contract	false
 rule	integration-tested-against-the-real-engine	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	integration-specs-in-their-own-run	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation	integration-tested-against-the-real-engine	false
-rule	captured-responses-verified-against-the-vendor	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	end-to-end-per-critical-scenario	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	test-files-named-by-role	core	blocks/core/foundation/testing.md		MUST	review			testing	foundation		true
 rule	cases-named-should-when	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
@@ -332,7 +331,6 @@ rule	sub-agent-never-touches-live-systems	core	blocks/core/workflow/collaboratio
 rule	shared-tooling-from-pinned-packages	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow		true
 rule	tests-first-from-a-description	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	bug-fix-starts-with-failing-test	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	test-seen-failing	false
-rule	contract-run-scheduled-outside-the-check	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	captured-responses-verified-against-the-vendor	false
 rule	whole-program-mutated-periodically	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	wcag-aa-conformance	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
 rule	native-semantics-first	a11y	blocks/domains/a11y/foundation/a11y.md		MUST	review			a11y	foundation		true
@@ -445,7 +443,6 @@ rule	one-version-for-all-packages	package	blocks/domains/package/workflow/packag
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
 rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
-rule	stream-ends-with-terminal-event	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
 rule	remote-data-cache-invalidates-by-prefix	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
@@ -453,18 +450,23 @@ rule	remote-data-cache-cancels-reads	remote-data	blocks/domains/remote-data/foun
 rule	remote-data-cache-mutation-lifecycle	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
 rule	remote-data-cache-global-error-handler	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			errors	foundation		true
 rule	remote-data-cache-staleness-policy	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data performance	foundation		true
-rule	remote-data-transport-timeout-and-cancel	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			errors performance	foundation		true
-rule	remote-data-transport-typed-failures	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			errors	foundation		true
-rule	remote-data-transport-retries-only-transient	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			errors	foundation		true
 rule	server-owns-remote-data	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	one-home-per-datum	false
-rule	responses-parsed-in-the-adapter	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data security	architecture	untrusted-input-parsed-at-edge	false
-rule	transport-failures-mapped-once	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
 rule	cache-keys-from-feature-factory	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	one-home-per-datum	false
 rule	invalidation-stays-in-its-feature	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	features-blind-to-each-other	false
-rule	stream-as-async-iterable-of-domain-events	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	contracts-know-no-vendor-or-other-contract	false
-rule	stream-folded-by-domain-reducer	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review			data	architecture		true
 rule	no-second-model-of-remote-data	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review				architecture		true
-rule	remote-data-transport-built-by-the-root	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review				architecture		true
+rule	stream-folded-by-domain-reducer	remote-data	blocks/domains/remote-data/architecture/with/remote-service.md	remote-service	SHOULD	review			data	architecture		true
+rule	stream-ends-with-terminal-event	remote-service	blocks/domains/remote-service/foundation/remote-service.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
+rule	remote-vendor-proven-by-captured-responses	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			testing	foundation		true
+rule	captured-responses-verified-against-the-vendor	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			testing	foundation		true
+rule	unmatched-request-fails-the-spec	remote-service	blocks/domains/remote-service/foundation/remote-service.md		MUST	review			testing security	foundation	tests-run-in-a-sandbox	false
+rule	transport-timeout-and-cancel	remote-service	blocks/domains/remote-service/foundation/remote-service.md		MUST	review			errors performance	foundation		true
+rule	transport-typed-failures	remote-service	blocks/domains/remote-service/foundation/remote-service.md		MUST	review			errors	foundation		true
+rule	transport-retries-only-transient	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			errors	foundation		true
+rule	responses-parsed-in-the-adapter	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST	review			data security	architecture	untrusted-input-parsed-at-edge	false
+rule	transport-failures-mapped-once	remote-service	blocks/domains/remote-service/architecture/remote-service.md		SHOULD	review			errors	architecture	expected-failures-typed-with-codes	false
+rule	stream-as-async-iterable-of-domain-events	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST	review			data	architecture	contracts-know-no-vendor-or-other-contract	false
+rule	transport-built-by-the-root	remote-service	blocks/domains/remote-service/architecture/remote-service.md		SHOULD	review				architecture		true
+rule	contract-run-scheduled-outside-the-check	remote-service	blocks/domains/remote-service/workflow/remote-service.md		SHOULD	review			testing	workflow	captured-responses-verified-against-the-vendor	false
 rule	four-data-states	ui	blocks/domains/ui/foundation/ui.md		MUST	test			ux a11y	foundation		true
 rule	state-messages-guide-the-user	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	button-names-its-result	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
@@ -536,7 +538,7 @@ rule	data-result-is-union-by-status	ui	blocks/domains/ui/foundation/with/remote-
 rule	optimistic-writes-in-rollback-lifecycle	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	review			data	foundation		true
 rule	optimistic-lifecycle-safe-under-concurrency	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			data	foundation		true
 rule	input-driven-requests-debounced	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	SHOULD	review			ux performance	foundation	fast-source-updates-once-per-frame	false
-rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
+rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-service.md	remote-service	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
 rule	screen-guards-through-auth-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	review			security	architecture	access-denied-unless-granted	false
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review				architecture	one-explicit-composition-root	false
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review				architecture		true
@@ -902,7 +904,7 @@ rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/found
 rule	client-open-for-the-program-life	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		SHOULD	review		python	performance	foundation	resources-released-on-every-path	false
 rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	security	foundation	boundary-values-object-until-parsed	false
 rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	testing security	foundation	unmatched-request-fails-the-spec	false
-rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python		architecture	remote-data-transport-built-by-the-root	false
+rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python		architecture	transport-built-by-the-root	false
 rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python	errors	architecture	transport-failures-mapped-once	true
 rule	retries-written-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python	errors	architecture	retry-only-transient-failures	false
 rule	httpx2-only-at-the-edge	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python		architecture	side-effects-at-the-edges	false
@@ -917,7 +919,7 @@ rule	unused-check-in-production-mode	knip	blocks/implementations/knip/foundation
 rule	ky-timeout-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	io-has-timeout-and-cancellation	false
 rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	boundary-values-unknown-until-parsed	false
-rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		SHOULD	review		typescript		architecture	remote-data-transport-built-by-the-root	false
+rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		SHOULD	review		typescript		architecture	transport-built-by-the-root	false
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript	errors	architecture	transport-failures-mapped-once	true
 rule	components-import-no-http-client	ky	blocks/implementations/ky/architecture/with/ui.md	ui	MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
 rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
@@ -1140,7 +1142,7 @@ rule	interactions-through-user-event	testing-library	blocks/implementations/test
 rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	spec-per-boundary	false
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
-rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/with/remote-data.md	remote-data	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
+rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/with/remote-service.md	remote-service	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
@@ -1187,12 +1189,12 @@ answer	fastmcp	untrusted-input-parsed-at-edge	yes
 answer	fastmcp	one-error-handler-per-transport	yes
 answer	fastmcp	error-kit-carries-code-cause-and-details	no
 answer	fastmcp	tests-run-in-a-sandbox	yes
-answer	httpx2	remote-data-transport-timeout-and-cancel	yes
-answer	httpx2	remote-data-transport-typed-failures	yes
-answer	httpx2	remote-data-transport-retries-only-transient	partly
-answer	ky	remote-data-transport-timeout-and-cancel	yes
-answer	ky	remote-data-transport-typed-failures	yes
-answer	ky	remote-data-transport-retries-only-transient	yes
+answer	httpx2	transport-timeout-and-cancel	yes
+answer	httpx2	transport-typed-failures	yes
+answer	httpx2	transport-retries-only-transient	partly
+answer	ky	transport-timeout-and-cancel	yes
+answer	ky	transport-typed-failures	yes
+answer	ky	transport-retries-only-transient	yes
 answer	lingui	plural-forms-by-locale-rules	yes
 answer	lingui	messages-take-named-parameters	yes
 answer	lingui	i18n-typed-keys	partly

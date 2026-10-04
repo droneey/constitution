@@ -1,12 +1,5 @@
 # Remote data
 
-## stream-ends-with-terminal-event → errors-surfaced-never-swallowed
-A stream that ends without its terminal event fails with a typed error.
-
-| Why | Check | Tags |
-|---|---|---|
-| a stream cut short otherwise looks like a complete one, and the user sees a partial result as final. | test | [] |
-
 ## reads-cancellable-latest-wins → io-has-timeout-and-cancellation
 Every read can be cancelled; a read superseded for the same key is cancelled, and only the latest answer reaches the cache.
 
@@ -16,7 +9,7 @@ Every read can be cancelled; a read superseded for the same key is cancelled, an
 
 ## Requirements for implementation
 
-What any cache of remote data, and any transport it reads through, must provide.
+What any cache of remote data must provide.
 
 ## remote-data-cache-dedupes-by-key · MUST
 Reads with one key share one request and one entry.
@@ -60,23 +53,3 @@ Staleness and refetching are set per key.
 |---|---|---|
 | data that changes every second and data that never changes need different policies. | review | [data, performance] |
 
-## remote-data-transport-timeout-and-cancel · MUST
-The transport sets a timeout on every request, per call, and cancels a request by signal.
-
-| Why | Check | Tags |
-|---|---|---|
-| without it, no request can meet the rule that it times out and can be cancelled. | review | [errors, performance] |
-
-## remote-data-transport-typed-failures · MUST
-The transport tells a status failure, a network failure and a timeout apart, for the mapper.
-
-| Why | Check | Tags |
-|---|---|---|
-| each maps to a different typed error, with a different next step for the user. | review | [errors] |
-
-## remote-data-transport-retries-only-transient · SHOULD
-Retries are configurable by method and status, with backoff, and off for writes that are not idempotent.
-
-| Why | Check | Tags |
-|---|---|---|
-| a retried write that is not idempotent repeats its effect. | review | [errors] |

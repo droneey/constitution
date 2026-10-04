@@ -1,0 +1,31 @@
+# Remote service
+
+> The ports and adapters that reach the other system follow core.
+
+## responses-parsed-in-the-adapter → untrusted-input-parsed-at-edge
+Every response is parsed against its wire schema in the adapter before it is mapped, so a change of the wire fails at that one boundary.
+
+| Why | Check | Tags |
+|---|---|---|
+| an unparsed response carries whatever the server sent into the domain, and it fails far from the cause. | review | [data] |
+
+## transport-failures-mapped-once → expected-failures-typed-with-codes
+One shared mapper, in `shared/<transport>/`, turns transport failures into domain errors: it maps unauthorized and unexpected failures to shared domain errors itself and takes each feature's map of codes. It only maps: the unauthorized error it returns is acted on afterwards, once, by the cache's global error handler.
+
+| Why | Check | Tags |
+|---|---|---|
+| every adapter then fails the same way, and a feature states only what is its own. | review | [] |
+
+## stream-as-async-iterable-of-domain-events → contracts-know-no-vendor-or-other-contract
+A progressive result is an asynchronous sequence of domain events the port returns: its end completes it, a domain error fails it, and stopping the loop cancels it. The events are a union declared in the port's file. The adapter maps wire events and drops unknown ones. A stream a write causes is a command; a passive subscription is a query.
+
+| Why | Check | Tags |
+|---|---|---|
+| the domain sees its own events in its own words, and the transport can change without touching it. | review | [data] |
+
+## transport-built-by-the-root · SHOULD
+One configured instance — base address, headers, credentials — is built by the composition root and passed to the adapters that need it.
+
+| Why | Check | Tags |
+|---|---|---|
+| every adapter then speaks to the server the same way, and a test passes them another instance. | review | [] |

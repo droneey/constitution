@@ -1,6 +1,6 @@
 # httpx2
 
-## one-client-per-system-built-by-the-root → remote-data-transport-built-by-the-root
+## one-client-per-system-built-by-the-root → transport-built-by-the-root
 `root/` builds one `AsyncClient` per remote system from the settings — base URL, headers, credentials, timeout — opens it for the program's lifespan, and passes it to the factories of that system's adapters; no adapter builds a client.
 
 | Why | Check | Tags |

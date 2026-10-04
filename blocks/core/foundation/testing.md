@@ -170,7 +170,7 @@ A unit case finishes in milliseconds; a slower case reaches something outside it
 ## The sandbox
 
 ## tests-run-in-a-sandbox · MUST
-Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person, or by a contract run outside the check.
+Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person, or outside the check.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -182,13 +182,6 @@ The unit run replaces every call that opens a connection with one that throws, s
 | Why | Check | Tags |
 |---|---|---|
 | a spec that reaches a server by mistake passes while the server answers and fails at random when it does not; refused at once, it fails where the mistake is. | review | [] |
-
-## unmatched-request-fails-the-spec → tests-run-in-a-sandbox
-A transport replaced by captured responses throws on a request none of them matches, naming its method and address.
-
-| Why | Check | Tags |
-|---|---|---|
-| a request nobody captured otherwise gets an empty answer, and the spec passes on code that would fail against the real service. | review | [testing] |
 
 ## one-fake-per-contract · SHOULD
 Each faked contract has one fake, `<contract>.fake`, shared by every spec that needs it.
@@ -205,7 +198,7 @@ No spec mocks, patches or spies on a module of the program: an effect is replace
 | a mocked module replaces code the spec claims to test, and breaks when the module moves. | review | [] |
 
 ## integration-tested-against-the-real-engine · SHOULD
-Each implementation of a contract over an external system is proven against its real engine inside the sandbox, in `<name>.integration.test`, with a case for each operation of the contract and each failure it maps. A remote vendor that cannot run in a sandbox is proven through its transport with captured responses. An integration spec counts toward the coverage gate only for an engine the project owns.
+Each implementation of a contract over an external system whose engine can run inside the sandbox is proven against that engine there, in `<name>.integration.test`, with a case for each operation of the contract and each failure it maps. An integration spec counts toward the coverage gate only for an engine the project owns.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -217,13 +210,6 @@ The unit run leaves the integration specs out, and they run as their own entry o
 | Why | Check | Tags |
 |---|---|---|
 | the fast run stays fast, and the slower integration run fails on its own. | review | [] |
-
-## captured-responses-verified-against-the-vendor · SHOULD
-Each captured response of a remote vendor is checked against the vendor by a contract run, which captures it again and reports any difference.
-
-| Why | Check | Tags |
-|---|---|---|
-| a vendor changes its answers without telling anyone, and a spec on an old capture keeps passing while the program breaks. | review | [testing] |
 
 ## end-to-end-per-critical-scenario · SHOULD
 Each critical scenario `PROJECT.md` names has one end-to-end test through the built program, the way its users reach it, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.

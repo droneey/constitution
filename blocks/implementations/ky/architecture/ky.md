@@ -1,6 +1,6 @@
 # ky
 
-## one-ky-instance-per-system → remote-data-transport-built-by-the-root
+## one-ky-instance-per-system → transport-built-by-the-root
 One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter imports it or uses ky's default export.
 
 | Why | Check | Tags |
