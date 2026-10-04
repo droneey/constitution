@@ -3,12 +3,17 @@ import bunTest from './.droneey/constitution/presets/typescript/stryker/foundati
 import core from './.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
 import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
 import self from './.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
+import uv from './.droneey/constitution/presets/typescript/stryker/foundation/uv.mjs';
 
 export default {
   ...self,
   ...mise,
   ...bunTest,
   ...core,
+  ignorePatterns: [
+    ...mise.ignorePatterns,
+    ...uv.ignorePatterns,
+  ],
   commandRunner: {
     command: `${bunTest.commandRunner.command} ./src ./tools`,
   },
