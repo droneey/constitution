@@ -4,7 +4,7 @@ import type { Files } from '../../../__tests__/constitution.fixtures';
 import { checkInputOf, mainFile } from '../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../__tests__/valid-files.fixtures';
 import type { Place } from '../closure.utils';
-import { closureOf, mayReferTo, reachableFrom } from '../closure.utils';
+import { closureOf, mayCarryOut, mayReferTo, reachableFrom } from '../closure.utils';
 
 interface ClosureCase {
   blockId: string;
@@ -203,6 +203,113 @@ describe('mayReferTo', () => {
 
     // Act
     const isAllowed = mayReferTo({
+      byId,
+      from,
+      to,
+    });
+
+    // Assert
+    expect(isAllowed).toBe(expected);
+  });
+});
+
+describe('mayCarryOut', () => {
+  it.each<{
+    expected: boolean;
+    from: Place;
+    name: string;
+    to: Place;
+  }>([
+    {
+      expected: true,
+      from: {
+        block: 'browser',
+        with: undefined,
+      },
+      name: 'a parent in core',
+      to: {
+        block: 'core',
+        with: undefined,
+      },
+    },
+    {
+      expected: true,
+      from: {
+        block: 'react-dom',
+        with: undefined,
+      },
+      name: 'a parent in a block its closure reaches',
+      to: {
+        block: 'ui',
+        with: undefined,
+      },
+    },
+    {
+      expected: true,
+      from: {
+        block: 'ui',
+        with: 'remote-data',
+      },
+      name: 'a parent in a seam whose other block its place reaches',
+      to: {
+        block: 'ui',
+        with: 'remote-data',
+      },
+    },
+    {
+      expected: false,
+      from: {
+        block: 'react-dom',
+        with: undefined,
+      },
+      name: 'a parent in a seam whose other block its place does not reach',
+      to: {
+        block: 'ui',
+        with: 'remote-data',
+      },
+    },
+    {
+      expected: false,
+      from: {
+        block: 'browser',
+        with: undefined,
+      },
+      name: 'a parent in a block of a layer above outside its closure',
+      to: {
+        block: 'i18n',
+        with: undefined,
+      },
+    },
+    {
+      expected: false,
+      from: {
+        block: 'nowhere',
+        with: undefined,
+      },
+      name: 'a parent in core from a block that does not exist',
+      to: {
+        block: 'core',
+        with: undefined,
+      },
+    },
+    {
+      expected: false,
+      from: {
+        block: 'browser',
+        with: undefined,
+      },
+      name: 'a parent in a block that does not exist',
+      to: {
+        block: 'nowhere',
+        with: undefined,
+      },
+    },
+  ])('should answer $expected when a rule carries out $name', ({ expected, from, to }) => {
+    // Arrange
+    const { byId } = checkInputOf(validFiles());
+
+    // Act
+    const isAllowed = mayCarryOut({
       byId,
       from,
       to,

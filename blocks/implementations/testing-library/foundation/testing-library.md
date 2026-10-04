@@ -28,9 +28,3 @@ A hook that loads or writes data is proven through the screen or component that 
 |---|---|---|
 | the screen is the boundary a user meets, and a hook tested alone repeats what its screen's spec proves. | review | [] |
 
-## render-helper-builds-fresh-providers → ui-specs-replace-the-transport
-One render helper in `__tests__/<name>.fixtures` mounts the providers a spec needs, fresh for each spec, with the transport replaced by captured responses and the cache client's retries off; no client is shared between specs.
-
-| Why | Check | Tags |
-|---|---|---|
-| every spec then runs inside the real composition, and nothing leaks from one spec's cache into the next. | review | [] |

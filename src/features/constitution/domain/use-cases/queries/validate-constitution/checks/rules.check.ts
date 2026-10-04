@@ -3,7 +3,7 @@ import { Axis, LEVELS, ROLES, Tag } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { checkOf, mayReferTo } from '../../../../utils';
+import { checkOf, mayCarryOut } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -118,13 +118,15 @@ const parentMessage = (input: {
   }
 
   if (
-    !mayReferTo({
+    !mayCarryOut({
       byId: input.byId,
       from: input.rule,
-      to: target.block,
+      to: target,
     })
   ) {
-    return `carries out "${parent}" of ${target.block}, which its block may not refer to`;
+    return target.with === undefined
+      ? `carries out "${parent}" of ${target.block}, which its block may not refer to`
+      : `carries out "${parent}" of ${target.block} with ${target.with}, which its place does not reach`;
   }
 
   if (target.axis !== input.rule.axis && target.axis !== Axis.Foundation) {

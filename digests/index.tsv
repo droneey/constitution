@@ -65,7 +65,7 @@ block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities 
 block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md architecture/pino.md		typescript observability		false						**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md	foundation/a11y	browser ui typescript		false						tests/e2e/** playwright.config.*
 block	poethepoet	implementation	Poe the Poet runs the tasks of a Python repository.	foundation/poethepoet.md		python		false						pyproject.toml
-block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	foundation/pydantic.md architecture/pydantic.md		python		false						**/models/** **/adapters/** **/root/**
+block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	foundation/pydantic.md architecture/pydantic.md	foundation/convergence	python		false						**/models/** **/adapters/** **/root/**
 block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	foundation/pytest.md architecture/pytest.md		python		false		tests coverage	python			**/tests/**
 block	python-check	implementation	The constitution's own check of what no Python tool holds.	foundation/python-check.md architecture/python-check.md		python		false		lint imports	python			
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y foundation/bun-test	browser	_react	false					_react	**/*.tsx
@@ -82,16 +82,16 @@ block	tanstack-form	implementation	Forms with TanStack Form — one form state, 
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query foundation/version-control architecture/access-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
-block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
+block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y foundation/remote-data	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md	foundation/pydantic	python		false		types	python			ty.toml
 block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package workflow/package	python		false						pyproject.toml uv.lock
-block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md architecture/vite.md	foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
+block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser foundation/tsc architecture/browser	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
-block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md architecture/zod.md		typescript		false						**/models/** **/adapters/**
+block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md architecture/zod.md	foundation/convergence	typescript		false						**/models/** **/adapters/**
 rule	intention-revealing-names	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	names-from-the-glossary	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	one-word-per-concept	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
@@ -963,7 +963,6 @@ rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright
 rule	poe-only-without-a-script-runner	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		SHOULD	review		python		foundation		true
 rule	check-chains-area-tasks	poethepoet	blocks/implementations/poethepoet/foundation/poethepoet.md		MUST	review		python		foundation	check-chains-one-entry-per-area	false
 rule	owned-documents-strict-vendor-answers-tolerant	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	test		python	data	foundation	documents-strict-vendor-answers-tolerant	false
-rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	test		python	data	foundation	published-schema-generated-from-code	false
 rule	validation-errors-become-error-details	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		SHOULD	review		python	errors security	foundation	parse-failure-is-one-coded-error	false
 rule	models-frozen	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		SHOULD	review		python		foundation	immutable-by-default	false
 rule	secrets-typed-secret-str	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
@@ -971,6 +970,7 @@ rule	pydantic-two-forms-only	pydantic	blocks/implementations/pydantic/foundation
 rule	pydantic-only-at-the-edge	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
 rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	data	architecture	external-shapes-mapped-at-boundary	false
 rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	environment-read-once-at-boot	false
+rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/foundation/with/convergence.md	convergence	MUST	test		python	data	foundation	published-schema-generated-from-code	false
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	tests	python	testing	foundation	tests-pass-in-check	false
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	coverage	python	testing	foundation	coverage-holds-all-logic	false
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	case-order-shuffled-with-a-seed	false
@@ -1123,8 +1123,8 @@ rule	queries-by-role-label-text	testing-library	blocks/implementations/testing-l
 rule	interactions-through-user-event	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation		true
 rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	spec-per-boundary	false
-rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/with/a11y.md	a11y	MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
+rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/with/remote-data.md	remote-data	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
@@ -1141,10 +1141,10 @@ rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/foundation/uv.md
 rule	members-linked-by-workspace-source	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation	workspace-packages-linked-locally	false
 rule	uv-build-backend-capped	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation		true
 rule	version-written-by-uv-version	uv	blocks/implementations/uv/workflow/with/package.md	package	MUST	review		python		workflow	one-version-for-all-packages	false
-rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
-rule	one-build-for-every-environment	vite	blocks/implementations/vite/architecture/vite.md		MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
+rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/with/browser.md	browser	SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
 rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/foundation/with/tsc.md	tsc	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
+rule	one-build-for-every-environment	vite	blocks/implementations/vite/architecture/with/browser.md	browser	MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
 rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	tool	unused	python		foundation	no-dead-code	false
 rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	review		python		foundation	suppression-states-its-reason	false
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	errors	foundation	parse-failure-is-one-coded-error	false
@@ -1153,11 +1153,11 @@ rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/architecture/yaml.md
 rule	document-header-names-its-schema	yaml	blocks/implementations/yaml/foundation/with/convergence.md	convergence	SHOULD	review		typescript	ux	foundation	init-writes-document-from-template	false
 rule	yamllint-strict-over-every-file	yamllint	blocks/implementations/yamllint/foundation/yamllint.md		MUST	review				foundation	rules-held-by-tools	false
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	documents-strict-vendor-answers-tolerant	false
-rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/zod.md		MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/foundation/zod.md		SHOULD	test		typescript	errors	foundation	parse-failure-is-one-coded-error	false
 rule	zod-four-forms-only	zod	blocks/implementations/zod/foundation/zod.md		MUST	tool	lint	typescript		foundation	deprecated-forms-never-used	false
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/architecture/zod.md		MUST	review		typescript		architecture	schema-derives-from-domain-types	false
 rule	schema-never-brands	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	lint	typescript	data	architecture	value-object-built-only-by-its-check	false
+rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/with/convergence.md	convergence	MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
 answer	bun	workspace-packages-linked-locally	yes
 answer	bun	publishing-with-provenance-supported	partly
 answer	bunli	command-framework-parses-flags-by-schema	yes

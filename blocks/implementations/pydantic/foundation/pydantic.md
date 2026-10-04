@@ -7,13 +7,6 @@ A model of a document the program owns sets `ConfigDict(extra='forbid', strict=T
 |---|---|---|
 | `extra='forbid'` fails on an unknown key and `strict=True` on a value of another type, which pydantic otherwise converts. | test | [] |
 
-## json-schema-from-pydantic → published-schema-generated-from-code
-The published JSON Schema is built from the document's model by `model_json_schema()`, or by `TypeAdapter(...).json_schema()` for a union.
-
-| Why | Check | Tags |
-|---|---|---|
-| the schema editors read then comes from the code, and cannot drift from it. | test | [] |
-
 ## validation-errors-become-error-details → parse-failure-is-one-coded-error
 Input is parsed by `model_validate` or `model_validate_json`, and each entry of the `ValidationError` it raises becomes a detail, its `loc` the path and its `type` the reason, read by `errors(include_input=False)`.
 

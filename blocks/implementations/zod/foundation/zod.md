@@ -7,13 +7,6 @@ A document the program owns is parsed with `z.strictObject`; a vendor's response
 |---|---|---|
 | `z.strictObject` fails on an unknown key, and `z.object` drops it. | test | [] |
 
-## json-schema-from-zod → published-schema-generated-from-code
-The published JSON Schema is built by `z.toJSONSchema` from the document's schema.
-
-| Why | Check | Tags |
-|---|---|---|
-| the schema editors read then comes from the code, and cannot drift from it. | test | [] |
-
 ## zod-issues-become-error-details → parse-failure-is-one-coded-error
 Input is parsed with `safeParse`, and each of the error's `issues` becomes a detail, with its `path`.
 

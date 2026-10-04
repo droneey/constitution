@@ -3,6 +3,7 @@ export {
   byIdOf,
   closureOf,
   linksOf,
+  mayCarryOut,
   mayReferTo,
   reachableFrom,
 } from './closure.utils';

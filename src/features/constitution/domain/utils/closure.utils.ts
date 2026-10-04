@@ -1,4 +1,4 @@
-import { LAYER_RANK } from '#/kernel';
+import { LAYER_RANK, Layer } from '#/kernel';
 
 import type { Block } from '../entities';
 
@@ -83,5 +83,28 @@ const mayReferTo = (input: { byId: BlocksById; from: Place; to: string }): boole
   );
 };
 
+// A rule carries out a parent only where the parent is active too: in core, or
+// in a block its place reaches, and in a seam only when it reaches that seam's
+// other block as well.
+const mayCarryOut = (input: { byId: BlocksById; from: Place; to: Place }): boolean => {
+  const source = input.byId.get(input.from.block);
+  const target = input.byId.get(input.to.block);
+
+  if (source === undefined || target === undefined) {
+    return false;
+  }
+
+  if (target.layer === Layer.Core) {
+    return true;
+  }
+
+  const reachable = reachableFrom({
+    byId: input.byId,
+    place: input.from,
+  });
+
+  return reachable.has(target.id) && (input.to.with === undefined || reachable.has(input.to.with));
+};
+
 export type { BlocksById, Place };
-export { byIdOf, closureOf, linksOf, mayReferTo, reachableFrom };
+export { byIdOf, closureOf, linksOf, mayCarryOut, mayReferTo, reachableFrom };
