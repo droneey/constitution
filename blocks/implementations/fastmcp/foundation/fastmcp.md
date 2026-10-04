@@ -8,7 +8,7 @@ Every tool has a docstring that says what it does and when to call it, and every
 | a model knows a tool only by its description, so to the model no tool is an obvious entry. | review | [] |
 
 ## program-raises-no-tool-error → framework-errors-never-raised
-The program raises the error kit's errors, never `ToolError`; the middleware turns each into what the model reads.
+The program raises the error kit's errors, never `ToolError`.
 
 | Why | Check | Tags |
 |---|---|---|

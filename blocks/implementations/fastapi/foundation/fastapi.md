@@ -33,7 +33,7 @@ What the app keeps open — clients, pools, connections — is opened and closed
 ## Failures
 
 ## program-raises-no-http-exception → framework-errors-never-raised
-The program raises the error kit's errors, never `HTTPException`; the error handlers give each code its status.
+The program raises the error kit's errors, never `HTTPException`.
 
 | Why | Check | Tags |
 |---|---|---|

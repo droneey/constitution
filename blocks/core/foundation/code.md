@@ -276,7 +276,7 @@ A parser's failure becomes one coded error of the kit, with its cause, and each 
 | the caller handles one error type and sees every problem of the input at once, each pointing at its place. | review | [errors] |
 
 ## framework-errors-never-raised → expected-failures-typed-with-codes
-Code raises the error kit's errors, never the error type of the framework that serves it, which carries a status or a message but no code; one error handler of the framework turns each code into its answer.
+Code raises the error kit's errors, never the error type of the framework that serves it, which carries a status or a message but no code.
 
 | Why | Check | Tags |
 |---|---|---|
