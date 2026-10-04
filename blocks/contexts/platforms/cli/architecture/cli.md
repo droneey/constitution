@@ -18,12 +18,12 @@ The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag def
 |---|---|---|
 | every command is found in one place. | tool/names | [] |
 
-## report-is-a-value-the-command-prints → no-debug-output-in-shipped-code
-What a run reports is a value the command prints at the end, never lines the logic prints along the way.
+## report-is-a-value-the-command-prints → report-returned-as-a-value
+The command prints the run's report once, at the end of the run.
 
 | Why | Check | Tags |
 |---|---|---|
-| a value can be printed as text or as data and checked by a test; lines printed from deep inside can be neither. | review | [ux] |
+| a command line program's output is read as one result, by a person or by the next program in a pipe. | review | [ux] |
 
 ## Requirements for implementation
 

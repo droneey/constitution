@@ -32,12 +32,12 @@ Validate, render, plan and apply are separate use-cases: each runs alone, and la
 |---|---|---|
 | a user can check, preview and plan without touching the world, and each stage is tested on its own. | review | [] |
 
-## run-report-is-a-value → run-reports-per-stage
-A use-case returns its run's report as a value, and the delivery layer prints it, as text or as data.
+## run-report-is-a-value → report-returned-as-a-value
+The use-case of a run returns its report, with the entry of each stage, as a value.
 
 | Why | Check | Tags |
 |---|---|---|
-| the use-case never knows how its report is shown, and a new output format touches only the delivery layer. | review | [] |
+| the stages then report into one value, which every way of starting a run presents alike. | review | [] |
 
 ## Engines
 

@@ -40,3 +40,12 @@ A compound's surface exports only its root and its prop types; a part is reached
 | Why | Check | Tags |
 |---|---|---|
 | a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |
+
+## Failure
+
+## error-boundary-catches-render-errors → error-boundary-per-screen
+A screen's error boundary catches the render errors below it and shows the screen's error state.
+
+| Why | Check | Tags |
+|---|---|---|
+| React unmounts the whole tree below the nearest boundary on a render error, so a boundary per screen costs one screen, not the application. | review | [errors, ux] |

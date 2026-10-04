@@ -21,12 +21,12 @@ Browser code never reads `process.env`.
 |---|---|---|
 | a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
 
-## no-credential-readable-by-script · MUST
+## no-credential-readable-by-script → credentials-only-in-the-protected-store
 A credential in the tab lives only in a cookie its script cannot read — `HttpOnly`, `Secure`, `SameSite`, named `__Host-` when the program's own tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does — never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
 
 | Why | Check | Tags |
 |---|---|---|
-| any script that runs in the page — injected, or a compromised dependency — reads what the page's script can read and sends it away. | review | [security] |
+| a cookie the page's script cannot read is the one store of a tab that no script in the page can reach. | review | [security] |
 
 ## strict-content-security-policy · MUST
 Every document is served with a Content Security Policy that allows scripts only by nonce, hash or the program's own origin, with no `unsafe-inline` and no `unsafe-eval`, and sets `object-src 'none'`, `base-uri 'none'` and `frame-ancestors`.

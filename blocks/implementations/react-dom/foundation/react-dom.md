@@ -1,14 +1,7 @@
 # React DOM
 
-## third-party-script-rendered-as-element · SHOULD
-A third-party script is rendered as `<script async src>` where it is needed; no script tag is inserted by hand.
-
-| Why | Check | Tags |
-|---|---|---|
-| React dedupes and orders rendered scripts; a hand-inserted one runs twice or too early. | review | [performance] |
-
-## document-metadata-rendered-by-its-owner · SHOULD
-Unless another active block claims the document's head, `<title>`, `<meta>` and `<link>` are rendered as elements, which React hoists into the head; no head library, and no effect writing to the document head.
+## one-writer-of-the-head → one-writer-per-shared-resource
+Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, and no effect writing to the document head.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -42,7 +35,7 @@ An element's inline `style` is an object literal of custom properties only; geom
 |---|---|---|
 | an inline visual value is a value written outside the tokens, while a custom property passes data to the stylesheet that styles it. | tool/lint | [ux] |
 
-## render-errors-reported-at-the-root → error-boundary-catches-render-errors
+## render-errors-reported-at-the-root → error-logged-once
 Render errors are reported once, through the root's `onUncaughtError`, `onCaughtError` and `onRecoverableError`; a boundary renders the failure and reports nothing.
 
 | Why | Check | Tags |
