@@ -18,9 +18,7 @@ const nextOf = (input: { block: Block; byId: BlocksById }): readonly Block[] =>
   linksOf(input.block).flatMap((id) => {
     const next = input.byId.get(id);
 
-    return next === undefined ||
-      next.id === input.block.id ||
-      next.layer !== Layer.Implementation
+    return next === undefined || next.id === input.block.id || next.layer !== Layer.Implementation
       ? []
       : [
           next,
@@ -61,10 +59,7 @@ const cycleFrom = (search: Search): readonly string[] | undefined => {
   return undefined;
 };
 
-const cyclesCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const cyclesCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
   const reported = new Set<string>();
 
   return constitution.blocks.flatMap((block) => {

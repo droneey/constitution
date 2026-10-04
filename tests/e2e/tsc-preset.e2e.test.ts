@@ -7,8 +7,7 @@ const TYPE_IMPORTED_AS_VALUE =
   "import { Order } from './order';\nexport const orders: Order[] = [];\n";
 const IMPORT_WITH_TS_EXTENSION =
   "import { ORDER_KIND } from './order.ts';\nexport const kind = ORDER_KIND;\n";
-const FIELD_WITHOUT_INITIALIZER =
-  'export class CreateOrderInput {\n  id: string;\n}\n';
+const FIELD_WITHOUT_INITIALIZER = 'export class CreateOrderInput {\n  id: string;\n}\n';
 const READS_THE_DOCUMENT = 'export const title = document.title;\n';
 const READS_BUN = 'export const version = Bun.version;\n';
 const READS_THE_PROCESS = 'export const home = process.env.HOME;\n';
@@ -20,8 +19,7 @@ const OPTIONAL_SET_TO_UNDEFINED =
 const INDEX_READ_AS_PRESENT =
   'const totals: number[] = [1];\nexport const first: number = totals[0];\n';
 const UNUSED_LOCAL = 'const unused = 1;\nexport const used = 2;\n';
-const UNUSED_PARAMETER =
-  'export const total = (price: number, count: number): number => price;\n';
+const UNUSED_PARAMETER = 'export const total = (price: number, count: number): number => price;\n';
 const OVERRIDE_UNMARKED =
   'class Base {\n  public run(): void {}\n}\nexport class Child extends Base {\n  public run(): void {}\n}\n';
 const PATH_WITHOUT_RETURN =
@@ -37,27 +35,24 @@ const PARAMETER_DECORATOR =
 describe('the tsconfig preset', () => {
   it.each([
     ...presetParts(),
-  ])(
-    'should resolve and check an empty project when a project extends %s',
-    (part) => {
-      // Arrange
-      const project = {
-        main: EMPTY,
-        parts: [
-          ...new Set([
-            'self',
-            part,
-          ]),
-        ],
-      };
+  ])('should resolve and check an empty project when a project extends %s', (part) => {
+    // Arrange
+    const project = {
+      main: EMPTY,
+      parts: [
+        ...new Set([
+          'self',
+          part,
+        ]),
+      ],
+    };
 
-      // Act
-      const isClean = typeChecks(project);
+    // Act
+    const isClean = typeChecks(project);
 
-      // Assert
-      expect(isClean).toBe(true);
-    },
-  );
+    // Assert
+    expect(isClean).toBe(true);
+  });
 
   it.each([
     {
@@ -215,22 +210,19 @@ describe('the tsconfig preset', () => {
         'bun',
       ],
     },
-  ])(
-    'should fail the type check of $parts when $condition',
-    ({ main, parts }) => {
-      // Arrange
-      const project = {
-        main,
-        parts,
-      };
+  ])('should fail the type check of $parts when $condition', ({ main, parts }) => {
+    // Arrange
+    const project = {
+      main,
+      parts,
+    };
 
-      // Act
-      const isClean = typeChecks(project);
+    // Act
+    const isClean = typeChecks(project);
 
-      // Assert
-      expect(isClean).toBe(false);
-    },
-  );
+    // Assert
+    expect(isClean).toBe(false);
+  });
 
   it.each([
     {
@@ -299,20 +291,17 @@ describe('the tsconfig preset', () => {
         'nestjs',
       ],
     },
-  ])(
-    'should pass the type check of $parts when $condition',
-    ({ main, parts }) => {
-      // Arrange
-      const project = {
-        main,
-        parts,
-      };
+  ])('should pass the type check of $parts when $condition', ({ main, parts }) => {
+    // Arrange
+    const project = {
+      main,
+      parts,
+    };
 
-      // Act
-      const isClean = typeChecks(project);
+    // Act
+    const isClean = typeChecks(project);
 
-      // Assert
-      expect(isClean).toBe(true);
-    },
-  );
+    // Assert
+    expect(isClean).toBe(true);
+  });
 });

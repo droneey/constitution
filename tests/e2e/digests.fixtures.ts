@@ -3,13 +3,11 @@ import { INSTALLED } from './plugin-root.fixtures';
 
 const CORE_FILES =
   "Core's files, under blocks/core/ and named without .md: core; foundation: code, principles; architecture: principles; workflow: delivery.";
-const KEY =
-  "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
+const KEY = "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const PLATFORMS = '## Platforms (blocks/contexts/platforms/<id>/<id>.md)';
 const LANGUAGES = '## Languages (blocks/contexts/languages/<id>/<id>.md)';
-const IMPLEMENTATIONS =
-  '## Implementations (blocks/implementations/<id>/<id>.md)';
+const IMPLEMENTATIONS = '## Implementations (blocks/implementations/<id>/<id>.md)';
 
 const firstLine = (root: string): string =>
   `The droneey constitution plugin ${INSTALLED} supplies this repository's rules. Block files live under ${root}.`;

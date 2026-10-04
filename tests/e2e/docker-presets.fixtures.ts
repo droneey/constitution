@@ -72,9 +72,7 @@ const lintDockerfile = (text: string): Lint =>
       );
 
       return {
-        codes: HADOLINT_REPORT.parse(JSON.parse(run.stdout)).map(
-          ({ code }) => code,
-        ),
+        codes: HADOLINT_REPORT.parse(JSON.parse(run.stdout)).map(({ code }) => code),
         exitCode: run.status ?? undefined,
       };
     },
@@ -100,8 +98,8 @@ const lintCompose = (text: string): Lint =>
       );
 
       return {
-        codes: DCLINT_REPORT.parse(JSON.parse(run.stdout)).flatMap(
-          ({ messages }) => messages.map(({ rule }) => rule),
+        codes: DCLINT_REPORT.parse(JSON.parse(run.stdout)).flatMap(({ messages }) =>
+          messages.map(({ rule }) => rule),
         ),
         exitCode: run.status ?? undefined,
       };

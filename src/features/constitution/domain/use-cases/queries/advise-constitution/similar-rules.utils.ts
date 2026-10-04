@@ -9,10 +9,7 @@ const SIMILAR = 0.5;
 const wordsOf = (statement: string): ReadonlySet<string> =>
   new Set(statement.toLowerCase().match(WORD) ?? []);
 
-const similarityOf = (input: {
-  left: ReadonlySet<string>;
-  right: ReadonlySet<string>;
-}): number => {
+const similarityOf = (input: { left: ReadonlySet<string>; right: ReadonlySet<string> }): number => {
   const shared = [
     ...input.left,
   ].filter((word) => input.right.has(word)).length;
@@ -25,11 +22,7 @@ const similarityOf = (input: {
   return all === 0 ? 0 : shared / all;
 };
 
-const areSiblings = (input: {
-  byId: BlocksById;
-  left: Rule;
-  right: Rule;
-}): boolean => {
+const areSiblings = (input: { byId: BlocksById; left: Rule; right: Rule }): boolean => {
   const left: Block | undefined = input.byId.get(input.left.block);
   const right: Block | undefined = input.byId.get(input.right.block);
 
@@ -46,10 +39,7 @@ const areSiblings = (input: {
 // Advice only: two blocks of one layer — one kind, so a platform and a language
 // are siblings — saying nearly the same thing may share a rule that belongs one
 // layer up; a person decides.
-const similarRules = (input: {
-  byId: BlocksById;
-  rules: readonly Rule[];
-}): readonly string[] => {
+const similarRules = (input: { byId: BlocksById; rules: readonly Rule[] }): readonly string[] => {
   const words = input.rules.map((rule) => wordsOf(rule.statement));
 
   return input.rules.flatMap((left, index) =>
@@ -68,8 +58,7 @@ const similarRules = (input: {
           }) >= SIMILAR,
       )
       .map(
-        (right) =>
-          `similar rules: ${left.slug} (${left.block}) and ${right.slug} (${right.block})`,
+        (right) => `similar rules: ${left.slug} (${left.block}) and ${right.slug} (${right.block})`,
       ),
   );
 };

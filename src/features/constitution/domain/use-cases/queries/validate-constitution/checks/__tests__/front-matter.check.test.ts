@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { frontMatterCheck } from '../front-matter.check';
 

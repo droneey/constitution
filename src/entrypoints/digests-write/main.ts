@@ -21,9 +21,7 @@ if (prepared.status === 'prepared') {
 }
 
 const findings: readonly Finding[] =
-  prepared.status === 'prepared'
-    ? prepared.digests.findings
-    : prepared.findings;
+  prepared.status === 'prepared' ? prepared.digests.findings : prepared.findings;
 
 for (const finding of findings) {
   wiring.console.write(`${finding.path}: ${finding.message}\n`);

@@ -192,8 +192,7 @@ describe('mutation targets', () => {
       ],
     },
     {
-      condition:
-        'a changed spec reaches its boundary through a fixture outside it',
+      condition: 'a changed spec reaches its boundary through a fixture outside it',
       diff: diffOf({
         'src/orders/__tests__/orders.use-case.test.ts': [
           '@@ -5 +5 @@',

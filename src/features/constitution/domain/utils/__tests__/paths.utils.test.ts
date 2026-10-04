@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  directoryOf,
-  fileNameOf,
-  joinPaths,
-  normalizePath,
-  stemOf,
-} from '../paths.utils';
+import { directoryOf, fileNameOf, joinPaths, normalizePath, stemOf } from '../paths.utils';
 
 describe('paths', () => {
   it.each([

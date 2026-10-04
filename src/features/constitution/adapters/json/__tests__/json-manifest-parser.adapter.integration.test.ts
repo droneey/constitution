@@ -61,8 +61,7 @@ describe('createJsonManifestParser', () => {
   it('should read the repository when the plugin manifest names one', () => {
     // Arrange
     const parser = createJsonManifestParser();
-    const json =
-      '{"name":"constitution","repository":"https://github.com/droneey/constitution"}';
+    const json = '{"name":"constitution","repository":"https://github.com/droneey/constitution"}';
 
     // Act
     const read = parser.plugin(json);

@@ -45,9 +45,7 @@ or {
   }
 } as $call where {
   $call <: within JsModule() as $module where {
-    $module <: contains JsImport() as $import where {
-      $import <: r"(?s).*['\"]zod(?:/v4)?['\"].*"
-    }
+    $module <: contains JsImport() as $import where { $import <: r"(?s).*['\"]zod(?:/v4)?['\"].*" }
   } ,
   register_diagnostic(span=$call, message="Write the Zod 4 form: z.enum, z.strictObject, z.looseObject, A.extend(B.shape), and a format such as z.email() on its own", severity="error")
 }

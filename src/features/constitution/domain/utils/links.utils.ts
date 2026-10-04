@@ -15,8 +15,7 @@ interface LinkTarget {
   target: string;
 }
 
-const isLocal = (target: string): boolean =>
-  target !== '' && !EXTERNAL.test(target);
+const isLocal = (target: string): boolean => target !== '' && !EXTERNAL.test(target);
 
 const targetsIn = (text: string): readonly LinkTarget[] =>
   [
@@ -47,19 +46,14 @@ const proseOf = (text: string): string => {
   return blankInlineCode(
     text
       .split('\n')
-      .map((line, index) =>
-        unfenced[index] === line ? line : BLANK.repeat(line.length),
-      )
+      .map((line, index) => (unfenced[index] === line ? line : BLANK.repeat(line.length)))
       .join('\n'),
   );
 };
 
 // Code keeps its text: a link in a fence or a code span stays as written.
 // Targets are spliced from the last back, so the earlier offsets still hold.
-const rewriteLocalLinks = (input: {
-  rewrite: (target: string) => string;
-  text: string;
-}): string =>
+const rewriteLocalLinks = (input: { rewrite: (target: string) => string; text: string }): string =>
   targetsIn(proseOf(input.text))
     .map((link) => ({
       start: link.start,

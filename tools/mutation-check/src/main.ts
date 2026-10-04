@@ -39,9 +39,7 @@ const importsOf = (path: string): readonly string[] => {
   })
     .scanImports(readFileSync(from, 'utf8'))
     .map(({ path: specifier }) => Bun.resolveSync(specifier, dirname(from)))
-    .filter(
-      (target) => isAbsolute(target) && !target.includes('/node_modules/'),
-    )
+    .filter((target) => isAbsolute(target) && !target.includes('/node_modules/'))
     .map((target) => relative(process.cwd(), target))
     .filter((target) => !target.startsWith('..'));
 };
@@ -53,12 +51,9 @@ const git = (args: readonly string[]): string =>
 
 const mutatePatterns = (config: unknown): readonly string[] => {
   const mutate =
-    typeof config === 'object' && config !== null && 'mutate' in config
-      ? config.mutate
-      : undefined;
+    typeof config === 'object' && config !== null && 'mutate' in config ? config.mutate : undefined;
 
-  return Array.isArray(mutate) &&
-    mutate.every((pattern) => typeof pattern === 'string')
+  return Array.isArray(mutate) && mutate.every((pattern) => typeof pattern === 'string')
     ? mutate
     : [];
 };
@@ -67,9 +62,7 @@ const loadConfig = async (): Promise<unknown> => {
   const file = CONFIG_FILES.find((name) => existsSync(name));
 
   if (file === undefined) {
-    throw new Error(
-      `mutation-check: no Stryker configuration (${CONFIG_FILES.join(', ')})`,
-    );
+    throw new Error(`mutation-check: no Stryker configuration (${CONFIG_FILES.join(', ')})`);
   }
 
   if (file.endsWith('.json')) {

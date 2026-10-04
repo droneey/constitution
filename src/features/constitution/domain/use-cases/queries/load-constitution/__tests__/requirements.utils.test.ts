@@ -130,55 +130,49 @@ describe('parseRequirements', () => {
   it.each([
     '|i18n-typed-keys|compiled catalogs|partly|',
     '  | `i18n-typed-keys` | compiled catalogs | partly |',
-  ])(
-    'should read the row %p when it is written without padding or indented',
-    (row) => {
-      // Arrange
-      const source = sourceOf([
-        '## Requirements',
-        row,
-      ]);
+  ])('should read the row %p when it is written without padding or indented', (row) => {
+    // Arrange
+    const source = sourceOf([
+      '## Requirements',
+      row,
+    ]);
 
-      // Act
-      const parsed = parseRequirements(source);
+    // Act
+    const parsed = parseRequirements(source);
 
-      // Assert
-      expect(parsed).toStrictEqual({
-        answers: [
-          answer({
-            how: 'compiled catalogs',
-            met: 'partly',
-            requirement: 'i18n-typed-keys',
-          }),
-        ],
-        findings: [],
-      });
-    },
-  );
+    // Assert
+    expect(parsed).toStrictEqual({
+      answers: [
+        answer({
+          how: 'compiled catalogs',
+          met: 'partly',
+          requirement: 'i18n-typed-keys',
+        }),
+      ],
+      findings: [],
+    });
+  });
 
   it.each([
     '|Requirement|How|Met|',
     '| --- | :---: | --- |',
     '---|---|---',
-  ])(
-    'should skip %p when it is the header or the separator of the table',
-    (line) => {
-      // Arrange
-      const source = sourceOf([
-        '## Requirements',
-        line,
-      ]);
+  ])('should skip %p when it is the header or the separator of the table', (line) => {
+    // Arrange
+    const source = sourceOf([
+      '## Requirements',
+      line,
+    ]);
 
-      // Act
-      const parsed = parseRequirements(source);
+    // Act
+    const parsed = parseRequirements(source);
 
-      // Assert
-      expect(parsed).toStrictEqual({
-        answers: [],
-        findings: [],
-      });
-    },
-  );
+    // Assert
+    expect(parsed).toStrictEqual({
+      answers: [],
+      findings: [],
+    });
+  });
 
   it.each([
     '| i18n | `i18n-plurals-by-cldr` | ICU | yes |',
@@ -210,30 +204,27 @@ describe('parseRequirements', () => {
     '| Requirement | How in lingui | Status |',
     '|Requirement|How|Status|',
     '| Requirement | How | Met | Notes |',
-  ])(
-    'should report the header %p when it is not the Requirements header',
-    (header) => {
-      // Arrange
-      const source = sourceOf([
-        '## Requirements',
-        header,
-      ]);
+  ])('should report the header %p when it is not the Requirements header', (header) => {
+    // Arrange
+    const source = sourceOf([
+      '## Requirements',
+      header,
+    ]);
 
-      // Act
-      const parsed = parseRequirements(source);
+    // Act
+    const parsed = parseRequirements(source);
 
-      // Assert
-      expect(parsed).toStrictEqual({
-        answers: [],
-        findings: [
-          {
-            message: `has the header "${header}" in its Requirements; it is "| Requirement | How | Met |"`,
-            path: FILE,
-          },
-        ],
-      });
-    },
-  );
+    // Assert
+    expect(parsed).toStrictEqual({
+      answers: [],
+      findings: [
+        {
+          message: `has the header "${header}" in its Requirements; it is "| Requirement | How | Met |"`,
+          path: FILE,
+        },
+      ],
+    });
+  });
 
   it.each([
     '# requirements',

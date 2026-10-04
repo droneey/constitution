@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { referencesCheck } from '../references.check';
 
@@ -88,9 +85,7 @@ describe('referencesCheck', () => {
   it('should report each decision when a block cites it by number', () => {
     // Arrange
     const files = validFiles();
-    files[UI] = uiWith(
-      '# UI\n\nAs ADR-0012 decided, and `ADR-0030` after it; ADR-0012 again.\n',
-    );
+    files[UI] = uiWith('# UI\n\nAs ADR-0012 decided, and `ADR-0030` after it; ADR-0012 again.\n');
     const input = checkInputOf(files);
 
     // Act
@@ -99,13 +94,11 @@ describe('referencesCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message:
-          'cites ADR-0012; a block states its rules without citing the decision log',
+        message: 'cites ADR-0012; a block states its rules without citing the decision log',
         path: UI,
       },
       {
-        message:
-          'cites ADR-0030; a block states its rules without citing the decision log',
+        message: 'cites ADR-0030; a block states its rules without citing the decision log',
         path: UI,
       },
     ]);

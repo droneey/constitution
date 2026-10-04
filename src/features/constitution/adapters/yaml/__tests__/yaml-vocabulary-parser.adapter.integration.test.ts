@@ -100,22 +100,19 @@ describe('createYamlVocabularyParser', () => {
       name: 'the file is empty',
       yaml: '',
     },
-  ])(
-    'should return every issue at its dotted field when $name',
-    ({ issues, yaml }) => {
-      // Arrange
-      const parser = createYamlVocabularyParser();
+  ])('should return every issue at its dotted field when $name', ({ issues, yaml }) => {
+    // Arrange
+    const parser = createYamlVocabularyParser();
 
-      // Act
-      const read = parser.parse(yaml);
+    // Act
+    const read = parser.parse(yaml);
 
-      // Assert
-      expect(read).toStrictEqual({
-        issues,
-        status: 'mismatched',
-      });
-    },
-  );
+    // Assert
+    expect(read).toStrictEqual({
+      issues,
+      status: 'mismatched',
+    });
+  });
 
   it('should report the reason when the vocabulary is not YAML', () => {
     // Arrange
@@ -126,8 +123,7 @@ describe('createYamlVocabularyParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      reason:
-        'Flow sequence in block collection must be sufficiently indented and end with a ]',
+      reason: 'Flow sequence in block collection must be sufficiently indented and end with a ]',
       status: 'not-yaml',
     });
   });

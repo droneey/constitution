@@ -18,8 +18,7 @@ interface RequirementsParsed {
 
 const SECTION = '## Requirements';
 const NEAR_SECTION = /^#{1,6}\s*requirements$/i;
-const ROW =
-  /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|$/;
+const ROW = /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|$/;
 const SEPARATOR = /^\|?[\s:|-]+\|?$/;
 const HEADER = /^\|\s*Requirement\s*\|\s*How\s*\|\s*Met\s*\|$/;
 const NEAR_HEADER = /^\|\s*Requirement\s*\|/;
@@ -27,16 +26,10 @@ const HEADER_FORM = '| Requirement | How | Met |';
 const PIPE = '|';
 const ROW_FORM = '| `<requirement>` | <how> | <met> |';
 
-const rowsOf = (input: {
-  section: MarkdownSection;
-  source: Source;
-}): RequirementsParsed => {
+const rowsOf = (input: { section: MarkdownSection; source: Source }): RequirementsParsed => {
   const rows = input.section.lines
     .map((line) => line.trim())
-    .filter(
-      (line) =>
-        line.includes(PIPE) && !SEPARATOR.test(line) && !HEADER.test(line),
-    );
+    .filter((line) => line.includes(PIPE) && !SEPARATOR.test(line) && !HEADER.test(line));
 
   return {
     answers: rows.flatMap((row) => {
@@ -71,10 +64,7 @@ const rowsOf = (input: {
   };
 };
 
-const readSection = (input: {
-  section: MarkdownSection;
-  source: Source;
-}): RequirementsParsed => {
+const readSection = (input: { section: MarkdownSection; source: Source }): RequirementsParsed => {
   const heading = input.section.heading.trim();
 
   if (heading === SECTION) {

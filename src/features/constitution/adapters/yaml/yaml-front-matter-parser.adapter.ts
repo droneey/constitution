@@ -1,15 +1,11 @@
 import type { Document } from 'yaml';
 import { isAlias, LineCounter, parseDocument, visit } from 'yaml';
 
-import type {
-  FrontMatterParser,
-  FrontMatterRead,
-} from '../../domain/contracts';
+import type { FrontMatterParser, FrontMatterRead } from '../../domain/contracts';
 import type { SkillFrontMatterRead } from '../../domain/entities';
 import { frontMatterModel, skillFrontMatterModel } from './models';
 
-const ALIAS_REASON =
-  'an unquoted value starts with "*", which YAML reads as an alias; quote it';
+const ALIAS_REASON = 'an unquoted value starts with "*", which YAML reads as an alias; quote it';
 
 const isMapping = (parsed: unknown): parsed is Record<string, unknown> =>
   typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);

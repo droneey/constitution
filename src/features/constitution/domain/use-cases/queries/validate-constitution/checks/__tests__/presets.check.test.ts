@@ -2,10 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { Finding } from '#/kernel';
 
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { presetsCheck } from '../presets.check';
 
@@ -117,26 +114,22 @@ describe('presetsCheck', () => {
       path: 'presets/typescript/biome/foundation/nested/bindings.yaml',
     },
     {
-      message:
-        'is in presets/nowhere/, which is neither common nor a language biome covers',
+      message: 'is in presets/nowhere/, which is neither common nor a language biome covers',
       name: 'a part sits in a scope that names no block',
       path: 'presets/nowhere/biome/architecture/ui.jsonc',
     },
     {
-      message:
-        'is in presets/ui/, which is neither common nor a language biome covers',
+      message: 'is in presets/ui/, which is neither common nor a language biome covers',
       name: 'a part sits in a scope that is a domain, not a language',
       path: 'presets/ui/biome/architecture/typescript.jsonc',
     },
     {
-      message:
-        'is in presets/css/, which is neither common nor a language biome covers',
+      message: 'is in presets/css/, which is neither common nor a language biome covers',
       name: 'a part sits in a language its tool does not cover',
       path: 'presets/css/biome/foundation/core.jsonc',
     },
     {
-      message:
-        'is in presets/css/, which is neither common nor a language biome covers',
+      message: 'is in presets/css/, which is neither common nor a language biome covers',
       name: 'the bindings sit in a language their tool does not cover',
       path: 'presets/css/biome/bindings.yaml',
     },
@@ -146,8 +139,7 @@ describe('presetsCheck', () => {
       path: 'presets/common/eslint/bindings.yaml',
     },
     {
-      message:
-        'is in presets/ui/, which is neither common nor a language lingui covers',
+      message: 'is in presets/ui/, which is neither common nor a language lingui covers',
       name: 'a part of a tool that covers any language sits in a domain',
       path: 'presets/ui/lingui/foundation/core.jsonc',
     },
@@ -162,8 +154,7 @@ describe('presetsCheck', () => {
       path: 'presets/common/eslint/foundation/core.mjs',
     },
     {
-      message:
-        'is in base/, which is not an axis: foundation, architecture, workflow',
+      message: 'is in base/, which is not an axis: foundation, architecture, workflow',
       name: 'the axis folder is no axis',
       path: 'presets/typescript/biome/base/core.jsonc',
     },
@@ -179,8 +170,7 @@ describe('presetsCheck', () => {
       path: 'presets/typescript/biome/foundation/plugins/null-free.grit',
     },
     {
-      message:
-        'holds reads-are-cancellable, a rule of architecture, in foundation/plugins',
+      message: 'holds reads-are-cancellable, a rule of architecture, in foundation/plugins',
       name: 'a plugin sits on another axis than its rule',
       path: 'presets/typescript/biome/foundation/plugins/reads-are-cancellable.grit',
     },

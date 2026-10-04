@@ -1,11 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -121,9 +115,7 @@ describe('createNodeFileSystem', () => {
     });
 
     // Assert
-    expect(readFileSync(join(root, 'digests/index.tsv'), 'utf8')).toBe(
-      '# header\n',
-    );
+    expect(readFileSync(join(root, 'digests/index.tsv'), 'utf8')).toBe('# header\n');
   });
 
   it('should replace the whole text when the digest already exists', () => {
@@ -143,8 +135,6 @@ describe('createNodeFileSystem', () => {
     });
 
     // Assert
-    expect(readFileSync(join(root, 'digests/core.md'), 'utf8')).toBe(
-      '# Core\n',
-    );
+    expect(readFileSync(join(root, 'digests/core.md'), 'utf8')).toBe('# Core\n');
   });
 });

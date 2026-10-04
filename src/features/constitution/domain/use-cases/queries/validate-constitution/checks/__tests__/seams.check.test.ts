@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { seamsCheck } from '../seams.check';
 
@@ -30,45 +27,39 @@ describe('seamsCheck', () => {
       expected: 'is a with/ file of core, which pairs with no block',
       path: 'blocks/core/foundation/with/ui.md',
     },
-  ])(
-    'should report "$expected" when $path pairs with a block it may not',
-    ({ expected, path }) => {
-      // Arrange
-      const files = validFiles();
-      files[path] = '# Seam\n';
-      const input = checkInputOf(files);
+  ])('should report "$expected" when $path pairs with a block it may not', ({ expected, path }) => {
+    // Arrange
+    const files = validFiles();
+    files[path] = '# Seam\n';
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = seamsCheck(input);
+    // Act
+    const findings = seamsCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path,
+      },
+    ]);
+  });
 
   it.each([
     'blocks/contexts/platforms/browser/foundation/with/typescript.md',
     'blocks/contexts/platforms/browser/workflow/with/ui.md',
-  ])(
-    'should accept %p when it pairs with a block of its own rank or above',
-    (path) => {
-      // Arrange
-      const files = validFiles();
-      files[path] = '# Seam\n';
-      const input = checkInputOf(files);
+  ])('should accept %p when it pairs with a block of its own rank or above', (path) => {
+    // Arrange
+    const files = validFiles();
+    files[path] = '# Seam\n';
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = seamsCheck(input);
+    // Act
+    const findings = seamsCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 
   it('should report a chapter named after a block when core lists it', () => {
     // Arrange
@@ -86,8 +77,7 @@ describe('seamsCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message:
-          'takes the id of the block ui; a file named after a block belongs in with/',
+        message: 'takes the id of the block ui; a file named after a block belongs in with/',
         path: 'blocks/core/architecture/ui.md',
       },
     ]);

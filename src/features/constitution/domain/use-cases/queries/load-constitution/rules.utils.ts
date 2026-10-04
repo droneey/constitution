@@ -148,9 +148,7 @@ const labelProblems = (lines: readonly string[]): readonly string[] =>
   });
 
 const statementOf = (lines: readonly string[]): string => {
-  const end = lines.findIndex(
-    (line) => TABLE_LINE.test(line) || LABEL_LINE.test(line),
-  );
+  const end = lines.findIndex((line) => TABLE_LINE.test(line) || LABEL_LINE.test(line));
 
   return (end === -1 ? lines : lines.slice(0, end))
     .map((line) => line.trim())
@@ -167,10 +165,7 @@ const tagsOf = (cell: string): readonly string[] | undefined =>
         .filter((tag) => tag !== '')
     : undefined;
 
-const readSection = (input: {
-  section: MarkdownSection;
-  source: Source;
-}): SectionRead => {
+const readSection = (input: { section: MarkdownSection; source: Source }): SectionRead => {
   const heading = headingOf(input.section.heading);
 
   if (heading === undefined) {

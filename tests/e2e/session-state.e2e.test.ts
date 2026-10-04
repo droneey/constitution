@@ -17,10 +17,7 @@ import { configOf, createProject, removeProjects } from './project.fixtures';
 
 let root = '';
 
-const recordsOf = (input: {
-  kind: string;
-  session: string;
-}): readonly (readonly string[])[] =>
+const recordsOf = (input: { kind: string; session: string }): readonly (readonly string[])[] =>
   readFileSync(join(stateFolderOf(input.session), 'active.tsv'), 'utf8')
     .split('\n')
     .map((line) => line.split('\t'))
@@ -207,10 +204,7 @@ describe('the session state the session-start hook saves', () => {
 
       // Assert
       expect({
-        reminded: readFileSync(
-          join(stateFolderOf(session), 'reminded'),
-          'utf8',
-        ),
+        reminded: readFileSync(join(stateFolderOf(session), 'reminded'), 'utf8'),
         saved: existsSync(join(stateFolderOf(session), 'active.tsv')),
       }).toStrictEqual({
         reminded,

@@ -22,30 +22,26 @@ const WELL_FORMED = {
     from: '../../domain/entities',
     name: 'order',
   }),
-  'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
-    importing({
-      from: '../../../../domain/entities',
-      name: 'order',
-    }),
-  'src/features/orders/app/use-cases/queries/count-orders/count-orders.use-case.ts':
-    importing({
-      from: '../../../../domain/use-cases/queries/count-orders',
-      name: 'countOrders',
-    }),
+  'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+    from: '../../../../domain/entities',
+    name: 'order',
+  }),
+  'src/features/orders/app/use-cases/queries/count-orders/count-orders.use-case.ts': importing({
+    from: '../../../../domain/use-cases/queries/count-orders',
+    name: 'countOrders',
+  }),
   'src/features/orders/domain/use-cases/queries/count-orders/count-orders.use-case.ts':
     "import type { Mail } from '../../../../../../contracts/mail';\nexport const countOrders = (mail: Mail): Mail => mail;\n",
   'src/features/orders/domain/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
-  'src/features/orders/domain/entities/index.ts':
-    "export { order } from './order.entity';\n",
+  'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
   'src/features/orders/domain/entities/order.entity.ts':
     "import { money } from '../../../../kernel';\nexport const order = money;\n",
   'src/features/orders/index.ts':
     "export { listOrders } from './app/use-cases/queries/list-orders/list-orders.use-case';\n",
   'src/kernel/index.ts':
     "export { money } from './money';\nexport type { Money } from './money';\n",
-  'src/kernel/money.ts':
-    'export const money = 1;\nexport type Money = number;\n',
+  'src/kernel/money.ts': 'export const money = 1;\nexport type Money = number;\n',
   'src/libs/smtp/index.ts': "export { smtp } from './smtp';\n",
   'src/libs/smtp/smtp.ts': exported('smtp'),
   'src/main.ts': importing({
@@ -251,8 +247,7 @@ describe('the dependency-cruiser layer set', () => {
           from: '../domain/entities/order.entity',
           name: 'order',
         }),
-        'src/features/orders/domain/entities/order.entity.ts':
-          exported('order'),
+        'src/features/orders/domain/entities/order.entity.ts': exported('order'),
       },
       rule: 'domain-role-reached-through-its-surface',
     },
@@ -303,19 +298,16 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a read imports a write',
       files: {
-        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts':
-          exported('cancel'),
-        'src/features/orders/app/use-cases/queries/list/list.use-case.ts':
-          importing({
-            from: '../../commands/cancel/cancel.use-case',
-            name: 'cancel',
-          }),
+        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': exported('cancel'),
+        'src/features/orders/app/use-cases/queries/list/list.use-case.ts': importing({
+          from: '../../commands/cancel/cancel.use-case',
+          name: 'cancel',
+        }),
       },
       rule: 'reads-never-reach-writes',
     },
     {
-      condition:
-        'two modules import each other, a rule of the foundation core part',
+      condition: 'two modules import each other, a rule of the foundation core part',
       files: {
         'src/shared/format/format.ts': importing({
           from: './parse',
@@ -331,13 +323,11 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a write imports a read',
       files: {
-        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts':
-          importing({
-            from: '../../queries/list/list.use-case',
-            name: 'list',
-          }),
-        'src/features/orders/app/use-cases/queries/list/list.use-case.ts':
-          exported('list'),
+        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': importing({
+          from: '../../queries/list/list.use-case',
+          name: 'list',
+        }),
+        'src/features/orders/app/use-cases/queries/list/list.use-case.ts': exported('list'),
       },
       rule: 'writes-never-reach-reads',
     },
@@ -355,11 +345,10 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: "a module loose at a feature's root is imported",
       files: {
-        'src/features/orders/app/use-cases/queries/list/list.use-case.ts':
-          importing({
-            from: '../../../../utils',
-            name: 'format',
-          }),
+        'src/features/orders/app/use-cases/queries/list/list.use-case.ts': importing({
+          from: '../../../../utils',
+          name: 'format',
+        }),
         'src/features/orders/utils.ts': exported('format'),
       },
       rule: 'feature-root-reached-only-through-its-layers',
@@ -367,11 +356,10 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a write reaches a read through a surface that joins both',
       files: {
-        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts':
-          importing({
-            from: '../../../../domain/contracts',
-            name: 'cancelOrder',
-          }),
+        'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': importing({
+          from: '../../../../domain/contracts',
+          name: 'cancelOrder',
+        }),
         'src/features/orders/domain/contracts/index.ts':
           "export { cancelOrder } from './repositories/commands/order.repository';\nexport { listOrders } from './repositories/queries/order.repository';\n",
         'src/features/orders/domain/contracts/repositories/commands/order.repository.ts':
@@ -530,8 +518,7 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a widget imports an adapter',
       files: {
-        'src/features/orders/adapters/api/order.adapter.ts':
-          exported('fetchOrders'),
+        'src/features/orders/adapters/api/order.adapter.ts': exported('fetchOrders'),
         'src/features/orders/ui/widgets/orders.tsx': importing({
           from: '../../adapters/api/order.adapter',
           name: 'fetchOrders',
@@ -646,8 +633,7 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a component imports a widget',
       files: {
-        'src/features/orders/ui/widgets/orders-widget/index.ts':
-          exported('ordersWidget'),
+        'src/features/orders/ui/widgets/orders-widget/index.ts': exported('ordersWidget'),
         'src/features/orders/ui/components/order-card.tsx': importing({
           from: '../widgets/orders-widget',
           name: 'ordersWidget',
@@ -663,11 +649,10 @@ describe('the dependency-cruiser layer set', () => {
       condition: 'a binding unit imports an adapter',
       files: {
         'src/features/orders/adapters/api/index.ts': exported('ordersAdapter'),
-        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
-          importing({
-            from: '../../../../adapters/api',
-            name: 'ordersAdapter',
-          }),
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts': importing({
+          from: '../../../../adapters/api',
+          name: 'ordersAdapter',
+        }),
       },
       parts: [
         'typescript/architecture/ui',
@@ -678,13 +663,11 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a binding unit imports a component',
       files: {
-        'src/features/orders/ui/components/order-card.tsx':
-          exported('orderCard'),
-        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
-          importing({
-            from: '../../../../ui/components/order-card',
-            name: 'orderCard',
-          }),
+        'src/features/orders/ui/components/order-card.tsx': exported('orderCard'),
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts': importing({
+          from: '../../../../ui/components/order-card',
+          name: 'orderCard',
+        }),
       },
       parts: [
         'typescript/architecture/ui',
@@ -737,11 +720,10 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a feature imports a screen',
       files: {
-        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx':
-          importing({
-            from: '../../../../../routes/orders',
-            name: 'route',
-          }),
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
+          from: '../../../../../routes/orders',
+          name: 'route',
+        }),
         'src/routes/orders.tsx': exported('route'),
       },
       parts: [
@@ -790,8 +772,7 @@ describe('the dependency-cruiser layer set', () => {
           "export { ordersWidget } from './ui/widgets/orders-widget';\n",
         'src/features/orders/ui/widgets/orders-widget/index.ts':
           "export { ordersWidget } from './orders-widget';\n",
-        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx':
-          exported('ordersWidget'),
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': exported('ordersWidget'),
       },
       parts: [
         'typescript/architecture/ui',
@@ -812,11 +793,10 @@ describe('the dependency-cruiser layer set', () => {
       files: {
         'src/features/orders/domain/entities/index.ts':
           "export enum OrderStatus {\n  Pending = 'pending',\n}\n",
-        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx':
-          importing({
-            from: '../../../domain/entities',
-            name: 'OrderStatus',
-          }),
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
+          from: '../../../domain/entities',
+          name: 'OrderStatus',
+        }),
       },
       parts: [
         'typescript/architecture/ui',
@@ -843,8 +823,7 @@ describe('the dependency-cruiser layer set', () => {
           from: 'yaml',
           name: 'value',
         }),
-        'src/features/orders/domain/entities/index.ts':
-          'export type Order = { id: string };\n',
+        'src/features/orders/domain/entities/index.ts': 'export type Order = { id: string };\n',
         'src/features/orders/ui/widgets/orders.tsx':
           "import type { Order } from '../../domain/entities';\nimport { value } from '@tanstack/react-router';\nexport const orders: Order[] = [];\nexport const link = value;\n",
         'src/libs/ui/button.stories.tsx': importing({
@@ -1010,10 +989,8 @@ describe('the dependency-cruiser foundation parts', () => {
     {
       condition: 'two modules import each other',
       files: {
-        'src/order.ts':
-          "import { line } from './line';\nexport const order = line;\n",
-        'src/line.ts':
-          "import { order } from './order';\nexport const line = order;\n",
+        'src/order.ts': "import { line } from './line';\nexport const order = line;\n",
+        'src/line.ts': "import { order } from './order';\nexport const line = order;\n",
       },
       rule: 'no-circular',
     },
@@ -1038,48 +1015,42 @@ describe('the dependency-cruiser foundation parts', () => {
     {
       condition: 'code imports a package the manifest does not declare',
       files: {
-        'src/order.ts':
-          "import { ghost } from 'ghost';\nexport const order = ghost;\n",
+        'src/order.ts': "import { ghost } from 'ghost';\nexport const order = ghost;\n",
       },
       rule: 'no-undeclared-dependency',
     },
     {
       condition: 'code imports a module that does not exist',
       files: {
-        'src/order.ts':
-          "import { line } from './line';\nexport const order = line;\n",
+        'src/order.ts': "import { line } from './line';\nexport const order = line;\n",
       },
       rule: 'no-unresolvable',
     },
     {
       condition: 'code imports a deprecated package',
       files: {
-        'src/order.ts':
-          "import { legacy } from 'legacy';\nexport const order = legacy;\n",
+        'src/order.ts': "import { legacy } from 'legacy';\nexport const order = legacy;\n",
       },
       rule: 'no-deprecated-dependency',
     },
     {
       condition: 'production code imports a development dependency',
       files: {
-        'src/order.ts':
-          "import { devtool } from 'devtool';\nexport const order = devtool;\n",
+        'src/order.ts': "import { devtool } from 'devtool';\nexport const order = devtool;\n",
       },
       rule: 'no-development-dependency-in-production',
     },
     {
       condition: 'code imports a package the manifest declares twice',
       files: {
-        'src/order.ts':
-          "import { doubled } from 'doubled';\nexport const order = doubled;\n",
+        'src/order.ts': "import { doubled } from 'doubled';\nexport const order = doubled;\n",
       },
       rule: 'no-duplicate-dep-types',
     },
     {
       condition: 'code imports a deprecated core module',
       files: {
-        'src/order.ts':
-          "import { toASCII } from 'punycode';\nexport const order = toASCII;\n",
+        'src/order.ts': "import { toASCII } from 'punycode';\nexport const order = toASCII;\n",
       },
       rule: 'no-deprecated-core',
     },
@@ -1101,8 +1072,7 @@ describe('the dependency-cruiser foundation parts', () => {
 
   it.each([
     {
-      condition:
-        'production code imports a declared package and its own modules',
+      condition: 'production code imports a declared package and its own modules',
       files: {
         'src/line.ts': 'export const line = 1;\n',
         'src/order.ts':
@@ -1110,8 +1080,7 @@ describe('the dependency-cruiser foundation parts', () => {
       },
     },
     {
-      condition:
-        'production code imports only the types of a development dependency',
+      condition: 'production code imports only the types of a development dependency',
       files: {
         'src/order.ts':
           "import type { devtool } from 'devtool';\nexport type Order = typeof devtool;\n",
@@ -1120,8 +1089,7 @@ describe('the dependency-cruiser foundation parts', () => {
     {
       condition: 'a hidden folder holds modules that break the rules',
       files: {
-        '.cache/order.ts':
-          "import { line } from './line';\nexport const order = line;\n",
+        '.cache/order.ts': "import { line } from './line';\nexport const order = line;\n",
         'src/order.ts': 'export const order = 1;\n',
       },
     },
@@ -1137,8 +1105,7 @@ describe('the dependency-cruiser foundation parts', () => {
       condition: "the root imports a library's stylesheet surface by path",
       files: {
         'src/libs/ui/index.css': '.card {\n  color: inherit;\n}\n',
-        'src/root/app.ts':
-          "import '../libs/ui/index.css';\n\nexport const app = 1;\n",
+        'src/root/app.ts': "import '../libs/ui/index.css';\n\nexport const app = 1;\n",
       },
     },
     {

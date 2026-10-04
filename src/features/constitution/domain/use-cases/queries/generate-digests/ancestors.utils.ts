@@ -2,16 +2,12 @@ import type { BlocksById } from '../../../utils';
 
 // The extends chain, nearest base first; a cycle ends it, and the cycles check
 // reports the cycle.
-const ancestorsOf = (input: {
-  blockId: string;
-  byId: BlocksById;
-}): readonly string[] => {
+const ancestorsOf = (input: { blockId: string; byId: BlocksById }): readonly string[] => {
   const chain: string[] = [];
 
   for (
     // Stryker disable next-line OptionalChaining: the digest asks only for known blocks
-    let base: string | undefined = input.byId.get(input.blockId)?.frontMatter
-      .extends;
+    let base: string | undefined = input.byId.get(input.blockId)?.frontMatter.extends;
     base !== undefined && base !== input.blockId && !chain.includes(base);
     base = input.byId.get(base)?.frontMatter.extends
   ) {

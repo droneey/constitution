@@ -31,8 +31,7 @@ interface BlockLoaded {
   findings: readonly Finding[];
 }
 
-const lineCount = (text: string): number =>
-  text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
+const lineCount = (text: string): number => text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
 
 const groupByFolder = (located: readonly Located[]): readonly BlockFolder[] => {
   const folders = new Map<
@@ -64,9 +63,7 @@ const groupByFolder = (located: readonly Located[]): readonly BlockFolder[] => {
   ];
 };
 
-const secondaryFindings = (
-  secondary: readonly Secondary[],
-): readonly Finding[] =>
+const secondaryFindings = (secondary: readonly Secondary[]): readonly Finding[] =>
   secondary
     .filter(({ text }) => splitFrontMatter(text).frontMatter !== undefined)
     .map(({ entry }) => ({
@@ -79,10 +76,7 @@ const secondaryFile = ({ entry, text }: Secondary): BlockFile => ({
   body: text,
   lines: lineCount(text),
   path: entry.path,
-  role:
-    entry.block.file === BlockPathFile.With
-      ? BlockFileRole.With
-      : BlockFileRole.Chapter,
+  role: entry.block.file === BlockPathFile.With ? BlockFileRole.With : BlockFileRole.Chapter,
   with: entry.block.with,
 });
 
@@ -116,12 +110,8 @@ const filesOf = (input: {
 
   return [
     input.main,
-    ...ordered
-      .filter(({ entry }) => entry.block.file === BlockPathFile.Chapter)
-      .map(secondaryFile),
-    ...ordered
-      .filter(({ entry }) => entry.block.file === BlockPathFile.With)
-      .map(secondaryFile),
+    ...ordered.filter(({ entry }) => entry.block.file === BlockPathFile.Chapter).map(secondaryFile),
+    ...ordered.filter(({ entry }) => entry.block.file === BlockPathFile.With).map(secondaryFile),
   ];
 };
 

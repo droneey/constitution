@@ -13,8 +13,6 @@ or {
     JsStringLiteralExpression(),
     JsxString(),
     JsTemplateChunkElement()
-  } as $text where {
-    $text <: r"(?s).*(?:[\w\])]!(?:[\s\"'`]|$)|(?:^|[\s\"'`])![a-z]).*"
-  },
+  } as $text where { $text <: r"(?s).*(?:[\w\])]!(?:[\s\"'`]|$)|(?:^|[\s\"'`])![a-z]).*" },
   register_diagnostic(span=$text, message="Win by a later layer: the important modifier writes !important", severity="error")
 }

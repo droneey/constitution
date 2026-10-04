@@ -54,14 +54,12 @@ describe('the commit message hook', () => {
     {
       condition: 'it has a scope',
       message: 'feat(biome): Add a preset',
-      output:
-        'Commit must match format: type: Subject, or type!: Subject for a breaking change',
+      output: 'Commit must match format: type: Subject, or type!: Subject for a breaking change',
     },
     {
       condition: 'the colon has no space after it',
       message: 'feat:Add a preset',
-      output:
-        'Commit must match format: type: Subject, or type!: Subject for a breaking change',
+      output: 'Commit must match format: type: Subject, or type!: Subject for a breaking change',
     },
     {
       condition: 'the subject starts in lower case',

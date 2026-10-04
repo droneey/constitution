@@ -14,9 +14,7 @@ language js
     JsPropertyObjectMember(value=`($...) => null`),
     JsxExpressionAttributeValue(expression=`($...) => null`),
     TsReturnTypeAnnotation(ty=TsUnionType(types=$alternatives)) where {
-      $alternatives <: some TsReferenceType(name=$type) where {
-        $type <: r".*ReactElement"
-      }
+      $alternatives <: some TsReferenceType(name=$type) where { $type <: r".*ReactElement" }
     },
     JsConditionalExpression(consequent=$shown, alternate=`null`) where {
       $shown <: or {

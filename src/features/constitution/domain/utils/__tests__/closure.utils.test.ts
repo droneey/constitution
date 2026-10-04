@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { Files } from '../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  mainFile,
-} from '../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile } from '../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../__tests__/valid-files.fixtures';
 import type { Place } from '../closure.utils';
 import { closureOf, mayReferTo, reachableFrom } from '../closure.utils';
@@ -22,10 +19,7 @@ interface ReachCase {
   place: Place;
 }
 
-const implementationRequiring = (input: {
-  id: string;
-  requires: readonly string[];
-}): Files => ({
+const implementationRequiring = (input: { id: string; requires: readonly string[] }): Files => ({
   [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
     body: `# ${input.id}\n`,
     id: input.id,
@@ -130,24 +124,21 @@ describe('reachableFrom', () => {
         with: 'browser',
       },
     },
-  ])(
-    'should hold every block the place reaches when the place is $name',
-    ({ expected, place }) => {
-      // Arrange
-      const { byId } = checkInputOf(validFiles());
+  ])('should hold every block the place reaches when the place is $name', ({ expected, place }) => {
+    // Arrange
+    const { byId } = checkInputOf(validFiles());
 
-      // Act
-      const reachable = reachableFrom({
-        byId,
-        place,
-      });
+    // Act
+    const reachable = reachableFrom({
+      byId,
+      place,
+    });
 
-      // Assert
-      expect([
-        ...reachable,
-      ]).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect([
+      ...reachable,
+    ]).toStrictEqual(expected);
+  });
 });
 
 describe('mayReferTo', () => {
@@ -206,21 +197,18 @@ describe('mayReferTo', () => {
       name: 'a block of a layer above from a block that does not exist',
       to: 'core',
     },
-  ])(
-    'should answer $expected when a file refers to $name',
-    ({ expected, from, to }) => {
-      // Arrange
-      const { byId } = checkInputOf(validFiles());
+  ])('should answer $expected when a file refers to $name', ({ expected, from, to }) => {
+    // Arrange
+    const { byId } = checkInputOf(validFiles());
 
-      // Act
-      const isAllowed = mayReferTo({
-        byId,
-        from,
-        to,
-      });
+    // Act
+    const isAllowed = mayReferTo({
+      byId,
+      from,
+      to,
+    });
 
-      // Assert
-      expect(isAllowed).toBe(expected);
-    },
-  );
+    // Assert
+    expect(isAllowed).toBe(expected);
+  });
 });

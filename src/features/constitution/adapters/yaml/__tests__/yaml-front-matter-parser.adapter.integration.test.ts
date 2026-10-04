@@ -96,10 +96,7 @@ describe('createYamlFrontMatterParser', () => {
   it('should report the line and the reason without its position when the text is not YAML', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
-    const yaml = FIELDS.replace(
-      'governs: ["**/ui/**"]',
-      'governs: ["**/ui/**" "**/web/**"]',
-    );
+    const yaml = FIELDS.replace('governs: ["**/ui/**"]', 'governs: ["**/ui/**" "**/web/**"]');
 
     // Act
     const read = parser.parse(yaml);
@@ -123,8 +120,7 @@ describe('createYamlFrontMatterParser', () => {
     // Assert
     expect(read).toStrictEqual({
       line: 3,
-      reason:
-        'an unquoted value starts with "*", which YAML reads as an alias; quote it',
+      reason: 'an unquoted value starts with "*", which YAML reads as an alias; quote it',
       status: 'not-yaml',
     });
   });
@@ -142,21 +138,18 @@ describe('createYamlFrontMatterParser', () => {
       name: 'empty',
       yaml: '',
     },
-  ])(
-    'should say it is not a mapping when the front matter is $name',
-    ({ yaml }) => {
-      // Arrange
-      const parser = createYamlFrontMatterParser();
+  ])('should say it is not a mapping when the front matter is $name', ({ yaml }) => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
 
-      // Act
-      const read = parser.parse(yaml);
+    // Act
+    const read = parser.parse(yaml);
 
-      // Assert
-      expect(read).toStrictEqual({
-        status: 'not-a-mapping',
-      });
-    },
-  );
+    // Assert
+    expect(read).toStrictEqual({
+      status: 'not-a-mapping',
+    });
+  });
 
   it.each([
     {
@@ -207,22 +200,19 @@ describe('createYamlFrontMatterParser', () => {
       name: 'the front matter is empty',
       yaml: '',
     },
-  ])(
-    "should read a skill's name and description as text when $name",
-    ({ expected, yaml }) => {
-      // Arrange
-      const parser = createYamlFrontMatterParser();
+  ])("should read a skill's name and description as text when $name", ({ expected, yaml }) => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
 
-      // Act
-      const read = parser.skill(yaml);
+    // Act
+    const read = parser.skill(yaml);
 
-      // Assert
-      expect(read).toStrictEqual({
-        ...expected,
-        status: 'parsed',
-      });
-    },
-  );
+    // Assert
+    expect(read).toStrictEqual({
+      ...expected,
+      status: 'parsed',
+    });
+  });
 
   it("should report the reason when a skill's front matter is not YAML", () => {
     // Arrange
@@ -233,8 +223,7 @@ describe('createYamlFrontMatterParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      reason:
-        'Flow sequence in block collection must be sufficiently indented and end with a ]',
+      reason: 'Flow sequence in block collection must be sufficiently indented and end with a ]',
       status: 'not-yaml',
     });
   });

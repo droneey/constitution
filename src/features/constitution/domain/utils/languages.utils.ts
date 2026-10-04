@@ -6,10 +6,7 @@ import { closureOf } from './closure.utils';
 
 // A block's languages are the language blocks among itself and its closure;
 // none means the block's rules hold for every language.
-const languagesOf = (input: {
-  blockId: string;
-  byId: BlocksById;
-}): readonly string[] =>
+const languagesOf = (input: { blockId: string; byId: BlocksById }): readonly string[] =>
   [
     input.blockId,
     ...closureOf(input),
@@ -19,10 +16,7 @@ const languagesOf = (input: {
 
 // A rule of a with/ file holds only where both blocks do, so it takes the
 // languages of both.
-const ruleLanguagesOf = (input: {
-  byId: BlocksById;
-  rule: Rule;
-}): readonly string[] => {
+const ruleLanguagesOf = (input: { byId: BlocksById; rule: Rule }): readonly string[] => {
   const { rule } = input;
   const blockIds =
     // Stryker disable next-line ConditionalExpression: no block has the id undefined

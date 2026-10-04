@@ -16,14 +16,7 @@ interface Verdict {
 }
 
 const ALLOWLIST = readFileSync(
-  join(
-    REPOSITORY,
-    'presets',
-    'common',
-    'osv-scanner',
-    'foundation',
-    'core.txt',
-  ),
+  join(REPOSITORY, 'presets', 'common', 'osv-scanner', 'foundation', 'core.txt'),
   'utf8',
 )
   .trim()

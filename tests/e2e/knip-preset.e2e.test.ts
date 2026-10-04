@@ -6,12 +6,10 @@ const ENTITIES = 'src/features/orders/domain/entities';
 
 const WIRED = {
   [`${ENTITIES}/index.ts`]: "export { order, draft } from './order.entity';\n",
-  [`${ENTITIES}/order.entity.ts`]:
-    'export const order = 1;\nexport const draft = 2;\n',
+  [`${ENTITIES}/order.entity.ts`]: 'export const order = 1;\nexport const draft = 2;\n',
   'src/entrypoints/run/main.ts':
     "import { order } from '../../features/orders';\nconsole.log(order);\n",
-  'src/features/orders/index.ts':
-    "export { draft, order } from './domain/entities';\n",
+  'src/features/orders/index.ts': "export { draft, order } from './domain/entities';\n",
 };
 
 describe('the knip preset', () => {
@@ -57,12 +55,10 @@ describe('the knip preset', () => {
     const project = {
       files: {
         ...WIRED,
-        [`${ENTITIES}/__tests__/order.fixtures.ts`]:
-          'export const anOrder = 1;\n',
+        [`${ENTITIES}/__tests__/order.fixtures.ts`]: 'export const anOrder = 1;\n',
         [`${ENTITIES}/__tests__/total.utils.test.ts`]:
           "import { expect, test } from 'bun:test';\nimport { anOrder } from './order.fixtures';\nimport { total } from '../total.utils';\ntest('total', () => {\n  expect(total(anOrder)).toBe(1);\n});\n",
-        [`${ENTITIES}/total.utils.ts`]:
-          'export const total = (value: number): number => value;\n',
+        [`${ENTITIES}/total.utils.ts`]: 'export const total = (value: number): number => value;\n',
       },
       production: true,
     };
