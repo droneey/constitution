@@ -1,0 +1,14 @@
+foundation:
+  self:
+    awaitable-never-dropped:
+      - all
+    generics-written-with-their-arguments:
+      - all
+    overrides-marked-by-decorator:
+      - all
+    ty-ignore-names-its-rule:
+      - all
+      - respect-type-ignore-comments
+    ty-is-the-type-gate:
+      - all
+      - error-on-warning

@@ -1,0 +1,39 @@
+# python: the project
+[project]
+name = "<name>"
+version = "0.0.0"
+requires-python = ">=3.14"
+dependencies = []
+
+# uv: the build backend
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+# uv: the tools, pinned exactly
+[dependency-groups]
+dev = [
+  "poethepoet==0.48.0",
+  "ruff==0.16.9",
+  "ty==0.0.84",
+]
+
+# uv: installs
+[tool.uv]
+exclude-newer = "3 days"
+no-build = true
+python-downloads = "never"
+python-preference = "only-system"
+
+# ruff: the constitution's chain of parts
+[tool.ruff]
+extend = ".droneey/constitution/presets/python/ruff/foundation/python.toml"
+
+# poethepoet: the check
+[tool.poe.tasks]
+"format:check" = "ruff format --check"
+"format:fix" = "ruff format"
+"lint:check" = "ruff check"
+"lint:fix" = "ruff check --fix"
+"type:check" = "ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml"
+check = ["format:check", "lint:check", "type:check"]

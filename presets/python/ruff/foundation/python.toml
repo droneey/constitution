@@ -1,0 +1,29 @@
+extend = "core.toml"
+
+[lint]
+extend-ignore = [
+  "D1",
+]
+extend-select = [
+  "ANN",
+  "D",
+  "DTZ",
+  "INP",
+  "S110",
+  "S112",
+  "SLF",
+  "TC",
+  "TID251",
+  "UP040",
+  "UP046",
+  "UP047",
+]
+
+[lint.flake8-bandit]
+check-typed-exception = true
+
+[lint.flake8-tidy-imports.banned-api]
+"sys.path".msg = "a module is imported as a member of an installed package"
+
+[lint.pydocstyle]
+convention = "google"

@@ -1,0 +1,45 @@
+indent-width = 2
+line-length = 100
+
+[format]
+docstring-code-format = true
+quote-style = "single"
+
+[lint]
+ignore = [
+  "PLR09",
+  "PLR2004",
+]
+select = [
+  "A",
+  "ASYNC",
+  "B",
+  "C4",
+  "E",
+  "EXE",
+  "F",
+  "FURB",
+  "G",
+  "I",
+  "ICN",
+  "ISC",
+  "LOG",
+  "N",
+  "PERF",
+  "PGH",
+  "PIE",
+  "PL",
+  "PYI",
+  "RET",
+  "RSE",
+  "RUF",
+  "SIM",
+  "SLOT",
+  "UP",
+  "W",
+]
+
+[lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "double"

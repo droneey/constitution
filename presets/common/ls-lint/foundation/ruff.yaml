@@ -1,0 +1,2 @@
+ignore:
+  - .ruff_cache

@@ -1,0 +1,19 @@
+ls:
+  .dir: kebab-case | regex:^\.[a-z0-9]+(-[a-z0-9]+)*$ | regex:^__pycache__$
+  .py: snake_case
+  .pyi: snake_case
+  .*.pyc: snake_case
+  src:
+    .dir: snake_case
+    .*: kebab-case
+    .*.*: kebab-case
+    .py: snake_case
+    .pyi: snake_case
+    .*.pyc: snake_case
+  tests:
+    .dir: snake_case
+    .*: kebab-case
+    .*.*: kebab-case
+    .py: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures)$
+    .*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures)$
+    .*.*.*.*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$
