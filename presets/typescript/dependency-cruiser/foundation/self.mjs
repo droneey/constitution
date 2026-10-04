@@ -60,6 +60,18 @@ export default {
     // TODO(#186): move to tsc once TypeScript 7.1 ships.
     parser: 'swc',
     skipAnalysisNotInRules: true,
+    // A package that names its entry points only in `exports` resolves only when the resolver reads it.
+    enhancedResolveOptions: {
+      exportsFields: [
+        'exports',
+      ],
+      conditionNames: [
+        'import',
+        'require',
+        'node',
+        'default',
+      ],
+    },
     doNotFollow: {
       path: [
         'node_modules',

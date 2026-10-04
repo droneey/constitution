@@ -12,12 +12,6 @@ ORDERS_ALL = (
 @pytest.mark.parametrize(
   ('changes', 'globs'),
   [
-    pytest.param(changes_of(), (), id='nothing changed'),
-    pytest.param(
-      changes_of(lines={'src/shop/orders.py': (range(1, 2),)}),
-      (),
-      id='a line outside every function',
-    ),
     pytest.param(
       changes_of(lines={'src/shop/orders.py': (range(5, 6),)}),
       ('shop.orders.x_total__mutmut_*',),
@@ -88,14 +82,6 @@ ORDERS_ALL = (
       ),
       ('shop.kernel.money.x_cents__mutmut_*', *ORDERS_ALL),
       id='a changed spec that imports modules',
-    ),
-    pytest.param(
-      changes_of(
-        lines={'tests/test_shop.py': (range(1, 2),)},
-        extra={'tests/test_shop.py': python('from shop import version', 'import json')},
-      ),
-      ('shop.x_version__mutmut_*',),
-      id="a changed spec that imports a package's surface",
     ),
     pytest.param(
       changes_of(

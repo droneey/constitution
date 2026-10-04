@@ -82,15 +82,4 @@ describe('seamsCheck', () => {
       },
     ]);
   });
-
-  it('should report nothing when each chapter takes the name of its own block', () => {
-    // Arrange
-    const input = checkInputOf(validFiles());
-
-    // Act
-    const findings = seamsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
 });

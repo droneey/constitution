@@ -4,6 +4,7 @@ import core from './.droneey/constitution/presets/typescript/stryker/foundation/
 import git from './.droneey/constitution/presets/typescript/stryker/foundation/git.mjs';
 import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
 import self from './.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
+import uv from './.droneey/constitution/presets/typescript/stryker/foundation/uv.mjs';
 
 export default {
   ...self,
@@ -14,10 +15,11 @@ export default {
   ignorePatterns: [
     ...git.ignorePatterns,
     ...mise.ignorePatterns,
+    ...uv.ignorePatterns,
   ],
-  commandRunner: {
-    command: `${bunTest.commandRunner.command} ./src ./tools`,
-  },
+  plugins: [
+    './tools/mutation-check/src/runner.ts',
+  ],
   mutate: [
     ...core.mutate,
     ...architecture.mutate,

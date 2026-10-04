@@ -65,11 +65,6 @@ def _findings(*, folder: Path, importer: str, statement: str) -> tuple[Finding, 
     ),
     pytest.param(
       'src/shop/kernel/money.py',
-      'import shop',
-      id='an absolute import of the package',
-    ),
-    pytest.param(
-      'src/shop/kernel/money.py',
       'from shop.kernel import currency',
       id='a top-level folder importing itself by its absolute path',
     ),

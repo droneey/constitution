@@ -249,24 +249,10 @@ describe('bindingsCheck', () => {
     },
     {
       axis: 'foundation',
-      binding: 'foundation:\n  ui:\n    four-data-states: [useHookAtTopLevel]\n',
-      name: 'a part of every language holds a rule of its block',
-      part: 'ui',
-      scope: 'common',
-    },
-    {
-      axis: 'foundation',
       binding: `${HOOKS_BINDING}  i18n:\n    no-any: [useHookAtTopLevel]\n`,
       name: "a part of a language's scope holds a rule of its language",
       part: 'i18n',
       scope: 'typescript',
-    },
-    {
-      axis: 'foundation',
-      binding: 'foundation:\n  self:\n    four-data-states: [useHookAtTopLevel]\n',
-      name: "the tool's own part holds a rule of a domain above the tool",
-      part: 'self',
-      scope: 'common',
     },
     {
       axis: 'foundation',

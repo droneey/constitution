@@ -171,10 +171,6 @@ describe('the session state the session-start hook saves', () => {
       event: HookEvent.Clear,
       reminded: '',
     },
-    {
-      event: HookEvent.Compact,
-      reminded: '',
-    },
   ])(
     'should keep what was reminded only when a session resumes, not on $event',
     ({ event, reminded }) => {

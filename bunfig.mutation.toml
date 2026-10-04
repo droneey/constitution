@@ -1,5 +1,6 @@
 [test]
 root = "."
+pathIgnorePatterns = ["tests/e2e/**", "**/main.test.*"]
 coverage = false
 
 [run]

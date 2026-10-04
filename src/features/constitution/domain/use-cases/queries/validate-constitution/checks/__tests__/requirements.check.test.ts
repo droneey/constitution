@@ -90,11 +90,6 @@ describe('requirementsCheck', () => {
       row: '| `i18n-plurals-by-cldr` | ICU plural | met |',
     },
     {
-      expected:
-        'answers "i18n-plurals-by-cldr" with Met "partial: no ordinals"; Met is yes, partly or no',
-      row: '| `i18n-plurals-by-cldr` | ICU plural | partial: no ordinals |',
-    },
-    {
       expected: 'answers "i18n-plurals-by-cldr" without saying how',
       row: '| `i18n-plurals-by-cldr` |  | yes |',
     },

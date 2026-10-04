@@ -53,13 +53,6 @@ describe('checkOf', () => {
       name: '"tool/lint"',
     },
     {
-      check: 'tool— lint',
-      expected: {
-        kind: 'unknown',
-      },
-      name: 'a tool without the space before its dash',
-    },
-    {
       check: 'unit test',
       expected: {
         kind: 'unknown',

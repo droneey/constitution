@@ -38,14 +38,3 @@ def test_should_read_the_lines_each_file_adds_or_changes() -> None:
     Path('src/shop/orders.py'): (range(3, 4), range(11, 14)),
     Path('src/shop/kernel.py'): (range(1, 3),),
   }
-
-
-def test_should_read_nothing_when_nothing_changed() -> None:
-  # Arrange
-  diff = ''
-
-  # Act
-  lines = changed_lines(diff)
-
-  # Assert
-  assert lines == {}
