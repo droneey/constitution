@@ -53,16 +53,11 @@ const proseOf = (input: { block: Block; file: BlockFile }): string => {
   const body = withoutCodeFences(input.file.body);
 
   return collapseWhitespace(
-    input.file.role === BlockFileRole.Main
-      ? `${input.block.frontMatter.summary}\n${body}`
-      : body,
+    input.file.role === BlockFileRole.Main ? `${input.block.frontMatter.summary}\n${body}` : body,
   );
 };
 
-const ownedWordsCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const ownedWordsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
   const { duplicates, owners } = ownersOf(constitution.blocks);
 
   return [

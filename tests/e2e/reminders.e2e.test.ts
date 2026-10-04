@@ -42,11 +42,7 @@ const startSession = (
   };
 };
 
-const touch = (input: {
-  filePath: string;
-  session: string;
-  toolName?: string;
-}): string =>
+const touch = (input: { filePath: string; session: string; toolName?: string }): string =>
   runScript({
     event: Object.fromEntries([
       [
@@ -113,9 +109,7 @@ describe('the reminders of the post-tool-use hook', () => {
     expect({
       files: context.includes('read blocks/domains/ui/ui.md'),
       musts: context.includes('its MUST rules: '),
-      opening: context.startsWith(
-        'ui governs src/features/orders/ui/order-card.tsx: ',
-      ),
+      opening: context.startsWith('ui governs src/features/orders/ui/order-card.tsx: '),
       within: context.length <= 300,
     }).toStrictEqual({
       files: true,

@@ -44,10 +44,7 @@ const nameMessage = (input: {
 };
 
 // A scope is common to every language the tool reads, or one of them.
-const scopeMessage = (input: {
-  byId: BlocksById;
-  preset: PresetPath;
-}): string | undefined => {
+const scopeMessage = (input: { byId: BlocksById; preset: PresetPath }): string | undefined => {
   const { scope, tool } = input.preset;
   const covered = input.byId.get(tool)?.frontMatter.languages ?? [];
   const isCovered =
@@ -68,17 +65,12 @@ const partMessages = (input: {
   const { axis } = input.preset;
 
   return [
-    axes.includes(axis)
-      ? undefined
-      : `is in ${axis}/, which is not an axis: ${AXES.join(', ')}`,
+    axes.includes(axis) ? undefined : `is in ${axis}/, which is not an axis: ${AXES.join(', ')}`,
     nameMessage(input),
   ];
 };
 
-const presetsCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
   const rules = new Map(
     constitution.rules.map((rule) => [
       rule.slug,

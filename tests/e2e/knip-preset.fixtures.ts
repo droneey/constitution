@@ -1,11 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -117,13 +111,9 @@ const unusedCode = (project: Project): Unused => {
   const { issues } = REPORT.parse(JSON.parse(running.stdout));
 
   return {
-    binaries: issues.flatMap(({ binaries }) =>
-      binaries.map(({ name }) => name),
-    ),
+    binaries: issues.flatMap(({ binaries }) => binaries.map(({ name }) => name)),
     exports: issues.flatMap(({ exports }) => exports.map(({ name }) => name)),
-    files: issues
-      .filter(({ files: unused }) => unused.length > 0)
-      .map(({ file }) => file),
+    files: issues.filter(({ files: unused }) => unused.length > 0).map(({ file }) => file),
   };
 };
 

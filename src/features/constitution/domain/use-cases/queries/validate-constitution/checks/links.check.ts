@@ -10,9 +10,7 @@ interface Document {
   text: string;
 }
 
-const linksCheck: Check = ({
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const linksCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
   const folders = foldersOf(constitution.paths);
   const { decisions, readme } = constitution.documents;
   const documents: readonly Document[] = [

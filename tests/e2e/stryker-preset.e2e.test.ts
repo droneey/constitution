@@ -6,11 +6,7 @@ import { mutationOf } from './stryker-preset.fixtures';
 // runner.
 const STRYKER_RUN_MS = 60_000;
 
-const specOf = (input: {
-  condition: string;
-  price: number;
-  tax: number;
-}): string =>
+const specOf = (input: { condition: string; price: number; tax: number }): string =>
   `import { expect, test } from 'bun:test';\n\nimport { total } from '../order.utils';\n\ntest('should add the tax when ${input.condition}', () => {\n  expect(total(${String(input.price)}, ${String(input.tax)})).toBe(${String(input.price + input.tax)});\n});\n`;
 
 describe('the Stryker preset', () => {

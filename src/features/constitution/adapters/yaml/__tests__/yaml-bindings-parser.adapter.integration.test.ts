@@ -8,9 +8,7 @@ describe('createYamlBindingsParser', () => {
     const parser = createYamlBindingsParser();
 
     // Act
-    const read = parser.parse(
-      'foundation:\n  core:\n    no-empty-verbs: [no-empty-verbs.grit]\n',
-    );
+    const read = parser.parse('foundation:\n  core:\n    no-empty-verbs: [no-empty-verbs.grit]\n');
 
     // Assert
     expect(read).toStrictEqual({
@@ -43,9 +41,7 @@ describe('createYamlBindingsParser', () => {
     const parser = createYamlBindingsParser();
 
     // Act
-    const read = parser.parse(
-      'base:\n  core: {}\nfoundation:\n  core:\n    no-any: [1]\n',
-    );
+    const read = parser.parse('base:\n  core: {}\nfoundation:\n  core:\n    no-any: [1]\n');
 
     // Assert
     expect(read).toStrictEqual({

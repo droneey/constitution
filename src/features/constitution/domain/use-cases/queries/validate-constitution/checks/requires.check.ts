@@ -73,9 +73,7 @@ const blockFindings = (subject: Subject): readonly Finding[] => {
             id,
           }),
         )),
-    subject.block.layer === Layer.Implementation
-      ? extendsMessage(subject)
-      : undefined,
+    subject.block.layer === Layer.Implementation ? extendsMessage(subject) : undefined,
   ];
 
   return messages.flatMap((message) =>
@@ -90,10 +88,7 @@ const blockFindings = (subject: Subject): readonly Finding[] => {
   );
 };
 
-const requiresCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] =>
+const requiresCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] =>
   constitution.blocks.flatMap((block) =>
     blockFindings({
       block,

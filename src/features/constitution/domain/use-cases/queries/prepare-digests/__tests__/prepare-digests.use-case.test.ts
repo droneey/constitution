@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  sourceOf,
-  textOf,
-} from '../../../../../__tests__/constitution.fixtures';
-import {
-  GOLDEN_CORE,
-  GOLDEN_INDEX,
-} from '../../../../../__tests__/valid-digests.fixtures';
+import { sourceOf, textOf } from '../../../../../__tests__/constitution.fixtures';
+import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { prepareDigests } from '../prepare-digests.use-case';
 
@@ -35,8 +29,7 @@ describe('prepareDigests', () => {
         core: GOLDEN_CORE.replace(HEADING, `${HEADING}\n${paragraph}\n`),
         findings: [
           {
-            message:
-              'makes a core part of 3567 bytes; the digest holds at most 3500 of core',
+            message: 'makes a core part of 3567 bytes; the digest holds at most 3500 of core',
             path: CORE,
           },
         ],

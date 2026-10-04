@@ -26,10 +26,7 @@ const linksOf = (block: Block): readonly string[] => [
       ]),
 ];
 
-const closureOf = (input: {
-  blockId: string;
-  byId: BlocksById;
-}): ReadonlySet<string> => {
+const closureOf = (input: { blockId: string; byId: BlocksById }): ReadonlySet<string> => {
   const linksOfId = (id: string): readonly string[] => {
     const block = input.byId.get(id);
 
@@ -50,10 +47,7 @@ const closureOf = (input: {
   return seen;
 };
 
-const reachableFrom = (input: {
-  byId: BlocksById;
-  place: Place;
-}): ReadonlySet<string> => {
+const reachableFrom = (input: { byId: BlocksById; place: Place }): ReadonlySet<string> => {
   const seam = input.place.with;
 
   return new Set([
@@ -74,11 +68,7 @@ const reachableFrom = (input: {
   ]);
 };
 
-const mayReferTo = (input: {
-  byId: BlocksById;
-  from: Place;
-  to: string;
-}): boolean => {
+const mayReferTo = (input: { byId: BlocksById; from: Place; to: string }): boolean => {
   const source = input.byId.get(input.from.block);
   const target = input.byId.get(input.to);
 

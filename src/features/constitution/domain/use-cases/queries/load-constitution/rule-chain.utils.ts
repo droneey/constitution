@@ -7,9 +7,7 @@ interface Inherited {
   tags: readonly string[];
 }
 
-const firstBySlug = (
-  rules: readonly StatedRule[],
-): ReadonlyMap<string, StatedRule> =>
+const firstBySlug = (rules: readonly StatedRule[]): ReadonlyMap<string, StatedRule> =>
   new Map(
     rules.toReversed().map((rule) => [
       rule.slug,

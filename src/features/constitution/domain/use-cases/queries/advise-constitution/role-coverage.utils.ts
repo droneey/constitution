@@ -8,10 +8,7 @@ const languageFree: readonly string[] = LANGUAGE_FREE_ROLES;
 
 // A tool holds its checks for the languages it names; a tool that names none
 // holds only the language-free roles, for every language.
-const heldRoles = (input: {
-  blocks: readonly Block[];
-  language: string;
-}): ReadonlySet<string> =>
+const heldRoles = (input: { blocks: readonly Block[]; language: string }): ReadonlySet<string> =>
   new Set(
     input.blocks.flatMap(({ frontMatter }) =>
       frontMatter.checks.filter((role) =>
@@ -41,8 +38,7 @@ const neededRoles = (input: {
             byId: input.byId,
             rule,
           });
-          const applies =
-            languages.length === 0 || languages.includes(input.language.id);
+          const applies = languages.length === 0 || languages.includes(input.language.id);
 
           // Stryker disable next-line ConditionalExpression: other checks have no role to match
           return check.kind === 'tool' && roles.includes(check.role) && applies
@@ -55,10 +51,7 @@ const neededRoles = (input: {
   ];
 };
 
-const roleCoverage = (input: {
-  byId: BlocksById;
-  constitution: Constitution;
-}): readonly string[] =>
+const roleCoverage = (input: { byId: BlocksById; constitution: Constitution }): readonly string[] =>
   input.constitution.blocks
     .filter((block) => block.layer === Layer.Language)
     .flatMap((language) => {

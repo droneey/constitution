@@ -2,11 +2,7 @@ import type { Finding } from '#/kernel';
 import { Axis } from '#/kernel';
 
 import { DocumentPath } from '../../../../constants';
-import type {
-  BlockFile,
-  Vocabulary,
-  VocabularySection,
-} from '../../../../entities';
+import type { BlockFile, Vocabulary, VocabularySection } from '../../../../entities';
 import { isHeading, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { collapseWhitespace, WordKind, wordMatcher } from '../tokens.utils';
@@ -100,25 +96,18 @@ const listFindings = (words: readonly Word[]): readonly Finding[] =>
         ),
     ),
     ...SECTIONS.flatMap(({ axis }) =>
-      repeatsOf(
-        words.filter((entry) => entry.axis === axis).map((entry) => entry.word),
-      ).map((word) => `lists "${word}" twice in the ${axis}`),
+      repeatsOf(words.filter((entry) => entry.axis === axis).map((entry) => entry.word)).map(
+        (word) => `lists "${word}" twice in the ${axis}`,
+      ),
     ),
     ...[
       ...new Set(words.map((entry) => entry.word)),
     ]
       .filter(
         (word) =>
-          new Set(
-            words
-              .filter((entry) => entry.word === word)
-              .map((entry) => entry.axis),
-          ).size > 1,
+          new Set(words.filter((entry) => entry.word === word).map((entry) => entry.axis)).size > 1,
       )
-      .map(
-        (word) =>
-          `lists "${word}" in both the ${Axis.Architecture} and the ${Axis.Workflow}`,
-      ),
+      .map((word) => `lists "${word}" in both the ${Axis.Architecture} and the ${Axis.Workflow}`),
   ].map((message) => ({
     message,
     path: DocumentPath.Vocabulary,
@@ -149,9 +138,7 @@ const usageFindings = (input: {
     return [
       ...new Set(
         matchers
-          .filter(
-            (matcher) => matcher.axis !== file.axis && matcher.matches(text),
-          )
+          .filter((matcher) => matcher.axis !== file.axis && matcher.matches(text))
           .map(
             (matcher) =>
               `uses "${matcher.word}", a word of the ${matcher.axis}; ${place} holds whatever the ${matcher.axis}`,
@@ -164,9 +151,7 @@ const usageFindings = (input: {
   });
 };
 
-const vocabularyCheck: Check = ({
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const vocabularyCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
   const read = constitution.documents.vocabulary;
 
   if (read === undefined) {

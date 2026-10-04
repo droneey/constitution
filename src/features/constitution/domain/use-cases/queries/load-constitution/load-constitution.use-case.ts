@@ -53,8 +53,7 @@ const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
 // Five layers, not four ranks: the index groups platforms, then languages, and
 // the hook never sorts.
 const byLayerThenId = (left: Block, right: Block): number =>
-  LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) ||
-  compareText(left.id, right.id);
+  LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) || compareText(left.id, right.id);
 
 const locate = (paths: readonly string[]): readonly Located[] =>
   paths.flatMap((path) => {
@@ -95,9 +94,7 @@ const parsedOf = (blocks: readonly Block[]): Parsed => {
 
 const duplicateIdFindings = (blocks: readonly Block[]): readonly Finding[] =>
   blocks.flatMap((block) => {
-    const others = blocks.filter(
-      (other) => other.id === block.id && other.path !== block.path,
-    );
+    const others = blocks.filter((other) => other.id === block.id && other.path !== block.path);
 
     return others.length === 0
       ? []
@@ -116,9 +113,7 @@ const manifestOf = (input: {
 }): SkillFrontMatterRead | undefined => {
   const { frontMatter } = splitFrontMatter(input.tree.read(input.path));
 
-  return frontMatter === undefined
-    ? undefined
-    : input.parser.skill(frontMatter);
+  return frontMatter === undefined ? undefined : input.parser.skill(frontMatter);
 };
 
 const skillsOf = (input: {
@@ -198,10 +193,7 @@ const documentsOf = (input: {
       index: textOf(DocumentPath.DigestIndex),
     },
     hooks: hooks === undefined ? undefined : input.parser.hooks(hooks),
-    marketplace:
-      marketplace === undefined
-        ? undefined
-        : input.parser.marketplace(marketplace),
+    marketplace: marketplace === undefined ? undefined : input.parser.marketplace(marketplace),
     plugin: plugin === undefined ? undefined : input.parser.plugin(plugin),
     readme: textOf(DocumentPath.Readme),
     skills: skillsOf({
@@ -209,10 +201,7 @@ const documentsOf = (input: {
       parser: input.frontMatterParser,
       tree: input.tree,
     }),
-    vocabulary:
-      vocabulary === undefined
-        ? undefined
-        : input.vocabularyParser.parse(vocabulary),
+    vocabulary: vocabulary === undefined ? undefined : input.vocabularyParser.parse(vocabulary),
   };
 };
 

@@ -136,14 +136,12 @@ describe('the ls-lint preset', () => {
     {
       condition: 'a file of a domain use-case has no role suffix',
       path: 'src/features/orders/domain/use-cases/queries/list-orders/list-orders.ts',
-      reported:
-        'src/features/orders/domain/use-cases/queries/list-orders/list-orders.ts',
+      reported: 'src/features/orders/domain/use-cases/queries/list-orders/list-orders.ts',
     },
     {
       condition: 'a binding unit holds a file not named after its operation',
       path: 'src/features/orders/app/use-cases/queries/list-orders/helpers.ts',
-      reported:
-        'src/features/orders/app/use-cases/queries/list-orders/helpers.ts',
+      reported: 'src/features/orders/app/use-cases/queries/list-orders/helpers.ts',
     },
     {
       condition: 'a data port folder holds a surface joining both sides',
@@ -505,24 +503,21 @@ describe('the ls-lint expo parts', () => {
         'src/routes/Orders.tsx',
       ],
     },
-  ])(
-    'should report the names it refuses when $condition',
-    ({ parts, path, reported }) => {
-      // Arrange
-      const project = {
-        paths: [
-          path,
-        ],
-        parts,
-      };
+  ])('should report the names it refuses when $condition', ({ parts, path, reported }) => {
+    // Arrange
+    const project = {
+      paths: [
+        path,
+      ],
+      parts,
+    };
 
-      // Act
-      const failed = failedPaths(project);
+    // Act
+    const failed = failedPaths(project);
 
-      // Assert
-      expect(failed).toStrictEqual(reported);
-    },
-  );
+    // Assert
+    expect(failed).toStrictEqual(reported);
+  });
 });
 
 describe('the ls-lint foundation parts', () => {
@@ -690,22 +685,19 @@ describe('the ls-lint foundation parts', () => {
         'node_modules/SomePackage/Index.js',
       ],
     },
-  ])(
-    'should report nothing when $condition and a project extends $parts',
-    ({ parts, paths }) => {
-      // Arrange
-      const project = {
-        parts,
-        paths,
-      };
+  ])('should report nothing when $condition and a project extends $parts', ({ parts, paths }) => {
+    // Arrange
+    const project = {
+      parts,
+      paths,
+    };
 
-      // Act
-      const failed = failedPaths(project);
+    // Act
+    const failed = failedPaths(project);
 
-      // Assert
-      expect(failed).toStrictEqual([]);
-    },
-  );
+    // Assert
+    expect(failed).toStrictEqual([]);
+  });
 });
 
 describe('the ls-lint parts of the tools that write folders', () => {
@@ -949,8 +941,7 @@ describe('the ls-lint python parts', () => {
     {
       condition: 'a repository sits outside its side',
       path: 'src/shop/features/orders/domain/contracts/repositories/orders_repository.py',
-      reported:
-        'src/shop/features/orders/domain/contracts/repositories/orders_repository.py',
+      reported: 'src/shop/features/orders/domain/contracts/repositories/orders_repository.py',
     },
     {
       condition: 'a shared port has no role suffix',

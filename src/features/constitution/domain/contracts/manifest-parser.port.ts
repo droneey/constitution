@@ -1,9 +1,4 @@
-import type {
-  HooksManifest,
-  ManifestRead,
-  MarketplaceManifest,
-  PluginManifest,
-} from '../entities';
+import type { HooksManifest, ManifestRead, MarketplaceManifest, PluginManifest } from '../entities';
 
 interface ManifestParser {
   hooks: (json: string) => ManifestRead<HooksManifest>;

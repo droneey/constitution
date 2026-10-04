@@ -79,9 +79,7 @@ const paraglideFromTemplate = (): string => {
   const left = PLACEHOLDER.exec(filled)?.[0];
 
   if (left !== undefined) {
-    throw new Error(
-      `templates/block.md has a placeholder no fill covers: ${left}`,
-    );
+    throw new Error(`templates/block.md has a placeholder no fill covers: ${left}`);
   }
 
   return filled;

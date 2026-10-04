@@ -3,10 +3,7 @@ import type { BlocksById } from '../../../utils';
 import { corePartOf } from './core.utils';
 import { indexOf } from './index.utils';
 
-const generateDigests = (input: {
-  byId: BlocksById;
-  constitution: Constitution;
-}): Digests => {
+const generateDigests = (input: { byId: BlocksById; constitution: Constitution }): Digests => {
   const core = corePartOf(input.constitution);
 
   return {

@@ -9,10 +9,7 @@ import type { Check, CheckInput } from '../check.types';
 
 const METS: readonly string[] = Object.values(Met);
 
-const at = (input: {
-  answer: RequirementAnswer;
-  message: string;
-}): Finding => ({
+const at = (input: { answer: RequirementAnswer; message: string }): Finding => ({
   message: `answers "${input.answer.requirement}"${input.message}`,
   path: input.answer.file,
 });
@@ -92,10 +89,7 @@ const answerFindings = (input: {
   });
 };
 
-const requirementsCheck: Check = ({
-  byId,
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const requirementsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
   const isInImplementation = (answer: RequirementAnswer): boolean =>
     // Stryker disable next-line OptionalChaining: every answer comes from a loaded block
     byId.get(answer.block)?.layer === Layer.Implementation;
@@ -105,9 +99,7 @@ const requirementsCheck: Check = ({
   }): readonly Finding[] =>
     [
       ...new Set(
-        constitution.requirementAnswers
-          .filter(input.isMisplaced)
-          .map((answer) => answer.file),
+        constitution.requirementAnswers.filter(input.isMisplaced).map((answer) => answer.file),
       ),
     ].map((path) => ({
       message: input.message,
@@ -115,8 +107,7 @@ const requirementsCheck: Check = ({
     }));
   const outside = [
     ...fileFindings({
-      isMisplaced: (answer: RequirementAnswer): boolean =>
-        !isInImplementation(answer),
+      isMisplaced: (answer: RequirementAnswer): boolean => !isInImplementation(answer),
       message: 'answers requirements, which only an implementation does',
     }),
     // The index gives an answer no seam, so a with/ file holds no answer.

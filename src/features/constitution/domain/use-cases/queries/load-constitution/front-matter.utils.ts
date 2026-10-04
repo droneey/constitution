@@ -48,16 +48,10 @@ const WHITESPACE = /\s/;
 const SUMMARY_LENGTH = 70;
 const OPENING_LINES = 1;
 
-const oneOf = <T extends string>(input: {
-  value: string;
-  values: readonly T[];
-}): T | undefined =>
+const oneOf = <T extends string>(input: { value: string; values: readonly T[] }): T | undefined =>
   input.values.find((candidate) => candidate === input.value);
 
-const keyAt = (input: {
-  line: number;
-  lines: readonly string[];
-}): string | undefined =>
+const keyAt = (input: { line: number; lines: readonly string[] }): string | undefined =>
   input.lines
     .slice(0, input.line)
     .toReversed()
@@ -84,8 +78,7 @@ const yamlMessage = (input: {
 
 const keyMessages = (keys: readonly string[]): readonly string[] => {
   const missing = FIELDS.filter((field) => !keys.includes(field)).map(
-    (field) =>
-      `front matter lacks "${field}"; every block declares every field`,
+    (field) => `front matter lacks "${field}"; every block declares every field`,
   );
   const unknown = keys
     .filter((key) => !FIELDS.includes(key))
@@ -140,10 +133,7 @@ const repeatsOf = (values: readonly string[]): readonly string[] => [
   ...new Set(values.filter((entry, index) => values.indexOf(entry) !== index)),
 ];
 
-const notRoles = (input: {
-  field: ListField;
-  values: readonly string[];
-}): readonly string[] =>
+const notRoles = (input: { field: ListField; values: readonly string[] }): readonly string[] =>
   input.values
     .filter(
       (role) =>
@@ -152,19 +142,12 @@ const notRoles = (input: {
           values: ROLES,
         }) === undefined,
     )
-    .map(
-      (role) => `front matter: ${input.field} "${role}", which is not a role`,
-    );
+    .map((role) => `front matter: ${input.field} "${role}", which is not a role`);
 
-const notBlockIds = (input: {
-  field: ListField;
-  values: readonly string[];
-}): readonly string[] =>
+const notBlockIds = (input: { field: ListField; values: readonly string[] }): readonly string[] =>
   input.values
     .filter((id) => !BLOCK_ID.test(id))
-    .map(
-      (id) => `front matter: ${input.field} "${id}", which is not a block id`,
-    );
+    .map((id) => `front matter: ${input.field} "${id}", which is not a block id`);
 
 const entryMessages = (fields: FrontMatterFields): readonly string[] => [
   ...notBlockIds({
@@ -196,9 +179,7 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
         `front matter: governs lists ${JSON.stringify(glob)}, which holds whitespace; the index separates globs with spaces`,
     ),
   ...LIST_FIELDS.flatMap((field) =>
-    repeatsOf(fields[field]).map(
-      (repeat) => `front matter: ${field} lists "${repeat}" twice`,
-    ),
+    repeatsOf(fields[field]).map((repeat) => `front matter: ${field} lists "${repeat}" twice`),
   ),
 ];
 

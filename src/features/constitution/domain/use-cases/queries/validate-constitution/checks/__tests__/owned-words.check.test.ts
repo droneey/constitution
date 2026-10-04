@@ -2,22 +2,14 @@ import { describe, expect, it } from 'bun:test';
 
 import type { Finding } from '#/kernel';
 
-import {
-  checkInputOf,
-  mainFile,
-  textOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { ownedWordsCheck } from '../owned-words.check';
 
 const UI = 'blocks/domains/ui/ui.md';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
-const named = (input: {
-  owner: string;
-  path: string;
-  word: string;
-}): Finding => ({
+const named = (input: { owner: string; path: string; word: string }): Finding => ({
   message: `names "${input.word}", which ${input.owner} owns; only ${input.owner} and the blocks that depend on it may`,
   path: input.path,
 });

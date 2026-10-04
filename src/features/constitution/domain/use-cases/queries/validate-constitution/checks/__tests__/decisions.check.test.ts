@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  without,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { decisionsCheck } from '../decisions.check';
 
@@ -38,8 +35,7 @@ describe('decisionsCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message:
-          'is missing; the constitution keeps its decision log at the root',
+        message: 'is missing; the constitution keeps its decision log at the root',
         path: LOG,
       },
     ]);
@@ -47,8 +43,7 @@ describe('decisionsCheck', () => {
 
   it.each([
     {
-      expected:
-        'entry ADR-0001 follows ADR-0001; the numbers of the log only rise',
+      expected: 'entry ADR-0001 follows ADR-0001; the numbers of the log only rise',
       name: 'a number repeats',
       numbers: [
         '0001',
@@ -56,8 +51,7 @@ describe('decisionsCheck', () => {
       ],
     },
     {
-      expected:
-        'entry ADR-0002 follows ADR-0003; the numbers of the log only rise',
+      expected: 'entry ADR-0002 follows ADR-0003; the numbers of the log only rise',
       name: 'a number falls',
       numbers: [
         '0001',
@@ -65,33 +59,30 @@ describe('decisionsCheck', () => {
         '0002',
       ],
     },
-  ])(
-    'should report the entry out of place when $name',
-    ({ expected, numbers }) => {
-      // Arrange
-      const files = validFiles();
-      files[LOG] = logOf(
-        numbers.map((number) =>
-          entry({
-            line: ACCEPTED,
-            number,
-          }),
-        ),
-      );
-      const input = checkInputOf(files);
+  ])('should report the entry out of place when $name', ({ expected, numbers }) => {
+    // Arrange
+    const files = validFiles();
+    files[LOG] = logOf(
+      numbers.map((number) =>
+        entry({
+          line: ACCEPTED,
+          number,
+        }),
+      ),
+    );
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = decisionsCheck(input);
+    // Act
+    const findings = decisionsCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: LOG,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: LOG,
+      },
+    ]);
+  });
 
   it.each([
     {
@@ -107,44 +98,39 @@ describe('decisionsCheck', () => {
       line: '**Date:** 2026-09-25 · **Status:** Accepted by the team',
     },
     {
-      expected:
-        'entry ADR-0001 is dated 2026-02-30, which is not a calendar date',
+      expected: 'entry ADR-0001 is dated 2026-02-30, which is not a calendar date',
       line: '**Date:** 2026-02-30 · **Status:** Accepted',
     },
     {
-      expected:
-        'entry ADR-0001 is dated 2026-13-05, which is not a calendar date',
+      expected: 'entry ADR-0001 is dated 2026-13-05, which is not a calendar date',
       line: '**Date:** 2026-13-05 · **Status:** Accepted',
     },
     {
       expected: NO_DATE_LINE,
       line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
     },
-  ])(
-    'should report "$expected" when the line under the heading is $line',
-    ({ expected, line }) => {
-      // Arrange
-      const files = validFiles();
-      files[LOG] = logOf([
-        entry({
-          line,
-          number: '0001',
-        }),
-      ]);
-      const input = checkInputOf(files);
+  ])('should report "$expected" when the line under the heading is $line', ({ expected, line }) => {
+    // Arrange
+    const files = validFiles();
+    files[LOG] = logOf([
+      entry({
+        line,
+        number: '0001',
+      }),
+    ]);
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = decisionsCheck(input);
+    // Act
+    const findings = decisionsCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: LOG,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: LOG,
+      },
+    ]);
+  });
 
   it.each([
     {

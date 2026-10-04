@@ -42,10 +42,7 @@ const missing = (input: { path: string; role: string }): Finding => ({
   path: input.path,
 });
 
-const readFindings = (input: {
-  path: string;
-  read: Unread;
-}): readonly Finding[] => {
+const readFindings = (input: { path: string; read: Unread }): readonly Finding[] => {
   if (input.read.status === 'not-json') {
     return [
       {
@@ -127,8 +124,7 @@ const frontMatterFindings = (skill: Skill): readonly Finding[] => {
   if (frontMatter === undefined) {
     return [
       {
-        message:
-          'has no front matter; a skill names itself and says when to use it there',
+        message: 'has no front matter; a skill names itself and says when to use it there',
         path,
       },
     ];
@@ -167,8 +163,7 @@ const agentFindings = (agent: Agent): readonly Finding[] => {
   if (frontMatter === undefined) {
     return [
       {
-        message:
-          'has no front matter; an agent names itself and says when to use it there',
+        message: 'has no front matter; an agent names itself and says when to use it there',
         path,
       },
     ];
@@ -234,9 +229,7 @@ const checkPlugin = (
   return read.status === 'parsed'
     ? {
         findings: skillFindings({
-          declared: read.value.skills.map((directory) =>
-            directory.slice(RELATIVE_PREFIX.length),
-          ),
+          declared: read.value.skills.map((directory) => directory.slice(RELATIVE_PREFIX.length)),
           paths: constitution.paths,
           skills: constitution.documents.skills,
         }),
@@ -324,9 +317,7 @@ const checkHooks = (input: {
       });
 };
 
-const pluginCheck: Check = ({
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const pluginCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
   const plugin = checkPlugin(constitution);
 
   return [

@@ -26,6 +26,7 @@
 | A real application | ADR-0116 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
 | Repositories of packages | ADR-0125 |
+| Line width and licences | ADR-0126 |
 | Python | ADR-0127 |
 | TypeScript configuration | ADR-0130, ADR-0131 |
 
@@ -876,6 +877,14 @@
 - **Decision.** A repository of packages keeps each product in `packages/<product>/`: its language-free files — specification, fixtures, hooks — in `packages/<product>/common/`, and each package at `packages/<product>/<language>/<name>/`. A package reaches its own product's `common` and nothing of another package or product; the bun workspaces are `["packages/*/<language>/*"]`.
 - **Rejected.** `packages/<language>/libs/<name>/` with one `packages/common/`, which scatters one product — its contract, its fixtures and its packages in each language — over several trees.
 - **Why.** The kit's products ship one contract in TypeScript and Python, proven by shared fixtures; one folder per product keeps them together, changed in one pull request (owner).
+
+## ADR-0126 — Lines of 100 characters, and PSF-2.0 and MIT-0 on the licence allowlist
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.**
+  - Biome formats at a line width of 100, not 80, in the common part every project extends.
+  - The licence allowlist gains `PSF-2.0` and `MIT-0`.
+- **Why.** At 80 a typed signature or a call of a few arguments breaks over lines that each say little; at 100 this repository's code is about a thousand lines shorter (owner). Both licences are permissive and ask no more than `MIT` or `Python-2.0`, already on the list; `typing-extensions` is `PSF-2.0` and `cffi` is `MIT-0`, and FastAPI and MCP applications load both at runtime (owner).
 
 ## ADR-0127 — Python is a language, with uv, Ruff, ty and Poe the Poet
 **Date:** 2026-10-04 · **Status:** Accepted

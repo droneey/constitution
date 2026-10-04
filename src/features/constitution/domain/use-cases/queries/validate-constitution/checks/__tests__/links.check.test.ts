@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  without,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { linksCheck } from '../links.check';
 
@@ -16,8 +13,7 @@ describe('linksCheck', () => {
     const files = validFiles();
     files[PRINCIPLES] = '# Principles\n\nSee [gone](gone.md).\n';
     files[README] = '# constitution\n\nSee [plan](local/plan.md).\n';
-    files['DECISIONS.md'] =
-      '# Decision Log\n\nSee [the draft](local/draft.md).\n';
+    files['DECISIONS.md'] = '# Decision Log\n\nSee [the draft](local/draft.md).\n';
     const input = checkInputOf(files);
 
     // Act
@@ -64,7 +60,7 @@ describe('linksCheck', () => {
     files[README] = [
       '# constitution',
       '',
-      'Start with [core](blocks/core/), [the blocks](blocks/) or [the root](./).',
+      'Start with [core](blocks/core/), [its rules](blocks/core/foundation/), [the blocks](blocks/) or [the root](./).',
       'Call `handlers[event.type](event)`.',
     ].join('\n');
     files[PRINCIPLES] = [

@@ -4,17 +4,9 @@ import type { Finding } from '#/kernel';
 import { Axis } from '#/kernel';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
-import {
-  loadedOf,
-  mainFile,
-  rule,
-  textOf,
-} from '../../../../../__tests__/constitution.fixtures';
+import { loadedOf, mainFile, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { paraglideOnAxes } from '../../../../../__tests__/templates.fixtures';
-import {
-  GOLDEN_CORE,
-  GOLDEN_INDEX,
-} from '../../../../../__tests__/valid-digests.fixtures';
+import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { BlockFileRole } from '../../../../entities';
 
@@ -232,13 +224,9 @@ describe('loadConstitution', () => {
       answers: loaded.constitution.requirementAnswers.map(
         (answer) => `${answer.requirement} ${answer.met}`,
       ),
-      blocks: loaded.constitution.blocks.map(
-        (block) => `${block.layer} ${block.id}`,
-      ),
+      blocks: loaded.constitution.blocks.map((block) => `${block.layer} ${block.id}`),
       findings: loaded.findings,
-      rules: loaded.constitution.rules.map(
-        (parsed) => `${parsed.slug} ${parsed.level}`,
-      ),
+      rules: loaded.constitution.rules.map((parsed) => `${parsed.slug} ${parsed.level}`),
     }).toStrictEqual({
       answers: [
         'i18n-plurals-by-cldr yes',
@@ -268,9 +256,7 @@ describe('loadConstitution', () => {
 
     // Assert
     expect({
-      blocks: loaded.constitution.blocks.map(
-        (block) => `${block.layer} ${block.id}`,
-      ),
+      blocks: loaded.constitution.blocks.map((block) => `${block.layer} ${block.id}`),
       findings: loaded.findings,
     }).toStrictEqual({
       blocks: [
@@ -353,8 +339,7 @@ describe('loadConstitution', () => {
     // Arrange
     const files = {
       'blocks/domains/ui/architecture/remote-data.md': '# Remote data\n\nText.',
-      'blocks/domains/ui/architecture/with/remote-data.md':
-        '# UI with remote data\n',
+      'blocks/domains/ui/architecture/with/remote-data.md': '# UI with remote data\n',
       'blocks/domains/ui/foundation/a.md': '# A\n',
       'blocks/domains/ui/foundation/ui.md': '# UI\n',
       'blocks/domains/ui/foundation/with/i18n.md': '# UI with i18n\n',
@@ -440,8 +425,7 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/foundation/with/i18n.md':
-          '---\nid: i18n\n---\n# UI with i18n\n',
+        'blocks/domains/ui/foundation/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
         'blocks/domains/ui/ui.md': UI_CARD,
       },
       finding: {
@@ -735,14 +719,12 @@ describe('loadConstitution', () => {
 
   it.each([
     {
-      message:
-        'is not valid YAML: Unexpected flow-seq-end token in YAML stream: "]"',
+      message: 'is not valid YAML: Unexpected flow-seq-end token in YAML stream: "]"',
       name: 'the file is not YAML',
       text: 'foundation: ]\n',
     },
     {
-      message:
-        'does not match its schema: <root>: Invalid input: expected record, received array',
+      message: 'does not match its schema: <root>: Invalid input: expected record, received array',
       name: 'the file is a list',
       text: '- foundation\n',
     },
@@ -752,33 +734,30 @@ describe('loadConstitution', () => {
       name: 'a rule lists no setting',
       text: 'foundation:\n  core:\n    no-any: []\n',
     },
-  ])(
-    'should report the bindings and load none when $name',
-    ({ message, text }) => {
-      // Arrange
-      const files: Files = {
-        ...validFiles(),
-        'presets/typescript/biome/bindings.yaml': text,
-      };
+  ])('should report the bindings and load none when $name', ({ message, text }) => {
+    // Arrange
+    const files: Files = {
+      ...validFiles(),
+      'presets/typescript/biome/bindings.yaml': text,
+    };
 
-      // Act
-      const loaded = loadedOf(files);
+    // Act
+    const loaded = loadedOf(files);
 
-      // Assert
-      expect({
-        bindings: loaded.constitution.bindings,
-        findings: loaded.findings,
-      }).toStrictEqual({
-        bindings: [],
-        findings: [
-          {
-            message,
-            path: 'presets/typescript/biome/bindings.yaml',
-          },
-        ],
-      });
-    },
-  );
+    // Assert
+    expect({
+      bindings: loaded.constitution.bindings,
+      findings: loaded.findings,
+    }).toStrictEqual({
+      bindings: [],
+      findings: [
+        {
+          message,
+          path: 'presets/typescript/biome/bindings.yaml',
+        },
+      ],
+    });
+  });
 
   it('should report the rule and load none when it sits in the card', () => {
     // Arrange

@@ -249,37 +249,34 @@ describe('readFrontMatter', () => {
         status: 'mapping',
       },
     },
-  ])(
-    'should report "$message" when the parser reads $name',
-    ({ lines, message, read }) => {
-      // Arrange
-      const parser = createFakeFrontMatterParser(read);
-      const text = [
-        '---',
-        ...lines,
-        '---',
-        '# UI',
-      ].join('\n');
+  ])('should report "$message" when the parser reads $name', ({ lines, message, read }) => {
+    // Arrange
+    const parser = createFakeFrontMatterParser(read);
+    const text = [
+      '---',
+      ...lines,
+      '---',
+      '# UI',
+    ].join('\n');
 
-      // Act
-      const loaded = readFrontMatter({
-        parser,
-        path: PATH,
-        text,
-      });
+    // Act
+    const loaded = readFrontMatter({
+      parser,
+      path: PATH,
+      text,
+    });
 
-      // Assert
-      expect(loaded).toStrictEqual({
-        body: '# UI',
-        findings: [
-          {
-            message,
-            path: PATH,
-          },
-        ],
-      });
-    },
-  );
+    // Assert
+    expect(loaded).toStrictEqual({
+      body: '# UI',
+      findings: [
+        {
+          message,
+          path: PATH,
+        },
+      ],
+    });
+  });
 
   it.each<{
     fields?: Partial<FrontMatterFields>;
@@ -328,16 +325,14 @@ describe('readFrontMatter', () => {
       fields: {
         summary: 'Screens. And tokens',
       },
-      message:
-        'front matter: summary is one sentence on one line, ending with a full stop',
+      message: 'front matter: summary is one sentence on one line, ending with a full stop',
       name: 'a summary with no full stop at its end',
     },
     {
       fields: {
         summary: 'Screens\nand tokens.',
       },
-      message:
-        'front matter: summary is one sentence on one line, ending with a full stop',
+      message: 'front matter: summary is one sentence on one line, ending with a full stop',
       name: 'a summary over two lines',
     },
     {
@@ -452,28 +447,25 @@ describe('readFrontMatter', () => {
       message: 'front matter: requires lists "i18n" twice',
       name: 'the same block in requires twice',
     },
-  ])(
-    'should report "$message" when the front matter has $name',
-    ({ fields, keys, message }) => {
-      // Arrange
-      const read = mappingOf({
-        fields,
-        keys,
-      });
+  ])('should report "$message" when the front matter has $name', ({ fields, keys, message }) => {
+    // Arrange
+    const read = mappingOf({
+      fields,
+      keys,
+    });
 
-      // Act
-      const loaded = readOf(read);
+    // Act
+    const loaded = readOf(read);
 
-      // Assert
-      expect(loaded).toStrictEqual({
-        body: BODY,
-        findings: [
-          {
-            message,
-            path: PATH,
-          },
-        ],
-      });
-    },
-  );
+    // Assert
+    expect(loaded).toStrictEqual({
+      body: BODY,
+      findings: [
+        {
+          message,
+          path: PATH,
+        },
+      ],
+    });
+  });
 });

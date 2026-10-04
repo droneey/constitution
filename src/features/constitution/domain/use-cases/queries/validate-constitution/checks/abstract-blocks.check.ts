@@ -10,10 +10,7 @@ const textOf = (input: { base: Block; file: BlockFile }): string =>
     ? `${input.base.frontMatter.summary}\n${input.file.body}`
     : input.file.body;
 
-const heirFindings = (input: {
-  base: Block;
-  heir: Block;
-}): readonly Finding[] =>
+const heirFindings = (input: { base: Block; heir: Block }): readonly Finding[] =>
   input.base.files.flatMap((file) => [
     ...(containsId({
       id: input.heir.id,
@@ -39,13 +36,8 @@ const heirFindings = (input: {
       : []),
   ]);
 
-const baseFindings = (input: {
-  base: Block;
-  blocks: readonly Block[];
-}): readonly Finding[] => {
-  const heirs = input.blocks.filter(
-    (block) => block.frontMatter.extends === input.base.id,
-  );
+const baseFindings = (input: { base: Block; blocks: readonly Block[] }): readonly Finding[] => {
+  const heirs = input.blocks.filter((block) => block.frontMatter.extends === input.base.id);
 
   return heirs.length === 0
     ? [
@@ -62,9 +54,7 @@ const baseFindings = (input: {
       );
 };
 
-const abstractBlocksCheck: Check = ({
-  constitution,
-}: CheckInput): readonly Finding[] =>
+const abstractBlocksCheck: Check = ({ constitution }: CheckInput): readonly Finding[] =>
   constitution.blocks
     .filter((block) => block.frontMatter.abstract)
     .flatMap((base) =>

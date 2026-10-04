@@ -169,8 +169,7 @@ describe('the dclint docker part', () => {
       to: "    environment:\n      NODE_ENV: production\n    ports:\n      - '127.0.0.1:3000:3000'\n",
     },
     {
-      condition:
-        'a service sets a read-only file system before dropping capabilities',
+      condition: 'a service sets a read-only file system before dropping capabilities',
       from: '    cap_drop: [ALL]\n    read_only: true\n',
       rule: 'service-keys-order',
       to: '    read_only: true\n    cap_drop: [ALL]\n',

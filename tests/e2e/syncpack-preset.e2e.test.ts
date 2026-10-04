@@ -83,8 +83,7 @@ describe('the syncpack parts of a repository of packages', () => {
       reported: 'SameRangeMismatch',
     },
     {
-      condition:
-        "a package takes the repository's own package from the registry",
+      condition: "a package takes the repository's own package from the registry",
       packages: [
         {
           name: 'a',

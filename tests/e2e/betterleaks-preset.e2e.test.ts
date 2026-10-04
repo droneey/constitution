@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  PASSWORD_PACKAGE,
-  scanStaged,
-  TOKEN,
-} from './betterleaks-preset.fixtures';
+import { PASSWORD_PACKAGE, scanStaged, TOKEN } from './betterleaks-preset.fixtures';
 
 describe('the betterleaks preset', () => {
   it('should stop the commit when a staged file holds a token', () => {
@@ -51,8 +47,7 @@ describe('the betterleaks preset', () => {
       },
     },
     {
-      condition:
-        'its fingerprint is ignored under a line that states the reason',
+      condition: 'its fingerprint is ignored under a line that states the reason',
       files: {
         '.betterleaksignore':
           '# a fixture token in the parser spec, never a real one\nconfig.ts:github-pat:1\n',

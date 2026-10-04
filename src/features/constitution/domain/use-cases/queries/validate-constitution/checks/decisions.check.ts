@@ -10,13 +10,11 @@ interface Entry {
 }
 
 const ENTRY = /^## ADR-(\d{4})\b/;
-const DATE_LINE =
-  /^\*\*Date:\*\* (\d{4})-(\d{2})-(\d{2}) · \*\*Status:\*\* (?:Accepted|Proposed)$/;
+const DATE_LINE = /^\*\*Date:\*\* (\d{4})-(\d{2})-(\d{2}) · \*\*Status:\*\* (?:Accepted|Proposed)$/;
 const DATE_FORM = '"**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed"';
 const NUMBER_WIDTH = 4;
 
-const nameOf = (number: number): string =>
-  `ADR-${String(number).padStart(NUMBER_WIDTH, '0')}`;
+const nameOf = (number: number): string => `ADR-${String(number).padStart(NUMBER_WIDTH, '0')}`;
 
 const entriesOf = (text: string): readonly Entry[] => {
   const lines = withoutCodeFences(text).split('\n');
@@ -38,11 +36,7 @@ const entriesOf = (text: string): readonly Entry[] => {
   });
 };
 
-const isCalendarDate = (input: {
-  day: number;
-  month: number;
-  year: number;
-}): boolean => {
+const isCalendarDate = (input: { day: number; month: number; year: number }): boolean => {
   const date = new Date(Date.UTC(input.year, input.month - 1, input.day));
 
   // A day or month out of range rolls the date into another month.
@@ -87,16 +81,13 @@ const entryFindings = (entries: readonly Entry[]): readonly Finding[] =>
     }));
   });
 
-const decisionsCheck: Check = ({
-  constitution,
-}: CheckInput): readonly Finding[] => {
+const decisionsCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
   const log = constitution.documents.decisions;
 
   return log === undefined
     ? [
         {
-          message:
-            'is missing; the constitution keeps its decision log at the root',
+          message: 'is missing; the constitution keeps its decision log at the root',
           path: DocumentPath.Decisions,
         },
       ]

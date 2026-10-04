@@ -8,10 +8,7 @@ import {
   textOf,
   without,
 } from '../../../../../__tests__/constitution.fixtures';
-import {
-  GOLDEN_CORE,
-  GOLDEN_INDEX,
-} from '../../../../../__tests__/valid-digests.fixtures';
+import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { generateDigests } from '../generate-digests.use-case';
 
@@ -156,8 +153,7 @@ describe('generateDigests', () => {
       what: 'the stricter level it states and the parent',
     },
     {
-      condition:
-        'its chapters and seams sit on several axes and one chapter takes its name',
+      condition: 'its chapters and seams sit on several axes and one chapter takes its name',
       files: {
         'blocks/domains/ui/architecture/forms.md': '# Forms\n',
         'blocks/domains/ui/foundation/design-system.md': '# Design system\n',
@@ -181,29 +177,26 @@ describe('generateDigests', () => {
       record: 'answer\tlingui\ti18n-plurals-by-cldr\tpartly',
       what: 'the Met value partly',
     },
-  ])(
-    'should write $what in the record when $condition',
-    ({ files, key, record }) => {
-      // Arrange
-      const input = checkInputOf({
-        ...validFiles(),
-        ...files,
-      });
+  ])('should write $what in the record when $condition', ({ files, key, record }) => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      ...files,
+    });
 
-      // Act
-      const { index } = generateDigests(input);
+    // Act
+    const { index } = generateDigests(input);
 
-      // Assert
-      expect(
-        recordsOf({
-          index,
-          key,
-        }),
-      ).toStrictEqual([
-        record,
-      ]);
-    },
-  );
+    // Assert
+    expect(
+      recordsOf({
+        index,
+        key,
+      }),
+    ).toStrictEqual([
+      record,
+    ]);
+  });
 
   it('should write an empty core part without a finding when there is no core', () => {
     // Arrange
@@ -253,25 +246,22 @@ describe('generateDigests', () => {
       },
       text: '# Core\n',
     },
-  ])(
-    'should write only the card core.md in the core part when $condition',
-    ({ files, text }) => {
-      // Arrange
-      const input = checkInputOf(files);
+  ])('should write only the card core.md in the core part when $condition', ({ files, text }) => {
+    // Arrange
+    const input = checkInputOf(files);
 
-      // Act
-      const digests = generateDigests(input);
+    // Act
+    const digests = generateDigests(input);
 
-      // Assert
-      expect({
-        core: digests.core,
-        findings: digests.findings,
-      }).toStrictEqual({
-        core: text,
-        findings: [],
-      });
-    },
-  );
+    // Assert
+    expect({
+      core: digests.core,
+      findings: digests.findings,
+    }).toStrictEqual({
+      core: text,
+      findings: [],
+    });
+  });
 
   // Beside the filler the part holds 9 bytes: "# Core", a paragraph break and
   // the closing newline; Ω takes two bytes of UTF-8.
@@ -285,8 +275,7 @@ describe('generateDigests', () => {
       filler: 'Ω'.repeat(1746),
       findings: [
         {
-          message:
-            'makes a core part of 3501 bytes; the digest holds at most 3500 of core',
+          message: 'makes a core part of 3501 bytes; the digest holds at most 3500 of core',
           path: CORE,
         },
       ],

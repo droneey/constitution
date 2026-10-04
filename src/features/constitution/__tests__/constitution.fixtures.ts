@@ -52,8 +52,7 @@ interface RuleFixture {
   why?: string;
 }
 
-const list = (items: readonly string[] | undefined): string =>
-  JSON.stringify(items ?? []);
+const list = (items: readonly string[] | undefined): string => JSON.stringify(items ?? []);
 
 const mainFile = (block: BlockFixture): string =>
   [
@@ -122,8 +121,7 @@ const sourceOf = (files: Readonly<Files>): Source => ({
   vocabularyParser: createYamlVocabularyParser(),
 });
 
-const loadedOf = (files: Readonly<Files>): ConstitutionLoaded =>
-  loadConstitution(sourceOf(files));
+const loadedOf = (files: Readonly<Files>): ConstitutionLoaded => loadConstitution(sourceOf(files));
 
 const checkInputOf = (files: Readonly<Files>): CheckInput => {
   const { constitution, findings } = loadedOf(files);
@@ -151,20 +149,7 @@ const textOf = (input: { files: Readonly<Files>; path: string }): string => {
 };
 
 const without = (input: { files: Readonly<Files>; path: string }): Files =>
-  Object.fromEntries(
-    Object.entries(input.files).filter(
-      ([candidate]) => candidate !== input.path,
-    ),
-  );
+  Object.fromEntries(Object.entries(input.files).filter(([candidate]) => candidate !== input.path));
 
 export type { BlockFixture, Files, RuleFixture };
-export {
-  blockFiles,
-  checkInputOf,
-  loadedOf,
-  mainFile,
-  rule,
-  sourceOf,
-  textOf,
-  without,
-};
+export { blockFiles, checkInputOf, loadedOf, mainFile, rule, sourceOf, textOf, without };

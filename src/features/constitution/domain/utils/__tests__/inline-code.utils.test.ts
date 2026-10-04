@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  blankInlineCode,
-  inlineCodeSpans,
-  withoutInlineCode,
-} from '../inline-code.utils';
+import { blankInlineCode, inlineCodeSpans, withoutInlineCode } from '../inline-code.utils';
 
 describe('blankInlineCode', () => {
   it('should blank every span to spaces of its length and keep its line breaks when a span wraps a line', () => {

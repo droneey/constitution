@@ -2,29 +2,18 @@ import { describe, expect, it } from 'bun:test';
 
 import { ROLES } from '#/kernel';
 
-import type {
-  Files,
-  RuleFixture,
-} from '../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  mainFile,
-  rule,
-} from '../../../../../__tests__/constitution.fixtures';
+import type { Files, RuleFixture } from '../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, mainFile, rule } from '../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { adviseConstitution } from '../advise-constitution.use-case';
 
 const I18N = 'blocks/domains/i18n/foundation/i18n.md';
 const UI = 'blocks/domains/ui/foundation/ui.md';
-const UI_WITH_REMOTE_DATA =
-  'blocks/domains/ui/architecture/with/remote-data.md';
+const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
-const BROWSER_WITH_TYPESCRIPT =
-  'blocks/contexts/platforms/browser/foundation/with/typescript.md';
-const TYPESCRIPT =
-  'blocks/contexts/languages/typescript/foundation/typescript.md';
-const TYPESCRIPT_WITH_CSS =
-  'blocks/contexts/languages/typescript/workflow/with/css.md';
+const BROWSER_WITH_TYPESCRIPT = 'blocks/contexts/platforms/browser/foundation/with/typescript.md';
+const TYPESCRIPT = 'blocks/contexts/languages/typescript/foundation/typescript.md';
+const TYPESCRIPT_WITH_CSS = 'blocks/contexts/languages/typescript/workflow/with/css.md';
 const PYTHON = 'blocks/contexts/languages/python/python.md';
 const CSS = 'blocks/contexts/languages/css/css.md';
 const BIOME = 'blocks/implementations/biome/biome.md';
@@ -53,10 +42,7 @@ const CSS_FILE = mainFile({
   ],
 });
 
-const prettierFile = (input: {
-  checks: readonly string[];
-  requires?: readonly string[];
-}): string =>
+const prettierFile = (input: { checks: readonly string[]; requires?: readonly string[] }): string =>
   mainFile({
     body: '# Prettier\n',
     checks: input.checks,
@@ -271,6 +257,32 @@ describe('adviseConstitution', () => {
       },
     },
     {
+      expected: [
+        'role coverage: typescript has no tool for imports',
+      ],
+      name: 'a domain lists a role, which only a language is held to',
+      files: {
+        'blocks/domains/ui/ui.md': mainFile({
+          body: '# UI\n',
+          governs: [
+            '**/ui/**',
+          ],
+          id: 'ui',
+          roles: [
+            'imports',
+          ],
+        }),
+      },
+      rules: {
+        [UI]: [
+          {
+            check: 'tool/imports',
+            slug: 'screens-hold-no-logic',
+          },
+        ],
+      },
+    },
+    {
       expected: [],
       name: 'a language is held to no role',
       files: {
@@ -407,19 +419,16 @@ describe('adviseConstitution', () => {
         second: UI_WITH_REMOTE_DATA,
       }),
     },
-  ])(
-    'should name the similar rules of sibling blocks when $name',
-    ({ expected, ...scenario }) => {
-      // Arrange
-      const input = inputOf(scenario);
+  ])('should name the similar rules of sibling blocks when $name', ({ expected, ...scenario }) => {
+    // Arrange
+    const input = inputOf(scenario);
 
-      // Act
-      const advice = adviseConstitution(input);
+    // Act
+    const advice = adviseConstitution(input);
 
-      // Assert
-      expect(advice).toStrictEqual(expected);
-    },
-  );
+    // Assert
+    expect(advice).toStrictEqual(expected);
+  });
 
   it('should give the role coverage before the similar rules when both apply', () => {
     // Arrange
