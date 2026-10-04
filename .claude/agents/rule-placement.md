@@ -1,6 +1,6 @@
 ---
 name: rule-placement
-description: Judges where each rule a change adds or rewrites belongs — its layer and its axis — and where each preset setting it adds or moves belongs, by what they mean, and reports what sits elsewhere. Use on every change to blocks/ or presets/ before it is handed back.
+description: Judges where each rule a change adds or rewrites belongs — its layer and its axis — and where each preset setting it adds or moves belongs, by what they mean, and reports what sits elsewhere or repeats a rule of another block. Use on every change to blocks/ or presets/ before it is handed back.
 tools: Read, Grep, Glob, Bash
 model: opus
 ---
@@ -29,6 +29,10 @@ Also check the arrow: `foundation/` refers only to `foundation/`; `architecture/
 
 Judge the meaning, not the words. A foundation rule about a network port, a Docker `ENTRYPOINT` or an attack surface is fine; a foundation rule that says "code talking to the outside world lives apart from the logic" is architecture though it names no folder.
 
+## The same rule in another block
+
+This step is required. For every rule the range adds or rewrites, search the rules of every other block for one with the same requirement: the same meaning in another tool's or another language's words. `rg -n '^## ' blocks/` lists every rule, and the similar rules `bun run blocks:check` prints are a start, never the whole search. Where one exists and no common parent states that meaning, report the pair as a lift to the most general block where the shared meaning keeps its meaning, asked by the layer question; each block then keeps a child that states only its own form. Do the same when a child adds a meaning its parent lacks and a sibling under the same parent repeats it: that meaning belongs in the parent, or in a child of it in the most general block.
+
 ## Preset settings
 
 Also read what the range changes under `presets/`: every setting added to or moved between parts `presets/<scope>/<tool>/<axis>/<part>.*`, and every entry of `presets/<scope>/<tool>/bindings.yaml`. A part is named after the block its settings need — the one without which they mean nothing. Ask of each setting: which block must be active for it to make sense? A setting that names or needs a library, a framework or a platform — `noTailwindArbitraryValue`, `noReactNativeLiteralColors`, a JSX rule — sits in that block's part even when the rule it holds belongs to a block above, such as `ui`; `bindings.yaml` records that rule. A setting that needs nothing beyond the tool sits in `core` when it holds a rule of core, and in `self` when it is the tool's own. The scope folder is `common` when the setting reads files of any language, and otherwise the language whose files it reads; the axis folder is the axis of the rule the setting holds. Report a setting in a part more general than it needs, and one in a part more specific than it needs, as findings of the same form, with the path of the part.
@@ -44,5 +48,9 @@ First a table with one row per rule you read, for the pull request:
 Then the findings, one per line, or the single line `No findings.`:
 
 `<path>:<line> — <slug> — sits in <block>/<axis> — belongs in <block>/<axis>, or split: <why, in one sentence>`
+
+A lift is a finding of its own form:
+
+`<path>:<line> — <slug> — repeats <slug> of <block> — lift to <block>/<axis>: <the shared meaning, in one sentence>`
 
 Report only what you would defend to the owner. When a rule is borderline, say so in its Why and do not raise a finding.
