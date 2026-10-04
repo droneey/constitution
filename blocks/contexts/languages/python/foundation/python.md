@@ -60,6 +60,13 @@ A generic class in an annotation takes its type arguments: `list[Order]`, never 
 |---|---|---|
 | a generic written without its arguments is a generic of `Any`. | tool/types | [] |
 
+## boundary-values-object-until-parsed → outside-values-untyped-until-parsed
+A value from outside the program — `json.loads`'s result included — is `object`, and its plain checks are `isinstance` and `in`; `cast` is no check.
+
+| Why | Check | Tags |
+|---|---|---|
+| the type checker refuses every use of an `object` value until a check narrows it, where `Any` would allow them all. | review | [] |
+
 ## generics-in-pep-695-form · SHOULD
 A generic class, function or alias is declared in the form of PEP 695 — `class Box[T]`, `def first[T](items: list[T]) -> T`, `type Orders = list[Order]` — never through `TypeVar`, `Generic` or `TypeAlias`.
 
@@ -74,7 +81,7 @@ A `datetime` carries its time zone: `now`, `fromtimestamp` and the constructor a
 |---|---|---|
 | a naive `datetime` is read in the machine's zone by one function and in UTC by the next, and the two compare as if they were the same instant. | tool/lint | [data] |
 
-## overrides-marked-by-decorator → override-marked-where-declared · MUST
+## overrides-marked-by-decorator → override-marked-where-declared
 A method that overrides one of a base class is marked `@override`, `__init__`, `__new__`, `__init_subclass__` and `__post_init__` aside.
 
 | Why | Check | Tags |
@@ -136,7 +143,7 @@ A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608
 
 ## Dependencies
 
-## tools-in-the-dev-group → tools-are-pinned-development-dependencies
+## tools-in-the-dev-group → tools-pinned-exactly-by-the-repository
 The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `pyproject.toml`.
 
 | Why | Check | Tags |

@@ -44,8 +44,9 @@ A compound's surface exports only its root and its prop types; a part is reached
 ## Failure
 
 ## error-boundary-catches-render-errors → error-boundary-per-screen
-A screen's error boundary catches the render errors below it and shows the screen's error state.
+A screen's error boundary catches what is thrown while its tree renders; a failure in an event handler or an effect never reaches a boundary, and is handled where it happens.
 
 | Why | Check | Tags |
 |---|---|---|
-| React unmounts the whole tree below the nearest boundary on a render error, so a boundary per screen costs one screen, not the application. | review | [errors, ux] |
+| React sends a boundary only the errors of rendering and unmounts the whole tree below it, so a boundary per screen costs one screen, and a handler's failure left to a boundary is never caught. | review | [errors, ux] |
+

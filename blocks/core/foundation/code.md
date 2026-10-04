@@ -340,6 +340,13 @@ const isUser = (candidate: unknown): candidate is User =>
 const isUser = (candidate: unknown): candidate is User => userSchema.safeParse(candidate).success;
 ```
 
+## outside-values-untyped-until-parsed · MUST
+A value from outside the program — parsed text, a response body, a file, a message — has no known type until a schema parses it or plain checks narrow it, in specs as in production; no cast and no annotation stands in for either.
+
+| Why | Check | Tags |
+|---|---|---|
+| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [security] |
+
 ## identifiers-branded-by-entity · SHOULD
 An entity's identifier is a type of its own, branded by its entity, so an order's identifier cannot be passed where a user's is expected.
 
@@ -444,7 +451,7 @@ Behaviour is composed from small units. Inheritance is used only for error types
 |---|---|---|
 | inheritance couples a child to its parent's internals and resists every change the hierarchy did not foresee. | review | [] |
 
-## override-marked-where-declared → inheritance-only-for-errors-and-framework-points
+## override-marked-where-declared · MUST
 A method that overrides one of its base class carries the language's mark of an override where it is declared, so the type checker fails on a mark that overrides nothing and on an override without one.
 
 | Why | Check | Tags |

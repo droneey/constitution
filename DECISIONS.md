@@ -30,6 +30,7 @@
 | TypeScript configuration | ADR-0131, ADR-0133 |
 | Scripts of the check | ADR-0132 |
 | Dependencies | ADR-0134 |
+| Levels | ADR-0135 |
 
 ---
 
@@ -702,6 +703,13 @@
 ## ADR-0134 — Tools pinned exactly in both languages
 **Date:** 2026-10-04 · **Status:** Accepted
 
-- **Decision.** A build, test or lint tool is a development dependency pinned in the manifest to one exact version, in TypeScript as in Python (`tools-are-pinned-development-dependencies`): Syncpack's `typescript` part asks for exact versions in `devDependencies` and caret ranges in `dependencies` only. The program's dependencies keep their ranges, and the lockfile pins what is installed.
+- **Decision.** A build, test or lint tool is pinned to one exact version, as a development dependency of the manifest or in the toolchain's file, in TypeScript as in Python (`tools-pinned-exactly-by-the-repository`): Syncpack's `typescript` part asks for exact versions in `devDependencies` and caret ranges in `dependencies` only. The program's dependencies keep their ranges, and the lockfile pins what is installed.
 - **Rejected.** Caret ranges for the tools, which TypeScript had: an update inside the range moves a tool through the lockfile alone, and a new version of a linter or a type checker changes what the check reports, so it belongs in the manifest where a reviewer sees it (owner).
 - **Why.** Python already pinned its tools with `==`; one meaning in both languages lets one core rule state it.
+
+## ADR-0135 — Shipped types and the environment's readers are MUST
+**Date:** 2026-10-04 · **Status:** Accepted
+
+- **Decision.** A published package ships the types of every entry a consumer imports (`package-ships-its-types`), and only `root/`, the configuration provider a lower block names, the entry files and the specs read the environment (`environment-read-once-at-boot`); both are MUST.
+- **Rejected.** SHOULD, which TypeScript's `manifest-exports-with-types-condition` and core's `environment-read-once-at-boot` had, while Python's forms were already MUST: one meaning cannot bind one language and advise the other (owner).
+- **Why.** Each exception the SHOULD left room for is named in the rule — the entry files and the specs for the environment — so nothing reasonable is left outside it.

@@ -14,8 +14,8 @@ ky's `retry` stays on its idempotent methods and transient statuses; no option a
 |---|---|---|
 | ky's defaults already retry only what may succeed the next time, and each option widened loses that silently. | review | [performance] |
 
-## ky-body-parsed-by-schema → response-body-parsed-never-cast
-A response body is read as `unknown` and parsed by a schema; `.json<T>()` is a cast and is forbidden.
+## ky-body-parsed-by-schema → boundary-values-unknown-until-parsed
+A response body is read by `.json()` with no type argument and parsed by a schema; `.json<T>()` is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|

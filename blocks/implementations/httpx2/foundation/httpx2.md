@@ -14,7 +14,7 @@ A client is opened once, with `async with`, for as long as the program runs, and
 |---|---|---|
 | a client pools its connections, so a client per call pays for a new connection and handshake each time, and one never closed leaks its sockets. | review | [performance] |
 
-## response-body-parsed-by-its-model → response-body-parsed-never-cast
+## response-body-parsed-by-its-model → boundary-values-object-until-parsed
 A response body is parsed by its model from `response.content`, after `raise_for_status()`; `response.json()` is never called.
 
 | Why | Check | Tags |

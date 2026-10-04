@@ -34,13 +34,6 @@ A layer folder's `__init__.py` is empty: it makes the folder a package and offer
 
 ## Values and configuration
 
-## boundary-values-object-until-parsed → untrusted-input-parsed-at-edge
-A value from beyond the boundary — `json.loads`, a response body, a file, a message — is `object` until the project's model parses it or plain checks — `isinstance`, `in` — narrow it, in specs as in production; `cast` stands in for neither.
-
-| Why | Check | Tags |
-|---|---|---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
-
 ## environment-read-only-under-root → environment-read-once-at-boot
 The environment is `os.environ` and `os.getenv`, and `root/` builds one settings object from them at boot.
 

@@ -132,6 +132,7 @@ rule	only-errors-thrown	core	blocks/core/foundation/code.md		MUST	review			error
 rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/foundation/code.md		SHOULD	review			errors security ux	foundation		true
 rule	error-kit-carries-code-cause-and-details	core	blocks/core/foundation/code.md		MUST	review			errors	foundation		true
 rule	guard-proves-every-property-it-claims	core	blocks/core/foundation/code.md		MUST	review				foundation		true
+rule	outside-values-untyped-until-parsed	core	blocks/core/foundation/code.md		MUST	review			security	foundation		true
 rule	identifiers-branded-by-entity	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	domain-values-never-typed-again	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	invariant-values-are-plain-immutable-data	core	blocks/core/foundation/code.md		MUST	review			data	foundation	invariant-checked-at-construction	true
@@ -146,7 +147,7 @@ rule	io-has-timeout-and-cancellation	core	blocks/core/foundation/code.md		SHOULD
 rule	structured-concurrency	core	blocks/core/foundation/code.md		SHOULD	review			errors	foundation		true
 rule	operations-idempotent-by-design	core	blocks/core/foundation/code.md		SHOULD	test			data	foundation		true
 rule	inheritance-only-for-errors-and-framework-points	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
-rule	override-marked-where-declared	core	blocks/core/foundation/code.md		SHOULD	review				foundation	inheritance-only-for-errors-and-framework-points	false
+rule	override-marked-where-declared	core	blocks/core/foundation/code.md		MUST	review				foundation		true
 rule	canonical-patterns-by-need	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	dry-applies-to-knowledge	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	function-answers-or-changes-state	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
@@ -201,7 +202,7 @@ rule	least-privilege-credentials	core	blocks/core/foundation/security.md		SHOULD
 rule	dependencies-pinned-by-lockfile	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
 rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/security.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
-rule	tools-are-pinned-development-dependencies	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
+rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
 rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
@@ -448,7 +449,6 @@ rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/pac
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
 rule	stream-ends-with-terminal-event	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
-rule	response-body-parsed-never-cast	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			security	foundation		true
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
 rule	remote-data-cache-invalidates-by-prefix	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
 rule	remote-data-cache-cancels-reads	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
@@ -677,9 +677,10 @@ rule	none-is-the-only-absence	python	blocks/contexts/languages/python/foundation
 rule	no-any-annotation	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python		foundation	no-any-type	false
 rule	signatures-annotated-without-any	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	lint	python		foundation	no-any-annotation	false
 rule	generics-written-with-their-arguments	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	types	python		foundation	no-any-annotation	false
+rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python	security	foundation	outside-values-untyped-until-parsed	false
 rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	tool	lint	python		foundation		true
 rule	aware-datetimes-only	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	lint	python	data	foundation		true
-rule	overrides-marked-by-decorator	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	types	python		foundation	override-marked-where-declared	true
+rule	overrides-marked-by-decorator	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	types	python		foundation	override-marked-where-declared	false
 rule	business-types-frozen-dataclasses	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation	immutable-by-default	false
 rule	keyword-only-past-three	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation	at-most-three-positional-arguments	false
 rule	awaitable-never-dropped	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	types	python	errors	foundation	async-work-awaited-or-deliberately-detached	false
@@ -687,14 +688,13 @@ rule	concurrency-by-task-groups	python	blocks/contexts/languages/python/foundati
 rule	except-never-only-passes	python	blocks/contexts/languages/python/foundation/python.md		MUST	tool	lint	python	errors	foundation	catch-never-empty	false
 rule	docstring-only-for-non-obvious-public-entry	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation	docs-only-for-non-obvious-public-entry	false
 rule	suppression-names-its-code-and-reason	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python		foundation	suppression-silences-one-finding	false
-rule	tools-in-the-dev-group	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python	security	foundation	tools-are-pinned-development-dependencies	false
+rule	tools-in-the-dev-group	python	blocks/contexts/languages/python/foundation/python.md		MUST	review		python	security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	requires-python-at-the-pinned-minor	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python		foundation		true
 rule	floor-ranges-lockfile-pins	python	blocks/contexts/languages/python/foundation/python.md		SHOULD	review		python	security	foundation	program-dependencies-ranged-lockfile-pins	false
 rule	relative-imports-stay-in-the-feature	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python		architecture	import-only-through-surface	false
 rule	python-role-and-surface-files	python	blocks/contexts/languages/python/architecture/python.md		MUST	tool	names	python		architecture	file-carries-its-role-suffix	false
 rule	surface-is-init-with-sorted-all	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python		architecture	surface-only-re-exports	false
 rule	layer-init-empty	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python		architecture	layer-folder-has-no-surface	false
-rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
 rule	environment-read-only-under-root	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python	security	architecture	environment-read-once-at-boot	false
 rule	py-typed-in-every-package	python	blocks/contexts/languages/python/foundation/with/package.md	package	MUST	review		python		foundation	package-ships-its-types	false
 rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation		true
@@ -714,8 +714,9 @@ rule	nullish-operators-for-absence	typescript	blocks/contexts/languages/typescri
 rule	nullish-default-over-or	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	nullish-operators-for-absence	false
 rule	no-any	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	no-any-type	false
 rule	no-unchecked-escape-hatches	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation	suppression-states-its-reason	false
-rule	overrides-marked-by-keyword	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	types	typescript		foundation	override-marked-where-declared	true
+rule	overrides-marked-by-keyword	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	types	typescript		foundation	override-marked-where-declared	false
 rule	casts-and-assertions-refused	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	no-unchecked-escape-hatches	false
+rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	security	foundation	outside-values-untyped-until-parsed	false
 rule	exhaustive-branching-over-unions	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation	illegal-states-unrepresentable	false
 rule	switch-over-union-exhaustive	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	exhaustive-branching-over-unions	false
 rule	satisfies-to-check-conformance	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
@@ -739,7 +740,7 @@ rule	options-object-typed-as-function-input	typescript	blocks/contexts/languages
 rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	docs-only-for-non-obvious-public-entry	false
 rule	deprecated-by-jsdoc-tag	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	retired-code-marked-deprecated	false
 rule	no-deprecated-import	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	deprecated-forms-never-used	false
-rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	security	foundation	tools-are-pinned-development-dependencies	false
+rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	tools-pinned-without-a-range	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	versions	typescript	security	foundation	tools-are-dev-dependencies	false
 rule	production-imports-no-development-dependency	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	imports	typescript	security	foundation	tools-are-dev-dependencies	false
 rule	caret-ranges-lockfile-pins	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	versions	typescript	security	foundation	program-dependencies-ranged-lockfile-pins	false
@@ -749,7 +750,6 @@ rule	test-folder-files-in-test-forms	typescript	blocks/contexts/languages/typesc
 rule	hash-imports-leave-the-module	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	review		typescript		architecture	import-only-through-surface	false
 rule	typescript-role-and-surface-files	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	tool	names	typescript		architecture	file-carries-its-role-suffix	false
 rule	null-mapped-to-undefined-at-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	review		typescript	data	architecture	wire-absence-mapped-at-boundary	false
-rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
 rule	domain-type-fields-readonly	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript		architecture	business-types-readonly	false
 rule	brands-set-at-the-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	identifiers-branded-by-entity	false
 rule	ambient-aliases-are-project-vocabulary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	semantic-alias-names-a-shared-meaning	false
@@ -883,7 +883,7 @@ rule	hadolint-over-every-dockerfile	hadolint	blocks/implementations/hadolint/fou
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	review				foundation	suppression-silences-one-finding	false
 rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	errors performance	foundation	io-has-timeout-and-cancellation	true
 rule	client-open-for-the-program-life	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		SHOULD	review		python	performance	foundation	resources-released-on-every-path	false
-rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	security	foundation	response-body-parsed-never-cast	false
+rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	security	foundation	boundary-values-object-until-parsed	false
 rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	testing security	foundation	unmatched-request-fails-the-spec	false
 rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python		architecture	remote-data-transport-built-by-the-root	false
 rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python	errors	architecture	transport-failures-mapped-once	true
@@ -899,7 +899,7 @@ rule	structlog-imported-only-by-the-root	import-linter	blocks/implementations/im
 rule	unused-check-in-production-mode	knip	blocks/implementations/knip/foundation/knip.md		MUST	tool	unused	typescript		foundation	no-dead-code	false
 rule	ky-timeout-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	io-has-timeout-and-cancellation	false
 rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
-rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	response-body-parsed-never-cast	false
+rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	boundary-values-unknown-until-parsed	false
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		SHOULD	review		typescript		architecture	remote-data-transport-built-by-the-root	false
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript	errors	architecture	transport-failures-mapped-once	true
 rule	components-import-no-http-client	ky	blocks/implementations/ky/architecture/with/ui.md	ui	MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
@@ -923,7 +923,7 @@ rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/foundation/ma
 rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	security data	foundation	no-personal-data-in-events	false
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	performance	foundation		true
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST	review		typescript		architecture	sinks-behind-one-contract	true
-rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	dependencies-pinned-by-lockfile	false
+rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false

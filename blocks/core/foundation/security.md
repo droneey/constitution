@@ -69,12 +69,12 @@ A file the program or its build downloads outside a package manager — a binary
 |---|---|---|
 | an unverified download runs whatever the address serves that day, and a swapped file fails its checksum. | review | [security] |
 
-## tools-are-pinned-development-dependencies · MUST
-Build, test and lint tools are development dependencies of the repository, each pinned in the manifest to one exact version, never installed globally, and production code imports none of them.
+## tools-pinned-exactly-by-the-repository · MUST
+Every build, test and lint tool is pinned to one exact version in a file the repository commits — a development dependency of the manifest, or the toolchain's file for a tool outside the package manager — never installed globally, and production code imports none of them.
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change of the manifest that someone reviews, and a tool in the program's dependencies ships to every installation. | review | [security] |
+| a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change someone reviews, and a tool in the program's dependencies ships to every installation. | review | [security] |
 
 ## program-dependencies-ranged-lockfile-pins · SHOULD
 A dependency of the program is declared in the manifest by the range of versions it works with, and the lockfile pins the exact version installed.

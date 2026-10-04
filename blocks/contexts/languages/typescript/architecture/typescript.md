@@ -27,13 +27,6 @@ A role file is `<name>.<role>.ts`, and a folder's surface is `index.ts`.
 |---|---|---|
 | a `null` that travels inward brings a second absence into code that checks only for `undefined`. | review | [] |
 
-## boundary-values-unknown-until-parsed → untrusted-input-parsed-at-edge
-A value from beyond the boundary — `JSON.parse`, a response body, a file, a message — is `unknown` until the project's schema parses it or plain checks — `typeof`, `in`, `Array.isArray` — narrow it, in specs as in production. `.json<T>()` and `as Promise<T>` are casts.
-
-| Why | Check | Tags |
-|---|---|---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
-
 ## domain-type-fields-readonly → business-types-readonly
 A field of an interface or an object type declared in a `*.entity.ts` or `*.value-object.ts` file is `readonly`.
 

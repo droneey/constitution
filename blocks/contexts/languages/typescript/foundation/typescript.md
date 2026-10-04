@@ -134,7 +134,7 @@ No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@
 |---|---|---|
 | each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | review | [] |
 
-## overrides-marked-by-keyword → override-marked-where-declared · MUST
+## overrides-marked-by-keyword → override-marked-where-declared
 A method that overrides one of its base class carries `override`.
 
 | Why | Check | Tags |
@@ -147,6 +147,13 @@ No `as` cast except `as const`, no `!` non-null assertion and no `@ts-ignore`.
 | Why | Check | Tags |
 |---|---|---|
 | each is a place where the code tells the compiler it knows better. | tool/lint | [] |
+
+## boundary-values-unknown-until-parsed → outside-values-untyped-until-parsed
+A value from outside the program — `JSON.parse`'s result included — is `unknown`, and its plain checks are `typeof`, `in` and `Array.isArray`; `.json<T>()` and `as Promise<T>` are casts.
+
+| Why | Check | Tags |
+|---|---|---|
+| the compiler refuses every use of an `unknown` value until a check narrows it. | review | [] |
 
 ## exhaustive-branching-over-unions → illegal-states-unrepresentable
 A branch over a union handles every member: a `switch` whose default proves `never`, or an `if` chain that ends in a `never` check.
@@ -328,7 +335,7 @@ No module imports an export marked `@deprecated`.
 
 ## Dependencies
 
-## tools-are-dev-dependencies → tools-are-pinned-development-dependencies
+## tools-are-dev-dependencies → tools-pinned-exactly-by-the-repository
 The tools are `devDependencies` of `package.json`.
 
 | Why | Check | Tags |

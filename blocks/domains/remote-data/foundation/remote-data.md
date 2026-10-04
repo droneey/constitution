@@ -14,13 +14,6 @@ Every read can be cancelled; a read superseded for the same key is cancelled, an
 |---|---|---|
 | answers that arrive out of order otherwise show data for a question the user no longer asks. | review | [data] |
 
-## response-body-parsed-never-cast · MUST
-A response body is read as a value of no known type and parsed by its schema; no code gives the body a type without parsing it.
-
-| Why | Check | Tags |
-|---|---|---|
-| a body typed without a parse trusts the server with the program's types, and the first unexpected field breaks code far away. | review | [security] |
-
 ## Requirements for implementation
 
 What any cache of remote data, and any transport it reads through, must provide.
