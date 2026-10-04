@@ -1,0 +1,20 @@
+extend = "pytest.toml"
+
+[lint]
+extend-select = [
+  "FAST",
+]
+
+# extend-banned-api replaces the one of the part extended, so pytest's bans are repeated here
+[lint.flake8-tidy-imports.extend-banned-api]
+"fastapi.HTTPException".msg = "the program raises the error kit's errors, which the handlers answer"
+"pytest.importorskip".msg = "a spec runs whole, or is deleted"
+"pytest.mark.flaky".msg = "a flaky case is fixed or deleted, never run again"
+"pytest.mark.skip".msg = "a spec runs whole, or is deleted"
+"pytest.mark.skipif".msg = "a spec runs whole, or is deleted"
+"pytest.mark.xfail".msg = "a spec runs whole, or is deleted"
+"pytest.skip".msg = "a spec runs whole, or is deleted"
+"pytest.xfail".msg = "a spec runs whole, or is deleted"
+"pytest_asyncio".msg = "async specs run on anyio's plugin"
+"starlette.exceptions.HTTPException".msg = "the program raises the error kit's errors, which the handlers answer"
+"unittest.mock".msg = "an effect is replaced by the fake of its contract"

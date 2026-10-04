@@ -29,6 +29,7 @@ const CHAIN = [
   'core',
   'python',
   'pytest',
+  'fastapi',
 ];
 
 const filesOf = (project: Project): Files => ({

@@ -12,6 +12,14 @@ foundation:
     positional-parameters-at-most-three:
       - PLR0917
       - max-positional-args
+  fastapi:
+    dependencies-declared-in-annotated:
+      - FAST
+    http-exception-banned:
+      - fastapi.HTTPException
+      - starlette.exceptions.HTTPException
+    path-parameters-read-by-the-handler:
+      - FAST
   python:
     aware-datetimes-only:
       - DTZ

@@ -141,6 +141,51 @@ const BROAD_RAISES = spec(
   '  with pytest.raises(ValueError):',
   "    int('ten')",
 );
+const route = (...lines: readonly string[]): string =>
+  python(
+    'from typing import Annotated',
+    '',
+    'from fastapi import FastAPI, Query',
+    '',
+    'app = FastAPI()',
+    '',
+    '',
+    ...lines,
+  );
+const ANNOTATED_ROUTE = route(
+  "@app.get('/orders/{order_id}')",
+  'async def order(order_id: int, page: Annotated[int, Query()] = 1) -> int:',
+  '  return order_id + page',
+);
+const DEFAULT_QUERY = python(
+  'from fastapi import FastAPI, Query',
+  '',
+  'app = FastAPI()',
+  '',
+  '',
+  "@app.get('/orders')",
+  'async def orders(page: int = Query(1)) -> int:',
+  '  return page',
+);
+const UNREAD_PATH_PARAMETER = route(
+  "@app.get('/orders/{order_id}')",
+  'async def order(page: Annotated[int, Query()] = 1) -> int:',
+  '  return page',
+);
+const HTTP_EXCEPTION = python(
+  'from fastapi import HTTPException',
+  '',
+  '',
+  'def refuse() -> None:',
+  '  raise HTTPException(status_code=404)',
+);
+const STARLETTE_EXCEPTION = python(
+  'from starlette.exceptions import HTTPException',
+  '',
+  '',
+  'def refuse() -> None:',
+  '  raise HTTPException(status_code=404)',
+);
 const FOUR_SPACES = python('def total(prices: list[int]) -> int:', '    return sum(prices)');
 const longCall = (width: number): string => {
   const head = 'TOTAL = sum(';
@@ -456,6 +501,93 @@ describe("the ruff preset's part of pytest", () => {
       'PT011',
     ]);
   });
+});
+
+describe("the ruff preset's part of FastAPI", () => {
+  it('should pass a route that declares its parameters in Annotated and reads its path', () => {
+    // Arrange
+    const project = {
+      part: 'fastapi',
+      source: ANNOTATED_ROUTE,
+    };
+
+    // Act
+    const codes = lintCodes(project);
+
+    // Assert
+    expect(codes).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      code: 'FAST002',
+      condition: "a parameter's source is its default value",
+      source: DEFAULT_QUERY,
+    },
+    {
+      code: 'FAST003',
+      condition: 'the handler does not take a parameter of its path',
+      source: UNREAD_PATH_PARAMETER,
+    },
+    {
+      code: 'TID251',
+      condition: "the program imports FastAPI's HTTPException",
+      source: HTTP_EXCEPTION,
+    },
+    {
+      code: 'TID251',
+      condition: "the program imports Starlette's HTTPException",
+      source: STARLETTE_EXCEPTION,
+    },
+    {
+      code: 'TID251',
+      condition: 'a spec patches with unittest.mock, which the part bans again',
+      source: MOCK,
+    },
+    {
+      code: 'TID251',
+      condition: 'a spec is marked to be skipped, which the part bans again',
+      source: SKIP_MARK,
+    },
+  ])('should report $code when $condition', ({ code, source }) => {
+    // Arrange
+    const project = {
+      part: 'fastapi',
+      source,
+    };
+
+    // Act
+    const codes = lintCodes(project);
+
+    // Assert
+    expect(codes).toContain(code);
+  });
+
+  it.each([
+    {
+      code: 'FAST002',
+      source: DEFAULT_QUERY,
+    },
+    {
+      code: 'TID251',
+      source: HTTP_EXCEPTION,
+    },
+  ])(
+    'should leave $code to the FastAPI part when a project extends only pytest',
+    ({ code, source }) => {
+      // Arrange
+      const project = {
+        part: 'pytest',
+        source,
+      };
+
+      // Act
+      const codes = lintCodes(project);
+
+      // Assert
+      expect(codes).not.toContain(code);
+    },
+  );
 });
 
 describe('the ruff formatter', () => {

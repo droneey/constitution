@@ -8,6 +8,7 @@ dev = [
   "mutmut==3.8.0",
   "mutmut-check",
   "poethepoet==0.48.0",
+  "pydantic==2.13.5",
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
   "pytest-randomly==5.0.0",
