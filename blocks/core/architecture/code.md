@@ -72,12 +72,12 @@ A schema over a domain type or enum derives its values from it, so the edge depe
 
 ## Effects
 
-## environment-read-once-at-boot · SHOULD
-One place reads the environment: `root/`, or the configuration provider a lower block names. Configuration is parsed once, at boot, into a typed value the rest of the program receives.
+## environment-read-once-at-boot · MUST
+Only `root/` — or the configuration provider a lower block names — and the entry files read the environment; a spec may read it to drive the program. Configuration is parsed once, at boot, into a typed value the rest of the program receives.
 
 | Why | Check | Tags |
 |---|---|---|
-| a missing or malformed setting fails at start, not in the middle of a request, and no module depends on the process's environment. | review | [security] |
+| a missing or malformed setting fails at start, not in the middle of a request, and no module depends on the process's environment through a read no signature shows. | review | [security] |
 
 ## stateful-clients-built-by-the-root → one-explicit-composition-root
 A stateful client — a cache client, a store, a connection — is never created at a module's top level.

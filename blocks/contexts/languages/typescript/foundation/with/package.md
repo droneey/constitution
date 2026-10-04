@@ -9,12 +9,12 @@ The tool a package configures is a `peerDependencies` entry with a `>=` floor.
 |---|---|---|
 | the floor states the oldest version the package supports, and leaves the choice of version to the consumer. | review | [] |
 
-## manifest-exports-with-types-condition · SHOULD
-Wherever a consumer imports code, an entry of `exports` carries a `types` condition beside `default`; `files` lists exactly what ships.
+## manifest-exports-with-types-condition → package-ships-its-types
+Wherever a consumer imports code, an entry of `exports` carries a `types` condition beside `default`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a consumer's compiler finds the types of each entry, and nothing unlisted ships by accident. | review | [] |
+| the consumer's compiler finds an entry's types through that condition. | review | [] |
 
 ## exported-types-have-type-tests · SHOULD
 A package's exported generic and conditional types are proven by type cases the compiler checks.

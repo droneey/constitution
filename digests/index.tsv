@@ -303,7 +303,7 @@ rule	typed-failures-homed-by-layer	core	blocks/core/architecture/code.md		SHOULD
 rule	one-error-handler-per-transport	core	blocks/core/architecture/code.md		SHOULD	review			errors security ux	architecture	failure-shown-as-what-happened-and-what-next	false
 rule	value-object-built-only-by-its-check	core	blocks/core/architecture/code.md		MUST	review			data	architecture	invariant-checked-at-construction	true
 rule	schema-derives-from-domain-types	core	blocks/core/architecture/code.md		MUST	review				architecture	domain-values-never-typed-again	false
-rule	environment-read-once-at-boot	core	blocks/core/architecture/code.md		SHOULD	review			security	architecture		true
+rule	environment-read-once-at-boot	core	blocks/core/architecture/code.md		MUST	review			security	architecture		true
 rule	stateful-clients-built-by-the-root	core	blocks/core/architecture/code.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	decorators-applied-at-composition-root	core	blocks/core/architecture/code.md		SHOULD	review				architecture	canonical-patterns-by-need	false
 rule	ports-and-use-cases-answer-or-change	core	blocks/core/architecture/code.md		MUST	review				architecture	function-answers-or-changes-state	true
@@ -421,6 +421,7 @@ rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundat
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
 rule	generated-copy-guarded-by-spec	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	generated-files-marked-never-edited	false
+rule	package-ships-its-types	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	every-package-ships-its-licence	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation	public-repository-carries-a-licence	false
 rule	package-readme-shows-install-and-extends	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation	readme-is-the-front-door	false
 rule	breaking-change-ships-its-migration	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
@@ -540,7 +541,7 @@ rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review				architecture	one-explicit-composition-root	false
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review				architecture		true
 rule	binding-units-import-no-adapter-or-ui	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	tool	imports			architecture	binding-unit-composes-its-operation	false
-rule	configuration-provider-reads-environment	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review			security	architecture	environment-read-once-at-boot	false
+rule	configuration-provider-reads-environment	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review			security	architecture	environment-read-once-at-boot	false
 rule	command-invalidates-in-its-binding-unit	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review			data	architecture		true
 rule	unauthorized-handled-once-in-cache	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review			errors security ux	architecture	one-error-handler-per-transport	false
 rule	every-request-has-a-timeout	unreliable-network	blocks/domains/unreliable-network/foundation/unreliable-network.md		MUST	review			errors performance	foundation	io-has-timeout-and-cancellation	true
@@ -693,8 +694,8 @@ rule	python-role-and-surface-files	python	blocks/contexts/languages/python/archi
 rule	surface-is-init-with-sorted-all	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python		architecture	surface-only-re-exports	false
 rule	layer-init-empty	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python		architecture	layer-folder-has-no-surface	false
 rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
-rule	environment-read-only-under-root	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python	security	architecture	environment-read-once-at-boot	true
-rule	py-typed-in-every-package	python	blocks/contexts/languages/python/foundation/with/package.md	package	MUST	review		python		foundation		true
+rule	environment-read-only-under-root	python	blocks/contexts/languages/python/architecture/python.md		MUST	review		python	security	architecture	environment-read-once-at-boot	false
+rule	py-typed-in-every-package	python	blocks/contexts/languages/python/foundation/with/package.md	package	MUST	review		python		foundation	package-ships-its-types	false
 rule	hash-alias-from-package-imports	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation		true
 rule	file-named-after-its-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	file-is-one-semantic-unit	false
 rule	typescript-file-forms	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	names	typescript		foundation	kebab-case-file-names	false
@@ -751,12 +752,13 @@ rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/t
 rule	domain-type-fields-readonly	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript		architecture	business-types-readonly	false
 rule	brands-set-at-the-boundary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	identifiers-branded-by-entity	false
 rule	ambient-aliases-are-project-vocabulary	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	review		typescript		architecture	semantic-alias-names-a-shared-meaning	false
-rule	environment-read-only-in-root	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		SHOULD	tool	lint	typescript	security	architecture	environment-read-once-at-boot	false
+rule	environment-read-only-in-root	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	tool	lint	typescript	security	architecture	environment-read-once-at-boot	false
 rule	intl-calls-take-a-locale	typescript	blocks/contexts/languages/typescript/foundation/with/i18n.md	i18n	MUST	tool	lint	typescript	ux	foundation	formatters-take-the-active-locale	false
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	configured-tool-is-a-peer-with-floor	false
-rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript		foundation		true
+rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	package-ships-its-types	false
 rule	exported-types-have-type-tests	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation		true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
+rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
 rule	react-compiler-on	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	performance	foundation		true
 rule	render-is-pure	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	props-never-assigned	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	render-is-pure	false
@@ -801,7 +803,7 @@ rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		MU
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	check-chains-one-entry-per-area	false
-rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		SHOULD	review		typescript	security	architecture	environment-read-once-at-boot	false
+rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		MUST	review		typescript	security	architecture	environment-read-once-at-boot	false
 rule	bun-build-after-the-check	bun	blocks/implementations/bun/workflow/bun.md		SHOULD	review		typescript		workflow		true
 rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation	root-dogfoods-every-package	false
 rule	own-packages-at-workspace-version	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	tool	versions	typescript		foundation	workspace-packages-linked-locally	false
@@ -959,7 +961,7 @@ rule	secrets-typed-secret-str	pydantic	blocks/implementations/pydantic/foundatio
 rule	pydantic-two-forms-only	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	review		python		foundation	deprecated-forms-never-used	false
 rule	pydantic-only-at-the-edge	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
 rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	data	architecture	external-shapes-mapped-at-boundary	false
-rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		SHOULD	review		python	security	architecture	environment-read-once-at-boot	false
+rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	environment-read-once-at-boot	false
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	tests	python	testing	foundation	tests-pass-in-check	false
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	tool	coverage	python	testing	foundation	coverage-holds-all-logic	false
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	case-order-shuffled-with-a-seed	false

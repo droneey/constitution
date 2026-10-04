@@ -41,9 +41,10 @@ A value from beyond the boundary — `json.loads`, a response body, a file, a me
 |---|---|---|
 | a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
 
-## environment-read-only-under-root → environment-read-once-at-boot · MUST
-`os.environ` and `os.getenv` are read only under `root/`, where one settings object is built at boot, and in the entry files; a spec may read them to drive the program.
+## environment-read-only-under-root → environment-read-once-at-boot
+The environment is `os.environ` and `os.getenv`, and `root/` builds one settings object from them at boot.
 
 | Why | Check | Tags |
 |---|---|---|
-| a variable read deep in the program is a dependency no signature shows, and the settings built by the root are bypassed. | review | [] |
+| these are where Python reads a variable, so a search for them outside `root/`, the entry files and the specs finds every read the rule forbids. | review | [] |
+

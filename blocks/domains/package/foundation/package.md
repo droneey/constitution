@@ -39,6 +39,13 @@ A copy a package ships of a shared file is rebuilt by the package's build, never
 |---|---|---|
 | a copy that drifts from its source ships a different file than the one reviewed. | test | [testing] |
 
+## package-ships-its-types · MUST
+A published package ships the types of every entry a consumer imports code from, where the consumer's type checker finds them.
+
+| Why | Check | Tags |
+|---|---|---|
+| without them a consumer's type checker reads every name of the package as unchecked, and a change of its signatures breaks the consumer at run time. | review | [] |
+
 ## Documents
 
 ## every-package-ships-its-licence → public-repository-carries-a-licence
