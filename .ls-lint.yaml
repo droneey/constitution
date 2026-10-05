@@ -18,7 +18,6 @@ ls:
       .*.*.*.*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$
 ignore:
   - local
-  - .claude/worktrees
   - tools/python-check/mutants
   - tools/python-check/.pytest_cache
   - tools/mutmut-check/mutants
