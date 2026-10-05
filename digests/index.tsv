@@ -362,7 +362,7 @@ rule	plan-names-destroying-changes	convergence	blocks/domains/convergence/founda
 rule	second-run-changes-nothing	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			testing data	foundation	operations-idempotent-by-design	true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux errors	foundation		true
 rule	run-output-in-one-work-folder	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
-rule	engines-downloaded-per-release-not-vendored	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
+rule	engines-downloaded-per-release-not-vendored	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review				foundation		true
 rule	developer-and-ci-run-the-tools-engines	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
 rule	schema-rejects-unknown-keys	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			data	foundation		true
 rule	schema-discriminated-unions	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			data errors	foundation		true

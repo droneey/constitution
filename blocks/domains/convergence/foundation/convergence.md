@@ -76,7 +76,7 @@ What a run produces lands in one work folder, apart from the document.
 
 ## Engines
 
-## engines-downloaded-per-release-not-vendored → downloads-pinned-by-version-and-checksum
+## engines-downloaded-per-release-not-vendored · MUST
 Engines the program drives are not vendored: each is downloaded per release into the program's home.
 
 | Why | Check | Tags |
