@@ -153,7 +153,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 `blocks:check` loads every block and fails on:
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
 - a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty; a `languages` entry that is no language block, and `languages` on a block that checks no role;
-- a `requires` or `extends` that points down, or sideways where the layer allows no peer, a `with/` file named after a block below its own layer, and a cycle between implementations;
+- a `requires` or `extends` that points down, or sideways where the layer allows no peer, a `with/` file named after a block below its own layer, and a cycle between blocks of one layer;
 - a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or the arrow of a rule heading;
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;

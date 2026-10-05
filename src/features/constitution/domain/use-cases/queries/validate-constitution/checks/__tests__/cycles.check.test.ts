@@ -75,6 +75,38 @@ describe('cyclesCheck', () => {
     ]);
   });
 
+  it('should report a cycle when two domains require each other', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/domains/i18n/i18n.md': mainFile({
+        body: '# i18n\n',
+        id: 'i18n',
+        requires: [
+          'remote-data',
+        ],
+      }),
+      'blocks/domains/remote-data/remote-data.md': mainFile({
+        body: '# Remote data\n',
+        id: 'remote-data',
+        requires: [
+          'i18n',
+        ],
+      }),
+    });
+
+    // Act
+    const findings = cyclesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'is part of a dependency cycle: i18n → remote-data → i18n',
+        path: 'blocks/domains/i18n/i18n.md',
+      },
+    ]);
+  });
+
   it.each([
     {
       files: requiring({
