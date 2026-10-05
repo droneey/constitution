@@ -196,7 +196,7 @@ A sub-agent never commits, never pushes and never merges.
 |---|---|---|
 | a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |
 
-## agent-never-rewrites-shared-history → shared-history-never-rewritten
+## agent-never-force-pushes → shared-history-never-rewritten
 An agent never force-pushes, to any branch.
 
 | Why | Check | Tags |

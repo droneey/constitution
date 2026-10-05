@@ -393,7 +393,7 @@ rule	log-records-carry-the-trace-id	observability	blocks/domains/observability/f
 rule	logging-configured-by-the-root	observability	blocks/domains/observability/architecture/observability.md		MUST	review				architecture	one-explicit-composition-root	false
 rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review				foundation		true
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review			security	foundation		true
-rule	entities-guarded-where-the-program-owns-them	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture		true
+rule	changes-through-the-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture		true
 rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture	data-ports-split-by-reads-and-writes	false
 rule	package-named-after-what-it-serves	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	package-root-private	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
@@ -593,7 +593,7 @@ rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/
 rule	agent-pushes-and-opens-pull-requests-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
 rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-takes-no-direct-push	false
 rule	sub-agent-never-commits-pushes-or-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	sub-agent-only-does-the-work	false
-rule	agent-never-rewrites-shared-history	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
+rule	agent-never-force-pushes	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
 rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	no-tool-attribution	false
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
 rule	bundle-reads-no-build-environment	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	tool	types		security	foundation	runtime-configuration-served-beside-bundle	false
@@ -643,7 +643,7 @@ rule	command-framework-leaves-exits-to-the-handler	cli	blocks/contexts/platforms
 rule	command-framework-runs-in-a-test-sandbox	cli	blocks/contexts/platforms/cli/foundation/cli.md		MUST	review			testing	foundation		true
 rule	commands-in-the-cli-folder	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	review				architecture	anatomy-top-level-by-concern	false
 rule	command-files-in-cli	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	tool	names			architecture	commands-in-the-cli-folder	false
-rule	report-is-a-value-the-command-prints	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	review			ux	architecture	report-returned-as-a-value	false
+rule	progressive-report-printed-as-events-arrive	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	review			ux	architecture	report-returned-as-a-value	false
 rule	init-writes-document-from-template	cli	blocks/contexts/platforms/cli/foundation/with/convergence.md	convergence	SHOULD	review			ux	foundation		true
 rule	state-survives-the-os-lifecycle	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		SHOULD	test			ux data	foundation		true
 rule	useful-offline-with-what-it-has	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		SHOULD	review			ux data	foundation		true
