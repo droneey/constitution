@@ -158,7 +158,7 @@ The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `p
 | the linter and the type checker read the language's version from it, and hold the code to an older language when the floor is lower. | review | [] |
 
 ## floor-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
-The range is a `>=` floor, capped only with the reason beside the cap.
+A dependency of the program is declared with a `>=` floor, capped only with the reason beside the cap.
 
 | Why | Check | Tags |
 |---|---|---|

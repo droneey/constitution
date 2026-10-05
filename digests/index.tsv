@@ -764,7 +764,7 @@ rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/language
 rule	deprecated-by-jsdoc-tag	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	retired-code-marked-deprecated	false
 rule	no-deprecated-import	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	deprecated-forms-never-used	false
 rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript	security	foundation	tools-pinned-exactly-by-the-repository	false
-rule	tools-pinned-without-a-range	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	versions	typescript	security	foundation	tools-are-dev-dependencies	false
+rule	tools-pinned-without-a-range	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	versions	typescript	security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	production-imports-no-development-dependency	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	imports	typescript	security	foundation	tools-are-dev-dependencies	false
 rule	caret-ranges-lockfile-pins	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	versions	typescript	security	foundation	program-dependencies-ranged-lockfile-pins	false
 rule	shared-state-packages-once-in-lockfile	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true

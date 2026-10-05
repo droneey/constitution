@@ -342,8 +342,8 @@ The tools are `devDependencies` of `package.json`.
 |---|---|---|
 | a package's `devDependencies` are installed in its repository and never with the package. | review | [] |
 
-## tools-pinned-without-a-range → tools-are-dev-dependencies
-Every entry of `devDependencies` is an exact version, with no range.
+## tools-pinned-without-a-range → tools-pinned-exactly-by-the-repository
+Every tool in `devDependencies` is an exact version, with no range; the workspace's own packages, at `workspace:*`, are not tools.
 
 | Why | Check | Tags |
 |---|---|---|
