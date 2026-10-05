@@ -400,8 +400,12 @@ rule	package-named-after-what-it-serves	package	blocks/domains/package/foundatio
 rule	package-root-private	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
+rule	consumers-extend-never-copy	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
+rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
+rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
 rule	generated-copy-guarded-by-spec	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	generated-files-marked-never-edited	false
+rule	shared-package-file-lives-once	package	blocks/domains/package/foundation/package.md		MUST	review			testing	foundation	generated-copy-guarded-by-spec	false
 rule	package-ships-its-types	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	every-package-ships-its-licence	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	package-readme-shows-install-and-extends	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation	readme-is-the-front-door	false
@@ -416,10 +420,6 @@ rule	package-anatomy	package	blocks/domains/package/architecture/package.md		SHO
 rule	package-knows-no-consumer	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	libs-import-no-application-code	false
 rule	package-entries-curated	package	blocks/domains/package/architecture/package.md		MUST	review				architecture	access-only-through-curated-surface	false
 rule	consumers-import-package-entries	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	package-entries-curated	false
-rule	consumers-extend-never-copy	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
-rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
-rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
-rule	shared-package-file-lives-once	package	blocks/domains/package/architecture/package.md		MUST	review			testing	architecture	generated-copy-guarded-by-spec	false
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
