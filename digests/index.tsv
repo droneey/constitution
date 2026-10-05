@@ -637,12 +637,12 @@ rule	output-masks-secret-values	cli	blocks/contexts/platforms/cli/foundation/cli
 rule	flags-over-environment-over-file	cli	blocks/contexts/platforms/cli/foundation/cli.md		SHOULD	test			ux	foundation		true
 rule	no-prompt-without-a-terminal	cli	blocks/contexts/platforms/cli/foundation/cli.md		MUST	test			ux	foundation		true
 rule	command-tested-through-its-command-line	cli	blocks/contexts/platforms/cli/foundation/cli.md		SHOULD	test			testing	foundation	spec-per-boundary	false
+rule	command-framework-parses-flags-by-schema	cli	blocks/contexts/platforms/cli/foundation/cli.md		SHOULD	review			ux	foundation		true
+rule	command-framework-leaves-exits-to-the-handler	cli	blocks/contexts/platforms/cli/foundation/cli.md		MUST	review			errors	foundation		true
+rule	command-framework-runs-in-a-test-sandbox	cli	blocks/contexts/platforms/cli/foundation/cli.md		MUST	review			testing	foundation		true
 rule	commands-in-the-cli-folder	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	review				architecture	anatomy-top-level-by-concern	false
 rule	command-files-in-cli	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	tool	names			architecture	commands-in-the-cli-folder	false
 rule	report-is-a-value-the-command-prints	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	review			ux	architecture	report-returned-as-a-value	false
-rule	command-framework-parses-flags-by-schema	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD	review			ux	architecture		true
-rule	command-framework-leaves-exits-to-the-handler	cli	blocks/contexts/platforms/cli/architecture/cli.md		MUST	review			errors	architecture		true
-rule	command-framework-runs-in-a-test-sandbox	cli	blocks/contexts/platforms/cli/architecture/cli.md		MUST	review			testing	architecture		true
 rule	init-writes-document-from-template	cli	blocks/contexts/platforms/cli/foundation/with/convergence.md	convergence	SHOULD	review			ux	foundation		true
 rule	state-survives-the-os-lifecycle	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		SHOULD	test			ux data	foundation		true
 rule	useful-offline-with-what-it-has	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		SHOULD	review			ux data	foundation		true

@@ -54,3 +54,28 @@ A command's spec runs the program on an argument list with a fake command contex
 | Why | Check | Tags |
 |---|---|---|
 | that is the command's boundary, so the spec proves what a user of the command sees. | test | [] |
+
+## Requirements for implementation
+
+What any command framework must provide.
+
+## command-framework-parses-flags-by-schema · SHOULD
+Flags are declared with a schema and parsed before the handler runs.
+
+| Why | Check | Tags |
+|---|---|---|
+| a handler then receives typed, validated input, and a bad flag is a usage error before any work starts. | review | [ux] |
+
+## command-framework-leaves-exits-to-the-handler · MUST
+The program's handler decides every exit code, the framework's own failures included.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it, the one map of exit codes cannot hold. | review | [errors] |
+
+## command-framework-runs-in-a-test-sandbox · MUST
+The framework's terminal, prompts, clock and process hooks can be replaced in a spec.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it, a command's spec reaches the real process and breaks the test sandbox. | review | [testing] |
