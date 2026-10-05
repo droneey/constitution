@@ -2,30 +2,6 @@
 export default {
   forbidden: [
     {
-      name: 'packages-blind-to-each-other',
-      severity: 'error',
-      from: {
-        path: '^packages/([^/]+)/([^/]+)/([^/]+)/',
-        pathNot: '^packages/[^/]+/common/',
-      },
-      to: {
-        path: '^packages/',
-        pathNot: [
-          '^packages/$1/$2/$3/',
-          '^packages/$1/common/',
-        ],
-      },
-    },
-    {
-      name: 'common-imports-nothing',
-      severity: 'error',
-      from: {
-        path: '^packages/[^/]+/common/',
-        pathNot: '/__tests__/',
-      },
-      to: {},
-    },
-    {
       name: 'package-knows-no-consumer',
       severity: 'error',
       from: {

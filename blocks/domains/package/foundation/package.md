@@ -2,12 +2,19 @@
 
 ## Layout
 
-## package-named-scope-kit-language-name · SHOULD
-A package is named `<scope>/<kit>-<language>-<name>`, after what it configures.
+## package-named-after-what-it-serves · SHOULD
+A package is named after what it serves: the tool it configures, or the need its primitives or tooling meet.
 
 | Why | Check | Tags |
 |---|---|---|
-| the name tells a consumer which kit, which language and which tool the package serves before it is installed. | review | [] |
+| the name tells a consumer what the package is for before it is installed. | review | [] |
+
+## package-root-private · SHOULD
+The root of a repository of packages is private and never published.
+
+| Why | Check | Tags |
+|---|---|---|
+| the root is the repository's workspace, not a package, and a consumer who installed it would get the repository's tooling instead of a package. | review | [] |
 
 ## Entries and consumers
 
@@ -56,7 +63,7 @@ Every package ships its licence file.
 | a package is used apart from its repository, and without the licence beside it nobody can lawfully use it. | review | [] |
 
 ## package-readme-shows-install-and-extends → readme-is-the-front-door
-A package's README shows the install line, the one-line extends and its options.
+A package's README shows the install line and the shortest use: for a configuration package, the one-line extends and its options.
 
 | Why | Check | Tags |
 |---|---|---|

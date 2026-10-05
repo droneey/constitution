@@ -849,52 +849,10 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'a package imports another package’s file',
-      files: {
-        'packages/eros/typescript/core/build.ts': importing({
-          from: '../nestjs/configs',
-          name: 'configs',
-        }),
-        'packages/eros/typescript/nestjs/configs.ts': exported('configs'),
-      },
-      roots: [
-        'packages',
-      ],
-      rule: 'packages-blind-to-each-other',
-    },
-    {
-      condition: 'a package imports the common files of another product',
-      files: {
-        'packages/eros/typescript/core/build.ts': importing({
-          from: '../../../logus/common/kinds',
-          name: 'kinds',
-        }),
-        'packages/logus/common/kinds.ts': exported('kinds'),
-      },
-      roots: [
-        'packages',
-      ],
-      rule: 'packages-blind-to-each-other',
-    },
-    {
-      condition: 'the common area imports a package',
-      files: {
-        'packages/eros/common/hooks.ts': importing({
-          from: '../typescript/core/build',
-          name: 'build',
-        }),
-        'packages/eros/typescript/core/build.ts': exported('build'),
-      },
-      roots: [
-        'packages',
-      ],
-      rule: 'common-imports-nothing',
-    },
-    {
       condition: 'a package imports a file of the repository that holds it',
       files: {
-        'packages/eros/typescript/core/build.ts': importing({
-          from: '../../../../scripts/release',
+        'packages/core/build.ts': importing({
+          from: '../../scripts/release',
           name: 'release',
         }),
         'scripts/release.ts': exported('release'),
@@ -908,9 +866,9 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'the root imports a package by its path',
       files: {
-        'packages/eros/typescript/core/build.ts': exported('build'),
+        'packages/core/build.ts': exported('build'),
         'scripts/release.ts': importing({
-          from: '../packages/eros/typescript/core/build',
+          from: '../packages/core/build',
           name: 'build',
         }),
       },
@@ -940,14 +898,13 @@ describe('the dependency-cruiser layer set', () => {
     },
   );
 
-  it('should report no violation when a package imports its own files, the common files of its product and the runtime', () => {
+  it('should report no violation when a package imports its own files and the runtime', () => {
     // Arrange
     const project = {
       files: {
-        'packages/eros/common/kinds.ts': exported('kinds'),
-        'packages/eros/typescript/core/build.ts':
-          "import { readFileSync } from 'node:fs';\nimport { kinds } from '../../common/kinds';\nimport { plugins } from './plugins';\nexport const build = [readFileSync, kinds, plugins];\n",
-        'packages/eros/typescript/core/plugins.ts': exported('plugins'),
+        'packages/core/build.ts':
+          "import { readFileSync } from 'node:fs';\nimport { plugins } from './plugins';\nexport const build = [readFileSync, plugins];\n",
+        'packages/core/plugins.ts': exported('plugins'),
         'scripts/release.ts': importing({
           from: 'yaml',
           name: 'value',

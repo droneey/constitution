@@ -24,7 +24,6 @@
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
 | A real application | ADR-0116, ADR-0118 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
-| Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129 |
 | TypeScript configuration | ADR-0131, ADR-0133 |
@@ -636,13 +635,6 @@
 - **Decision.** The constitution's install guide links its archive at `.droneey/constitution`, beside the owner's other tools, and a project ignores `.droneey/`; no rule names that path. The mise rule that named the constitution's archive and its link gives way to `shared-configuration-archive-installed-by-mise`, which holds for any archive of shared tool configuration.
 - **Rejected.** A rule that says how the constitution itself is delivered: that is its install guide's business, and moving the folder then meant rewording a rule.
 - **Why.** The rules govern a project's engineering; where a tool's files land is the tool's own documentation.
-
-## ADR-0125 — A repository of packages is laid out by product, then language
-**Date:** 2026-10-04 · **Status:** Accepted
-
-- **Decision.** A repository of packages keeps each product in `packages/<product>/`: its language-free files — specification, fixtures, hooks — in `packages/<product>/common/`, and each package at `packages/<product>/<language>/<name>/`. A package reaches its own product's `common` and nothing of another package or product; the bun workspaces are `["packages/*/<language>/*"]`.
-- **Rejected.** `packages/<language>/libs/<name>/` with one `packages/common/`, which scatters one product — its contract, its fixtures and its packages in each language — over several trees.
-- **Why.** The kit's products ship one contract in TypeScript and Python, proven by shared fixtures; one folder per product keeps them together, changed in one pull request (owner).
 
 ## ADR-0126 — Lines of 100 characters, and PSF-2.0 and MIT-0 on the licence allowlist
 **Date:** 2026-10-04 · **Status:** Accepted

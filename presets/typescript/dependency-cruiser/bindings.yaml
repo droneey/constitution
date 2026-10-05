@@ -78,9 +78,6 @@ architecture:
   package:
     consumers-import-package-entries:
       - root-takes-packages-by-name
-    package-dependency-matrix:
-      - common-imports-nothing
-      - packages-blind-to-each-other
     package-knows-no-consumer:
       - package-knows-no-consumer
   tanstack-query:

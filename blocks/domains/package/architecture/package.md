@@ -2,33 +2,19 @@
 
 ## Layout
 
-## package-repository-layout → anatomy-top-level-by-concern
-A repository of packages keeps each product in `packages/<product>/`: its language-free files — specification, fixtures, hooks — in `packages/<product>/common/`, and each of its packages at `packages/<product>/<language>/<name>/`. A new language is a new folder in its product.
+## package-root-holds-only-the-workspace · SHOULD
+The root of a repository of packages holds only the workspace and the scripts of the check.
 
 | Why | Check | Tags |
 |---|---|---|
-| everything about a product — its contract, its fixtures and each language's package — is found in one folder and changes together, and a new language adds a folder without moving the others. | review | [] |
-
-## package-root-private · SHOULD
-The root of a repository of packages is private: it holds only the workspace, the scripts of the check, and a README with one row per package.
-
-| Why | Check | Tags |
-|---|---|---|
-| a root that publishes nothing and holds no code of its own cannot leak into a consumer. | review | [] |
+| a root with no code of its own has nothing a package could import by accident, and nothing that leaks into a consumer. | review | [] |
 
 ## package-anatomy → anatomy-top-level-by-concern
-A package holds its manifest, its README, its licence, its `configs/` or `src/`, and its `__tests__/`.
+A package holds its manifest, its README, its licence, its source, and its specs where its language keeps them.
 
 | Why | Check | Tags |
 |---|---|---|
 | every package looks the same inside, so a reader and a tool know where each part is. | review | [] |
-
-## package-dependency-matrix → dependencies-point-inward
-A product's `common` imports nothing. A language package reaches only its peers, its declared dependencies and its own product's `common`; no package imports another package's files.
-
-| Why | Check | Tags |
-|---|---|---|
-| packages that reach into each other cannot be released, versioned or replaced apart. | tool/imports | [] |
 
 ## Entries and consumers
 
@@ -61,7 +47,7 @@ Consumers extend a package's entries; they never copy its files.
 | an extended entry takes every fix with the next update, and a copy takes none. | review | [] |
 
 ## template-copied-once-owned-by-consumer · SHOULD
-A file no tool can extend is a template: kept canonical under `templates/`, copied once, then owned by the consumer. Copies stay alike by convention, with no checker; a template that needs a checker should have been an entry.
+A file no tool can extend is a template: kept canonical in the repository that publishes it, copied once, then owned by the consumer. Copies stay alike by convention, with no checker; a template that needs a checker should have been an entry.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -74,9 +60,9 @@ A consumer takes a package by the tool's own extends, else by a one-line module 
 |---|---|---|
 | the closer to the tool's own mechanism, the less glue each consumer writes and keeps. | review | [] |
 
-## language-free-file-lives-once-in-common → generated-copy-guarded-by-spec
-A language-free file lives once, in its product's `common`; a language package that ships it holds only a copy generated from it.
+## shared-package-file-lives-once → generated-copy-guarded-by-spec
+A file several packages ship lives once, and each package holds only a copy generated from it.
 
 | Why | Check | Tags |
 |---|---|---|
-| one source means a fix is made once and reaches every language, and no copy becomes a second original. | review | [] |
+| one source means a fix is made once and reaches every package, and no copy becomes a second original. | review | [] |

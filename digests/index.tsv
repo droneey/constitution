@@ -20,7 +20,7 @@ block	i18n	domain	Messages, plurals and locale for text a person reads.	foundati
 block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
-block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	workflow/version-control			false						packages/**
+block	package	domain	Publishing packages: public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	workflow/version-control			false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md	architecture/access-control	remote-service		false						
 block	remote-service	domain	Another system the program calls: transport, failures, streams, specs.	foundation/remote-service.md architecture/remote-service.md workflow/remote-service.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/a11y.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
@@ -36,7 +36,7 @@ block	typescript	language	How TypeScript is written, resolved, typed and package
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md workflow/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package architecture/package	typescript		false	bun-test					bunfig.toml package.json
+block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package	typescript		false	bun-test					bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md			bun	false		tests coverage	typescript		bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.	foundation/complexipy.md		python		false		lint	python			
@@ -396,7 +396,8 @@ rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/foundation/open-source.md		SHOULD	review			security	foundation		true
 rule	entities-guarded-where-the-program-owns-them	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture		true
 rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	review			data	architecture	data-ports-split-by-reads-and-writes	false
-rule	package-named-scope-kit-language-name	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
+rule	package-named-after-what-it-serves	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
+rule	package-root-private	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
@@ -410,17 +411,15 @@ rule	deprecation-names-replacement-and-removal	package	blocks/domains/package/fo
 rule	publishing-by-workflow-identity	package	blocks/domains/package/foundation/package.md		MUST	review			security	foundation	least-privilege-credentials	true
 rule	workspace-packages-linked-locally	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	publishing-with-provenance-supported	package	blocks/domains/package/foundation/package.md		MUST	review			security	foundation		true
-rule	package-repository-layout	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture	anatomy-top-level-by-concern	false
-rule	package-root-private	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
+rule	package-root-holds-only-the-workspace	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
 rule	package-anatomy	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture	anatomy-top-level-by-concern	false
-rule	package-dependency-matrix	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	dependencies-point-inward	false
 rule	package-knows-no-consumer	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	libs-import-no-application-code	false
 rule	package-entries-curated	package	blocks/domains/package/architecture/package.md		MUST	review				architecture	access-only-through-curated-surface	false
 rule	consumers-import-package-entries	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	package-entries-curated	false
 rule	consumers-extend-never-copy	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
 rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
 rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
-rule	language-free-file-lives-once-in-common	package	blocks/domains/package/architecture/package.md		MUST	review			testing	architecture	generated-copy-guarded-by-spec	false
+rule	shared-package-file-lives-once	package	blocks/domains/package/architecture/package.md		MUST	review			testing	architecture	generated-copy-guarded-by-spec	false
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
@@ -779,9 +778,9 @@ rule	intl-calls-take-a-locale	typescript	blocks/contexts/languages/typescript/fo
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	configured-tool-is-a-peer-with-floor	false
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	MUST	review		typescript		foundation	package-ships-its-types	false
 rule	exported-types-have-type-tests	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation		true
+rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/foundation/with/package.md	package	SHOULD	review		typescript		foundation	package-root-private	false
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
 rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	MUST	review		typescript		architecture	package-entries-curated	false
-rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/architecture/with/package.md	package	SHOULD	review		typescript		architecture	package-root-private	false
 rule	react-compiler-on	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	performance	foundation		true
 rule	render-is-pure	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	props-never-assigned	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	render-is-pure	false
@@ -832,7 +831,6 @@ rule	bun-build-after-the-check	bun	blocks/implementations/bun/workflow/bun.md		S
 rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation	root-dogfoods-every-package	false
 rule	own-packages-at-workspace-version	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	tool	versions	typescript		foundation	workspace-packages-linked-locally	false
 rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript		foundation	workspace-packages-linked-locally	false
-rule	workspaces-follow-the-package-layout	bun	blocks/implementations/bun/architecture/with/package.md	package	SHOULD	review		typescript		architecture	package-repository-layout	false
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-intent-per-case	false
 rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript		foundation	effects-faked-never-mocked	false
 rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-specs-in-their-own-run	false

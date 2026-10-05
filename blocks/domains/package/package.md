@@ -1,6 +1,6 @@
 ---
 id: package
-summary: "Publishing packages: layout, public entries, versions and releases."
+summary: "Publishing packages: public entries, versions and releases."
 requires: []
 extends: null
 abstract: false

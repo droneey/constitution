@@ -22,3 +22,10 @@ A package's exported generic and conditional types are proven by type cases the 
 | Why | Check | Tags |
 |---|---|---|
 | a consumer relies on what such a type computes, and nothing else fails when a change computes something else. | review | [testing] |
+
+## root-manifest-private → package-root-private
+The root `package.json` of a repository of packages is `"private": true`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a package manager refuses to publish a manifest marked private, so the root can never be published by mistake. | review | [] |
