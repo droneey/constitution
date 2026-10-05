@@ -3,7 +3,7 @@
 > Specs of screens whose data travels through a transport to another system.
 
 ## ui-specs-replace-the-transport → tests-run-in-a-sandbox
-A screen's spec, and the spec of what loads or writes its data, run inside their providers, with the transport replaced by captured responses. A fake of a business operation serves only a screen that shows no remote data.
+A screen's spec, and the spec of what loads or writes its data, run the real code down to the transport, and replace the transport with captured responses. A fake of a business operation serves only a screen that shows nothing a remote service gives.
 
 | Why | Check | Tags |
 |---|---|---|
