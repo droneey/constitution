@@ -37,7 +37,7 @@ Every data view shows four states: loading, empty, error and content.
 | an empty screen cannot otherwise be told from a slow one. | test | [ux, a11y] |
 ```
 
-A rule that carries out another names it with an arrow instead of a level, and takes its level and its tags from it: `## query-result-returned-as-status-union → four-data-states`. It may state a stricter level, `## x → y · MUST`, never a looser one, and an override of a rule lowers every rule under it that states none. A rule carries out one rule at most.
+A rule that carries out another names it with an arrow instead of a level, and takes its level and its tags from it: `## query-result-returned-as-status-union → data-result-is-union-by-status`. It may state a stricter level, `## x → y · MUST`, never a looser one, and an override of a rule lowers every rule under it that states none. A rule carries out one rule at most.
 
 The levels mean what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) give them, in capitals only. A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The reminders name a file's MUST rules, and only MUST rules raise the hook's warnings.
 
