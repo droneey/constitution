@@ -1,6 +1,6 @@
 # mise
 
-## toolchain-pinned-and-locked → tools-pinned-exactly-by-the-repository
+## toolchain-pinned-in-mise-toml → tools-pinned-exactly-by-the-repository
 Every tool outside the package manager — the runtime, the package manager itself, other languages' linters — is pinned exactly in `mise.toml`. Personal overrides live in `mise.local.toml`.
 
 | Why | Check | Tags |

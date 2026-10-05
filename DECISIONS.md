@@ -499,7 +499,7 @@
   - Rules that repeated a neighbour or a parent are removed or merged: `browser-checklist-before-shipping` into `interactive-checked-by-hand`; `boundary-builds-value-objects-through-the-domain` into `value-object-built-only-by-its-check`; `view-transitions-honour-reduced-motion` into `reduced-motion-honoured`; `screens-imported-by-nothing-inside` into `dependencies-point-inward`, which `routes-imported-only-by-the-router` now carries out, and so becomes a MUST. The line between a brand and an alias is drawn once, in `semantic-alias-names-a-shared-meaning`.
   - `catch-narrows-and-rethrows` carries out `errors-surfaced-never-swallowed`, and lets a catch around a library's call map its exceptions to coded errors.
   - `nothing-rendered-as-null` is reviewed: its plugin only allows `null`, and never refuses `undefined`. `query-client-through-router-context` is reviewed too: its import rule exempts the root route, which is where the client is mounted.
-  - `toolchain-pinned-and-locked` drops the `MISE_LOCKED=0` workaround, which loosened the lockfile rule for one machine.
+  - `toolchain-downloads-verified-by-the-lock` drops the `MISE_LOCKED=0` workaround, which loosened the lockfile rule for one machine.
   - Installs wait three days for a new release, not seven: a hijacked release is pulled within a day or two, and a week would hold back fixes.
   - Biome's nursery rules change only through a reviewed update.
 - **Why.** A review of the audit changes found rules that said one thing twice and intros that restated their own rules.
