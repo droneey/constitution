@@ -46,6 +46,13 @@ A consumer takes a package by the tool's own extends, else by a one-line module 
 |---|---|---|
 | the closer to the tool's own mechanism, the less glue each consumer writes and keeps. | review | [] |
 
+## consumers-import-package-entries → dependencies-imported-from-their-entries
+In a repository of packages, the root and the other packages import a package by its name, through an entry its manifest lists, never by a path into its folder.
+
+| Why | Check | Tags |
+|---|---|---|
+| a path inside a package is not part of its contract, and an import by path proves an entry no consumer can reach. | tool/imports | [] |
+
 ## package-spec-asserts-configuration-intent → coverage-holds-all-logic
 Each shipped configuration has a spec that parses it and asserts its intent; code a package runs is held by the coverage gate like any other.
 

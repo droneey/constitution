@@ -4,6 +4,9 @@ foundation:
       - no-circular
     test-code-unreachable-from-production:
       - no-test-code-in-production
+  package:
+    consumers-import-package-entries:
+      - root-takes-packages-by-name
   storybook:
     stories-unreachable-from-production:
       - stories-unreachable-from-production
@@ -76,8 +79,6 @@ architecture:
     primitives-import-no-message-catalog:
       - primitives-hold-no-text
   package:
-    consumers-import-package-entries:
-      - root-takes-packages-by-name
     package-knows-no-consumer:
       - package-knows-no-consumer
   tanstack-query:

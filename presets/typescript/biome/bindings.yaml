@@ -131,6 +131,8 @@ foundation:
     jsx-viewport-never-blocks-zoom:
       - noNonScalableViewport
   react-native:
+    react-native-imported-from-its-entry:
+      - noReactNativeDeepImports
     no-literal-colour-in-a-style:
       - noReactNativeLiteralColors
   tailwind:
@@ -202,9 +204,6 @@ architecture:
   core:
     surface-only-re-exports:
       - noReExportAll
-  react-native:
-    react-native-imported-from-its-entry:
-      - noReactNativeDeepImports
   tanstack-query:
     keys-only-from-the-key-factory:
       - keys-only-from-the-key-factory.grit

@@ -2492,7 +2492,7 @@ describe('the Biome architecture parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/react-native',
+        'typescript/foundation/react-native',
       ],
       rule: 'noReactNativeDeepImports',
     },

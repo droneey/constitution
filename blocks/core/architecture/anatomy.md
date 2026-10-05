@@ -222,13 +222,6 @@ A feature's surface offers its operations and its presentation — use-cases, bi
 |---|---|---|
 | a caller that reaches a mechanism depends on how the feature works rather than on what it does. | review | [] |
 
-## dependencies-imported-from-their-entries → access-only-through-curated-surface
-A dependency is imported only from the entries it publishes, never from its internal paths.
-
-| Why | Check | Tags |
-|---|---|---|
-| internal paths change between releases without notice, and an update then breaks the program. | review | [] |
-
 ## Placement
 
 ## contract-lifts-on-the-second-feature · SHOULD

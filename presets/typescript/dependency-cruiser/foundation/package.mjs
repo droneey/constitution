@@ -2,19 +2,13 @@
 export default {
   forbidden: [
     {
-      name: 'package-knows-no-consumer',
+      name: 'root-takes-packages-by-name',
       severity: 'error',
       from: {
-        path: '^packages/',
+        pathNot: '^packages/',
       },
       to: {
-        pathNot: [
-          '^packages/',
-          'node_modules/',
-        ],
-        dependencyTypesNot: [
-          'core',
-        ],
+        path: '^packages/',
       },
     },
   ],

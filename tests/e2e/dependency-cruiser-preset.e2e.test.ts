@@ -857,6 +857,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'scripts/release.ts': exported('release'),
       },
+      part: 'typescript/architecture/package',
       roots: [
         'packages',
         'scripts',
@@ -872,6 +873,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'build',
         }),
       },
+      part: 'typescript/foundation/package',
       roots: [
         'packages',
         'scripts',
@@ -879,13 +881,13 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'root-takes-packages-by-name',
     },
   ])(
-    'should report $rule when $condition and a repository of packages extends architecture package',
-    ({ files, roots, rule }) => {
+    'should report $rule when $condition and a repository of packages extends $part',
+    ({ files, part, roots, rule }) => {
       // Arrange
       const project = {
         files,
         parts: [
-          'typescript/architecture/package',
+          part,
         ],
         roots,
       };
@@ -911,6 +913,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
+        'typescript/foundation/package',
         'typescript/architecture/package',
       ],
       roots: [

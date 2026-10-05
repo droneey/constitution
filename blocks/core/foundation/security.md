@@ -90,6 +90,13 @@ Each dependency has one version across every manifest of the repository.
 |---|---|---|
 | two versions of one dependency behave differently in two places, and the difference is found in production. | review | [] |
 
+## dependencies-imported-from-their-entries · MUST
+A dependency is imported only from the entries it publishes, never from its internal paths.
+
+| Why | Check | Tags |
+|---|---|---|
+| internal paths change between releases without notice, and an update then breaks the program. | review | [] |
+
 ## ci-steps-pinned-to-immutable-references · MUST
 A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
 

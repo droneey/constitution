@@ -69,7 +69,7 @@ block	pydantic	implementation	pydantic parses what crosses the program's edge in
 block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	foundation/pytest.md architecture/pytest.md		python		false		tests coverage	python			**/tests/**
 block	python-check	implementation	The constitution's own check of what no Python tool holds.	foundation/python-check.md architecture/python-check.md		python		false		lint imports	python			
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/bun-test	browser	_react	false					_react	**/*.tsx
-block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
+block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/fastapi foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
@@ -200,6 +200,7 @@ rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MU
 rule	shared-configuration-from-one-pinned-source	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
+rule	dependencies-imported-from-their-entries	core	blocks/core/foundation/security.md		MUST	review				foundation		true
 rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	dependency-release-cooldown	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	new-dependency-vetted	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
@@ -273,7 +274,6 @@ rule	layer-folder-has-no-surface	core	blocks/core/architecture/anatomy.md		MUST	
 rule	layer-folder-never-imported	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture	layer-folder-has-no-surface	false
 rule	surface-only-re-exports	core	blocks/core/architecture/anatomy.md		MUST	tool	lint			architecture		true
 rule	surface-offers-operations-not-mechanisms	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
-rule	dependencies-imported-from-their-entries	core	blocks/core/architecture/anatomy.md		MUST	review				architecture	access-only-through-curated-surface	false
 rule	contract-lifts-on-the-second-feature	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	one-adapter-per-system	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	adapter-built-by-factory-or-module-object	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
@@ -403,6 +403,7 @@ rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundat
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
 rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/foundation/package.md		SHOULD	review			security	foundation	shared-configuration-from-one-pinned-source	false
+rule	consumers-import-package-entries	package	blocks/domains/package/foundation/package.md		MUST	tool	imports			foundation	dependencies-imported-from-their-entries	false
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
 rule	generated-copy-guarded-by-spec	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	generated-files-marked-never-edited	false
 rule	shared-package-file-lives-once	package	blocks/domains/package/foundation/package.md		MUST	review			testing	foundation	generated-copy-guarded-by-spec	false
@@ -419,7 +420,6 @@ rule	package-root-holds-only-the-workspace	package	blocks/domains/package/archit
 rule	package-anatomy	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture	anatomy-top-level-by-concern	false
 rule	package-knows-no-consumer	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	libs-import-no-application-code	false
 rule	package-entries-curated	package	blocks/domains/package/architecture/package.md		MUST	review				architecture	access-only-through-curated-surface	false
-rule	consumers-import-package-entries	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	package-entries-curated	false
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
 rule	release-job-owns-publishing	package	blocks/domains/package/workflow/package.md		MUST	review			security	workflow	publishing-by-workflow-identity	false
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
@@ -1019,7 +1019,7 @@ rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/rea
 rule	dom-registered-before-the-sandbox	react-dom	blocks/implementations/react-dom/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing security	foundation	network-refused-by-the-test-preload	false
 rule	long-lists-virtualised	react-native	blocks/implementations/react-native/foundation/react-native.md		SHOULD	review		typescript	performance	foundation		true
 rule	no-literal-colour-in-a-style	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript	ux	foundation	tokens-single-source-of-appearance	false
-rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST	tool	lint	typescript		architecture	dependencies-imported-from-their-entries	false
+rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript		foundation	dependencies-imported-from-their-entries	false
 rule	update-cooldown-configured	renovate	blocks/implementations/renovate/foundation/renovate.md		SHOULD	review			security	foundation	dependency-release-cooldown	false
 rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	hooks-and-release-automation-from-the-shared-source	false
 rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovate/workflow/renovate.md		MUST	review				workflow	commit-header-type-and-subject	false

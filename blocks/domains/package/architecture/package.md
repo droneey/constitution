@@ -31,10 +31,3 @@ The manifest lists every entry a consumer may use and nothing else, and names th
 | Why | Check | Tags |
 |---|---|---|
 | every path a consumer can reach becomes part of the contract, and cannot change without breaking someone. | review | [] |
-
-## consumers-import-package-entries → package-entries-curated
-A consumer imports a package by an entry its manifest lists, never by a path inside the package.
-
-| Why | Check | Tags |
-|---|---|---|
-| a path inside a package is not part of its contract, and the next release may move it. | tool/imports | [] |
