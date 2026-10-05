@@ -13,3 +13,10 @@ mutmut runs pytest with `pytest_add_cli_args = ["-p", "no:randomly"]`, and `addo
 | Why | Check | Tags |
 |---|---|---|
 | a run per mutant must stop at its first failing case, which a coverage gate over one mutant's specs fails first and a shuffled order makes differ from one mutant to the next. | review | [] |
+
+## spec-finds-files-by-searching-up → mutants-all-killed
+A spec reaches a file outside `tests/` by searching up from its own file for the folder that holds it, never by a fixed count of `Path(__file__).parents`.
+
+| Why | Check | Tags |
+|---|---|---|
+| mutmut copies `src/` and `tests/` into `mutants/` and runs the specs there, a folder deeper, so a fixed count misses the file and the specs fail before any mutant runs. | review | [] |
