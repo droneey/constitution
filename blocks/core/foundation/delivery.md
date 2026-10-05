@@ -42,7 +42,7 @@ Each area of the check — `format`, `lint`, `type`, `test`, `mutation`, `unused
 | CI, the hooks and a person run the same names, so the names stay stable, and a second language adds its tools to the areas rather than a second set of names. | review | [] |
 
 ## check-only-checks · MUST
-The check verifies and never changes a tracked file: it generates nothing, formats nothing and rewrites nothing. A tool's cache in an ignored folder is not a change.
+The check verifies and never changes a file of the repository: it generates nothing, formats nothing and rewrites nothing. A tool's cache, in a folder of its own, is not a change.
 
 | Why | Check | Tags |
 |---|---|---|

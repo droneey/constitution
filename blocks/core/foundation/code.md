@@ -195,11 +195,11 @@ A to-do comment names its issue: `TODO(#<issue>)`. A to-do without one is done, 
 | an issue has an owner and a place in the plan; a bare to-do is forgotten where it stands. | review | [] |
 
 ## no-commented-out-code · MUST
-Code is never commented out; it is deleted. History keeps it.
+Code is never commented out; it is deleted.
 
 | Why | Check | Tags |
 |---|---|---|
-| commented-out code rots unseen, misleads readers, and version control already remembers it. | review | [] |
+| commented-out code rots unseen and misleads readers, while deleted code stays recoverable from an earlier version of the project. | review | [] |
 
 ## no-dead-code · MUST
 No unused file, dependency, export, parameter, variable or label, and no unreachable statement. Code and dependencies that only tests reach are unused too. An export a module offers through its public entry is not dead code.

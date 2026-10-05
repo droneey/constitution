@@ -31,7 +31,7 @@ Each kind of value — a size, a duration — has one syntax in the document, pa
 | a user learns one way to write a size, and the program never guesses which one was meant. | review | [data] |
 
 ## published-schema-generated-from-code · MUST
-The schema published for editors is generated from the code's schema, never written by hand. The check compares a committed copy with it and never rewrites it.
+The schema published for editors is generated from the code's schema, never written by hand. The check compares the copy kept in the repository with it and never rewrites it.
 
 | Why | Check | Tags |
 |---|---|---|

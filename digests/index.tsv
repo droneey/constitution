@@ -20,7 +20,7 @@ block	i18n	domain	Messages, plurals and locale for text a person reads.	foundati
 block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
-block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
+block	package	domain	Publishing packages: layout, public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	workflow/version-control			false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md	architecture/remote-service			false						
 block	remote-service	domain	Another system the program calls: transport, failures, streams, specs.	foundation/remote-service.md architecture/remote-service.md workflow/remote-service.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/a11y.md foundation/design-system.md architecture/ui.md	foundation/remote-data foundation/remote-service architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
@@ -354,7 +354,7 @@ rule	features-never-track	analytics	blocks/domains/analytics/architecture/analyt
 rule	consent-reachable-from-every-screen	analytics	blocks/domains/analytics/foundation/with/ui.md	ui	MUST	review			security ux	foundation	consent-withdrawable-and-recorded	false
 rule	section-optional-fields-required	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data	foundation	absence-has-one-value	false
 rule	secrets-are-references	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation		true
-rule	document-schema-strict	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data errors	foundation	documents-strict-vendor-answers-tolerant	false
+rule	document-variants-selected-by-a-discriminant	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data errors	foundation	illegal-states-unrepresentable	false
 rule	one-syntax-per-value-kind	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			data	foundation		true
 rule	published-schema-generated-from-code	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data	foundation		true
 rule	document-points-editors-at-the-schema	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux	foundation		true
@@ -362,7 +362,7 @@ rule	plan-names-destroying-changes	convergence	blocks/domains/convergence/founda
 rule	second-run-changes-nothing	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			testing data	foundation	operations-idempotent-by-design	true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux errors	foundation		true
 rule	run-output-in-one-work-folder	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
-rule	engines-pinned-by-version-and-checksum	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
+rule	engines-downloaded-per-release-not-vendored	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
 rule	developer-and-ci-run-the-tools-engines	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
 rule	schema-rejects-unknown-keys	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			data	foundation		true
 rule	schema-discriminated-unions	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			data errors	foundation		true
@@ -423,8 +423,8 @@ rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/packag
 rule	language-free-file-lives-once-in-common	package	blocks/domains/package/architecture/package.md		MUST	review			testing	architecture	generated-copy-guarded-by-spec	false
 rule	one-version-for-all-packages	package	blocks/domains/package/workflow/package.md		MUST	tool	versions			workflow		true
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
-rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
-rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/package.md		SHOULD	review				workflow		true
+rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
+rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
 rule	remote-data-cache-invalidates-by-prefix	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
@@ -590,6 +590,7 @@ rule	dependencies-updated-by-bot	version-control	blocks/domains/version-control/
 rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
 rule	agent-commits-only-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
 rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
+rule	agent-pushes-and-opens-pull-requests-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
 rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-takes-no-direct-push	false
 rule	sub-agent-never-commits-pushes-or-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	sub-agent-only-does-the-work	false
 rule	agent-permissions-committed	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-permissions-kept-with-the-project	false
@@ -822,7 +823,8 @@ rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/foundation/bun.
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	install-scripts-only-for-listed-dependencies	false
 rule	release-age-set-for-installs	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript	security	foundation	dependency-release-cooldown	false
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
-rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
+rule	other-runtime-pinned-like-bun	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
+rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	check-chains-one-entry-per-area	false
 rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		MUST	review		typescript	security	architecture	environment-read-once-at-boot	false
@@ -935,7 +937,7 @@ rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/
 rule	t-never-at-module-level	lingui	blocks/implementations/lingui/foundation/lingui.md		MUST	tool	lint	typescript		foundation	module-level-messages-are-descriptors	false
 rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/foundation/with/_react.md	_react	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	true
 rule	macros-expanded-by-the-test-preload	lingui	blocks/implementations/lingui/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing ux	foundation	messages-through-lingui-macros	false
-rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	MUST	review		typescript	security	foundation	other-runtime-only-where-bun-cannot	false
+rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/foundation/with/bun.md	bun	SHOULD	review		typescript		foundation	other-runtime-only-where-bun-cannot	false
 rule	macros-expanded-by-the-lingui-plugin	lingui	blocks/implementations/lingui/foundation/with/vite.md	vite	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	false
 rule	primitives-import-no-message-catalog	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	primitives-take-text-by-props	false
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/foundation/ls-lint.md		SHOULD	tool	names			foundation	yaml-files-end-in-yaml	false
@@ -943,7 +945,7 @@ rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/foundation/ma
 rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	security data	foundation	no-personal-data-in-events	false
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	performance	foundation		true
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST	review		typescript		architecture	sinks-behind-one-contract	true
-rule	toolchain-pinned-and-locked	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
+rule	toolchain-pinned-in-mise-toml	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	toolchain-downloads-verified-by-the-lock	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
@@ -1142,9 +1144,10 @@ rule	queries-by-role-label-text	testing-library	blocks/implementations/testing-l
 rule	interactions-through-user-event	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation		true
 rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		SHOULD	review		typescript	testing	foundation	spec-per-boundary	false
+rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	review		typescript	testing	foundation	specs-independent-of-order	true
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	spec-cache-client-fresh-without-retries	testing-library	blocks/implementations/testing-library/foundation/with/remote-data.md	remote-data	MUST	review		typescript	testing	foundation	specs-independent-of-order	true
-rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/with/remote-service.md	remote-service	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
+rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/foundation/with/remote-service.md	remote-service	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
