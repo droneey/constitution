@@ -19,11 +19,11 @@ The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag def
 | every command is found in one place. | tool/names | [] |
 
 ## report-is-a-value-the-command-prints → report-returned-as-a-value
-The command prints the run's report once, at the end of the run.
+The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
 
 | Why | Check | Tags |
 |---|---|---|
-| a command line program's output is read as one result, by a person or by the next program in a pipe. | review | [ux] |
+| a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. | review | [ux] |
 
 ## Requirements for implementation
 
