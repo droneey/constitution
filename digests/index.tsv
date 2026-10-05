@@ -25,7 +25,7 @@ block	remote-data	domain	Data another system owns — cache keys, invalidation, 
 block	remote-service	domain	Another system the program calls: transport, failures, streams, specs.	foundation/remote-service.md architecture/remote-service.md workflow/remote-service.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/a11y.md foundation/design-system.md architecture/ui.md	foundation/remote-data foundation/remote-service architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
-block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md architecture/untrusted-client.md				false						
+block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md				false						
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	foundation/version-control.md workflow/version-control.md				false						
 block	browser	platform	Code that runs in a browser tab.	foundation/browser.md architecture/browser.md	foundation/analytics foundation/i18n foundation/ui architecture/ui	untrusted-client unreliable-network		false						
 block	cli	platform	A program run from a command line, one command per invocation.	foundation/cli.md architecture/cli.md	foundation/convergence			false						**/cli/**
@@ -550,8 +550,8 @@ rule	connection-loss-is-an-expected-failure	unreliable-network	blocks/domains/un
 rule	user-input-survives-connection-loss	unreliable-network	blocks/domains/unreliable-network/foundation/unreliable-network.md		SHOULD	review			ux	foundation		true
 rule	network-failures-have-cases	unreliable-network	blocks/domains/unreliable-network/foundation/unreliable-network.md		SHOULD	test			testing errors	foundation	every-declared-failure-has-a-case	false
 rule	client-holds-nothing-hidden	untrusted-client	blocks/domains/untrusted-client/foundation/untrusted-client.md		MUST	review			security	foundation		true
+rule	client-checks-repeated-on-server	untrusted-client	blocks/domains/untrusted-client/foundation/untrusted-client.md		MUST	review			security	foundation		true
 rule	credentials-only-in-the-protected-store	untrusted-client	blocks/domains/untrusted-client/foundation/untrusted-client.md		MUST	review			security	foundation		true
-rule	client-checks-repeated-on-server	untrusted-client	blocks/domains/untrusted-client/architecture/untrusted-client.md		MUST	review				architecture		true
 rule	commit-is-one-logical-change	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	refactor-apart-from-behaviour-change	version-control	blocks/domains/version-control/foundation/version-control.md		SHOULD	review				foundation		true
 rule	every-commit-passes-the-check	version-control	blocks/domains/version-control/foundation/version-control.md		MUST	review			testing	foundation		true
