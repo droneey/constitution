@@ -199,6 +199,7 @@ rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/securi
 rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	shared-configuration-from-one-pinned-source	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
+rule	template-copied-once-owned-by-consumer	core	blocks/core/foundation/security.md		SHOULD	review				foundation		true
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
 rule	dependencies-imported-from-their-entries	core	blocks/core/foundation/security.md		MUST	review				foundation		true
@@ -399,7 +400,6 @@ rule	package-named-after-what-it-serves	package	blocks/domains/package/foundatio
 rule	package-root-private	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
-rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/foundation/package.md		SHOULD	review			security	foundation	shared-configuration-from-one-pinned-source	false
 rule	consumers-import-package-entries	package	blocks/domains/package/foundation/package.md		MUST	tool	imports			foundation	dependencies-imported-from-their-entries	false
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
