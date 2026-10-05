@@ -35,7 +35,7 @@ class Workspace:
   run: Runner
   read: Callable[[Path], str]
   sources: Callable[[], tuple[Path, ...]]
-  # removes the mutants mutmut keeps: before a run, and after one that passes
+  # removes the mutants/ folder mutmut keeps between runs
   clear: Callable[[], None]
   output: TextIO
 
