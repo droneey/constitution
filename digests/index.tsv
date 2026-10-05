@@ -421,6 +421,7 @@ rule	package-knows-no-consumer	package	blocks/domains/package/architecture/packa
 rule	package-entries-curated	package	blocks/domains/package/architecture/package.md		MUST	review				architecture	access-only-through-curated-surface	false
 rule	consumers-import-package-entries	package	blocks/domains/package/architecture/package.md		MUST	tool	imports			architecture	package-entries-curated	false
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
+rule	release-job-owns-publishing	package	blocks/domains/package/workflow/package.md		MUST	review			security	workflow	publishing-by-workflow-identity	false
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true

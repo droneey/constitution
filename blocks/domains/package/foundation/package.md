@@ -121,11 +121,11 @@ A deprecated entry also names the version that removes it.
 | a deprecation without a replacement leaves the consumer stuck, and one without a removal version never ends. | review | [] |
 
 ## publishing-by-workflow-identity → least-privilege-credentials · MUST
-The registry trusts the release job's identity and records provenance; no stored token publishes. A new package is published once by a person with two-factor authentication, then the automation owns it.
+No stored token publishes: the registry trusts only an identity issued to the run that publishes, and records the provenance of every version.
 
 | Why | Check | Tags |
 |---|---|---|
-| a stored publishing token is the credential attackers want most; an identity that exists only inside the release job cannot leak. | review | [] |
+| a stored publishing token is the credential attackers want most; an identity that exists only inside the run that publishes cannot leak. | review | [] |
 
 ## Requirements for implementation
 
