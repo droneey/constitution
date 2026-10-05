@@ -88,7 +88,7 @@ A hover style that changes visibility has a state without hover, or sits behind 
 |---|---|---|
 | on a touch screen hover never happens, and whatever it reveals would never appear. | review | [] |
 
-## focus-ring-survives-forced-colors → focus-always-visible · MUST
+## focus-ring-survives-forced-colors → focus-always-visible
 The focus ring is an outline, or keeps a transparent outline beside a shadow, so it shows in forced-colors mode; nothing removes the outline outright.
 
 | Why | Check | Tags |
@@ -101,3 +101,26 @@ Content that stays on screen while the page scrolls — a header, a footer, a ba
 | Why | Check | Tags |
 |---|---|---|
 | focus moved under a sticky header is focus the user cannot see. | review | [a11y] |
+
+## Layout
+
+## popover-placed-by-anchor-positioning · SHOULD
+Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by CSS anchor positioning — `anchor-name`, `position-anchor`, `position-area` — never by a script that measures; a supported browser that lacks it loads the anchor-positioning polyfill once, in the entry file.
+
+| Why | Check | Tags |
+|---|---|---|
+| the browser places it and flips it at the viewport's edge without a positioning library or a frame of the wrong position. | review | [ux, performance] |
+
+## mobile-first-additive-breakpoints → components-size-to-their-container
+Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out, and every entry document declares the responsive viewport.
+
+| Why | Check | Tags |
+|---|---|---|
+| styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | review | [] |
+
+## dynamic-viewport-units · MUST
+Heights use the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`, and no layout width is fixed in pixels outside the tokens.
+
+| Why | Check | Tags |
+|---|---|---|
+| `100vh` ignores the browser's own toolbars on phones, and content slides under them. | review | [] |

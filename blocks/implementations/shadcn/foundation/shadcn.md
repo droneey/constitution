@@ -1,11 +1,11 @@
 # shadcn
 
 ## complex-widgets-on-base-ui → complex-patterns-on-accessible-primitives
-A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin that the platform's element does not carry are built on Base UI, through shadcn source created with Base UI (`shadcn init -b base`).
+A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Base UI, through shadcn source created with Base UI (`shadcn init -b base`), the dialog, the popover and the accordion included: Base UI is the active block whose primitives the browser's `<dialog>`, `popover` and `<details>` give way to, and positions its popovers itself.
 
 | Why | Check | Tags |
 |---|---|---|
-| Base UI carries the keyboard, focus and announcement behaviour these patterns need, and is the library shadcn generates on. | review | [] |
+| Base UI carries the keyboard, focus and announcement behaviour these patterns need, and more than the browser's elements do: a dialog's scroll lock, its light dismiss in Safari and its controlled state; a popover that opens on hover after a delay and holds focus as a modal; arrow, Home and End keys between an accordion's headers. | review | [] |
 
 ## polymorphism-through-render · SHOULD
 A polymorphic render is Base UI's `render` prop, the kit's only polymorphism; no `as` or `asChild` of the kit's own.

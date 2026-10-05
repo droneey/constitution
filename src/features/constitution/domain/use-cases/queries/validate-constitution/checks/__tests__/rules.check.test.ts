@@ -336,4 +336,54 @@ describe('rulesCheck', () => {
       },
     ]);
   });
+
+  it.each([
+    {
+      condition: 'its parent states it',
+      level: 'SHOULD',
+      principles: [
+        rule({
+          level: 'SHOULD',
+          slug: 'dependencies-point-inward',
+        }),
+      ],
+    },
+    {
+      condition: 'its parent takes it from its own parent',
+      level: 'MUST',
+      principles: [
+        rule({
+          slug: 'names-reveal-intent',
+        }),
+        rule({
+          parent: 'names-reveal-intent',
+          slug: 'dependencies-point-inward',
+        }),
+      ],
+    },
+  ])(
+    'should report a rule that states the level it inherits when $condition',
+    ({ level, principles }) => {
+      // Arrange
+      const files = validFiles();
+      files[PRINCIPLES] = `# Principles\n\n${principles.join('\n')}`;
+      files[WORKFLOW] = `# Workflow\n\n${rule({
+        level,
+        parent: 'dependencies-point-inward',
+        slug: 'rules-bind',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "rules-bind" states ${level}, the level it already takes from "dependencies-point-inward"; a rule states a level only to be stricter than the rule it carries out`,
+          path: WORKFLOW,
+        },
+      ]);
+    },
+  );
 });

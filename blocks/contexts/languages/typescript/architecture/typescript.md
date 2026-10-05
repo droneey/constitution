@@ -4,13 +4,6 @@
 
 ## Modules and files
 
-## hash-alias-for-the-source-root → alias-declared-in-package-imports
-The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
-
-| Why | Check | Tags |
-|---|---|---|
-| an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | review | [] |
-
 ## hash-imports-leave-the-module → folder-files-import-each-other-directly
 An import that leaves its module uses `#/`; files inside one module import each other by relative path. A module never imports itself through `#/`.
 
@@ -55,9 +48,3 @@ A project's semantic aliases live in one ambient `types.d.ts` at its source root
 |---|---|---|
 | one file holds the program's vocabulary, and `libs/` stays free of a hidden dependency on it. | review | [] |
 
-## environment-read-only-in-root → environment-read-once-at-boot
-The environment is `process.env`, read only under `root/`, in the entry files and in specs.
-
-| Why | Check | Tags |
-|---|---|---|
-| the linter refuses `process.env` everywhere else, so a read deep in the program fails the check. | tool/lint | [] |

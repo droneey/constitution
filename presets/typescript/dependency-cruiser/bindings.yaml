@@ -45,7 +45,7 @@ architecture:
       - kernel-reaches-only-itself
       - libs-know-no-application
       - shared-knows-no-feature-or-root
-    domain-imports-only-itself-and-kernel:
+    domain-imports-only-itself-kernel-and-contracts:
       - domain-reaches-only-itself-and-kernel
     feature-root-holds-its-layers:
       - feature-root-reached-only-through-its-layers
@@ -68,7 +68,7 @@ architecture:
       - writes-never-reach-reads
     root-imported-only-by-entry-and-delivery-wiring:
       - root-reached-only-from-entries
-    shared-imports-no-feature-or-root:
+    shared-imports-no-feature-adapter-contract-or-root:
       - shared-knows-no-feature-or-root
   expo:
     adapters-never-import-each-other-or-callers:
@@ -100,7 +100,7 @@ architecture:
       - libs-never-route
     route-pieces-reach-the-route-by-its-api:
       - route-pieces-never-import-route-files
-    routes-imported-only-by-the-router:
+    routes-imported-by-no-inner-layer:
       - routes-reached-only-from-the-router
     root-imported-only-by-entry-and-delivery-wiring:
       - root-reached-only-from-entries

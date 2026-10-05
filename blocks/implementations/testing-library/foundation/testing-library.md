@@ -1,7 +1,7 @@
 # Testing Library
 
 ## queries-by-role-label-text → elements-found-by-role-label-text · MUST
-Elements are queried by role first, then by label and text; `getByTestId`, `container.querySelector` and class selectors are forbidden.
+Elements are queried by role first, then by label and text; `getByTestId` is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -34,12 +34,3 @@ One render helper in `__tests__/<name>.fixtures` mounts the providers a spec nee
 | Why | Check | Tags |
 |---|---|---|
 | every spec then runs inside the real composition, and nothing one spec's providers hold reaches the next. | review | [] |
-
-## Accessibility
-
-## ui-specs-run-the-axe-scan → ui-specs-scan-accessibility
-Every screen and component spec runs the axe scan over what it rendered, on the WCAG 2.2 A and AA rules only, and passes with zero violations. Contrast, which a simulated DOM cannot judge, is turned off there and is the token-pair test's; the landmark rule runs in screen specs, not over a lone component.
-
-| Why | Check | Tags |
-|---|---|---|
-| the scan catches a third of the problems in every spec, on every change, for free. | test | [] |

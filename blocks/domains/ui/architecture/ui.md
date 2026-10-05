@@ -126,7 +126,7 @@ A component has its own folder: the component file, its `.types`, `.variants` an
 | everything about one component is in one place, and its internals stay private. | review | [] |
 
 ## component-folders-hold-their-files → component-in-its-own-folder
-`components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `__tests__/` and its surface.
+`components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `components/` folder of sub-components, its `__tests__/` and its surface.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -179,6 +179,13 @@ A form validates a field when the field is left or the form is submitted, not on
 |---|---|---|
 | a user told off while still typing learns to ignore the message. | review | [ux] |
 
+## form-validated-by-its-own-schema · SHOULD
+A form validates its fields through its schema.
+
+| Why | Check | Tags |
+|---|---|---|
+| the form refuses bad input before it is sent, by the same rules that decide what it sends. | review | [ux] |
+
 ## submit-busy-while-submitting · SHOULD
 A form never submits twice: while it submits, a repeat submit is ignored, and the button shows it is busy with a busy label, keeping its focus.
 

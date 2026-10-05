@@ -9,6 +9,13 @@ The tool a package configures is a `peerDependencies` entry with a `>=` floor.
 |---|---|---|
 | the floor states the oldest version the package supports, and leaves the choice of version to the consumer. | review | [] |
 
+## exports-map-each-entry → package-entries-curated
+`exports` in `package.json` maps each entry of the package to its file, so a consumer reaches the package only through the entries it lists.
+
+| Why | Check | Tags |
+|---|---|---|
+| a path `exports` does not map cannot be imported, so the curated entries are the whole of what a consumer can couple to. | review | [] |
+
 ## manifest-exports-with-types-condition → package-ships-its-types
 Wherever a consumer imports code, an entry of `exports` carries a `types` condition beside `default`.
 

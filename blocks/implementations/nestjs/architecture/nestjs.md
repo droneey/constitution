@@ -20,7 +20,7 @@ A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `
 
 ## Wiring
 
-## adapter-is-an-injectable-class → adapter-built-from-explicit-dependencies
+## adapter-is-an-injectable-class → adapter-is-a-factory-module-object-or-class
 An adapter is an `@Injectable()` class, a provider like any other: it takes its dependencies through its constructor (`providers-injected-through-the-constructor`) and is bound in a module (`contracts-injected-by-token`).
 
 | Why | Check | Tags |
@@ -42,11 +42,11 @@ No provider, controller or guard takes `ModuleRef` and calls its `get` or `resol
 | a dependency asked for at run time appears in no constructor and no module, so neither a reader nor a spec sees it until it fails. | review | [testing] |
 
 ## no-global-module → one-explicit-composition-root
-No module is `@Global()`. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — the adapter of a contract of `contracts/` — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
+No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — the adapter of a contract of `contracts/` — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
 
 | Why | Check | Tags |
 |---|---|---|
-| a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; and a feature's module that imports another feature's ties the two features as an import of code would. | review | [] |
+| a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; a library's, imported by the root alone, is wiring the root shows, as a logger is; and a feature's module that imports another feature's ties the two features as an import of code would. | review | [] |
 
 ## contracts-injected-by-token → one-explicit-composition-root
 A dependency that stands for a contract is injected by a token — an abstract class, or a `Symbol` named by `@Inject` — and bound to its implementation with `useClass` or `useFactory` in a module's `providers`; a constructor never names a concrete adapter class.

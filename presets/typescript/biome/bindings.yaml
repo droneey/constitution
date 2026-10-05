@@ -55,10 +55,6 @@ foundation:
       - noAlert
       - noConsole
       - noDebugger
-    no-empty-names:
-      - no-empty-names.grit
-    no-empty-verbs:
-      - no-empty-verbs.grit
     no-secret-in-repository:
       - noSecrets
     no-skipped-or-empty-tests:
@@ -130,6 +126,11 @@ foundation:
       - useImageSize
     jsx-viewport-never-blocks-zoom:
       - noNonScalableViewport
+  self:
+    biome-refuses-empty-names:
+      - biome-refuses-empty-names.grit
+    biome-refuses-empty-verbs:
+      - biome-refuses-empty-verbs.grit
   react-native:
     react-native-imported-from-its-entry:
       - noReactNativeDeepImports
@@ -152,6 +153,8 @@ foundation:
     link-targets-never-built:
       - link-targets-never-built.grit
   testing-library:
+    no-document-selectors-in-specs:
+      - queries-by-role-label-text.grit
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
   typescript:
@@ -201,6 +204,9 @@ architecture:
   _react:
     component-file-calls-no-effect-hook:
       - component-effects-in-its-hooks-file.grit
+  bun:
+    process-env-read-only-in-root:
+      - noProcessEnv
   core:
     surface-only-re-exports:
       - noReExportAll
@@ -214,8 +220,6 @@ architecture:
   typescript:
     domain-type-fields-readonly:
       - domain-type-fields-readonly.grit
-    environment-read-only-in-root:
-      - noProcessEnv
     surface-only-re-exports:
       - surface-only-re-exports.grit
   zod:

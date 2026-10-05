@@ -1,7 +1,7 @@
 # TanStack Start
 
 ## hashed-assets-immutable-html-revalidated · SHOULD
-Hashed assets are served as immutable; the HTML, the runtime configuration and the embed entries are revalidated.
+Hashed assets are served as immutable; the HTML and the runtime configuration are revalidated.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -20,3 +20,10 @@ The same `routeRules` set the other security headers, and the same test reads th
 | Why | Check | Tags |
 |---|---|---|
 | one place for every header keeps them from drifting apart, and the test covers them all. | test | [security] |
+
+## runtime-config-from-one-server-function → runtime-configuration-served-beside-bundle
+One server function reads the environment, parses it by a schema and serves it; the root route loads it once, before anything reads configuration.
+
+| Why | Check | Tags |
+|---|---|---|
+| one bundle then serves every environment, and a missing setting fails at start. | review | [] |

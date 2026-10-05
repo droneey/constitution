@@ -34,7 +34,7 @@ The inner layer declares, in its own words, the contracts it needs; the outer la
 |---|---|---|
 | the business rules then choose what they need, and a vendor or engine can be replaced without touching them. | review | [] |
 
-## domain-imports-only-itself-and-kernel · MUST
+## domain-imports-only-itself-kernel-and-contracts · MUST
 The domain imports only itself, the shared kernel and the shared ports of `contracts/`: no framework, no input or output, no vendor library, however pure. A tool's types stop at its boundary; a validation engine conforms to the domain's types and never declares them.
 
 | Why | Check | Tags |
@@ -91,7 +91,7 @@ Input and output, network, storage, clock, randomness and processes live in adap
 | code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | review | [] |
 
 ## one-explicit-composition-root · MUST
-Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies typed by their contracts, and never builds an adapter itself or asks for one. A container may do the wiring only from bindings written in the declarations the root composes — its own, or those of a feature's module the root names in its imports; one that finds its bindings by scanning, by name or by convention, or that a unit asks for what it needs, is the magic this rule forbids.
+Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies typed by their contracts, and never builds an adapter itself or asks for one; reading a typed scope the root fills — the context a component tree provides, the context a router passes to its routes — is receiving, not asking. A container may do the wiring only from bindings written in the declarations the root composes — its own, or those of a feature's module the root names in its imports; one that finds its bindings by scanning, by name or by convention, or that a unit asks for what it needs, is the magic this rule forbids.
 
 | Why | Check | Tags |
 |---|---|---|

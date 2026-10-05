@@ -9,6 +9,13 @@ An import alias, where the program has one, is declared once, in `imports` of `p
 |---|---|---|
 | one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | review | [] |
 
+## hash-alias-for-the-source-root → alias-declared-in-package-imports
+The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | review | [] |
+
 ## file-named-after-its-export · SHOULD
 A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
 
@@ -305,7 +312,7 @@ A value whose type implements `Disposable` or `AsyncDisposable` is declared with
 |---|---|---|
 | the type says the value must be released, so the lint can hold it; a reader or a handle whose type says nothing stays with review. | tool/lint | [] |
 
-## options-object-has-a-named-type → at-most-three-positional-arguments
+## options-object-has-a-named-type → parameters-at-most-three-wholes-as-one-object
 An object of values that travel together is typed by a named type, never by an object type written inline in the signature.
 
 | Why | Check | Tags |

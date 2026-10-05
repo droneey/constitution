@@ -2,13 +2,6 @@
 
 ## The document
 
-## field-constraints-checked-in-validation → untrusted-input-parsed-at-edge
-Every constraint between fields of the document is checked in validation, before any stage runs, never at the point of use.
-
-| Why | Check | Tags |
-|---|---|---|
-| an impossible combination found mid-run fails after part of the world has changed, far from the line that caused it. | review | [data, errors] |
-
 ## document-lives-in-composition → feature-speaks-in-its-own-contracts
 The document and its schema live in `composition/`, which knows every section. A feature never reads the document; it declares the vocabulary the document imports.
 

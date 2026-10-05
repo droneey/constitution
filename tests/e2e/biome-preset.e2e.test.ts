@@ -1512,7 +1512,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: true,
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/typescript',
+        'typescript/architecture/bun',
       ],
       rule: 'noProcessEnv',
     },
@@ -1525,7 +1525,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: false,
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/typescript',
+        'typescript/architecture/bun',
       ],
       rule: 'noProcessEnv',
     },
@@ -2587,6 +2587,58 @@ describe('the Biome architecture parts', () => {
 
       // Assert
       expect(rules.includes('noParameterProperties')).toBe(isReported);
+    },
+  );
+
+  it.each([
+    {
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      path: 'src/orders.controller.ts',
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/nestjs',
+      ],
+      path: 'src/orders.controller.ts',
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/nestjs',
+        'typescript/architecture/nestjs',
+      ],
+      path: 'src/place-order.use-case.ts',
+    },
+    {
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/nestjs',
+        'typescript/architecture/nestjs',
+      ],
+      path: 'src/orders.ts',
+    },
+  ])(
+    'should report useMaxParams $isReported when $path holds a constructor of four dependencies and a project extends $parts',
+    ({ isReported, parts, path }) => {
+      // Arrange
+      const project = {
+        files: {
+          [path]:
+            'export class Orders {\n  public constructor(\n    private readonly clock: Date,\n    private readonly region: string,\n    private readonly limit: number,\n    private readonly label: string,\n  ) {}\n}\n',
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('useMaxParams')).toBe(isReported);
     },
   );
 });

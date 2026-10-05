@@ -8,7 +8,7 @@ A file a tool produces carries `.gen` in its name or sits in a folder named `*.g
 | a hand edit to a generated file is lost at the next generation, and the mark tells every reader and tool not to touch it. | review | [] |
 
 ## kebab-case-file-names · MUST
-Files and folders are named in kebab-case. Root files that convention names in upper case — `README.md`, `LICENSE.md` — keep it, and the language block fixes the case of source files.
+Files and folders are named in kebab-case. A name whose form is fixed outside the project keeps that form: a root file the convention names in upper case — `README.md`, `LICENSE.md`, `SECURITY.md` —, a source file in the case its language sets, and a file or folder a tool finds by its name, such as a router's `__root` route or `__tests__/`. The block of that language or tool names the form.
 
 | Why | Check | Tags |
 |---|---|---|

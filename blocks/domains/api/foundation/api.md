@@ -5,7 +5,7 @@
 ## Failures
 
 ## failure-answered-by-its-code → failure-shown-as-what-happened-and-what-next
-Every failure of a request is answered from what failed: an expected error with the answer its code maps to, carrying its code and details; a refusal the framework raises before the route or tool runs — a refused input, an unknown route, method or tool — as the caller's failure of that kind, a refused input with the path of each field it refused; and any other failure with a masked internal error that shows no message, class or trace. Over HTTP the status is the one the code or the kind maps to, any other failure is a `500`, and the body is a problem of RFC 9457, `application/problem+json`, with the code as a member of its own.
+Every failure of a request is answered from what failed: an expected error with the answer its code maps to, carrying its code and details; a refusal the framework raises before the route or tool runs — a refused input, an unknown route, method or tool — as the caller's failure of that kind, a refused input with the path of each field it refused; and any other failure with a masked internal error that shows no message, class or trace. Where HTTP is the protocol of the answer — not where it only carries another protocol that answers a failure in its own form, as a server of model tools answers a tool's failure as a result of its call — the status is the one the code or the kind maps to, any other failure is a `500`, and the body is a problem of RFC 9457, `application/problem+json`, with the code as a member of its own.
 
 | Why | Check | Tags |
 |---|---|---|

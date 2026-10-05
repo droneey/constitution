@@ -8,11 +8,11 @@ One bundle serves every environment: its configuration is served beside it, and 
 | one tested bundle is promoted from staging to production unchanged, and nothing environment-specific is published inside it. | review | [security] |
 
 ## bundle-reads-no-build-environment → runtime-configuration-served-beside-bundle
-Browser code never reads `process.env`.
+Browser code reads no variable of the environment it is built in; the compiler gives it the browser's globals and no runtime's.
 
 | Why | Check | Tags |
 |---|---|---|
-| a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
+| a bundler fills such a read in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
 
 ## no-credential-readable-by-script → credentials-only-in-the-protected-store
 A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
@@ -71,7 +71,7 @@ A script from another origin is served from the program's own origin, or loaded 
 | a script on another server changes when that server does; with its hash pinned, the browser refuses a replaced file. | review | [security] |
 
 ## bundle-size-budget · SHOULD
-Each bundle has a size budget the check holds, the embeddable one first.
+Each bundle has a size budget the check holds.
 
 | Why | Check | Tags |
 |---|---|---|

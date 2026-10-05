@@ -64,7 +64,7 @@ timeout = "10"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["**/main.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py"]
+omit = ["**/main.py", "**/__main__.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -102,7 +102,7 @@ source_modules = ["*.libs"]
 forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
-name = "shared-imports-no-feature-or-root"
+name = "shared-imports-no-feature-adapter-contract-or-root"
 type = "forbidden"
 source_modules = ["*.shared"]
 forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.root"]
@@ -114,10 +114,17 @@ source_modules = ["*.contracts"]
 forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
-name = "domain-imports-only-itself-and-kernel"
+name = "domain-imports-only-itself-kernel-and-contracts"
 type = "forbidden"
 source_modules = ["*.features.*.domain"]
 forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.libs", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "domain-imports-no-logging"
+type = "forbidden"
+source_modules = ["*.features.*.domain"]
+forbidden_modules = ["logging"]
+allow_indirect_imports = true
 
 [[tool.importlinter.contracts]]
 name = "features-blind-to-each-other"

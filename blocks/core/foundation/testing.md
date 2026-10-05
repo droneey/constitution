@@ -26,7 +26,7 @@ A constant gets a spec only when a reader outside the code relies on it — a co
 | a spec that restates a constant passes as long as the file says what it says, catches nothing, and fails on every deliberate change. | review | [testing] |
 
 ## assert-what-a-caller-observes · SHOULD
-A case checks an outcome a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call itself is the behaviour. Fakes over mocks; no verified mocks.
+A case checks an outcome a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call itself is the behaviour.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -68,7 +68,7 @@ A fixture is a factory that returns a valid value and takes overrides; a case ov
 | a case that states only what it is about shows its cause next to its effect, and a new required field changes one factory, not every case. | review | [testing] |
 
 ## no-unreadable-snapshots · SHOULD
-No snapshot of a structure a reader cannot check by eye. A generated format is compared with a golden file a reader can read.
+No snapshot of a structure a reader cannot check by eye. A generated format is compared with a golden file a reader can read, beside the spec that compares it.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -221,7 +221,7 @@ Each critical scenario `PROJECT.md` names has one end-to-end test through the bu
 ## Files and names
 
 ## test-files-named-by-role · MUST
-A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<contract>.fake`, or fixtures `<name>.fixtures`, and nothing else; the language fixes the spelling.
+A file in `__tests__/` or in `tests/` is a spec named after the file or scenario it proves — `<name>.test`, `<name>.integration.test`, `<name>.e2e.test` — a fake `<contract>.fake`, fixtures `<name>.fixtures`, or a golden file `<name>.golden.<ext>` that a spec compares a generated format with, and nothing else; the language fixes the spelling of its own files.
 
 | Why | Check | Tags |
 |---|---|---|

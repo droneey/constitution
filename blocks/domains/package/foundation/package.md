@@ -9,6 +9,13 @@ A package is named after what it serves: the tool it configures, or the need its
 |---|---|---|
 | the name tells a consumer what the package is for before it is installed. | review | [] |
 
+## package-anatomy · SHOULD
+A package holds its manifest, its README, its source, and its specs where its language keeps them.
+
+| Why | Check | Tags |
+|---|---|---|
+| every package looks the same inside, so a reader and a tool know where each part is. | review | [] |
+
 ## package-root-private · SHOULD
 The root of a repository of packages is private and never published.
 
@@ -18,8 +25,15 @@ The root of a repository of packages is private and never published.
 
 ## Entries and consumers
 
+## package-entries-curated · MUST
+The manifest lists every entry a consumer may use and nothing else.
+
+| Why | Check | Tags |
+|---|---|---|
+| every path a consumer can reach becomes part of the contract, and cannot change without breaking someone. | review | [] |
+
 ## configured-tool-is-a-peer-with-floor · MUST
-The tool a package configures is a peer dependency with a lowest supported version, never a dependency of the package. A package takes a runtime dependency only when it runs code.
+The consumer installs the tool a package configures: the package never depends on it, and declares the lowest version of it that it supports wherever its language's manifest can say so. A package takes a runtime dependency only when it runs code.
 
 | Why | Check | Tags |
 |---|---|---|

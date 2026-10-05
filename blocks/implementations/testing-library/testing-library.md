@@ -19,4 +19,4 @@ governs: ["**/__tests__/**/*.test.tsx"]
 
 | Requirement | How | Met |
 |---|---|---|
-| `a11y-scan-inside-component-specs` | axe runs over the rendered container through a matcher registered in the test setup, reporting each violation with its element | yes |
+| `a11y-scan-inside-component-specs` | over a document, axe runs on the rendered container through a matcher registered in the test setup and reports each violation with its element (`ui-specs-run-the-axe-scan`); a native renderer leaves no document for it to scan | partly |

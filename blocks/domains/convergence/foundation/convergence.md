@@ -9,6 +9,13 @@ One document the user writes is the program's single input; every run reads it w
 |---|---|---|
 | one declared state is reviewable, repeatable and diffable; inputs scattered across flags and files are none of these. | review | [] |
 
+## field-constraints-checked-in-validation → declared-document-is-the-single-input
+Every constraint between fields of the document is checked in validation, before any stage runs, never at the point of use.
+
+| Why | Check | Tags |
+|---|---|---|
+| an impossible combination found mid-run fails after part of the world has changed, far from the line that caused it. | review | [data, errors] |
+
 ## section-optional-fields-required → absence-has-one-value
 A section may be absent, and is then left untouched. Inside a declared section every managed field is stated: "there is none" is written, and mapped to absence when the document is read; a switched-off option carries nothing else.
 

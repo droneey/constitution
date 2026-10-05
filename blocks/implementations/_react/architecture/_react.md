@@ -29,7 +29,7 @@ An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its adapter f
 
 ## Adapters
 
-## adapter-is-a-factory-or-module-object → adapter-built-from-explicit-dependencies
+## adapter-is-a-factory-or-module-object → adapter-is-a-factory-module-object-or-class
 An adapter is a factory function that takes its dependencies and returns the adapter, or a module object where it has no dependency; never a class.
 
 | Why | Check | Tags |

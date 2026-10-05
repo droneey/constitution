@@ -8,7 +8,7 @@ A layout is a pathless `_name/route.tsx` that renders `<Outlet/>`, never an `ind
 | an `index.tsx` is a leaf route, and a layout placed there renders nothing below it. | review | [] |
 
 ## tanstack-router-file-names-kept → kebab-case-file-names
-Beside kebab-case, a route keeps the names TanStack Router reads: `__root.tsx`, a pathless layout `_auth.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
+A route keeps the names TanStack Router builds its tree from: `__root.tsx`, a pathless layout `_auth.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
 
 | Why | Check | Tags |
 |---|---|---|

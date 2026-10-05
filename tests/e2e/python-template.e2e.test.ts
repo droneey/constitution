@@ -205,6 +205,16 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: "a feature's domain imports logging",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/domain/__init__.py': '',
+        'src/shop/features/orders/domain/order_entity.py': 'import logging\n',
+      },
+      finding: 'domain-imports-no-logging BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a feature imports structlog',
       changes: {
         ...FEATURE,

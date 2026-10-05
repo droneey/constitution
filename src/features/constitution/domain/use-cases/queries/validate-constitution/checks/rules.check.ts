@@ -133,8 +133,12 @@ const parentMessage = (input: {
     return `carries out "${parent}" on ${target.axis}, which a rule on ${input.rule.axis} may not refer to`;
   }
 
-  return LEVELS.indexOf(input.rule.level) > LEVELS.indexOf(target.level)
-    ? `is ${input.rule.level} while it carries out the ${target.level} rule "${parent}"; a rule is never looser than the rule it carries out`
+  if (LEVELS.indexOf(input.rule.level) > LEVELS.indexOf(target.level)) {
+    return `is ${input.rule.level} while it carries out the ${target.level} rule "${parent}"; a rule is never looser than the rule it carries out`;
+  }
+
+  return input.rule.statedLevel === target.level
+    ? `states ${target.level}, the level it already takes from "${parent}"; a rule states a level only to be stricter than the rule it carries out`
     : undefined;
 };
 

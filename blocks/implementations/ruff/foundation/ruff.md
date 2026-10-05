@@ -1,6 +1,6 @@
 # Ruff
 
-## ruff-format-is-the-formatter → rules-held-by-tools
+## ruff-format-is-the-formatter → code-formatted-by-one-formatter
 Ruff formats every Python file, and the check runs `ruff format --check`: two spaces, single quotes, docstrings in double quotes, lines of at most 100.
 
 | Why | Check | Tags |

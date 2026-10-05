@@ -4,9 +4,9 @@
 
 ## What the anatomy governs
 
-- **An application.** The tree below lays out one application. The block that owns its entry surface names its delivery layer: a command-line platform names its commands' folder, an API domain its handlers', a router its screens'.
+- **An application.** The tree below lays out one application. The block that owns its entry surface names its delivery layer: a command-line platform names its commands' folder, an API domain its handlers', a router its screens'. An application distributed through a registry — a command-line tool its users install from PyPI or npm — is an application all the same: it keeps this tree, and the package domain adds what publishing asks of it.
 - **A tooling program** with no entry surface of its own — the scripts of a repository — has only entrypoints: each command is `entrypoints/<name>/`, and its entry file builds `root/`.
-- **A package**, and a repository of packages, follow the package domain.
+- **A library** — a package whose consumers import its code or extend its configuration — and a repository of packages follow the package domain.
 
 A folder appears when its first member does. The trees show every place a file may go, not folders to create in advance.
 
@@ -70,7 +70,7 @@ No code imports an entrypoint. An entrypoint composes features through their sur
 |---|---|---|
 | code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool/imports | [] |
 
-## shared-imports-no-feature-or-root · MUST
+## shared-imports-no-feature-adapter-contract-or-root · MUST
 `shared/` imports no feature, adapter or contract and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
 
 | Why | Check | Tags |
@@ -238,19 +238,19 @@ An adapter implements, over one external system, every contract of its owner tha
 |---|---|---|
 | one system's knowledge — its client, its errors, its wire shapes — is then in one place. | review | [] |
 
-## adapter-built-from-explicit-dependencies · SHOULD
-An adapter receives its dependencies explicitly — as a factory's parameters or through its constructor — and keeps no hidden state. Its form is a factory, a module object for one with no dependency, or a class whose constructor takes its dependencies.
+## adapter-is-a-factory-module-object-or-class · SHOULD
+An adapter's form is a factory, a module object for one with no dependency, or a class whose constructor takes its dependencies.
 
 | Why | Check | Tags |
 |---|---|---|
-| every dependency then shows in the signature that builds the adapter, and nothing it holds outlives a test or leaks between its callers unseen. | review | [] |
+| each form builds the adapter in one signature that names what it takes, so a reader finds an adapter's dependencies in the same place in every program. | review | [] |
 
 ## adapter-receives-its-dependencies → one-explicit-composition-root
-The dependencies an adapter receives — the transport, the clients it speaks through — come from the composition root; the adapter never imports a shared instance of them.
+An adapter receives its dependencies explicitly — the transport, the clients it speaks through — from the composition root, as a factory's parameters or through its constructor, and keeps no hidden state; it never imports a shared instance of them.
 
 | Why | Check | Tags |
 |---|---|---|
-| a dependency the adapter receives is visible and replaceable, in production and in tests; a shared instance it imports is neither. | review | [] |
+| a dependency the adapter receives is visible and replaceable, in production and in tests, and nothing it holds outlives a test or leaks between its callers unseen; a shared instance it imports is neither. | review | [] |
 
 ## real-effects-chosen-at-composition-root → side-effects-at-the-edges
 A port for an effect — clock, randomness, identifiers, environment, file system, processes, network — is a contract placed like any other, its real implementation is an adapter, and only a composition root chooses the real one. Logic never calls the effect directly.
@@ -259,8 +259,8 @@ A port for an effect — clock, randomness, identifiers, environment, file syste
 |---|---|---|
 | everything else receives the effect through its port, so a test replaces it without touching the code and runs deterministically. | review | [testing] |
 
-## vendor-clients-in-libs · SHOULD
-A vendor client without application knowledge, and any pure project-agnostic helper, lives in `libs/<system>/`.
+## vendor-clients-in-libs → kernel-or-shared-by-meaning
+A vendor client without application knowledge lives in `libs/<system>/`.
 
 | Why | Check | Tags |
 |---|---|---|

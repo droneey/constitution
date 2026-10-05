@@ -3,7 +3,7 @@
 ## Modules and files
 
 ## python-file-forms → kebab-case-file-names
-A module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and its stub a `.pyi`; the folders of the source root `src/` and of `tests/` are snake_case packages, and the bytecode the interpreter writes keeps its names: `__pycache__/`, `<module>.cpython-314.pyc`. Every other file and folder is kebab-case.
+Python sets the case of its import tree: a module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and its stub a `.pyi`, and the folders of the source root `src/` and of `tests/` are snake_case packages, imported by their folders' names. The bytecode the interpreter writes keeps the names it gives it: `__pycache__/`, `<module>.cpython-314.pyc`. Every other file and folder is kebab-case.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -31,13 +31,6 @@ No code reads or changes `sys.path`.
 | a module then resolves only as a member of an installed package, the project's own included, so it imports the same way in the program, the specs and every tool. | tool/lint | [] |
 
 ## Names and values
-
-## python-names-never-empty → no-empty-names
-A variable, a parameter or a name bound by unpacking is never only an empty word in snake_case — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff`, `thing` — outside generic code that knows nothing of the program.
-
-| Why | Check | Tags |
-|---|---|---|
-| no linter of Python checks a name against a list of words, so a reviewer holds the rule. | review | [] |
 
 ## none-is-the-only-absence → absence-has-one-value
 Code spells absence as `None`, typed `T | None`; no sentinel object of the code's own stands for it.
@@ -111,14 +104,7 @@ A value that keeps an invariant is a dataclass of the form `business-types-froze
 
 ## Functions
 
-## python-functions-never-empty-verbs → no-empty-verbs
-A function or a method is never named by an empty verb alone — `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update` — unless a protocol it implements imposes the name, as a mapping's `get`.
-
-| Why | Check | Tags |
-|---|---|---|
-| no linter of Python checks a function's name against a list of verbs, so a reviewer holds the rule. | review | [] |
-
-## keyword-only-past-three → at-most-three-positional-arguments
+## keyword-only-past-three → parameters-at-most-three-wholes-as-one-object
 A parameter past the third is keyword-only, after a bare `*`, and values that make one whole travel as one frozen dataclass.
 
 | Why | Check | Tags |
@@ -188,7 +174,7 @@ The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `p
 | a dependency group is installed in the repository and never published with a package built from it. | review | [] |
 
 ## requires-python-at-the-pinned-minor · SHOULD
-An application's `requires-python` in `[project]` is a floor at the minor of the interpreter the repository pins: `>=3.14`.
+An application that no registry distributes floors its `requires-python` in `[project]` at the minor of the interpreter the repository pins: `>=3.14`.
 
 | Why | Check | Tags |
 |---|---|---|

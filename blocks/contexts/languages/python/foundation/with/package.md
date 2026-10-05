@@ -2,15 +2,15 @@
 
 > The typed form of a published Python package.
 
-## py-typed-in-every-package → package-ships-its-types
-A published package ships `py.typed` in its import package, beside its `__init__.py`.
+## py-typed-where-code-is-imported → package-ships-its-types
+A published package whose code a consumer imports ships `py.typed` in its import package, beside its `__init__.py`.
 
 | Why | Check | Tags |
 |---|---|---|
 | without the marker a consumer's type checker ignores the package's annotations. | review | [] |
 
 ## requires-python-floor-in-the-support-window · SHOULD
-A package published for the public, on an index anyone installs from, floors its `requires-python` at the oldest minor released within the last three years, as SPEC 0 counts them, and never at a minor past its end of life.
+A package published for the public, on an index anyone installs from — a library, or an application distributed through it — floors its `requires-python` at the oldest minor released within the last three years, as SPEC 0 counts them, and never at a minor past its end of life.
 
 | Why | Check | Tags |
 |---|---|---|

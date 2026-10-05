@@ -37,7 +37,7 @@ Every data view shows four states: loading, empty, error and content.
 | an empty screen cannot otherwise be told from a slow one. | test | [ux, a11y] |
 ```
 
-A rule that carries out another names it with an arrow instead of a level, and takes its level and its tags from it: `## query-result-returned-as-status-union → data-result-is-union-by-status`. It may state a stricter level, `## x → y · MUST`, never a looser one, and an override of a rule lowers every rule under it that states none. A rule carries out one rule at most.
+A rule that carries out another names it with an arrow instead of a level, and takes its level and its tags from it: `## query-result-returned-as-status-union → data-result-is-union-by-status`. It may state a stricter level, `## x → y · MUST`, never a looser one nor the one it takes, and an override of a rule lowers every rule under it that states none. A rule carries out one rule at most.
 
 The levels mean what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) give them, in capitals only. A rule's level is MUST where a violation is plainly wrong and answered yes or no, most often by a tool, and SHOULD where it takes judgement or has reasonable exceptions; MAY marks a permitted choice. A MUST binds until an override lowers it; a SHOULD may be left with a stated reason. The reminders name a file's MUST rules, and only MUST rules raise the hook's warnings.
 
@@ -99,7 +99,7 @@ foundation:
   typescript:
     no-any: [noExplicitAny]
   core:
-    no-empty-verbs: [no-empty-verbs.grit]
+    biome-refuses-empty-verbs: [biome-refuses-empty-verbs.grit]
 ```
 
 ## 🧭 What a session receives
@@ -160,7 +160,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or table that misses the rule format;
-- a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits, a cycle and a missing rule;
+- a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits or equal to it, a cycle and a missing rule;
 - a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
 - a malformed Requirements row, an answer to a rule its block may not answer, a `partly` or `no` answer that names in backticks no rule of its own block, or a Requirements table outside an implementation's card and chapters;
 - a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;

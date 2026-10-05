@@ -2,6 +2,13 @@
 
 > Screens on a phone or tablet: the system's lifecycle, touch, safe areas, the keyboard and the system's gestures.
 
+## useful-offline-with-what-it-has · SHOULD
+Offline, the app opens, shows the data it has cached, marked as such, and says which actions wait. A write made offline is queued, retried or refused, never lost silently.
+
+| Why | Check | Tags |
+|---|---|---|
+| a phone is offline often; an app that is useless then fails its users every day. | review | [ux, data] |
+
 ## state-survives-the-os-lifecycle · SHOULD
 Going to the background, being suspended or being ended by the system loses no input and no view state.
 
@@ -60,12 +67,19 @@ Text follows the system's text size, and layouts reflow to fit it.
 |---|---|---|
 | people who set a larger text size need it in every app, not only in the system's own. | review | [] |
 
-## system-display-settings-honoured → reduced-motion-honoured
-The system's reduced-motion and increased-contrast settings are honoured.
+## system-reduced-motion-honoured → reduced-motion-honoured
+The system's reduced-motion setting is honoured.
 
 | Why | Check | Tags |
 |---|---|---|
-| these settings are the user's request, made once for every app. | test | [] |
+| the setting is the user's request, made once for every app. | test | [] |
+
+## system-increased-contrast-honoured → wcag-aa-conformance
+The system's increased-contrast setting is honoured.
+
+| Why | Check | Tags |
+|---|---|---|
+| the setting is the user's request, made once for every app, and the contrast it asks for is what lets a person with low vision read the screen. | test | [] |
 
 ## device-checklist-before-shipping → interactive-checked-by-hand
 Before a new interactive component ships, a person operates it with each system's screen reader, and with a switch or a keyboard.

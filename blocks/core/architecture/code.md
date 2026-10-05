@@ -21,11 +21,11 @@ A layer that only passes a call through to the next one is removed. A domain use
 ## Comments and leftovers
 
 ## diagnostics-through-the-logging-port → no-debug-output-in-shipped-code
-Diagnostics a program keeps on purpose go through the logging port, never straight to the console or a stream.
+Diagnostics a program keeps on purpose go through the logging port, never straight to the console or a stream. The port is the language's standard logging facade, whose sinks only `root/` configures, where the language has one, and a contract of the program's own where it has none. The domain, its use-cases included, logs nothing: it returns a result or an error, or emits an event, and a binding unit of `app/` or the delivery layer logs what happened.
 
 | Why | Check | Tags |
 |---|---|---|
-| a port decides in one place where diagnostics go and what they may carry, and a test replaces it without touching the code. | review | [] |
+| a port decides in one place where diagnostics go and what they may carry, and a test replaces it without touching the code; a facade every library already writes to is that port, so the program's records and theirs pass one pipeline, and a domain that logs would decide what is worth telling an operator, which is the caller's to know. | review | [] |
 
 ## Absence
 

@@ -2,27 +2,6 @@
 
 > Screens in a browser: the URL, the document, the viewport and the pointer.
 
-## popover-placed-by-anchor-positioning · SHOULD
-A native `popover` is placed against its trigger by CSS anchor positioning — `anchor-name`, `position-anchor`, `position-area` — never by a script that measures; a supported browser that lacks it loads the anchor-positioning polyfill once, in the entry file.
-
-| Why | Check | Tags |
-|---|---|---|
-| the browser places it and flips it at the viewport's edge without a positioning library or a frame of the wrong position. | review | [ux, performance] |
-
-## mobile-first-additive-breakpoints → components-size-to-their-container
-Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out, and every entry document declares the responsive viewport.
-
-| Why | Check | Tags |
-|---|---|---|
-| styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | review | [] |
-
-## dynamic-viewport-units · MUST
-Heights use the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`, and no layout width is fixed in pixels outside the tokens.
-
-| Why | Check | Tags |
-|---|---|---|
-| `100vh` ignores the browser's own toolbars on phones, and content slides under them. | review | [] |
-
 ## targets-at-least-24-css-px → targets-meet-platform-minimum
 A pointer target is at least 24 × 24 CSS pixels, padding included, and 44 for a primary touch target.
 
@@ -82,11 +61,11 @@ A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps it
 ## Accessibility
 
 ## dialog-popover-and-details-native → complex-patterns-on-accessible-primitives
-In the browser, the platform's own elements are `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
+Unless another active block brings accessible primitives for these patterns, the browser's own elements carry them: `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
 
 | Why | Check | Tags |
 |---|---|---|
-| each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong. | review | [] |
+| each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong; a library of primitives adds what they lack, so where one is active these patterns are built on it. | review | [] |
 
 ## native-html-elements-first → native-semantics-first
 `<button>` for an action, `<a>` with a real `href` for a move, lists as lists, tables with headers and a caption; ARIA only where HTML has no element.

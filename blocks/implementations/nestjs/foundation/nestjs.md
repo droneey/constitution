@@ -21,6 +21,13 @@ A class a decorated constructor names is imported as a value, never with `import
 |---|---|---|
 | the metadata of a class imported as a type is `Object`, which the injector cannot resolve, and the compiler reports nothing. | review | [] |
 
+## decorated-constructor-takes-every-dependency → parameters-at-most-three-wholes-as-one-object
+A constructor the injector calls takes one parameter for each dependency, however many: the injector imposes its signature, so the limit of three positions leaves it out, and the linter's limit is lifted in the files that hold such classes.
+
+| Why | Check | Tags |
+|---|---|---|
+| the injector resolves each parameter by its type, so dependencies gathered into one object would no longer be injected; a class with too many is split by its responsibilities, not by its signature. | review | [] |
+
 ## framework-filled-fields-marked-definite → compiler-is-the-type-gate
 A field of a class the framework fills — a body, a query or the parameters of a request — has no initializer and is marked definite: `name!: string`, or `name?: string` when it may be absent.
 

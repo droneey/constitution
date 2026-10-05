@@ -1,7 +1,7 @@
 ---
 id: matomo
 summary: Matomo as one of the product's analytics services.
-requires: [analytics, typescript]
+requires: [analytics, browser, typescript]
 extends: null
 abstract: false
 checks: []

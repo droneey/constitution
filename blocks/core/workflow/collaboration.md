@@ -9,8 +9,8 @@ Consent is given in the chat, for that action alone, and never carries over to t
 |---|---|---|
 | the chat is where the person who answers for an action sees it asked, and a go-ahead for one action says nothing of the next. | review | [] |
 
-## consent-before-consequential-actions → consent-before-irreversible-actions
-An agent asks before adding a dependency, a pattern or an abstraction, and before changing a public entry, a schema or a format. Consent is given as for an irreversible action.
+## consent-before-consequential-actions · MUST
+An agent asks before adding a dependency, a pattern or an abstraction, and before changing a public entry, a schema or a format, and goes on only with a person's go-ahead for that change.
 
 | Why | Check | Tags |
 |---|---|---|

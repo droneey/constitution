@@ -32,14 +32,14 @@ No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `val
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty name makes the reader look up what it holds, every time. | tool/lint | [] |
+| an empty name makes the reader look up what it holds, every time. | review | [] |
 
 ## no-empty-verbs · SHOULD
-A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`. A name an interface the code implements imposes — a handler's `get` — is exempt; the lint sees a proxy's handler, and another such name takes a suppression that says so.
+A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`. A name an interface the code implements imposes — a handler's `get` — is exempt.
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty verb says a function does something, never what. | tool/lint | [] |
+| an empty verb says a function does something, never what. | review | [] |
 
 ## collections-plural-items-singular · SHOULD
 A collection is named in the plural and one of its items in the singular, destructured names included.
@@ -78,14 +78,14 @@ A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `shou
 
 ## Arguments
 
-## at-most-three-positional-arguments · SHOULD
+## parameters-at-most-three-wholes-as-one-object · SHOULD
 A function takes at most three positional parameters. Values that make one whole — the fields of an order, the options of a call — travel as one named object, whatever their number. A signature a framework or library imposes is exempt.
 
 | Why | Check | Tags |
 |---|---|---|
 | each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | review | [] |
 
-## positional-parameters-at-most-three → at-most-three-positional-arguments
+## positional-parameters-at-most-three → parameters-at-most-three-wholes-as-one-object
 A function takes at most three positional parameters.
 
 | Why | Check | Tags |
@@ -236,7 +236,7 @@ Code spells absence with one value, which the language block names; another spel
 
 | Why | Check | Tags |
 |---|---|---|
-| two spellings of absence make every check ask twice, and one of them is always forgotten. | tool/lint | [data] |
+| two spellings of absence make every check ask twice, and one of them is always forgotten. | review | [data] |
 
 ## Failure
 

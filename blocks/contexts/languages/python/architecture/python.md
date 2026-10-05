@@ -26,7 +26,7 @@ A surface `__init__.py` holds only `from .<module> import <Name>` lines and an `
 | `__all__` is the list of what the folder offers, and a sorted list shows an added or removed name in one line of a diff. | review | [] |
 
 ## import-package-holds-the-tree → top-level-folders-from-the-tree
-The import package `src/<name>/` holds only the top-level folders of the tree, the delivery layer its blocks name, `__init__.py`, `__main__.py`, `main.py` and `py.typed`.
+The import package `src/<name>/` of an application, distributed through a registry or not, holds only the top-level folders of the tree, the delivery layer its blocks name, `__init__.py`, `__main__.py`, `main.py` and `py.typed`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -68,3 +68,10 @@ A layer folder's `__init__.py` is empty: it makes the folder a package and offer
 | Why | Check | Tags |
 |---|---|---|
 | these are where Python reads a variable, so a search for them outside `root/`, the entry files and the specs finds every read the rule forbids. | review | [] |
+
+## domain-imports-no-logging → diagnostics-through-the-logging-port
+A feature's `domain/` imports no `logging`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the domain logs nothing, and an import contract holds what a reviewer would otherwise have to find. | tool/imports | [] |
