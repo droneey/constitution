@@ -12,7 +12,7 @@ role	mutation	false
 role	secrets	true
 role	audit	true
 role	commits	true
-block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/security.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
+block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
 block	access-control	domain	Callers who sign in with different rights: identity, sessions, access.	foundation/access-control.md architecture/access-control.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
@@ -193,6 +193,7 @@ rule	secret-never-in-url-or-artefact	core	blocks/core/foundation/security.md		MU
 rule	leaked-secret-rotated-at-once	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	no-secret-or-personal-data-in-output	core	blocks/core/foundation/security.md		MUST	review			security data	foundation		true
 rule	least-privilege-credentials	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
+rule	environment-names-declared-in-one-place	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	dependencies-pinned-by-lockfile	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
@@ -318,7 +319,6 @@ rule	untrusted-input-parsed-at-edge	core	blocks/core/architecture/principles.md	
 rule	extension-by-addition	core	blocks/core/architecture/principles.md		MUST	review				architecture		true
 rule	duplication-across-contexts-by-default	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	entity-behaviour-beside-entity	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
-rule	environment-names-declared-in-one-place	core	blocks/core/architecture/security.md		SHOULD	review			security	architecture		true
 rule	spec-per-boundary-of-the-tree	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture	spec-per-boundary	false
 rule	effects-faked-through-ports	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture		true
 rule	consent-given-in-the-chat-per-action	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false

@@ -39,6 +39,13 @@ A credential belongs to one identity and one purpose, per environment, with only
 |---|---|---|
 | a narrow credential limits what a leak can do, and one identity per credential says who did what. | review | [security] |
 
+## environment-names-declared-in-one-place · SHOULD
+Every environment variable the program reads is declared in one place, and code reads only declared names.
+
+| Why | Check | Tags |
+|---|---|---|
+| one declaration shows what a deployment must provide, and no module reads a name nobody knows it needs. | review | [security] |
+
 ## Dependencies
 
 ## dependencies-pinned-by-lockfile · MUST
