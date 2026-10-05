@@ -28,7 +28,7 @@ The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` 
 
 | Why | Check | Tags |
 |---|---|---|
-| the type sets the version bump and the changelog, so a wrong type ships a wrong version. | review | [] |
+| the type tells a reader and the project's release tooling what the change does, so a wrong type mislabels it in the history. | review | [] |
 
 ## check-run-by-hooks-and-ci → every-commit-passes-the-check
 The commit hooks run the check's fast part before each commit, and CI runs the same command, all of it.
@@ -52,13 +52,6 @@ A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<name>`: the is
 | Why | Check | Tags |
 |---|---|---|
 | the name ties the branch to its issue and tells the release automation which version to bump. | tool/commits | [] |
-
-## branch-type-sets-version-bump → release-cut-by-automation-promoted-by-person
-The type of the merged branch sets the version bump: `feature` a minor one; `fix`, `hotfix` and dependency updates a patch.
-
-| Why | Check | Tags |
-|---|---|---|
-| the bump is decided when the branch is named, by the person who knows what it holds, not guessed at release time. | review | [] |
 
 ## merged-branch-deleted · SHOULD
 A branch is deleted once it is merged.
@@ -126,13 +119,6 @@ CI checks the pull request's title and branch name against the formats, since a 
 | the squash title becomes the commit, and no local hook sees it. | review | [] |
 
 ## History and releases
-
-## release-tags-named-by-semver → release-marked-by-immutable-tag
-A release tag is named `v<major>.<minor>.<patch>`.
-
-| Why | Check | Tags |
-|---|---|---|
-| one naming scheme lets people and tools find every release and order them. | review | [] |
 
 ## release-cut-by-automation-promoted-by-person · SHOULD
 Releases are cut by automation from the merged changes; a person promotes a pre-release to a release.

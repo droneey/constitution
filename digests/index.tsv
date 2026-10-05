@@ -20,7 +20,7 @@ block	i18n	domain	Messages, plurals and locale for text a person reads.	foundati
 block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
-block	package	domain	Publishing packages: public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	workflow/version-control			false						packages/**
+block	package	domain	Publishing packages: public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md				false						packages/**
 block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md	architecture/access-control architecture/remote-service			false						
 block	remote-service	domain	Another system the program calls: transport, failures, streams, specs.	foundation/remote-service.md architecture/remote-service.md workflow/remote-service.md				false						
 block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/a11y.md foundation/design-system.md architecture/ui.md	foundation/remote-data foundation/remote-service architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
@@ -420,7 +420,6 @@ rule	package-knows-no-consumer	package	blocks/domains/package/architecture/packa
 rule	package-entries-curated	package	blocks/domains/package/architecture/package.md		MUST	review				architecture	access-only-through-curated-surface	false
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
 rule	release-job-owns-publishing	package	blocks/domains/package/workflow/package.md		MUST	review			security	workflow	publishing-by-workflow-identity	false
-rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
 rule	remote-data-cache-invalidates-by-prefix	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data	foundation		true
@@ -574,7 +573,6 @@ rule	commit-type-matches-the-diff	version-control	blocks/domains/version-control
 rule	check-run-by-hooks-and-ci	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			testing	workflow	every-commit-passes-the-check	false
 rule	secrets-scanned-before-each-commit	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	no-secret-in-repository	false
 rule	branch-named-type-issue-name	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	tool	commits			workflow		true
-rule	branch-type-sets-version-bump	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow	release-cut-by-automation-promoted-by-person	false
 rule	merged-branch-deleted	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
 rule	changes-reach-main-line-through-review	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
 rule	main-line-takes-no-direct-push	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-protected	false
@@ -584,7 +582,6 @@ rule	one-integration-strategy-no-work-in-progress	version-control	blocks/domains
 rule	small-reviewable-change-requests	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow	scope-limited-to-the-task	false
 rule	squash-merge-titled-in-commit-format	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	one-integration-strategy-no-work-in-progress	false
 rule	pull-request-title-checked-in-ci	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	commit-header-type-and-subject	false
-rule	release-tags-named-by-semver	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	release-marked-by-immutable-tag	false
 rule	release-cut-by-automation-promoted-by-person	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
 rule	dependencies-updated-by-bot	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow		true
 rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
