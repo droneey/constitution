@@ -189,12 +189,12 @@ A sub-agent never commits, never pushes and never merges.
 |---|---|---|
 | a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |
 
-## agent-permissions-committed → agent-permissions-kept-with-the-project
-The project's permission settings for agents are committed, and only each person's own overrides are ignored.
+## agent-settings-overrides-ignored → agent-permissions-kept-with-the-project
+Version control ignores each person's override file of the agent settings.
 
 | Why | Check | Tags |
 |---|---|---|
-| committed settings are the same in every clone, and a change to them is reviewed like code. | review | [security] |
+| a person's override then stays on their machine, and the settings every clone shares change only through a reviewed change. | review | [security] |
 
 ## agent-never-rewrites-shared-history → shared-history-never-rewritten
 An agent never force-pushes, to any branch.

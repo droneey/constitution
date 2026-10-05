@@ -596,7 +596,7 @@ rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/
 rule	agent-pushes-and-opens-pull-requests-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
 rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-takes-no-direct-push	false
 rule	sub-agent-never-commits-pushes-or-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	sub-agent-only-does-the-work	false
-rule	agent-permissions-committed	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-permissions-kept-with-the-project	false
+rule	agent-settings-overrides-ignored	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-permissions-kept-with-the-project	false
 rule	agent-never-rewrites-shared-history	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
 rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	no-tool-attribution	false
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
