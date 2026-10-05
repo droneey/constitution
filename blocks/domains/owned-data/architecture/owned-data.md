@@ -3,7 +3,7 @@
 > An aggregate is the unit a change keeps consistent: an entity and what belongs to it, reached through its root, the entity that guards the rest.
 
 ## entities-guarded-where-the-program-owns-them · SHOULD
-Where the program owns the data it changes, every change goes through its aggregate's root, which keeps the aggregate consistent; an aggregate stays small, and a child with a life of its own becomes an aggregate referenced by identifier.
+Every change goes through its aggregate's root, which keeps the aggregate consistent; an aggregate stays small, and a child with a life of its own becomes an aggregate referenced by identifier.
 
 | Why | Check | Tags |
 |---|---|---|
