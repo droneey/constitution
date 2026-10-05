@@ -4,7 +4,7 @@
 
 ## Modules and files
 
-## hash-imports-leave-the-module → import-only-through-surface
+## hash-imports-leave-the-module → folder-files-import-each-other-directly
 An import that leaves its module uses `#/`; files inside one module import each other by relative path. A module never imports itself through `#/`.
 
 | Why | Check | Tags |

@@ -14,7 +14,7 @@ Every flag is `option(schema, { short, description })`, its schema a standard sc
 |---|---|---|
 | a flag is validated once, before the handler runs, and the handler works with typed values. | review | [] |
 
-## bunli-handler-through-the-error-handler → exit-codes-from-one-map
+## bunli-handler-through-the-error-handler → one-error-handler-per-transport · MUST
 Every handler runs its work through the program's one error handler, which maps a failure to the exit map.
 
 | Why | Check | Tags |

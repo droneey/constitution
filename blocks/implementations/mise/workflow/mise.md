@@ -7,7 +7,7 @@ The `postinstall` hook of the shared configuration's archive also installs the c
 |---|---|---|
 | the hooks then arrive with the configuration they belong to, in a repository of any language, and no dependency's install script runs to set them up. | review | [] |
 
-## ci-runs-the-pinned-toolchain → one-check-command
+## ci-runs-the-pinned-toolchain → tools-run-on-the-pinned-runtime
 CI installs the toolchain from `mise.toml`, so the check runs on the pinned versions, never on the runner's.
 
 | Why | Check | Tags |

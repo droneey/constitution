@@ -41,7 +41,7 @@ The use-case of a run returns its report, with the entry of each stage, as a val
 
 ## Engines
 
-## engines-reached-through-a-port · MUST
+## engines-reached-through-a-port → side-effects-at-the-edges
 The program reaches an engine only through a port of its own; no use-case runs an engine's binary or reads its output directly.
 
 | Why | Check | Tags |

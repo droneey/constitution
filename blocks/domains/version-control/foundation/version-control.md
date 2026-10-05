@@ -100,11 +100,11 @@ A file that moves is moved, never deleted and written anew, and a moved file is 
 | a move keeps the file's history and shows the reviewer that nothing changed but its place. | review | [] |
 
 ## generated-files-not-committed · SHOULD
-Generated files are not committed; the build produces them. A file an author's step generates and the program's code imports — not a build output — is the exception, and is committed.
+Generated files are not committed; the build produces them. Two kinds are the exception, and are committed: a file an author's step generates and the program's code imports — not a build output — and a generated copy kept for readers outside the code, such as a schema an editor fetches by its address.
 
 | Why | Check | Tags |
 |---|---|---|
-| a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, and the check may not generate them. | review | [] |
+| a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, which the check may not generate, and a reader outside the code finds a copy only where it is committed. | review | [] |
 
 ## machine-local-files-ignored · SHOULD
 Files local to one machine — the local environment file, a person's overrides of the project's tools — are ignored by version control; the environment file's committed example carries placeholders only.

@@ -63,8 +63,8 @@ Context shared by every event — signed in or not, the mode — is set once, as
 |---|---|---|
 | every event then carries it without every call passing it. | review | [data] |
 
-## event-names-object-action · SHOULD
-An event is named after its object and the action done to it, in the past tense — `order_placed` — and its parameters in the same case.
+## event-names-object-action → events-named-in-past-tense
+An analytics event is named after its object and the action done to it — `order_placed` — and its parameters in the same case.
 
 | Why | Check | Tags |
 |---|---|---|

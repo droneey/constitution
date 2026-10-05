@@ -4,7 +4,7 @@
 
 ## Modules and files
 
-## relative-imports-stay-in-the-feature → import-only-through-surface
+## relative-imports-stay-in-the-feature → folder-files-import-each-other-directly
 An import that leaves its feature — or, outside `features/`, the top-level folder it sits in — is absolute, from the import package's name; files inside one feature import each other by relative path, at any depth, and a relative import never climbs out of it. A feature never imports itself by its absolute path.
 
 | Why | Check | Tags |

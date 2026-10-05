@@ -46,7 +46,7 @@ Each kind of state has one home: view state a link or a restart must reproduce i
 |---|---|---|
 | state kept in the wrong home is lost on reload, shared by accident, or copied until the copies disagree. | review | [] |
 
-## form-reuses-domain-predicates → invariant-checked-at-construction
+## form-reuses-domain-predicates → value-object-built-only-by-its-check
 A form's schema composes the predicates of the value objects and sits with the form; it never restates an invariant.
 
 | Why | Check | Tags |

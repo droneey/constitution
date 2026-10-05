@@ -41,8 +41,8 @@ The domain imports only itself, the shared kernel and the shared ports of `contr
 |---|---|---|
 | a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/imports | [] |
 
-## one-reason-to-change · MUST
-Each layer and each module has one reason to change.
+## one-reason-to-change → one-reason-per-unit
+A layer and a module have one reason to change each, as every unit does.
 
 | Why | Check | Tags |
 |---|---|---|

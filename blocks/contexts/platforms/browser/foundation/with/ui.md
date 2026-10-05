@@ -109,7 +109,7 @@ Every page has landmarks — header, navigation, main, footer — and a link to 
 |---|---|---|
 | screen reader and keyboard users jump by landmarks, and the skip link spares them the navigation on every page. | test | [] |
 
-## fields-declare-autocomplete → every-control-has-an-accessible-name
+## fields-declare-autocomplete → wcag-aa-conformance
 A field for the user's own data declares its purpose with `autocomplete`.
 
 | Why | Check | Tags |

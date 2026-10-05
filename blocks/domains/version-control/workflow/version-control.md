@@ -83,8 +83,8 @@ The protection also refuses a direct push to the main line; only the release aut
 |---|---|---|
 | a direct push skips the review and the required check that every other change passes through. | review | [] |
 
-## required-check-blocks-integration → one-check-command
-The check runs in CI on every pull request, and a red check blocks the merge.
+## required-check-blocks-integration → every-commit-passes-the-check
+A red check blocks the merge.
 
 | Why | Check | Tags |
 |---|---|---|

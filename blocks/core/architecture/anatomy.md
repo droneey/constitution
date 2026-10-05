@@ -180,14 +180,14 @@ A feature that needs an answer from another declares a contract in its own words
 
 A surface is the file the language resolves when a folder is imported. It re-exports and does nothing else.
 
-## import-only-through-surface · MUST
-Outside a folder, a caller imports only its surface. Inside it, files import each other directly and never their own folder's surface.
+## folder-files-import-each-other-directly → access-only-through-curated-surface
+Inside a folder, files import each other directly.
 
 | Why | Check | Tags |
 |---|---|---|
-| the surface is the folder's offer, so a caller couples only to what is offered; importing one's own surface is where import cycles begin. | review | [] |
+| the surface is the folder's offer to callers outside it; a file inside that goes through it imports its own folder, and that is where import cycles begin. | review | [] |
 
-## own-surface-never-imported → import-only-through-surface
+## own-surface-never-imported → folder-files-import-each-other-directly
 A file never imports the surface of the module it belongs to.
 
 | Why | Check | Tags |

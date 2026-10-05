@@ -1,6 +1,6 @@
 # FastMCP
 
-## tool-described-for-the-model → docs-only-for-non-obvious-public-entry · MUST
+## tool-described-for-the-model · MUST
 Every tool has a docstring that says what it does and when to call it, and every parameter a description, given as `Annotated[..., Field(description=...)]`.
 
 | Why | Check | Tags |

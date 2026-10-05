@@ -48,7 +48,7 @@ Nothing submitted under a person's name — a change, its description, a documen
 
 ## Delegating
 
-## sub-agent-only-does-the-work · MUST
+## sub-agent-only-does-the-work → person-decides-what-is-recorded-or-shipped
 A sub-agent does the work it is given and nothing more: whether that work is recorded, shared or shipped stays with the agent the person talks to.
 
 | Why | Check | Tags |

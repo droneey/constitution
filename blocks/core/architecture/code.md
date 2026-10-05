@@ -88,7 +88,7 @@ A stateful client — a cache client, a store, a connection — is never created
 
 ## Patterns and design
 
-## decorators-applied-at-composition-root → canonical-patterns-by-need
+## decorators-applied-at-composition-root → one-explicit-composition-root
 A behaviour wrapped around an implementation is a decorator, applied at the composition root where the implementation is chosen.
 
 | Why | Check | Tags |
