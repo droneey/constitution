@@ -8,7 +8,7 @@ Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as I
 | the macros extract every message into the catalog, with its parameters and plural forms intact. | review | [] |
 
 ## catalogs-compiled-strictly-in-check → check-only-checks
-The check compiles the catalogs in strict mode, failing on a missing translation, and writes no tracked file. Extraction is the author's step, and its change to the catalog is committed with the code.
+The check compiles the catalogs in strict mode, failing on a missing translation, and writes no file of the source. Extraction is the author's step, and its change to the catalog ships in the same change as the code.
 
 | Why | Check | Tags |
 |---|---|---|

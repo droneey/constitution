@@ -1,7 +1,7 @@
 # Expo
 
 ## native-projects-generated-by-prebuild → generated-files-marked-never-edited
-The native projects are generated from `app.config.ts` and config plugins, never committed or edited by hand.
+The native projects are a build output, generated from `app.config.ts` and config plugins, never edited by hand.
 
 | Why | Check | Tags |
 |---|---|---|

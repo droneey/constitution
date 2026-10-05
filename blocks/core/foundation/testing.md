@@ -123,7 +123,7 @@ Tests ship in the same change as the behaviour they prove. A change of behaviour
 
 | Why | Check | Tags |
 |---|---|---|
-| a behaviour merged without its test is a behaviour nobody will test later. | review | [testing] |
+| a behaviour shipped without its test is a behaviour nobody will test later. | review | [testing] |
 
 ## test-seen-failing · SHOULD
 Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment.

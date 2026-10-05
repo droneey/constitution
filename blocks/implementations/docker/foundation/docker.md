@@ -14,7 +14,7 @@ A base image in a Dockerfile, an image in a Compose file and an image a script r
 
 | Why | Check | Tags |
 |---|---|---|
-| a floating tag changes under the same name, so two builds of one commit run different code. | review | [security] |
+| a floating tag changes under the same name, so two builds of the same source run different code. | review | [security] |
 
 ## image-never-untagged-or-latest → images-pinned-to-a-version
 No image in a Dockerfile or a Compose file is untagged or tagged `latest`.
@@ -56,7 +56,7 @@ A system package is installed at a pinned version, without recommended extras, a
 
 | Why | Check | Tags |
 |---|---|---|
-| an unpinned package changes between two builds of one commit, and every extra package and cached index is size and code to attack that the program never uses. | tool/lint | [security, performance] |
+| an unpinned package changes between two builds of the same source, and every extra package and cached index is size and code to attack that the program never uses. | tool/lint | [security, performance] |
 
 ## image-runs-as-non-root · MUST
 The final stage of an image sets `USER` to the numeric id of an unprivileged user.

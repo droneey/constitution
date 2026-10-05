@@ -26,7 +26,7 @@ The check runs `bun test` with `CI=1`, so a snapshot the specs lack fails the ru
 
 | Why | Check | Tags |
 |---|---|---|
-| outside CI, Bun writes a missing snapshot file and fills an inline snapshot into the spec, so a local check would change tracked files. | review | [] |
+| outside CI, Bun writes a missing snapshot file and fills an inline snapshot into the spec, so a local check would change the files it checks. | review | [] |
 
 ## coverage-gate-on-loaded-files → coverage-holds-all-logic
 `bun test` fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions.

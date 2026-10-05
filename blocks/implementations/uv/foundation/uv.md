@@ -3,7 +3,7 @@
 ## Packages and installs
 
 ## uv-is-the-only-python-package-manager → dependencies-pinned-by-lockfile
-uv installs (`uv sync`), adds (`uv add`) and runs the tools (`uv run`); never pip, Poetry or Pipenv. `uv.lock` is the only lockfile, and no `requirements.txt` is committed.
+uv installs (`uv sync`), adds (`uv add`) and runs the tools (`uv run`); never pip, Poetry or Pipenv. `uv.lock` is the only lockfile, and no `requirements.txt` is kept.
 
 | Why | Check | Tags |
 |---|---|---|

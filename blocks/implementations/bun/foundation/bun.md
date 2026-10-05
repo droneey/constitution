@@ -3,7 +3,7 @@
 ## Packages and installs
 
 ## bun-is-the-only-package-manager → dependencies-pinned-by-lockfile
-Bun installs (`bun install`), runs scripts (`bun run`) and runs binaries (`bunx`); never npm, yarn, pnpm or npx, except `npm publish` in the release workflow. `bun.lock` is the only lockfile, and no other is committed.
+Bun installs (`bun install`), runs scripts (`bun run`) and runs binaries (`bunx`); never npm, yarn, pnpm or npx, except `npm publish` in the release workflow. `bun.lock` is the only lockfile, and no other is kept.
 
 | Why | Check | Tags |
 |---|---|---|

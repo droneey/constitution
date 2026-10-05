@@ -14,7 +14,7 @@ A secret in the document is a reference by name to the environment. Validation l
 
 | Why | Check | Tags |
 |---|---|---|
-| the document can then be committed and reviewed, and a missing secret fails before anything is applied. | review | [security] |
+| the document can then be shared and reviewed, and a missing secret fails before anything is applied. | review | [security] |
 
 ## document-variants-selected-by-a-discriminant → illegal-states-unrepresentable
 A section of the document that takes several forms is a union selected by a discriminant field.
