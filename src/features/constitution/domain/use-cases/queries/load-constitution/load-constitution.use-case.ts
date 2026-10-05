@@ -42,6 +42,7 @@ interface Parsed {
 
 const BLOCKS = 'blocks/';
 const PRESETS = 'presets/';
+const TEMPLATES = 'templates/project/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
@@ -235,12 +236,14 @@ const loadConstitution = (input: {
     )
     .toSorted(byLayerThenId);
   const parsed = parsedOf(blocks);
-  const presets: readonly PresetFile[] = listed
-    .filter((path) => path.startsWith(PRESETS))
-    .map((path) => ({
-      path,
-      text: input.tree.read(path),
-    }));
+  const filesUnder = (folder: string): readonly PresetFile[] =>
+    listed
+      .filter((path) => path.startsWith(folder))
+      .map((path) => ({
+        path,
+        text: input.tree.read(path),
+      }));
+  const presets = filesUnder(PRESETS);
   const bindings = bindingsOf({
     parser: input.bindingsParser,
     presets,
@@ -262,6 +265,7 @@ const loadConstitution = (input: {
       presets,
       requirementAnswers: parsed.answers,
       rules: parsed.rules,
+      templates: filesUnder(TEMPLATES),
     },
     findings: [
       ...underBlocks

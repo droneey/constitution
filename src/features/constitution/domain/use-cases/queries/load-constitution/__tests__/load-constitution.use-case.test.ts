@@ -55,6 +55,7 @@ describe('loadConstitution', () => {
         presets: [],
         requirementAnswers: [],
         rules: [],
+        templates: [],
       },
       findings: [],
     });
