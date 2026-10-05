@@ -52,7 +52,7 @@
 ## ADR-0003 — Two links between blocks: requires and extends
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** `requires` names a block that must also be active; it points up the layers, or to a peer implementation the block cannot work without. `extends` joins implementations only, and the base comes with its heir. A domain requires nothing, since above it is only core, which is always active. A tool never adds a domain: the project lists every domain, environment properties such as `untrusted-client` included. Choosing a tool, or using one that has no block, is not a departure.
+- **Decision.** `requires` names a block that must also be active; it points up the layers, or to a peer domain or implementation the block cannot work without. `extends` joins implementations only, and the base comes with its heir. A tool never adds a domain: the project lists every domain, environment properties such as `untrusted-client` included. Choosing a tool, or using one that has no block, is not a departure.
 - **Rejected.** An `activates` link through which a platform switched domains on, and inheritance from several bases.
 - **Why.** Every block a project follows stays visible in its own file; nothing is added behind its back except the base of an implementation.
 

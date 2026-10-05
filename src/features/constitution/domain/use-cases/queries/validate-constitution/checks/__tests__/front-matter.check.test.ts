@@ -26,17 +26,6 @@ describe('frontMatterCheck', () => {
     {
       block: {
         body: '# UI\n',
-        id: 'ui',
-        requires: [
-          'i18n',
-        ],
-      },
-      expected: 'sets "requires", which a domain block leaves empty',
-      path: UI,
-    },
-    {
-      block: {
-        body: '# UI\n',
         extends: 'i18n',
         id: 'ui',
       },
