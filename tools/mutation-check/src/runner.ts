@@ -54,7 +54,6 @@ const settingsOf = (
   };
 };
 
-// The specs `bun test` finds under the configuration's root, as paths from the project.
 const specsOf = (text: string): readonly string[] => {
   const { ignored, root } = settingsOf(text);
 
