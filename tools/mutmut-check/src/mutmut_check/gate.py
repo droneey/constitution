@@ -35,7 +35,7 @@ class Workspace:
   run: Runner
   read: Callable[[Path], str]
   sources: Callable[[], tuple[Path, ...]]
-  # clears the mutants mutmut kept from an earlier run
+  # removes the mutants mutmut keeps: before a run, and after one that passes
   clear: Callable[[], None]
   output: TextIO
 
@@ -104,6 +104,7 @@ def check(arguments: Sequence[str], *, workspace: Workspace) -> int:
   if failures:
     return 1
 
+  workspace.clear()
   workspace.output.write(
     'mutation: the functions hold nothing to mutate\n'
     if stopped
