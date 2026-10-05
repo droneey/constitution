@@ -35,13 +35,6 @@ Server data lives only in the cache: never copied into state, a context or a sto
 |---|---|---|
 | a copy stops updating when the cache does, and the screen shows the copy. | review | [] |
 
-## unauthorized-handled-once-in-the-cache → unauthorized-handled-once-in-cache
-`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, turns an unauthorized error into session state through the auth feature's surface, once.
-
-| Why | Check | Tags |
-|---|---|---|
-| an expired session is handled the same way for every read and write. | review | [] |
-
 ## components-import-no-query-library → components-dumb-widgets-smart
 A component in `components/` imports no query library.
 

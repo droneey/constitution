@@ -27,3 +27,17 @@ Whoever decides whether a change is valid owns the data. Where another system de
 | Why | Check | Tags |
 |---|---|---|
 | a second model of someone else's data duplicates their rules, and disagrees with them the first time they change. | review | [] |
+
+## stream-folded-by-domain-reducer · SHOULD
+Events that build an entity are folded by a pure reducer of the domain before they reach the cache.
+
+| Why | Check | Tags |
+|---|---|---|
+| the fold is tested without a network, and the transport can change without touching it. | review | [data] |
+
+## unauthorized-acted-on-once-by-the-cache → transport-failures-mapped-once
+The unauthorized error the shared mapper returns is acted on afterwards, once, by the cache's global error handler.
+
+| Why | Check | Tags |
+|---|---|---|
+| every read and write can meet that failure, so it is handled in one place for all of them, and no adapter handles it on its own. | review | [] |

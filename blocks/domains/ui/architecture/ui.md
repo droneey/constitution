@@ -40,7 +40,7 @@ Every screen sits inside an error boundary of its own, and one boundary in `root
 | a failure in one screen then costs that screen, not the whole application, and the user is never left with a blank page. | review | [] |
 
 ## view-state-homes → one-home-per-datum
-Each kind of state has one home: remote data in its cache; view state a link or a restart must reproduce in the platform's navigation state; ephemeral state in its component; the few global concerns the client owns — theme, whether a session exists, notices — in small stores the root builds, while the session's data stays in the cache.
+Each kind of state has one home: view state a link or a restart must reproduce in the platform's navigation state; ephemeral state in its component; the few global concerns the client owns — theme, notices — in small stores the root builds.
 
 | Why | Check | Tags |
 |---|---|---|

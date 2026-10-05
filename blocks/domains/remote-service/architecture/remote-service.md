@@ -23,9 +23,9 @@ A progressive result is an asynchronous sequence of domain events the port retur
 |---|---|---|
 | the domain sees its own events in its own words, and the transport can change without touching it. | review | [data] |
 
-## transport-built-by-the-root · SHOULD
-One configured instance — base address, headers, credentials — is built by the composition root and passed to the adapters that need it.
+## one-transport-instance-per-system → one-explicit-composition-root
+Each remote system has one configured instance of the transport — its base address, headers and credentials — which every adapter that reaches that system receives.
 
 | Why | Check | Tags |
 |---|---|---|
-| every adapter then speaks to the server the same way, and a test passes them another instance. | review | [] |
+| every adapter then speaks to the server the same way, and a test hands them all another instance. | review | [] |

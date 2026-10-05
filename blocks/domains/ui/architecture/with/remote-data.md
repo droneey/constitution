@@ -1,6 +1,13 @@
 # User interface with remote data
 
-> Screens that show and change data another system owns: how an operation is bound to the screen and how the application is composed.
+> Screens that show and change data another system owns: where that data lives, how an operation is bound to the screen and how the application is composed.
+
+## remote-data-homed-in-its-cache → view-state-homes
+Remote data has its home in its cache, and no store the root builds holds a copy of it.
+
+| Why | Check | Tags |
+|---|---|---|
+| the screen then reads remote data where its system keeps it fresh, never a copy the server has already changed. | review | [] |
 
 ## providers-compose-the-ui-application → one-explicit-composition-root
 The providers are the application's composition root: they build the configuration, the transport and the cache client, build each adapter by its factory from the transport, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
@@ -29,10 +36,3 @@ After a write, invalidation happens in the command's binding unit, through the f
 | Why | Check | Tags |
 |---|---|---|
 | the one place that knows what a write changed is the one that says what to reload. | review | [data] |
-
-## unauthorized-handled-once-in-cache → one-error-handler-per-transport
-The cache's global error handler, wired by the providers, receives the unauthorized domain error the shared mapper produced and turns it into session state through the surface of the feature that owns sessions. Other failures reach the screen through the binding unit's error state.
-
-| Why | Check | Tags |
-|---|---|---|
-| an expired session is handled once, the same way on every screen, and no screen handles it differently. | review | [] |

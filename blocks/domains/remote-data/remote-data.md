@@ -1,7 +1,7 @@
 ---
 id: remote-data
 summary: Data another system owns — cache keys, invalidation, streams.
-requires: []
+requires: [remote-service]
 extends: null
 abstract: false
 checks: []

@@ -1,7 +1,7 @@
 ---
 id: tanstack-query
 summary: Server data in the TanStack Query cache — keys, queries, mutations.
-requires: [_react, remote-data, remote-service]
+requires: [_react, remote-data]
 extends: null
 abstract: false
 checks: []

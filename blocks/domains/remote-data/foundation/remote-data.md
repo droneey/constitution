@@ -44,7 +44,7 @@ One handler sees every failed read and write.
 
 | Why | Check | Tags |
 |---|---|---|
-| an expired session is handled once, there. | review | [errors] |
+| a failure every read and write can meet is handled once, there. | review | [errors] |
 
 ## remote-data-cache-staleness-policy · SHOULD
 Staleness and refetching are set per key.
