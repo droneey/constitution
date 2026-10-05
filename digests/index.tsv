@@ -36,7 +36,7 @@ block	typescript	language	How TypeScript is written, resolved, typed and package
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md workflow/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package architecture/package workflow/package	typescript		false	bun-test					bunfig.toml package.json
+block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package architecture/package	typescript		false	bun-test					bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md			bun	false		tests coverage	typescript		bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.	foundation/complexipy.md		python		false		lint	python			
@@ -86,7 +86,7 @@ block	testing-library	implementation	Testing Library — specs that use the UI t
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
-block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package workflow/package	python		false						pyproject.toml uv.lock
+block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package	python		false						pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser foundation/tsc architecture/browser	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
@@ -421,9 +421,7 @@ rule	consumers-extend-never-copy	package	blocks/domains/package/architecture/pac
 rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
 rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/architecture/package.md		SHOULD	review				architecture		true
 rule	language-free-file-lives-once-in-common	package	blocks/domains/package/architecture/package.md		MUST	review			testing	architecture	generated-copy-guarded-by-spec	false
-rule	one-version-for-all-packages	package	blocks/domains/package/workflow/package.md		MUST	tool	versions			workflow		true
 rule	versions-follow-semver	package	blocks/domains/package/workflow/package.md		MUST	review				workflow	breaking-change-ships-its-migration	false
-rule	one-tag-publishes-every-package	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	changelog-from-commit-subjects	package	blocks/domains/package/workflow/with/version-control.md	version-control	SHOULD	review				workflow		true
 rule	reads-cancellable-latest-wins	remote-data	blocks/domains/remote-data/foundation/remote-data.md		SHOULD	review			data errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	remote-data-cache-dedupes-by-key	remote-data	blocks/domains/remote-data/foundation/remote-data.md		MUST	review			data performance	foundation		true
@@ -835,7 +833,6 @@ rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/found
 rule	own-packages-at-workspace-version	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	tool	versions	typescript		foundation	workspace-packages-linked-locally	false
 rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript		foundation	workspace-packages-linked-locally	false
 rule	workspaces-follow-the-package-layout	bun	blocks/implementations/bun/architecture/with/package.md	package	SHOULD	review		typescript		architecture	package-repository-layout	false
-rule	version-written-to-every-manifest	bun	blocks/implementations/bun/workflow/with/package.md	package	MUST	review		typescript		workflow	one-version-for-all-packages	false
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-intent-per-case	false
 rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript		foundation	effects-faked-never-mocked	false
 rule	integration-specs-run-apart	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-specs-in-their-own-run	false
@@ -1164,7 +1161,6 @@ rule	sdists-never-built	uv	blocks/implementations/uv/foundation/uv.md		MUST	revi
 rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	tools-run-on-the-pinned-runtime	false
 rule	members-linked-by-workspace-source	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation	workspace-packages-linked-locally	false
 rule	uv-build-backend-capped	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation		true
-rule	version-written-by-uv-version	uv	blocks/implementations/uv/workflow/with/package.md	package	MUST	review		python		workflow	one-version-for-all-packages	false
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/with/browser.md	browser	SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
 rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/foundation/with/tsc.md	tsc	MUST	review		typescript		foundation	compiler-is-the-type-gate	false

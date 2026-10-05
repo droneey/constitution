@@ -18,14 +18,11 @@ const CONFIG = `import bun from './.droneey/constitution/presets/typescript/sync
 import packageDependencies from './.droneey/constitution/presets/typescript/syncpack/foundation/package.mjs';
 import self from './.droneey/constitution/presets/typescript/syncpack/foundation/self.mjs';
 import typescript from './.droneey/constitution/presets/typescript/syncpack/foundation/typescript.mjs';
-import packageVersions from './.droneey/constitution/presets/typescript/syncpack/workflow/package.mjs';
 
 export default {
   ...self,
   ...typescript,
-  customTypes: packageVersions.customTypes,
   versionGroups: [
-    ...packageVersions.versionGroups,
     ...bun.versionGroups,
     ...packageDependencies.versionGroups,
   ],

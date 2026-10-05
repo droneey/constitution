@@ -77,50 +77,30 @@ describe('the syncpack self part', () => {
 });
 
 describe('the syncpack parts of a repository of packages', () => {
-  it.each([
-    {
-      condition: 'two packages are at different versions',
-      packages: [
-        {
-          name: 'a',
-          version: '1.0.0',
-        },
-        {
-          name: 'b',
-          version: '1.1.0',
-        },
-      ],
-      reported: 'SameRangeMismatch',
-    },
-    {
-      condition: "a package takes the repository's own package from the registry",
-      packages: [
-        {
-          name: 'a',
-          version: '1.0.0',
-        },
-        {
-          devDependencies: {
-            a: '^1.0.0',
-          },
-          name: 'b',
-          version: '1.0.0',
-        },
-      ],
-      reported: 'DiffersToPin',
-    },
-  ])('should report $reported when $condition', ({ packages, reported }) => {
+  it("should report DiffersToPin when a package takes the repository's own package from the registry", () => {
     // Arrange
-    const repository = packages;
+    const repository = [
+      {
+        name: 'a',
+        version: '1.0.0',
+      },
+      {
+        devDependencies: {
+          a: '^1.0.0',
+        },
+        name: 'b',
+        version: '1.0.0',
+      },
+    ];
 
     // Act
     const found = versionIssues(repository);
 
     // Assert
-    expect(found).toContain(reported);
+    expect(found).toContain('DiffersToPin');
   });
 
-  it('should report nothing when the packages share a version, link each other and keep wide peer ranges', () => {
+  it('should report nothing when the packages link each other and keep wide peer ranges', () => {
     // Arrange
     const repository = [
       {
