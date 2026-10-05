@@ -40,4 +40,3 @@ The environment is `os.environ` and `os.getenv`.
 | Why | Check | Tags |
 |---|---|---|
 | these are where Python reads a variable, so a search for them outside `root/`, the entry files and the specs finds every read the rule forbids. | review | [] |
-

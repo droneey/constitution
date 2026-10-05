@@ -13,4 +13,3 @@ A suppression is `# dclint disable-line <rule>` or `# dclint disable-next-line <
 | Why | Check | Tags |
 |---|---|---|
 | dclint's other comments disable a rule for the whole file, which silences it for every service. | review | [] |
-

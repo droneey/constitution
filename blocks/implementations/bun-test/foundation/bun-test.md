@@ -62,4 +62,3 @@ A spec calls neither `Bun.sleep`, `Bun.sleepSync` nor the `setTimeout` of `node:
 | Why | Check | Tags |
 |---|---|---|
 | a preload runs before every spec file of the run, so the refusal holds for each of them with no line in the spec. | review | [] |
-

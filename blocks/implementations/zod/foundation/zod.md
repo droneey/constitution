@@ -20,4 +20,3 @@ A schema uses Zod 4's forms — `z.enum`, `z.strictObject` and `z.looseObject`, 
 | Why | Check | Tags |
 |---|---|---|
 | Zod 4 deprecates these forms, and replaces `.strict()` with `z.strictObject`. | tool/lint | [] |
-

@@ -54,4 +54,3 @@ The environment is `process.env`, read only under `root/`, in the entry files an
 | Why | Check | Tags |
 |---|---|---|
 | the linter refuses `process.env` everywhere else, so a read deep in the program fails the check. | tool/lint | [] |
-

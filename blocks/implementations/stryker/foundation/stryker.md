@@ -6,4 +6,3 @@ An equivalent mutant is marked `// Stryker disable next-line <mutator>: <reason>
 | Why | Check | Tags |
 |---|---|---|
 | a disable without `next-line` holds to the end of the file, and `all` silences every mutator. | review | [] |
-

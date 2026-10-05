@@ -13,4 +13,3 @@ The entries are tasks of `[tool.poe.tasks]`, and `check` is the sequence of the 
 | Why | Check | Tags |
 |---|---|---|
 | a sequence task stops at the first task that fails, as a chain of commands does. | review | [] |
-

@@ -13,4 +13,3 @@ A suppression is `# hadolint ignore=<code>` on the line above its instruction, w
 | Why | Check | Tags |
 |---|---|---|
 | a rule ignored in the configuration is silenced for every Dockerfile. | review | [] |
-

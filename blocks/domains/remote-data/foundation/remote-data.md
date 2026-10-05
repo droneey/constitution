@@ -52,4 +52,3 @@ Staleness and refetching are set per key.
 | Why | Check | Tags |
 |---|---|---|
 | data that changes every second and data that never changes need different policies. | review | [data, performance] |
-

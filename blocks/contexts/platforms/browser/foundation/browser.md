@@ -55,4 +55,3 @@ Each bundle has a size budget the check holds, the embeddable one first.
 | Why | Check | Tags |
 |---|---|---|
 | size grows one dependency at a time, and only a budget notices the one that crosses the line. | test | [performance] |
-

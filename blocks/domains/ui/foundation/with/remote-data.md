@@ -27,4 +27,3 @@ A request driven by typing is sent after a pause, or on the deferred value.
 | Why | Check | Tags |
 |---|---|---|
 | a request per keystroke floods the server and shows results for words the user has not finished. | review | [ux] |
-

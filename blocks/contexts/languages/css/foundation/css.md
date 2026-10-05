@@ -82,4 +82,3 @@ A class the project declares is kebab-case and names what the element is — `.o
 | Why | Check | Tags |
 |---|---|---|
 | a name that says what an element is stays true when its look changes; one that says how it looks lies after the first redesign. | review | [] |
-

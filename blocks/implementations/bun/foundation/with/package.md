@@ -22,4 +22,3 @@ The root `package.json` declares the repository's packages in `workspaces`.
 | Why | Check | Tags |
 |---|---|---|
 | Bun links a package from the working tree only when the root's `workspaces` lists it. | review | [] |
-

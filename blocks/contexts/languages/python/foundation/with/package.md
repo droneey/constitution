@@ -8,4 +8,3 @@ A published package ships `py.typed` in its import package, beside its `__init__
 | Why | Check | Tags |
 |---|---|---|
 | without the marker a consumer's type checker ignores the package's annotations. | review | [] |
-

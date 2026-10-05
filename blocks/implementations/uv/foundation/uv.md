@@ -43,4 +43,3 @@ CI and every script install with `uv sync --locked`, which fails when `uv.lock` 
 | Why | Check | Tags |
 |---|---|---|
 | uv otherwise downloads an interpreter of its own, or picks another it finds, which the toolchain neither pinned nor verified. | review | [] |
-

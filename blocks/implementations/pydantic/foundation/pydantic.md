@@ -34,4 +34,3 @@ A model uses pydantic 2's forms — `model_config = ConfigDict(...)`, `field_val
 | Why | Check | Tags |
 |---|---|---|
 | pydantic 2 deprecates the old forms and will remove them. | review | [] |
-

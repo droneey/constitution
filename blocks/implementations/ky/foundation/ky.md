@@ -20,4 +20,3 @@ A response body is read by `.json()` with no type argument and parsed by a schem
 | Why | Check | Tags |
 |---|---|---|
 | `.json<T>()` only names a type and checks nothing. | tool/lint | [security] |
-

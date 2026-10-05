@@ -59,4 +59,3 @@ The entries are scripts of `package.json`, and `check` chains the check scripts 
 | Why | Check | Tags |
 |---|---|---|
 | `bun run` runs a script of `package.json` by its name, and `&&` stops the chain at the first script that fails. | review | [] |
-

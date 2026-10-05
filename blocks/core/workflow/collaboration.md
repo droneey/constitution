@@ -61,4 +61,3 @@ A sub-agent never runs a live system and never calls a real external service.
 | Why | Check | Tags |
 |---|---|---|
 | a sub-agent acts without the person watching and has no chat in which to ask for consent, so these actions stay with the agent the person talks to. | review | [] |
-

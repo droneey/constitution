@@ -27,4 +27,3 @@ Whoever decides whether a change is valid owns the data. Where another system de
 | Why | Check | Tags |
 |---|---|---|
 | a second model of someone else's data duplicates their rules, and disagrees with them the first time they change. | review | [] |
-

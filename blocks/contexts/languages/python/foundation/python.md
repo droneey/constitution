@@ -163,4 +163,3 @@ The range is a `>=` floor, capped only with the reason beside the cap.
 | Why | Check | Tags |
 |---|---|---|
 | a floor takes every later release, so a cap is a decision, and one with no reason blocks every later fix. | review | [] |
-

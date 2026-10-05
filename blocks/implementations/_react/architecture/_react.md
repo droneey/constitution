@@ -49,4 +49,3 @@ A screen's error boundary is a React error boundary, which catches what is throw
 | Why | Check | Tags |
 |---|---|---|
 | React unmounts the whole tree below the boundary that catches, so a boundary per screen costs one screen. | review | [errors, ux] |
-
