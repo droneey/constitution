@@ -26,7 +26,7 @@ When a request can be read in two ways that lead to different work, the agent as
 | asking costs a message; guessing wrong costs the work. | review | [] |
 
 ## report-outcomes-faithfully · MUST
-Outcomes are reported as they are: a failing test with its output, a skipped step as skipped, a claim about the code checked against the code. Completion is claimed only with a passing check.
+Outcomes are reported as they are: a failing test with its output, a skipped step as skipped, a claim about the code checked against the code.
 
 | Why | Check | Tags |
 |---|---|---|

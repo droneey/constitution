@@ -46,7 +46,7 @@ The document points editors at the published schema.
 
 ## The stages
 
-## plan-names-destroying-changes → irreversible-operations-behind-flag-and-human
+## plan-names-destroying-changes → irreversible-operations-behind-a-flag
 The plan names every change that destroys something, and apply refuses one without an explicit flag.
 
 | Why | Check | Tags |
@@ -61,7 +61,7 @@ Applying the same document twice reports no change the second time, and a test p
 | convergence is safe to rerun only if it is idempotent, and only a test keeps it so. | test | [testing] |
 
 ## run-reports-per-stage · SHOULD
-A run reports each stage as skipped with its reason, unchanged, changed, ran or failed.
+A run's report holds an entry for each stage: skipped with its reason, unchanged, changed, ran or failed.
 
 | Why | Check | Tags |
 |---|---|---|

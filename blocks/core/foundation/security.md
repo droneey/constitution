@@ -162,8 +162,8 @@ Every dependency the program ships or loads at runtime has a licence on the proj
 
 ## Operations
 
-## irreversible-operations-behind-flag-and-human · MUST
-An operation a person or an agent runs against a system — a script, a command line, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
+## irreversible-operations-behind-a-flag · MUST
+An operation a person or an agent runs against a system — a script, a command line, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only behind an explicit flag; without it, the operation is a dry run that shows what it would do.
 
 | Why | Check | Tags |
 |---|---|---|

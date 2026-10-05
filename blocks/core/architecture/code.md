@@ -2,8 +2,6 @@
 
 ## Naming
 
-The case of source file names belongs to the language block; every other file is kebab-case.
-
 ## domain-names-free-of-vendor-and-storage · SHOULD
 A domain name names the concept, never the vendor or the storage behind it: `UserRecord`, not `UserMongoDocument`.
 

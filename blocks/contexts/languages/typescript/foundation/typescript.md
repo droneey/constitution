@@ -17,7 +17,7 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 | a reader who knows the name of a thing knows the name of its file. | review | [] |
 
 ## typescript-file-forms → kebab-case-file-names
-Source files are kebab-case `.ts` or `.tsx`. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts` or `.tsx`.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -59,13 +59,13 @@ An `<img>` written in JSX declares `width` and `height`.
 ## Accessibility
 
 ## labels-bound-with-use-id → every-control-has-an-accessible-name
-A label names its control with `htmlFor`, and the id comes from `useId`, never typed by hand or random.
+A label names its control with `htmlFor`, by the control's id from `useId`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a typed id collides when the component renders twice, and a random one differs between server and client. | review | [] |
+| a label bound by its control's id names the control to assistive technology wherever the two sit in the markup. | review | [] |
 
-## ids-from-use-id → labels-bound-with-use-id
+## ids-from-use-id · MUST
 An id comes from `useId`, never typed by hand or random — except the id of an element, never a labelled control, that the root renders once and other code must know, a skip link's target or an SVG's shared `<defs>`, which is a constant with a suppression that says so.
 
 | Why | Check | Tags |
@@ -80,7 +80,7 @@ An email, telephone, password or URL input declares `autocomplete`, with a valid
 | the browser fills these fields only when told what they hold. | tool/lint | [ux] |
 
 ## handlers-and-links-on-native-elements → native-html-elements-first
-A handler on a static element comes with a role, an element whose role HTML has an element for is that element, and an anchor has a real `href`.
+In JSX, a handler such as `onClick` sits on the native element whose role it needs, never on a `div` or a `span`, and an `<a>` takes a real `href`, never `#` or a `javascript:` address.
 
 | Why | Check | Tags |
 |---|---|---|

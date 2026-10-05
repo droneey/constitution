@@ -87,7 +87,7 @@ block	ts-reset	implementation	Types an application's parsed and fetched values a
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
 block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package	python		false						pyproject.toml uv.lock
-block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
+block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
@@ -210,7 +210,7 @@ rule	agent-extensions-vetted-as-dependencies	core	blocks/core/foundation/securit
 rule	install-scripts-only-for-listed-dependencies	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	known-vulnerabilities-fail-the-check	core	blocks/core/foundation/security.md		MUST	tool	audit		security	foundation		true
 rule	licences-from-an-allowlist	core	blocks/core/foundation/security.md		MUST	tool	audit		security	foundation		true
-rule	irreversible-operations-behind-flag-and-human	core	blocks/core/foundation/security.md		MUST	review			security ux	foundation		true
+rule	irreversible-operations-behind-a-flag	core	blocks/core/foundation/security.md		MUST	review			security ux	foundation		true
 rule	spec-per-boundary	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	constant-tested-only-as-contract	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
 rule	assert-what-a-caller-observes	core	blocks/core/foundation/testing.md		SHOULD	review			testing	foundation		true
@@ -358,7 +358,7 @@ rule	document-variants-selected-by-a-discriminant	convergence	blocks/domains/con
 rule	one-syntax-per-value-kind	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			data	foundation		true
 rule	published-schema-generated-from-code	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data	foundation	generated-files-marked-never-edited	false
 rule	document-points-editors-at-the-schema	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux	foundation		true
-rule	plan-names-destroying-changes	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			security ux	foundation	irreversible-operations-behind-flag-and-human	false
+rule	plan-names-destroying-changes	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			security ux	foundation	irreversible-operations-behind-a-flag	false
 rule	second-run-changes-nothing	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			testing data	foundation	operations-idempotent-by-design	true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review			ux errors	foundation		true
 rule	run-output-in-one-work-folder	convergence	blocks/domains/convergence/foundation/convergence.md		SHOULD	review				foundation		true
@@ -371,7 +371,6 @@ rule	declared-document-is-the-single-input	convergence	blocks/domains/convergenc
 rule	field-constraints-checked-in-validation	convergence	blocks/domains/convergence/architecture/convergence.md		MUST	review			data errors security	architecture	untrusted-input-parsed-at-edge	false
 rule	document-lives-in-composition	convergence	blocks/domains/convergence/architecture/convergence.md		SHOULD	review				architecture	feature-speaks-in-its-own-contracts	false
 rule	stages-validate-render-plan-apply	convergence	blocks/domains/convergence/architecture/convergence.md		SHOULD	review				architecture		true
-rule	run-report-is-a-value	convergence	blocks/domains/convergence/architecture/convergence.md		SHOULD	review				architecture	report-returned-as-a-value	false
 rule	engines-reached-through-a-port	convergence	blocks/domains/convergence/architecture/convergence.md		MUST	review				architecture	side-effects-at-the-edges	false
 rule	run-output-in-an-ignored-work-folder	convergence	blocks/domains/convergence/foundation/with/version-control.md	version-control	SHOULD	review				foundation	generated-files-not-committed	false
 rule	user-facing-text-from-catalog	i18n	blocks/domains/i18n/foundation/i18n.md		MUST	review			ux	foundation		true
@@ -470,6 +469,7 @@ rule	targets-meet-platform-minimum	ui	blocks/domains/ui/foundation/ui.md		MUST	r
 rule	stateful-component-controllable-or-not	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	primitive-passes-its-element-through	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	loading-never-replaces-shown-content	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	fields-validated-on-leave-or-submit	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	submit-busy-while-submitting	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux a11y	foundation		true
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			ux testing	foundation	spec-per-boundary	false
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			a11y testing	foundation	spec-per-boundary	false
@@ -609,7 +609,6 @@ rule	server-rendering-is-delivery-only	browser	blocks/contexts/platforms/browser
 rule	served-configuration-read-at-boot	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	environment-read-once-at-boot	true
 rule	global-privacy-control-honoured	browser	blocks/contexts/platforms/browser/foundation/with/analytics.md	analytics	SHOULD	review			security	foundation		true
 rule	document-language-follows-locale	browser	blocks/contexts/platforms/browser/foundation/with/i18n.md	i18n	MUST	test			a11y ux	foundation		true
-rule	links-are-anchors	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation		true
 rule	popover-placed-by-anchor-positioning	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux performance	foundation		true
 rule	mobile-first-additive-breakpoints	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation	components-size-to-their-container	false
 rule	dynamic-viewport-units	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			ux	foundation	components-size-to-their-container	true
@@ -893,7 +892,8 @@ rule	stage-by-name-and-read-staged-diff	git	blocks/implementations/git/foundatio
 rule	worktree-one-branch-own-dependencies	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation		true
 rule	force-push-with-lease-to-own-branch-only	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation	shared-history-never-rewritten	false
 rule	clean-tree-with-safe-cleanup	git	blocks/implementations/git/foundation/git.md		SHOULD	review				foundation	working-copy-clean-at-hand-back	false
-rule	gitignore-covers-keys-and-environment-files	git	blocks/implementations/git/foundation/git.md		MUST	review			security	foundation	machine-local-files-ignored	true
+rule	gitignore-covers-key-files	git	blocks/implementations/git/foundation/git.md		MUST	review			security	foundation	no-secret-in-repository	false
+rule	gitignore-covers-environment-files	git	blocks/implementations/git/foundation/git.md		MUST	review			security	foundation	machine-local-files-ignored	true
 rule	gitignore-covers-dependencies-output-and-caches	git	blocks/implementations/git/foundation/git.md		SHOULD	review				foundation		true
 rule	release-tags-annotated	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation	release-marked-by-immutable-tag	false
 rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/foundation/git.md		SHOULD	review			performance	foundation	large-files-outside-history	false
@@ -1008,7 +1008,7 @@ rule	no-inline-style	react-dom	blocks/implementations/react-dom/foundation/react
 rule	render-errors-reported-at-the-root	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	errors	foundation	error-logged-once	false
 rule	jsx-images-declare-their-size	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	tool	lint	typescript	performance ux	foundation	images-declare-their-size	false
 rule	labels-bound-with-use-id	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	review		typescript	a11y	foundation	every-control-has-an-accessible-name	false
-rule	ids-from-use-id	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation	labels-bound-with-use-id	false
+rule	ids-from-use-id	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript		foundation		true
 rule	known-fields-declare-autocomplete	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	ux a11y	foundation	fields-declare-autocomplete	false
 rule	handlers-and-links-on-native-elements	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation	native-html-elements-first	false
 rule	jsx-controls-named	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation	every-control-has-an-accessible-name	false
@@ -1163,7 +1163,6 @@ rule	uv-build-backend-capped	uv	blocks/implementations/uv/foundation/with/packag
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	build-env-holds-only-build-facts	vite	blocks/implementations/vite/foundation/with/browser.md	browser	MUST	review		typescript	security	foundation	runtime-configuration-served-beside-bundle	false
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/with/browser.md	browser	SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
-rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/foundation/with/tsc.md	tsc	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	tool	unused	python		foundation	no-dead-code	false
 rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	review		python		foundation	suppression-states-its-reason	false
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	errors	foundation	parse-failure-is-one-coded-error	false

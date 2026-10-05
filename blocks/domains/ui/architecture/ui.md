@@ -161,8 +161,8 @@ The theme module lives in `libs/ui/theme/`: its tokens, its constants and the co
 | the theme knows nothing of the application, and one home lets a tool and a reviewer find every token. | review | [ux] |
 
 ## configuration-provider-reads-environment → environment-read-once-at-boot
-The configuration provider is the application's one reader of the environment, and parses it once, at boot.
+The configuration provider reads the environment for the screens and components, which never read it themselves.
 
 | Why | Check | Tags |
 |---|---|---|
-| a missing setting fails at start, and no component reads the environment on its own. | review | [] |
+| a screen or component then depends on typed configuration it receives, and a missing setting fails before any of them renders. | review | [] |

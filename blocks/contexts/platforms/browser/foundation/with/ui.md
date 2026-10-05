@@ -2,13 +2,6 @@
 
 > Screens in a browser: the URL, the document, the viewport and the pointer.
 
-## links-are-anchors · MUST
-Navigation renders an anchor with a real `href`.
-
-| Why | Check | Tags |
-|---|---|---|
-| a real link opens in a new tab, can be copied and is announced as a link; a click handler is none of these. | review | [a11y, ux] |
-
 ## popover-placed-by-anchor-positioning · SHOULD
 A native `popover` is placed against its trigger by CSS anchor positioning — `anchor-name`, `position-anchor`, `position-area` — never by a script that measures; a supported browser that lacks it loads the anchor-positioning polyfill once, in the entry file.
 
@@ -96,7 +89,7 @@ In the browser, the platform's own elements are `<dialog>` for a dialog, the `po
 | each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong. | review | [] |
 
 ## native-html-elements-first → native-semantics-first
-`<button>` for an action, `<a href>` for a move, lists as lists, tables with headers and a caption; ARIA only where HTML has no element.
+`<button>` for an action, `<a>` with a real `href` for a move, lists as lists, tables with headers and a caption; ARIA only where HTML has no element.
 
 | Why | Check | Tags |
 |---|---|---|
