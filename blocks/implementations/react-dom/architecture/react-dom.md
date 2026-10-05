@@ -15,8 +15,8 @@ Unless another active block claims the document's head, `<title>`, `<meta>` and 
 | React hoists these elements from wherever they are rendered, so each is declared beside what it describes. | review | [ux] |
 
 ## third-party-script-rendered-as-element → document-metadata-owned-by-screen
-A third-party script is rendered as `<script async src>` by the component that uses it; no script tag is inserted by hand.
+A third-party script is rendered as `<script async src>` by the component that uses it.
 
 | Why | Check | Tags |
 |---|---|---|
-| React dedupes and orders rendered scripts; a hand-inserted one runs twice or too early. | review | [performance] |
+| React dedupes and orders rendered scripts, and the script loads with the component that needs it. | review | [performance] |

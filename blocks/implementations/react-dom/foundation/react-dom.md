@@ -1,11 +1,11 @@
 # React DOM
 
 ## one-writer-of-the-head → one-writer-per-shared-resource
-Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, and no effect writing to the document head.
+Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, no effect writing to the document head, and no script tag inserted by hand.
 
 | Why | Check | Tags |
 |---|---|---|
-| a library or an effect is a second writer of the head, and it and React overwrite each other. | review | [ux] |
+| a library or an effect is a second writer of the head, and it and React overwrite each other; a hand-inserted script runs twice or too early. | review | [ux] |
 
 ## aria-attributes-as-the-dom-spells-them · MUST
 ARIA attributes are written hyphenated, as the DOM spells them; the camelCase form is forbidden.

@@ -28,6 +28,13 @@ A hook that loads or writes data is proven through the screen or component that 
 |---|---|---|
 | the screen is the boundary a user meets, and a hook tested alone repeats what its screen's spec proves. | review | [] |
 
+## render-helper-builds-fresh-providers → specs-independent-of-order · MUST
+One render helper in `__tests__/<name>.fixtures` mounts the providers a spec needs, fresh for each spec.
+
+| Why | Check | Tags |
+|---|---|---|
+| every spec then runs inside the real composition, and nothing one spec's providers hold reaches the next. | review | [] |
+
 ## Accessibility
 
 ## ui-specs-run-the-axe-scan → ui-specs-scan-accessibility
