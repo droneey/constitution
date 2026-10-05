@@ -1,8 +1,8 @@
 ---
 id: lefthook
 summary: Git hooks that check branch names, messages and staged changes.
-requires: []
-extends: git
+requires: [git]
+extends: null
 abstract: false
 checks: [commits]
 languages: []
