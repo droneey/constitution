@@ -1,8 +1,8 @@
 ---
 id: tanstack-start
 summary: The TanStack app shell — SPA mode, root shell, runtime configuration.
-requires: []
-extends: tanstack-router
+requires: [tanstack-router]
+extends: null
 abstract: false
 checks: []
 languages: []

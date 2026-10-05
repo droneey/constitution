@@ -32,25 +32,25 @@ block	typescript	language	How TypeScript is written, resolved, typed and package
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md workflow/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package architecture/package workflow/package	typescript		false	bun-test					bunfig.toml package.json
-block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md			bun	false		tests coverage	typescript		bun	**/__tests__/**
+block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package architecture/package workflow/package	typescript		false						bunfig.toml package.json
+block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md		bun		false		tests coverage	typescript			**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.	foundation/complexipy.md		python		false		lint	python			
 block	dclint	implementation	Lints Docker Compose files.	foundation/dclint.md		docker		false		lint				.dclintrc
 block	dependency-cruiser	implementation	Holds the import rules between layers, modules and packages.	architecture/dependency-cruiser.md		typescript		false		imports	typescript			.dependency-cruiser.mjs
 block	deptry	implementation	deptry checks the dependencies a Python package declares and imports.	foundation/deptry.md		python		false		unused	python			
 block	docker	implementation	Container images and the services Docker Compose runs from them.	foundation/docker.md				false						**/Dockerfile **/*.Dockerfile **/.dockerignore **/compose.yaml **/compose.*.yaml
-block	expo	implementation	Expo on React Native — app config, native builds, secure storage.	foundation/expo.md architecture/expo.md			react-native	false					react-native _react	app.config.ts eas.json
+block	expo	implementation	Expo on React Native — app config, native builds, secure storage.	foundation/expo.md architecture/expo.md		react-native		false						app.config.ts eas.json
 block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicorn.	foundation/fastapi.md architecture/fastapi.md	foundation/structlog	python pydantic		false						
 block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	foundation/fastmcp.md architecture/fastmcp.md	foundation/structlog	python pydantic		false						
-block	git	implementation	Git's commits, branches, tags, ignores and worktrees.	foundation/git.md		version-control		false	lefthook					.gitignore .gitattributes
+block	git	implementation	Git's commits, branches, tags, ignores and worktrees.	foundation/git.md		version-control		false						.gitignore .gitattributes
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	foundation/hadolint.md		docker		false		lint				.hadolint.yaml
 block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	foundation/httpx2.md architecture/httpx2.md		python remote-data		false						**/adapters/** **/root/**
 block	hypothesis	implementation	Hypothesis writes Python's property tests.	foundation/hypothesis.md		python		false						
 block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md	architecture/httpx2 architecture/pydantic architecture/structlog	python		false		imports	python			
 block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md		typescript		false		unused	typescript			knip.config.ts
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-data		false						**/providers/** **/adapters/**
-block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks		git	false		commits			git	lefthook.yaml
+block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks	git		false		commits				lefthook.yaml
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.	foundation/lingui.md	foundation/_react foundation/bun-test foundation/bun foundation/vite architecture/ui	i18n typescript		false						lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names				.ls-lint.yaml
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
@@ -64,7 +64,7 @@ block	pydantic	implementation	pydantic parses what crosses the program's edge in
 block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	foundation/pytest.md architecture/pytest.md		python		false		tests coverage	python			**/tests/**
 block	python-check	implementation	The constitution's own check of what no Python tool holds.	foundation/python-check.md architecture/python-check.md		python		false		lint imports	python			
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/a11y foundation/bun-test	browser	_react	false					_react	**/*.tsx
-block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false	expo				_react	**/*.tsx
+block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false					_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot on a schedule.	foundation/renovate.md workflow/renovate.md	workflow/mise	git		false						renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/fastapi foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
@@ -75,8 +75,8 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/a11y foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md		_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
-block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/a11y foundation/tanstack-query architecture/tanstack-query	react-dom		false						src/routes/** src/router.tsx
+block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md		tanstack-router		false						src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/a11y	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json

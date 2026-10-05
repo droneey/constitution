@@ -1,8 +1,8 @@
 ---
 id: expo
 summary: Expo on React Native — app config, native builds, secure storage.
-requires: []
-extends: react-native
+requires: [react-native]
+extends: null
 abstract: false
 checks: []
 languages: []
@@ -13,4 +13,4 @@ governs: ["app.config.ts", "eas.json"]
 
 # Expo
 
-> React Native through Expo. Written thin, like its base: the rest waits for the first mobile project.
+> React Native through Expo. Written thin, like the React Native it requires: the rest waits for the first mobile project.
