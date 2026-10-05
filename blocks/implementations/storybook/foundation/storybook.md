@@ -21,7 +21,7 @@ Screenshots are compared over the UI kit's stories, where the look is the contra
 |---|---|---|
 | the kit's look is the one place a changed pixel is a changed contract. | review | [] |
 
-## stories-outside-coverage · MUST
+## stories-outside-coverage → coverage-holds-all-logic
 Stories are outside coverage.
 
 | Why | Check | Tags |

@@ -8,7 +8,7 @@ checks: []
 languages: []
 roles: []
 dictionary: [FastAPI, fastapi, Starlette, starlette, Uvicorn, uvicorn]
-governs: []
+governs: ["**/api/**", "**/root/**"]
 ---
 
 # FastAPI

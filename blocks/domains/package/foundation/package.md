@@ -53,19 +53,19 @@ Each shipped configuration has a spec that parses it and asserts its intent; cod
 |---|---|---|
 | a configuration package has no behaviour to call, so its spec proves it says what it means. | test | [] |
 
-## generated-copy-guarded-by-spec → generated-files-marked-never-edited
-A copy a package ships of a shared file is rebuilt by the package's build, never edited by hand, and a spec asserts it equals its source.
-
-| Why | Check | Tags |
-|---|---|---|
-| a copy that drifts from its source ships a different file than the one reviewed. | test | [testing] |
-
-## shared-package-file-lives-once → generated-copy-guarded-by-spec
+## shared-package-file-lives-once · MUST
 A file several packages ship lives once, and each package holds only a copy generated from it.
 
 | Why | Check | Tags |
 |---|---|---|
 | one source means a fix is made once and reaches every package, and no copy becomes a second original. | review | [] |
+
+## generated-copy-guarded-by-spec → shared-package-file-lives-once
+A copy a package ships of a shared file is rebuilt by the package's build, never edited by hand, and a spec asserts it equals its source.
+
+| Why | Check | Tags |
+|---|---|---|
+| a copy that drifts from its source ships a different file than the one reviewed. | test | [testing] |
 
 ## package-ships-only-the-files-it-names · MUST
 A package's manifest names the files it ships, and the package ships those and no other.
@@ -114,7 +114,7 @@ Publishing skips a version the registry already holds, so a failed publish is re
 | a publish that fails on a version already out cannot be rerun, and a half-published release stays half published. | review | [] |
 
 ## deprecation-names-replacement-and-removal → retired-code-marked-deprecated · MUST
-A deprecated entry also names the version that removes it.
+A deprecated entry names its replacement and the version that removes it.
 
 | Why | Check | Tags |
 |---|---|---|

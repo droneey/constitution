@@ -7,7 +7,7 @@
 |---|---|---|
 | it writes a string into the DOM as markup, past React's escaping. | tool/lint | [] |
 
-## one-writer-of-the-head → one-writer-per-shared-resource
+## one-writer-of-the-head → browser-resources-have-one-writer
 Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, no effect writing to the document head, and no script tag inserted by hand.
 
 | Why | Check | Tags |

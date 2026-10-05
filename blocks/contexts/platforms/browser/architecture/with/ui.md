@@ -1,7 +1,7 @@
 # Browser with user interface
 
 ## url-holds-shareable-view-state → view-state-homes
-View state a link or a reload must reproduce — filters, sort, page, selection, the open tab — lives in the URL, and nothing else does. A screen writes the one parameter it changes and keeps the others.
+View state a link or a reload must reproduce — filters, sort, page, selection, the open tab — lives in the URL, and nothing else does.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -102,7 +102,7 @@ A value that can be derived is computed during render, never stored in state and
 |---|---|---|
 | a derived copy in state renders twice and is one render behind the value it copies. | review | [performance] |
 
-## effect-cleans-up-and-cancels → io-has-timeout-and-cancellation · MUST
+## effect-cleans-up-and-cancels → resources-released-on-every-path · MUST
 Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
 
 | Why | Check | Tags |
@@ -131,6 +131,13 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 | Why | Check | Tags |
 |---|---|---|
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
+
+## compound-parts-reached-through-the-root → compound-over-prop-regions
+A compound's surface exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |
 
 ## slot-and-container-children-typed · SHOULD
 A slot that keeps control of its element takes a `ReactElement`; a container takes `ReactNode`; a render-prop slot is `(children, …data) => ReactElement`.

@@ -76,3 +76,10 @@ An adapter never imports the cache library; caching belongs to the binding units
 | Why | Check | Tags |
 |---|---|---|
 | the library's own examples build the client at a module's top level, where it is shared by every request on the server and every spec. | tool/lint | [] |
+
+## unauthorized-handled-once-in-the-cache → unauthorized-acted-on-once-by-the-cache
+`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, is the one place that acts on an unauthorized error.
+
+| Why | Check | Tags |
+|---|---|---|
+| every read and write then ends in the same handler, and no query or mutation acts on the error on its own. | review | [] |

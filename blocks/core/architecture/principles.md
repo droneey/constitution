@@ -125,13 +125,6 @@ Input from outside the program is parsed once, at the edge; inside, it is truste
 |---|---|---|
 | the checks do not scatter through the code, and the domain receives only values of a known shape. | review | [] |
 
-## extension-by-addition · MUST
-A new kind of thing — a vendor, a command, a format, a rule — is added as a new member and its registration, without editing the code that handles the other kinds. A long branch by kind becomes a strategy and a registry.
-
-| Why | Check | Tags |
-|---|---|---|
-| code that grows by addition keeps every existing member untouched, so adding one cannot break another. | review | [] |
-
 ## The modelling vocabulary
 
 - **Ubiquitous language.** Names match the business: `cancelOrder`, not `updateRecord`. The terms come from the people who own the domain and are mirrored, not translated; `PROJECT.md` keeps them in its glossary.

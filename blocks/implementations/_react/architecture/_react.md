@@ -18,14 +18,14 @@ A component file calls no effect hook.
 |---|---|---|
 | a component then reads as its markup. | tool/lint | [] |
 
-## Composition
+## Binding units
 
-## compound-parts-reached-through-the-root → compound-over-prop-regions
-A compound's surface exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
+## binding-unit-is-a-hook → binding-unit-composes-its-operation
+An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its adapter from the providers' context and calls the use-case, or the port when there is none. A plain `<op>.ts` exists only for a caller outside React — a loader, a guard — and not before one exists.
 
 | Why | Check | Tags |
 |---|---|---|
-| a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |
+| a hook is the framework's reactive unit; the adapter comes from the composition root, so a spec hands it another. | review | [] |
 
 ## Adapters
 

@@ -30,13 +30,6 @@ Router primitives — `Link`, `useNavigate`, `useSearch`, `useParams` — are im
 |---|---|---|
 | a presentational component that navigates works on one screen only. | tool/imports | [] |
 
-## search-params-merged-on-write → url-holds-shareable-view-state
-A write to the search merges with the current parameters, never replaces them.
-
-| Why | Check | Tags |
-|---|---|---|
-| a screen that changes its page must keep the filter another piece set. | review | [] |
-
 ## screen-private-pieces-in-dash-folders → screen-private-pieces-beside-screen
 A screen's private pieces live beside its route in `-components/`, its private binding units in `-hooks/`, and the specs of both in the `__tests__/` of those folders, never in a `__tests__/` of the route folder.
 

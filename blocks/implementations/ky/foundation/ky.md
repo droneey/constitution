@@ -1,6 +1,6 @@
 # ky
 
-## ky-timeout-and-signal-kept → io-has-timeout-and-cancellation
+## ky-timeout-and-signal-kept → io-has-timeout-and-cancellation · MUST
 ky's `timeout` stays on, and the caller's abort signal is passed through as `signal`.
 
 | Why | Check | Tags |

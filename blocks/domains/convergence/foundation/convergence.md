@@ -2,6 +2,13 @@
 
 ## The document
 
+## declared-document-is-the-single-input · MUST
+One document the user writes is the program's single input; every run reads it whole, validates it, and moves the world toward it.
+
+| Why | Check | Tags |
+|---|---|---|
+| one declared state is reviewable, repeatable and diffable; inputs scattered across flags and files are none of these. | review | [] |
+
 ## section-optional-fields-required → absence-has-one-value
 A section may be absent, and is then left untouched. Inside a declared section every managed field is stated: "there is none" is written, and mapped to absence when the document is read; a switched-off option carries nothing else.
 

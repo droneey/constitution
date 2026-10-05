@@ -9,7 +9,7 @@ An import alias, where the program has one, is declared once, in `imports` of `p
 |---|---|---|
 | one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | review | [] |
 
-## file-named-after-its-export → file-is-one-semantic-unit
+## file-named-after-its-export · SHOULD
 A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
 
 | Why | Check | Tags |

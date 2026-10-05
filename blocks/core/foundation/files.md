@@ -7,6 +7,13 @@ A file a tool produces carries `.gen` in its name or sits in a folder named `*.g
 |---|---|---|
 | a hand edit to a generated file is lost at the next generation, and the mark tells every reader and tool not to touch it. | review | [] |
 
+## kebab-case-file-names · MUST
+Files and folders are named in kebab-case. Root files that convention names in upper case — `README.md`, `LICENSE.md` — keep it, and the language block fixes the case of source files.
+
+| Why | Check | Tags |
+|---|---|---|
+| one case removes a decision from every new file and keeps names portable across file systems. | tool/names | [] |
+
 ## yaml-files-end-in-yaml · SHOULD
 A YAML file ends in `.yaml`, never `.yml`, unless a tool reads it only by a fixed name, as a code host may read its issue forms.
 
@@ -27,3 +34,10 @@ A folder holds one purpose, said in one phrase without "and". It appears to sepa
 | Why | Check | Tags |
 |---|---|---|
 | a folder of two purposes gives a new file two places to go, and a reader two things to tell apart. | review | [] |
+
+## set-folder-holds-only-members · SHOULD
+Files of one kind that arrive one at a time — one per vendor, command, rule or section — live in a folder named for the member in the plural, and nothing else lives there. Their contract, registry and runner sit beside that folder.
+
+| Why | Check | Tags |
+|---|---|---|
+| adding a member is then adding a file, and no one has to tell members from machinery by their names. | review | [] |

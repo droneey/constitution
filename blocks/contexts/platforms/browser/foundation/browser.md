@@ -76,3 +76,10 @@ Each bundle has a size budget the check holds, the embeddable one first.
 | Why | Check | Tags |
 |---|---|---|
 | size grows one dependency at a time, and only a budget notices the one that crosses the line. | test | [performance] |
+
+## browser-resources-have-one-writer → one-writer-per-shared-resource
+In the browser, the resources the program shares with its host include the document's head, the URL, focus, the scroll position, the root element's classes and attributes, and the service worker; each has one writer.
+
+| Why | Check | Tags |
+|---|---|---|
+| each outlives the code that writes it, so two writers overwrite each other on every navigation and the last to run wins. | review | [] |

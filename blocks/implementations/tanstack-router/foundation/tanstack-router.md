@@ -49,19 +49,26 @@ The router's bundler plugin splits every route's code automatically (`autoCodeSp
 |---|---|---|
 | each screen then loads only its own code, with no split written by hand. | review | [] |
 
-## router-claims-the-head → one-writer-per-shared-resource
+## router-claims-the-head → browser-resources-have-one-writer
 The router claims the document's head: the root renders `<HeadContent/>`, and nothing else writes the head.
 
 | Why | Check | Tags |
 |---|---|---|
 | the router changes the head with the route, so a second writer would fight it on every navigation. | review | [] |
 
-## search-params-validated-by-schema → outside-values-untyped-until-parsed
+## search-params-validated-by-schema → address-parsed-as-untrusted-input
 Every route with search parameters validates them by a schema in `validateSearch`.
 
 | Why | Check | Tags |
 |---|---|---|
 | the URL is input anyone can type, and an unvalidated parameter reaches the screen as whatever was typed. | review | [] |
+
+## search-params-merged-on-write → address-write-keeps-the-other-parameters
+A write to the search merges with the current parameters, never replaces them.
+
+| Why | Check | Tags |
+|---|---|---|
+| a screen that changes its page must keep the filter another piece set. | review | [] |
 
 ## search-falls-back-to-defaults · SHOULD
 A route's search schema gives every param a default, so a malformed URL opens the screen with its defaults instead of an error.

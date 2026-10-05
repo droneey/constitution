@@ -84,10 +84,3 @@ A repository keeps at its root `constitution.yaml`, the blocks it follows and th
 | Why | Check | Tags |
 |---|---|---|
 | knowledge beside its module changes with it; one folder of everything drifts from the code it describes. | review | [] |
-
-## kebab-case-file-names · MUST
-Files and folders are named in kebab-case. Root files that convention names in upper case — `README.md`, `LICENSE.md` — keep it, and the language block fixes the case of source files.
-
-| Why | Check | Tags |
-|---|---|---|
-| one case removes a decision from every new file and keeps names portable across file systems. | tool/names | [] |

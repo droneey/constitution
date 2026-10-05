@@ -16,7 +16,7 @@ Base styles serve the smallest screen, and wider screens add overrides from a mi
 |---|---|---|
 | styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | review | [] |
 
-## dynamic-viewport-units → components-size-to-their-container · MUST
+## dynamic-viewport-units · MUST
 Heights use the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`, and no layout width is fixed in pixels outside the tokens.
 
 | Why | Check | Tags |

@@ -2,7 +2,7 @@
 
 > Screens some users may not open: where a screen is guarded, how a feature learns the permissions it adapts to, and where the client keeps whether a session exists.
 
-## screen-guards-through-auth-surface → access-denied-unless-granted
+## screen-guards-through-auth-surface → entry-point-declares-its-access
 Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.
 
 | Why | Check | Tags |

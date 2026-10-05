@@ -9,19 +9,19 @@ The check lints every Dockerfile and every Compose file of the repository, and a
 
 ## Images
 
-## images-pinned-to-a-version · MUST
-A base image in a Dockerfile, an image in a Compose file and an image a script runs name the most specific version the image is published under — `major.minor.patch` where it has one — never `latest`, never a floating major or minor, never none.
+## images-pinned-by-version-and-digest → downloads-pinned-by-version-and-checksum
+A base image in a Dockerfile, an image in a Compose file and an image a script runs name the most specific version the image is published under — `major.minor.patch` where it has one — and its digest, `image:x.y.z@sha256:<digest>`; never `latest`, never a floating major or minor, never a tag alone and never a digest alone.
 
 | Why | Check | Tags |
 |---|---|---|
-| a floating tag changes under the same name, so two builds of the same source run different code. | review | [security] |
+| any tag, a patch's included, can be pushed again under the same name, so only the digest fixes what runs; the version beside it tells a reader and an updater which release the digest is. | review | [security] |
 
-## image-never-untagged-or-latest → images-pinned-to-a-version
+## image-never-untagged-or-latest → images-pinned-by-version-and-digest
 No image in a Dockerfile or a Compose file is untagged or tagged `latest`.
 
 | Why | Check | Tags |
 |---|---|---|
-| these are the floating forms the linters see; a floating major or minor is left to review. | tool/lint | [] |
+| these are the floating forms the linters see; a floating major or minor and a missing digest are left to review, since neither linter can require a digest. | tool/lint | [] |
 
 ## files-copied-never-added · MUST
 Local files and folders enter an image with `COPY`, never `ADD`.

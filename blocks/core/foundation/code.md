@@ -62,7 +62,7 @@ A value with a unit carries the unit in its name: `timeoutMs`, `DEFAULT_TIMEOUT_
 |---|---|---|
 | a number without its unit is read in the wrong one sooner or later, and the bug looks like correct code. | review | [] |
 
-## file-is-one-semantic-unit · SHOULD
+## file-is-one-semantic-unit → one-reason-per-unit
 A file holds one semantic unit and is named after it; unrelated exports go to their own files.
 
 | Why | Check | Tags |

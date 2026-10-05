@@ -134,14 +134,14 @@ A feature's `domain/` holds only the role folders of the tree and no file of its
 |---|---|---|
 | a use-case, a port or an entity is found in the same place in every feature. | tool/names | [] |
 
-## data-ports-split-by-reads-and-writes · SHOULD
+## data-ports-split-by-reads-and-writes → contracts-shaped-by-role
 A data port is a repository per entity, one file per side: `repositories/queries/<entity>.repository` for reads and `repositories/commands/<entity>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name, and `repositories/` has no surface that joins the two sides; a shape both sides use — the page a read returns and a write updates in the cache — is an entity.
 
 | Why | Check | Tags |
 |---|---|---|
 | reads and writes change apart, and a caller that only reads cannot reach a write. | tool/names | [] |
 
-## ports-named-by-entity-and-side → data-ports-split-by-reads-and-writes
+## ports-named-by-entity-and-side · SHOULD
 A data port's contract is named after its entity and its side: `<Entity>QueryRepository` for reads, `<Entity>CommandRepository` for writes.
 
 | Why | Check | Tags |
@@ -169,7 +169,7 @@ An adapter imports its contracts, `kernel/`, `shared/` and `libs/`, and never a 
 |---|---|---|
 | adapters that know each other or their callers form a second, hidden program beside the domain. | tool/imports | [] |
 
-## feature-speaks-in-its-own-contracts · SHOULD
+## feature-speaks-in-its-own-contracts → features-blind-to-each-other
 A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature's surface.
 
 | Why | Check | Tags |
@@ -224,7 +224,7 @@ A feature's surface offers its operations and its presentation — use-cases, bi
 
 ## Placement
 
-## contract-lifts-on-the-second-feature · SHOULD
+## contract-lifts-on-the-second-feature → code-lives-with-its-reason-to-change
 A contract belongs to the feature that needs it. When two features need it, it lifts to `contracts/`; a business type two features share lifts to `kernel/`, never sideways into one of them.
 
 | Why | Check | Tags |
@@ -245,14 +245,14 @@ An adapter receives its dependencies explicitly — as a factory's parameters or
 |---|---|---|
 | every dependency then shows in the signature that builds the adapter, and nothing it holds outlives a test or leaks between its callers unseen. | review | [] |
 
-## adapter-receives-its-dependencies → adapter-built-from-explicit-dependencies
+## adapter-receives-its-dependencies → one-explicit-composition-root
 The dependencies an adapter receives — the transport, the clients it speaks through — come from the composition root; the adapter never imports a shared instance of them.
 
 | Why | Check | Tags |
 |---|---|---|
 | a dependency the adapter receives is visible and replaceable, in production and in tests; a shared instance it imports is neither. | review | [] |
 
-## real-effects-chosen-at-composition-root · SHOULD
+## real-effects-chosen-at-composition-root → side-effects-at-the-edges
 A port for an effect — clock, randomness, identifiers, environment, file system, processes, network — is a contract placed like any other, its real implementation is an adapter, and only a composition root chooses the real one. Logic never calls the effect directly.
 
 | Why | Check | Tags |
@@ -301,13 +301,6 @@ A folder whose purpose a layer or a role of the vocabulary of the project's acti
 | Why | Check | Tags |
 |---|---|---|
 | a folder named by the vocabulary tells a reader its place in the tree before it is opened, the same way in every project. | review | [] |
-
-## set-folder-holds-only-members · SHOULD
-Files of one kind that arrive one at a time — one per vendor, command, rule or section — live in a folder named for the member in the plural, and nothing else lives there. Their contract, registry and runner sit beside that folder.
-
-| Why | Check | Tags |
-|---|---|---|
-| adding a member is then adding a file, and no one has to tell members from machinery by their names. | review | [] |
 
 ## file-carries-its-role-suffix · MUST
 A file carries its role's suffix, whatever its folder: `entities/chat.entity`. No suffix on a surface or an entry, a file whose name a tool fixes, a component file named after its component in its own folder, a member of a set whose role has no suffix, a registry, and a binding unit's plain form, named after its operation in its own folder. A spec keeps the role suffix of the file it proves — `chat.entity.test` — so a double suffix appears only in tests.

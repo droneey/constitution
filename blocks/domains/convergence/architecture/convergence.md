@@ -2,13 +2,6 @@
 
 ## The document
 
-## declared-document-is-the-single-input · MUST
-One document the user writes is the program's single input; every run reads it whole, validates it, and moves the world toward it.
-
-| Why | Check | Tags |
-|---|---|---|
-| one declared state is reviewable, repeatable and diffable; inputs scattered across flags and files are none of these. | review | [] |
-
 ## field-constraints-checked-in-validation → untrusted-input-parsed-at-edge
 Every constraint between fields of the document is checked in validation, before any stage runs, never at the point of use.
 

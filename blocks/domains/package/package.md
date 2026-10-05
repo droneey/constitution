@@ -8,7 +8,7 @@ checks: []
 languages: []
 roles: []
 dictionary: []
-governs: ["packages/**"]
+governs: ["packages/**", "package.json", "pyproject.toml"]
 ---
 
 # Package

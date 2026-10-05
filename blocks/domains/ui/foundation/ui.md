@@ -23,6 +23,20 @@ An address no screen answers shows the application's not-found screen, which is 
 |---|---|---|
 | a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. | review | [ux] |
 
+## address-parsed-as-untrusted-input → outside-values-untyped-until-parsed
+A screen's address — its path and its parameters, in a URL or a deep link — reaches the screen only after a schema parses it; an address that fails the parse opens the screen with its defaults or a fallback screen, never a crash or a half-filled one.
+
+| Why | Check | Tags |
+|---|---|---|
+| anyone can write a link and send it to the user, so a malformed one is to be expected, and it must not break the program. | review | [data] |
+
+## address-write-keeps-the-other-parameters · MUST
+A write to a screen's address changes only the parameter it is for and keeps every other one as it was.
+
+| Why | Check | Tags |
+|---|---|---|
+| a screen that changes its page must keep the filter another piece set, or the link no longer reproduces the view the user built. | review | [ux] |
+
 ## button-names-its-result · SHOULD
 A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action; a confirmation of a destructive action names the action; a payment button shows the amount.
 

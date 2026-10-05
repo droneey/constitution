@@ -1,6 +1,13 @@
 # Mobile with user interface
 
-> Screens on a phone or tablet: touch, safe areas, the keyboard and the system's gestures.
+> Screens on a phone or tablet: the system's lifecycle, touch, safe areas, the keyboard and the system's gestures.
+
+## state-survives-the-os-lifecycle · SHOULD
+Going to the background, being suspended or being ended by the system loses no input and no view state.
+
+| Why | Check | Tags |
+|---|---|---|
+| the system ends apps without asking, and a user who comes back expects to find what they left. | test | [ux, data] |
 
 ## touch-targets-44-pt-48-dp → targets-meet-platform-minimum
 A touch target is at least 44 × 44 points, or 48 × 48 density-independent pixels, padding included.

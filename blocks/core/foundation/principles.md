@@ -39,6 +39,13 @@ Each unit — a function, a class, a file — has one reason to change.
 |---|---|---|
 | a unit with two reasons changes for both, and every change risks the other purpose. | review | [] |
 
+## extension-by-addition · MUST
+A new kind of thing — a vendor, a command, a format, a rule — is added as a new member and its registration, without editing the code that handles the other kinds. A long branch by kind becomes a strategy and a registry.
+
+| Why | Check | Tags |
+|---|---|---|
+| code that grows by addition keeps every existing member untouched, so adding one cannot break another. | review | [] |
+
 ## numbers-in-text-from-data · MUST
 A number shown in a text — a count, a total, a limit — is read from the data it describes, never typed again.
 
@@ -54,7 +61,7 @@ A value that must keep an invariant is built only through the function that chec
 | when the invariant is checked at construction, no caller has to check it again or can forget to. | review | [] |
 
 ## one-writer-per-shared-resource · MUST
-Every resource the program shares with its host — the document's head, the URL, focus, the scroll position, the root element's classes and attributes, a service worker — has exactly one writer. A block that brings its own writer for such a resource claims it in a rule; a block whose default writer another active block has claimed yields, and no library or effect writes the resource besides.
+Every resource the program shares with its host — a signal's handler, the process's exit code, its working directory, a standard stream — has exactly one writer. A block that brings its own writer for such a resource claims it in a rule; a block whose default writer another active block has claimed yields, and no library or effect writes the resource besides.
 
 | Why | Check | Tags |
 |---|---|---|

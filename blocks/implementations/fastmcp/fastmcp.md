@@ -8,7 +8,7 @@ checks: []
 languages: []
 roles: []
 dictionary: [FastMCP, fastmcp, MCP]
-governs: []
+governs: ["**/api/**", "**/root/**"]
 ---
 
 # FastMCP

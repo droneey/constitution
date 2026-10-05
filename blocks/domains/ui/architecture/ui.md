@@ -118,7 +118,7 @@ A feature's `ui/` never imports its adapters, contracts or domain use-cases, nor
 |---|---|---|
 | these are the mechanisms the UI reaches only through its binding units. | tool/imports | [] |
 
-## component-in-its-own-folder → file-carries-its-role-suffix
+## component-in-its-own-folder → access-only-through-curated-surface
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.
 
 | Why | Check | Tags |
@@ -147,7 +147,7 @@ A deep component never reads a store to spare a prop its path; the state stays i
 | state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | review | [] |
 
 ## primitives-take-text-by-props → libs-import-no-application-code
-The primitive library holds no user-facing text and no message catalog; text arrives through props.
+The primitive library holds no user-facing text; text arrives through props.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -166,3 +166,26 @@ The configuration provider reads the environment for the screens and components,
 | Why | Check | Tags |
 |---|---|---|
 | a screen or component then depends on typed configuration it receives, and a missing setting fails before any of them renders. | review | [] |
+
+## Binding units
+
+## providers-compose-the-ui-application → one-explicit-composition-root
+The providers are the application's composition root: they build the configuration, build each adapter from its dependencies, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
+
+| Why | Check | Tags |
+|---|---|---|
+| every concrete choice is made in one place, and a test hands the same binding unit a different adapter without touching it. | review | [] |
+
+## binding-unit-composes-its-operation · SHOULD
+A binding unit binds one operation: it takes its adapter from the providers and calls the use-case, or the port when there is none. A plain function form of it is added only when a caller that is not reactive appears.
+
+| Why | Check | Tags |
+|---|---|---|
+| each operation is bound once, and the screen never learns which adapter serves it. | review | [] |
+
+## binding-units-import-no-adapter-or-ui → binding-unit-composes-its-operation
+A binding unit imports neither an adapter, which the providers hand it, nor anything of `ui/`, which imports it.
+
+| Why | Check | Tags |
+|---|---|---|
+| an adapter imported directly bypasses the composition root, so a spec cannot replace it; a binding unit that imports UI points against the layers. | tool/imports | [] |
