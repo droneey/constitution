@@ -541,7 +541,6 @@ rule	input-driven-requests-debounced	ui	blocks/domains/ui/foundation/with/remote
 rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
 rule	screen-guards-through-auth-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	review			security	architecture	access-denied-unless-granted	false
 rule	session-presence-in-a-root-store	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	review			data	architecture	view-state-homes	false
-rule	remote-data-homed-in-its-cache	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review			data	architecture	view-state-homes	false
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review				architecture	one-explicit-composition-root	false
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	review				architecture		true
 rule	binding-units-import-no-adapter-or-ui	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	tool	imports			architecture	binding-unit-composes-its-operation	false
@@ -593,7 +592,6 @@ rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/
 rule	agent-pushes-and-opens-pull-requests-when-asked	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	person-decides-what-is-recorded-or-shipped	false
 rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-takes-no-direct-push	false
 rule	sub-agent-never-commits-pushes-or-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	sub-agent-only-does-the-work	false
-rule	agent-settings-overrides-ignored	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review			security	workflow	agent-permissions-kept-with-the-project	false
 rule	agent-never-rewrites-shared-history	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
 rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	no-tool-attribution	false
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true

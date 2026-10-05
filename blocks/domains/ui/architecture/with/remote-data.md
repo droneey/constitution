@@ -1,13 +1,6 @@
 # User interface with remote data
 
-> Screens that show and change data another system owns: where that data lives, how an operation is bound to the screen and how the application is composed.
-
-## remote-data-homed-in-its-cache → view-state-homes
-Remote data has its home in its cache, and no store the root builds holds a copy of it.
-
-| Why | Check | Tags |
-|---|---|---|
-| the screen then reads remote data where its system keeps it fresh, never a copy the server has already changed. | review | [] |
+> Screens that show and change data another system owns: how an operation is bound to the screen and how the application is composed.
 
 ## providers-compose-the-ui-application → one-explicit-composition-root
 The providers are the application's composition root: they build the configuration, the transport and the cache client, build each adapter by its factory from the transport, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
