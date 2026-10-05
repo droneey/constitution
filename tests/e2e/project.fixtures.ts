@@ -462,7 +462,7 @@ const REAL_CLI: ProjectLayout = {
     'version: 1.0.0',
     'axes: [foundation, architecture, workflow]',
     '',
-    'domains: [convergence, remote-data, version-control]',
+    'domains: [convergence, remote-data, remote-service, version-control]',
     'platforms: [cli]',
     'languages: [typescript]',
     'implementations: [bun, bun-test, bunli, zod, yaml, yamllint, tsc, biome, dependency-cruiser,',
