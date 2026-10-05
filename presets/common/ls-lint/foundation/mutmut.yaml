@@ -1,2 +1,7 @@
 ignore:
   - mutants
+  # TODO(loeffel-io/ls-lint#86): keep only the root's line once ls-lint reads .gitignore.
+  - "*/mutants"
+  - "*/*/mutants"
+  - "*/*/*/mutants"
+  - "*/*/*/*/mutants"

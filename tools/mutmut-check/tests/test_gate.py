@@ -57,7 +57,7 @@ def test_should_pass_without_mutmut_when_no_function_changed() -> None:
   )
 
 
-def test_should_pass_when_every_mutant_of_the_changed_functions_is_killed() -> None:
+def test_should_pass_and_remove_the_mutants_when_every_changed_mutant_is_killed() -> None:
   # Arrange
   answers = {DIFF: TOTAL_CHANGED, (*MUTMUT, 'results'): KILLED}
 
@@ -69,24 +69,25 @@ def test_should_pass_when_every_mutant_of_the_changed_functions_is_killed() -> N
     0,
     'mutation: every mutant killed\n',
     [DIFF, UNTRACKED, (*MUTMUT, 'run', TOTAL), (*MUTMUT, 'results')],
-    1,
+    2,
   )
 
 
-def test_should_fail_with_each_mutant_of_the_changed_functions_not_killed() -> None:
+def test_should_fail_and_keep_the_mutants_when_a_changed_mutant_is_not_killed() -> None:
   # Arrange
   answers = {DIFF: TOTAL_CHANGED, (*MUTMUT, 'results'): RESULTS}
 
   # Act
-  status, output, _ = _check(arguments=[], answers=answers)
+  status, output, runner = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output) == (
+  assert (status, output, runner.cleared) == (
     1,
     (
       'mutation: shop.orders.x_total__mutmut_1: survived\n'
       'mutation: shop.orders.x_total__mutmut_2: no tests\n'
     ),
+    1,
   )
 
 
