@@ -26,7 +26,7 @@
 | Delivery of the constitution | ADR-0124 |
 | Repositories of packages | ADR-0125 |
 | Line width and licences | ADR-0126 |
-| Python | ADR-0127 – ADR-0129 |
+| Python | ADR-0127 – ADR-0129, ADR-0140 |
 | TypeScript configuration | ADR-0131, ADR-0133 |
 | Scripts of the check | ADR-0132 |
 
@@ -704,3 +704,10 @@
 - **Decision.** Stryker runs `bun test` through the archive's runner `bun-specs` (`tools/mutation-check/dist/runner.js`), which runs each mutant against only the specs whose imports reach its file, the nearest first; a mutant in a file no spec loads survives (`stryker-runs-each-mutant-against-the-specs-that-load-it`).
 - **Rejected.** Stryker's command runner, which ran every spec for every mutant: a run cost its mutants times the whole suite, and a change to 24 specs ran 2,416 mutants past CI's 15 minutes. The specs in the `__tests__/` folders above the file, which left 119 mutants of this repository alive in helpers proven through the specs of the boundaries that use them, as `spec-per-boundary` asks. A community runner for Bun with per-test coverage, which over 986 mutants took 58 s against 52 s for the command runner and has one maintainer.
 - **Why.** The full run of this repository, about 3,500 mutants, took 1 min 3 s against 5 min 25 s and left alive no mutant the command runner killed; the cost of a mutant follows the specs that prove its file, not the size of the program.
+
+## ADR-0140 — pytest's hidden folders kept beside the folders the unit run leaves out
+**Date:** 2026-10-05 · **Status:** Accepted
+
+- **Decision.** The template's `norecursedirs` is `[".*", "integration", "e2e"]` (`integration-folder-runs-apart`).
+- **Rejected.** `["integration", "e2e"]` alone, which replaces pytest's defaults, so Hypothesis warns that it skips `.hypothesis/` and `filterwarnings = ["error"]` fails the run; pytest's whole default list, whose `build`, `dist`, `venv` and `node_modules` never sit under `tests/`, the only path `testpaths` collects, and would skip a folder of specs that bears one of those names.
+- **Why.** `.*` is the one default a collection from `tests/` meets: the folders the tools write at the package's root.

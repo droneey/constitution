@@ -345,6 +345,13 @@ describe('the python template', () => {
       task: 'test:check',
     },
     {
+      condition: 'Hypothesis kept its examples in .hypothesis/',
+      changes: {
+        '.hypothesis/examples/0a1b2c3d/4e5f6a7b': '',
+      },
+      task: 'test:check',
+    },
+    {
       condition: 'an adapter parses with pydantic and calls through httpx2',
       changes: {
         ...FEATURE,
