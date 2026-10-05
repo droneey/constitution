@@ -1,5 +1,6 @@
 ignore:
   - .pytest_cache
+  # TODO(loeffel-io/ls-lint#86): keep only the root's line once ls-lint reads .gitignore.
   - "*/.pytest_cache"
   - "*/*/.pytest_cache"
   - "*/*/*/.pytest_cache"

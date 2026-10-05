@@ -1,5 +1,6 @@
 ignore:
   - .hypothesis
+  # TODO(loeffel-io/ls-lint#86): keep only the root's line once ls-lint reads .gitignore.
   - "*/.hypothesis"
   - "*/*/.hypothesis"
   - "*/*/*/.hypothesis"
