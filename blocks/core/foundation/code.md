@@ -362,11 +362,11 @@ A set of values the program declares for its business is never typed out again. 
 | a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | review | [] |
 
 ## invariant-values-are-plain-immutable-data → invariant-checked-at-construction · MUST
-A value that keeps an invariant is immutable, compared by value, and plain data, never a class instance.
+A value that keeps an invariant is immutable, compared by value, and made of data alone, in its language's plain immutable record form: it has no identity and no state that changes.
 
 | Why | Check | Tags |
 |---|---|---|
-| plain data crosses a cache, a URL and storage, where a class instance loses its methods, and a value no one can change keeps its invariant. | review | [data] |
+| data alone crosses a cache, a URL and storage as it is, two values with the same data are the same value, and a value no one can change keeps its invariant. | review | [data] |
 
 ## shapes-composed-of-small-shapes · SHOULD
 A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large base type by omitting or picking its fields.

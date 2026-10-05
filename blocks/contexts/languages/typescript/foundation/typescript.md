@@ -70,7 +70,7 @@ A brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol.
 | one form of brand reads the same in every file. | review | [] |
 
 ## invariant-value-is-a-branded-type → invariant-values-are-plain-immutable-data
-A value that keeps an invariant is a branded type, built by `create<Name>`, which throws the kit's error when the invariant fails, and narrowed by `is<Name>`.
+A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the kit's error when the invariant fails, and narrowed by `is<Name>`.
 
 ```ts
 type Email = string & { readonly __brand: 'Email' };
