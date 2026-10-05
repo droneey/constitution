@@ -2,8 +2,8 @@
 
 > Data another system owns, which a caller reads and changes only while signed in.
 
-## unauthorized-ends-the-session-through-its-owner → unauthorized-acted-on-once-by-the-cache
-The cache's handler turns the unauthorized error into session state through the surface of the feature that owns sessions.
+## unauthorized-ends-the-session-through-its-owner · SHOULD
+The cache's global error handler turns an unauthorized error into session state through the surface of the feature that owns sessions, once.
 
 | Why | Check | Tags |
 |---|---|---|

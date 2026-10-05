@@ -1,4 +1,5 @@
 import type { Finding } from '#/kernel';
+import { Layer } from '#/kernel';
 
 import type { Block } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -17,7 +18,7 @@ const nextOf = (input: { block: Block; byId: BlocksById }): readonly Block[] =>
   linksOf(input.block).flatMap((id) => {
     const next = input.byId.get(id);
 
-    return next === undefined || next.id === input.block.id || next.layer !== input.block.layer
+    return next === undefined || next.id === input.block.id || next.layer !== Layer.Implementation
       ? []
       : [
           next,

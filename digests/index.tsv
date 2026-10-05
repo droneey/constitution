@@ -21,9 +21,9 @@ block	observability	domain	Logs a collector reads: one pipeline, events with fie
 block	open-source	domain	A public repository: its licence and a private channel for reports.	foundation/open-source.md				false						
 block	owned-data	domain	Data the program decides on: aggregates changed through their roots.	architecture/owned-data.md				false						
 block	package	domain	Publishing packages: public entries, versions and releases.	foundation/package.md architecture/package.md workflow/package.md	workflow/version-control			false						packages/**
-block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md	architecture/access-control	remote-service		false						
+block	remote-data	domain	Data another system owns — cache keys, invalidation, streams.	foundation/remote-data.md architecture/remote-data.md	architecture/access-control architecture/remote-service			false						
 block	remote-service	domain	Another system the program calls: transport, failures, streams, specs.	foundation/remote-service.md architecture/remote-service.md workflow/remote-service.md				false						
-block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/a11y.md foundation/design-system.md architecture/ui.md	foundation/remote-data architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
+block	ui	domain	Screens, components and the design system of any user interface.	foundation/ui.md foundation/a11y.md foundation/design-system.md architecture/ui.md	foundation/remote-data foundation/remote-service architecture/access-control architecture/remote-data			false						**/ui/** **/components/** **/widgets/**
 block	unreliable-network	domain	Code whose requests can time out, fail or lose the connection.	foundation/unreliable-network.md				false						
 block	untrusted-client	domain	Code that runs where its user can read and change it.	foundation/untrusted-client.md architecture/untrusted-client.md				false						
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	foundation/version-control.md workflow/version-control.md				false						
@@ -79,10 +79,10 @@ block	stryker	implementation	Stryker measures the tests by the mutants they kill
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.	foundation/tailwind.md	foundation/i18n	ui browser typescript css		false						**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	foundation/tanstack-form.md architecture/tanstack-form.md		_react		false						**/*.tsx
-block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md	architecture/access-control	_react remote-data		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
+block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	foundation/tanstack-query.md architecture/tanstack-query.md	architecture/access-control	_react remote-data remote-service		false						**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	foundation/tanstack-router.md architecture/tanstack-router.md	foundation/access-control foundation/tanstack-query foundation/version-control architecture/access-control architecture/tanstack-query	react-dom		false	tanstack-start					src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	foundation/tanstack-start.md architecture/tanstack-start.md			tanstack-router	false					tanstack-router	src/routes/__root.tsx src/router.tsx
-block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/remote-data	_react		false						**/__tests__/**/*.test.tsx
+block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/remote-data foundation/remote-service	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
@@ -433,9 +433,9 @@ rule	server-owns-remote-data	remote-data	blocks/domains/remote-data/architecture
 rule	cache-keys-from-feature-factory	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	one-home-per-datum	false
 rule	invalidation-stays-in-its-feature	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	review			data	architecture	features-blind-to-each-other	false
 rule	no-second-model-of-remote-data	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review				architecture		true
-rule	stream-folded-by-domain-reducer	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review			data	architecture		true
-rule	unauthorized-acted-on-once-by-the-cache	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	review			errors	architecture	transport-failures-mapped-once	false
-rule	unauthorized-ends-the-session-through-its-owner	remote-data	blocks/domains/remote-data/architecture/with/access-control.md	access-control	SHOULD	review			errors	architecture	unauthorized-acted-on-once-by-the-cache	false
+rule	unauthorized-ends-the-session-through-its-owner	remote-data	blocks/domains/remote-data/architecture/with/access-control.md	access-control	SHOULD	review				architecture		true
+rule	stream-folded-by-domain-reducer	remote-data	blocks/domains/remote-data/architecture/with/remote-service.md	remote-service	SHOULD	review			data	architecture		true
+rule	unauthorized-acted-on-once-by-the-cache	remote-data	blocks/domains/remote-data/architecture/with/remote-service.md	remote-service	SHOULD	review			errors	architecture	transport-failures-mapped-once	false
 rule	stream-ends-with-terminal-event	remote-service	blocks/domains/remote-service/foundation/remote-service.md		MUST	test			errors	foundation	errors-surfaced-never-swallowed	false
 rule	remote-vendor-proven-by-captured-responses	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			testing	foundation		true
 rule	captured-responses-verified-against-the-vendor	remote-service	blocks/domains/remote-service/foundation/remote-service.md		SHOULD	review			testing	foundation		true
@@ -538,7 +538,7 @@ rule	data-result-is-union-by-status	ui	blocks/domains/ui/foundation/with/remote-
 rule	optimistic-writes-in-rollback-lifecycle	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	review			data	foundation		true
 rule	optimistic-lifecycle-safe-under-concurrency	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			data	foundation		true
 rule	input-driven-requests-debounced	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	SHOULD	review			ux performance	foundation	fast-source-updates-once-per-frame	false
-rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-data.md	remote-data	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
+rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/foundation/with/remote-service.md	remote-service	MUST	test			testing security	foundation	tests-run-in-a-sandbox	false
 rule	screen-guards-through-auth-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	review			security	architecture	access-denied-unless-granted	false
 rule	session-presence-in-a-root-store	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	review			data	architecture	view-state-homes	false
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	MUST	review				architecture	one-explicit-composition-root	false
@@ -1096,7 +1096,7 @@ rule	query-function-only-in-cache-utils	tanstack-query	blocks/implementations/ta
 rule	adapters-never-import-the-cache-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	one-reason-per-unit	false
 rule	libs-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
 rule	query-client-built-by-the-root	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript		architecture	stateful-clients-built-by-the-root	false
-rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/with/access-control.md	access-control	SHOULD	review		typescript	errors	architecture	unauthorized-ends-the-session-through-its-owner	false
+rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/with/access-control.md	access-control	SHOULD	review		typescript		architecture	unauthorized-ends-the-session-through-its-owner	false
 rule	layout-lives-in-route-file	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	tanstack-router-file-names-kept	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	tool	names	typescript		foundation	kebab-case-file-names	false
 rule	links-name-typed-targets	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
@@ -1142,7 +1142,7 @@ rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/te
 rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	review		typescript	testing	foundation	specs-independent-of-order	true
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/foundation/testing-library.md		MUST	test		typescript	a11y testing	foundation	ui-specs-scan-accessibility	false
 rule	spec-cache-client-fresh-without-retries	testing-library	blocks/implementations/testing-library/foundation/with/remote-data.md	remote-data	MUST	review		typescript	testing	foundation	specs-independent-of-order	true
-rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/foundation/with/remote-data.md	remote-data	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
+rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/foundation/with/remote-service.md	remote-service	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
