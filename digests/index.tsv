@@ -320,7 +320,6 @@ rule	extension-by-addition	core	blocks/core/architecture/principles.md		MUST	rev
 rule	duplication-across-contexts-by-default	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	entity-behaviour-beside-entity	core	blocks/core/architecture/principles.md		SHOULD	review				architecture		true
 rule	spec-per-boundary-of-the-tree	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture	spec-per-boundary	false
-rule	effects-faked-through-ports	core	blocks/core/architecture/testing.md		SHOULD	review			testing	architecture		true
 rule	consent-given-in-the-chat-per-action	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	consent-before-consequential-actions	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
 rule	design-settled-in-chat-first	core	blocks/core/workflow/collaboration.md		SHOULD	review				workflow		true
