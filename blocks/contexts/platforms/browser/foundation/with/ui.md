@@ -88,6 +88,13 @@ A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps it
 
 ## Accessibility
 
+## dialog-popover-and-details-native → complex-patterns-on-accessible-primitives
+In the browser, the platform's own elements are `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
+
+| Why | Check | Tags |
+|---|---|---|
+| each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong. | review | [] |
+
 ## native-html-elements-first → native-semantics-first
 `<button>` for an action, `<a href>` for a move, lists as lists, tables with headers and a caption; ARIA only where HTML has no element.
 

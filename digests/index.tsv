@@ -622,6 +622,7 @@ rule	images-declare-their-size	browser	blocks/contexts/platforms/browser/foundat
 rule	core-web-vitals-within-budget	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			performance ux	foundation		true
 rule	no-browser-globals-during-render	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			errors	foundation		true
 rule	busy-submit-marked-aria-disabled	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			a11y ux	foundation	submit-busy-while-submitting	false
+rule	dialog-popover-and-details-native	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation	complex-patterns-on-accessible-primitives	false
 rule	native-html-elements-first	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y	foundation	native-semantics-first	false
 rule	landmarks-and-skip-link	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	test			a11y	foundation	wcag-aa-conformance	false
 rule	fields-declare-autocomplete	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			ux a11y	foundation	every-control-has-an-accessible-name	false
