@@ -180,14 +180,22 @@ const removeProjects = (): void => {
   }
 };
 
-const localBlock = (fields: Readonly<Record<string, string>>): string =>
+const localBlock = (input: {
+  fields: Readonly<Record<string, string>>;
+  headings: readonly string[];
+}): string =>
   [
     '---',
-    ...Object.entries(fields).map(([key, field]) => `${key}: ${field}`),
+    ...Object.entries(input.fields).map(([key, field]) => `${key}: ${field}`),
     '---',
     '',
     '# A local block',
     '',
+    ...input.headings.flatMap((heading) => [
+      heading,
+      'A rule of the local block.',
+      '',
+    ]),
   ].join('\n');
 
 const IMPLEMENTATIONS = 'implementations';
@@ -197,11 +205,12 @@ const rulesFolder = (folder: string): string => (folder === '' ? 'rules' : `rule
 const localBlockFiles = (input: {
   fields?: Readonly<Record<string, string>>;
   folder?: string;
+  headings?: readonly string[];
   id: string;
   omit?: string;
 }): Files => ({
-  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]: localBlock(
-    Object.fromEntries(
+  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]: localBlock({
+    fields: Object.fromEntries(
       Object.entries({
         id: input.id,
         summary: `The local ${input.id} block.`,
@@ -216,7 +225,8 @@ const localBlockFiles = (input: {
         ...input.fields,
       }).filter(([key]) => key !== input.omit),
     ),
-  ),
+    headings: input.headings ?? [],
+  }),
 });
 
 const localPath = (id: string, folder: string = IMPLEMENTATIONS): string =>

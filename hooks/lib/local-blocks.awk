@@ -1,6 +1,7 @@
-# Only a local block's front matter is read: its rules are not in the index
-# (spec §4.3). A file is opened only when the hook's "local file <path>" record
-# says it is regular and readable.
+# A local block's front matter and its rule headings are read: its rules are not
+# in the index (spec §4.3), so only a heading's slug and parent are known. A
+# file is opened only when the hook's "local file <path>" record says it is
+# regular and readable.
 
 function unquote(v,   c, n) {
   c = substr(v, 1, 1)
@@ -104,6 +105,7 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   n = split(FM["requires"], a, " ")
   for (k = 1; k <= n; k++) if (!(a[k] in KNOWN) && !(a[k] in LOCAL)) warn("local-block", path " requires " a[k] ", which is not a block — fix its front matter")
   check_coverage(path)
+  local_rules(ENVIRON["CONSTITUTION_PROJECT"] "/" substr(path, 3))
   LPATH[++nlocal] = path
   LID[nlocal] = name
   LLAYER[nlocal] = layer
@@ -130,4 +132,54 @@ function check_coverage(path,   n, a, k) {
   for (k = 1; k <= n; k++) if (!is_language(a[k])) warn("local-block", path " covers " a[k] ", which is not a language block — fix its front matter")
   n = split(FM["roles"], a, " ")
   for (k = 1; k <= n; k++) if (!(a[k] in FREE)) warn("local-block", path " is held to " a[k] ", which is not a role — fix its front matter")
+}
+
+# A rule heading of a local block is "## <slug> · <LEVEL>" or
+# "## <slug> → <parent>", with a level after the parent or none. A heading in a
+# code fence is an example.
+function local_rules(file,   line, r, in_fence, in_front, rest, arrow, at, slug, parent) {
+  arrow = " → "
+  in_fence = 0
+  in_front = 1
+  r = (getline line < file)
+  sub(/\r$/, "", line)
+  if (r <= 0 || line != "---") {
+    close(file)
+    return
+  }
+  while ((getline line < file) > 0) {
+    sub(/\r$/, "", line)
+    if (in_front) {
+      if (line == "---") in_front = 0
+      continue
+    }
+    if (line ~ /^(```|~~~)/) {
+      in_fence = !in_fence
+      continue
+    }
+    if (in_fence) continue
+    if (line ~ /^## [^ ]+ · (MUST|SHOULD|MAY)$/) {
+      rest = substr(line, 4)
+      LOCAL_RULE[substr(rest, 1, index(rest, " ") - 1)] = 1
+    } else if (line ~ /^## [^ ]+ → [^ ]+( · [^ ]+)?$/) {
+      rest = substr(line, 4)
+      at = index(rest, arrow)
+      slug = substr(rest, 1, at - 1)
+      parent = substr(rest, at + length(arrow))
+      at = index(parent, " ")
+      if (at > 0) parent = substr(parent, 1, at - 1)
+      LOCAL_RULE[slug] = 1
+      LPARENT_SLUG[++nlparents] = slug
+      LPARENT_OF[nlparents] = parent
+    }
+  }
+  close(file)
+}
+
+# A local rule's parent is a rule of the constitution or of a local block.
+function check_local_parents(   k) {
+  for (k = 1; k <= nlparents; k++) {
+    if (LPARENT_OF[k] in RULE || LPARENT_OF[k] in LOCAL_RULE) continue
+    warn("local-block", LPARENT_SLUG[k] " → " LPARENT_OF[k] ": " LPARENT_OF[k] " is an unknown rule — check the slug")
+  }
 }
