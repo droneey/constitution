@@ -373,7 +373,7 @@ describe('the Biome foundation parts', () => {
 
   it.each([
     'common/biome/foundation/git.jsonc',
-    'typescript/biome/architecture/react-dom.jsonc',
+    'typescript/biome/foundation/react-dom.jsonc',
   ])('should parse when a project extends %s', (path) => {
     // Arrange
     const text = presetText(path);
@@ -1877,7 +1877,7 @@ describe('the Biome browser part', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/browser',
+        'typescript/foundation/browser',
       ],
     };
 

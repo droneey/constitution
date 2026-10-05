@@ -56,6 +56,13 @@ The router claims the document's head: the root renders `<HeadContent/>`, and no
 |---|---|---|
 | the router changes the head with the route, so a second writer would fight it on every navigation. | review | [] |
 
+## search-params-validated-by-schema → outside-values-untyped-until-parsed
+Every route with search parameters validates them by a schema in `validateSearch`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the URL is input anyone can type, and an unvalidated parameter reaches the screen as whatever was typed. | review | [] |
+
 ## search-falls-back-to-defaults · SHOULD
 A route's search schema gives every param a default, so a malformed URL opens the screen with its defaults instead of an error.
 

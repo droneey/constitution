@@ -30,13 +30,6 @@ Router primitives — `Link`, `useNavigate`, `useSearch`, `useParams` — are im
 |---|---|---|
 | a presentational component that navigates works on one screen only. | tool/imports | [] |
 
-## search-params-validated-by-schema → untrusted-input-parsed-at-edge
-Every route with search parameters validates them by a schema in `validateSearch`.
-
-| Why | Check | Tags |
-|---|---|---|
-| the URL is input anyone can type, and an unvalidated parameter reaches the screen as whatever was typed. | review | [] |
-
 ## search-params-merged-on-write → url-holds-shareable-view-state
 A write to the search merges with the current parameters, never replaces them.
 

@@ -1,12 +1,5 @@
 # React DOM
 
-## no-dangerously-set-inner-html → no-raw-html-injection
-`dangerouslySetInnerHTML` is never set.
-
-| Why | Check | Tags |
-|---|---|---|
-| it writes a string into the DOM as markup, past React's escaping. | tool/lint | [] |
-
 ## document-metadata-rendered-by-its-owner → document-metadata-owned-by-screen
 Unless another active block claims the document's head, `<title>`, `<meta>` and `<link>` are rendered as elements by the screen or component that owns them, and React hoists them into the head.
 

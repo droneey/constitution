@@ -9,6 +9,7 @@
         "useImageSize": "error",
       },
       "security": {
+        "noDangerouslySetInnerHtml": "error",
         "noDangerouslySetInnerHtmlWithChildren": "error",
         "noBlankTarget": "error",
       },

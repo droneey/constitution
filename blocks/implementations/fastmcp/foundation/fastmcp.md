@@ -14,6 +14,13 @@ The program raises the error kit's errors, never `ToolError`.
 |---|---|---|
 | a `ToolError` carries a message and no code. | review | [errors] |
 
+## tool-arguments-bounded-by-their-annotations → outside-values-untyped-until-parsed
+A tool's parameters are typed as narrowly as the business allows — a `Literal`, `Annotated[int, Field(ge=1, le=100)]`, a model with `extra='forbid'` — so the server refuses a wrong argument before the tool runs.
+
+| Why | Check | Tags |
+|---|---|---|
+| a model fills arguments by guessing; a bound in the annotation is checked at the edge, while one in the body is code each tool repeats. | review | [security] |
+
 ## validation-inside-a-tool-is-internal · SHOULD
 A validation error that a tool's own code raises — on parsing a vendor's answer, say — is an unexpected failure and is masked; only a failure of the tool's arguments is the caller's.
 

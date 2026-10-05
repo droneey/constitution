@@ -20,3 +20,10 @@ Tokens, credentials and other secrets on the device live only in the system's se
 | Why | Check | Tags |
 |---|---|---|
 | the keychain and the keystore are the stores the system encrypts and keeps from other apps, while plain storage is read by backups and by whoever holds the phone. | review | [security] |
+
+## deep-link-params-parsed-as-untrusted-input → outside-values-untyped-until-parsed
+A deep link's path and query parameters reach a screen only after a schema parses them; a link that fails the parse opens a fallback screen, never a crash or a half-filled one.
+
+| Why | Check | Tags |
+|---|---|---|
+| anyone can write a deep link and send it to the user, so a malformed one is to be expected, and it must not break the app. | review | [data] |

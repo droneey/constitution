@@ -21,12 +21,33 @@ A credential in the tab lives only in a cookie its script cannot read — `HttpO
 |---|---|---|
 | a cookie the page's script cannot read is the one store of a tab that no script in the page can reach. | review | [security] |
 
+## cross-window-messages-check-origin → outside-values-untyped-until-parsed
+A message from another window is accepted only from an expected origin, and parsed; an outgoing message names its target origin.
+
+| Why | Check | Tags |
+|---|---|---|
+| any page can post a message to any window; without the origin check, any page can drive the program. | review | [] |
+
+## redirect-targets-allowlisted → outside-values-untyped-until-parsed
+A redirect target taken from the address or a form — `returnTo`, `redirect`, `next` — is followed only when it is a path of the program's own or on an allowlist; anything else falls back to the home screen.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sign-in link that redirects anywhere sends the user, just signed in and trusting the page, to a lookalike site. | review | [security] |
+
 ## strict-content-security-policy · MUST
 Every document is served with a Content Security Policy that allows scripts only by nonce, hash or the program's own origin, with no `unsafe-inline` and no `unsafe-eval`, and sets `object-src 'none'`, `base-uri 'none'` and `frame-ancestors`.
 
 | Why | Check | Tags |
 |---|---|---|
 | when a script slips into the page anyway, the browser refuses to run it; the policy is the last wall behind every check in the code. | test | [security] |
+
+## no-raw-html-injection · MUST
+No raw HTML reaches the DOM: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`. Untrusted markup goes through a sanitising renderer.
+
+| Why | Check | Tags |
+|---|---|---|
+| injected HTML runs whatever script it carries, in the user's session. | tool/lint | [security] |
 
 ## trusted-types-required · SHOULD
 The Content Security Policy requires Trusted Types for scripts, so a string reaches an HTML or script sink only through a policy the program defines.

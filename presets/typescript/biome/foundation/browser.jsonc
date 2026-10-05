@@ -6,4 +6,7 @@
       },
     },
   },
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/no-raw-html-injection.grit",
+  ],
 }

@@ -597,16 +597,16 @@ rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/v
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation		true
 rule	bundle-reads-no-build-environment	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	tool	types		security	foundation	runtime-configuration-served-beside-bundle	false
 rule	no-credential-readable-by-script	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation	credentials-only-in-the-protected-store	false
+rule	cross-window-messages-check-origin	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation	outside-values-untyped-until-parsed	false
+rule	redirect-targets-allowlisted	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	review			security	foundation	outside-values-untyped-until-parsed	false
 rule	strict-content-security-policy	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	test			security	foundation		true
+rule	no-raw-html-injection	browser	blocks/contexts/platforms/browser/foundation/browser.md		MUST	tool	lint		security	foundation		true
 rule	trusted-types-required	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			security	foundation		true
 rule	documents-sent-with-security-headers	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			security	foundation		true
 rule	scripts-from-other-origins-pinned	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	review			security	foundation		true
 rule	bundle-size-budget	browser	blocks/contexts/platforms/browser/foundation/browser.md		SHOULD	test			performance	foundation		true
 rule	server-rendering-is-delivery-only	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review				architecture		true
 rule	served-configuration-read-at-boot	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	environment-read-once-at-boot	true
-rule	cross-window-messages-check-origin	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	untrusted-input-parsed-at-edge	false
-rule	redirect-targets-allowlisted	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	review			security	architecture	untrusted-input-parsed-at-edge	false
-rule	no-raw-html-injection	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	tool	lint		security	architecture	untrusted-input-parsed-at-edge	false
 rule	global-privacy-control-honoured	browser	blocks/contexts/platforms/browser/foundation/with/analytics.md	analytics	SHOULD	review			security	foundation		true
 rule	document-language-follows-locale	browser	blocks/contexts/platforms/browser/foundation/with/i18n.md	i18n	MUST	test			a11y ux	foundation		true
 rule	links-are-anchors	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation		true
@@ -647,7 +647,7 @@ rule	init-writes-document-from-template	cli	blocks/contexts/platforms/cli/founda
 rule	state-survives-the-os-lifecycle	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		SHOULD	test			ux data	foundation		true
 rule	useful-offline-with-what-it-has	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		SHOULD	review			ux data	foundation		true
 rule	credentials-in-secure-storage	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		MUST	review			security	foundation	credentials-only-in-the-protected-store	false
-rule	deep-link-params-parsed-as-untrusted-input	mobile	blocks/contexts/platforms/mobile/architecture/mobile.md		MUST	review			data security	architecture	untrusted-input-parsed-at-edge	false
+rule	deep-link-params-parsed-as-untrusted-input	mobile	blocks/contexts/platforms/mobile/foundation/mobile.md		MUST	review			data security	foundation	outside-values-untyped-until-parsed	false
 rule	device-capabilities-behind-ports	mobile	blocks/contexts/platforms/mobile/architecture/mobile.md		SHOULD	review			testing	architecture	real-effects-chosen-at-composition-root	false
 rule	touch-targets-44-pt-48-dp	mobile	blocks/contexts/platforms/mobile/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation	targets-meet-platform-minimum	false
 rule	safe-areas-respected	mobile	blocks/contexts/platforms/mobile/foundation/with/ui.md	ui	MUST	review			ux	foundation		true
@@ -882,9 +882,9 @@ rule	error-kit-handlers-registered-by-the-root	fastapi	blocks/implementations/fa
 rule	uvicorn-records-join-the-chain	fastapi	blocks/implementations/fastapi/foundation/with/structlog.md	structlog	MUST	review		python	security data	foundation	one-chain-for-every-record	false
 rule	tool-described-for-the-model	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python		foundation	docs-only-for-non-obvious-public-entry	true
 rule	program-raises-no-tool-error	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors	foundation	framework-errors-never-raised	false
+rule	tool-arguments-bounded-by-their-annotations	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python	security	foundation	outside-values-untyped-until-parsed	false
 rule	validation-inside-a-tool-is-internal	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors security	foundation		true
 rule	specs-through-the-in-memory-client	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
-rule	tool-arguments-bounded-by-their-annotations	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
 rule	tool-failures-answered-by-one-middleware	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-per-transport	false
 rule	fastmcp-records-join-the-chain	fastmcp	blocks/implementations/fastmcp/foundation/with/structlog.md	structlog	MUST	review		python	security data	foundation	one-chain-for-every-record	false
 rule	move-with-git-mv	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation	move-files-never-recreate	false
@@ -997,6 +997,7 @@ rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.m
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
 rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/foundation/python-check.md		MUST	tool	lint	python		foundation	function-file-and-complexity-limits	false
 rule	relative-import-kept-in-its-module	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	tool	imports	python		architecture	relative-imports-stay-in-the-feature	false
+rule	no-dangerously-set-inner-html	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	security	foundation	no-raw-html-injection	false
 rule	one-writer-of-the-head	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	review		typescript	ux	foundation	one-writer-per-shared-resource	false
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation		true
 rule	overlays-rendered-through-portal	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		SHOULD	review		typescript	a11y ux	foundation		true
@@ -1011,7 +1012,6 @@ rule	handlers-and-links-on-native-elements	react-dom	blocks/implementations/reac
 rule	jsx-controls-named	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation	every-control-has-an-accessible-name	false
 rule	jsx-roles-and-aria-valid	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation	native-semantics-first	false
 rule	jsx-viewport-never-blocks-zoom	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation	viewport-never-blocks-zoom	false
-rule	no-dangerously-set-inner-html	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		MUST	tool	lint	typescript	security	architecture	no-raw-html-injection	false
 rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		SHOULD	review		typescript	ux	architecture	document-metadata-owned-by-screen	false
 rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		SHOULD	review		typescript	performance	architecture	document-metadata-owned-by-screen	false
 rule	dom-registered-before-the-sandbox	react-dom	blocks/implementations/react-dom/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing security	foundation	network-refused-by-the-test-preload	false
@@ -1106,6 +1106,7 @@ rule	routes-preload-on-intent	tanstack-router	blocks/implementations/tanstack-ro
 rule	loader-declares-the-search-it-reads	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	routes-split-automatically	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	router-claims-the-head	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript		foundation	one-writer-per-shared-resource	false
+rule	search-params-validated-by-schema	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript	security	foundation	outside-values-untyped-until-parsed	false
 rule	search-falls-back-to-defaults	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	not-found-declared-by-the-root	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript	ux	foundation	unknown-address-shows-the-not-found-screen	false
 rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript	a11y ux	foundation	navigation-moves-focus-to-the-view	false
@@ -1113,7 +1114,6 @@ rule	screens-are-file-routes	tanstack-router	blocks/implementations/tanstack-rou
 rule	routes-folder-holds-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screens-are-file-routes	false
 rule	route-owns-its-url	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux performance	architecture	screen-composes-the-page	false
 rule	router-primitives-only-in-screens-and-widgets	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	pieces-never-touch-navigation	false
-rule	search-params-validated-by-schema	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
 rule	search-params-merged-on-write	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	ux data	architecture	url-holds-shareable-view-state	false
 rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript		architecture	screen-private-pieces-beside-screen	false
 rule	screen-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screen-private-pieces-in-dash-folders	false

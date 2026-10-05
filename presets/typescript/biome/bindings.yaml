@@ -66,6 +66,9 @@ foundation:
       - noFocusedTests
       - noSkippedTests
       - useExpect
+  browser:
+    no-raw-html-injection:
+      - no-raw-html-injection.grit
   css:
     stylesheet-classes-declared-and-used:
       - noUndeclaredClasses
@@ -89,6 +92,8 @@ foundation:
     web-first-assertions-awaited:
       - noPlaywrightMissingAwait
   react-dom:
+    no-dangerously-set-inner-html:
+      - noDangerouslySetInnerHtml
     aria-attributes-as-the-dom-spells-them:
       - noUnknownAttribute
     jsx-controls-named:
@@ -191,18 +196,12 @@ foundation:
     zod-four-forms-only:
       - zod-four-forms-only.grit
 architecture:
-  browser:
-    no-raw-html-injection:
-      - no-raw-html-injection.grit
   _react:
     component-file-calls-no-effect-hook:
       - component-effects-in-its-hooks-file.grit
   core:
     surface-only-re-exports:
       - noReExportAll
-  react-dom:
-    no-dangerously-set-inner-html:
-      - noDangerouslySetInnerHtml
   react-native:
     react-native-imported-from-its-entry:
       - noReactNativeDeepImports
