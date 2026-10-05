@@ -22,7 +22,7 @@ A preview rule is selected only by its exact code, with `explicit-preview-rules 
 | a family in preview grows with each release; a code names one rule someone read. | review | [] |
 
 ## noqa-names-its-codes → suppression-silences-one-finding
-A `# noqa` names its codes and silences a finding the check would report, and a `# type: ignore` names its code.
+A `# noqa` names its codes and silences a finding the check would report, and no `# type: ignore` is written.
 
 | Why | Check | Tags |
 |---|---|---|
