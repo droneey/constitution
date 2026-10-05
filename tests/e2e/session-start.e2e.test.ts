@@ -1313,6 +1313,25 @@ describe('session-start hook', () => {
       ],
     },
     {
+      condition: 'a local block extends a concrete constitution block',
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: `[git, ${localPath('kit')}]`,
+        }),
+        files: localBlockFiles({
+          fields: {
+            extends: 'git',
+          },
+          id: 'kit',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        `- local-block: ${localPath('kit')} extends git, a concrete block; a block extends only an abstract base — require it instead`,
+      ],
+    },
+    {
       condition: 'a local block requires no block',
       layout: {
         config: configOf({

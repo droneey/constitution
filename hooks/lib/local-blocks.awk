@@ -100,6 +100,7 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
     return
   }
   if (FM["extends"] != "" && !(FM["extends"] in KNOWN)) warn("local-block", path " extends " FM["extends"] ", which is not a constitution block — fix its front matter")
+  else if (FM["extends"] != "" && ABSTRACT[FM["extends"]] != "true") warn("local-block", path " extends " FM["extends"] ", a concrete block; a block extends only an abstract base — require it instead")
   n = split(FM["requires"], a, " ")
   for (k = 1; k <= n; k++) if (!(a[k] in KNOWN) && !(a[k] in LOCAL)) warn("local-block", path " requires " a[k] ", which is not a block — fix its front matter")
   check_coverage(path)

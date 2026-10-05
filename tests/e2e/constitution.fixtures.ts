@@ -587,10 +587,11 @@ const implementationFiles = (): Files => ({
     summary: 'Git as the version control.',
   }),
   ...implementation({
-    extends: 'git',
     axis: Axis.Workflow,
     id: 'lefthook',
-    requires: [],
+    requires: [
+      'git',
+    ],
     rules: [
       {
         slug: 'hooks-run-the-check',

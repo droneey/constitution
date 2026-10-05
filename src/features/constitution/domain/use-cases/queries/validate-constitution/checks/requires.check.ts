@@ -54,9 +54,13 @@ const extendsMessage = (subject: Subject): string | undefined => {
     return 'extends itself';
   }
 
-  return target.layer === Layer.Implementation
+  if (target.layer !== Layer.Implementation) {
+    return `extends ${base}, ${aBlock(target.layer)}; a block extends only an implementation`;
+  }
+
+  return target.frontMatter.abstract
     ? undefined
-    : `extends ${base}, ${aBlock(target.layer)}; a block extends only an implementation`;
+    : `extends ${base}, a concrete block; a block extends only an abstract base — require it instead`;
 };
 
 // A layer that requires or extends nothing leaves the fields empty; the

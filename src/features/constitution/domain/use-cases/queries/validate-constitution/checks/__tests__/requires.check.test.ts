@@ -118,6 +118,11 @@ describe('requiresCheck', () => {
       base: 'ui',
       expected: 'extends ui, a domain block; a block extends only an implementation',
     },
+    {
+      base: 'lingui',
+      expected:
+        'extends lingui, a concrete block; a block extends only an abstract base — require it instead',
+    },
   ])('should report "$expected" when an implementation extends $base', ({ base, expected }) => {
     // Arrange
     const files = validFiles();
