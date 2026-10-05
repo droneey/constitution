@@ -154,7 +154,7 @@ The primitive library holds no user-facing text and no message catalog; text arr
 | a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |
 
 ## theme-in-the-design-system-library → tokens-single-source-of-appearance
-The theme module lives in `libs/ui/theme/`: its stylesheet, its tokens, its constants and its hooks.
+The theme module lives in `libs/ui/theme/`: its tokens, its constants and the code that applies them.
 
 | Why | Check | Tags |
 |---|---|---|

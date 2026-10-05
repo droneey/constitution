@@ -16,7 +16,7 @@ Reads with one key share one request and one entry.
 
 | Why | Check | Tags |
 |---|---|---|
-| without it, two components that show the same data make two requests and may show two answers. | review | [data, performance] |
+| without it, two readers of the same data make two requests and may get two answers. | review | [data, performance] |
 
 ## remote-data-cache-invalidates-by-prefix · MUST
 The cache invalidates by a prefix of the key, with or without a refetch.

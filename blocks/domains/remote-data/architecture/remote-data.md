@@ -5,7 +5,7 @@ The remote system owns its data: it lives only in the cache of remote data, is n
 
 | Why | Check | Tags |
 |---|---|---|
-| a copy of remote data in a store goes stale the moment the server changes it, and the screen shows the copy. | review | [] |
+| a copy of remote data in a store goes stale the moment the server changes it, and the program then acts on the copy. | review | [] |
 
 ## cache-keys-from-feature-factory → one-home-per-datum
 Each feature owns one key factory, and every cache key is built through it from the port's parameters, never by hand.
