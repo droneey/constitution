@@ -3,11 +3,11 @@
 ## Modules and files
 
 ## alias-declared-in-package-imports · MUST
-An import alias, where the program has one, is declared once, in `imports` of `package.json`, the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's `index.ts` through `imports`. No alias in a bundler.
+An import alias, where the program has one, is declared once, in `imports` of `package.json`, the source the runtime reads. A tool that cannot read `imports` repeats it word for word, and no configuration declares an alias of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| one declaration is the source and the mirror is checked against it on sight; a third alias elsewhere drifts unseen. | review | [] |
+| one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | review | [] |
 
 ## file-named-after-its-export → file-is-one-semantic-unit
 A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
@@ -56,11 +56,11 @@ A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` o
 ## Values and types
 
 ## undefined-is-the-only-absence → absence-has-one-value
-Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears only in a comparison with what a platform API returns, in the type of an external format that uses it, and where an API's types demand it — the language's `Object.create(null)`, a signature a library imposes. The compiler runs with `exactOptionalPropertyTypes`.
+Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. An optional field that is absent is left out, never set to `undefined`. `null` appears only in a comparison with what a platform API returns, in the type of an external format that uses it, and where an API's types demand it — the language's `Object.create(null)`, a signature a library imposes.
 
 | Why | Check | Tags |
 |---|---|---|
-| one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident. | tool/lint | [] |
+| one spelling of absence means one check, and an optional field is then present or missing, never set to `undefined` by accident. | tool/lint | [] |
 
 ## brand-is-an-intersection-or-unique-symbol → identifiers-branded-by-entity
 A brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol.
@@ -121,11 +121,11 @@ A default for an absent value is given with `??`, not `||`.
 | a logical or also replaces `0`, an empty string and `false`, which are values, not absence. | tool/lint | [] |
 
 ## no-any → no-any-type
-No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`; `noImplicitAny` is never turned off.
+No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, and no parameter left without a type for the compiler to read as `any`.
 
 | Why | Check | Tags |
 |---|---|---|
-| these are the places `any` is written, and `noImplicitAny` refuses the parameter left without a type. | tool/lint | [] |
+| these are the places `any` is written, and a parameter without a type is an `any` nobody wrote. | tool/lint | [] |
 
 ## no-unchecked-escape-hatches → suppression-states-its-reason
 No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@ts-nocheck`. `@ts-expect-error` and any other exception carry a suppression that states why.
@@ -139,7 +139,7 @@ A method that overrides one of its base class carries `override`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `noImplicitOverride` makes the compiler refuse an override without the keyword, and the keyword on a method that overrides nothing. | tool/types | [] |
+| an override then says so where it is declared, and a base method renamed or removed leaves no method that silently overrides nothing. | tool/types | [] |
 
 ## casts-and-assertions-refused → no-unchecked-escape-hatches
 No `as` cast except `as const`, no `!` non-null assertion and no `@ts-ignore`.
@@ -305,12 +305,12 @@ A value whose type implements `Disposable` or `AsyncDisposable` is declared with
 |---|---|---|
 | the type says the value must be released, so the lint can hold it; a reader or a handle whose type says nothing stays with review. | tool/lint | [] |
 
-## options-object-typed-as-function-input → at-most-three-positional-arguments
-An object of values that travel together is typed by an interface named `<Function>Input`.
+## options-object-has-a-named-type → at-most-three-positional-arguments
+An object of values that travel together is typed by a named type, never by an object type written inline in the signature.
 
 | Why | Check | Tags |
 |---|---|---|
-| the interface names the whole the values make, and the call site reads each of them by name. | review | [] |
+| the type names the whole the values make, and the call site reads each of them by name. | review | [] |
 
 ## jsdoc-only-for-non-obvious-public-entry → docs-only-for-non-obvious-public-entry
 JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter; a `@deprecated` tag aside.

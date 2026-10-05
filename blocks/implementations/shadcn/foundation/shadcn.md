@@ -14,6 +14,13 @@ A polymorphic render is Base UI's `render` prop, the kit's only polymorphism; no
 |---|---|---|
 | one mechanism renders the consumer's element with the primitive's behaviour, everywhere the same. | review | [] |
 
+## parts-marked-by-data-slot · SHOULD
+A primitive marks itself and each of its parts with `data-slot`, named after the part.
+
+| Why | Check | Tags |
+|---|---|---|
+| a caller and a spec then reach a part by its slot, as shadcn source does, with no class written for it. | review | [ux] |
+
 ## shadcn-source-adapted-on-arrival → vendored-components-adapted-on-arrival · MUST
 Before shadcn source is added, the kit is searched for an equivalent. Added source is, before review, restyled to tokens, stripped of unused props, and made to follow the kit's prop rules.
 

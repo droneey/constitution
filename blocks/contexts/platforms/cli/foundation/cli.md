@@ -7,7 +7,7 @@ Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a us
 
 | Why | Check | Tags |
 |---|---|---|
-| a script decides what to do from the exit code alone, so each code must mean one thing in every command. | test | [errors, ux] |
+| a script decides what to do from the exit code alone, so each code must mean one thing in every command; 2 is the usage code of the shell's utilities and argument parsers, and 70 is `EX_SOFTWARE` of sysexits, the code for an internal error. | test | [errors, ux] |
 
 ## stdout-data-stderr-diagnostics · SHOULD
 Data goes to standard output; diagnostics and failures go to standard error.

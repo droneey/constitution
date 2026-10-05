@@ -3,7 +3,7 @@
 > Screens that show and change data another system owns: how an operation is bound to the screen and how the application is composed.
 
 ## providers-compose-the-ui-application → one-explicit-composition-root
-The providers are the application's composition root: they build the configuration and the cache client, build each adapter by its factory, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
+The providers are the application's composition root: they build the configuration and the cache client, build each adapter from its dependencies, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
 
 | Why | Check | Tags |
 |---|---|---|

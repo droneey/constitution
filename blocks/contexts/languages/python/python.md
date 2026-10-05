@@ -7,7 +7,7 @@ abstract: false
 checks: []
 languages: []
 roles: [format, lint, types, imports, names, unused, versions, tests, coverage, mutation, secrets, audit, commits]
-dictionary: [Python, .py, .pyi, __init__.py, __main__.py, main.py, py.typed, pyproject.toml, conftest.py, PEP 695]
+dictionary: [Python, .py, .pyi, __init__.py, __main__.py, main.py, py.typed, pyproject.toml, PEP 695]
 governs: ["**/*.py", "**/*.pyi", "pyproject.toml"]
 ---
 

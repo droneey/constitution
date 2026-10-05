@@ -70,6 +70,13 @@ Dark mode redefines the semantic tokens under one selector; a component writes `
 |---|---|---|
 | components written against tokens switch theme without a line of their own. | review | [] |
 
+## primitive-class-merged-by-cn → primitive-passes-attributes-and-class
+A primitive merges its class with the caller's through `cn()`, the caller's last.
+
+| Why | Check | Tags |
+|---|---|---|
+| the merge keeps the last of two classes of one group, so the caller's utility replaces the primitive's instead of fighting it by its order in the stylesheet. | review | [ux] |
+
 ## class-merger-knows-the-theme → utilities-only-from-tokens · MUST
 The class merger is configured with every scale the theme defines — `extendTailwindMerge` given the theme's namespaces — and a spec proves that two classes of different groups both survive a merge.
 

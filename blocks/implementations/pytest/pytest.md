@@ -7,7 +7,7 @@ abstract: false
 checks: [tests, coverage]
 languages: [python]
 roles: []
-dictionary: [pytest, pytest-cov, pytest-randomly, pytest-timeout, anyio]
+dictionary: [pytest, pytest-cov, pytest-randomly, pytest-timeout, anyio, conftest.py]
 governs: ["**/tests/**"]
 ---
 

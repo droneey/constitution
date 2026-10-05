@@ -238,15 +238,15 @@ An adapter implements, over one external system, every contract of its owner tha
 |---|---|---|
 | one system's knowledge — its client, its errors, its wire shapes — is then in one place. | review | [] |
 
-## adapter-built-by-factory-or-module-object · SHOULD
-An adapter is written as a factory function that takes its dependencies and returns the adapter. An adapter with no dependency may be a module object.
+## adapter-built-from-explicit-dependencies · SHOULD
+An adapter receives its dependencies explicitly — as a factory's parameters or through its constructor — and keeps no hidden state. Its form is a factory, a module object for one with no dependency, or a class whose constructor takes its dependencies.
 
 | Why | Check | Tags |
 |---|---|---|
-| a factory shows every dependency in its signature, and a module object is the smallest form of an adapter that needs none. | review | [] |
+| every dependency then shows in the signature that builds the adapter, and nothing it holds outlives a test or leaks between its callers unseen. | review | [] |
 
-## adapter-receives-its-dependencies → adapter-built-by-factory-or-module-object
-An adapter receives its dependencies — the transport, the clients it speaks through — from the composition root, and never imports a shared instance of them.
+## adapter-receives-its-dependencies → adapter-built-from-explicit-dependencies
+The dependencies an adapter receives — the transport, the clients it speaks through — come from the composition root; the adapter never imports a shared instance of them.
 
 | Why | Check | Tags |
 |---|---|---|

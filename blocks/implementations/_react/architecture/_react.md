@@ -27,6 +27,15 @@ A compound's surface exports only its root and its prop types; a part is reached
 |---|---|---|
 | a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |
 
+## Adapters
+
+## adapter-is-a-factory-or-module-object → adapter-built-from-explicit-dependencies
+An adapter is a factory function that takes its dependencies and returns the adapter, or a module object where it has no dependency; never a class.
+
+| Why | Check | Tags |
+|---|---|---|
+| a React program is built of functions, a factory shows every dependency in its signature, and a method of a factory's object handed to a hook or a handler keeps working where a class's loses its `this`. | review | [] |
+
 ## Failure
 
 ## error-boundary-catches-render-errors → error-boundary-per-screen

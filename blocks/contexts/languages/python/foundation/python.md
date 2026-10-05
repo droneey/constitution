@@ -10,7 +10,7 @@ A module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and
 | a module's name is the name it is imported by, and the language allows no hyphen in it; outside the import tree, core's case holds. | tool/names | [] |
 
 ## test-folder-files-in-python-forms → test-files-named-by-role
-A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`, fixtures `<name>_fixtures.py`, or `conftest.py`, which shares fixtures with the specs of its folder.
+A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`, fixtures `<name>_fixtures.py`, or the file the test runner reads for the fixtures the specs of its folder share.
 
 | Why | Check | Tags |
 |---|---|---|

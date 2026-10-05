@@ -262,7 +262,7 @@ Only a transient failure — a timeout, a dropped connection, a rate limit — i
 | retrying a failure that will not change wastes time and repeats side effects. | review | [errors] |
 
 ## expected-failures-typed-with-codes · SHOULD
-An expected failure is typed, carries a stable code `<MODULE>_<ENTITY>_<KIND>` and details that say what to do, and belongs to the contract that can fail.
+An expected failure is typed, carries a stable code a caller can branch on and details that say what to do, and belongs to the contract that can fail.
 
 | Why | Check | Tags |
 |---|---|---|

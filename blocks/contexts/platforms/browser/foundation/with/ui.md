@@ -44,12 +44,12 @@ On a foldable screen, content and controls never cross the fold; the layout foll
 |---|---|---|
 | text and buttons that fall into the hinge cannot be read or pressed. | review | [ux] |
 
-## primitive-passes-class-and-data-slot → primitive-passes-its-element-through
-In the browser, a primitive accepts its element's native attributes and class, merges its class through the class merger, and marks its parts with `data-slot`.
+## primitive-passes-attributes-and-class → primitive-passes-its-element-through
+In the browser, a primitive passes its native attributes and its class through, its class merged with the caller's.
 
 | Why | Check | Tags |
 |---|---|---|
-| a caller then styles and targets a primitive as it would the element underneath. | review | [ux] |
+| a caller then styles and sets attributes on a primitive as it would on the element underneath. | review | [ux] |
 
 ## images-declare-their-size → core-web-vitals-within-budget
 An image declares its width and height.

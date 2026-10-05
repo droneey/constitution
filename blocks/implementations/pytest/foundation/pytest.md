@@ -37,6 +37,13 @@ The unit run leaves out `tests/integration/` and `tests/e2e/` by `norecursedirs`
 |---|---|---|
 | pytest collects every folder under `tests/`, so only `norecursedirs` keeps the integration specs out of the unit run. | review | [] |
 
+## shared-fixtures-in-the-conftest → test-folder-files-in-python-forms
+The fixtures the specs of a folder share are in that folder's `conftest.py`.
+
+| Why | Check | Tags |
+|---|---|---|
+| pytest reads each folder's `conftest.py` and hands its fixtures to the specs below it, which import nothing to use them. | review | [testing] |
+
 ## The sandbox
 
 ## network-refused-by-the-conftest → network-refused-in-the-unit-run

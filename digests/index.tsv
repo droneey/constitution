@@ -33,7 +33,7 @@ block	cli	platform	A program run from a command line, one command per invocation
 block	mobile	platform	Code that runs as an application on a phone or tablet.	foundation/mobile.md architecture/mobile.md	foundation/ui architecture/ui	untrusted-client unreliable-network		false						
 block	css	language	How stylesheets are layered, named and written.	foundation/css.md architecture/css.md	foundation/i18n foundation/ui architecture/ui			false				format lint names		**/*.css
 block	python	language	How Python is written, resolved, typed and packaged.	foundation/python.md architecture/python.md	foundation/package architecture/cli workflow/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.py **/*.pyi pyproject.toml
-block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/i18n foundation/package architecture/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json tsconfig.json
+block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/i18n foundation/package architecture/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
@@ -281,8 +281,8 @@ rule	surface-only-re-exports	core	blocks/core/architecture/anatomy.md		MUST	tool
 rule	surface-offers-operations-not-mechanisms	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	contract-lifts-on-the-second-feature	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	one-adapter-per-system	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
-rule	adapter-built-by-factory-or-module-object	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
-rule	adapter-receives-its-dependencies	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture	adapter-built-by-factory-or-module-object	false
+rule	adapter-built-from-explicit-dependencies	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
+rule	adapter-receives-its-dependencies	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture	adapter-built-from-explicit-dependencies	false
 rule	real-effects-chosen-at-composition-root	core	blocks/core/architecture/anatomy.md		SHOULD	review			testing	architecture		true
 rule	vendor-clients-in-libs	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	delivery-unit-beside-what-it-serves	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
@@ -626,7 +626,7 @@ rule	dynamic-viewport-units	browser	blocks/contexts/platforms/browser/foundation
 rule	targets-at-least-24-css-px	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			a11y ux	foundation	targets-meet-platform-minimum	false
 rule	images-sized-for-density	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			performance ux	foundation		true
 rule	content-avoids-the-fold	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation		true
-rule	primitive-passes-class-and-data-slot	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation	primitive-passes-its-element-through	false
+rule	primitive-passes-attributes-and-class	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			ux	foundation	primitive-passes-its-element-through	false
 rule	images-declare-their-size	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			performance ux	foundation	core-web-vitals-within-budget	false
 rule	core-web-vitals-within-budget	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	SHOULD	review			performance ux	foundation		true
 rule	no-browser-globals-during-render	browser	blocks/contexts/platforms/browser/foundation/with/ui.md	ui	MUST	review			errors	foundation		true
@@ -778,7 +778,7 @@ rule	named-exports-only	typescript	blocks/contexts/languages/typescript/foundati
 rule	cancellation-by-abort-signal	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript	errors performance	foundation	io-has-timeout-and-cancellation	false
 rule	resources-released-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	resources-released-on-every-path	false
 rule	disposable-held-by-using	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	tool	lint	typescript		foundation	resources-released-by-using	false
-rule	options-object-typed-as-function-input	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	at-most-three-positional-arguments	false
+rule	options-object-has-a-named-type	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	at-most-three-positional-arguments	false
 rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	docs-only-for-non-obvious-public-entry	false
 rule	deprecated-by-jsdoc-tag	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation	retired-code-marked-deprecated	false
 rule	no-deprecated-import	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	lint	typescript		foundation	deprecated-forms-never-used	false
@@ -829,6 +829,7 @@ rule	controllable-props-named-value-default-change	_react	blocks/implementations
 rule	component-effects-in-its-hooks-file	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript		architecture	side-effects-at-the-edges	false
 rule	component-file-calls-no-effect-hook	_react	blocks/implementations/_react/architecture/_react.md		MUST	tool	lint	typescript		architecture	component-effects-in-its-hooks-file	false
 rule	compound-parts-reached-through-the-root	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript	ux	architecture	compound-over-prop-regions	false
+rule	adapter-is-a-factory-or-module-object	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript		architecture	adapter-built-from-explicit-dependencies	false
 rule	error-boundary-catches-render-errors	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript	errors ux security	architecture	error-boundary-per-screen	false
 rule	data-failures-rendered-as-state	_react	blocks/implementations/_react/foundation/with/remote-data.md	remote-data	MUST	review		typescript	errors ux	foundation	data-result-is-union-by-status	false
 rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/architecture/with/remote-data.md	remote-data	SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
@@ -990,6 +991,7 @@ rule	nest-exceptions-answered-by-their-kind	nestjs	blocks/implementations/nestjs
 rule	program-throws-no-http-exception	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	errors	foundation	errors-carry-codes-not-statuses	false
 rule	nestjs-files-in-the-tree	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	review		typescript		architecture	anatomy-top-level-by-concern	false
 rule	providers-folder-holds-provider-files	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	tool	names	typescript		architecture	nestjs-files-in-the-tree	false
+rule	adapter-is-an-injectable-class	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	review		typescript	testing	architecture	adapter-built-from-explicit-dependencies	false
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	injector-never-asked-for-a-dependency	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	no-global-module	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript		architecture	one-explicit-composition-root	false
@@ -1033,6 +1035,7 @@ rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/foundation
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	case-order-shuffled-with-a-seed	false
 rule	no-test-reruns	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	flaky-test-fixed-or-removed	false
 rule	integration-folder-runs-apart	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	testing	foundation	integration-specs-in-their-own-run	false
+rule	shared-fixtures-in-the-conftest	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	review		python	testing	foundation	test-folder-files-in-python-forms	false
 rule	network-refused-by-the-conftest	pytest	blocks/implementations/pytest/foundation/pytest.md		MUST	review		python	testing security	foundation	network-refused-in-the-unit-run	false
 rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python		foundation	effects-faked-never-mocked	false
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
@@ -1078,6 +1081,7 @@ rule	pytest-asyncio-banned	ruff	blocks/implementations/ruff/foundation/with/pyte
 rule	specs-lift-only-assert-and-package-rules	ruff	blocks/implementations/ruff/foundation/with/pytest.md	pytest	SHOULD	review		python	testing	foundation		true
 rule	complex-widgets-on-base-ui	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	a11y ux	foundation	complex-patterns-on-accessible-primitives	false
 rule	polymorphism-through-render	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		SHOULD	review		css typescript		foundation		true
+rule	parts-marked-by-data-slot	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		SHOULD	review		css typescript	ux	foundation		true
 rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/foundation/shadcn.md		MUST	review		css typescript	ux	foundation	vendored-components-adapted-on-arrival	true
 rule	shadcn-source-added-into-the-kit	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	review		css typescript	ux	architecture	vendored-component-placed-by-its-home	true
 rule	shadcn-text-passed-by-props	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	review		css typescript	ux	architecture	primitives-take-text-by-props	false
@@ -1108,6 +1112,7 @@ rule	variants-in-one-cva-map	tailwind	blocks/implementations/tailwind/foundation
 rule	mobile-first-breakpoints	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	mobile-first-additive-breakpoints	true
 rule	dynamic-viewport-classes	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	tool	lint	css typescript	ux	foundation	dynamic-viewport-units	false
 rule	dark-theme-redefines-tokens	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript	ux	foundation	light-and-dark-one-token-set	false
+rule	primitive-class-merged-by-cn	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript	ux	foundation	primitive-passes-attributes-and-class	false
 rule	class-merger-knows-the-theme	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	test		css typescript	ux	foundation	utilities-only-from-tokens	true
 rule	tailwind-layers-are-the-order	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		SHOULD	review		css typescript		foundation	layer-order-declared-once	false
 rule	focus-shown-by-focusable-utility	tailwind	blocks/implementations/tailwind/foundation/tailwind.md		MUST	review		css typescript	a11y	foundation	focus-always-visible	false
@@ -1188,6 +1193,7 @@ rule	spec-cache-client-fresh-without-retries	testing-library	blocks/implementati
 rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/foundation/with/remote-service.md	remote-service	MUST	review		typescript	testing security	foundation	ui-specs-replace-the-transport	false
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/foundation/ts-reset.md		MUST	review		typescript		foundation	no-any	false
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	tool	types	typescript		foundation	rules-held-by-tools	false
+rule	paths-mirror-package-imports	tsc	blocks/implementations/tsc/foundation/tsc.md		MUST	review		typescript		foundation	alias-declared-in-package-imports	false
 rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation/with/bun-test.md	bun-test	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
 rule	ty-is-the-type-gate	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	rules-held-by-tools	false
 rule	ty-ignore-names-its-rule	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	suppression-silences-one-finding	false

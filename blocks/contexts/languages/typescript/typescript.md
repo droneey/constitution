@@ -7,8 +7,8 @@ abstract: false
 checks: []
 languages: []
 roles: [format, lint, types, imports, names, unused, versions, tests, coverage, mutation, secrets, audit, commits]
-dictionary: [TypeScript, .ts, .tsx, .d.ts, index.ts, main.ts, types.d.ts, package.json, tsconfig.json, JSDoc]
-governs: ["**/*.ts", "**/*.tsx", "package.json", "tsconfig.json"]
+dictionary: [TypeScript, .ts, .tsx, .d.ts, index.ts, main.ts, types.d.ts, package.json, JSDoc]
+governs: ["**/*.ts", "**/*.tsx", "package.json"]
 ---
 
 # TypeScript
