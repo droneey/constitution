@@ -85,7 +85,7 @@ block	tanstack-start	implementation	The TanStack app shell — SPA mode, root sh
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.	foundation/testing-library.md	foundation/remote-data	_react		false						**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
-block	ty	implementation	ty checks the types of Python.	foundation/ty.md	foundation/pydantic	python		false		types	python			ty.toml
+block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
 block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package workflow/package	python		false						pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser foundation/tsc architecture/browser	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
@@ -1156,7 +1156,6 @@ rule	specs-checked-by-their-own-config	tsc	blocks/implementations/tsc/foundation
 rule	ty-is-the-type-gate	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	rules-held-by-tools	false
 rule	ty-ignore-names-its-rule	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	suppression-silences-one-finding	false
 rule	deprecated-calls-fail-the-types	ty	blocks/implementations/ty/foundation/ty.md		MUST	tool	types	python		foundation	deprecated-forms-never-used	false
-rule	deprecated-pydantic-forms-fail-the-types	ty	blocks/implementations/ty/foundation/with/pydantic.md	pydantic	MUST	tool	types	python		foundation	pydantic-two-forms-only	false
 rule	uv-is-the-only-python-package-manager	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	dependencies-pinned-by-lockfile	false
 rule	installs-follow-uv-lock	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	dependencies-pinned-by-lockfile	false
 rule	one-lock-for-the-workspace	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python		foundation	one-version-per-dependency	false
