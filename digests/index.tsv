@@ -87,7 +87,7 @@ block	ts-reset	implementation	Types an application's parsed and fetched values a
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
 block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/package	python		false						pyproject.toml uv.lock
-block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser foundation/tsc architecture/browser	typescript		false						vite.config.ts vite.*.config.ts
+block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser foundation/tsc	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
@@ -1159,9 +1159,9 @@ rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/foundation/uv.md
 rule	members-linked-by-workspace-source	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation	workspace-packages-linked-locally	false
 rule	uv-build-backend-capped	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation		true
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
+rule	build-env-holds-only-build-facts	vite	blocks/implementations/vite/foundation/with/browser.md	browser	MUST	review		typescript	security	foundation	runtime-configuration-served-beside-bundle	false
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/with/browser.md	browser	SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
 rule	build-is-not-the-type-gate	vite	blocks/implementations/vite/foundation/with/tsc.md	tsc	MUST	review		typescript		foundation	compiler-is-the-type-gate	false
-rule	one-build-for-every-environment	vite	blocks/implementations/vite/architecture/with/browser.md	browser	MUST	review		typescript	security	architecture	runtime-configuration-served-beside-bundle	false
 rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	tool	unused	python		foundation	no-dead-code	false
 rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/foundation/vulture.md		MUST	review		python		foundation	suppression-states-its-reason	false
 rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/foundation/yaml.md		SHOULD	test		typescript	errors	foundation	parse-failure-is-one-coded-error	false
