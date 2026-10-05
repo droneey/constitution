@@ -39,13 +39,6 @@ CI and every script install with `bun install --frozen-lockfile`.
 |---|---|---|
 | a tool with a Node shebang otherwise runs on whichever Node the machine finds, and one runtime for the program and its tools means one version to pin. | review | [] |
 
-## other-runtime-pinned-like-bun → tools-run-on-the-pinned-runtime
-A runtime that runs what Bun cannot is pinned in the toolchain's file like Bun.
-
-| Why | Check | Tags |
-|---|---|---|
-| pinned, the second runtime runs in one version on every machine. | review | [] |
-
 ## other-runtime-only-where-bun-cannot · SHOULD
 Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.
 

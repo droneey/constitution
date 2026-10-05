@@ -823,7 +823,6 @@ rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/foundation/bun.
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	install-scripts-only-for-listed-dependencies	false
 rule	release-age-set-for-installs	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript	security	foundation	dependency-release-cooldown	false
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
-rule	other-runtime-pinned-like-bun	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	tools-run-on-the-pinned-runtime	false
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	check-chains-one-entry-per-area	false
