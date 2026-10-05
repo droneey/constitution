@@ -1,7 +1,7 @@
 # Browser
 
 ## server-rendering-is-delivery-only · MUST
-The program's logic runs in the tab. Server rendering, when it is on, only speeds the first paint: no business logic, no data access and no server function lives on the web tier, except one session proxy — it exchanges the user's sign-in for tokens, keeps them on the server behind a cookie as `no-credential-readable-by-script` sets it and forwards calls to the API, with no business rule and no shaping of data.
+The program's logic runs in the tab. Server rendering, when it is on, only speeds the first paint: no business logic, no data access and no server function lives on the web tier, except one session proxy — it exchanges the user's sign-in for tokens, keeps them on the server behind a session cookie its script cannot read and forwards calls to the API, with no business rule and no shaping of data.
 
 | Why | Check | Tags |
 |---|---|---|

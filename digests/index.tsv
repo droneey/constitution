@@ -15,7 +15,7 @@ role	commits	true
 block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
 block	access-control	domain	Callers who sign in with different rights: identity, sessions, access.	foundation/access-control.md architecture/access-control.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
-block	api	domain	A program that serves requests: its handlers, failures and callers.	foundation/api.md architecture/api.md	foundation/access-control			false						**/api/**
+block	api	domain	A program that serves requests: its handlers, failures and callers.	foundation/api.md architecture/api.md				false						**/api/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md	architecture/ui			false						
 block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
@@ -335,6 +335,7 @@ rule	tests-first-from-a-description	core	blocks/core/workflow/testing.md		SHOULD
 rule	bug-fix-starts-with-failing-test	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	test-seen-failing	false
 rule	whole-program-mutated-periodically	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	access-denied-unless-granted	access-control	blocks/domains/access-control/foundation/access-control.md		MUST	test			security	foundation		true
+rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/foundation/access-control.md		MUST	review			security	foundation		true
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	review			security	architecture	access-denied-unless-granted	false
 rule	tracking-waits-for-consent	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security	foundation		true
 rule	refusal-as-easy-as-consent	analytics	blocks/domains/analytics/foundation/analytics.md		MUST	review			security ux	foundation	tracking-waits-for-consent	true
@@ -363,7 +364,6 @@ rule	handlers-in-the-api-folder	api	blocks/domains/api/architecture/api.md		SHOU
 rule	one-error-handler-registered-by-the-root	api	blocks/domains/api/architecture/api.md		SHOULD	review			errors security ux	architecture	one-error-handler-per-transport	false
 rule	every-failure-reaches-one-handler	api	blocks/domains/api/architecture/api.md		MUST	review			errors	architecture		true
 rule	request-parsed-before-its-handler	api	blocks/domains/api/architecture/api.md		MUST	review			security	architecture		true
-rule	session-cookie-closed-to-script	api	blocks/domains/api/foundation/with/access-control.md	access-control	MUST	review			security	foundation		true
 rule	section-optional-fields-required	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data	foundation	absence-has-one-value	false
 rule	secrets-are-references	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation		true
 rule	document-variants-selected-by-a-discriminant	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data errors	foundation	illegal-states-unrepresentable	false
