@@ -21,5 +21,5 @@ governs: ["components.json", "**/libs/ui/components/**"]
 |---|---|---|
 | `ui-primitives-keyboard-and-focus` | Base UI implements the WAI-ARIA patterns: keyboard, focus, roles | yes |
 | `ui-primitives-unstyled` | Base UI primitives carry no look; shadcn's classes are rewritten to tokens on arrival | yes |
-| `primitives-take-text-by-props` | the source ships English strings, such as a screen reader's "Close"; removed on arrival, the text passed by props | partly |
+| `primitives-take-text-by-props` | the source ships English strings, such as a screen reader's "Close"; they are removed on arrival and the text passed by props (`shadcn-source-adapted-on-arrival`) | partly |
 | `ui-primitives-slot` | Base UI's `render` prop | yes |

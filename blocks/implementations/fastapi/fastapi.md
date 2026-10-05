@@ -21,5 +21,5 @@ governs: []
 |---|---|---|
 | `untrusted-input-parsed-at-edge` | the body, query, path and headers are parsed by the handler's annotations before it runs, and a failure is a `RequestValidationError` | yes |
 | `one-error-handler-per-transport` | an exception handler per error class on the one app, `RequestValidationError` and `HTTPException` included | yes |
-| `error-kit-carries-code-cause-and-details` | `HTTPException` carries a status and a detail, but no stable code and no cause, so the program raises the error kit's errors and the handlers answer them | no |
+| `error-kit-carries-code-cause-and-details` | `HTTPException` carries a status and a detail, but no stable code and no cause, so the program raises the error kit's errors (`program-raises-no-http-exception`) and the handlers answer them | no |
 | `resources-released-on-every-path` | the `lifespan` context manager opens what the app holds before the first request and closes it after the last | yes |

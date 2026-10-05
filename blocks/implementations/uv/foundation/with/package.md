@@ -15,3 +15,10 @@ A package builds with `uv_build`, required in `[build-system]` with a floor and 
 | Why | Check | Tags |
 |---|---|---|
 | a new minor of the backend may build a different package from the same files; the cap makes that an update someone reviews. | review | [] |
+
+## distributions-attested-before-upload → publishing-by-workflow-identity
+The job that publishes signs each distribution with `pypi-attestations sign`, under the run's identity, which writes `<file>.publish.attestation` beside it, and `uv publish` uploads the two together.
+
+| Why | Check | Tags |
+|---|---|---|
+| `uv publish` uploads the attestations it finds but makes none, so without this step a package is published with no provenance. | review | [security] |

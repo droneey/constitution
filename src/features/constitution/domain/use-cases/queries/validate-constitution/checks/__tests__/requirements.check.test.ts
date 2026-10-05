@@ -18,6 +18,20 @@ const answering = (rows: readonly string[]): CheckInput => {
   return checkInputOf(files);
 };
 
+// Lingui with a rule of its own, which a partly or no answer may name.
+const coveredBy = (rows: readonly string[]): CheckInput => {
+  const files = validFiles();
+  files[LINGUI] = textOf({
+    files,
+    path: LINGUI,
+  }).replace(ANSWER, rows.join('\n'));
+  files['blocks/implementations/lingui/foundation/catalogs.md'] = `# Catalogs\n\n${rule({
+    slug: 'catalogs-compile',
+  })}`;
+
+  return checkInputOf(files);
+};
+
 describe('requirementsCheck', () => {
   it('should report a Requirements table once per file when a with/ file of a block that is no implementation holds one', () => {
     // Arrange
@@ -115,7 +129,7 @@ describe('requirementsCheck', () => {
     // Arrange
     const input = answering([
       ANSWER,
-      '| `i18n-plurals-by-cldr` | again, plurals only | partly |',
+      '| `i18n-plurals-by-cldr` | again, plurals only | yes |',
     ]);
 
     // Act
@@ -128,6 +142,49 @@ describe('requirementsCheck', () => {
         path: LINGUI,
       },
     ]);
+  });
+
+  it.each([
+    {
+      met: 'partly',
+      row: '| `i18n-plurals-by-cldr` | ICU plural; catalogs-compile does the rest | partly |',
+    },
+    {
+      met: 'no',
+      row: '| `i18n-plurals-by-cldr` | none; `no-any` stands in | no |',
+    },
+  ])(
+    'should report a $met answer when it names in backticks no rule of its own block',
+    ({ met, row }) => {
+      // Arrange
+      const input = coveredBy([
+        row,
+      ]);
+
+      // Act
+      const findings = requirementsCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `answers "i18n-plurals-by-cldr" ${met} without naming the rule that covers the rest`,
+          path: LINGUI,
+        },
+      ]);
+    },
+  );
+
+  it('should accept a partly answer when it names in backticks the rule of its own block that covers the rest', () => {
+    // Arrange
+    const input = coveredBy([
+      '| `i18n-plurals-by-cldr` | ICU plural; `catalogs-compile` does the rest | partly |',
+    ]);
+
+    // Act
+    const findings = requirementsCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
   });
 
   it('should report an answer when it names a rule of its own block', () => {

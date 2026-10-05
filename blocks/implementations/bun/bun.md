@@ -20,4 +20,4 @@ governs: ["bunfig.toml", "package.json"]
 | Requirement | How | Met |
 |---|---|---|
 | `workspace-packages-linked-locally` | `workspace:*` resolves a package from the working tree | yes |
-| `publishing-with-provenance-supported` | Bun does not publish; npm publishes, through trusted publishing | partly |
+| `publishing-with-provenance-supported` | `bun publish` has no provenance and no trusted publishing, so `npm publish` publishes, in the release workflow and through trusted publishing (`bun-is-the-only-package-manager`) | no |

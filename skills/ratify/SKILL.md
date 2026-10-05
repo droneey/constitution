@@ -69,7 +69,7 @@ For a local block, fill the template's placeholders from the repository and the 
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names an abstract constitution base it inherits, an id that starts with `_`, or stays `null` — a constitution block it builds on goes under `requires`;
 - `checks` lists the roles the tool checks, if it is a checking tool — the `role` lines of `${CLAUDE_PLUGIN_ROOT}/digests/index.tsv` hold them; `languages` the language blocks whose files those checks cover — constitution ids or local language blocks — and `[]` when it checks nothing or only the roles the index marks `true`, which hold for every language; `roles` stays `[]`, since only a language block is held to roles; `dictionary` its brand and file names; `governs` the file globs its rules govern;
-- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `${CLAUDE_PLUGIN_ROOT}/blocks/` to find them. One row per requirement: its slug, how the library meets it — with the workaround where it falls short — and whether it is met: `yes`, `partly` or `no`. Drop the section when there is nothing to answer;
+- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `${CLAUDE_PLUGIN_ROOT}/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the local block covers the part it misses; `no` — it cannot meet the rule, and a rule of the local block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the template's format, with a slug no `rule` line of the index holds. Drop the placeholder rule when there is none.
 
 A local block is a draft until a person reviews it; say so.
@@ -117,6 +117,8 @@ Show the owner everything you will write:
 - `constitution.yaml` exactly as it will be written;
 - `PROJECT.md` in full;
 - each local block in full.
+
+Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the plugin's, from their cards under `${CLAUDE_PLUGIN_ROOT}/blocks/`, and each local block's — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
 
 Write only after the owner's yes, and only the files the owner agreed to.
 

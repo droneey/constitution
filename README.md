@@ -63,6 +63,8 @@ A tool's block lists in `languages` the language blocks whose files its checks c
 
 A rule's Tags are lenses for the concerns that cross every axis and layer — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — so a review can take one concern across the whole project. They are optional: a full review reads every rule, and a rule inherits the tags of the rule it carries out.
 
+A domain, a platform or core may list, under a chapter's heading `Requirements for implementation`, the rules it asks of any library that does its job. An implementation's card answers those of the blocks above it in a Requirements table, one row each: the rule, how the library meets it, and whether it does. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the answering block covers the part it misses; `no` — it cannot meet the rule, and a rule of the answering block replaces it. A `partly` or `no` row names that rule in its How by its slug in backticks, so a project that takes the block follows the rule instead, with no override.
+
 A block refers, through its front matter, only to the layers above it and, among implementations, to the host it requires and the abstract base it extends. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 
 ## 🧰 Presets
@@ -114,7 +116,7 @@ At the hand-back, a third hook holds the gate. When the project names a `check` 
 
 Both are run by the user, never by the model on its own:
 
-- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about applications when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write and writes only after the owner's yes, never over a file without asking.
+- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about applications when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write, lists every `partly` and `no` answer of the proposed blocks with the rule that stands in, and writes only after the owner's yes, never over a file without asking.
 - **`/constitution:amend [rule-slug]`** adds, changes or removes an override: a rule the index holds, a level below its current one, a reason, an optional end date and a scope — the whole repository or one application. It shows the exact change to `constitution.yaml` and writes it only after the owner's yes for that override.
 
 The model may run one more itself, as the hand-back reminder suggests:
@@ -160,7 +162,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a rule without a Why, a Check or a known tag, a slug used twice, and a heading or table that misses the rule format;
 - a rule that carries out a rule on an axis it may not refer to, a stated level looser than the one it inherits, a cycle and a missing rule;
 - a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
-- a malformed Requirements row, an answer to a rule its block may not answer, or a Requirements table outside an implementation's card and chapters;
+- a malformed Requirements row, an answer to a rule its block may not answer, a `partly` or `no` answer that names in backticks no rule of its own block, or a Requirements table outside an implementation's card and chapters;
 - a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
 - a binding whose rule, axis, part or setting does not hold, or whose rule belongs to a block below its part, and a rule a tool checks that no binding, no held rule under it and no account of the tool's own run holds; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;

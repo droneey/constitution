@@ -15,7 +15,7 @@ A polymorphic render is Base UI's `render` prop, the kit's only polymorphism; no
 | one mechanism renders the consumer's element with the primitive's behaviour, everywhere the same. | review | [] |
 
 ## shadcn-source-adapted-on-arrival → vendored-components-adapted-on-arrival · MUST
-Before shadcn source is added, the kit is searched for an equivalent. Added source is, before review, restyled to tokens, stripped of unused props, and made to follow the kit's prop rules.
+Before shadcn source is added, the kit is searched for an equivalent. Added source is, before review, restyled to tokens, stripped of unused props and of the text it ships, which then comes by props, and made to follow the kit's prop rules.
 
 | Why | Check | Tags |
 |---|---|---|
