@@ -10,7 +10,7 @@ A published package ships `py.typed` in its import package, beside its `__init__
 | without the marker a consumer's type checker ignores the package's annotations. | review | [] |
 
 ## requires-python-floor-in-the-support-window · SHOULD
-A published package's `requires-python` is a `>=` floor at the oldest minor released within the last three years, as SPEC 0 counts them, and never at a minor past its end of life; the floor is raised only in a minor release. Its `Programming Language :: Python :: 3.<minor>` classifiers list each minor its specs run on.
+A published package's `requires-python` is a `>=` floor at the oldest minor released within the last three years, as SPEC 0 counts them, and never at a minor past its end of life. Its `Programming Language :: Python :: 3.<minor>` classifiers list each minor its specs run on.
 
 | Why | Check | Tags |
 |---|---|---|

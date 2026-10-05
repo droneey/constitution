@@ -96,11 +96,11 @@ A type of the program's business data is a dataclass with `frozen=True, slots=Tr
 | the runtime then refuses a mutation the business never meant, and each field is set by its name. | review | [] |
 
 ## invariant-value-is-a-frozen-dataclass → invariant-values-are-plain-immutable-data
-A value that keeps an invariant is a dataclass of the form `business-types-frozen-dataclasses` gives, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset` or another such value — so the generated `__eq__` and `__hash__` compare and hash it by its data. Its `__post_init__` checks the invariant and raises the kit's error. It is never a `NamedTuple` or a parsing library's model, such as msgspec's `Struct`; input from outside reaches it through a model at the edge that maps to it.
+A value that keeps an invariant is a dataclass of the form `business-types-frozen-dataclasses` gives, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset` or another such value — so the generated `__eq__` and `__hash__` compare and hash it by its data. Its `__post_init__` checks the invariant and raises the kit's error. It is never a `NamedTuple` or a parsing library's model, such as msgspec's `Struct`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a frozen dataclass of immutable fields is the language's plain immutable record, while a `NamedTuple` equals any tuple of the same items and a parsing library's model ties the value to that library. | review | [] |
+| a frozen dataclass of immutable fields is the language's plain immutable record, while a `NamedTuple` equals any tuple of the same items and a parsing library's model carries the library's behaviour beside the data. | review | [] |
 
 ## Functions
 

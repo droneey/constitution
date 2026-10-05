@@ -1,6 +1,6 @@
 # Python
 
-> A folder's surface is `__init__.py`, a role file is `<name>_<role>.py`, and the wiring file is `root/wiring.py`. Role folders and suffixes are spelled in snake_case: `entities/`, `value_objects/`, `use_cases/`, `errors/`, `constants/`, `types/`, `utils/`, `models/`, `contracts/`, `repositories/`, and `_entity.py`, `_value_object.py`, `_use_case.py`, `_error.py`, `_constants.py`, `_types.py`, `_utils.py`, `_model.py`, `_port.py`, `_repository.py`, `_cli.py`.
+> A folder's surface is `__init__.py`, a role file is `<name>_<role>.py`, and the wiring file is `root/wiring.py`. Role folders and suffixes are spelled in snake_case: `entities/`, `value_objects/`, `use_cases/`, `errors/`, `constants/`, `types/`, `utils/`, `models/`, `contracts/`, `repositories/`, and `_entity.py`, `_value_object.py`, `_use_case.py`, `_error.py`, `_constants.py`, `_types.py`, `_utils.py`, `_model.py`, `_port.py`, `_repository.py`.
 
 ## Modules and files
 
