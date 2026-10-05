@@ -12,6 +12,11 @@ foundation:
     test-folder-files-in-python-forms:
       - tests
 architecture:
+  cli:
+    command-files-in-cli:
+      - 'src/*/cli'
+    kebab-case-file-names:
+      - 'src/*/cli'
   core:
     data-ports-split-by-reads-and-writes:
       - 'src/*/*/**/repositories'
