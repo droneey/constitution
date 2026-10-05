@@ -7,9 +7,4 @@ export default {
     './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/yaml.mjs',
     './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/core.mjs',
   ],
-  options: {
-    tsConfig: {
-      fileName: 'tsconfig.json',
-    },
-  },
 };

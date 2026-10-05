@@ -948,6 +948,7 @@ rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundati
 rule	personal-toolchain-overrides-ignored	mise	blocks/implementations/mise/foundation/with/version-control.md	version-control	MUST	review			security	foundation	machine-local-files-ignored	true
 rule	equivalent-mutant-marked-by-pragma	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python		foundation	suppression-silences-one-finding	false
 rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
+rule	spec-finds-files-by-searching-up	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true
 rule	compiler-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
 rule	program-throws-no-http-exception	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	errors	foundation	framework-errors-never-raised	false

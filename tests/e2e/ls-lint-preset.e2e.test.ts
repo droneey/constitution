@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { blockCode } from './biome-preset.fixtures';
-import { failedPaths, PARTS, presetWords } from './ls-lint-preset.fixtures';
+import { failedPaths, inPackages, PARTS, presetWords } from './ls-lint-preset.fixtures';
 
 const WELL_FORMED = [
   '.github/ISSUE_TEMPLATE/bug_report.yml',
@@ -758,6 +758,87 @@ describe('the ls-lint parts of the tools that write folders', () => {
         without: [
           reported,
         ],
+      });
+    },
+  );
+});
+
+describe('the ls-lint parts of the tools that write folders in each package', () => {
+  it.each([
+    {
+      part: 'common/foundation/stryker',
+      path: '.stryker-tmp/sandbox-AhbDNq/package.json',
+      reported: '.stryker-tmp/sandbox-AhbDNq',
+    },
+    {
+      part: 'typescript/foundation/typescript',
+      path: 'node_modules/some-package/index.js',
+      reported: 'node_modules',
+    },
+    {
+      part: 'common/foundation/uv',
+      path: '.venv/lib/python3.14/site-packages/orders.py',
+      reported: '.venv/lib/python3.14',
+    },
+    {
+      part: 'common/foundation/ruff',
+      path: '.ruff_cache/cache/orders.json',
+      reported: '.ruff_cache',
+    },
+    {
+      part: 'common/foundation/pytest',
+      path: '.pytest_cache/v/cache/lastfailed',
+      reported: '.pytest_cache',
+    },
+    {
+      part: 'common/foundation/hypothesis',
+      path: '.hypothesis/unicode_data/charmap.json.gz',
+      reported: '.hypothesis/unicode_data',
+    },
+    {
+      part: 'common/foundation/mutmut',
+      path: 'mutants/src/shop/__init__.py',
+      reported: 'mutants/src/shop/__init__.py',
+    },
+    {
+      part: 'common/foundation/complexipy',
+      path: '.complexipy_cache/cache.json',
+      reported: '.complexipy_cache',
+    },
+    {
+      part: 'common/foundation/import-linter',
+      path: '.import_linter_cache/a1b2c3.meta.json',
+      reported: '.import_linter_cache',
+    },
+  ])(
+    'should skip the folder its tool writes in a package up to four folders down only when a project extends $part',
+    ({ part, path, reported }) => {
+      // Arrange
+      const project = {
+        paths: inPackages(path),
+      };
+
+      // Act
+      const failed = {
+        with: failedPaths({
+          ...project,
+          parts: [
+            'common/foundation/core',
+            part,
+          ],
+        }),
+        without: failedPaths({
+          ...project,
+          parts: [
+            'common/foundation/core',
+          ],
+        }),
+      };
+
+      // Assert
+      expect(failed).toStrictEqual({
+        with: [],
+        without: inPackages(reported),
       });
     },
   );

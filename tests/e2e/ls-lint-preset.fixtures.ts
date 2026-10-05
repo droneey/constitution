@@ -36,6 +36,18 @@ const PARTS = [
 
 const LS_LINT = miseBinary('ls-lint');
 
+// A package one to four folders down, as a repository of packages lays them
+// out, in the order ls-lint reports them.
+const PACKAGES = [
+  'packages/shop',
+  'packages/shop/python',
+  'packages/shop/python/orders',
+  'shop',
+];
+
+const inPackages = (path: string): readonly string[] =>
+  PACKAGES.map((folder) => `${folder}/${path}`);
+
 const failedPaths = (project: Project): readonly string[] => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-ls-lint-'));
 
@@ -159,4 +171,4 @@ const presetWords = (): readonly string[] => {
   ];
 };
 
-export { failedPaths, PARTS, presetWords };
+export { failedPaths, inPackages, PARTS, presetWords };

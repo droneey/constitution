@@ -31,7 +31,7 @@ No plugin that runs a case again — pytest-rerunfailures, flaky — is installe
 | a case run again passes on its second try and hides the race that failed the first. | review | [] |
 
 ## integration-folder-runs-apart → integration-specs-in-their-own-run
-The unit run leaves out `tests/integration/` and `tests/e2e/` by `norecursedirs`; integration specs run as their own task of the check, `pytest tests/integration`.
+The unit run leaves out `tests/integration/` and `tests/e2e/` by `norecursedirs`, which keeps pytest's `.*` for the hidden folders the tools write; integration specs run as their own task of the check, `pytest tests/integration`.
 
 | Why | Check | Tags |
 |---|---|---|

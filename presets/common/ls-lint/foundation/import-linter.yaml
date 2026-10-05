@@ -1,2 +1,7 @@
 ignore:
   - .import_linter_cache
+  # TODO(loeffel-io/ls-lint#86): keep only the root's line once ls-lint reads .gitignore.
+  - "*/.import_linter_cache"
+  - "*/*/.import_linter_cache"
+  - "*/*/*/.import_linter_cache"
+  - "*/*/*/*/.import_linter_cache"

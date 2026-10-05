@@ -53,7 +53,8 @@ minversion = "9.1"
 strict = true
 testpaths = ["tests"]
 pythonpath = ["tests"]
-norecursedirs = ["integration", "e2e"]
+# the list replaces pytest's defaults: `.*` keeps the hidden folders out, or Hypothesis warns of .hypothesis/
+norecursedirs = [".*", "integration", "e2e"]
 addopts = ["-ra", "--import-mode=importlib"]
 filterwarnings = ["error"]
 anyio_mode = "auto"
