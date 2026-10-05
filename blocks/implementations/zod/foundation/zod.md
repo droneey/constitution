@@ -7,6 +7,13 @@ A document the program owns is parsed with `z.strictObject`; a vendor's response
 |---|---|---|
 | `z.strictObject` fails on an unknown key, and `z.object` drops it. | test | [] |
 
+## schema-held-exactly-to-its-model → domain-values-never-typed-again
+A schema over one of the program's types is held to it exactly — `conformingTo<Model>()(schema)`, or `z.ZodType<Model>` where assignability is enough — and an enum's schema is `z.enum(TheEnum)`.
+
+| Why | Check | Tags |
+|---|---|---|
+| exact conformance fails both a stricter and a looser schema, so the schema can never say something the type does not. | review | [] |
+
 ## zod-issues-become-error-details → parse-failure-is-one-coded-error
 Input is parsed with `safeParse`, and each of the error's `issues` becomes a detail, with its `path`.
 

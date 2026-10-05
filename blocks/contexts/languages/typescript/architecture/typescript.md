@@ -4,6 +4,13 @@
 
 ## Modules and files
 
+## hash-alias-for-the-source-root → alias-declared-in-package-imports
+The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | review | [] |
+
 ## hash-imports-leave-the-module → folder-files-import-each-other-directly
 An import that leaves its module uses `#/`; files inside one module import each other by relative path. A module never imports itself through `#/`.
 

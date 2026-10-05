@@ -1,6 +1,6 @@
 # API
 
-> How a program that serves requests answers them and guards itself, in any architecture: a failure answered from its code, and what the server refuses from callers it does not know.
+> How a program that serves requests answers them and guards itself, in any architecture: a failure answered from its code, what the server refuses from callers it does not know, and what any server framework must provide.
 
 ## Failures
 
@@ -42,3 +42,21 @@ A request the server sends to an address a caller gave — a webhook, a file to 
 | Why | Check | Tags |
 |---|---|---|
 | the server reaches what its callers cannot — its own network, the cloud's metadata endpoint — and a caller who chooses the address chooses what the server reaches for them. | review | [security] |
+
+## Requirements for implementation
+
+What any server framework must provide.
+
+## every-failure-reaches-one-handler · MUST
+The framework passes every failure of a request — a route's or a tool's, a refused input, an unknown route, method or tool — to a handler the program registers once, and answers none of them in a shape of its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it, some failures leave in the framework's shape, unmasked, and the one handler cannot be written. | review | [errors] |
+
+## request-parsed-before-its-handler · MUST
+The framework parses a request's parameters and body against a declared shape before the route or tool runs, and passes a refusal to the one handler with the path of each field it refused.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it, each route parses its own input, and the edge the program trusts is wherever each one remembered to parse. | review | [security] |

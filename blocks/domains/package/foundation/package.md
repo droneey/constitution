@@ -67,6 +67,13 @@ A file several packages ship lives once, and each package holds only a copy gene
 |---|---|---|
 | one source means a fix is made once and reaches every package, and no copy becomes a second original. | review | [] |
 
+## package-ships-only-the-files-it-names · MUST
+A package's manifest names the files it ships, and the package ships those and no other.
+
+| Why | Check | Tags |
+|---|---|---|
+| a file the package does not name — a spec, a local configuration, a secret left in the folder — ships by accident, and every consumer installs it. | review | [security] |
+
 ## package-ships-its-types · MUST
 A published package ships the types of every entry a consumer imports code from, where the consumer's type checker finds them.
 
@@ -93,11 +100,11 @@ A package's README shows the install line and the shortest use: for a configurat
 ## Versions and releases
 
 ## breaking-change-ships-its-migration · MUST
-A breaking change of an entry is announced by the package's version and ships with a migration a consumer can follow.
+A breaking change of an entry ships with a migration a consumer can follow.
 
 | Why | Check | Tags |
 |---|---|---|
-| a break the version hides is taken as a safe update, and one without a migration leaves the consumer to rediscover it. | review | [] |
+| a break without a migration leaves every consumer to rediscover what changed and how to follow it. | review | [] |
 
 ## publish-skips-published-versions → operations-idempotent-by-design
 Publishing skips a version the registry already holds, so a failed publish is repaired by running it again.
@@ -114,11 +121,11 @@ A deprecated entry also names the version that removes it.
 | a deprecation without a replacement leaves the consumer stuck, and one without a removal version never ends. | review | [] |
 
 ## publishing-by-workflow-identity → least-privilege-credentials · MUST
-No stored token publishes: the registry trusts only an identity issued to the run that publishes, and records the provenance of every version.
+No stored token publishes. A new package's first version is published once by a person with two-factor authentication; every later version only by an identity issued to the run that publishes, and the registry records its provenance.
 
 | Why | Check | Tags |
 |---|---|---|
-| a stored publishing token is the credential attackers want most; an identity that exists only inside the run that publishes cannot leak. | review | [] |
+| a stored publishing token is the credential attackers want most, and an identity that exists only inside the run that publishes cannot leak; a registry may trust a run only for a package it already holds, so the first version needs a person. | review | [] |
 
 ## Requirements for implementation
 

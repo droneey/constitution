@@ -6,10 +6,3 @@
 | Why | Check | Tags |
 |---|---|---|
 | a path `exports` does not map cannot be imported, so the curated entries are the whole of what a consumer can couple to. | review | [] |
-
-## files-list-what-ships → package-entries-curated
-`files` in `package.json` lists exactly what the package ships.
-
-| Why | Check | Tags |
-|---|---|---|
-| without the list, every file the ignore rules leave in is packed, and ships by accident. | review | [] |

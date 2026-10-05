@@ -4,13 +4,6 @@
 
 ## State and effects
 
-## derived-state-computed-in-render → one-home-per-datum
-A value that can be derived is computed during render, never stored in state and synchronised by an effect.
-
-| Why | Check | Tags |
-|---|---|---|
-| a derived copy in state is a second home of the same fact, one render behind the first. | review | [performance] |
-
 ## component-effects-in-its-hooks-file → side-effects-at-the-edges
 A component file calls no effect hook: its effects live in hooks in `<name>.hooks.ts` beside it, and input or output goes only through binding units.
 

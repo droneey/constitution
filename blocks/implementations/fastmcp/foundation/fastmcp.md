@@ -28,12 +28,12 @@ A tool's parameters are typed as narrowly as the business allows — a `Literal`
 |---|---|---|
 | a model fills arguments by guessing; a bound in the annotation is checked at the edge, while one in the body is code each tool repeats. | review | [security] |
 
-## validation-inside-a-tool-is-internal · SHOULD
-A validation error that a tool's own code raises — on parsing a vendor's answer, say — is an unexpected failure and is masked; only a failure of the tool's arguments is the caller's.
+## validation-inside-a-tool-is-internal → failure-answered-by-its-code
+A `pydantic.ValidationError` the tool's own code raises — on parsing a vendor's answer, say — is masked like any other failure; only fastmcp's `ValidationError`, which it raises for the arguments, is a refused argument.
 
 | Why | Check | Tags |
 |---|---|---|
-| the model can correct an argument it sent, not an answer the program failed to parse, and the error would show it the program's internals. | review | [errors, security] |
+| fastmcp passes the tool's own `pydantic.ValidationError` on unchanged, and the model can correct an argument it sent, not an answer the program failed to parse. | review | [] |
 
 ## specs-through-the-in-memory-client → tests-run-in-a-sandbox
 A spec calls a tool through `fastmcp.Client(server)`, the in-memory transport, on a server built with fakes, and opens the client with `async with` inside the case.

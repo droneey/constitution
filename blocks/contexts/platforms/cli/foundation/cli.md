@@ -23,6 +23,13 @@ A command that reports data prints it as JSON when given `--json`.
 |---|---|---|
 | another program can then read the result without parsing text meant for people. | test | [ux] |
 
+## progressive-report-printed-as-events-arrive · SHOULD
+The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
+
+| Why | Check | Tags |
+|---|---|---|
+| a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. | review | [ux] |
+
 ## output-masks-secret-values → no-secret-or-personal-data-in-output
 Every value the run knows to be secret is masked in all output, an engine's output included, before it is printed.
 

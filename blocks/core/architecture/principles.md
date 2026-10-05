@@ -118,12 +118,12 @@ A contract is shaped by the role that uses it: a reader sees only reads, a write
 |---|---|---|
 | a wide contract couples every caller to operations it never uses, and hides which caller can change what. | review | [] |
 
-## untrusted-input-parsed-at-edge · MUST
-Input from outside the program — a request, a response, a file, the environment — is parsed once, at the edge, into a known type. Inside, it is trusted and never checked again.
+## untrusted-input-parsed-at-edge → outside-values-untyped-until-parsed
+Input from outside the program is parsed once, at the edge; inside, it is trusted and never checked again.
 
 | Why | Check | Tags |
 |---|---|---|
-| a value parsed once cannot carry an unexpected shape into the domain, and the checks do not scatter through the code. | review | [security] |
+| the checks do not scatter through the code, and the domain receives only values of a known shape. | review | [] |
 
 ## extension-by-addition · MUST
 A new kind of thing — a vendor, a command, a format, a rule — is added as a new member and its registration, without editing the code that handles the other kinds. A long branch by kind becomes a strategy and a registry.

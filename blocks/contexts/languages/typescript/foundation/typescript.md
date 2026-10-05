@@ -2,8 +2,8 @@
 
 ## Modules and files
 
-## hash-alias-from-package-imports · MUST
-`#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's `index.ts` through `imports`. No alias in a bundler.
+## alias-declared-in-package-imports · MUST
+An import alias, where the program has one, is declared once, in `imports` of `package.json`, the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's `index.ts` through `imports`. No alias in a bundler.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -236,11 +236,11 @@ A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appear
 | `Date` mixes an instant with the machine's time zone and mutates in place, which is where date bugs come from; `Temporal` keeps each meaning in its own immutable type. | review | [data] |
 
 ## no-date-library → dates-through-temporal
-No module imports `moment`, `dayjs`, `date-fns` or `luxon`, or a path inside them.
+No module imports a date library, one that wraps `Date`, or a path inside one.
 
 | Why | Check | Tags |
 |---|---|---|
-| each of them wraps the `Date` that `Temporal` replaces. | tool/lint | [] |
+| a date library wraps the `Date` that `Temporal` replaces. | tool/lint | [] |
 
 ## no-object-joined-into-text → text-made-deliberately
 No object reaches text through its default `toString`, by `+` or in a template, and `+` never mixes a `bigint` with a `number`.

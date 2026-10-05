@@ -295,19 +295,12 @@ What an operation reports is a value it returns — for a progressive report, a 
 
 **Suffixes of core's vocabulary:** `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is not a repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`. The language fixes the spelling. Each block names its own folders and suffixes in its chapter, and a project adds its own the same way.
 
-## folder-named-for-purpose-or-role · SHOULD
-A folder is named for its purpose, or by a role of the vocabulary of the project's active blocks. No other technical name: no `helpers`, `misc`, `stuff`, `magic`, or a singular `lib`. The layer names are fixed words, whatever their grammatical number.
+## folder-named-for-purpose-or-role → folder-named-for-its-purpose
+A folder whose purpose a layer or a role of the vocabulary of the project's active blocks names takes that name; the layer names are fixed words, whatever their grammatical number.
 
 | Why | Check | Tags |
 |---|---|---|
-| a folder named for what its contents are for tells a reader about the system; one named for their shape tells nothing. | review | [] |
-
-## one-purpose-per-folder · SHOULD
-A folder holds one purpose, said in one phrase without "and". It appears to separate purposes already mixed, never for members that do not exist yet.
-
-| Why | Check | Tags |
-|---|---|---|
-| a folder of two purposes gives a new file two places to go, and a reader two things to tell apart. | review | [] |
+| a folder named by the vocabulary tells a reader its place in the tree before it is opened, the same way in every project. | review | [] |
 
 ## set-folder-holds-only-members · SHOULD
 Files of one kind that arrive one at a time — one per vendor, command, rule or section — live in a folder named for the member in the plural, and nothing else lives there. Their contract, registry and runner sit beside that folder.

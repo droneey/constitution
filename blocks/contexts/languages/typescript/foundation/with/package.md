@@ -16,6 +16,13 @@ Wherever a consumer imports code, an entry of `exports` carries a `types` condit
 |---|---|---|
 | the consumer's compiler finds an entry's types through that condition. | review | [] |
 
+## files-list-what-ships → package-ships-only-the-files-it-names
+`files` in `package.json` lists exactly what the package ships.
+
+| Why | Check | Tags |
+|---|---|---|
+| without the list, every file the ignore rules leave in is packed, and ships by accident. | review | [] |
+
 ## exported-types-have-type-tests · SHOULD
 A package's exported generic and conditional types are proven by type cases the compiler checks.
 

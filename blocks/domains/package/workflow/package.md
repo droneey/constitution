@@ -10,7 +10,7 @@ Versions follow semantic versioning: major for a breaking change of an entry, mi
 | a consumer reads the version to decide whether an update is safe; a version that lies breaks them. | review | [] |
 
 ## release-job-owns-publishing → publishing-by-workflow-identity
-The release job publishes every version. A new package is published once by a person with two-factor authentication, and from then on the release job alone publishes it.
+The release job is the run that publishes every version after a new package's first.
 
 | Why | Check | Tags |
 |---|---|---|

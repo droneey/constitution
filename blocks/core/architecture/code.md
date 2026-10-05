@@ -46,11 +46,11 @@ Universal failures live in `kernel/errors`, a feature's in its `domain/errors`, 
 | a failure declared where its contract lives is found with it, and a raw transport failure that passes the boundary couples its caller to the vendor. | review | [] |
 
 ## one-error-handler-per-transport → failure-shown-as-what-happened-and-what-next
-Defects travel to the boundary. Each transport has one handler that turns a failure into what its user sees, and a program exits only there.
+Defects travel to the boundary. Each transport has one handler of last resort that turns a failure into what its user sees, and a program exits only there. A handler nested below it — a screen's error boundary — only renders a failure within its own part, in the same shape.
 
 | Why | Check | Tags |
 |---|---|---|
-| one handler gives every failure the same shape and the same next step, and no internal detail leaks past it. | review | [] |
+| one handler gives every failure the same shape and the same next step, and no internal detail leaks past it; a nested one that only renders keeps a failure to the part it broke. | review | [] |
 
 ## Types
 

@@ -8,7 +8,7 @@ A read goes through `useQuery`, and a write through `useMutation`.
 | the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. | review | [data] |
 
 ## query-result-returned-as-status-union → data-result-is-union-by-status
-What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. The error type is registered once for the cache, and no default is invented.
+What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. Or the read suspends — `useSuspenseQuery` — and the boundary above it handles the pending and failed states. The error type is registered once for the cache, and no default is invented.
 
 | Why | Check | Tags |
 |---|---|---|

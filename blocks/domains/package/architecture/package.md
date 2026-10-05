@@ -26,7 +26,7 @@ A package ships configuration, primitives or tooling, never a product's business
 | a package that knows its consumer changes whenever the consumer does, and serves no one else. | tool/imports | [] |
 
 ## package-entries-curated → access-only-through-curated-surface
-The manifest lists every entry a consumer may use and nothing else, and names the files it ships.
+The manifest lists every entry a consumer may use and nothing else.
 
 | Why | Check | Tags |
 |---|---|---|

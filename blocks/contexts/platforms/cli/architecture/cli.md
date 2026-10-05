@@ -17,10 +17,3 @@ The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag def
 | Why | Check | Tags |
 |---|---|---|
 | every command is found in one place. | tool/names | [] |
-
-## progressive-report-printed-as-events-arrive → report-returned-as-a-value
-The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
-
-| Why | Check | Tags |
-|---|---|---|
-| a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. | review | [ux] |

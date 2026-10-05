@@ -95,6 +95,13 @@ An effect synchronises with a system outside React — never state from state, n
 |---|---|---|
 | an effect that sets state from state renders twice and races; an event's response belongs in its handler. | review | [] |
 
+## derived-state-computed-in-render → effects-only-for-external-systems
+A value that can be derived is computed during render, never stored in state and synchronised by an effect.
+
+| Why | Check | Tags |
+|---|---|---|
+| a derived copy in state renders twice and is one render behind the value it copies. | review | [performance] |
+
 ## effect-cleans-up-and-cancels → io-has-timeout-and-cancellation · MUST
 Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
 
