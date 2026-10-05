@@ -91,7 +91,7 @@ Input and output, network, storage, clock, randomness and processes live in adap
 | code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | review | [] |
 
 ## one-explicit-composition-root · MUST
-Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies, typed by their contracts, and never builds an adapter itself. No container magic.
+Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies typed by their contracts, and never builds an adapter itself or asks for one. A container may do the wiring only from bindings written in the root's own declarations; one that finds its bindings by scanning, by name or by convention, or that a unit asks for what it needs, is the magic this rule forbids.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -16,6 +16,7 @@
           },
           "style": {
             "noParameterProperties": "off",
+            "useImportType": "off",
           },
         },
       },

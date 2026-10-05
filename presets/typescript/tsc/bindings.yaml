@@ -10,6 +10,8 @@ foundation:
     compiler-keeps-decorator-metadata:
       - emitDecoratorMetadata
       - experimentalDecorators
+    framework-filled-fields-marked-definite:
+      - strictPropertyInitialization
   self:
     compiler-is-the-type-gate:
       - exactOptionalPropertyTypes

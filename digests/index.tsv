@@ -836,6 +836,8 @@ rule	test-order-randomized	bun-test	blocks/implementations/bun-test/foundation/b
 rule	no-sleep-in-specs	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	no-fixed-sleeps-in-tests	false
 rule	network-refused-by-the-test-preload	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		MUST	review		typescript	testing security	foundation	network-refused-in-the-unit-run	false
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/foundation/bunli.md		SHOULD	test		typescript	testing	foundation	command-tested-through-its-command-line	false
+rule	bunli-usage-failures-exit-two	bunli	blocks/implementations/bunli/foundation/bunli.md		MUST	test		typescript	errors ux	foundation	exit-codes-from-one-map	false
+rule	bunli-configured-inline	bunli	blocks/implementations/bunli/foundation/bunli.md		MUST	review		typescript	testing security	foundation	tests-run-in-a-sandbox	false
 rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architecture/bunli.md		SHOULD	review		typescript		architecture	delivery-units-stay-thin	false
 rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	review		typescript	security	architecture	untrusted-input-parsed-at-edge	false
 rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	review		typescript	errors security ux	architecture	one-error-handler-per-transport	true
@@ -950,8 +952,13 @@ rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/foundati
 rule	spec-finds-files-by-searching-up	mutmut	blocks/implementations/mutmut/foundation/mutmut.md		MUST	review		python	testing	foundation	mutants-all-killed	false
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation		true
 rule	compiler-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
+rule	injected-classes-imported-as-values	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
+rule	framework-filled-fields-marked-definite	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript		foundation	compiler-is-the-type-gate	false
 rule	program-throws-no-http-exception	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	errors	foundation	framework-errors-never-raised	false
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
+rule	injector-never-asked-for-a-dependency	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
+rule	no-global-module	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript		architecture	one-explicit-composition-root	false
+rule	contracts-injected-by-token	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	error-kit-mapped-by-one-exception-filter	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	review		typescript	errors security ux	architecture	one-error-handler-per-transport	false
 rule	decorator-options-where-bun-reads	nestjs	blocks/implementations/nestjs/foundation/with/bun-test.md	bun-test	MUST	review		typescript	errors	foundation	compiler-keeps-decorator-metadata	false
 rule	nest-logs-through-the-pino-instance	nestjs	blocks/implementations/nestjs/foundation/with/pino.md	pino	MUST	review		typescript	security data	foundation	one-instance-writes-every-record	false
@@ -1157,6 +1164,7 @@ rule	sdists-never-built	uv	blocks/implementations/uv/foundation/uv.md		MUST	revi
 rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/foundation/uv.md		MUST	review		python	security	foundation	tools-run-on-the-pinned-runtime	false
 rule	members-linked-by-workspace-source	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation	workspace-packages-linked-locally	false
 rule	uv-build-backend-capped	uv	blocks/implementations/uv/foundation/with/package.md	package	SHOULD	review		python		foundation		true
+rule	distributions-attested-before-upload	uv	blocks/implementations/uv/foundation/with/package.md	package	MUST	review		python	security	foundation	publishing-by-workflow-identity	false
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	build-env-holds-only-build-facts	vite	blocks/implementations/vite/foundation/with/browser.md	browser	MUST	review		typescript	security	foundation	runtime-configuration-served-beside-bundle	false
 rule	bundle-measured-against-budget	vite	blocks/implementations/vite/foundation/with/browser.md	browser	SHOULD	review		typescript	performance	foundation	bundle-size-budget	false
@@ -1174,7 +1182,7 @@ rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/architectur
 rule	schema-never-brands	zod	blocks/implementations/zod/architecture/zod.md		MUST	tool	lint	typescript	data	architecture	value-object-built-only-by-its-check	false
 rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/with/convergence.md	convergence	MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
 answer	bun	workspace-packages-linked-locally	yes
-answer	bun	publishing-with-provenance-supported	partly
+answer	bun	publishing-with-provenance-supported	no
 answer	bunli	command-framework-parses-flags-by-schema	yes
 answer	bunli	command-framework-leaves-exits-to-the-handler	partly
 answer	bunli	command-framework-runs-in-a-test-sandbox	partly
@@ -1200,8 +1208,8 @@ answer	matomo	analytics-consent-first	yes
 answer	matomo	analytics-anonymous-by-default	yes
 answer	matomo	analytics-loads-without-blocking	yes
 answer	matomo	analytics-context-dimensions	yes
-answer	nestjs	one-explicit-composition-root	partly
-answer	nestjs	compiler-is-the-type-gate	partly
+answer	nestjs	one-explicit-composition-root	yes
+answer	nestjs	compiler-is-the-type-gate	yes
 answer	pydantic	schema-rejects-unknown-keys	yes
 answer	pydantic	schema-discriminated-unions	yes
 answer	pydantic	schema-exports-json-schema	yes

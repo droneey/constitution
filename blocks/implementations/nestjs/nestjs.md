@@ -19,5 +19,5 @@ governs: ["nest-cli.json", ".swcrc"]
 
 | Requirement | How | Met |
 |---|---|---|
-| `one-explicit-composition-root` | the modules are the one place the program is wired, and a provider receives its dependencies through its constructor, but Nest's injector builds them from the modules' declarations — the container the rule forbids | partly |
-| `compiler-is-the-type-gate` | `tsc --noEmit` runs with `strict` and the listed options, but `verbatimModuleSyntax` and `strictPropertyInitialization` are off: decorator metadata needs a constructor's types imported as values, and a class the framework fills from a request has no initializer | partly |
+| `one-explicit-composition-root` | the modules' `providers` are where the program is wired: each binds a token to its implementation with `useClass` or `useFactory` (`contracts-injected-by-token`), and the injector follows only those declarations; a provider takes its dependencies through its constructor (`providers-injected-through-the-constructor`), never asks the injector for one (`injector-never-asked-for-a-dependency`), and no module is global (`no-global-module`) | yes |
+| `compiler-is-the-type-gate` | `tsc --noEmit` runs with `strict` and every listed option, `verbatimModuleSyntax` included; a field the framework fills is marked definite (`framework-filled-fields-marked-definite`), and an injected class is imported as a value (`injected-classes-imported-as-values`) | yes |
