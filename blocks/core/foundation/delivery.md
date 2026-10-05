@@ -41,6 +41,13 @@ Each area of the check — `format`, `lint`, `type`, `test`, `mutation`, `unused
 |---|---|---|
 | CI, the hooks and a person run the same names, so the names stay stable, and a second language adds its tools to the areas rather than a second set of names. | review | [] |
 
+## application-checked-from-its-own-folder → one-check-command
+In a repository of several applications, each application under `apps` in `constitution.yaml` is checked by a run of each tool scoped to its folder, with the parts of its own blocks, and each area's `<area>:check` entry chains those runs; a tool that reads the whole repository — its manifests, its lockfiles, its history — runs once, from the root.
+
+| Why | Check | Tags |
+|---|---|---|
+| a part applied from the root either misses the application's paths, as one that names `src/` does, and passes in silence, or applies one application's parts to the others and loosens their rules. | review | [] |
+
 ## check-only-checks · MUST
 The check verifies and never changes a file of the repository: it generates nothing, formats nothing and rewrites nothing. A tool's cache, in a folder of its own, is not a change.
 

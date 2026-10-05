@@ -49,6 +49,13 @@ A function or a method named only `handle`, `process`, `manage`, `do`, `run`, `e
 |---|---|---|
 | a list of verbs is what a lint can hold of the rule; the lint sees a proxy's handler, and no other interface that imposes a name. | tool/lint | [] |
 
+## configuration-per-application-at-the-root → application-checked-from-its-own-folder
+An application with parts of its own has its configuration in the repository's root, `biome.<application>.jsonc`, which extends the shared parts and its own; its check runs `biome check --config-path=biome.<application>.jsonc <its folder>`, and `biome.json` leaves that folder out of `files.includes`.
+
+| Why | Check | Tags |
+|---|---|---|
+| Biome reads a plugin's path from the configuration at the top, so a configuration inside the application's folder cannot load the presets' plugins, and a nested one that extends the root's takes no other file. | review | [] |
+
 ## project-grit-rules-scoped · SHOULD
 A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the constitution's presets carry it.
 

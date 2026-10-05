@@ -8,7 +8,7 @@ checks: [format, lint, names]
 languages: [typescript, css]
 roles: []
 dictionary: [Biome, biome.json, biome-ignore, GritQL, .grit]
-governs: ["biome.json", "**/*.grit"]
+governs: ["biome.json", "biome.*.jsonc", "**/*.grit"]
 ---
 
 # Biome

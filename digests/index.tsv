@@ -36,7 +36,7 @@ block	python	language	How Python is written, resolved, typed and packaged.	found
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/i18n foundation/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
-block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
+block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md		typescript		false		format lint names	typescript css			biome.json biome.*.jsonc **/*.grit
 block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md	foundation/package	typescript		false						bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md		bun		false		tests coverage	typescript			**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
@@ -172,6 +172,7 @@ rule	scope-limited-to-the-task	core	blocks/core/foundation/delivery.md		SHOULD	r
 rule	documents-change-with-what-they-describe	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
 rule	one-check-command	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	check-chains-one-entry-per-area	core	blocks/core/foundation/delivery.md		MUST	review				foundation	one-check-command	false
+rule	application-checked-from-its-own-folder	core	blocks/core/foundation/delivery.md		MUST	review				foundation	one-check-command	false
 rule	check-only-checks	core	blocks/core/foundation/delivery.md		MUST	review				foundation		true
 rule	check-passes-before-hand-back	core	blocks/core/foundation/delivery.md		MUST	review			testing	foundation		true
 rule	review-against-active-rules-before-hand-back	core	blocks/core/foundation/delivery.md		SHOULD	review				foundation		true
@@ -850,6 +851,7 @@ rule	biome-warnings-fail-the-check	biome	blocks/implementations/biome/foundation
 rule	biome-check-never-writes	biome	blocks/implementations/biome/foundation/biome.md		MUST	review		typescript		foundation	check-only-checks	false
 rule	biome-refuses-empty-names	biome	blocks/implementations/biome/foundation/biome.md		SHOULD	tool	lint	typescript		foundation	no-empty-names	false
 rule	biome-refuses-empty-verbs	biome	blocks/implementations/biome/foundation/biome.md		SHOULD	tool	lint	typescript		foundation	no-empty-verbs	false
+rule	configuration-per-application-at-the-root	biome	blocks/implementations/biome/foundation/biome.md		MUST	review		typescript		foundation	application-checked-from-its-own-folder	false
 rule	project-grit-rules-scoped	biome	blocks/implementations/biome/foundation/biome.md		SHOULD	review		typescript		foundation		true
 rule	bun-is-the-only-package-manager	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	dependencies-pinned-by-lockfile	false
 rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	dependencies-pinned-by-lockfile	false
@@ -979,6 +981,7 @@ rule	lingui-cli-on-bun-or-noted-exception	lingui	blocks/implementations/lingui/f
 rule	macros-expanded-by-the-lingui-plugin	lingui	blocks/implementations/lingui/foundation/with/vite.md	vite	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	false
 rule	primitives-import-no-message-catalog	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	primitives-take-text-by-props	false
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/foundation/ls-lint.md		SHOULD	tool	names			foundation	yaml-files-end-in-yaml	false
+rule	each-application-linted-in-its-folder	ls-lint	blocks/implementations/ls-lint/foundation/ls-lint.md		MUST	review				foundation	application-checked-from-its-own-folder	false
 rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	security	foundation	tracking-waits-for-consent	false
 rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	security data	foundation	no-personal-data-in-events	false
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	performance	foundation		true
