@@ -905,11 +905,12 @@ rule	hadolint-over-every-dockerfile	hadolint	blocks/implementations/hadolint/fou
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/foundation/hadolint.md		MUST	review				foundation	suppression-silences-one-finding	false
 rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	errors performance	foundation	io-has-timeout-and-cancellation	true
 rule	client-open-for-the-program-life	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		SHOULD	review		python	performance	foundation	resources-released-on-every-path	false
+rule	httpx2-retries-kept-to-transient-failures	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		SHOULD	review		python	errors	foundation	retry-only-transient-failures	false
 rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	security	foundation	boundary-values-object-until-parsed	false
 rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/foundation/httpx2.md		MUST	review		python	testing security	foundation	unmatched-request-fails-the-spec	false
 rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python		architecture	one-transport-instance-per-system	false
 rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python	errors	architecture	transport-failures-mapped-once	true
-rule	retries-written-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python	errors	architecture	retry-only-transient-failures	false
+rule	retries-written-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python	errors	architecture	httpx2-retries-kept-to-transient-failures	false
 rule	httpx2-only-at-the-edge	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python		architecture	side-effects-at-the-edges	false
 rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-tests-where-they-pay	false
 rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-counterexample-kept-as-case	false

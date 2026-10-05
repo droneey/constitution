@@ -14,8 +14,8 @@
 |---|---|---|
 | the domain handles its own errors, whatever client the transport uses. | review | [] |
 
-## retries-written-in-the-adapter → retry-only-transient-failures
-The adapter retries a call, not the client: a timeout, a lost connection, a `429` or a `503` — after the `Retry-After` the answer gives — with backoff and a limit, and only for a call that repeats safely.
+## retries-written-in-the-adapter → httpx2-retries-kept-to-transient-failures
+The adapter retries its calls, not the client.
 
 | Why | Check | Tags |
 |---|---|---|

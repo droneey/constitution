@@ -21,4 +21,4 @@ governs: ["**/adapters/**", "**/root/**"]
 |---|---|---|
 | `transport-timeout-and-cancel` | `timeout` on the client and on each call; a call is cancelled with the task or the cancel scope that awaits it | yes |
 | `transport-typed-failures` | `HTTPStatusError` from `raise_for_status()`, `TimeoutException`, and `NetworkError` for a lost connection | yes |
-| `transport-retries-only-transient` | the transport's `retries` repeats only a connection that failed to open, with no backoff; retries by method and status are the program's own (`retries-written-in-the-adapter`) | partly |
+| `transport-retries-only-transient` | the transport's `retries` repeats only a connection that failed to open, with no backoff; retries by failure, status and method are the program's own (`httpx2-retries-kept-to-transient-failures`) | partly |
