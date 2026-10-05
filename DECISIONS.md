@@ -711,7 +711,7 @@
 ## ADR-0135 — Shipped types and the environment's readers are MUST
 **Date:** 2026-10-04 · **Status:** Accepted
 
-- **Decision.** A published package ships the types of every entry a consumer imports (`package-ships-its-types`), and only `root/`, the configuration provider a lower block names, the entry files and the specs read the environment (`environment-read-once-at-boot`); both are MUST.
+- **Decision.** A published package ships the types of every entry a consumer imports (`package-ships-its-types`), and only `root/`, the configuration provider a lower block names, the entry files and the specs read the environment (`environment-read-once-at-boot`); both are MUST. Four SHOULD rules that #269 re-parents onto a MUST become MUST: `every-tool-runs-on-bun` carries out core's `tools-run-on-the-pinned-runtime`; `no-deprecated-import` carries out core's `deprecated-forms-never-used`; `error-boundary-catches-render-errors` and `error-component-per-route` carry out ui's `error-boundary-per-screen`, and a rule that carries out a MUST cannot be looser than it.
 - **Rejected.** SHOULD, which TypeScript's `manifest-exports-with-types-condition` and core's `environment-read-once-at-boot` had, while Python's forms were already MUST: one meaning cannot bind one language and advise the other (owner).
 - **Why.** Each exception the SHOULD left room for is named in the rule — the entry files and the specs for the environment — so nothing reasonable is left outside it.
 
