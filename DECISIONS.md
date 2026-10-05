@@ -85,7 +85,7 @@
 ## ADR-0013 — Rules: one format, global slugs
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A rule is a heading with its slug, its statement, and an **Example** where one is needed; ADR-0089 gives the heading and the table under the statement. A slug is kebab-case, unique across the whole constitution, carries no number and is never renamed once published; an outdated rule is marked deprecated, and its replacement gets a new slug. Blocks, labels and hook output are written in English.
+- **Decision.** A rule is a heading with its slug, its statement, and an **Example** where one is needed; ADR-0089 gives the heading and the table under the statement. A slug is kebab-case, unique across the whole constitution and carries no number. It is renamed whenever its rule's statement outgrows it, with no entry in this log; a project's override that names an old slug is reported by the hook. Blocks, labels and hook output are written in English.
 - **Rejected.** Numbered rules, which shift with every insertion.
 
 ## ADR-0014 — No rule above the implementations names a tool
