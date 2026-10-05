@@ -90,6 +90,13 @@ A red check blocks the merge.
 |---|---|---|
 | a check that can be merged past protects nothing. | review | [testing] |
 
+## program-built-after-the-check · SHOULD
+CI builds the program only after the check passes.
+
+| Why | Check | Tags |
+|---|---|---|
+| a build of code that fails its check ships the failure. | review | [] |
+
 ## one-integration-strategy-no-work-in-progress · MUST
 A repository integrates by one strategy, which the protection enforces, and no work-in-progress or fix-up commit reaches the main line.
 

@@ -36,7 +36,7 @@ block	typescript	language	How TypeScript is written, resolved, typed and package
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package	typescript		false	bun-test					bunfig.toml package.json
+block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md	foundation/package	typescript		false	bun-test					bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md			bun	false		tests coverage	typescript		bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.	foundation/complexipy.md		python		false		lint	python			
@@ -579,6 +579,7 @@ rule	merged-branch-deleted	version-control	blocks/domains/version-control/workfl
 rule	changes-reach-main-line-through-review	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
 rule	main-line-takes-no-direct-push	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			security	workflow	main-line-protected	false
 rule	required-check-blocks-integration	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review			testing	workflow	every-commit-passes-the-check	false
+rule	program-built-after-the-check	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow		true
 rule	one-integration-strategy-no-work-in-progress	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow		true
 rule	small-reviewable-change-requests	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD	review				workflow	scope-limited-to-the-task	false
 rule	squash-merge-titled-in-commit-format	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	one-integration-strategy-no-work-in-progress	false
@@ -825,7 +826,6 @@ rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/foundati
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/foundation/bun.md		SHOULD	review		typescript		foundation		true
 rule	check-chains-area-scripts	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript		foundation	check-chains-one-entry-per-area	false
 rule	no-automatic-env-file	bun	blocks/implementations/bun/architecture/bun.md		MUST	review		typescript	security	architecture	environment-read-once-at-boot	false
-rule	bun-build-after-the-check	bun	blocks/implementations/bun/workflow/bun.md		SHOULD	review		typescript		workflow		true
 rule	own-packages-as-workspace-dependencies	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript	testing	foundation	root-dogfoods-every-package	false
 rule	own-packages-at-workspace-version	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	tool	versions	typescript		foundation	workspace-packages-linked-locally	false
 rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/foundation/with/package.md	package	SHOULD	review		typescript		foundation	workspace-packages-linked-locally	false
