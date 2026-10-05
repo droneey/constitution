@@ -469,7 +469,7 @@ rule	targets-meet-platform-minimum	ui	blocks/domains/ui/foundation/ui.md		MUST	r
 rule	stateful-component-controllable-or-not	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	primitive-passes-its-element-through	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	loading-never-replaces-shown-content	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
-rule	fields-validated-on-leave-or-submit	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	fields-validated-on-leave-or-submit	ui	blocks/domains/ui/foundation/ui.md		MUST	review			ux	foundation		true
 rule	submit-busy-while-submitting	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux a11y	foundation		true
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			ux testing	foundation	spec-per-boundary	false
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/foundation/ui.md		SHOULD	test			a11y testing	foundation	spec-per-boundary	false

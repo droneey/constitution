@@ -158,7 +158,7 @@ A refetch or a transition keeps the content already shown in place, and a first-
 |---|---|---|
 | content that blinks to a skeleton on every refresh reads as a failure, and a late indicator that moves the layout makes the user lose their place. | review | [ux] |
 
-## fields-validated-on-leave-or-submit · SHOULD
+## fields-validated-on-leave-or-submit · MUST
 A form validates a field when the field is left or the form is submitted, not on every keystroke.
 
 | Why | Check | Tags |
