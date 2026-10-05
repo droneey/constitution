@@ -1331,6 +1331,48 @@ describe('session-start hook', () => {
       ],
     },
     {
+      condition: 'a local rule names a parent that is no rule',
+      layout: {
+        config: configOf({
+          implementations: `[${localPath('kit')}]`,
+        }),
+        files: localBlockFiles({
+          headings: [
+            '## kit-rule → no-such-rule · MUST',
+          ],
+          id: 'kit',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        '- local-block: kit-rule → no-such-rule: no-such-rule names no rule — check the slug',
+      ],
+    },
+    {
+      condition: 'local rules name a rule of the constitution and a rule of a later local block',
+      layout: {
+        config: configOf({
+          implementations: `[${localPath('kit')}, ${localPath('base-kit')}]`,
+        }),
+        files: {
+          ...localBlockFiles({
+            headings: [
+              '## kit-rule → no-secret-in-code',
+              '## kit-child → base-rule · MUST',
+            ],
+            id: 'kit',
+          }),
+          ...localBlockFiles({
+            headings: [
+              '## base-rule · MUST',
+            ],
+            id: 'base-kit',
+          }),
+        },
+      },
+      warnings: [],
+    },
+    {
       condition: 'a local block path names no .md file',
       layout: {
         config: configOf({

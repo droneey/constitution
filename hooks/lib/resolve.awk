@@ -534,6 +534,7 @@ END {
     for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == 0) IN[s, LID[k]] = 1
     for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s] && IKEY[i] != "axes") declare(s, i)
   }
+  check_local_parents()
   apply_overrides()
   for (s = 0; s <= napps; s++) {
     requires_of(s)
