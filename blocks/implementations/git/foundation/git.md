@@ -39,7 +39,7 @@ A stash carries a message, and `git clean -n` precedes `git clean -fd`.
 
 ## Ignores, tags and large files
 
-## gitignore-covers-keys-and-environment-files → local-environment-file-ignored · MUST
+## gitignore-covers-keys-and-environment-files → machine-local-files-ignored · MUST
 `.gitignore` covers key and credential files and every local environment file except its example — `.env*` but `.env.example`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets`, `.htpasswd` — in nested ignore files too.
 
 | Why | Check | Tags |

@@ -106,9 +106,9 @@ Generated files are not committed; the build produces them. A file an author's s
 |---|---|---|
 | a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, and the check may not generate them. | review | [] |
 
-## local-environment-file-ignored · SHOULD
-The local environment file is ignored by version control; its committed example carries placeholders only.
+## machine-local-files-ignored · SHOULD
+Files local to one machine — the local environment file, a person's overrides of the project's tools — are ignored by version control; the environment file's committed example carries placeholders only.
 
 | Why | Check | Tags |
 |---|---|---|
-| the real values stay on the machine they belong to, and a real value never lands in the example. | review | [security] |
+| what belongs to one machine stays on it and changes no one else's setup, and a real value never lands in the example. | review | [security] |
