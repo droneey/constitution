@@ -1,5 +1,25 @@
 # NestJS
 
+> **Vocabulary:** suffixes `.module`, a module; `.controller`, a controller; `.provider`, a token bound to its implementation by `useClass` or `useFactory`; `.filter`, `.pipe`, `.guard` and `.interceptor`, the framework's providers of a request.
+
+## Files
+
+## nestjs-files-in-the-tree → anatomy-top-level-by-concern
+The root's module is `root/root.module.ts`, and `api/api.module.ts` mounts the controllers of `api/`; a feature's module is `<feature>.module.ts` in its `app/`, and a module that joins features is `composition/<name>/<name>.module.ts`. A controller is `<name>.controller.ts`, in `api/`, or in a feature's `app/` when it serves that feature alone. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role.
+
+| Why | Check | Tags |
+|---|---|---|
+| a module, a controller and a provider are found in the same place in every program, and the tree still says which feature each belongs to. | review | [] |
+
+## providers-folder-holds-provider-files → nestjs-files-in-the-tree
+A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `.interceptor` files, and its surface.
+
+| Why | Check | Tags |
+|---|---|---|
+| a provider is found by its suffix, and a file of another role is not hidden among them. | tool/names | [] |
+
+## Wiring
+
 ## providers-injected-through-the-constructor → one-explicit-composition-root
 A provider takes its dependencies as `private readonly` parameters of its constructor, and a module's providers are its wiring; a provider never builds a dependency or reaches a global.
 
@@ -15,11 +35,11 @@ No provider, controller or guard takes `ModuleRef` and calls its `get` or `resol
 | a dependency asked for at run time appears in no constructor and no module, so neither a reader nor a spec sees it until it fails. | review | [testing] |
 
 ## no-global-module → one-explicit-composition-root
-No module is `@Global()`; a module imports each module whose providers it takes.
+No module is `@Global()`. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — the adapter of a contract of `contracts/` — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
 
 | Why | Check | Tags |
 |---|---|---|
-| a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on. | review | [] |
+| a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; and a feature's module that imports another feature's ties the two features as an import of code would. | review | [] |
 
 ## contracts-injected-by-token → one-explicit-composition-root
 A dependency that stands for a contract is injected by a token — an abstract class, or a `Symbol` named by `@Inject` — and bound to its implementation with `useClass` or `useFactory` in a module's `providers`; a constructor never names a concrete adapter class.

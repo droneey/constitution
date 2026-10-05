@@ -91,6 +91,16 @@ architecture:
       - 'src/routes'
     kebab-case-file-names:
       - 'src/routes'
+  nestjs:
+    kebab-case-file-names:
+      - 'src/*/**/providers'
+    providers-folder-holds-provider-files:
+      - 'src/*/**/providers'
+      - '.provider.ts'
+      - '.filter.ts'
+      - '.pipe.ts'
+      - '.guard.ts'
+      - '.interceptor.ts'
   tanstack-router:
     kebab-case-file-names:
       - 'src/routes'
