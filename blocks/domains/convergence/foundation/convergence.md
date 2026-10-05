@@ -16,12 +16,12 @@ A secret in the document is a reference by name to the environment. Validation l
 |---|---|---|
 | the document can then be committed and reviewed, and a missing secret fails before anything is applied. | review | [security] |
 
-## document-schema-strict → documents-strict-vendor-answers-tolerant
-Each section of the document has a strict schema: unions selected by a discriminant field, and unknown keys rejected.
+## document-variants-selected-by-a-discriminant → illegal-states-unrepresentable
+A section of the document that takes several forms is a union selected by a discriminant field.
 
 | Why | Check | Tags |
 |---|---|---|
-| a typo or a wrong variant fails before anything runs, with a message that points at the line. | test | [data, errors] |
+| each form is then checked by its own schema, and a wrong one fails before anything runs, with a message that names the field. | test | [data, errors] |
 
 ## one-syntax-per-value-kind · SHOULD
 Each kind of value — a size, a duration — has one syntax in the document, parsed once.

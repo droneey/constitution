@@ -162,11 +162,18 @@ The main agent commits only when a person asks it to, on the working branch.
 | a commit records a decision under the person's name; the person makes it. | review | [] |
 
 ## agent-never-merges → person-decides-what-is-recorded-or-shipped
-An agent never merges a pull request. It pushes a branch, its own or one others share, and opens a pull request only when a person asks.
+An agent never merges a pull request.
 
 | Why | Check | Tags |
 |---|---|---|
-| merging is the decision that ships a change, and pushing shares it; both belong to the person who answers for it. | review | [] |
+| merging is the decision that ships a change, and it belongs to the person who answers for it. | review | [] |
+
+## agent-pushes-and-opens-pull-requests-when-asked → person-decides-what-is-recorded-or-shipped
+An agent pushes a branch, its own or one others share, and opens a pull request only when a person asks.
+
+| Why | Check | Tags |
+|---|---|---|
+| pushing and opening a pull request share a change, and the person who answers for it decides when it is shared. | review | [] |
 
 ## agent-never-pushes-to-the-main-line → main-line-takes-no-direct-push
 An agent never pushes to the main line, even where its rights would pass the protection.
