@@ -16,6 +16,20 @@ The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
 |---|---|---|
 | an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | review | [] |
 
+## exports-map-each-entry → library-entries-curated
+`exports` in a library's `package.json` maps each of its entries to its file, so a consumer reaches the library only through the entries it lists.
+
+| Why | Check | Tags |
+|---|---|---|
+| a path `exports` does not map cannot be imported, so the curated entries are the whole of what a consumer can couple to. | review | [] |
+
+## exported-types-have-type-tests · SHOULD
+A library's exported generic and conditional types are proven by type cases the compiler checks.
+
+| Why | Check | Tags |
+|---|---|---|
+| a consumer relies on what such a type computes, and nothing else fails when a change computes something else. | review | [testing] |
+
 ## file-named-after-its-export · SHOULD
 A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
 
@@ -327,7 +341,7 @@ JSDoc documents only a public entry whose use is not obvious, never a self-descr
 | JSDoc that repeats a signature drifts from it, and the editor already shows the types. | review | [] |
 
 ## deprecated-by-jsdoc-tag → retired-code-marked-deprecated
-The mark is a JSDoc `@deprecated` tag that names the replacement.
+Code kept only for its old callers is marked by a JSDoc `@deprecated` tag that names its replacement.
 
 | Why | Check | Tags |
 |---|---|---|

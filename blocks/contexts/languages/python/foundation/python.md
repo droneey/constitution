@@ -3,7 +3,7 @@
 ## Modules and files
 
 ## python-file-forms → kebab-case-file-names
-Python sets the case of its import tree: a module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and its stub a `.pyi`, and the folders of the source root `src/` and of `tests/` are snake_case packages, imported by their folders' names. The bytecode the interpreter writes keeps the names it gives it: `__pycache__/`, `<module>.cpython-314.pyc`. Every other file and folder is kebab-case.
+Python sets the case of its import tree: a module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and its stub a `.pyi`, and the folders of the source root `src/` are snake_case packages, imported by their folders' names, while those of `tests/` are snake_case folders and no packages. The bytecode the interpreter writes keeps the names it gives it: `__pycache__/`, `<module>.cpython-314.pyc`. Every other file and folder is kebab-case.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -125,6 +125,13 @@ Concurrent work starts in a task group — `asyncio.TaskGroup`, or the one of th
 |---|---|---|
 | a task group waits for its tasks, cancels them on the first failure and raises every failure together. | review | [errors] |
 
+## async-functions-never-block · SHOULD
+An `async def` function makes no blocking call: it awaits its input and output, and blocking work runs in a thread, through `asyncio.to_thread` or the framework's own.
+
+| Why | Check | Tags |
+|---|---|---|
+| one blocking call in a coroutine stalls everything else the event loop runs. | review | [performance] |
+
 ## except-never-only-passes → catch-never-empty
 No `except` body is only `pass` or `continue`.
 
@@ -156,6 +163,13 @@ A docstring documents only a public entry whose use is not obvious, in the Googl
 | Why | Check | Tags |
 |---|---|---|
 | a docstring that repeats a signature drifts from it, and the editor already shows the annotations. | review | [] |
+
+## deprecated-by-decorator → retired-code-marked-deprecated
+Code kept only for its old callers is marked `@warnings.deprecated`, imported from `typing_extensions` below Python 3.13, with a message that names its replacement.
+
+| Why | Check | Tags |
+|---|---|---|
+| the type checker reports every call of it and the runtime warns at each one, both with the message, which a docstring never does. | review | [] |
 
 ## suppression-names-its-code-and-reason → suppression-states-its-reason
 A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608 -- the table name comes from an enum`.

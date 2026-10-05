@@ -1,8 +1,8 @@
-# Python with package
+# Python with distribution
 
-> The typed form of a published Python package.
+> The typed form and the floor of a distributed Python package.
 
-## py-typed-where-code-is-imported → package-ships-its-types
+## py-typed-where-code-is-imported → ships-its-types
 A published package whose code a consumer imports ships `py.typed` in its import package, beside its `__init__.py`.
 
 | Why | Check | Tags |

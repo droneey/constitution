@@ -4,9 +4,10 @@
 
 ## What the anatomy governs
 
-- **An application.** The tree below lays out one application. The block that owns its entry surface names its delivery layer: a command-line platform names its commands' folder, an API domain its handlers', a router its screens'. An application distributed through a registry — a command-line tool its users install from PyPI or npm — is an application all the same: it keeps this tree, and the package domain adds what publishing asks of it.
+- **An application.** The tree below lays out one application, whether or not a package registry distributes it — a command-line tool its users install is an application all the same. The block that owns its entry surface names its delivery layer: a command-line platform names its commands' folder, an API domain its handlers', a router its screens'.
 - **A tooling program** with no entry surface of its own — the scripts of a repository — has only entrypoints: each command is `entrypoints/<name>/`, and its entry file builds `root/`.
-- **A library** — a package whose consumers import its code or extend its configuration — and a repository of packages follow the package domain.
+- **A library** — code its consumers import, or configuration they extend — has the form of `libs/<name>/` taken out of a program.
+- **A repository of several units** keeps each unit's tree in the unit's own folder.
 
 A folder appears when its first member does. The trees show every place a file may go, not folders to create in advance.
 
@@ -64,11 +65,18 @@ No code imports an entrypoint. An entrypoint composes features through their sur
 | everything depends on the kernel, so it must depend on nothing that changes. | tool/imports | [] |
 
 ## libs-import-no-application-code · MUST
-`libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/` or `root/` — and knows nothing of the repository that uses it.
+`libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/` or `root/` — and knows nothing of the repository that uses it; a library, which has its form, knows nothing of those that use it.
 
 | Why | Check | Tags |
 |---|---|---|
-| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good. | tool/imports | [] |
+| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good, and a library that knows its consumer changes whenever the consumer does and serves no one else. | tool/imports | [] |
+
+## library-has-the-form-of-libs · SHOULD
+A library has the form of `libs/<name>/` taken out of a program: a surface, and modules by meaning, each with its own entities, value objects and errors in their usual forms and its input and output behind contracts of its own. It has no `root/`, `entrypoints/` or `features/`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a library has no program of its own to wire or deliver: whatever uses it composes it, and a reader finds its parts where a program's `libs/` keeps them. | review | [] |
 
 ## shared-imports-no-feature-adapter-contract-or-root · MUST
 `shared/` imports no feature, adapter or contract and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
@@ -78,18 +86,18 @@ No code imports an entrypoint. An entrypoint composes features through their sur
 | plumbing that knows a feature is part of that feature, and every other feature that uses it depends on it too. | tool/imports | [] |
 
 ## kernel-or-shared-by-meaning · SHOULD
-A shared piece with business meaning goes to `kernel/`; one without goes to `shared/`; one that would make sense in any program goes to `libs/`. Each is created by symptom, when a second feature needs it, and `kernel/` stays small.
+A shared piece with business meaning goes to `kernel/`; one without goes to `shared/`; one that would make sense in any program goes to `libs/`. `kernel/` stays small.
 
 | Why | Check | Tags |
 |---|---|---|
 | the folder then says what a piece means, and the kernel does not grow into a second domain every feature depends on. | review | [] |
 
-## composition-on-the-second-consumer · SHOULD
+## composition-on-the-second-consumer → code-lives-with-its-reason-to-change
 Composition across features lives in the delivery unit that needs it, which assembles features through their surfaces. It moves to `composition/<name>/` when a second consumer needs it, and facts derived from several features are derived there.
 
 | Why | Check | Tags |
 |---|---|---|
-| someone above the features must assemble them; keeping it where it is used, until it is shared, avoids a composition layer nobody needs yet. | review | [] |
+| someone above the features must assemble them, and a composition layer made before a second consumer is one nobody needs yet. | review | [] |
 
 ## protocol-between-artifacts-in-shared · SHOULD
 A protocol two artifacts of one repository speak — the messages an embedded frame and its host exchange — lives in `shared/<protocol>/`, imported by both.
@@ -274,7 +282,7 @@ A delivery unit that serves one feature lives in that feature's `app/`, where th
 | a unit lives with the reason it changes. | review | [] |
 
 ## delivery-units-stay-thin · SHOULD
-A delivery unit — a screen, a command, a handler, a tool function — parses its flags or parameters, resolves its input, calls one use-case, binding unit or composition, and presents the result. It holds no business logic.
+A delivery unit — a screen, a command, a handler, a tool function — parses its flags or parameters, resolves its input, calls the use-cases, binding units or composition whose results it presents, and presents them. It holds no business logic.
 
 | Why | Check | Tags |
 |---|---|---|

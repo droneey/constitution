@@ -14,7 +14,7 @@ Input is parsed by `model_validate` or `model_validate_json`, and each entry of 
 |---|---|---|
 | `include_input=False` keeps the rejected values out of the entries pydantic returns. | review | [errors, security] |
 
-## settings-model-prefixed-and-closed → documents-strict-vendor-answers-tolerant
+## settings-model-prefixed-and-closed → environment-names-declared-in-one-place · MUST
 A `BaseSettings` sets an `env_prefix` and `extra='forbid'`.
 
 | Why | Check | Tags |

@@ -35,12 +35,3 @@ An adapter is a factory function that takes its dependencies and returns the ada
 | Why | Check | Tags |
 |---|---|---|
 | a React program is built of functions, a factory shows every dependency in its signature, and a method of a factory's object handed to a hook or a handler keeps working where a class's loses its `this`. | review | [] |
-
-## Failure
-
-## error-boundary-catches-render-errors → error-boundary-per-screen
-A screen's error boundary is a React error boundary, which catches what is thrown while its tree renders.
-
-| Why | Check | Tags |
-|---|---|---|
-| React unmounts the whole tree below the boundary that catches, so a boundary per screen costs one screen. | review | [errors, ux] |

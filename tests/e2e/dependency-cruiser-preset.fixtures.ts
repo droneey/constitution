@@ -20,8 +20,11 @@ interface Installed {
 
 interface Project {
   files: Readonly<Record<string, string>>;
+  // A link's path, then the folder it points to, as a package manager links a workspace's units.
+  links?: Readonly<Record<string, string>>;
   parts?: readonly string[];
   roots?: readonly string[];
+  workspaces?: readonly string[];
 }
 
 interface Cruise {
@@ -158,6 +161,7 @@ const cruise = (project: Project): Cruise => {
         Declaration.PeerAndDevelopment,
       ]),
       type: 'module',
+      workspaces: project.workspaces,
     }),
   };
 
@@ -166,6 +170,13 @@ const cruise = (project: Project): Cruise => {
       recursive: true,
     });
     writeFileSync(join(folder, path), text);
+  }
+
+  for (const [path, target] of Object.entries(project.links ?? {})) {
+    mkdirSync(dirname(join(folder, path)), {
+      recursive: true,
+    });
+    symlinkSync(join(folder, target), join(folder, path));
   }
 
   mkdirSync(join(folder, '.droneey'));

@@ -76,8 +76,8 @@ describe('the syncpack self part', () => {
   });
 });
 
-describe('the syncpack parts of a repository of packages', () => {
-  it("should report DiffersToPin when a package takes the repository's own package from the registry", () => {
+describe('the syncpack parts of a workspace', () => {
+  it("should report DiffersToPin when a unit takes the repository's own unit from the registry", () => {
     // Arrange
     const repository = [
       {
@@ -100,7 +100,7 @@ describe('the syncpack parts of a repository of packages', () => {
     expect(found).toContain('DiffersToPin');
   });
 
-  it('should report nothing when the packages link each other and keep wide peer ranges', () => {
+  it('should report nothing when the units link each other and keep wide peer ranges', () => {
     // Arrange
     const repository = [
       {

@@ -20,7 +20,7 @@ The project folder holds:
 
 ## What you write
 
-- **`constitution.yaml`** at the repository root: the blocks the repository follows, its applications, the one command that runs its checks, and its overrides. The session-start hook reads it and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
+- **`constitution.yaml`** at the repository root: the blocks the repository follows, its units, the one command that runs its checks, and its overrides. The session-start hook reads it and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **A local block** under `./rules/implementations/<id>.md` for each library the owner wants rules for that the plugin has no block for.
 
@@ -78,19 +78,19 @@ A local block is a draft until a person reviews it; say so.
 
 `check` names the one command that runs every check of the repository — lint, types, tests. Look for it: a `check` script in the manifest, a task runner target (`make check`, `just check`, `task check`), or the steps CI runs. Propose what you found and where. If there is none, ask the owner which command it is; do not write a command the repository cannot run. A repository with no check at all writes `check: null`.
 
-### 5. Ask about applications
+### 5. Ask about units
 
-When the repository holds several applications — packages of a workspace, an `apps/` folder, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; an application under `apps:` adds its own blocks for the files under its path:
+When the repository holds several units — the applications and packages of a workspace, the code they share, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `packages/`, `shared/` or `libs/`:
 
 ```yaml
-apps:
+packages:
   packages/web:
     domains: [ui, untrusted-client, unreliable-network]
     platforms: [browser]
     implementations: [react-dom]
 ```
 
-A path is relative to the root, two spaces in; its keys are `axes`, `domains`, `platforms`, `languages` and `implementations`, four spaces in, each a flow list. An application's `axes` replace the repository's. Write `apps: {}` when there is one application, or when they all follow the same blocks.
+A path is relative to the root, two spaces in; its keys are `axes`, `domains`, `platforms`, `languages` and `implementations`, four spaces in, each a flow list. A unit's `axes` replace the repository's. Write `packages: {}` when there is one unit, or when they all follow the same blocks.
 
 ### 6. Interview for PROJECT.md
 

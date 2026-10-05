@@ -35,6 +35,13 @@ The router is created with `defaultPreload: 'intent'`, so hovering, focusing or 
 |---|---|---|
 | the data is on its way before the click; it costs a request for a link hovered and not followed. | review | [] |
 
+## screen-reads-start-in-the-loader · SHOULD
+A screen's reads start together in its route's loader, before it renders, never one after another as its components mount.
+
+| Why | Check | Tags |
+|---|---|---|
+| reads started in a loader run in parallel and before the first paint; reads in components wait for each other. | review | [performance] |
+
 ## loader-declares-the-search-it-reads · SHOULD
 A loader that reads search params declares them in `loaderDeps`.
 
@@ -83,6 +90,13 @@ The root route declares the not-found component, which shows an address no route
 | Why | Check | Tags |
 |---|---|---|
 | the router matches an address against its whole tree, so only the root sees an address no route takes. | review | [ux] |
+
+## error-component-per-route → failure-contained-to-its-screen
+Each route that renders a screen declares its error component.
+
+| Why | Check | Tags |
+|---|---|---|
+| a route's error component is the boundary of its screen, so a failed loader costs its route, with its own message, not the whole application. | review | [errors, ux] |
 
 ## Accessibility
 

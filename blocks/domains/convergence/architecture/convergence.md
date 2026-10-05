@@ -11,12 +11,12 @@ The document and its schema live in `composition/`, which knows every section. A
 
 ## The stages
 
-## stages-validate-render-plan-apply · SHOULD
-Validate, render, plan and apply are separate use-cases: each runs alone, and later ones reuse earlier ones. Rendering runs no engine.
+## stages-validate-render-plan-apply → stages-run-alone
+Validate, render, plan and apply are separate use-cases, and a later one calls the earlier ones.
 
 | Why | Check | Tags |
 |---|---|---|
-| a user can check, preview and plan without touching the world, and each stage is tested on its own. | review | [] |
+| each stage is then tested on its own, and a later one cannot drift from what an earlier one checked. | review | [] |
 
 ## Engines
 

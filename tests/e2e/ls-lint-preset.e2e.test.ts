@@ -673,7 +673,6 @@ describe('the ls-lint foundation parts', () => {
         'src/components/order-card.stories.tsx',
         'src/components/order-card.tsx',
         'src/order-view.ts',
-        'node_modules/SomePackage/Index.js',
       ],
     },
   ])('should report nothing when $condition and a project extends $parts', ({ parts, paths }) => {
@@ -704,7 +703,7 @@ describe('the ls-lint parts of the tools that write folders', () => {
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'typescript/foundation/typescript',
+      part: 'common/foundation/bun',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },
@@ -786,7 +785,7 @@ describe('the ls-lint parts of the tools that write folders', () => {
   );
 });
 
-describe('the ls-lint parts of the tools that write folders in each package', () => {
+describe('the ls-lint parts of the tools that write folders in each unit', () => {
   it.each([
     {
       part: 'common/foundation/stryker',
@@ -794,7 +793,7 @@ describe('the ls-lint parts of the tools that write folders in each package', ()
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'typescript/foundation/typescript',
+      part: 'common/foundation/bun',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },

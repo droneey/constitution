@@ -27,10 +27,3 @@ The program's entry adds a listener to the process's `exit` that turns an exit `
 | Why | Check | Tags |
 |---|---|---|
 | bunli ends its own usage failures with `process.exit(1)`, the code the map gives to a failure the user can act on, and offers no hook to change it. | test | [] |
-
-## bunli-configured-inline → tests-run-in-a-sandbox
-`createCLI` takes the program's configuration — its name, version, description and plugins — inline, and the program keeps no `bunli.config.*`.
-
-| Why | Check | Tags |
-|---|---|---|
-| bunli merges a `bunli.config.*` it finds in the working folder into the configuration given inline, so a spec run from another folder would build another program. | review | [] |

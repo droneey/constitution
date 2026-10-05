@@ -1,7 +1,7 @@
 # Tailwind
 
 ## utilities-only-from-tokens → tokens-single-source-of-appearance
-The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable stays legal.
+The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable is allowed with a suppression that says why.
 
 | Why | Check | Tags |
 |---|---|---|

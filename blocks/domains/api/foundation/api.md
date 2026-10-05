@@ -12,11 +12,29 @@ Every failure of a request is answered from what failed: an expected error with 
 | a caller branches on a code that stays when the message is reworded, every failure arrives in one shape a client parses once, and an unexpected one shows nothing of how the program works. | review | [errors, security] |
 
 ## errors-carry-codes-not-statuses → framework-errors-never-raised
-The code a request runs raises the error kit's errors, which carry a code; no error it raises carries a status or an answer of the protocol, whether the framework's or one of the program's own.
+No error the code of a request raises carries a status or an answer of the protocol, whether the framework's or one of the program's own.
 
 | Why | Check | Tags |
 |---|---|---|
 | a status chosen where the error is raised ties that code to one protocol, and the answer is then decided in two places that drift apart. | review | [errors] |
+
+## Tools for models
+
+## model-tools-described · MUST
+A server of tools that models call describes every tool — what it does and when to call it — and every parameter, in the definitions it sends.
+
+| Why | Check | Tags |
+|---|---|---|
+| a model knows a tool only by its description, so to the model no tool is an obvious entry. | review | [] |
+
+## Specs
+
+## server-specs-run-in-process → tests-run-in-a-sandbox
+A spec of a server drives it in process, through its real middleware, parsing and handler, on a server built with fakes, and opens no port.
+
+| Why | Check | Tags |
+|---|---|---|
+| the request travels what a caller's does in production, and nothing leaves the process. | review | [testing] |
 
 ## Callers from other origins
 
@@ -36,7 +54,7 @@ Over HTTP, a request that changes state is refused when its `Origin` names an or
 
 ## Outbound requests
 
-## outbound-addresses-from-callers-allowlisted · MUST
+## outbound-addresses-from-callers-allowlisted → outside-addresses-trusted-only-on-an-allowlist
 A request the server sends to an address a caller gave — a webhook, a file to fetch, a link to preview — goes only to a host on an allowlist and follows no redirect off it, and the address it resolves to is never private, loopback or link-local.
 
 | Why | Check | Tags |

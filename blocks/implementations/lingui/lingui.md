@@ -21,5 +21,5 @@ governs: ["lingui.config.ts", "**/locales/**"]
 |---|---|---|
 | `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | yes |
 | `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | yes |
-| `i18n-typed-keys` | a message's id is its source text, checked by extraction; no compile-time key type; the strict compile fails on a missing message (`catalogs-compiled-strictly-in-check`) | partly |
+| `i18n-typed-keys` | a message's id is its source text, checked by extraction; no compile-time key type; the strict compile fails on a missing message (`missing-translation-fails-the-check`) | partly |
 | `i18n-lazy-locales` | a dynamic import per locale through the build plugin | yes |

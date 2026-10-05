@@ -1,7 +1,7 @@
 # pino
 
 ## pino-configured-by-the-root → logging-configured-by-the-root
-`root/` creates the one pino instance, with its mask, its `mixin` and its destination, and the middleware that enters each request's trace id; no other code creates an instance.
+`root/` creates the one pino instance, with its mask, its `mixin` and its destination; no other code creates an instance.
 
 | Why | Check | Tags |
 |---|---|---|

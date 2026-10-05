@@ -35,7 +35,7 @@ Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with
 |---|---|---|
 | read during render, they break server rendering and tear between renders. | review | [] |
 
-## no-inline-style → tokens-single-source-of-appearance
+## inline-style-only-custom-properties-and-geometry → tokens-single-source-of-appearance
 An element's inline `style` is an object literal of custom properties only; geometry a positioning library computes is the one other inline value, and its suppression says so.
 
 | Why | Check | Tags |

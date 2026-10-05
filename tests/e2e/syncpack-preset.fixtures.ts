@@ -15,7 +15,7 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const SYNCPACK = join(REPOSITORY, 'node_modules', '.bin', 'syncpack');
 
 const CONFIG = `import bun from './.droneey/constitution/presets/typescript/syncpack/foundation/bun.mjs';
-import packageDependencies from './.droneey/constitution/presets/typescript/syncpack/foundation/package.mjs';
+import distribution from './.droneey/constitution/presets/typescript/syncpack/foundation/distribution.mjs';
 import self from './.droneey/constitution/presets/typescript/syncpack/foundation/self.mjs';
 import typescript from './.droneey/constitution/presets/typescript/syncpack/foundation/typescript.mjs';
 
@@ -24,7 +24,7 @@ export default {
   ...typescript,
   versionGroups: [
     ...bun.versionGroups,
-    ...packageDependencies.versionGroups,
+    ...distribution.versionGroups,
   ],
 };
 `;

@@ -1,8 +1,8 @@
 # Observability
 
-## logging-configured-by-the-root → one-explicit-composition-root
-`root/` configures logging once, at boot — the pipeline, where its records go, and what binds the trace id; no other code configures it, and no library of the program adds an output of its own.
+## logging-configured-by-the-root → diagnostics-through-the-logging-port · MUST
+`root/` builds the logging pipeline once, at boot — the steps every record passes and what binds the trace id to it — and no library of the program adds an output of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| where records go and what they carry is one choice, made where every other concrete choice is. | review | [] |
+| what every record carries is one choice, made where its sinks are chosen, and an output a library adds is a second pipeline that skips the first. | review | [] |

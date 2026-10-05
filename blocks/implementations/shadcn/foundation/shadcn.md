@@ -27,3 +27,10 @@ Before shadcn source is added, the kit is searched for an equivalent. Added sour
 | Why | Check | Tags |
 |---|---|---|
 | code kept as it came carries another project's looks and props; adapted on arrival, it is the kit's own. | review | [] |
+
+## shadcn-text-passed-by-props → primitives-take-text-by-props
+The text shadcn source ships — a screen reader's "Close" among it — is removed on arrival, and the component takes it by a prop.
+
+| Why | Check | Tags |
+|---|---|---|
+| the shipped strings are English and fixed, so a kit that keeps them speaks one language whatever the program's locale. | review | [] |

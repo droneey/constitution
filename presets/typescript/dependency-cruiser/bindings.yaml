@@ -4,15 +4,16 @@ foundation:
       - no-circular
     test-code-unreachable-from-production:
       - no-test-code-in-production
-  package:
-    consumers-import-package-entries:
-      - root-takes-packages-by-name
   storybook:
     stories-unreachable-from-production:
       - stories-unreachable-from-production
   typescript:
     production-imports-no-development-dependency:
       - no-development-dependency-in-production
+  workspace:
+    units-imported-by-their-entries:
+      - root-imports-units-by-name
+      - units-imported-by-name
 architecture:
   analytics:
     features-never-track:
@@ -83,9 +84,6 @@ architecture:
       - application-returns-codes-not-text
     primitives-import-no-message-catalog:
       - primitives-hold-no-text
-  package:
-    package-knows-no-consumer:
-      - package-knows-no-consumer
   tanstack-query:
     adapters-never-import-the-cache-library:
       - adapters-never-cache
@@ -121,3 +119,9 @@ architecture:
   yaml:
     yaml-only-at-the-edge:
       - yaml-only-at-the-edge
+  workspace:
+    product-units-blind-to-each-other:
+      - product-units-blind-to-each-other
+    units-import-toward-libs:
+      - libs-know-no-product
+      - shared-knows-no-product-unit

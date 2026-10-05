@@ -1,11 +1,11 @@
 # pino
 
 ## one-instance-writes-every-record → log-records-pass-one-pipeline
-The pipeline is one pino instance, created at the program's start, and pino-http takes it as `logger`. Code logs through that instance or its children; no second instance writes a record.
+The pipeline is one pino instance, created at the program's start. Code logs through that instance or its children; no second instance writes a record.
 
 | Why | Check | Tags |
 |---|---|---|
-| the mask and the trace id are options of the instance, and pino-http given no `logger` builds its own, which writes the caller's `authorization` header unmasked. | review | [security] |
+| the mask and the trace id are options of the instance, so a record a second instance writes carries neither. | review | [security] |
 
 ## secret-keys-masked-in-the-finished-line → log-secrets-masked-by-key
 The mask is the instance's `hooks.streamWrite`, which parses each finished line, masks it and writes it again. `redact` is no such mask: it matches exact paths, with case, and its wildcard spans one level.

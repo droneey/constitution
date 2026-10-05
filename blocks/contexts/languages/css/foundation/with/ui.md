@@ -51,7 +51,7 @@ The theme writes no hexadecimal colour.
 |---|---|---|
 | hexadecimal is the form a colour copied from a design tool arrives in, and the one the lint can see. | tool/lint | [] |
 
-## components-adapt-by-container-queries · SHOULD
+## components-adapt-by-container-queries → components-size-to-their-container
 A component adapts to the space its container gives it with a container query; a media query adapts the page's layout and follows the user's preferences.
 
 | Why | Check | Tags |
@@ -105,14 +105,14 @@ Content that stays on screen while the page scrolls — a header, a footer, a ba
 ## Layout
 
 ## popover-placed-by-anchor-positioning · SHOULD
-Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by CSS anchor positioning — `anchor-name`, `position-anchor`, `position-area` — never by a script that measures; a supported browser that lacks it loads the anchor-positioning polyfill once, in the entry file.
+A popover placed against its trigger by the stylesheet is placed by anchor positioning: `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover.
 
 | Why | Check | Tags |
 |---|---|---|
-| the browser places it and flips it at the viewport's edge without a positioning library or a frame of the wrong position. | review | [ux, performance] |
+| the browser places it and flips it at the viewport's edge from three declarations, with no measuring script and no frame of the wrong position. | review | [ux, performance] |
 
-## mobile-first-additive-breakpoints → components-size-to-their-container
-Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out, and every entry document declares the responsive viewport.
+## mobile-first-additive-breakpoints · SHOULD
+Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out.
 
 | Why | Check | Tags |
 |---|---|---|

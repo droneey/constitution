@@ -2,7 +2,7 @@
 export default {
   versionGroups: [
     {
-      label: "The repository's own packages use the workspace protocol",
+      label: "The repository's own units use the workspace protocol",
       dependencies: [
         '$LOCAL',
       ],

@@ -1,6 +1,6 @@
-# Python with package
+# Python with distribution
 
-> How a published Python package's versions follow its floor.
+> How a distributed Python package's versions follow its floor.
 
 ## requires-python-raised-in-a-minor → versions-follow-semver
 A published package raises its `requires-python` floor only in a minor release, never in a patch.

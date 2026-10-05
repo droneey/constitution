@@ -1,6 +1,6 @@
 # Untrusted client
 
-## client-holds-nothing-hidden · MUST
+## client-holds-nothing-hidden → secret-never-in-url-or-artefact
 Nothing shipped to the client — code, configuration, a variable the build inlines under a public prefix, data in memory or in storage — is treated as hidden from its user, so none of it holds a secret; configuration the client receives at runtime is public.
 
 | Why | Check | Tags |

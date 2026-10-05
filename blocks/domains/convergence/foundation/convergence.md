@@ -60,6 +60,13 @@ The document points editors at the published schema.
 
 ## The stages
 
+## stages-run-alone · SHOULD
+Validating, rendering, planning and applying are separate stages a user runs alone, and each later stage reuses the earlier ones. Rendering runs no engine.
+
+| Why | Check | Tags |
+|---|---|---|
+| a user can check, preview and plan without touching the world, and a later stage builds on exactly what an earlier one showed. | review | [] |
+
 ## plan-names-destroying-changes → irreversible-operations-behind-a-flag
 The plan names every change that destroys something, and apply refuses one without an explicit flag.
 

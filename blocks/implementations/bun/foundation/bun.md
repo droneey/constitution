@@ -39,6 +39,13 @@ CI and every script install with `bun install --frozen-lockfile`.
 |---|---|---|
 | a tool with a Node shebang otherwise runs on whichever Node the machine finds, and one runtime for the program and its tools means one version to pin. | review | [] |
 
+## no-automatic-env-file → configuration-parsed-once-at-boot
+Bun's automatic loading of the local environment file is off — `--no-env-file` in the entry's shebang and in the scripts — so the program parses only the variables its deployment provides.
+
+| Why | Check | Tags |
+|---|---|---|
+| a file loaded behind the program's back sets values nobody declared, and hides a missing one. | review | [] |
+
 ## other-runtime-only-where-bun-cannot · SHOULD
 Another runtime or tool runs only where Bun cannot run it, with the reason written in the configuration or script that makes the exception.
 

@@ -67,6 +67,13 @@ Unless another active block brings accessible primitives for these patterns, the
 |---|---|---|
 | each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong; a library of primitives adds what they lack, so where one is active these patterns are built on it. | review | [] |
 
+## native-popover-anchored-to-its-trigger · SHOULD
+Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning, never by a script that measures; a supported browser that lacks anchor positioning loads its polyfill once, in the entry file.
+
+| Why | Check | Tags |
+|---|---|---|
+| the browser places the popover without a positioning library, and one polyfill loaded before any popover opens serves them all. | review | [ux, performance] |
+
 ## native-html-elements-first → native-semantics-first
 `<button>` for an action, `<a>` with a real `href` for a move, lists as lists, tables with headers and a caption; ARIA only where HTML has no element.
 
@@ -108,6 +115,13 @@ A live region is in the document, empty, before its message is put into it.
 | Why | Check | Tags |
 |---|---|---|
 | a region rendered together with its text is often not announced at all. | test | [a11y] |
+
+## entry-document-declares-the-viewport → wcag-aa-conformance
+Every entry document declares the responsive viewport: `<meta name="viewport" content="width=device-width, initial-scale=1">`.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it a phone lays the page out at a desktop's width and shrinks it, so its text is small and its layout never reflows. | review | [a11y] |
 
 ## viewport-never-blocks-zoom → wcag-aa-conformance
 The viewport declaration never blocks zooming: no `user-scalable=no`, and no `maximum-scale` below 5.

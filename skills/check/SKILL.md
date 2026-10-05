@@ -31,7 +31,7 @@ git -C "<project>" diff --name-only HEAD; git -C "<project>" ls-files --others -
 
 `all`: every file `git ls-files` lists, reviewed in batches of one block each.
 
-For each file, the blocks whose `governs` globs match it — the `active` lines above hold the globs, relative to the project, or to the application's path when the file lies under one. Core governs every file. A file no block governs is left out of the review.
+For each file, the blocks whose `governs` globs match it — the `active` lines above hold the globs, relative to the project, or to the unit's path when the file lies under one. Core governs every file. A file no block governs is left out of the review.
 
 ## 3. Review
 

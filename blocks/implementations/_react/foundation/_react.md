@@ -146,6 +146,13 @@ A slot that keeps control of its element takes a `ReactElement`; a container tak
 |---|---|---|
 | the type says what the caller may pass, and the compiler refuses the rest. | review | [] |
 
+## error-boundary-catches-render-errors → failure-contained-to-its-screen
+A screen's error boundary is a React error boundary, which catches what is thrown while its tree renders.
+
+| Why | Check | Tags |
+|---|---|---|
+| React unmounts the whole tree below the boundary that catches, so a boundary per screen costs one screen. | review | [errors, ux] |
+
 ## handler-and-effect-failures-handled-where-they-happen → errors-surfaced-never-swallowed
 An expected failure in an event handler or an effect is handled where it happens, never left for an error boundary; a defect there travels on to the root's report.
 

@@ -1,6 +1,6 @@
 # Testing Library
 
-## queries-by-role-label-text → elements-found-by-role-label-text · MUST
+## queries-by-role-label-text → elements-found-by-role-label-text
 Elements are queried by role first, then by label and text; `getByTestId` is forbidden.
 
 | Why | Check | Tags |

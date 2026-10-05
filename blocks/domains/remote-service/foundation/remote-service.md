@@ -17,11 +17,11 @@ A remote vendor that cannot run in a sandbox is proven through its transport wit
 | the vendor's engine runs only on the vendor's side, so its answers, captured once, are the closest a spec can come to it. | review | [testing] |
 
 ## captured-responses-verified-against-the-vendor · SHOULD
-Each captured response of a remote vendor is checked against the vendor by a contract run, which captures it again and reports any difference.
+Each captured response of a remote vendor is checked against the vendor by a contract run, which captures it again and reports any difference. A system of the same repository is no vendor: its captured responses are checked against its own contract in the check.
 
 | Why | Check | Tags |
 |---|---|---|
-| a vendor changes its answers without telling anyone, and a spec on an old capture keeps passing while the program breaks. | review | [testing] |
+| a vendor changes its answers without telling anyone, and a spec on an old capture keeps passing while the program breaks; a system the repository holds changes in the same change as its contract, so the check can hold the two together. | review | [testing] |
 
 ## unmatched-request-fails-the-spec → tests-run-in-a-sandbox
 A transport replaced by captured responses throws on a request none of them matches, naming its method and address.

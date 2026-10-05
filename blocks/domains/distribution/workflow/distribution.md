@@ -1,4 +1,4 @@
-# Package
+# Distribution
 
 ## Versions and releases
 

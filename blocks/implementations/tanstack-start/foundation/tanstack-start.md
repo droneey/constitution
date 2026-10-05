@@ -1,11 +1,11 @@
 # TanStack Start
 
-## hashed-assets-immutable-html-revalidated · SHOULD
-Hashed assets are served as immutable; the HTML and the runtime configuration are revalidated.
+## caching-set-in-route-rules → hashed-assets-immutable-html-revalidated
+Nitro's `routeRules` set the caching headers: `immutable` with a year's `max-age` on the hashed assets, and `no-cache` on the documents and the runtime configuration.
 
 | Why | Check | Tags |
 |---|---|---|
-| hashed files never change, so they are cached for good, while what points at them must be fresh. | review | [performance] |
+| the server that serves the files then says how long each may be kept, in the same configuration as the program's other headers. | review | [performance] |
 
 ## content-security-policy-set-in-route-rules → strict-content-security-policy
 Nitro's `routeRules` set the Content Security Policy on every document, beside the caching rules, and the policy allows the shell's inline scripts by hash; a test reads the policy the server sends.

@@ -7,7 +7,7 @@ BEGIN {
   FS = "\t"
   T = "\t"
   CODES = "missing abstract unknown wrong-key config local-block no-tool not-met override"
-  KEYS = "version axes domains platforms languages implementations apps check overrides"
+  KEYS = "version axes domains platforms languages implementations packages check overrides"
   FIELDS = "id summary requires extends abstract checks languages roles dictionary governs"
   LAYERS = "domain platform language implementation"
   AXES = "foundation architecture workflow"
@@ -28,12 +28,12 @@ BEGIN {
   }
   ADD["version"] = "version: " ENVIRON["CONSTITUTION_INSTALLED"]
   ADD["axes"] = "axes: [foundation, architecture, workflow]"
-  ADD["apps"] = "apps: {}"
+  ADD["packages"] = "packages: {}"
   ADD["check"] = "check: <the command that runs every check, or null>"
   ADD["overrides"] = "overrides: []"
   FILL["version"] = "write version: " ENVIRON["CONSTITUTION_INSTALLED"]
   FILL["axes"] = "write axes: [foundation, architecture, workflow]"
-  FILL["apps"] = "write apps: {}"
+  FILL["packages"] = "write packages: {}"
   FILL["check"] = "name the command that runs every check, or write check: null"
   FILL["overrides"] = "write overrides: []"
   read_index(ENVIRON["CONSTITUTION_INDEX"])

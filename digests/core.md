@@ -25,7 +25,7 @@ Hold it to the rules of the project's domains and language and their requirement
 
 ## The project's files
 
-- `constitution.yaml`: the pinned version, its axes (`foundation` always), its blocks, its applications, its check command and its overrides.
+- `constitution.yaml`: the pinned version, its axes (`foundation` always), its blocks, the blocks of each of its units under `packages`, its check command and its overrides.
 - `PROJECT.md`: the product and its users, entities, boundaries and glossary.
 - `rules/`: the project's local blocks.
 

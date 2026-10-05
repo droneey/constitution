@@ -21,7 +21,7 @@ Under concurrent writes, reads in flight for the touched keys are cancelled befo
 |---|---|---|
 | a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read overwrites the optimistic state, or one failure erases the other's success. | test | [data] |
 
-## input-driven-requests-debounced → fast-source-updates-once-per-frame
+## input-driven-requests-debounced · SHOULD
 A request driven by typing is sent after a pause, or on the deferred value.
 
 | Why | Check | Tags |

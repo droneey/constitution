@@ -216,7 +216,7 @@ function close_level(l, app) {
 
 function close_top() {
   close_level(1, app)
-  if (KIND[0] == "apps" && !apps) print "empty" T T "apps"
+  if (KIND[0] == "packages" && !apps) print "empty" T T "packages"
   close_level(0, "")
 }
 
@@ -243,9 +243,9 @@ function top(t,   key, rest) {
     else print "value" T key T rest
   } else if (index(LISTS, " " key " ")) {
     list(0, rest, "", key)
-  } else if (key == "apps") {
+  } else if (key == "packages") {
     if (rest ~ /^\{ *\}$/) KIND[0] = "done"
-    else if (rest == "") KIND[0] = "apps"
+    else if (rest == "") KIND[0] = "packages"
     else fail(NR)
   } else if (key == "overrides") {
     overrides(0, rest)
@@ -255,7 +255,7 @@ function top(t,   key, rest) {
   }
 }
 
-# Under apps: a path two spaces in, its keys four spaces in.
+# Under packages: a path two spaces in, its keys four spaces in.
 function app_line(t, indent,   key, rest) {
   if (indent == 2 && t !~ /^-( |$)/) {
     if (substr(t, length(t)) != ":") fail(NR)
@@ -302,7 +302,7 @@ function app_line(t, indent,   key, rest) {
     next
   }
   if (indent == 0 && t !~ /^-( |$)/) top(t)
-  else if (KIND[0] == "apps") app_line(t, indent)
+  else if (KIND[0] == "packages") app_line(t, indent)
   else body(0, t, indent, "")
 }
 

@@ -6,10 +6,3 @@ shadcn source is added with its CLI into the UI kit, never imported from a packa
 | Why | Check | Tags |
 |---|---|---|
 | the source becomes part of the kit's tree, found where every other component is, and no copy of it hides in a dependency. | review | [] |
-
-## shadcn-text-passed-by-props → primitives-take-text-by-props
-The text shadcn source ships — a screen reader's "Close" among it — is removed on arrival, and the component takes it by a prop.
-
-| Why | Check | Tags |
-|---|---|---|
-| the shipped strings are English and fixed, so a kit that keeps them speaks one language whatever the program's locale. | review | [] |

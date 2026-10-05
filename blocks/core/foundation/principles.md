@@ -46,6 +46,13 @@ Each unit — a function, a class, a file — has one reason to change.
 |---|---|---|
 | a unit with two reasons changes for both, and every change risks the other purpose. | review | [] |
 
+## one-home-per-datum · MUST
+Every datum and every piece of state lives in one place; everything else reads it or derives from it.
+
+| Why | Check | Tags |
+|---|---|---|
+| two copies of one fact drift apart, and then the program is wrong in one of them. | review | [data] |
+
 ## extension-by-addition · MUST
 A new kind of thing — a vendor, a command, a format, a rule — is added as a new member and its registration, without editing the code that handles the other kinds. A long branch by kind becomes a strategy and a registry.
 

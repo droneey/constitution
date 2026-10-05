@@ -32,12 +32,12 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 |---|---|---|
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | review | [] |
 
-## error-boundary-per-screen → one-error-handler-per-transport · MUST
-Every screen sits inside an error boundary of its own, and one boundary in `root/` catches what the screens do not.
+## root-boundary-catches-the-rest → one-error-handler-per-transport · MUST
+One error boundary in `root/` catches what no screen's own boundary does.
 
 | Why | Check | Tags |
 |---|---|---|
-| a failure in one screen then costs that screen, not the whole application, and the user is never left with a blank page. | review | [] |
+| a failure no screen contained still reaches a handler that shows it, and the user is never left with a blank page. | review | [] |
 
 ## view-state-homes → one-home-per-datum
 Each kind of state has one home: view state a link or a restart must reproduce in the platform's navigation state; ephemeral state in its component; the few global concerns the client owns — theme, notices — in small stores the root builds.
@@ -145,13 +145,6 @@ A deep component never reads a store to spare a prop its path; the state stays i
 | Why | Check | Tags |
 |---|---|---|
 | state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | review | [] |
-
-## primitives-take-text-by-props → libs-import-no-application-code
-The primitive library holds no user-facing text; text arrives through props.
-
-| Why | Check | Tags |
-|---|---|---|
-| a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |
 
 ## theme-in-the-design-system-library → tokens-single-source-of-appearance
 The theme module lives in `libs/ui/theme/`: its tokens, its constants and the code that applies them.

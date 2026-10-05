@@ -5,7 +5,7 @@ domains: [version-control, open-source]
 platforms: []
 languages: [typescript, python]
 implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner, uv, ruff, ty, pytest, mutmut, deptry, vulture, complexipy, python-check]
-apps: {}
+packages: {}
 check: bun run check
 overrides:
   - rule: no-agent-file-in-project

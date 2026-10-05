@@ -13,3 +13,10 @@ Every handler runs its work through the program's one error handler, which maps 
 | Why | Check | Tags |
 |---|---|---|
 | every command then exits by the same map, whatever fails. | review | [] |
+
+## bunli-configured-inline → one-explicit-composition-root
+`createCLI` takes the program's configuration — its name, version, description and plugins — inline, and the program keeps no `bunli.config.*`.
+
+| Why | Check | Tags |
+|---|---|---|
+| bunli merges a `bunli.config.*` it finds in the working folder into the configuration given inline, so a file beside the program changes what it ships as much as what a spec run from another folder builds, and the root no longer names every choice. | review | [] |

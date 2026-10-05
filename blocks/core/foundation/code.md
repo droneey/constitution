@@ -276,11 +276,11 @@ A parser's failure becomes one coded error of the kit, with its cause, and each 
 | the caller handles one error type and sees every problem of the input at once, each pointing at its place. | review | [errors] |
 
 ## framework-errors-never-raised → expected-failures-typed-with-codes
-Code raises the error kit's errors, never the error type of the framework that serves it, which carries a status or a message but no code.
+Code raises the error kit's errors, never the error types of the framework that serves it — a server's or a command-line framework's — which carry no code of the program's expected failures.
 
 | Why | Check | Tags |
 |---|---|---|
-| a framework's error carries no code, so no caller can branch on it, and the code that raises it is tied to that framework. | review | [errors] |
+| a framework's error carries no code a caller can branch on, and the code that raises it is tied to that framework. | review | [errors] |
 
 ## failures-listed-beside-the-contract → expected-failures-typed-with-codes
 A contract that can fail lists the expected failures it throws as one named type beside it, each an error of the kit with its code.

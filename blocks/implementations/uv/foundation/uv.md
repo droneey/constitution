@@ -23,6 +23,13 @@ CI and every script install with `uv sync --locked`, which fails when `uv.lock` 
 |---|---|---|
 | uv resolves the workspace as one whole, so a second version of a dependency cannot enter while every manifest is a member. | review | [] |
 
+## uv-build-backend-capped · SHOULD
+A package builds with `uv_build`, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.12,<0.13`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a new minor of the backend may build a different package from the same files; the cap makes that an update someone reviews. | review | [] |
+
 ## exclude-newer-sets-the-cooldown → dependency-release-cooldown
 `exclude-newer = "3 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
 

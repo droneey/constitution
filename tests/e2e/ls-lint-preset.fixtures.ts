@@ -36,8 +36,8 @@ const PARTS = [
 
 const LS_LINT = miseBinary('ls-lint');
 
-// A package one to four folders down, as a repository of packages lays them
-// out, in the order ls-lint reports them.
+// A unit one to four folders down, as a workspace lays them out, in the order
+// ls-lint reports them.
 const PACKAGES = [
   'packages/shop',
   'packages/shop/python',

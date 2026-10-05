@@ -12,7 +12,7 @@ No secret is written into the repository — not in code, documents, tests or fi
 | a secret in the repository is readable by everyone who can read the repository, and by every copy made of it. | tool/secrets | [security] |
 
 ## secret-never-in-url-or-artefact · MUST
-A secret never travels in a URL, and never reaches a build artefact: an image layer, a client bundle, a variable baked in at build time.
+A secret never travels in a URL, and never reaches a build artefact: an image layer, a variable baked in at build time.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -45,6 +45,22 @@ Every environment variable the program reads is declared in one place, and code 
 | Why | Check | Tags |
 |---|---|---|
 | one declaration shows what a deployment must provide, and no module reads a name nobody knows it needs. | review | [security] |
+
+## configuration-parsed-once-at-boot · MUST
+Configuration is parsed once, at boot, into a typed value the rest of the program receives, and a missing or malformed setting fails the start.
+
+| Why | Check | Tags |
+|---|---|---|
+| a setting checked where it is first used fails in the middle of a request, long after the deployment that broke it, and one parsed in two places can be read two ways. | review | [security] |
+
+## Addresses from outside
+
+## outside-addresses-trusted-only-on-an-allowlist · MUST
+An address or an origin that comes from outside the program — a redirect target, the origin of a message, a host a caller names — is followed, trusted or reached only when it is on an allowlist of the program's own.
+
+| Why | Check | Tags |
+|---|---|---|
+| whoever chooses the address chooses where the program sends its user, whom it believes, or what it reaches on their behalf. | review | [security] |
 
 ## Dependencies
 
@@ -83,6 +99,13 @@ A repository takes its tools' configuration, and any other file a shared source 
 |---|---|---|
 | a copy drifts and is fixed in one repository at a time; a pinned source is fixed once and reaches every repository with an update. | review | [security] |
 
+## shared-configuration-taken-by-the-tools-own-mechanism → shared-configuration-from-one-pinned-source
+A repository takes a shared configuration through the tool's own way of extending one, else through a one-line module that re-exports it, else through the tool's remote configuration.
+
+| Why | Check | Tags |
+|---|---|---|
+| the closer to the tool's own mechanism, the less glue each repository writes and keeps. | review | [] |
+
 ## template-copied-once-owned-by-consumer · SHOULD
 A file no tool can extend is a template: kept canonical in the source that offers it, copied once, then owned by the repository that copied it. Copies stay alike by convention, with no checker; a template that needs a checker should have been a file a tool extends.
 
@@ -110,6 +133,13 @@ A dependency is imported only from the entries it publishes, never from its inte
 | Why | Check | Tags |
 |---|---|---|
 | internal paths change between releases without notice, and an update then breaks the program. | review | [] |
+
+## library-entries-curated → module-hides-much-behind-small-public-entry · MUST
+A library offers its consumers its entries and nothing else, and its manifest lists them wherever its language's manifest can say so.
+
+| Why | Check | Tags |
+|---|---|---|
+| every path a consumer can reach becomes part of the contract, and cannot change without breaking someone. | review | [] |
 
 ## ci-steps-pinned-to-immutable-references · MUST
 A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.

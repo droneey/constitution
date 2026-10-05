@@ -51,13 +51,6 @@ A route declares its document metadata in `head`.
 |---|---|---|
 | the metadata changes with the route that owns it. | review | [ux] |
 
-## error-component-per-route → error-boundary-per-screen
-Each route that renders a screen declares its error component.
-
-| Why | Check | Tags |
-|---|---|---|
-| a route's error component is the boundary of its screen, so a failed loader costs its route, with its own message, not the whole application. | review | [errors, ux] |
-
 ## route-pieces-reach-the-route-by-its-api → screen-private-pieces-beside-screen
 A route's private pieces reach its params and search through `getRouteApi('<route id>')`, never by importing the route file.
 
@@ -78,13 +71,6 @@ Nothing under `features/`, `shared/`, `libs/`, `kernel/`, `contracts/` or `compo
 | Why | Check | Tags |
 |---|---|---|
 | these are the layers the router's screens sit above. | tool/imports | [] |
-
-## screen-reads-start-in-the-loader → route-owns-its-url
-A screen's reads start together in its route's loader, before it renders, never one after another as its components mount.
-
-| Why | Check | Tags |
-|---|---|---|
-| reads started in a loader run in parallel and before the first paint; reads in components wait for each other. | review | [] |
 
 ## services-reach-loaders-through-router-context → one-explicit-composition-root
 Every service the providers build — the adapters, the cache client, analytics, the configuration — reaches loaders and guards through the router's context.

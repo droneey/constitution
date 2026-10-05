@@ -57,7 +57,7 @@ A spec calls neither `Bun.sleep`, `Bun.sleepSync` nor the `setTimeout` of `node:
 | these are the fixed delays a spec reaches for; the fake clock of `bun:test` or a wait on a condition replaces them. | tool/lint | [] |
 
 ## network-refused-by-the-test-preload → network-refused-in-the-unit-run
-`bunfig.toml` preloads a fixture that replaces `fetch`, `WebSocket` and `Bun.connect` with functions that throw; the integration run does not preload it.
+`bunfig.toml` preloads a fixture that replaces with functions that throw every way the runtime opens a connection: `fetch`, `WebSocket`, `Bun.connect` and `Bun.SQL`; `node:net`'s `Socket.prototype.connect`, `connect` and `createConnection`; `node:tls`'s `connect`; and `request` and `get` of `node:http` and `node:https`. The integration run does not preload it.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -1,6 +1,6 @@
 foundation:
   bun:
-    own-packages-at-workspace-version:
+    own-units-at-workspace-version:
       - versionGroups
   typescript:
     caret-ranges-lockfile-pins:

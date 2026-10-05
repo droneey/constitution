@@ -8,11 +8,11 @@ Nothing is tracked, and no identifier is stored, before the user consents; decli
 | tracking is the user's choice, and a product that tracks first and asks later has already taken it from them. | review | [security] |
 
 ## refusal-as-easy-as-consent → tracking-waits-for-consent
-Refusing sits beside accepting, where consent is first asked, with the same weight; every purpose is chosen on its own, and nothing is chosen in advance.
+Refusing takes no more steps than accepting, where consent is first asked; every purpose is chosen on its own, and nothing is chosen in advance.
 
 | Why | Check | Tags |
 |---|---|---|
-| a refusal hidden behind a second screen is consent taken, not given. | review | [security, ux] |
+| a refusal hidden behind a second step is consent taken, not given. | review | [security, ux] |
 
 ## consent-withdrawable-and-recorded · MUST
 Consent can be withdrawn at any time as easily as it was given, and each choice is recorded with its time and purposes. A recorded refusal is not asked again for about six months, or until the purposes change.

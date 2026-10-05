@@ -9,6 +9,13 @@ Every data view shows loading, error and content, and the empty or not-found sta
 |---|---|---|
 | an empty screen cannot otherwise be told from a slow one, and the user does not know what to do. | test | [ux, a11y] |
 
+## failure-contained-to-its-screen · MUST
+A failure while a screen loads or renders costs that screen alone: the screen shows it in its own place, and the rest of the application stays usable.
+
+| Why | Check | Tags |
+|---|---|---|
+| a failure in one screen then costs that screen, not the whole application, and the user is never left with a blank page. | review | [errors, ux] |
+
 ## state-messages-guide-the-user · SHOULD
 An empty state names the situation and offers an action; a state with no results repeats the query. A long load names what it is doing and shows progress when it is known.
 
@@ -151,6 +158,13 @@ Every target meets the platform's minimum size, counting its padding.
 |---|---|---|
 | a target smaller than a finger or a tremor allows is missed, and the wrong action runs. | review | [a11y, ux] |
 
+## primitives-take-text-by-props · MUST
+The primitive library holds no user-facing text; text arrives through props.
+
+| Why | Check | Tags |
+|---|---|---|
+| a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |
+
 ## stateful-component-controllable-or-not · SHOULD
 A component that holds a value can be driven from outside or left to itself through one interface — the value, its initial value and a change callback — and never switches between the two.
 
@@ -209,7 +223,7 @@ A reusable component's spec proves the variants that change behaviour or meaning
 |---|---|---|
 | a component used on many screens breaks all of them at once; its spec is where that is caught. | test | [a11y] |
 
-## elements-found-by-role-label-text → assert-what-a-caller-observes
+## elements-found-by-role-label-text → assert-what-a-caller-observes · MUST
 A spec finds elements by role, label and text, never by class or internal state.
 
 | Why | Check | Tags |

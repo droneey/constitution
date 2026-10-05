@@ -57,6 +57,64 @@ const WELL_FORMED = {
   }),
 };
 
+// A workspace of four units and a group of two, each linked by its name as a
+// package manager links them, with the workspace's parts of both axes.
+const UNITS: Readonly<Record<string, string>> = {
+  admin: 'packages/admin',
+  core: 'packages/eros/core',
+  nestjs: 'packages/eros/nestjs',
+  proto: 'shared/proto',
+  smtp: 'libs/smtp',
+  web: 'packages/web',
+};
+
+const workspaceProject = (files: Readonly<Record<string, string>>) => ({
+  files: {
+    ...Object.fromEntries(
+      Object.entries(UNITS).flatMap(([name, folder]) => [
+        [
+          `${folder}/package.json`,
+          JSON.stringify({
+            exports: {
+              '.': './src/index.ts',
+            },
+            name: `@shop/${name}`,
+            type: 'module',
+          }),
+        ],
+        [
+          `${folder}/src/index.ts`,
+          exported('unit'),
+        ],
+      ]),
+    ),
+    'scripts/build.ts': exported('build'),
+    ...files,
+  },
+  links: Object.fromEntries(
+    Object.entries(UNITS).map(([name, folder]) => [
+      `node_modules/@shop/${name}`,
+      folder,
+    ]),
+  ),
+  parts: [
+    'typescript/foundation/workspace',
+    'typescript/architecture/workspace',
+  ],
+  roots: [
+    'packages',
+    'shared',
+    'libs',
+    'scripts',
+  ],
+  workspaces: [
+    'packages/*',
+    'packages/eros/*',
+    'shared/*',
+    'libs/*',
+  ],
+});
+
 describe('the dependency-cruiser layer set', () => {
   it('should report no violation when an application follows the layer matrix', () => {
     // Arrange
@@ -879,78 +937,95 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'a package imports a file of the repository that holds it',
+      condition: 'a unit of packages imports another by its name',
       files: {
-        'packages/core/build.ts': importing({
-          from: '../../scripts/release',
-          name: 'release',
+        'packages/web/src/orders.ts': importing({
+          from: '@shop/admin',
+          name: 'unit',
         }),
-        'scripts/release.ts': exported('release'),
       },
-      part: 'typescript/architecture/package',
-      roots: [
-        'packages',
-        'scripts',
-      ],
-      rule: 'package-knows-no-consumer',
+      rule: 'product-units-blind-to-each-other',
     },
     {
-      condition: 'the root imports a package by its path',
+      condition: 'a unit of shared imports a unit of packages by its name',
       files: {
-        'packages/core/build.ts': exported('build'),
-        'scripts/release.ts': importing({
-          from: '../packages/core/build',
-          name: 'build',
+        'shared/proto/src/messages.ts': importing({
+          from: '@shop/web',
+          name: 'unit',
         }),
       },
-      part: 'typescript/foundation/package',
-      roots: [
-        'packages',
-        'scripts',
-      ],
-      rule: 'root-takes-packages-by-name',
+      rule: 'shared-knows-no-product-unit',
     },
-  ])(
-    'should report $rule when $condition and a repository of packages extends $part',
-    ({ files, part, roots, rule }) => {
-      // Arrange
-      const project = {
-        files,
-        parts: [
-          part,
-        ],
-        roots,
-      };
-
-      // Act
-      const { violations } = cruise(project);
-
-      // Assert
-      expect(violations).toContain(rule);
+    {
+      condition: 'a unit of libs imports a unit of shared by its name',
+      files: {
+        'libs/smtp/src/send.ts': importing({
+          from: '@shop/proto',
+          name: 'unit',
+        }),
+      },
+      rule: 'libs-know-no-product',
     },
-  );
-
-  it('should report no violation when a package imports its own files and the runtime', () => {
+    {
+      condition: 'a unit imports another by a path into its folder',
+      files: {
+        'packages/web/src/orders.ts': importing({
+          from: '../../../shared/proto/src/index',
+          name: 'unit',
+        }),
+      },
+      rule: 'units-imported-by-name',
+    },
+    {
+      condition: 'a member of a group imports another by a path into its folder',
+      files: {
+        'packages/eros/nestjs/src/filter.ts': importing({
+          from: '../../core/src/index',
+          name: 'unit',
+        }),
+      },
+      rule: 'units-imported-by-name',
+    },
+    {
+      condition: 'a script of the root imports a unit by a path into its folder',
+      files: {
+        'scripts/release.ts': importing({
+          from: '../packages/web/src/index',
+          name: 'unit',
+        }),
+      },
+      rule: 'root-imports-units-by-name',
+    },
+  ])('should report $rule when $condition in a workspace', ({ files, rule }) => {
     // Arrange
-    const project = {
-      files: {
-        'packages/core/build.ts':
-          "import { readFileSync } from 'node:fs';\nimport { plugins } from './plugins';\nexport const build = [readFileSync, plugins];\n",
-        'packages/core/plugins.ts': exported('plugins'),
-        'scripts/release.ts': importing({
-          from: 'yaml',
-          name: 'value',
-        }),
-      },
-      parts: [
-        'typescript/foundation/package',
-        'typescript/architecture/package',
-      ],
-      roots: [
-        'packages',
-        'scripts',
-      ],
-    };
+    const project = workspaceProject(files);
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toContain(rule);
+  });
+
+  it('should report no violation when the units of a workspace import downward by name', () => {
+    // Arrange
+    const project = workspaceProject({
+      'packages/eros/nestjs/src/filter.ts': importing({
+        from: '@shop/core',
+        name: 'unit',
+      }),
+      'packages/web/src/orders.ts':
+        "import { unit } from '@shop/proto';\nimport { unit as smtp } from '@shop/smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
+      'packages/web/src/line.ts': exported('line'),
+      'scripts/release.ts': importing({
+        from: '@shop/web',
+        name: 'unit',
+      }),
+      'shared/proto/src/messages.ts': importing({
+        from: '@shop/smtp',
+        name: 'unit',
+      }),
+    });
 
     // Act
     const { violations } = cruise(project);

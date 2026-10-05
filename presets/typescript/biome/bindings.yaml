@@ -120,8 +120,8 @@ foundation:
       - useValidAriaProps
       - useValidAriaRole
       - useValidAriaValues
-    no-inline-style:
-      - no-inline-style.grit
+    inline-style-only-custom-properties-and-geometry:
+      - inline-style-only-custom-properties-and-geometry.grit
     jsx-images-declare-their-size:
       - useImageSize
     jsx-viewport-never-blocks-zoom:

@@ -21,14 +21,14 @@ A credential in the tab lives only in a cookie its script cannot read, never in 
 |---|---|---|
 | a cookie the page's script cannot read is the one store of a tab that no script in the page can reach. | review | [security] |
 
-## cross-window-messages-check-origin → outside-values-untyped-until-parsed
+## cross-window-messages-check-origin → outside-addresses-trusted-only-on-an-allowlist
 A message from another window is accepted only from an expected origin, and parsed; an outgoing message names its target origin.
 
 | Why | Check | Tags |
 |---|---|---|
 | any page can post a message to any window; without the origin check, any page can drive the program. | review | [] |
 
-## redirect-targets-allowlisted → outside-values-untyped-until-parsed
+## redirect-targets-allowlisted → outside-addresses-trusted-only-on-an-allowlist
 A redirect target taken from the address or a form — `returnTo`, `redirect`, `next` — is followed only when it is a path of the program's own or on an allowlist; anything else falls back to the home screen.
 
 | Why | Check | Tags |
@@ -76,6 +76,13 @@ Each bundle has a size budget the check holds.
 | Why | Check | Tags |
 |---|---|---|
 | size grows one dependency at a time, and only a budget notices the one that crosses the line. | test | [performance] |
+
+## hashed-assets-immutable-html-revalidated · SHOULD
+Hashed assets are served as immutable; the HTML and the runtime configuration are revalidated.
+
+| Why | Check | Tags |
+|---|---|---|
+| hashed files never change, so they are cached for good, while what points at them must be fresh. | review | [performance] |
 
 ## browser-resources-have-one-writer → one-writer-per-shared-resource
 In the browser, the resources the program shares with its host include the document's head, the URL, focus, the scroll position, the root element's classes and attributes, and the service worker; each has one writer.

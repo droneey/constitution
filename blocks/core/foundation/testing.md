@@ -249,7 +249,7 @@ A case's body holds no branch, loop or conditional expression.
 | a branch in a case runs one path and skips the other, so the case may assert nothing on the path it took. | tool/lint | [testing] |
 
 ## arrange-act-assert-marked · SHOULD
-A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call.
+A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call. A lifecycle case is the one exception: after its Arrange, it repeats a marked Act and Assert for each transition, each Act making one call.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -48,13 +48,6 @@ A layer and a module have one reason to change each, as every unit does.
 |---|---|---|
 | a layer or module with two reasons changes for both, and every change risks the other purpose. | review | [] |
 
-## one-home-per-datum · MUST
-Every datum and every piece of state lives in one place; everything else reads it or derives from it.
-
-| Why | Check | Tags |
-|---|---|---|
-| two copies of one fact drift apart, and then the program is wrong in one of them. | review | [data] |
-
 ## features-blind-to-each-other · MUST
 A feature never imports another feature. Features are combined only by the layer above them.
 
