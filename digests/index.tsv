@@ -453,6 +453,7 @@ rule	one-transport-instance-per-system	remote-service	blocks/domains/remote-serv
 rule	contract-run-scheduled-outside-the-check	remote-service	blocks/domains/remote-service/workflow/remote-service.md		SHOULD	review			testing	workflow	captured-responses-verified-against-the-vendor	false
 rule	four-data-states	ui	blocks/domains/ui/foundation/ui.md		MUST	test			ux a11y	foundation		true
 rule	state-messages-guide-the-user	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
+rule	unknown-address-shows-the-not-found-screen	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	button-names-its-result	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	compose-before-authoring	ui	blocks/domains/ui/foundation/ui.md		SHOULD	review			ux	foundation		true
 rule	primitive-markup-never-recreated	ui	blocks/domains/ui/foundation/ui.md		MUST	review			ux a11y	foundation	compose-before-authoring	true
@@ -1112,6 +1113,7 @@ rule	loader-declares-the-search-it-reads	tanstack-router	blocks/implementations/
 rule	routes-split-automatically	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
 rule	router-claims-the-head	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript		foundation	one-writer-per-shared-resource	false
 rule	search-falls-back-to-defaults	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
+rule	not-found-declared-by-the-root	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript	ux	foundation	unknown-address-shows-the-not-found-screen	false
 rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		MUST	review		typescript	a11y ux	foundation	navigation-moves-focus-to-the-view	false
 rule	screens-are-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript		architecture		true
 rule	routes-folder-holds-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screens-are-file-routes	false
@@ -1123,7 +1125,6 @@ rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementation
 rule	screen-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screen-private-pieces-in-dash-folders	false
 rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux	architecture	document-metadata-owned-by-screen	false
 rule	error-component-per-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	errors ux security	architecture	error-boundary-per-screen	false
-rule	not-found-declared-by-the-root	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript	ux errors security	architecture	error-boundary-per-screen	false
 rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript		architecture	screen-private-pieces-beside-screen	false
 rule	libs-import-no-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
 rule	routes-imported-only-by-the-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	dependencies-point-inward	false

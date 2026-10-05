@@ -16,6 +16,13 @@ An empty state names the situation and offers an action; a state with no results
 |---|---|---|
 | each state is a moment the user decides what to do, and a message that does not help them leaves them stuck. | review | [ux] |
 
+## unknown-address-shows-the-not-found-screen · SHOULD
+An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
+
+| Why | Check | Tags |
+|---|---|---|
+| a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. | review | [ux] |
+
 ## button-names-its-result · SHOULD
 A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action; a confirmation of a destructive action names the action; a payment button shows the amount.
 

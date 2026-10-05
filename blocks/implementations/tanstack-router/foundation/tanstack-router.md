@@ -63,6 +63,13 @@ A route's search schema gives every param a default, so a malformed URL opens th
 |---|---|---|
 | a shared or old link still opens the screen. | review | [] |
 
+## not-found-declared-by-the-root → unknown-address-shows-the-not-found-screen
+The root route declares the not-found component, which shows an address no route matches.
+
+| Why | Check | Tags |
+|---|---|---|
+| the router matches an address against its whole tree, so only the root sees an address no route takes. | review | [ux] |
+
 ## Accessibility
 
 ## focus-moved-when-a-navigation-resolves → navigation-moves-focus-to-the-view
