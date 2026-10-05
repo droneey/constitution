@@ -7,7 +7,7 @@ The check scans the history the clone holds and the uncommitted changes, staged 
 |---|---|---|
 | a secret is caught wherever it waits — already committed, staged or only written — by the same run that checks the rest. | tool/secrets | [] |
 
-## history-scanned-once-on-adoption → leaked-secret-rotated-at-once
+## history-scanned-once-on-adoption → no-secret-in-history
 The whole history, every ref, is scanned once when the scanner is adopted, and before a first public release.
 
 | Why | Check | Tags |

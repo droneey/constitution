@@ -23,7 +23,7 @@ A component never assigns to its props.
 |---|---|---|
 | props belong to the caller; this is the change to existing data the linter can see. | tool/lint | [] |
 
-## no-manual-memoisation → suppression-states-its-reason
+## no-manual-memoisation → react-compiler-on
 No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
 
 | Why | Check | Tags |
@@ -124,6 +124,13 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 | Why | Check | Tags |
 |---|---|---|
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
+
+## slot-and-container-children-typed · SHOULD
+A slot that keeps control of its element takes a `ReactElement`; a container takes `ReactNode`; a render-prop slot is `(children, …data) => ReactElement`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the type says what the caller may pass, and the compiler refuses the rest. | review | [] |
 
 ## handler-and-effect-failures-handled-where-they-happen → errors-surfaced-never-swallowed
 An expected failure in an event handler or an effect is handled where it happens, never left for an error boundary; a defect there travels on to the root's report.

@@ -783,7 +783,7 @@ rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/archi
 rule	react-compiler-on	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	performance	foundation		true
 rule	render-is-pure	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	props-never-assigned	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	render-is-pure	false
-rule	no-manual-memoisation	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	performance	foundation	suppression-states-its-reason	false
+rule	no-manual-memoisation	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript	performance	foundation	react-compiler-on	false
 rule	modern-react-api-only	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
 rule	legacy-react-api-refused	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	modern-react-api-only	false
 rule	function-components-only	_react	blocks/implementations/_react/foundation/_react.md		MUST	tool	lint	typescript		foundation	inheritance-only-for-errors-and-framework-points	true
@@ -797,19 +797,19 @@ rule	effect-cleans-up-and-cancels	_react	blocks/implementations/_react/foundatio
 rule	async-ui-state-through-actions	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation		true
 rule	fast-source-batched-in-its-hook	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	performance	foundation	fast-source-updates-once-per-frame	false
 rule	compound-parts-share-the-root-context	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation	compound-root-owns-choreography	false
+rule	slot-and-container-children-typed	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript		foundation		true
 rule	handler-and-effect-failures-handled-where-they-happen	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	errors ux	foundation	errors-surfaced-never-swallowed	false
 rule	hidden-state-kept-by-activity	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation		true
 rule	controllable-props-named-value-default-change	_react	blocks/implementations/_react/foundation/_react.md		SHOULD	review		typescript	ux	foundation	stateful-component-controllable-or-not	false
 rule	derived-state-computed-in-render	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript	performance data	architecture	one-home-per-datum	false
 rule	component-effects-in-its-hooks-file	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript		architecture	side-effects-at-the-edges	false
 rule	component-file-calls-no-effect-hook	_react	blocks/implementations/_react/architecture/_react.md		MUST	tool	lint	typescript		architecture	component-effects-in-its-hooks-file	false
-rule	slot-and-container-children-typed	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript	ux	architecture	navigation-passed-by-slot	false
 rule	compound-parts-reached-through-the-root	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript	ux	architecture	compound-over-prop-regions	false
 rule	error-boundary-catches-render-errors	_react	blocks/implementations/_react/architecture/_react.md		MUST	review		typescript	errors ux security	architecture	error-boundary-per-screen	false
 rule	data-failures-rendered-as-state	_react	blocks/implementations/_react/foundation/with/remote-data.md	remote-data	MUST	review		typescript	errors ux	foundation	data-result-is-union-by-status	false
 rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/architecture/with/remote-data.md	remote-data	SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
 rule	secrets-scanned-on-every-change	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	tool	secrets		security	foundation	no-secret-in-repository	false
-rule	history-scanned-once-on-adoption	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	review			security	foundation	leaked-secret-rotated-at-once	false
+rule	history-scanned-once-on-adoption	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	review			security	foundation	no-secret-in-history	false
 rule	scanner-reports-redacted	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	review			security data	foundation	no-secret-or-personal-data-in-output	false
 rule	allowlisted-finding-states-its-reason	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	review			security	foundation	suppression-silences-one-finding	false
 rule	biome-suppression-states-its-reason	biome	blocks/implementations/biome/foundation/biome.md		MUST	tool	lint	typescript		foundation	suppression-states-its-reason	false
