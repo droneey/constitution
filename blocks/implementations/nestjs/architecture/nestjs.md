@@ -28,9 +28,9 @@ A dependency that stands for a contract is injected by a token — an abstract c
 |---|---|---|
 | a module's `providers` then name every concrete choice, and a spec replaces one by binding the same token to a fake. | review | [testing] |
 
-## error-kit-mapped-by-one-exception-filter → one-error-handler-per-transport
-One exception filter, registered globally by the root, turns every failure into its answer: an expected error into the status its code maps to, and any other into a masked `500`.
+## error-kit-mapped-by-one-exception-filter → one-error-handler-registered-by-the-root
+The handler is one exception filter whose `@Catch()` names no class, registered globally by the root; no controller or method binds a filter of its own with `@UseFilters`.
 
 | Why | Check | Tags |
 |---|---|---|
-| every failure of the transport leaves through one filter, in one shape, and no internal detail leaks past it. | review | [errors, security] |
+| a filter that names no class receives every exception, the `NotFoundException` of an unknown route and the `BadRequestException` of a malformed body included, while a filter bound to one controller answers its failures in a second shape. | review | [errors, security] |

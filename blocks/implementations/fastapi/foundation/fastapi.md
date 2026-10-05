@@ -32,7 +32,14 @@ What the app keeps open — clients, pools, connections — is opened and closed
 
 ## Failures
 
-## program-raises-no-http-exception → framework-errors-never-raised
+## framework-failures-answered-by-their-kind → failure-answered-by-its-code
+A `RequestValidationError` is answered as a validation failure whose details point at each field it refused, and Starlette's `HTTPException` — an unknown route, a method not allowed — as the kind its status maps to.
+
+| Why | Check | Tags |
+|---|---|---|
+| FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields. | review | [errors] |
+
+## program-raises-no-http-exception → errors-carry-codes-not-statuses
 The program raises the error kit's errors, never `HTTPException`.
 
 | Why | Check | Tags |

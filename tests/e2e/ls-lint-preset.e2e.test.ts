@@ -51,6 +51,7 @@ const WELL_FORMED = [
 const BLOCK_PARTS = [
   ...PARTS,
   'typescript/architecture/analytics',
+  'typescript/architecture/api',
   'typescript/architecture/cli',
   'typescript/architecture/tanstack-router',
   'typescript/architecture/ui',
@@ -69,6 +70,9 @@ const WELL_FORMED_WITH_PARTS = [
   'src/routes/(shop)/orders/-components/order-summary/order-summary.tsx',
   'src/routes/(shop)/orders/-components/order-summary/__tests__/order-summary.test.tsx',
   'src/routes/(shop)/orders/-hooks/order.hooks.ts',
+  'src/api/app.module.ts',
+  'src/api/orders/orders.controller.ts',
+  'src/api/__tests__/app.module.test.ts',
   'src/cli/commands.ts',
   'src/cli/init.cli.ts',
   'src/shared/analytics/sinks/index.ts',
@@ -213,6 +217,11 @@ describe('the ls-lint preset', () => {
       condition: "a sinks folder holds another role's file",
       path: 'src/shared/analytics/sinks/matomo.utils.ts',
       reported: 'src/shared/analytics/sinks',
+    },
+    {
+      condition: 'a handler file is not in kebab-case',
+      path: 'src/api/orders/OrdersController.ts',
+      reported: 'src/api/orders/OrdersController.ts',
     },
     {
       condition: 'a command file is not in kebab-case',

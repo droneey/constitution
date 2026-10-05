@@ -21,6 +21,7 @@ architecture:
     - write side
   folders:
     - adapters/
+    - api/
     - app/
     - cli/
     - commands/

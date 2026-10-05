@@ -444,6 +444,36 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'routes-reached-only-from-expo-router',
     },
     {
+      condition: 'a shared module imports a handler',
+      files: {
+        'src/api/orders.controller.ts': exported('OrdersController'),
+        'src/shared/jobs/index.ts': importing({
+          from: '../../api/orders.controller',
+          name: 'OrdersController',
+        }),
+      },
+      parts: [
+        'typescript/architecture/api',
+        'typescript/architecture/core',
+      ],
+      rule: 'handlers-reached-only-from-entries',
+    },
+    {
+      condition: 'an adapter imports a handler',
+      files: {
+        'src/adapters/smtp/index.ts': importing({
+          from: '../../api/orders.controller',
+          name: 'OrdersController',
+        }),
+        'src/api/orders.controller.ts': exported('OrdersController'),
+      },
+      parts: [
+        'typescript/architecture/api',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-handlers',
+    },
+    {
       condition: 'a shared module imports a command',
       files: {
         'src/cli/sync.cli.ts': exported('sync'),

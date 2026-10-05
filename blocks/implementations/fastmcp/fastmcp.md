@@ -1,7 +1,7 @@
 ---
 id: fastmcp
 summary: FastMCP serves the program's tools to models over MCP.
-requires: [python, pydantic]
+requires: [python, pydantic, api]
 extends: null
 abstract: false
 checks: []
@@ -19,7 +19,7 @@ governs: []
 
 | Requirement | How | Met |
 |---|---|---|
-| `untrusted-input-parsed-at-edge` | a tool's arguments are validated against its annotations, `Field` bounds included, before it runs | yes |
-| `one-error-handler-per-transport` | a middleware's `on_call_tool` sees every failure of every tool | yes |
+| `every-failure-reaches-one-handler` | a middleware's `on_call_tool` sees every failure of a call — the tool's own, the `ValidationError` of its arguments and the `NotFoundError` of an unknown tool | yes |
+| `request-parsed-before-its-handler` | a tool's arguments are validated against its annotations, `Field` bounds included, before it runs, and a refusal is a `ValidationError` that names each argument | yes |
 | `error-kit-carries-code-cause-and-details` | `ToolError` carries a message, but no stable code, no cause and no details, so the program raises the error kit's errors (`program-raises-no-tool-error`) and a middleware answers them | no |
 | `tests-run-in-a-sandbox` | `fastmcp.Client(server)` connects to the server in memory, with no process and no port | yes |

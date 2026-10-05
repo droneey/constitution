@@ -15,7 +15,7 @@ Browser code never reads `process.env`.
 | a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
 
 ## no-credential-readable-by-script → credentials-only-in-the-protected-store
-A credential in the tab lives only in a cookie its script cannot read — `HttpOnly`, `Secure`, `SameSite`, named `__Host-` when the program's own tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does — never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
+A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
 
 | Why | Check | Tags |
 |---|---|---|

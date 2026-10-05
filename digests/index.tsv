@@ -15,6 +15,7 @@ role	commits	true
 block	core	core	What holds for any program, in any language, of any kind.	foundation/code.md foundation/collaboration.md foundation/delivery.md foundation/files.md foundation/principles.md foundation/security.md foundation/testing.md architecture/anatomy.md architecture/code.md architecture/principles.md architecture/testing.md workflow/collaboration.md workflow/security.md workflow/testing.md				false						
 block	access-control	domain	Callers who sign in with different rights: identity, sessions, access.	foundation/access-control.md architecture/access-control.md				false						
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	foundation/analytics.md architecture/analytics.md	foundation/ui			false						**/sinks/**
+block	api	domain	A program that serves requests: its handlers, failures and callers.	foundation/api.md architecture/api.md	foundation/access-control			false						**/api/**
 block	convergence	domain	A declared document converged by validate, render, plan and apply.	foundation/convergence.md architecture/convergence.md	foundation/version-control			false						
 block	i18n	domain	Messages, plurals and locale for text a person reads.	foundation/i18n.md architecture/i18n.md	architecture/ui			false						
 block	observability	domain	Logs a collector reads: one pipeline, events with fields, trace ids.	foundation/observability.md architecture/observability.md				false						
@@ -45,8 +46,8 @@ block	dependency-cruiser	implementation	Holds the import rules between layers, m
 block	deptry	implementation	deptry checks the dependencies a Python package declares and imports.	foundation/deptry.md		python		false		unused	python			
 block	docker	implementation	Container images and the services Docker Compose runs from them.	foundation/docker.md				false						**/Dockerfile **/*.Dockerfile **/.dockerignore **/compose.yaml **/compose.*.yaml
 block	expo	implementation	Expo on React Native — app config, native builds, secure storage.	foundation/expo.md architecture/expo.md		react-native		false						app.config.ts eas.json
-block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicorn.	foundation/fastapi.md architecture/fastapi.md	foundation/structlog	python pydantic		false						
-block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	foundation/fastmcp.md architecture/fastmcp.md	foundation/structlog	python pydantic		false						
+block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicorn.	foundation/fastapi.md architecture/fastapi.md	foundation/structlog	python pydantic api		false						
+block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	foundation/fastmcp.md architecture/fastmcp.md	foundation/structlog	python pydantic api		false						
 block	git	implementation	Git's commits, branches, tags, ignores and worktrees.	foundation/git.md		version-control		false						.gitignore .gitattributes
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	foundation/hadolint.md		docker		false		lint				.hadolint.yaml
 block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	foundation/httpx2.md architecture/httpx2.md		python remote-service		false						**/adapters/** **/root/**
@@ -60,7 +61,7 @@ block	ls-lint	implementation	Holds the names of files and folders in every langu
 block	matomo	implementation	Matomo as one of the product's analytics services.	foundation/matomo.md architecture/matomo.md		analytics typescript		false						**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	foundation/mise.md workflow/mise.md	foundation/convergence foundation/version-control			false						mise.toml mise.lock
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.	foundation/mutmut.md		pytest		false		mutation	python			
-block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test foundation/pino	typescript tsc		false						nest-cli.json .swcrc
+block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	foundation/nestjs.md architecture/nestjs.md	foundation/bun-test foundation/pino	typescript tsc api		false						nest-cli.json .swcrc
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.	foundation/osv-scanner.md	foundation/docker			false		audit				osv-scanner.toml
 block	pino	implementation	pino writes the program's log records as JSON lines.	foundation/pino.md architecture/pino.md		typescript observability		false						**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.	foundation/playwright.md		browser ui typescript		false						tests/e2e/** playwright.config.*
@@ -353,6 +354,16 @@ rule	sinks-behind-one-contract	analytics	blocks/domains/analytics/architecture/a
 rule	sinks-folder-holds-sink-files	analytics	blocks/domains/analytics/architecture/analytics.md		SHOULD	tool	names			architecture	set-folder-holds-only-members	false
 rule	features-never-track	analytics	blocks/domains/analytics/architecture/analytics.md		MUST	tool	imports			architecture	code-lives-with-its-reason-to-change	false
 rule	consent-reachable-from-every-screen	analytics	blocks/domains/analytics/foundation/with/ui.md	ui	MUST	review			security ux	foundation	consent-withdrawable-and-recorded	false
+rule	failure-answered-by-its-code	api	blocks/domains/api/foundation/api.md		SHOULD	review			errors security ux	foundation	failure-shown-as-what-happened-and-what-next	false
+rule	errors-carry-codes-not-statuses	api	blocks/domains/api/foundation/api.md		SHOULD	review			errors	foundation	framework-errors-never-raised	false
+rule	cross-origin-callers-from-an-allowlist	api	blocks/domains/api/foundation/api.md		MUST	review			security	foundation		true
+rule	state-changes-refused-from-other-origins	api	blocks/domains/api/foundation/api.md		MUST	review			security	foundation		true
+rule	outbound-addresses-from-callers-allowlisted	api	blocks/domains/api/foundation/api.md		MUST	review			security	foundation		true
+rule	handlers-in-the-api-folder	api	blocks/domains/api/architecture/api.md		SHOULD	review				architecture	anatomy-top-level-by-concern	false
+rule	one-error-handler-registered-by-the-root	api	blocks/domains/api/architecture/api.md		SHOULD	review			errors security ux	architecture	one-error-handler-per-transport	false
+rule	every-failure-reaches-one-handler	api	blocks/domains/api/architecture/api.md		MUST	review			errors	architecture		true
+rule	request-parsed-before-its-handler	api	blocks/domains/api/architecture/api.md		MUST	review			security	architecture		true
+rule	session-cookie-closed-to-script	api	blocks/domains/api/foundation/with/access-control.md	access-control	MUST	review			security	foundation		true
 rule	section-optional-fields-required	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data	foundation	absence-has-one-value	false
 rule	secrets-are-references	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	review			security	foundation		true
 rule	document-variants-selected-by-a-discriminant	convergence	blocks/domains/convergence/foundation/convergence.md		MUST	test			data errors	foundation	illegal-states-unrepresentable	false
@@ -878,18 +889,20 @@ rule	dependencies-declared-in-annotated	fastapi	blocks/implementations/fastapi/f
 rule	path-parameters-read-by-the-handler	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	tool	lint	python		foundation		true
 rule	async-handlers-never-block	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	performance	foundation		true
 rule	lifespan-opens-and-closes	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python		foundation	resources-released-on-every-path	false
-rule	program-raises-no-http-exception	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	errors	foundation	framework-errors-never-raised	false
+rule	framework-failures-answered-by-their-kind	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	errors security ux	foundation	failure-answered-by-its-code	false
+rule	program-raises-no-http-exception	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	errors	foundation	errors-carry-codes-not-statuses	false
 rule	unexpected-error-logged-once	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		SHOULD	review		python	errors	foundation	error-logged-once	false
 rule	specs-through-the-asgi-transport	fastapi	blocks/implementations/fastapi/foundation/fastapi.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
 rule	app-assembled-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST	review		python	testing	architecture	one-explicit-composition-root	false
-rule	error-kit-handlers-registered-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-per-transport	false
+rule	error-kit-handlers-registered-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-registered-by-the-root	false
 rule	uvicorn-records-join-the-chain	fastapi	blocks/implementations/fastapi/foundation/with/structlog.md	structlog	MUST	review		python	security data	foundation	one-chain-for-every-record	false
 rule	tool-described-for-the-model	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python		foundation		true
-rule	program-raises-no-tool-error	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors	foundation	framework-errors-never-raised	false
+rule	tool-failure-answered-as-an-error-result	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors security ux	foundation	failure-answered-by-its-code	false
+rule	program-raises-no-tool-error	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors	foundation	errors-carry-codes-not-statuses	false
 rule	tool-arguments-bounded-by-their-annotations	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python	security	foundation	outside-values-untyped-until-parsed	false
 rule	validation-inside-a-tool-is-internal	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		SHOULD	review		python	errors security	foundation		true
 rule	specs-through-the-in-memory-client	fastmcp	blocks/implementations/fastmcp/foundation/fastmcp.md		MUST	review		python	testing security	foundation	tests-run-in-a-sandbox	false
-rule	tool-failures-answered-by-one-middleware	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-per-transport	false
+rule	tool-failures-answered-by-one-middleware	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		SHOULD	review		python	errors security ux	architecture	one-error-handler-registered-by-the-root	false
 rule	fastmcp-records-join-the-chain	fastmcp	blocks/implementations/fastmcp/foundation/with/structlog.md	structlog	MUST	review		python	security data	foundation	one-chain-for-every-record	false
 rule	move-with-git-mv	git	blocks/implementations/git/foundation/git.md		MUST	review				foundation	move-files-never-recreate	false
 rule	stage-by-name-and-read-staged-diff	git	blocks/implementations/git/foundation/git.md		MUST	review			security	foundation		true
@@ -960,12 +973,12 @@ rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/founda
 rule	compiler-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
 rule	injected-classes-imported-as-values	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	review		typescript	errors	foundation	nestjs-keeps-decorator-metadata	false
 rule	framework-filled-fields-marked-definite	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		MUST	tool	types	typescript		foundation	compiler-is-the-type-gate	false
-rule	program-throws-no-http-exception	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	errors	foundation	framework-errors-never-raised	false
+rule	program-throws-no-http-exception	nestjs	blocks/implementations/nestjs/foundation/nestjs.md		SHOULD	review		typescript	errors	foundation	errors-carry-codes-not-statuses	false
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	injector-never-asked-for-a-dependency	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	no-global-module	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript		architecture	one-explicit-composition-root	false
 rule	contracts-injected-by-token	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
-rule	error-kit-mapped-by-one-exception-filter	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	review		typescript	errors security ux	architecture	one-error-handler-per-transport	false
+rule	error-kit-mapped-by-one-exception-filter	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	review		typescript	errors security ux	architecture	one-error-handler-registered-by-the-root	false
 rule	decorator-options-where-bun-reads	nestjs	blocks/implementations/nestjs/foundation/with/bun-test.md	bun-test	MUST	review		typescript	errors	foundation	compiler-keeps-decorator-metadata	false
 rule	nest-logs-through-the-pino-instance	nestjs	blocks/implementations/nestjs/foundation/with/pino.md	pino	MUST	review		typescript	security data	foundation	one-instance-writes-every-record	false
 rule	vulnerabilities-scanned-in-the-check	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	known-vulnerabilities-fail-the-check	false
@@ -1194,12 +1207,12 @@ answer	bun	publishing-with-provenance-supported	no
 answer	bunli	command-framework-parses-flags-by-schema	yes
 answer	bunli	command-framework-leaves-exits-to-the-handler	partly
 answer	bunli	command-framework-runs-in-a-test-sandbox	partly
-answer	fastapi	untrusted-input-parsed-at-edge	yes
-answer	fastapi	one-error-handler-per-transport	yes
+answer	fastapi	every-failure-reaches-one-handler	yes
+answer	fastapi	request-parsed-before-its-handler	yes
 answer	fastapi	error-kit-carries-code-cause-and-details	no
 answer	fastapi	resources-released-on-every-path	yes
-answer	fastmcp	untrusted-input-parsed-at-edge	yes
-answer	fastmcp	one-error-handler-per-transport	yes
+answer	fastmcp	every-failure-reaches-one-handler	yes
+answer	fastmcp	request-parsed-before-its-handler	yes
 answer	fastmcp	error-kit-carries-code-cause-and-details	no
 answer	fastmcp	tests-run-in-a-sandbox	yes
 answer	httpx2	transport-timeout-and-cancel	yes
@@ -1217,6 +1230,8 @@ answer	matomo	analytics-anonymous-by-default	yes
 answer	matomo	analytics-loads-without-blocking	yes
 answer	matomo	analytics-context-dimensions	yes
 answer	nestjs	one-explicit-composition-root	yes
+answer	nestjs	every-failure-reaches-one-handler	yes
+answer	nestjs	request-parsed-before-its-handler	yes
 answer	nestjs	compiler-is-the-type-gate	yes
 answer	pydantic	schema-rejects-unknown-keys	yes
 answer	pydantic	schema-discriminated-unions	yes

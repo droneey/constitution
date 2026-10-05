@@ -17,6 +17,11 @@ architecture:
   analytics:
     features-never-track:
       - features-never-track
+  api:
+    adapters-never-import-each-other-or-callers:
+      - adapters-know-no-handlers
+    dependencies-point-inward:
+      - handlers-reached-only-from-entries
   cli:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-commands

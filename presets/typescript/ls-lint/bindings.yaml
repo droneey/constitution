@@ -29,6 +29,11 @@ architecture:
       - 'src/*/**/sinks'
     sinks-folder-holds-sink-files:
       - 'src/*/**/sinks'
+  api:
+    kebab-case-file-names:
+      - 'src/api'
+    top-level-folders-from-the-tree:
+      - 'src/api'
   cli:
     command-files-in-cli:
       - 'src/cli'

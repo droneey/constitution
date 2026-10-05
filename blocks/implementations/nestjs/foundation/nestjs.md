@@ -28,7 +28,7 @@ A field of a class the framework fills — a body, a query or the parameters of 
 |---|---|---|
 | the framework assigns these fields after it builds the object, and `!` says so to `strictPropertyInitialization`, which still refuses any other field left unset. | tool/types | [] |
 
-## program-throws-no-http-exception → framework-errors-never-raised
+## program-throws-no-http-exception → errors-carry-codes-not-statuses
 The program throws the error kit's errors, never `HttpException` or one of its subclasses.
 
 | Why | Check | Tags |
