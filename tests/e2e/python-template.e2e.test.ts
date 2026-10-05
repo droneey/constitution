@@ -236,6 +236,62 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: 'a read use-case imports a write one',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/domain/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/commands/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/commands/place_order_use_case.py': '',
+        'src/shop/features/orders/domain/use_cases/queries/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/queries/list_orders_use_case.py':
+          'from ..commands import place_order_use_case\n',
+      },
+      finding: 'reads-and-writes-apart BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the root imports a layer folder',
+      changes: {
+        ...FEATURE,
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py': 'from shop import features\n',
+      },
+      finding: 'layer-folder-never-imported BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the root reaches past the surface of the kernel',
+      changes: {
+        'src/shop/kernel/__init__.py': '',
+        'src/shop/kernel/money.py': 'MONEY = 1\n',
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py': 'from shop.kernel.money import MONEY\n',
+      },
+      finding: 'surface-is-the-only-way-in BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'a feature imports the composition above it',
+      changes: {
+        'src/shop/composition/__init__.py': '',
+        'src/shop/composition/checkout.py': 'CHECKOUT = 1\n',
+        'src/shop/features/__init__.py': '',
+        'src/shop/features/orders/__init__.py': 'from shop.composition import checkout\n',
+      },
+      finding: 'dependencies-point-inward BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the program imports a module of the specs',
+      changes: {
+        'src/shop/kernel.py': python('import orders_fixtures', '', 'ORDERS = orders_fixtures'),
+        'tests/orders_fixtures.py': 'ORDER = 1\n',
+      },
+      finding: 'DEP001',
+      task: 'dependencies:check',
+    },
+    {
       condition: 'the program imports a tool of the dev group',
       changes: {
         'src/shop/kernel.py': python('import pytest', '', 'MARK = pytest.mark'),

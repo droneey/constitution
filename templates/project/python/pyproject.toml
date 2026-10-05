@@ -152,6 +152,90 @@ name = "nothing-imports-an-entrypoint"
 type = "independence"
 modules = ["*.entrypoints.*"]
 
+[[tool.importlinter.contracts]]
+name = "dependencies-point-inward"
+type = "forbidden"
+source_modules = ["*.adapters", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.composition"]
+
+[[tool.importlinter.contracts]]
+name = "reads-and-writes-apart"
+type = "forbidden"
+source_modules = ["**.repositories.queries", "**.use_cases.queries"]
+forbidden_modules = ["**.repositories.commands", "**.use_cases.commands"]
+
+[[tool.importlinter.contracts]]
+name = "reads-and-writes-apart"
+type = "forbidden"
+source_modules = ["**.repositories.commands", "**.use_cases.commands"]
+forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
+
+# a layer folder's __init__.py, the import package's own among them, is never imported
+[[tool.importlinter.contracts]]
+name = "layer-folder-never-imported"
+type = "forbidden"
+source_modules = ["**"]
+forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.libs"]
+as_packages = false
+allow_indirect_imports = true
+
+# the kernel and a module of each layer are reached from outside only through their __init__.py
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.kernel.*"]
+allowed_importers = ["*.kernel"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.adapters.*.*"]
+allowed_importers = ["*.adapters.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.composition.*.*"]
+allowed_importers = ["*.composition.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.contracts.*.*"]
+allowed_importers = ["*.contracts.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.features.*.*"]
+allowed_importers = ["*.features.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.libs.*.*"]
+allowed_importers = ["*.libs.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.shared.*.*"]
+allowed_importers = ["*.shared.*"]
+
+# cli: the commands reached only from the entries
+[[tool.importlinter.contracts]]
+name = "dependencies-point-inward"
+type = "forbidden"
+source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.cli"]
+
+# api: the handlers reached only from the entries
+[[tool.importlinter.contracts]]
+name = "dependencies-point-inward"
+type = "forbidden"
+source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.api"]
+
 # pydantic: the models kept out of the domain
 [[tool.importlinter.contracts]]
 name = "pydantic-kept-out-of-the-domain"
