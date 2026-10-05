@@ -28,6 +28,13 @@ A field of a class the framework fills — a body, a query or the parameters of 
 |---|---|---|
 | the framework assigns these fields after it builds the object, and `!` says so to `strictPropertyInitialization`, which still refuses any other field left unset. | tool/types | [] |
 
+## nest-exceptions-answered-by-their-kind → failure-answered-by-its-code
+An `HttpException` Nest throws before a controller runs — the `NotFoundException` of an unknown route or method, the `BadRequestException` of a malformed body — is answered as the kind its status maps to.
+
+| Why | Check | Tags |
+|---|---|---|
+| Nest throws these with no code of the error kit, so their answer takes its kind from their status, and the caller learns what to correct. | review | [errors] |
+
 ## program-throws-no-http-exception → errors-carry-codes-not-statuses
 The program throws the error kit's errors, never `HttpException` or one of its subclasses.
 

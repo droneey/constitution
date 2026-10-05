@@ -8,11 +8,11 @@ Every tool has a docstring that says what it does and when to call it, and every
 | a model knows a tool only by its description, so to the model no tool is an obvious entry. | review | [] |
 
 ## tool-failure-answered-as-an-error-result → failure-answered-by-its-code
-An error of the error kit is answered as a tool result the model reads as an error, with its code and details, and any other failure as a masked internal error; the server is built with `mask_error_details=True`.
+An error of the error kit is answered as a tool result the model reads as an error, with its code and details, a refused argument or an unknown tool as such a result that names what was refused, and any other failure as a masked internal error; the server is built with `mask_error_details=True`, which masks only the last.
 
 | Why | Check | Tags |
 |---|---|---|
-| the model reads an expected failure as data it can act on, and with the mask an unexpected one shows it no internal detail. | review | [errors, security] |
+| the model reads an expected failure or a refused call as data it can act on, and with the mask an unexpected one shows it no internal detail. | review | [errors, security] |
 
 ## program-raises-no-tool-error → errors-carry-codes-not-statuses
 The program raises the error kit's errors, never `ToolError`.
