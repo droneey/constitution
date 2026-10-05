@@ -170,7 +170,7 @@ A unit case finishes in milliseconds; a slower case reaches something outside it
 ## The sandbox
 
 ## tests-run-in-a-sandbox · MUST
-Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person, or outside the check.
+Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person, or by a scheduled run outside the check, one a lower block names.
 
 | Why | Check | Tags |
 |---|---|---|
