@@ -30,12 +30,12 @@ No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effe
 |---|---|---|
 | hand-written memoisation is noise the Compiler makes useless, and it hides the real dependencies of the code. | tool/lint | [performance] |
 
-## modern-react-api-only → deprecated-forms-never-used
+## modern-react-api-only · MUST
 Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup, actions. The legacy form of each is forbidden.
 
 | Why | Check | Tags |
 |---|---|---|
-| React keeps each legacy form beside its replacement only until it removes it. | review | [] |
+| two forms of one thing double what a reader must know, and the legacy forms are on their way out. | review | [] |
 
 ## legacy-react-api-refused → modern-react-api-only
 No `useContext`, `Context.Provider`, `forwardRef`, `defaultProps`, `createRef` or string ref.
@@ -125,19 +125,12 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 |---|---|---|
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
 
-## data-failures-rendered-as-state · SHOULD
-A failure a data hook returns as a state is rendered where the data would be, not thrown; a suspending read's failure is thrown to the error boundary above it.
+## handler-and-effect-failures-handled-where-they-happen → errors-surfaced-never-swallowed
+An expected failure in an event handler or an effect is handled where it happens, never left for an error boundary; a defect there travels on to the root's report.
 
 | Why | Check | Tags |
 |---|---|---|
-| an expected failure is then shown where it belongs, and the boundary is left for what nobody expected. | review | [errors, ux] |
-
-## handler-and-effect-failures-handled-where-they-happen · MUST
-A failure in an event handler or an effect is handled where it happens: it never reaches an error boundary.
-
-| Why | Check | Tags |
-|---|---|---|
-| React sends a boundary only the errors of rendering, so a handler's failure left to a boundary is never caught. | review | [errors, ux] |
+| React sends a boundary only the errors of rendering, so an expected failure left to a boundary is never shown, and a defect caught on the spot is hidden from the one handler that reports it. | review | [errors, ux] |
 
 ## hidden-state-kept-by-activity · SHOULD
 A hidden part that must keep its state — a tab panel, a step, a view the user comes back to — is wrapped in `<Activity mode="hidden">`, neither unmounted nor hidden by a style alone.
