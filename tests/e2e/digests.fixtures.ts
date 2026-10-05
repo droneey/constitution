@@ -141,6 +141,7 @@ const localBlocksContext = (root: string): string =>
       LANGUAGES,
       '- typescript: Code written in TypeScript. (foundation)',
       IMPLEMENTATIONS,
+      '- _lint-base: What every TypeScript linter shares.',
       '- _react: React as every renderer shares it. (foundation)',
       '- betterleaks: Finds secrets in commits.',
       '- git: Git as the version control. (workflow)',
@@ -152,7 +153,7 @@ const localBlocksContext = (root: string): string =>
       '- paraglide (local, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
     ],
     facts: [
-      'constitution.yaml pins 1.0.0; 15 blocks are active.',
+      'constitution.yaml pins 1.0.0; 16 blocks are active.',
     ],
     root,
   });

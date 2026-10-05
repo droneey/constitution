@@ -63,7 +63,7 @@ A tool's block lists in `languages` the language blocks whose files its checks c
 
 A rule's Tags are lenses for the concerns that cross every axis and layer — `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` — so a review can take one concern across the whole project. They are optional: a full review reads every rule, and a rule inherits the tags of the rule it carries out.
 
-A block refers only to the layers above it, through its front matter. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
+A block refers, through its front matter, only to the layers above it and, among implementations, to the host it requires and the abstract base it extends. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 
 ## 🧰 Presets
 
@@ -153,7 +153,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 `blocks:check` loads every block and fails on:
 - a file outside a block folder, a stray file inside one, or two blocks with one id;
 - a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty; a `languages` entry that is no language block, and `languages` on a block that checks no role;
-- a `requires` or `extends` that points down, or sideways where the layer allows no peer, a `with/` file named after a block below its own layer, and a cycle between implementations;
+- a `requires` that points down, or sideways where the layer allows no peer, an `extends` of anything but an abstract implementation, a `with/` file named after a block below its own layer, and a cycle between implementations;
 - a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or the arrow of a rule heading;
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
@@ -183,7 +183,7 @@ After the findings it prints advice that does not fail the check: the roles a la
 ## 🛠️ Changing it
 
 - Every change lands through a pull request into `main`, squash-merged, with its entry in `DECISIONS.md` when it is a decision.
-- A file stays under 500 lines, and a block refers only to the layers above it.
+- A file stays under 500 lines, and a block refers only to the layers above it and, among implementations, to the host it requires and the abstract base it extends.
 
 ## 📄 License
 

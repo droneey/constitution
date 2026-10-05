@@ -13,4 +13,4 @@ governs: [".gitignore", ".gitattributes"]
 
 # Git
 
-> Version control with git: how changes are staged, what is ignored, annotated tags, large files and worktrees. A git-flow framework extends this block and may tighten it.
+> Version control with git: how changes are staged, what is ignored, annotated tags, large files and worktrees. A git-flow framework requires this block and may tighten it.

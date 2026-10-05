@@ -1,8 +1,8 @@
 ---
 id: bun-test
 summary: Bun's test runner, its coverage gate and its specs.
-requires: []
-extends: bun
+requires: [bun]
+extends: null
 abstract: false
 checks: [tests, coverage]
 languages: [typescript]

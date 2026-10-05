@@ -180,14 +180,22 @@ const removeProjects = (): void => {
   }
 };
 
-const localBlock = (fields: Readonly<Record<string, string>>): string =>
+const localBlock = (input: {
+  fields: Readonly<Record<string, string>>;
+  headings: readonly string[];
+}): string =>
   [
     '---',
-    ...Object.entries(fields).map(([key, field]) => `${key}: ${field}`),
+    ...Object.entries(input.fields).map(([key, field]) => `${key}: ${field}`),
     '---',
     '',
     '# A local block',
     '',
+    ...input.headings.flatMap((heading) => [
+      heading,
+      'A rule of the local block.',
+      '',
+    ]),
   ].join('\n');
 
 const IMPLEMENTATIONS = 'implementations';
@@ -197,11 +205,12 @@ const rulesFolder = (folder: string): string => (folder === '' ? 'rules' : `rule
 const localBlockFiles = (input: {
   fields?: Readonly<Record<string, string>>;
   folder?: string;
+  headings?: readonly string[];
   id: string;
   omit?: string;
 }): Files => ({
-  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]: localBlock(
-    Object.fromEntries(
+  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]: localBlock({
+    fields: Object.fromEntries(
       Object.entries({
         id: input.id,
         summary: `The local ${input.id} block.`,
@@ -216,7 +225,8 @@ const localBlockFiles = (input: {
         ...input.fields,
       }).filter(([key]) => key !== input.omit),
     ),
-  ),
+    headings: input.headings ?? [],
+  }),
 });
 
 const localPath = (id: string, folder: string = IMPLEMENTATIONS): string =>
@@ -248,7 +258,7 @@ const BROWSER_APP: ProjectLayout = {
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
-    'implementations: [react-dom, tanstack-query, matomo, biome, lefthook,',
+    'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
     `                  betterleaks, ${PARAGLIDE}]`,
     'apps: {}',
     'check: bun run check',
@@ -289,7 +299,7 @@ const LIBRARY: ProjectLayout = {
     'domains: [version-control]',
     'platforms: []',
     'languages: [typescript]',
-    'implementations: [biome, lefthook, betterleaks]',
+    'implementations: [biome, git, lefthook, betterleaks]',
     'apps:',
     '  packages/react-kit:',
     '    domains: [ui, untrusted-client, unreliable-network]',
@@ -315,7 +325,8 @@ const HTML_SITE: ProjectLayout = {
 };
 
 // Local blocks of every kind of front matter: CRLF line ends, a quoted
-// summary, block lists, a constitution base and one block in an application.
+// summary, block lists, a constitution host, an abstract constitution base and
+// one block in an application.
 const LOCAL_PROJECT: ProjectLayout = {
   config: [
     'version: 1.0.0',
@@ -323,7 +334,7 @@ const LOCAL_PROJECT: ProjectLayout = {
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
-    `implementations: [react-dom, betterleaks, ${localPath('git-flow')}, ${localPath('lint-kit')}]`,
+    `implementations: [react-dom, betterleaks, git, ${localPath('git-flow')}, ${localPath('lint-kit')}]`,
     'apps:',
     '  packages/web:',
     '    domains: [i18n]',
@@ -340,7 +351,8 @@ const LOCAL_PROJECT: ProjectLayout = {
       'summary: "Git flow: a branch per change, a tag per release."',
       'requires:',
       '  - version-control',
-      'extends: git',
+      '  - git',
+      'extends: null',
       'abstract: false',
       'checks: []',
       'languages: []',
@@ -356,7 +368,7 @@ const LOCAL_PROJECT: ProjectLayout = {
       "summary: 'Lints TypeScript the way this team likes.'",
       'requires:',
       '  - typescript',
-      'extends: null',
+      'extends: _lint-base',
       'abstract: false',
       'checks: [lint]',
       'languages:',
@@ -446,10 +458,10 @@ const REAL_WEB_APP: ProjectLayout = {
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript, css]',
-    'implementations: [react-dom, tanstack-start, tanstack-query, tanstack-form, tailwind,',
-    '                  shadcn, storybook, ky, zod, vite, bun-test, testing-library, matomo,',
-    '                  lingui, bun, tsc, biome, dependency-cruiser, ls-lint, knip, syncpack,',
-    '                  stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
+    'implementations: [react-dom, tanstack-router, tanstack-start, tanstack-query, tanstack-form,',
+    '                  tailwind, shadcn, storybook, ky, zod, vite, bun-test, testing-library,',
+    '                  matomo, lingui, bun, tsc, biome, dependency-cruiser, ls-lint, knip,',
+    '                  syncpack, stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
     'apps: {}',
     'check: bun run check',
     'overrides: []',

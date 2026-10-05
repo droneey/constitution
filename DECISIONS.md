@@ -52,21 +52,21 @@
 ## ADR-0003 — Two links between blocks: requires and extends
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** `requires` names a block that must also be active; it points up the layers, or to a peer implementation the block cannot work without. `extends` joins implementations only, and the base comes with its heir. A domain requires nothing, since above it is only core, which is always active. A tool never adds a domain: the project lists every domain, environment properties such as `untrusted-client` included. Choosing a tool, or using one that has no block, is not a departure.
+- **Decision.** `requires` names a block that must also be active; it points up the layers, or to a peer implementation that is the block's host — one it cannot work without, because it imports it, runs it or configures it (`fastapi` on `pydantic`, `mutmut` on `pytest`). A pair where each works on its own is a seam in `with/`, and the links among implementations are acyclic. `extends` joins implementations only, and the base comes with its heir. A domain requires nothing, since above it is only core, which is always active. A tool never adds a domain: the project lists every domain, environment properties such as `untrusted-client` included. Choosing a tool, or using one that has no block, is not a departure.
 - **Rejected.** An `activates` link through which a platform switched domains on, and inheritance from several bases.
-- **Why.** Every block a project follows stays visible in its own file; nothing is added behind its back except the base of an implementation.
+- **Why.** Every block a project follows stays visible in its own file; nothing is added behind its back except the abstract base of an implementation.
 
 ## ADR-0004 — Abstract blocks only among implementations
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** An abstract block is an implementation never used alone, such as `_react`. Its id starts with `_` exactly when `abstract: true`, its folder sits flat beside its heirs, and it has at least one heir and names none of them. `extends` inherits an abstract base (`react-dom` from `_react`) or builds on a concrete block (`next` on `react-dom`), and names one base either way. Requiring an abstract block is satisfied by any of its heirs. A new abstract block waits for its second heir.
-- **Rejected.** Abstract domains or platforms; a block with two bases.
+- **Decision.** An abstract block is an implementation never used alone, such as `_react`. Its id starts with `_` exactly when `abstract: true`, its folder sits flat beside its heirs, and it has at least one heir and names none of them. `extends` inherits only an abstract base (`react-dom` from `_react`) and names one; a concrete block another builds on is a `requires`. Requiring an abstract block is satisfied by any of its heirs. A new abstract block waits for its second heir.
+- **Rejected.** Abstract domains or platforms; a block with two bases; `extends` of a concrete block, which added a block to a project's list behind its back, while `requires` names the same host and its rules reach the same parents.
 - **Why.** Every rule of a base must hold for every heir, which only a shared technology guarantees. Platforms share properties only in part, so they require property domains instead.
 
 ## ADR-0005 — Seam rules live in with/ files
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** A rule that needs two blocks lives in `<block>/<axis>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/architecture/with/remote-data.md`, `browser/foundation/with/ui.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling.
+- **Decision.** A rule that needs two blocks lives in `<block>/<axis>/with/<other>.md`, in the block it refines, named after a block of its own layer or above — `ui/architecture/with/remote-data.md`, `browser/foundation/with/ui.md`. A project receives the file only when both blocks are active. It is the one place a block names a sibling it works without.
 - **Rejected.** Conditional sections inside a block's main file.
 - **Why.** A file per seam stays readable as seams multiply, and its name says when it applies.
 

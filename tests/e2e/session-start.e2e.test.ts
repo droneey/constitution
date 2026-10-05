@@ -1313,6 +1313,25 @@ describe('session-start hook', () => {
       ],
     },
     {
+      condition: 'a local block extends a concrete constitution block',
+      layout: {
+        config: configOf({
+          domains: '[version-control]',
+          implementations: `[git, ${localPath('kit')}]`,
+        }),
+        files: localBlockFiles({
+          fields: {
+            extends: 'git',
+          },
+          id: 'kit',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        `- local-block: ${localPath('kit')} extends git, a concrete block; a block extends only an abstract base — require it instead`,
+      ],
+    },
+    {
       condition: 'a local block requires no block',
       layout: {
         config: configOf({
@@ -1329,6 +1348,48 @@ describe('session-start hook', () => {
         WARNINGS,
         `- local-block: ${localPath('kit')} requires nothing, which is not a block — fix its front matter`,
       ],
+    },
+    {
+      condition: 'a local rule names a parent that is no rule',
+      layout: {
+        config: configOf({
+          implementations: `[${localPath('kit')}]`,
+        }),
+        files: localBlockFiles({
+          headings: [
+            '## kit-rule → no-such-rule · MUST',
+          ],
+          id: 'kit',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        '- local-block: kit-rule → no-such-rule: no-such-rule is an unknown rule — check the slug',
+      ],
+    },
+    {
+      condition: 'local rules name a rule of the constitution and a rule of a later local block',
+      layout: {
+        config: configOf({
+          implementations: `[${localPath('kit')}, ${localPath('base-kit')}]`,
+        }),
+        files: {
+          ...localBlockFiles({
+            headings: [
+              '## kit-rule → no-secret-in-code',
+              '## kit-child → base-rule · MUST',
+            ],
+            id: 'kit',
+          }),
+          ...localBlockFiles({
+            headings: [
+              '## base-rule · MUST',
+            ],
+            id: 'base-kit',
+          }),
+        },
+      },
+      warnings: [],
     },
     {
       condition: 'a local block path names no .md file',
