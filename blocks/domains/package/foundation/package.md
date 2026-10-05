@@ -32,13 +32,6 @@ The root of a repository of packages installs its own packages and extends them 
 |---|---|---|
 | a package the repository does not use itself is broken first in a consumer's repository. | review | [testing] |
 
-## consumers-extend-never-copy · SHOULD
-Consumers extend a package's entries; they never copy its files.
-
-| Why | Check | Tags |
-|---|---|---|
-| an extended entry takes every fix with the next update, and a copy takes none. | review | [] |
-
 ## template-copied-once-owned-by-consumer · SHOULD
 A file no tool can extend is a template: kept canonical in the repository that publishes it, copied once, then owned by the consumer. Copies stay alike by convention, with no checker; a template that needs a checker should have been an entry.
 
@@ -46,7 +39,7 @@ A file no tool can extend is a template: kept canonical in the repository that p
 |---|---|---|
 | a template is for files a tool cannot share, and pretending to keep copies in sync costs more than the drift. | review | [] |
 
-## consumer-takes-package-by-preferred-mechanism · SHOULD
+## consumer-takes-package-by-preferred-mechanism → shared-configuration-from-one-pinned-source
 A consumer takes a package by the tool's own extends, else by a one-line module that re-exports it, else by the tool's remote configuration.
 
 | Why | Check | Tags |

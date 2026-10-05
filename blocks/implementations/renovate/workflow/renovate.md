@@ -1,6 +1,6 @@
 # Renovate
 
-## updates-from-the-shared-preset → shared-tooling-from-pinned-packages
+## updates-from-the-shared-preset → hooks-and-release-automation-from-the-shared-source
 `renovate.json` extends the fleet's preset, pinned to a release.
 
 | Why | Check | Tags |

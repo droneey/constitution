@@ -1,6 +1,6 @@
 # Lefthook
 
-## hooks-from-the-shared-preset → shared-tooling-from-pinned-packages
+## hooks-from-the-shared-preset → hooks-and-release-automation-from-the-shared-source
 The hooks come from the shared preset, pinned, never from scripts copied into the repository.
 
 | Why | Check | Tags |

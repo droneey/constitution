@@ -69,6 +69,13 @@ Every tool runs on a runtime the repository pins, never on one a tool downloads 
 |---|---|---|
 | a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | review | [] |
 
+## shared-configuration-from-one-pinned-source · SHOULD
+A repository takes its tools' configuration, and any other file a shared source offers, from that one source, pinned by version like a dependency — a released archive or a package — and extends or imports it there; it never keeps a copy.
+
+| Why | Check | Tags |
+|---|---|---|
+| a copy drifts and is fixed in one repository at a time; a pinned source is fixed once and reaches every repository with an update. | review | [security] |
+
 ## program-dependencies-ranged-lockfile-pins · SHOULD
 A dependency of the program is declared in the manifest by the range of versions it works with, and the lockfile pins the exact version installed.
 

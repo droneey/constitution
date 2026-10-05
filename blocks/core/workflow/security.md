@@ -2,9 +2,9 @@
 
 ## Dependencies
 
-## shared-tooling-from-pinned-packages · SHOULD
-Hooks, linter configurations and release automation come from shared packages, installed and pinned like any other dependency, not from copies in each repository.
+## hooks-and-release-automation-from-the-shared-source → shared-configuration-from-one-pinned-source
+The commit hooks, the update policy and the release automation come from the same pinned shared source as the tools' configuration, never from scripts copied into each repository.
 
 | Why | Check | Tags |
 |---|---|---|
-| a copy drifts and is fixed in one repository at a time; a shared package is fixed once and adopted by an update. | review | [security] |
+| a fix to a hook or to the release reaches every repository with one update, and no copy drifts. | review | [security] |

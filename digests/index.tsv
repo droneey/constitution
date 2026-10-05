@@ -35,7 +35,7 @@ block	python	language	How Python is written, resolved, typed and packaged.	found
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/i18n foundation/package architecture/package			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json tsconfig.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data architecture/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
-block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md workflow/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
+block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md		typescript		false		format lint names	typescript css			biome.json **/*.grit
 block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md workflow/bun.md	foundation/package	typescript		false	bun-test					bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md			bun	false		tests coverage	typescript		bun	**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
@@ -197,6 +197,7 @@ rule	dependencies-pinned-by-lockfile	core	blocks/core/foundation/security.md		MU
 rule	downloads-pinned-by-version-and-checksum	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-pinned-exactly-by-the-repository	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	tools-run-on-the-pinned-runtime	core	blocks/core/foundation/security.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
+rule	shared-configuration-from-one-pinned-source	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
 rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
@@ -328,7 +329,7 @@ rule	agent-permissions-kept-with-the-project	core	blocks/core/workflow/collabora
 rule	no-tool-attribution	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/collaboration.md		MUST	review				workflow		true
 rule	sub-agent-never-touches-live-systems	core	blocks/core/workflow/collaboration.md		MUST	review			security	workflow	consent-before-irreversible-actions	false
-rule	shared-tooling-from-pinned-packages	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow		true
+rule	hooks-and-release-automation-from-the-shared-source	core	blocks/core/workflow/security.md		SHOULD	review			security	workflow	shared-configuration-from-one-pinned-source	false
 rule	tests-first-from-a-description	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
 rule	bug-fix-starts-with-failing-test	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow	test-seen-failing	false
 rule	whole-program-mutated-periodically	core	blocks/core/workflow/testing.md		SHOULD	review			testing	workflow		true
@@ -400,9 +401,8 @@ rule	package-named-after-what-it-serves	package	blocks/domains/package/foundatio
 rule	package-root-private	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	package	blocks/domains/package/foundation/package.md		MUST	review				foundation		true
 rule	root-dogfoods-every-package	package	blocks/domains/package/foundation/package.md		SHOULD	review			testing	foundation		true
-rule	consumers-extend-never-copy	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
 rule	template-copied-once-owned-by-consumer	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
-rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/foundation/package.md		SHOULD	review				foundation		true
+rule	consumer-takes-package-by-preferred-mechanism	package	blocks/domains/package/foundation/package.md		SHOULD	review			security	foundation	shared-configuration-from-one-pinned-source	false
 rule	package-spec-asserts-configuration-intent	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	coverage-holds-all-logic	false
 rule	generated-copy-guarded-by-spec	package	blocks/domains/package/foundation/package.md		MUST	test			testing	foundation	generated-files-marked-never-edited	false
 rule	shared-package-file-lives-once	package	blocks/domains/package/foundation/package.md		MUST	review			testing	foundation	generated-copy-guarded-by-spec	false
@@ -816,7 +816,7 @@ rule	biome-suppression-states-its-reason	biome	blocks/implementations/biome/foun
 rule	biome-suppression-names-one-rule	biome	blocks/implementations/biome/foundation/biome.md		MUST	review		typescript		foundation	suppression-silences-one-finding	false
 rule	biome-warnings-fail-the-check	biome	blocks/implementations/biome/foundation/biome.md		MUST	review		typescript	testing	foundation	check-passes-before-hand-back	false
 rule	biome-check-never-writes	biome	blocks/implementations/biome/foundation/biome.md		MUST	review		typescript		foundation	check-only-checks	false
-rule	project-grit-rules-scoped	biome	blocks/implementations/biome/workflow/biome.md		SHOULD	review		typescript	security	workflow	shared-tooling-from-pinned-packages	false
+rule	project-grit-rules-scoped	biome	blocks/implementations/biome/foundation/biome.md		SHOULD	review		typescript		foundation		true
 rule	bun-is-the-only-package-manager	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	dependencies-pinned-by-lockfile	false
 rule	installs-follow-the-lockfile	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	dependencies-pinned-by-lockfile	false
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/foundation/bun.md		MUST	review		typescript	security	foundation	install-scripts-only-for-listed-dependencies	false
@@ -921,7 +921,7 @@ rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUS
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript		architecture	one-transport-instance-per-system	false
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript	errors	architecture	transport-failures-mapped-once	true
 rule	components-import-no-http-client	ky	blocks/implementations/ky/architecture/with/ui.md	ui	MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
-rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
+rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	review			security	workflow	hooks-and-release-automation-from-the-shared-source	false
 rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	review				workflow		true
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	review			testing	workflow	check-run-by-hooks-and-ci	false
 rule	hook-rewrites-only-staged-files	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	review				workflow	check-only-checks	false
@@ -943,7 +943,8 @@ rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/mat
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST	review		typescript		architecture	sinks-behind-one-contract	true
 rule	toolchain-pinned-in-mise-toml	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	tools-pinned-exactly-by-the-repository	false
 rule	toolchain-downloads-verified-by-the-lock	mise	blocks/implementations/mise/foundation/mise.md		MUST	review			security	foundation	downloads-pinned-by-version-and-checksum	false
-rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
+rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/foundation/mise.md		SHOULD	review			security	foundation	shared-configuration-from-one-pinned-source	false
+rule	archive-hook-installs-the-commit-hooks	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	review			security	workflow	hooks-and-release-automation-from-the-shared-source	false
 rule	ci-runs-the-pinned-toolchain	mise	blocks/implementations/mise/workflow/mise.md		MUST	review				workflow	one-check-command	false
 rule	tool-engines-on-path-through-mise	mise	blocks/implementations/mise/foundation/with/convergence.md	convergence	SHOULD	review				foundation	developer-and-ci-run-the-tools-engines	false
 rule	personal-toolchain-overrides-ignored	mise	blocks/implementations/mise/foundation/with/version-control.md	version-control	MUST	review			security	foundation	machine-local-files-ignored	true
@@ -1020,7 +1021,7 @@ rule	long-lists-virtualised	react-native	blocks/implementations/react-native/fou
 rule	no-literal-colour-in-a-style	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript	ux	foundation	tokens-single-source-of-appearance	false
 rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST	tool	lint	typescript		architecture	dependencies-imported-from-their-entries	false
 rule	update-cooldown-configured	renovate	blocks/implementations/renovate/foundation/renovate.md		SHOULD	review			security	foundation	dependency-release-cooldown	false
-rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	shared-tooling-from-pinned-packages	false
+rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	hooks-and-release-automation-from-the-shared-source	false
 rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovate/workflow/renovate.md		MUST	review				workflow	commit-header-type-and-subject	false
 rule	updates-grouped-and-scheduled	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	dependencies-updated-by-bot	false
 rule	peer-ranges-widened-others-bumped	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	dependencies-updated-by-bot	false

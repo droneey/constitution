@@ -27,3 +27,10 @@ The check runs `biome check` without `--write`; `lint:fix` writes.
 | Why | Check | Tags |
 |---|---|---|
 | a check that fixes what it checks passes code nobody reviewed. | review | [] |
+
+## project-grit-rules-scoped · SHOULD
+A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the constitution's presets carry it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a rule of the project's own is found in one place and moves to the preset as one file. | review | [] |
