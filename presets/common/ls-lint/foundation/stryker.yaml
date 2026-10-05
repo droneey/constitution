@@ -1,2 +1,6 @@
 ignore:
   - .stryker-tmp
+  - "*/.stryker-tmp"
+  - "*/*/.stryker-tmp"
+  - "*/*/*/.stryker-tmp"
+  - "*/*/*/*/.stryker-tmp"

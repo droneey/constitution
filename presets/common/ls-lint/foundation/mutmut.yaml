@@ -1,2 +1,6 @@
 ignore:
   - mutants
+  - "*/mutants"
+  - "*/*/mutants"
+  - "*/*/*/mutants"
+  - "*/*/*/*/mutants"

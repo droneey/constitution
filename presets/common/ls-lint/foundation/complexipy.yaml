@@ -1,2 +1,6 @@
 ignore:
   - .complexipy_cache
+  - "*/.complexipy_cache"
+  - "*/*/.complexipy_cache"
+  - "*/*/*/.complexipy_cache"
+  - "*/*/*/*/.complexipy_cache"

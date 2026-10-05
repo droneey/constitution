@@ -1,2 +1,6 @@
 ignore:
   - .pytest_cache
+  - "*/.pytest_cache"
+  - "*/*/.pytest_cache"
+  - "*/*/*/.pytest_cache"
+  - "*/*/*/*/.pytest_cache"

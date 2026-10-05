@@ -1,2 +1,6 @@
 ignore:
   - .ruff_cache
+  - "*/.ruff_cache"
+  - "*/*/.ruff_cache"
+  - "*/*/*/.ruff_cache"
+  - "*/*/*/*/.ruff_cache"

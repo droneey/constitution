@@ -26,3 +26,7 @@ ls:
   tests/*: *tests
 ignore:
   - node_modules
+  - "*/node_modules"
+  - "*/*/node_modules"
+  - "*/*/*/node_modules"
+  - "*/*/*/*/node_modules"

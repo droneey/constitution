@@ -1,2 +1,6 @@
 ignore:
   - .import_linter_cache
+  - "*/.import_linter_cache"
+  - "*/*/.import_linter_cache"
+  - "*/*/*/.import_linter_cache"
+  - "*/*/*/*/.import_linter_cache"
