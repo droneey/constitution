@@ -1345,7 +1345,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         WARNINGS,
-        '- local-block: kit-rule → no-such-rule: no-such-rule names no rule — check the slug',
+        '- local-block: kit-rule → no-such-rule: no-such-rule is an unknown rule — check the slug',
       ],
     },
     {

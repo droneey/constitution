@@ -179,6 +179,6 @@ function local_rules(file,   line, r, in_fence, in_front, rest, arrow, at, slug,
 function check_local_parents(   k) {
   for (k = 1; k <= nlparents; k++) {
     if (LPARENT_OF[k] in RULE || LPARENT_OF[k] in LOCAL_RULE) continue
-    warn("local-block", LPARENT_SLUG[k] " → " LPARENT_OF[k] ": " LPARENT_OF[k] " names no rule — check the slug")
+    warn("local-block", LPARENT_SLUG[k] " → " LPARENT_OF[k] ": " LPARENT_OF[k] " is an unknown rule — check the slug")
   }
 }
