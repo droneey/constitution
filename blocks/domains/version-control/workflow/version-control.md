@@ -28,14 +28,21 @@ The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` 
 
 | Why | Check | Tags |
 |---|---|---|
-| the type sets the version bump and the changelog, so a wrong type ships a wrong version. | review | [] |
+| the type tells a reader and the project's release tooling what the change does, so a wrong type mislabels it in the history. | review | [] |
 
-## check-run-by-hooks-and-ci → every-commit-passes-the-check
-The commit hooks run the check's fast part before each commit, and CI runs the same command, all of it.
+## commit-checked-by-the-hooks → every-commit-passes-the-check
+The commit hooks hold what can be checked of a commit before it is made: its branch's name, its message and its staged files.
 
 | Why | Check | Tags |
 |---|---|---|
-| the hooks stop most failures before they are committed, and CI runs what is too slow for a hook, on a machine nobody set up by hand, so what passes locally passes in CI. | review | [] |
+| a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. | review | [] |
+
+## secrets-scanned-before-each-commit → no-secret-in-repository
+The commit hooks scan the staged changes for secrets before each commit.
+
+| Why | Check | Tags |
+|---|---|---|
+| a secret stopped before the commit never reaches history, where it is compromised for good. | review | [] |
 
 ## Branches
 
@@ -45,13 +52,6 @@ A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<name>`: the is
 | Why | Check | Tags |
 |---|---|---|
 | the name ties the branch to its issue and tells the release automation which version to bump. | tool/commits | [] |
-
-## branch-type-sets-version-bump → release-cut-by-automation-promoted-by-person
-The type of the merged branch sets the version bump: `feature` a minor one; `fix`, `hotfix` and dependency updates a patch.
-
-| Why | Check | Tags |
-|---|---|---|
-| the bump is decided when the branch is named, by the person who knows what it holds, not guessed at release time. | review | [] |
 
 ## merged-branch-deleted · SHOULD
 A branch is deleted once it is merged.
@@ -76,13 +76,6 @@ The protection also refuses a direct push to the main line; only the release aut
 |---|---|---|
 | a direct push skips the review and the required check that every other change passes through. | review | [] |
 
-## required-check-blocks-integration → one-check-command
-The check runs in CI on every pull request, and a red check blocks the merge.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check that can be merged past protects nothing. | review | [testing] |
-
 ## one-integration-strategy-no-work-in-progress · MUST
 A repository integrates by one strategy, which the protection enforces, and no work-in-progress or fix-up commit reaches the main line.
 
@@ -104,25 +97,71 @@ Pull requests are squash-merged; the title becomes the commit's subject and foll
 |---|---|---|
 | one commit per change keeps the main line readable, revertible and in the format the release automation reads. | review | [] |
 
-## pull-request-title-checked-in-ci → commit-header-type-and-subject
-CI checks the pull request's title and branch name against the formats, since a local hook can be skipped and the title is typed on the forge.
+## Dependencies
+
+## dependencies-updated-by-bot · SHOULD
+Dependency updates arrive as pull requests from an update bot, each passing the check before it is merged.
 
 | Why | Check | Tags |
 |---|---|---|
-| the squash title becomes the commit, and no local hook sees it. | review | [] |
+| updates that arrive on their own, small and checked, keep the project current without a risky update all at once. | review | [security] |
 
-## History and releases
+## Files
 
-## release-tags-named-by-semver → release-marked-by-immutable-tag
-A release tag is named `v<major>.<minor>.<patch>`.
-
-| Why | Check | Tags |
-|---|---|---|
-| one naming scheme lets people and tools find every release and order them. | review | [] |
-
-## release-cut-by-automation-promoted-by-person · SHOULD
-Releases are cut by automation from the merged changes; a person promotes a pre-release to a release.
+## working-notes-stay-out-of-history · SHOULD
+Specs, plans and working notes live in a `local/` folder that version control ignores.
 
 | Why | Check | Tags |
 |---|---|---|
-| automation makes every release the same way, and the person decides when one is ready. | review | [] |
+| working notes are true for a day; committed, they mislead every later reader. | review | [] |
+
+## Agents
+
+## agent-commits-only-when-asked → person-decides-what-is-recorded-or-shipped
+The main agent commits only when a person asks it to, on the working branch.
+
+| Why | Check | Tags |
+|---|---|---|
+| a commit records a decision under the person's name; the person makes it. | review | [] |
+
+## agent-never-merges → person-decides-what-is-recorded-or-shipped
+An agent never merges a pull request.
+
+| Why | Check | Tags |
+|---|---|---|
+| merging is the decision that ships a change, and it belongs to the person who answers for it. | review | [] |
+
+## agent-pushes-and-opens-pull-requests-when-asked → person-decides-what-is-recorded-or-shipped
+An agent pushes a branch, its own or one others share, and opens a pull request only when a person asks.
+
+| Why | Check | Tags |
+|---|---|---|
+| pushing and opening a pull request share a change, and the person who answers for it decides when it is shared. | review | [] |
+
+## agent-never-pushes-to-the-main-line → main-line-takes-no-direct-push
+An agent never pushes to the main line, even where its rights would pass the protection.
+
+| Why | Check | Tags |
+|---|---|---|
+| a holder of admin rights may pass the protection, so an agent that holds them is the last guard against the push. | review | [] |
+
+## sub-agent-never-commits-pushes-or-merges → sub-agent-only-does-the-work
+A sub-agent never commits, never pushes and never merges.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | review | [] |
+
+## agent-never-force-pushes → shared-history-never-rewritten
+An agent never force-pushes, to any branch.
+
+| Why | Check | Tags |
+|---|---|---|
+| history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | review | [] |
+
+## no-attribution-in-commits-or-pull-requests → no-tool-attribution
+No commit, its trailers included, and no pull request names the tool or model that helped write it.
+
+| Why | Check | Tags |
+|---|---|---|
+| a trailer or a line added by a tool lands in the history for good, under the name of the person who answers for the change. | review | [] |

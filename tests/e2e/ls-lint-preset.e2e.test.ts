@@ -14,6 +14,8 @@ const WELL_FORMED = [
   'src/root/wiring.ts',
   'src/kernel/index.ts',
   'src/kernel/money.types.ts',
+  'src/types/order.types.ts',
+  'src/integrations/nestjs/index.ts',
   'src/kernel/__tests__/money.types.test.ts',
   'src/contracts/mail/index.ts',
   'src/contracts/mail/mail.port.ts',
@@ -51,7 +53,9 @@ const WELL_FORMED = [
 const BLOCK_PARTS = [
   ...PARTS,
   'typescript/architecture/analytics',
+  'typescript/architecture/api',
   'typescript/architecture/cli',
+  'typescript/architecture/nestjs',
   'typescript/architecture/tanstack-router',
   'typescript/architecture/ui',
 ];
@@ -69,6 +73,17 @@ const WELL_FORMED_WITH_PARTS = [
   'src/routes/(shop)/orders/-components/order-summary/order-summary.tsx',
   'src/routes/(shop)/orders/-components/order-summary/__tests__/order-summary.test.tsx',
   'src/routes/(shop)/orders/-hooks/order.hooks.ts',
+  'src/api/api.module.ts',
+  'src/api/orders/orders.controller.ts',
+  'src/api/__tests__/api.module.test.ts',
+  'src/root/root.module.ts',
+  'src/features/orders/app/orders.module.ts',
+  'src/features/orders/app/orders.controller.ts',
+  'src/composition/checkout/checkout.module.ts',
+  'src/api/providers/auth.guard.ts',
+  'src/root/providers/index.ts',
+  'src/root/providers/error.filter.ts',
+  'src/features/orders/app/providers/clock.provider.ts',
   'src/cli/commands.ts',
   'src/cli/init.cli.ts',
   'src/shared/analytics/sinks/index.ts',
@@ -94,9 +109,9 @@ describe('the ls-lint preset', () => {
       reported: 'src/helpers',
     },
     {
-      condition: 'a role folder sits at the top level',
-      path: 'src/types/order.types.ts',
-      reported: 'src/types',
+      condition: 'a file of a role folder at the top level has no role suffix',
+      path: 'src/types/order.ts',
+      reported: 'src/types/order.ts',
     },
     {
       condition: "a feature's domain holds a folder of no role",
@@ -213,6 +228,16 @@ describe('the ls-lint preset', () => {
       condition: "a sinks folder holds another role's file",
       path: 'src/shared/analytics/sinks/matomo.utils.ts',
       reported: 'src/shared/analytics/sinks',
+    },
+    {
+      condition: 'a handler file is not in kebab-case',
+      path: 'src/api/orders/OrdersController.ts',
+      reported: 'src/api/orders/OrdersController.ts',
+    },
+    {
+      condition: "a providers folder holds another role's file",
+      path: 'src/features/orders/app/providers/orders.service.ts',
+      reported: 'src/features/orders/app/providers',
     },
     {
       condition: 'a command file is not in kebab-case',
@@ -650,7 +675,6 @@ describe('the ls-lint foundation parts', () => {
         'src/components/order-card.stories.tsx',
         'src/components/order-card.tsx',
         'src/order-view.ts',
-        'node_modules/SomePackage/Index.js',
       ],
     },
   ])('should report nothing when $condition and a project extends $parts', ({ parts, paths }) => {
@@ -681,7 +705,7 @@ describe('the ls-lint parts of the tools that write folders', () => {
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'typescript/foundation/typescript',
+      part: 'common/foundation/bun',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },
@@ -763,7 +787,7 @@ describe('the ls-lint parts of the tools that write folders', () => {
   );
 });
 
-describe('the ls-lint parts of the tools that write folders in each package', () => {
+describe('the ls-lint parts of the tools that write folders in each unit', () => {
   it.each([
     {
       part: 'common/foundation/stryker',
@@ -771,7 +795,7 @@ describe('the ls-lint parts of the tools that write folders in each package', ()
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'typescript/foundation/typescript',
+      part: 'common/foundation/bun',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },

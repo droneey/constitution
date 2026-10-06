@@ -23,7 +23,7 @@ A component never assigns to its props.
 |---|---|---|
 | props belong to the caller; this is the change to existing data the linter can see. | tool/lint | [] |
 
-## no-manual-memoisation → suppression-states-its-reason
+## no-manual-memoisation → react-compiler-on
 No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
 
 | Why | Check | Tags |
@@ -95,7 +95,14 @@ An effect synchronises with a system outside React — never state from state, n
 |---|---|---|
 | an effect that sets state from state renders twice and races; an event's response belongs in its handler. | review | [] |
 
-## effect-cleans-up-and-cancels → io-has-timeout-and-cancellation · MUST
+## derived-state-computed-in-render → effects-only-for-external-systems
+A value that can be derived is computed during render, never stored in state and synchronised by an effect.
+
+| Why | Check | Tags |
+|---|---|---|
+| a derived copy in state renders twice and is one render behind the value it copies. | review | [performance] |
+
+## effect-cleans-up-and-cancels → resources-released-on-every-path · MUST
 Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
 
 | Why | Check | Tags |
@@ -125,12 +132,33 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 |---|---|---|
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
 
-## error-boundary-catches-render-errors · SHOULD
-A screen's error boundary catches the render errors below it and shows the screen's error state, and the failure is reported once. A failure a data hook returns as a state is rendered, not thrown; a suspending read's failure is thrown to the error boundary above it.
+## compound-parts-reached-through-the-root → compound-over-prop-regions
+A compound exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| a thrown render error then costs one screen, and an expected failure is shown where it belongs. | review | [errors, ux] |
+| a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |
+
+## slot-and-container-children-typed · SHOULD
+A slot that keeps control of its element takes a `ReactElement`; a container takes `ReactNode`; a render-prop slot is `(children, …data) => ReactElement`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the type says what the caller may pass, and the compiler refuses the rest. | review | [] |
+
+## error-boundary-catches-render-errors → failure-contained-to-its-screen
+A screen's error boundary is a React error boundary, which catches what is thrown while its tree renders.
+
+| Why | Check | Tags |
+|---|---|---|
+| React unmounts the whole tree below the boundary that catches, so a boundary per screen costs one screen. | review | [errors, ux] |
+
+## handler-and-effect-failures-handled-where-they-happen → errors-surfaced-never-swallowed
+An expected failure in an event handler or an effect is handled where it happens, never left for an error boundary; a defect there travels on to the root's report.
+
+| Why | Check | Tags |
+|---|---|---|
+| React sends a boundary only the errors of rendering, so an expected failure left to a boundary is never shown, and a defect caught on the spot is hidden from the one handler that reports it. | review | [errors, ux] |
 
 ## hidden-state-kept-by-activity · SHOULD
 A hidden part that must keep its state — a tab panel, a step, a view the user comes back to — is wrapped in `<Activity mode="hidden">`, neither unmounted nor hidden by a style alone.

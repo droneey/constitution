@@ -1,41 +1,41 @@
 # Docker
 
 ## docker-files-linted-in-the-check · MUST
-The check lints every Dockerfile and every Compose file of the repository, and any finding fails it.
+Every Dockerfile and every Compose file of the repository is held by a linter, and any finding is a violation.
 
 | Why | Check | Tags |
 |---|---|---|
-| a file the check skips is held by nothing, and a warning that passes is one nobody fixes. | tool/lint | [] |
+| a file no linter reads is held by nothing, and a warning that passes is one nobody fixes. | tool/lint | [] |
 
 ## Images
 
-## images-pinned-to-a-version · MUST
-A base image in a Dockerfile, an image in a Compose file and an image a script runs name the most specific version the image is published under — `major.minor.patch` where it has one — never `latest`, never a floating major or minor, never none.
+## images-pinned-by-version-and-digest → downloads-pinned-by-version-and-checksum
+A base image in a Dockerfile, an image in a Compose file and an image a script runs name the most specific version the image is published under — `major.minor.patch` where it has one — and its digest, `image:x.y.z@sha256:<digest>`; never `latest`, never a floating major or minor, never a tag alone and never a digest alone.
 
 | Why | Check | Tags |
 |---|---|---|
-| a floating tag changes under the same name, so two builds of one commit run different code. | review | [security] |
+| any tag, a patch's included, can be pushed again under the same name, so only the digest fixes what runs; the version beside it tells a reader and an updater which release the digest is. | review | [security] |
 
-## image-never-untagged-or-latest → images-pinned-to-a-version
+## image-never-untagged-or-latest → images-pinned-by-version-and-digest
 No image in a Dockerfile or a Compose file is untagged or tagged `latest`.
 
 | Why | Check | Tags |
 |---|---|---|
-| these are the floating forms the linters see; a floating major or minor is left to review. | tool/lint | [] |
+| these are the floating forms the linters see; a floating major or minor and a missing digest are left to review, since neither linter can require a digest. | tool/lint | [] |
 
 ## files-copied-never-added · MUST
-Local files and folders enter an image with `COPY`, never `ADD`.
+No Dockerfile uses `ADD`: local files and folders enter an image with `COPY`.
 
 | Why | Check | Tags |
 |---|---|---|
 | `COPY` does one visible thing; `ADD` also fetches addresses and unpacks archives, unseen. | tool/lint | [security] |
 
-## downloads-verified-archives-unpacked · MUST
-A file from the network is downloaded in a `RUN` step at a pinned version and checked against its checksum, and an archive is unpacked with `tar`; `ADD` never fetches an address or unpacks an archive.
+## downloads-verified-archives-unpacked → downloads-pinned-by-version-and-checksum
+A file from the network is downloaded in a `RUN` step that checks its checksum, and an archive is unpacked with `tar`.
 
 | Why | Check | Tags |
 |---|---|---|
-| an unverified download runs whatever the address serves that day, inside the image. | review | [security] |
+| a `RUN` step shows the version, the checksum and the unpacking in one place. | review | [security] |
 
 ## commands-in-exec-form · MUST
 `CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.
@@ -56,7 +56,7 @@ A system package is installed at a pinned version, without recommended extras, a
 
 | Why | Check | Tags |
 |---|---|---|
-| an unpinned package changes between two builds of one commit, and every extra package and cached index is size and code to attack that the program never uses. | tool/lint | [security, performance] |
+| an unpinned package changes between two builds of the same source, and every extra package and cached index is size and code to attack that the program never uses. | tool/lint | [security, performance] |
 
 ## image-runs-as-non-root · MUST
 The final stage of an image sets `USER` to the numeric id of an unprivileged user.

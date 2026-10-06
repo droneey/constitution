@@ -4,10 +4,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { branchIn } from './branch.ts';
 import { mutateTargets } from './changes.ts';
 import { importsOf, loaderOf } from './imports.ts';
-
-const BASE = 'origin/main';
 
 const CONFIG_FILES = [
   'stryker.config.mjs',
@@ -15,20 +14,8 @@ const CONFIG_FILES = [
   'stryker.config.json',
 ];
 
-const git = (args: readonly string[]): string =>
-  spawnSync('git', args, {
-    encoding: 'utf8',
-  }).stdout;
-
-const mergeBase = (): string =>
-  git([
-    'merge-base',
-    'HEAD',
-    BASE,
-  ]).trim();
-
 // A change that only reformats leaves the transpiled code as it was, so it gives no mutant.
-const codeChanged = (input: { base: string; path: string }): boolean => {
+const codeChanged = (input: { baseText: (path: string) => string; path: string }): boolean => {
   const loader = loaderOf(input.path);
 
   if (loader === undefined) {
@@ -40,12 +27,8 @@ const codeChanged = (input: { base: string; path: string }): boolean => {
   });
 
   return (
-    transpiler.transformSync(
-      git([
-        'show',
-        `${input.base}:${input.path}`,
-      ]),
-    ) !== transpiler.transformSync(readFileSync(input.path, 'utf8'))
+    transpiler.transformSync(input.baseText(input.path)) !==
+    transpiler.transformSync(readFileSync(input.path, 'utf8'))
   );
 };
 
@@ -91,31 +74,18 @@ const runStryker = (args: readonly string[]): number =>
 if (process.argv.includes('all')) {
   process.exitCode = runStryker([]);
 } else {
-  const base = mergeBase();
+  const branch = branchIn(process.cwd());
   const targets = mutateTargets({
     codeChanged: (path) =>
       codeChanged({
-        base,
+        baseText: branch.baseText,
         path,
       }),
-    diff: git([
-      'diff',
-      '-U0',
-      '--no-color',
-      '--diff-filter=ACMR',
-      '--merge-base',
-      BASE,
-    ]),
+    diff: branch.diff,
     exists: existsSync,
     importsOf,
     mutate: mutatePatterns(await loadConfig()),
-    untracked: git([
-      'ls-files',
-      '--others',
-      '--exclude-standard',
-    ])
-      .split('\n')
-      .filter((path) => path !== ''),
+    untracked: branch.untracked,
   });
 
   if (targets.length === 0) {

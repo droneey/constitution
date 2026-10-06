@@ -185,4 +185,13 @@
       },
     },
   ],
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/biome-refuses-empty-verbs.grit",
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/biome-refuses-empty-names.grit",
+      "includes": [
+        "**",
+      ],
+    },
+  ],
 }

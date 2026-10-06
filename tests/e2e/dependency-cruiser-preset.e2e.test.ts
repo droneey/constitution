@@ -57,6 +57,63 @@ const WELL_FORMED = {
   }),
 };
 
+// A workspace of five units, one of them a product whose TypeScript package
+// sits beside its data in no language, each package linked by its name as a
+// package manager links it, with the workspace's architecture part.
+const UNITS: Readonly<Record<string, string>> = {
+  admin: 'packages/admin',
+  eros: 'packages/eros/typescript',
+  'libs-smtp': 'libs/smtp',
+  shared: 'shared',
+  web: 'packages/web',
+};
+
+const workspaceProject = (files: Readonly<Record<string, string>>) => ({
+  files: {
+    ...Object.fromEntries(
+      Object.entries(UNITS).flatMap(([name, folder]) => [
+        [
+          `${folder}/package.json`,
+          JSON.stringify({
+            exports: {
+              '.': './src/index.ts',
+            },
+            name: `@shop/${name}`,
+            type: 'module',
+          }),
+        ],
+        [
+          `${folder}/src/index.ts`,
+          exported('unit'),
+        ],
+      ]),
+    ),
+    'scripts/build.ts': exported('build'),
+    ...files,
+  },
+  links: Object.fromEntries(
+    Object.entries(UNITS).map(([name, folder]) => [
+      `node_modules/@shop/${name}`,
+      folder,
+    ]),
+  ),
+  parts: [
+    'typescript/architecture/workspace',
+  ],
+  roots: [
+    'packages',
+    'shared',
+    'libs',
+    'scripts',
+  ],
+  workspaces: [
+    'packages/*',
+    'packages/*/typescript',
+    'shared',
+    'libs/*',
+  ],
+});
+
 describe('the dependency-cruiser layer set', () => {
   it('should report no violation when an application follows the layer matrix', () => {
     // Arrange
@@ -444,6 +501,36 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'routes-reached-only-from-expo-router',
     },
     {
+      condition: 'a shared module imports a handler',
+      files: {
+        'src/api/orders.controller.ts': exported('OrdersController'),
+        'src/shared/jobs/index.ts': importing({
+          from: '../../api/orders.controller',
+          name: 'OrdersController',
+        }),
+      },
+      parts: [
+        'typescript/architecture/api',
+        'typescript/architecture/core',
+      ],
+      rule: 'handlers-reached-only-from-entries',
+    },
+    {
+      condition: 'an adapter imports a handler',
+      files: {
+        'src/adapters/smtp/index.ts': importing({
+          from: '../../api/orders.controller',
+          name: 'OrdersController',
+        }),
+        'src/api/orders.controller.ts': exported('OrdersController'),
+      },
+      parts: [
+        'typescript/architecture/api',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-handlers',
+    },
+    {
       condition: 'a shared module imports a command',
       files: {
         'src/cli/sync.cli.ts': exported('sync'),
@@ -474,7 +561,7 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'adapters-know-no-commands',
     },
     {
-      condition: 'a component imports the HTTP client',
+      condition: 'a component imports a package no block gives a home there',
       files: {
         'src/features/orders/ui/components/order-card.tsx': importing({
           from: 'ky',
@@ -482,10 +569,78 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/architecture/ky',
+        'typescript/architecture/_react',
         'typescript/architecture/core',
       ],
-      rule: 'components-never-fetch',
+      rule: 'not-in-allowed',
+    },
+    {
+      condition: 'a binding unit imports a package no block gives a home there',
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts': importing({
+          from: 'kit',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/core',
+      ],
+      rule: 'not-in-allowed',
+    },
+    {
+      condition:
+        'a component at the top of a package imports a package no block gives a home there',
+      files: {
+        'src/components/button/button.tsx': importing({
+          from: 'kit',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/core',
+      ],
+      rule: 'not-in-allowed',
+    },
+    {
+      condition: 'shared code imports a package no block gives a home there',
+      files: {
+        'src/shared/format/format.ts': importing({
+          from: 'kit',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/core',
+      ],
+      rule: 'not-in-allowed',
+    },
+    {
+      condition: 'the application imports an integration',
+      files: {
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '../../../integrations/nestjs/eros.module',
+          name: 'erosModule',
+        }),
+        'src/integrations/nestjs/eros.module.ts': exported('erosModule'),
+      },
+      parts: [
+        'typescript/architecture/core',
+      ],
+      rule: 'integration-never-imported',
+    },
+    {
+      condition: 'an integration imports another',
+      files: {
+        'src/integrations/fastify/plugin.ts': importing({
+          from: '../nestjs/eros.module',
+          name: 'erosModule',
+        }),
+        'src/integrations/nestjs/eros.module.ts': exported('erosModule'),
+      },
+      parts: [
+        'typescript/architecture/core',
+      ],
+      rule: 'integrations-blind-to-each-other',
     },
     {
       condition: 'a component imports the query library',
@@ -499,7 +654,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-query',
         'typescript/architecture/core',
       ],
-      rule: 'components-never-query',
+      rule: 'query-library-only-in-its-home',
     },
     {
       condition: 'a widget imports an adapter',
@@ -528,7 +683,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/lingui',
         'typescript/architecture/core',
       ],
-      rule: 'primitives-hold-no-text',
+      rule: 'lingui-only-in-its-home',
     },
     {
       condition: 'a component imports a router primitive',
@@ -542,7 +697,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-router',
         'typescript/architecture/core',
       ],
-      rule: 'router-primitives-only-in-screens-and-widgets',
+      rule: 'router-only-in-its-home',
     },
     {
       condition: 'a screen’s piece imports a router primitive',
@@ -556,7 +711,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-router',
         'typescript/architecture/core',
       ],
-      rule: 'screen-pieces-never-navigate',
+      rule: 'router-only-in-its-home',
     },
     {
       condition: 'a feature imports the analytics contract',
@@ -585,7 +740,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/lingui',
         'typescript/architecture/core',
       ],
-      rule: 'application-returns-codes-not-text',
+      rule: 'lingui-only-in-its-home',
     },
     {
       condition: 'production code imports a story',
@@ -673,7 +828,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-query',
         'typescript/architecture/core',
       ],
-      rule: 'adapters-never-cache',
+      rule: 'query-library-only-in-its-home',
     },
     {
       condition: 'a library imports the cache library',
@@ -687,7 +842,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-query',
         'typescript/architecture/core',
       ],
-      rule: 'libs-never-cache',
+      rule: 'query-library-only-in-its-home',
     },
     {
       condition: 'a library imports the router',
@@ -701,7 +856,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-router',
         'typescript/architecture/core',
       ],
-      rule: 'libs-never-route',
+      rule: 'router-only-in-its-home',
     },
     {
       condition: 'a feature imports a screen',
@@ -812,29 +967,34 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/domain/entities/index.ts': 'export type Order = { id: string };\n',
         'src/features/orders/ui/widgets/orders.tsx':
           "import type { Order } from '../../domain/entities';\nimport { value } from '@tanstack/react-router';\nexport const orders: Order[] = [];\nexport const link = value;\n",
-        'src/libs/ui/button.stories.tsx': importing({
-          from: './button',
-          name: 'button',
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+          "import { value } from '@tanstack/react-query';\nimport { useMemo } from 'react';\nexport const listOrders = [value, useMemo];\n",
+        'src/features/orders/ui/components/order-card.tsx':
+          "import { value } from '@lingui/core';\nimport type { ReactNode } from 'react';\nexport const card: ReactNode = value;\n",
+        'src/integrations/nestjs/index.ts': importing({
+          from: 'kit',
+          name: 'value',
         }),
+        'src/libs/ui/button.stories.tsx':
+          "import { value } from 'devtool';\nimport { button } from './button';\nexport const stories = [value, button];\n",
         'src/libs/ui/button.tsx': exported('button'),
         'src/root/wiring.ts': exported('wiring'),
         'src/routes/__root.tsx': importing({
           from: '../root/wiring',
           name: 'wiring',
         }),
-        'src/routes/orders/index.tsx': importing({
-          from: '@tanstack/react-router',
-          name: 'value',
-        }),
+        'src/routes/orders/index.tsx':
+          "import { value } from '@tanstack/react-router';\nimport { value as kit } from 'kit';\nexport const route = [value, kit];\n",
       },
       parts: [
         'typescript/architecture/ui',
+        'typescript/architecture/_react',
         'typescript/architecture/tanstack-router',
         'typescript/architecture/analytics',
         'typescript/architecture/lingui',
         'typescript/architecture/tanstack-query',
-        'typescript/architecture/ky',
         'typescript/foundation/storybook',
+        'typescript/architecture/storybook',
         'typescript/architecture/yaml',
         'typescript/architecture/core',
       ],
@@ -849,118 +1009,104 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'a package imports another package’s file',
+      condition: 'a unit of packages imports another by its name',
       files: {
-        'packages/eros/typescript/core/build.ts': importing({
-          from: '../nestjs/configs',
-          name: 'configs',
+        'packages/web/src/orders.ts': importing({
+          from: '@shop/admin',
+          name: 'unit',
         }),
-        'packages/eros/typescript/nestjs/configs.ts': exported('configs'),
       },
-      roots: [
-        'packages',
-      ],
-      rule: 'packages-blind-to-each-other',
+      rule: 'product-units-blind-to-each-other',
     },
     {
-      condition: 'a package imports the common files of another product',
+      condition: 'shared imports a unit of packages by its name',
       files: {
-        'packages/eros/typescript/core/build.ts': importing({
-          from: '../../../logus/common/kinds',
-          name: 'kinds',
+        'shared/src/messages.ts': importing({
+          from: '@shop/web',
+          name: 'unit',
         }),
-        'packages/logus/common/kinds.ts': exported('kinds'),
       },
-      roots: [
-        'packages',
-      ],
-      rule: 'packages-blind-to-each-other',
+      rule: 'shared-knows-no-product-unit',
     },
     {
-      condition: 'the common area imports a package',
+      condition: 'a unit of libs imports shared by its name',
       files: {
-        'packages/eros/common/hooks.ts': importing({
-          from: '../typescript/core/build',
-          name: 'build',
+        'libs/smtp/src/send.ts': importing({
+          from: '@shop/shared',
+          name: 'unit',
         }),
-        'packages/eros/typescript/core/build.ts': exported('build'),
       },
-      roots: [
-        'packages',
-      ],
-      rule: 'common-imports-nothing',
+      rule: 'libs-know-no-product',
     },
     {
-      condition: 'a package imports a file of the repository that holds it',
+      condition: 'a unit imports another by a path into its folder',
       files: {
-        'packages/eros/typescript/core/build.ts': importing({
-          from: '../../../../scripts/release',
-          name: 'release',
+        'packages/web/src/orders.ts': importing({
+          from: '../../../shared/src/index',
+          name: 'unit',
         }),
-        'scripts/release.ts': exported('release'),
       },
-      roots: [
-        'packages',
-        'scripts',
-      ],
-      rule: 'package-knows-no-consumer',
+      rule: 'units-imported-by-name',
     },
     {
-      condition: 'the root imports a package by its path',
+      condition: 'shared imports a unit by a path into its folder',
       files: {
-        'packages/eros/typescript/core/build.ts': exported('build'),
+        'shared/src/messages.ts': importing({
+          from: '../../libs/smtp/src/index',
+          name: 'unit',
+        }),
+      },
+      rule: 'units-imported-by-name',
+    },
+    {
+      condition: 'the package of a unit in several languages imports another unit by a path',
+      files: {
+        'packages/eros/typescript/src/filter.ts': importing({
+          from: '../../../admin/src/index',
+          name: 'unit',
+        }),
+      },
+      rule: 'units-imported-by-name',
+    },
+    {
+      condition: 'a script of the root imports a unit by a path into its folder',
+      files: {
         'scripts/release.ts': importing({
-          from: '../packages/eros/typescript/core/build',
-          name: 'build',
+          from: '../packages/web/src/index',
+          name: 'unit',
         }),
       },
-      roots: [
-        'packages',
-        'scripts',
-      ],
-      rule: 'root-takes-packages-by-name',
+      rule: 'root-imports-units-by-name',
     },
-  ])(
-    'should report $rule when $condition and a repository of packages extends architecture package',
-    ({ files, roots, rule }) => {
-      // Arrange
-      const project = {
-        files,
-        parts: [
-          'typescript/architecture/package',
-        ],
-        roots,
-      };
-
-      // Act
-      const { violations } = cruise(project);
-
-      // Assert
-      expect(violations).toContain(rule);
-    },
-  );
-
-  it('should report no violation when a package imports its own files, the common files of its product and the runtime', () => {
+  ])('should report $rule when $condition in a workspace', ({ files, rule }) => {
     // Arrange
-    const project = {
-      files: {
-        'packages/eros/common/kinds.ts': exported('kinds'),
-        'packages/eros/typescript/core/build.ts':
-          "import { readFileSync } from 'node:fs';\nimport { kinds } from '../../common/kinds';\nimport { plugins } from './plugins';\nexport const build = [readFileSync, kinds, plugins];\n",
-        'packages/eros/typescript/core/plugins.ts': exported('plugins'),
-        'scripts/release.ts': importing({
-          from: 'yaml',
-          name: 'value',
-        }),
-      },
-      parts: [
-        'typescript/architecture/package',
-      ],
-      roots: [
-        'packages',
-        'scripts',
-      ],
-    };
+    const project = workspaceProject(files);
+
+    // Act
+    const { violations } = cruise(project);
+
+    // Assert
+    expect(violations).toContain(rule);
+  });
+
+  it('should report no violation when the units of a workspace import downward by name', () => {
+    // Arrange
+    const project = workspaceProject({
+      'packages/eros/shared/schema/kinds.yaml': '- validation\n',
+      'packages/eros/typescript/src/kinds.ts':
+        "import kinds from '../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
+      'packages/web/src/orders.ts':
+        "import { unit } from '@shop/shared';\nimport { unit as smtp } from '@shop/libs-smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
+      'packages/web/src/line.ts': exported('line'),
+      'scripts/release.ts': importing({
+        from: '@shop/web',
+        name: 'unit',
+      }),
+      'shared/src/messages.ts': importing({
+        from: '@shop/libs-smtp',
+        name: 'unit',
+      }),
+    });
 
     // Act
     const { violations } = cruise(project);

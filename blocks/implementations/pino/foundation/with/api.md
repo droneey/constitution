@@ -1,0 +1,10 @@
+# pino with API
+
+> The request logger of a server that logs with pino.
+
+## request-logger-takes-the-instance → one-instance-writes-every-record
+pino-http takes the program's instance as `logger`.
+
+| Why | Check | Tags |
+|---|---|---|
+| pino-http given no `logger` builds an instance of its own, which writes the caller's `authorization` header unmasked. | review | [security] |

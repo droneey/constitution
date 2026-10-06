@@ -3,7 +3,12 @@ import { describe, expect, it } from 'bun:test';
 import type { Finding } from '#/kernel';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  blockFiles,
+  checkInputOf,
+  mainFile,
+  rule,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { bindingsCheck } from '../bindings.check';
 
@@ -329,4 +334,279 @@ describe('bindingsCheck', () => {
       },
     ]);
   });
+});
+
+const NAMES = 'blocks/domains/ui/foundation/names.md';
+const PYTHON = 'blocks/contexts/languages/python/foundation/python.md';
+const UNHELD_IN_PYTHON =
+  'says a tool holds screens-named-by-route (tool/lint), but nothing holds it in python, which holds other rules of ui for that role';
+
+// ui's two lint rules, both bound for TypeScript and the second for Python too.
+const languageFiles = (): Files => ({
+  ...presetFiles(),
+  [BINDINGS]: `${HOOKS_BINDING}  ui:\n    screens-named-by-route: [useHookAtTopLevel]\n    pieces-named-by-role: [useHookAtTopLevel]\n`,
+  [NAMES]: `# Names\n\n${rule({
+    check: 'tool/lint',
+    slug: 'screens-named-by-route',
+  })}${rule({
+    check: 'tool/lint',
+    slug: 'pieces-named-by-role',
+  })}`,
+  'blocks/contexts/languages/python/python.md': mainFile({
+    body: '# Python\n',
+    id: 'python',
+    roles: [
+      'lint',
+      'types',
+    ],
+  }),
+  'blocks/implementations/ruff/ruff.md': mainFile({
+    body: '# Ruff\n',
+    checks: [
+      'lint',
+      'types',
+    ],
+    id: 'ruff',
+    languages: [
+      'python',
+    ],
+    requires: [
+      'python',
+    ],
+  }),
+  'presets/python/ruff/bindings.yaml': 'foundation:\n  ui:\n    pieces-named-by-role: [N802]\n',
+  'presets/python/ruff/foundation/ui.toml': 'select = ["N802"]\n',
+  'presets/typescript/biome/foundation/ui.jsonc': '{ "useHookAtTopLevel": "error" }\n',
+});
+
+describe('bindingsCheck in each language', () => {
+  it('should report the rule in a language whose parts hold another rule of its block for that role but not it', () => {
+    // Arrange
+    const files = languageFiles();
+
+    // Act
+    const findings = findingsOf(files);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: UNHELD_IN_PYTHON,
+        path: NAMES,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: "a part of the language's scope binds it",
+      files: {
+        'presets/python/ruff/bindings.yaml':
+          'foundation:\n  ui:\n    pieces-named-by-role: [N802]\n    screens-named-by-route: [N802]\n',
+      },
+    },
+    {
+      condition: 'a part of every language binds it',
+      files: {
+        'presets/common/ruff/bindings.yaml':
+          'foundation:\n  ui:\n    screens-named-by-route: [N802]\n',
+        'presets/common/ruff/foundation/ui.toml': 'select = ["N802"]\n',
+      },
+    },
+    {
+      condition: "an import contract of the language's template is named after it",
+      files: {
+        'templates/project/python/pyproject.toml':
+          '[tool.importlinter]\n\n[[tool.importlinter.contracts]]\nname = "screens-named-by-route"\ntype = "forbidden"\n',
+      },
+    },
+    {
+      condition: 'a reviewed rule of the language carries it out',
+      files: {
+        [PYTHON]: `# Python\n\n${rule({
+          parent: 'screens-named-by-route',
+          slug: 'screens-named-by-route-in-python',
+        })}`,
+      },
+    },
+    {
+      condition: 'a rule under it is held in the language by a tool of another role',
+      files: {
+        [PYTHON]: `# Python\n\n${rule({
+          check: 'tool/types',
+          parent: 'screens-named-by-route',
+          slug: 'screens-typed-by-route',
+        })}`,
+        'presets/python/ruff/bindings.yaml':
+          'foundation:\n  ui:\n    pieces-named-by-role: [N802]\n  python:\n    screens-typed-by-route: [N802]\n',
+        'presets/python/ruff/foundation/python.toml': 'select = ["N802"]\n',
+      },
+    },
+    {
+      condition: "the language's parts hold only a rule of its block for another role",
+      files: {
+        [NAMES]: `# Names\n\n${rule({
+          check: 'tool/lint',
+          slug: 'screens-named-by-route',
+        })}${rule({
+          check: 'tool/types',
+          slug: 'pieces-named-by-role',
+        })}`,
+      },
+    },
+  ])('should find nothing when $condition', ({ files }) => {
+    // Arrange
+    const changed = {
+      ...languageFiles(),
+      ...files,
+    };
+
+    // Act
+    const findings = findingsOf(changed);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      condition: 'only a reviewed rule of no language carries it out',
+      files: {
+        'blocks/domains/ui/foundation/screens.md': `# Screens\n\n${rule({
+          parent: 'screens-named-by-route',
+          slug: 'screens-named-in-any-language',
+        })}`,
+      },
+    },
+    {
+      condition: "only another language's template names a contract after it",
+      files: {
+        'templates/project/typescript/pyproject.toml':
+          '[[tool.importlinter.contracts]]\nname = "screens-named-by-route"\n',
+      },
+    },
+    {
+      condition: "only the project's own name in the language's template spells it",
+      files: {
+        'templates/project/python/pyproject.toml': '[project]\nname = "screens-named-by-route"\n',
+      },
+    },
+    {
+      condition: "only a rule of another language's tool under it is held, by that tool's own run",
+      files: {
+        'blocks/implementations/biome/foundation/biome.md': `# Biome\n\n${rule({
+          check: 'tool/lint',
+          parent: 'screens-named-by-route',
+          slug: 'screens-linted-by-biome',
+        })}`,
+      },
+    },
+    {
+      condition: "a template of a block that is no language names another rule's contract",
+      files: {
+        'templates/project/ui/pyproject.toml':
+          '[[tool.importlinter.contracts]]\nname = "pieces-named-by-role"\n',
+      },
+    },
+  ])('should report the rule in the language when $condition', ({ files }) => {
+    // Arrange
+    const changed = {
+      ...languageFiles(),
+      ...files,
+    };
+
+    // Act
+    const findings = findingsOf(changed);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: UNHELD_IN_PYTHON,
+        path: NAMES,
+      },
+    ]);
+  });
+
+  it("should report a language's rule when only another language's part binds it", () => {
+    // Arrange
+    const files = {
+      ...languageFiles(),
+      [BINDINGS]: `${HOOKS_BINDING}  ui:\n    screens-named-by-route: [useHookAtTopLevel]\n    pieces-named-by-role: [useHookAtTopLevel]\n  python:\n    python-names-checked: [useHookAtTopLevel]\n`,
+      [PYTHON]: `# Python\n\n${rule({
+        check: 'tool/lint',
+        slug: 'python-names-checked',
+      })}`,
+      'presets/python/ruff/bindings.yaml':
+        'foundation:\n  ui:\n    pieces-named-by-role: [N802]\n    screens-named-by-route: [N802]\n',
+      'presets/typescript/biome/foundation/python.jsonc': '{ "useHookAtTopLevel": "error" }\n',
+    };
+
+    // Act
+    const findings = findingsOf(files);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'says a tool holds python-names-checked (tool/lint), but nothing holds it in python',
+        path: PYTHON,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      binding: {
+        [BINDINGS]: `${HOOKS_BINDING}  ui:\n    screens-named-by-route: [useHookAtTopLevel]\n    pieces-named-by-role: [useHookAtTopLevel]\n  polyglot:\n    polyglot-linted: [useHookAtTopLevel]\n`,
+        'presets/typescript/biome/foundation/polyglot.jsonc': '{ "useHookAtTopLevel": "error" }\n',
+      },
+      findings: [],
+      name: 'one of its languages binds it',
+    },
+    {
+      binding: {
+        'presets/css/biome/bindings.yaml':
+          'foundation:\n  polyglot:\n    polyglot-linted: [useHookAtTopLevel]\n',
+        'presets/css/biome/foundation/polyglot.jsonc': '{ "useHookAtTopLevel": "error" }\n',
+      },
+      findings: [
+        {
+          message:
+            'says a tool holds polyglot-linted (tool/lint), but nothing holds it in python or typescript',
+          path: 'blocks/implementations/polyglot/foundation/polyglot.md',
+        },
+      ],
+      name: 'only a scope of none of its languages binds it',
+    },
+  ])(
+    'should report a rule of two languages $findings.length times when $name',
+    ({ binding, findings }) => {
+      // Arrange
+      const files = {
+        ...languageFiles(),
+        ...blockFiles({
+          dir: 'blocks/implementations/polyglot',
+          files: {
+            'foundation/polyglot.md': `# Polyglot\n\n${rule({
+              check: 'tool/lint',
+              slug: 'polyglot-linted',
+            })}`,
+          },
+          id: 'polyglot',
+          requires: [
+            'python',
+            'typescript',
+          ],
+        }),
+        'presets/python/ruff/bindings.yaml':
+          'foundation:\n  ui:\n    pieces-named-by-role: [N802]\n    screens-named-by-route: [N802]\n',
+        ...binding,
+      };
+
+      // Act
+      const found = findingsOf(files);
+
+      // Assert
+      expect(found).toStrictEqual(findings);
+    },
+  );
 });

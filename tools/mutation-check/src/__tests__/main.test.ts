@@ -18,6 +18,9 @@ interface Check {
   config?: Readonly<Record<string, string>>;
   mainline?: Readonly<Record<string, string>>;
   mode?: 'all';
+  // A workspace's other files, committed with the unit's before the change.
+  neighbours?: Readonly<Record<string, string>>;
+  unit?: string;
 }
 
 interface Outcome {
@@ -102,6 +105,7 @@ const writeFiles = (input: { files: Readonly<Record<string, string>>; folder: st
 
 const runCheck = (check: Check): Outcome => {
   const folder = mkdtempSync(join(tmpdir(), 'devkit-mutation-check-'));
+  const unit = join(folder, check.unit ?? '');
   const bin = join(folder, '.bin');
 
   writeFiles({
@@ -109,6 +113,10 @@ const runCheck = (check: Check): Outcome => {
       ...SOURCE,
       ...(check.config ?? CONFIG),
     },
+    folder: unit,
+  });
+  writeFiles({
+    files: check.neighbours ?? {},
     folder,
   });
   git({
@@ -137,7 +145,7 @@ const runCheck = (check: Check): Outcome => {
 
   writeFiles({
     files: check.changes,
-    folder,
+    folder: unit,
   });
   mkdirSync(bin);
   writeFileSync(join(bin, 'stryker'), '#!/bin/sh\nprintf "%s " "$@" > "$PWD/.stryker-arguments"\n');
@@ -160,12 +168,12 @@ const runCheck = (check: Check): Outcome => {
           ]),
     ],
     {
-      cwd: folder,
+      cwd: unit,
       encoding: 'utf8',
       env,
     },
   );
-  const recorded = join(folder, '.stryker-arguments');
+  const recorded = join(unit, '.stryker-arguments');
   const strykerArguments = existsSync(recorded) ? readFileSync(recorded, 'utf8').trim() : undefined;
 
   rmSync(folder, {
@@ -278,6 +286,45 @@ describe('mutation-check', () => {
       changes: {
         'src/__tests__/helpers.ts': 'export const helper = 1;\n',
       },
+    };
+
+    // Act
+    const outcome = runCheck(check);
+
+    // Assert
+    expect(outcome).toStrictEqual({
+      output: 'mutation: no line to mutate changed\n',
+      strykerArguments: undefined,
+    });
+  });
+
+  test("should mutate the unit's changed line when the check runs from a unit of a workspace", () => {
+    // Arrange
+    const check = {
+      changes: {
+        ...CHANGE,
+        '../web/src/order.utils.ts': 'export const total = 4;\n',
+      },
+      neighbours: {
+        'packages/web/src/order.utils.ts': 'export const total = 1;\n',
+      },
+      unit: 'packages/api',
+    };
+
+    // Act
+    const { strykerArguments } = runCheck(check);
+
+    // Assert
+    expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
+  });
+
+  test('should run no mutant when a change only reformats a file of the unit the check runs from', () => {
+    // Arrange
+    const check = {
+      changes: {
+        'src/order.utils.ts': 'export const total = 1;\n\nexport const count = 2;\n',
+      },
+      unit: 'packages/api',
     };
 
     // Act

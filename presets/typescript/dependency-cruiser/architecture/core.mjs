@@ -1,21 +1,107 @@
-const SPECS = '(^|/)__tests__/';
-const MODULE_LAYERS = 'features|contracts|adapters|shared|libs|composition';
+const SPECS = [
+  '(^|/)__tests__/',
+  '^tests/',
+];
+const MODULE_LAYERS = 'features|contracts|adapters|shared|libs|composition|integrations';
+const LAYERS =
+  'root|features|composition|contracts|adapters|kernel|shared|libs|integrations|entrypoints';
+// Every role folder the blocks' vocabularies name, which no delivery layer is.
+const ROLES =
+  'use-cases|entities|value-objects|repositories|errors|constants|types|utils|models|providers|components|widgets|sinks|steps|queries|commands|ui|assets';
 const ENTRY = '^src/main\\.[^/]+$';
-export const ADAPTERS = [
+// A data file in no language, which imports nothing.
+const DATA = '\\.(?:json|ya?ml)$';
+const ENTRIES = [
+  ENTRY,
+  '^src/entrypoints/[^/]+/main\\.[^/]+$',
+];
+const ADAPTERS = [
   '^src/adapters/',
   '^src/features/[^/]+/adapters/',
 ];
-
-export const ROOT_CALLERS = [
-  ENTRY,
-  '^src/entrypoints/[^/]+/main\\.[^/]+$',
+const ROOT = [
+  ...ENTRIES,
   '^src/root/',
-  SPECS,
 ];
+// The delivery layer: a top-level folder, or file, that is no layer or role folder of the tree,
+// whatever name its block gives it.
+const DELIVERY = [
+  `^src/(?!(?:${LAYERS}|${ROLES}|__tests__)/)[^/]+/`,
+  '^src/(?!(?:main|index)\\.)[^/]+\\.[^/]+$',
+];
+const EDGE = [
+  ...ADAPTERS,
+  ...ROOT,
+  ...DELIVERY,
+  '^src/(libs|integrations)/',
+];
+// What a registry installs; the repository's own units are its code, held by the rules between units.
+const PACKAGES = [
+  'npm',
+  'npm-dev',
+  'npm-peer',
+  'npm-optional',
+  'npm-bundled',
+];
+
+const ROOT_CALLERS = [
+  ...ROOT,
+  ...SPECS,
+];
+
+export { ADAPTERS, DELIVERY, EDGE, PACKAGES, ROOT, ROOT_CALLERS, SPECS };
 
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
+  // dependency-cruiser takes the severity of the first part in extends with allowed rules, warn by default.
+  allowedSeverity: 'error',
+  allowed: [
+    {
+      comment:
+        'packages-imported-by-folder-role: what is no package of a registry, the forbidden rules hold',
+      from: {},
+      to: {
+        dependencyTypesNot: PACKAGES,
+      },
+    },
+    {
+      comment: 'packages-imported-by-folder-role: the edge and the specs import any package',
+      from: {
+        path: [
+          ...EDGE,
+          ...SPECS,
+        ],
+      },
+      to: {
+        dependencyTypes: PACKAGES,
+      },
+    },
+  ],
   forbidden: [
+    {
+      name: 'integration-never-imported',
+      severity: 'error',
+      from: {
+        pathNot: [
+          '^src/integrations/',
+          ...SPECS,
+        ],
+      },
+      to: {
+        path: '^src/integrations/',
+      },
+    },
+    {
+      name: 'integrations-blind-to-each-other',
+      severity: 'error',
+      from: {
+        path: '^src/integrations/([^/]+)/',
+      },
+      to: {
+        path: '^src/integrations/',
+        pathNot: '^src/integrations/$1/',
+      },
+    },
     {
       name: 'domain-reaches-only-itself-and-kernel',
       severity: 'error',
@@ -47,7 +133,10 @@ export default {
         pathNot: SPECS,
       },
       to: {
-        pathNot: '^src/kernel/',
+        pathNot: [
+          '^src/kernel/',
+          DATA,
+        ],
       },
     },
     {
@@ -58,7 +147,7 @@ export default {
       },
       to: {
         path: [
-          '^src/(features|kernel|shared|contracts|adapters|root|composition|entrypoints)/',
+          '^src/(features|kernel|shared|contracts|adapters|root|composition|integrations|entrypoints)/',
           ENTRY,
         ],
       },
@@ -71,7 +160,7 @@ export default {
       },
       to: {
         path: [
-          '^src/(features|contracts|adapters|root|composition|entrypoints)/',
+          '^src/(features|contracts|adapters|root|composition|integrations|entrypoints)/',
           ENTRY,
         ],
       },
@@ -190,7 +279,7 @@ export default {
       to: {
         path: [
           '^src/index\\.[^/]+$',
-          '^src/(features|libs|adapters)/index\\.[^/]+$',
+          '^src/(features|libs|adapters|integrations)/index\\.[^/]+$',
           '^src/features/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
         ],
       },

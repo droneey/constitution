@@ -2,7 +2,7 @@
 
 > Messages in React components.
 
-## components-take-t-from-use-lingui → messages-through-lingui-macros · MUST
+## components-take-t-from-use-lingui → messages-through-lingui-macros
 A component takes `t` from `useLingui`, never the global one.
 
 | Why | Check | Tags |

@@ -14,7 +14,7 @@ A counterexample Hypothesis finds is kept as an `@example(...)` on its property.
 |---|---|---|
 | an explicit example runs first on every run, whatever the strategies draw. | review | [testing] |
 
-## ci-profile-left-to-hypothesis → specs-independent-of-order
+## ci-profile-left-to-hypothesis → flaky-test-fixed-or-removed
 Under `CI`, Hypothesis's own profile `ci` runs — `derandomize=True`, `database=None` — and the project registers no profile of that name and loads no other.
 
 | Why | Check | Tags |

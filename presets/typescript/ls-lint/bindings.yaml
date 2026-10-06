@@ -26,9 +26,14 @@ foundation:
 architecture:
   analytics:
     kebab-case-file-names:
-      - 'src/*/**/sinks'
+      - 'src/**/sinks'
     sinks-folder-holds-sink-files:
-      - 'src/*/**/sinks'
+      - 'src/**/sinks'
+  api:
+    kebab-case-file-names:
+      - 'src/api'
+    top-level-folders-from-the-tree:
+      - 'src/api'
   cli:
     command-files-in-cli:
       - 'src/cli'
@@ -39,23 +44,22 @@ architecture:
     top-level-folders-from-the-tree:
       - src
     data-ports-split-by-reads-and-writes:
-      - 'src/*/**/repositories'
-      - 'src/*/**/repositories/{queries,commands}'
+      - 'src/**/repositories'
+      - 'src/**/repositories/{queries,commands}'
     feature-domain-holds-its-role-folders:
       - 'src/features/*/domain'
     role-folder-files-carry-its-suffix:
-      - 'src/*/**/constants'
-      - 'src/*/**/contracts'
-      - 'src/*/**/entities'
-      - 'src/*/**/errors'
-      - 'src/*/**/models'
-      - 'src/*/**/repositories/{queries,commands}'
-      - 'src/*/**/types'
-      - 'src/*/**/use-cases/{queries,commands}'
+      - 'src/**/constants'
+      - 'src/**/contracts'
+      - 'src/**/entities'
+      - 'src/**/errors'
+      - 'src/**/models'
+      - 'src/**/repositories/{queries,commands}'
+      - 'src/**/types'
+      - 'src/**/use-cases/{queries,commands}'
       - 'src/features/*/app/use-cases/{queries,commands}/*'
-      - 'src/*/**/utils'
-      - 'src/*/**/value-objects'
-      - 'src/contracts'
+      - 'src/**/utils'
+      - 'src/**/value-objects'
     kebab-case-file-names:
       - '.*'
       - '.*.*'
@@ -63,18 +67,17 @@ architecture:
     layer-folder-never-imported:
       - 'src/features/*/domain'
     typescript-role-and-surface-files:
-      - 'src/*/**/constants'
-      - 'src/*/**/contracts'
-      - 'src/*/**/entities'
-      - 'src/*/**/errors'
-      - 'src/*/**/models'
-      - 'src/*/**/repositories/{queries,commands}'
-      - 'src/*/**/types'
-      - 'src/*/**/use-cases/{queries,commands}'
+      - 'src/**/constants'
+      - 'src/**/contracts'
+      - 'src/**/entities'
+      - 'src/**/errors'
+      - 'src/**/models'
+      - 'src/**/repositories/{queries,commands}'
+      - 'src/**/types'
+      - 'src/**/use-cases/{queries,commands}'
       - 'src/features/*/app/use-cases/{queries,commands}/*'
-      - 'src/*/**/utils'
-      - 'src/*/**/value-objects'
-      - 'src/contracts'
+      - 'src/**/utils'
+      - 'src/**/value-objects'
     yaml-files-end-in-yaml:
       - '.yml'
   expo:
@@ -86,6 +89,16 @@ architecture:
       - 'src/routes'
     kebab-case-file-names:
       - 'src/routes'
+  nestjs:
+    kebab-case-file-names:
+      - 'src/**/providers'
+    providers-folder-holds-provider-files:
+      - 'src/**/providers'
+      - '.provider.ts'
+      - '.filter.ts'
+      - '.pipe.ts'
+      - '.guard.ts'
+      - '.interceptor.ts'
   tanstack-router:
     kebab-case-file-names:
       - 'src/routes'
@@ -98,16 +111,18 @@ architecture:
       - 'src/routes'
   ui:
     component-folders-hold-their-files:
-      - 'src/*/**/components'
-      - 'src/{features,shared,libs,composition,entrypoints}/**/components/[!_]*'
+      - 'src/**/components'
+      - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
+      - 'src/components/[!_]*'
       - 'src/root/**/components/[!_]*'
-      - 'src/*/**/widgets'
-      - 'src/*/**/widgets/[!_]*'
+      - 'src/**/widgets'
+      - 'src/**/widgets/[!_]*'
     widget-folder-ends-in-widget:
-      - 'src/*/**/widgets/[!_]*'
+      - 'src/**/widgets/[!_]*'
     root-components-prefixed:
       - 'src/root/**/components/[!_]*'
     kebab-case-file-names:
-      - 'src/*/**/assets'
-      - 'src/{features,shared,libs,composition,entrypoints}/**/components/[!_]*'
+      - 'src/**/assets'
+      - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
+      - 'src/components/[!_]*'
       - 'src/root/**/components/[!_]*'

@@ -1,12 +1,5 @@
 # Browser
 
-## no-browser-globals-during-render · MUST
-Code that can render on a server reads no browser global while it renders.
-
-| Why | Check | Tags |
-|---|---|---|
-| on the server the global does not exist, and the render fails or differs from the one in the tab. | review | [errors] |
-
 ## runtime-configuration-served-beside-bundle · MUST
 One bundle serves every environment: its configuration is served beside it, and no environment value is baked into the bundle.
 
@@ -15,18 +8,32 @@ One bundle serves every environment: its configuration is served beside it, and 
 | one tested bundle is promoted from staging to production unchanged, and nothing environment-specific is published inside it. | review | [security] |
 
 ## bundle-reads-no-build-environment → runtime-configuration-served-beside-bundle
-Browser code never reads `process.env`.
+Browser code reads no variable of the environment it is built in; the compiler gives it the browser's globals and no runtime's.
 
 | Why | Check | Tags |
 |---|---|---|
-| a bundler fills it in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
+| a bundler fills such a read in at build time, and bakes one environment's values into the bundle. | tool/types | [security] |
 
-## no-credential-readable-by-script · MUST
-A credential in the tab lives only in a cookie its script cannot read — `HttpOnly`, `Secure`, `SameSite`, named `__Host-` when the program's own tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does — never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
+## no-credential-readable-by-script → credentials-only-in-the-protected-store
+A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
 
 | Why | Check | Tags |
 |---|---|---|
-| any script that runs in the page — injected, or a compromised dependency — reads what the page's script can read and sends it away. | review | [security] |
+| a cookie the page's script cannot read is the one store of a tab that no script in the page can reach. | review | [security] |
+
+## cross-window-messages-check-origin → outside-addresses-trusted-only-on-an-allowlist
+A message from another window is accepted only from an expected origin, and parsed; an outgoing message names its target origin.
+
+| Why | Check | Tags |
+|---|---|---|
+| any page can post a message to any window; without the origin check, any page can drive the program. | review | [] |
+
+## redirect-targets-allowlisted → outside-addresses-trusted-only-on-an-allowlist
+A redirect target taken from the address or a form — `returnTo`, `redirect`, `next` — is followed only when it is a path of the program's own or on an allowlist; anything else falls back to the home screen.
+
+| Why | Check | Tags |
+|---|---|---|
+| a sign-in link that redirects anywhere sends the user, just signed in and trusting the page, to a lookalike site. | review | [security] |
 
 ## strict-content-security-policy · MUST
 Every document is served with a Content Security Policy that allows scripts only by nonce, hash or the program's own origin, with no `unsafe-inline` and no `unsafe-eval`, and sets `object-src 'none'`, `base-uri 'none'` and `frame-ancestors`.
@@ -34,6 +41,13 @@ Every document is served with a Content Security Policy that allows scripts only
 | Why | Check | Tags |
 |---|---|---|
 | when a script slips into the page anyway, the browser refuses to run it; the policy is the last wall behind every check in the code. | test | [security] |
+
+## no-raw-html-injection · MUST
+No raw HTML reaches the DOM: no `innerHTML` or `outerHTML` assigned, no `insertAdjacentHTML`, no `document.write`. Untrusted markup goes through a sanitising renderer.
+
+| Why | Check | Tags |
+|---|---|---|
+| injected HTML runs whatever script it carries, in the user's session. | tool/lint | [security] |
 
 ## trusted-types-required · SHOULD
 The Content Security Policy requires Trusted Types for scripts, so a string reaches an HTML or script sink only through a policy the program defines.
@@ -57,15 +71,22 @@ A script from another origin is served from the program's own origin, or loaded 
 | a script on another server changes when that server does; with its hash pinned, the browser refuses a replaced file. | review | [security] |
 
 ## bundle-size-budget · SHOULD
-Each bundle has a size budget the check holds, the embeddable one first.
+Each bundle has a size budget the check holds.
 
 | Why | Check | Tags |
 |---|---|---|
 | size grows one dependency at a time, and only a budget notices the one that crosses the line. | test | [performance] |
 
-## core-web-vitals-within-budget · SHOULD
-Largest Contentful Paint stays within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1 at the 75th percentile, measured in the field.
+## hashed-assets-immutable-html-revalidated · SHOULD
+Hashed assets are served as immutable; the HTML and the runtime configuration are revalidated.
 
 | Why | Check | Tags |
 |---|---|---|
-| these are what users feel of speed; a bundle budget is only a proxy for them. | review | [performance, ux] |
+| hashed files never change, so they are cached for good, while what points at them must be fresh. | review | [performance] |
+
+## browser-resources-have-one-writer → one-writer-per-shared-resource
+In the browser, the resources the program shares with its host include the document's head, the URL, focus, the scroll position, the root element's classes and attributes, and the service worker; each has one writer.
+
+| Why | Check | Tags |
+|---|---|---|
+| each outlives the code that writes it, so two writers overwrite each other on every navigation and the last to run wins. | review | [] |

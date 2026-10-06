@@ -1,34 +1,13 @@
 # User interface with remote data
 
-> Screens that show and change data another system owns: how an operation is bound to the screen and how the application is composed.
+> Screens that show and change data another system owns: the cache the providers build, and what a write reloads.
 
-## providers-compose-the-ui-application → one-explicit-composition-root
-The providers are the application's composition root: they build the configuration, the transport and the cache client, build each adapter by its factory from the transport, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
-
-| Why | Check | Tags |
-|---|---|---|
-| every concrete choice is made in one place, and a test hands the same binding unit a different transport or adapter without touching it. | review | [] |
-
-## binding-unit-composes-its-operation · SHOULD
-A binding unit binds one operation: it takes its adapter from the providers and calls the use-case, or the port when there is none. A plain function form of it is added only when a caller that is not reactive appears.
+## cache-client-built-by-the-providers → providers-compose-the-ui-application
+The providers also build the cache client and hand it to the binding units.
 
 | Why | Check | Tags |
 |---|---|---|
-| each operation is bound once, and the screen never learns which adapter serves it. | review | [] |
-
-## binding-units-import-no-adapter-or-ui → binding-unit-composes-its-operation
-A binding unit imports neither an adapter, which the providers hand it, nor anything of `ui/`, which imports it.
-
-| Why | Check | Tags |
-|---|---|---|
-| an adapter imported directly bypasses the composition root, so a spec cannot replace its transport; a binding unit that imports UI points against the layers. | tool/imports | [] |
-
-## configuration-provider-reads-environment → environment-read-once-at-boot
-The configuration provider is the application's one reader of the environment, and parses it once, at boot.
-
-| Why | Check | Tags |
-|---|---|---|
-| a missing setting fails at start, and no component reads the environment on its own. | review | [] |
+| every binding unit then reads and writes the one cache the composition root chose, and a spec hands them another. | review | [data] |
 
 ## command-invalidates-in-its-binding-unit · SHOULD
 After a write, invalidation happens in the command's binding unit, through the feature's key factory.
@@ -36,10 +15,3 @@ After a write, invalidation happens in the command's binding unit, through the f
 | Why | Check | Tags |
 |---|---|---|
 | the one place that knows what a write changed is the one that says what to reload. | review | [data] |
-
-## unauthorized-handled-once-in-cache → one-error-handler-per-transport
-The cache's global error handler, wired by the providers, receives the unauthorized domain error the shared mapper produced and turns it into session state through the surface of the feature that owns sessions. Other failures reach the screen through the binding unit's error state.
-
-| Why | Check | Tags |
-|---|---|---|
-| an expired session is handled once, the same way on every screen, and no screen handles it differently. | review | [] |

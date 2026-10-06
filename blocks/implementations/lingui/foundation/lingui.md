@@ -7,12 +7,12 @@ Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as I
 |---|---|---|
 | the macros extract every message into the catalog, with its parameters and plural forms intact. | review | [] |
 
-## catalogs-compiled-strictly-in-check → check-only-checks
-The check compiles the catalogs in strict mode, failing on a missing translation, and writes no tracked file. Extraction is the author's step, and its change to the catalog is committed with the code.
+## missing-translation-fails-the-check → user-facing-text-from-catalog
+The catalogs compile in strict mode, so a missing translation fails the compile.
 
 | Why | Check | Tags |
 |---|---|---|
-| a missing translation fails before release, and the check never rewrites what it checks. | review | [] |
+| a missing translation then fails before release, not on a user's screen. | review | [] |
 
 ## module-level-messages-are-descriptors → module-level-text-holds-the-message
 Text defined outside a render — an option list, an enum's labels — is a `msg` descriptor rendered later.

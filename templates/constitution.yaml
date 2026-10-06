@@ -5,6 +5,6 @@ domains: []
 platforms: []
 languages: []
 implementations: []
-apps: {}
+packages: {}
 check: <check command>
 overrides: []

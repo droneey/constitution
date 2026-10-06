@@ -2,6 +2,20 @@
 
 ## The document
 
+## declared-document-is-the-single-input · MUST
+One document the user writes is the program's single input; every run reads it whole, validates it, and moves the world toward it.
+
+| Why | Check | Tags |
+|---|---|---|
+| one declared state is reviewable, repeatable and diffable; inputs scattered across flags and files are none of these. | review | [] |
+
+## field-constraints-checked-in-validation → declared-document-is-the-single-input
+Every constraint between fields of the document is checked in validation, before any stage runs, never at the point of use.
+
+| Why | Check | Tags |
+|---|---|---|
+| an impossible combination found mid-run fails after part of the world has changed, far from the line that caused it. | review | [data, errors] |
+
 ## section-optional-fields-required → absence-has-one-value
 A section may be absent, and is then left untouched. Inside a declared section every managed field is stated: "there is none" is written, and mapped to absence when the document is read; a switched-off option carries nothing else.
 
@@ -14,14 +28,14 @@ A secret in the document is a reference by name to the environment. Validation l
 
 | Why | Check | Tags |
 |---|---|---|
-| the document can then be committed and reviewed, and a missing secret fails before anything is applied. | review | [security] |
+| the document can then be shared and reviewed, and a missing secret fails before anything is applied. | review | [security] |
 
-## document-schema-strict · MUST
-Each section of the document has a strict schema: unions selected by a discriminant field, and unknown keys rejected.
+## document-variants-selected-by-a-discriminant → illegal-states-unrepresentable
+A section of the document that takes several forms is a union selected by a discriminant field.
 
 | Why | Check | Tags |
 |---|---|---|
-| a typo or a wrong variant fails before anything runs, with a message that points at the line. | test | [data, errors] |
+| each form is then checked by its own schema, and a wrong one fails before anything runs, with a message that names the field. | test | [data, errors] |
 
 ## one-syntax-per-value-kind · SHOULD
 Each kind of value — a size, a duration — has one syntax in the document, parsed once.
@@ -30,23 +44,30 @@ Each kind of value — a size, a duration — has one syntax in the document, pa
 |---|---|---|
 | a user learns one way to write a size, and the program never guesses which one was meant. | review | [data] |
 
-## published-schema-generated-from-code · MUST
-The schema published for editors is generated from the code's schema, never written by hand. The check compares a committed copy with it and never rewrites it.
+## published-schema-generated-from-code → generated-files-marked-never-edited
+The schema published for editors is generated from the code's schema, never written by hand, and a spec compares the copy kept in the repository with it.
 
 | Why | Check | Tags |
 |---|---|---|
 | a schema written twice drifts, and editors then accept documents the program rejects. | test | [data] |
 
-## init-writes-document-from-template · SHOULD
-An `init` command writes one document from a template, named after the program, pointing editors at the published schema.
+## document-points-editors-at-the-schema · SHOULD
+The document points editors at the published schema.
 
 | Why | Check | Tags |
 |---|---|---|
-| a user starts from a valid document with completion in the editor, not from a blank page. | review | [ux] |
+| the editor then checks and completes the document as it is written. | review | [ux] |
 
 ## The stages
 
-## plan-names-destroying-changes → irreversible-operations-behind-flag-and-human
+## stages-run-alone · SHOULD
+Validating, rendering, planning and applying are separate stages a user runs alone, and each later stage reuses the earlier ones. Rendering runs no engine.
+
+| Why | Check | Tags |
+|---|---|---|
+| a user can check, preview and plan without touching the world, and a later stage builds on exactly what an earlier one showed. | review | [] |
+
+## plan-names-destroying-changes → irreversible-operations-behind-a-flag
 The plan names every change that destroys something, and apply refuses one without an explicit flag.
 
 | Why | Check | Tags |
@@ -61,30 +82,30 @@ Applying the same document twice reports no change the second time, and a test p
 | convergence is safe to rerun only if it is idempotent, and only a test keeps it so. | test | [testing] |
 
 ## run-reports-per-stage · SHOULD
-A run reports each stage as skipped with its reason, unchanged, changed, ran or failed.
+A run's report holds an entry for each stage: skipped with its reason, unchanged, changed, ran or failed.
 
 | Why | Check | Tags |
 |---|---|---|
 | the user sees what happened to each part, and where a failed run stopped. | review | [ux, errors] |
 
-## run-output-in-an-ignored-work-folder → generated-files-not-committed
-What a run produces lands in one work folder that version control ignores.
+## run-output-in-one-work-folder · SHOULD
+What a run produces lands in one work folder, apart from the document.
 
 | Why | Check | Tags |
 |---|---|---|
-| rendered files and state never mix with the document, and never reach history by accident. | review | [] |
+| rendered files and state never mix with the document, and one folder is cleared or ignored as a whole. | review | [] |
 
 ## Engines
 
-## engines-pinned-by-version-and-checksum → dependencies-pinned-by-lockfile
-Engines the program drives are not vendored: each is downloaded per release into the program's home, pinned by version and checksum.
+## engines-downloaded-per-release-not-vendored · MUST
+Engines the program drives are not vendored: each is downloaded per release into the program's home.
 
 | Why | Check | Tags |
 |---|---|---|
-| a pinned, verified engine behaves the same on every machine, and a swapped binary fails its checksum. | review | [] |
+| a vendored engine grows the repository with every release, while a download per release keeps every machine on the engine the release names. | review | [] |
 
-## developer-and-ci-run-the-tools-engines · SHOULD
-Developers and CI run exactly the engines the program installed, linked into one directory of its home.
+## tools-reach-the-programs-engines · SHOULD
+The engines the repository's tools reach are exactly those the program installed, linked into one directory of its home.
 
 | Why | Check | Tags |
 |---|---|---|

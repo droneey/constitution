@@ -1,10 +1,10 @@
 # TypeScript
 
-> A folder's surface is `index.ts`, a role file is `<name>.<role>.ts`, and the wiring file is `root/wiring.ts`.
+> A folder's surface is `index.ts`, a role file is `<name>.<role>.ts`, and the wiring file is `root/wiring.ts`, unless a framework's block names its own.
 
 ## Modules and files
 
-## hash-imports-leave-the-module → import-only-through-surface
+## hash-imports-leave-the-module → folder-files-import-each-other-directly
 An import that leaves its module uses `#/`; files inside one module import each other by relative path. A module never imports itself through `#/`.
 
 | Why | Check | Tags |
@@ -27,13 +27,6 @@ A role file is `<name>.<role>.ts`, and a folder's surface is `index.ts`.
 |---|---|---|
 | a `null` that travels inward brings a second absence into code that checks only for `undefined`. | review | [] |
 
-## boundary-values-unknown-until-parsed → untrusted-input-parsed-at-edge
-A value from beyond the boundary — `JSON.parse`, a response body, a file, a message — is `unknown` until the project's schema parses it or plain checks — `typeof`, `in`, `Array.isArray` — narrow it, in specs as in production. `.json<T>()` and `as Promise<T>` are casts.
-
-| Why | Check | Tags |
-|---|---|---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
-
 ## domain-type-fields-readonly → business-types-readonly
 A field of an interface or an object type declared in a `*.entity.ts` or `*.value-object.ts` file is `readonly`.
 
@@ -48,16 +41,10 @@ An identifier's brand is set only in the mapper at the boundary.
 |---|---|---|
 | a brand set in one place is a proof that the value came through it; set anywhere, it proves nothing. | review | [] |
 
-## ambient-aliases-are-project-vocabulary → semantic-alias-names-a-shared-meaning
-A project's semantic aliases live in one ambient `types.d.ts` at its source root, and code in `libs/` never references them.
+## semantic-alias-exported-where-it-belongs → semantic-alias-names-a-shared-meaning
+A semantic alias is a type exported by the module whose meaning it names, and a vocabulary several features share lives in `kernel/`. A term that keeps an invariant is a value object, never an alias.
 
 | Why | Check | Tags |
 |---|---|---|
-| one file holds the program's vocabulary, and `libs/` stays free of a hidden dependency on it. | review | [] |
+| an alias imported from its module shows in every file where its meaning comes from, and the import rules hold it like any other type; an ambient alias reaches every file unseen, `libs/` included, and no rule can keep it out. | review | [] |
 
-## environment-read-only-in-root → environment-read-once-at-boot
-`process.env` is read only under `root/` and in the entry files; a spec may read it to drive the program.
-
-| Why | Check | Tags |
-|---|---|---|
-| a variable read deep in the program is a dependency no signature shows, and the typed configuration of the root is bypassed. | tool/lint | [] |

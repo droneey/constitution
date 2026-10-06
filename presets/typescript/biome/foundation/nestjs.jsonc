@@ -16,6 +16,25 @@
           },
           "style": {
             "noParameterProperties": "off",
+            "useImportType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.controller.ts",
+        "**/*.provider.ts",
+        "**/*.service.ts",
+        "**/*.filter.ts",
+        "**/*.pipe.ts",
+        "**/*.guard.ts",
+        "**/*.interceptor.ts",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useMaxParams": "off",
           },
         },
       },

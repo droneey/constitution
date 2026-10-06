@@ -13,4 +13,4 @@ governs: []
 
 # Remote data
 
-> Data another system owns, which the program reads, caches and changes through that system. This block says how the data is cached, keyed, invalidated and streamed.
+> Data another system owns and decides on, which the program reads, caches and changes through that system. This block says how the data is cached, keyed and invalidated, and how a stream of it is folded before it reaches the cache.

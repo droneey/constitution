@@ -10,6 +10,8 @@ foundation:
     compiler-keeps-decorator-metadata:
       - emitDecoratorMetadata
       - experimentalDecorators
+    framework-filled-fields-marked-definite:
+      - strictPropertyInitialization
   self:
     compiler-is-the-type-gate:
       - exactOptionalPropertyTypes
@@ -26,5 +28,7 @@ foundation:
     no-dead-code:
       - noUnusedLocals
       - noUnusedParameters
+    overrides-marked-by-keyword:
+      - noImplicitOverride
     undefined-is-the-only-absence:
       - exactOptionalPropertyTypes

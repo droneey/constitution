@@ -5,6 +5,8 @@ foundation:
     test-code-unreachable-from-production:
       - no-test-code-in-production
   storybook:
+    production-imports-no-development-dependency:
+      - no-development-dependency-in-production
     stories-unreachable-from-production:
       - stories-unreachable-from-production
   typescript:
@@ -14,12 +16,26 @@ architecture:
   analytics:
     features-never-track:
       - features-never-track
+  api:
+    adapters-never-import-each-other-or-callers:
+      - adapters-know-no-handlers
+    dependencies-point-inward:
+      - handlers-reached-only-from-entries
   cli:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-commands
     dependencies-point-inward:
       - commands-reached-only-from-entries
+  _react:
+    react-imported-by-the-ui-and-binding-units:
+      - react-imported-by-the-ui-and-binding-units
   core:
+    packages-imported-by-folder-role:
+      - 'packages-imported-by-folder-role: what is no package of a registry, the forbidden rules hold'
+      - 'packages-imported-by-folder-role: the edge and the specs import any package'
+    nothing-imports-an-integration:
+      - integration-never-imported
+      - integrations-blind-to-each-other
     surface-is-the-only-way-in:
       - domain-role-reached-through-its-surface
       - kernel-reached-through-its-surface
@@ -37,7 +53,7 @@ architecture:
       - kernel-reaches-only-itself
       - libs-know-no-application
       - shared-knows-no-feature-or-root
-    domain-imports-only-itself-and-kernel:
+    domain-imports-only-itself-kernel-and-contracts:
       - domain-reaches-only-itself-and-kernel
     feature-root-holds-its-layers:
       - feature-root-reached-only-through-its-layers
@@ -60,50 +76,45 @@ architecture:
       - writes-never-reach-reads
     root-imported-only-by-entry-and-delivery-wiring:
       - root-reached-only-from-entries
-    shared-imports-no-feature-or-root:
+    shared-imports-no-feature-adapter-contract-or-root:
       - shared-knows-no-feature-or-root
   expo:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-routes
     dependencies-point-inward:
       - routes-reached-only-from-expo-router
-  ky:
-    components-import-no-http-client:
-      - components-never-fetch
   lingui:
-    domain-returns-codes-not-text:
-      - application-returns-codes-not-text
-    primitives-import-no-message-catalog:
-      - primitives-hold-no-text
-  package:
-    consumers-import-package-entries:
-      - root-takes-packages-by-name
-    package-dependency-matrix:
-      - common-imports-nothing
-      - packages-blind-to-each-other
-    package-knows-no-consumer:
-      - package-knows-no-consumer
+    lingui-only-where-text-is-rendered:
+      - lingui-only-where-text-is-rendered
+      - lingui-only-in-its-home
+  nestjs:
+    nestjs-imported-by-modules-and-providers:
+      - nestjs-imported-by-modules-and-providers
+  react-native:
+    react-native-imported-by-the-ui:
+      - react-native-imported-by-the-ui
+  storybook:
+    stories-import-what-they-render-with:
+      - stories-import-what-they-render-with
+  tanstack-form:
+    form-library-imported-by-the-ui:
+      - form-library-imported-by-the-ui
   tanstack-query:
-    adapters-never-import-the-cache-library:
-      - adapters-never-cache
-    components-import-no-query-library:
-      - components-never-query
-    libs-import-no-query-library:
-      - libs-never-cache
+    query-library-home-is-the-binding-units:
+      - query-library-home-is-the-binding-units
+      - query-library-only-in-its-home
   tanstack-router:
     adapters-never-import-each-other-or-callers:
       - adapters-know-no-routes
-    libs-import-no-router:
-      - libs-never-route
     route-pieces-reach-the-route-by-its-api:
       - route-pieces-never-import-route-files
-    routes-imported-only-by-the-router:
+    routes-imported-by-no-inner-layer:
       - routes-reached-only-from-the-router
     root-imported-only-by-entry-and-delivery-wiring:
       - root-reached-only-from-entries
     router-primitives-only-in-screens-and-widgets:
       - router-primitives-only-in-screens-and-widgets
-      - screen-pieces-never-navigate
+      - router-only-in-its-home
   ui:
     binding-units-import-no-adapter-or-ui:
       - binding-units-reach-no-adapter-or-ui
@@ -118,3 +129,17 @@ architecture:
   yaml:
     yaml-only-at-the-edge:
       - yaml-only-at-the-edge
+  zod:
+    zod-imported-by-forms:
+      - zod-imported-by-forms
+    zod-imported-by-the-document:
+      - zod-imported-by-the-document
+  workspace:
+    no-unit-reached-by-path:
+      - root-imports-units-by-name
+      - units-imported-by-name
+    product-units-blind-to-each-other:
+      - product-units-blind-to-each-other
+    units-import-toward-libs:
+      - libs-know-no-product
+      - shared-knows-no-product-unit

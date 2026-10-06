@@ -15,23 +15,15 @@ An optimistic write happens only in the mutation's lifecycle, which can roll it 
 | an optimistic change without a rollback leaves the screen showing what the server refused. | review | [data] |
 
 ## optimistic-lifecycle-safe-under-concurrency · MUST
-Under concurrent writes, reads in flight for the touched keys are cancelled before the snapshot; a failure rolls back only its own changes; invalidation waits until the last write settles; and an item whose identifier the server assigns renders from the pending variables under a stable key.
+Under concurrent writes, reads in flight for the touched keys are cancelled before the snapshot; a failure rolls back only its own changes; invalidation waits until the last write settles; and an item whose identifier the server assigns renders from the input of the pending write under a stable key.
 
 | Why | Check | Tags |
 |---|---|---|
 | a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read overwrites the optimistic state, or one failure erases the other's success. | test | [data] |
 
-## input-driven-requests-debounced → fast-source-updates-once-per-frame
+## input-driven-requests-debounced · SHOULD
 A request driven by typing is sent after a pause, or on the deferred value.
 
 | Why | Check | Tags |
 |---|---|---|
 | a request per keystroke floods the server and shows results for words the user has not finished. | review | [ux] |
-
-## ui-specs-replace-the-transport → tests-run-in-a-sandbox
-A screen's spec, and the spec of what loads or writes its data, run inside their providers, with the transport replaced by captured responses. A fake of a business operation serves only a screen that shows no remote data.
-
-| Why | Check | Tags |
-|---|---|---|
-| the spec then runs the real data bindings, the code that talks to the server and the mapping, and catches a response the mapping gets wrong, which a faked operation never sees. | test | [] |
-

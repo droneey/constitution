@@ -7,4 +7,14 @@ export default {
     './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/yaml.mjs',
     './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/core.mjs',
   ],
+  allowed: [
+    {
+      comment:
+        "the archive's tools are programs of their own, laid out flat, and import the packages they run with",
+      from: {
+        path: '^tools/[^/]+/src/',
+      },
+      to: {},
+    },
+  ],
 };

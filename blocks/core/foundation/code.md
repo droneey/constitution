@@ -32,14 +32,14 @@ No name is only an empty word — `data`, `result`, `temp`, `info`, `item`, `val
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty name makes the reader look up what it holds, every time. | tool/lint | [] |
+| an empty name makes the reader look up what it holds, every time. | review | [] |
 
 ## no-empty-verbs · SHOULD
-A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`. A name an interface the code implements imposes — a handler's `get` — is exempt; the lint sees a proxy's handler, and another such name takes a suppression that says so.
+A function is named by a concrete verb and its object, never an empty verb alone: `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`. A name an interface the code implements imposes — a handler's `get` — is exempt.
 
 | Why | Check | Tags |
 |---|---|---|
-| an empty verb says a function does something, never what. | tool/lint | [] |
+| an empty verb says a function does something, never what. | review | [] |
 
 ## collections-plural-items-singular · SHOULD
 A collection is named in the plural and one of its items in the singular, destructured names included.
@@ -62,12 +62,19 @@ A value with a unit carries the unit in its name: `timeoutMs`, `DEFAULT_TIMEOUT_
 |---|---|---|
 | a number without its unit is read in the wrong one sooner or later, and the bug looks like correct code. | review | [] |
 
-## file-is-one-semantic-unit · SHOULD
+## file-is-one-semantic-unit → one-reason-per-unit
 A file holds one semantic unit and is named after it; unrelated exports go to their own files.
 
 | Why | Check | Tags |
 |---|---|---|
 | a file's name then tells what is inside, and a change to one unit touches one file. | review | [] |
+
+## domain-names-free-of-vendor-and-storage · SHOULD
+A name of the business names its concept, never the vendor or the storage behind it: `UserRecord`, not `UserMongoDocument`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a vendor in such a name must be renamed everywhere when the vendor changes, and leaks it into code that should not know it. | review | [] |
 
 ## booleans-read-as-predicates · SHOULD
 A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `should` or `did`. A domain block may set the prefixes for booleans of its own kind, such as the properties of a presentational component.
@@ -78,14 +85,14 @@ A boolean variable, parameter or predicate starts with `is`, `has`, `can`, `shou
 
 ## Arguments
 
-## at-most-three-positional-arguments · SHOULD
+## parameters-at-most-three-wholes-as-one-object · SHOULD
 A function takes at most three positional parameters. Values that make one whole — the fields of an order, the options of a call — travel as one named object, whatever their number. A signature a framework or library imposes is exempt.
 
 | Why | Check | Tags |
 |---|---|---|
 | each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | review | [] |
 
-## positional-parameters-at-most-three → at-most-three-positional-arguments
+## positional-parameters-at-most-three → parameters-at-most-three-wholes-as-one-object
 A function takes at most three positional parameters.
 
 | Why | Check | Tags |
@@ -180,6 +187,13 @@ Code kept only for its old callers is marked deprecated where it is declared, na
 |---|---|---|
 | the mark stops new callers at the point of use, and the replacement it names is the way off. | review | [] |
 
+## deprecated-forms-never-used · MUST
+New code calls nothing a dependency or the program marks deprecated, and uses no form a dependency has deprecated in favour of another.
+
+| Why | Check | Tags |
+|---|---|---|
+| a deprecated form is removed in a later release, and two spellings of one thing double what a reader must know. | review | [] |
+
 ## todo-names-its-issue · SHOULD
 A to-do comment names its issue: `TODO(#<issue>)`. A to-do without one is done, filed, or removed.
 
@@ -188,11 +202,11 @@ A to-do comment names its issue: `TODO(#<issue>)`. A to-do without one is done, 
 | an issue has an owner and a place in the plan; a bare to-do is forgotten where it stands. | review | [] |
 
 ## no-commented-out-code · MUST
-Code is never commented out; it is deleted. History keeps it.
+Code is never commented out; it is deleted.
 
 | Why | Check | Tags |
 |---|---|---|
-| commented-out code rots unseen, misleads readers, and version control already remembers it. | review | [] |
+| commented-out code rots unseen and misleads readers, while deleted code stays recoverable from an earlier version of the project. | review | [] |
 
 ## no-dead-code · MUST
 No unused file, dependency, export, parameter, variable or label, and no unreachable statement. Code and dependencies that only tests reach are unused too. An export a module offers through its public entry is not dead code.
@@ -208,6 +222,20 @@ Silencing a check — a lint rule, a type error, a mutant, a deliberately ignore
 |---|---|---|
 | the next reader must know whether the exception still holds, and a suppression without a reason cannot be judged. | review | [] |
 
+## suppression-silences-one-finding · MUST
+A suppression silences one finding: it sits on the finding's line or the line above, or names the finding itself, and names the one rule, code or mutator it silences wherever the tool's form can name one; never a group of rules, a whole tool, a range or a whole file. A suppression that silences no finding the check would report is removed.
+
+| Why | Check | Tags |
+|---|---|---|
+| a suppression of one rule on one line can be judged where it stands; a broad one silences rules and lines nobody meant to, and one that silences nothing outlives the finding it was for. | review | [] |
+
+## diagnostics-through-the-logging-facade · MUST
+Diagnostics a program keeps on purpose go through the language's standard logging facade, or through a logger of the program's own where the language has none; never straight to the console or a stream.
+
+| Why | Check | Tags |
+|---|---|---|
+| one logger decides where diagnostics go and what they may carry, and a facade every library already writes to puts the program's records and theirs through one pipeline. | review | [] |
+
 ## no-debug-output-in-shipped-code · SHOULD
 Shipped code writes no debug output and stops at no breakpoint. What a command-line program writes for its user — its results, prompts and messages — is its output, not debug.
 
@@ -222,7 +250,7 @@ Code spells absence with one value, which the language block names; another spel
 
 | Why | Check | Tags |
 |---|---|---|
-| two spellings of absence make every check ask twice, and one of them is always forgotten. | tool/lint | [data] |
+| two spellings of absence make every check ask twice, and one of them is always forgotten. | review | [data] |
 
 ## Failure
 
@@ -234,11 +262,11 @@ A mapped error keeps its cause.
 | the cause is what finds the bug. | tool/lint | [errors] |
 
 ## error-logged-once · SHOULD
-An error is logged once, where it is handled, never at every level it passes.
+An error is reported once, where it is handled, never at every level it passes.
 
 | Why | Check | Tags |
 |---|---|---|
-| a failure logged at every level looks like several. | review | [errors] |
+| a failure reported at every level looks like several. | review | [errors] |
 
 ## retry-only-transient-failures · SHOULD
 Only a transient failure — a timeout, a dropped connection, a rate limit — is retried, with backoff and a limit.
@@ -248,11 +276,25 @@ Only a transient failure — a timeout, a dropped connection, a rate limit — i
 | retrying a failure that will not change wastes time and repeats side effects. | review | [errors] |
 
 ## expected-failures-typed-with-codes · SHOULD
-An expected failure is typed, carries a stable code `<MODULE>_<ENTITY>_<KIND>` and details that say what to do, and belongs to the contract that can fail.
+An expected failure is typed, carries a stable code a caller can branch on and details that say what to do, and belongs to the contract that can fail.
 
 | Why | Check | Tags |
 |---|---|---|
 | a caller that branches on a typed code keeps working when the message is reworded, and a failure that is part of the contract is handled by design. | review | [errors] |
+
+## parse-failure-is-one-coded-error → expected-failures-typed-with-codes
+A parser's failure becomes one coded error of the kit, with its cause, and each problem the parser reports becomes one of its details, with the path to where it was found and never the value it rejected.
+
+| Why | Check | Tags |
+|---|---|---|
+| the caller handles one error type and sees every problem of the input at once, each pointing at its place. | review | [errors] |
+
+## framework-errors-never-raised → expected-failures-typed-with-codes
+Code raises the error kit's errors, never the error types of the framework that serves it — a server's or a command-line framework's — which carry no code of the program's expected failures.
+
+| Why | Check | Tags |
+|---|---|---|
+| a framework's error carries no code a caller can branch on, and the code that raises it is tied to that framework. | review | [errors] |
 
 ## failures-listed-beside-the-contract → expected-failures-typed-with-codes
 A contract that can fail lists the expected failures it throws as one named type beside it, each an error of the kit with its code.
@@ -282,6 +324,13 @@ What a user sees of a failure says what happened and what to do next, never a st
 |---|---|---|
 | a user can act on a next step but not on a trace, and internals shown to a user leak how the program works. | review | [errors, security, ux] |
 
+## one-error-handler-per-transport → failure-shown-as-what-happened-and-what-next · MUST
+Defects travel to the boundary. Each transport has one handler of last resort that turns a failure into what its user sees, and a program exits only there.
+
+| Why | Check | Tags |
+|---|---|---|
+| one handler gives every failure the same shape and the same next step, and no internal detail leaks past it. | review | [] |
+
 ## Requirements for implementation
 
 What any error library a project uses must provide.
@@ -292,67 +341,6 @@ An error library gives every error a stable code, its cause and structured detai
 | Why | Check | Tags |
 |---|---|---|
 | without these, the rules on failure above cannot be followed through the library. | review | [errors] |
-
-## Types
-
-## guard-proves-every-property-it-claims · MUST
-A type guard checks every property of the type it claims. A guard that checks one field and claims the whole type is a cast.
-
-| Why | Check | Tags |
-|---|---|---|
-| code after the guard trusts every property, so a guard that checks one is a lie the type system repeats. | review | [] |
-
-**Example:**
-```ts
-// bad: claims a User, checks only the id
-const isUser = (candidate: unknown): candidate is User =>
-  typeof candidate === 'object' && candidate !== null && 'id' in candidate;
-
-// good: the schema checks every property it claims
-const isUser = (candidate: unknown): candidate is User => userSchema.safeParse(candidate).success;
-```
-
-## identifiers-branded-by-entity · SHOULD
-An entity's identifier is a type of its own, branded by its entity, so an order's identifier cannot be passed where a user's is expected.
-
-| Why | Check | Tags |
-|---|---|---|
-| two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | review | [] |
-
-## domain-values-never-typed-again · MUST
-A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces. A vocabulary another party owns — an analytics report's, a wire format's — is not the program's: a total table maps the program's values to it, and the compiler checks the table.
-
-| Why | Check | Tags |
-|---|---|---|
-| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | review | [] |
-
-## invariant-values-are-plain-immutable-data → invariant-checked-at-construction · MUST
-A value that keeps an invariant is immutable, compared by value, and plain data, never a class instance.
-
-| Why | Check | Tags |
-|---|---|---|
-| plain data crosses a cache, a URL and storage, where a class instance loses its methods, and a value no one can change keeps its invariant. | review | [data] |
-
-## shapes-composed-of-small-shapes · SHOULD
-A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large base type by omitting or picking its fields.
-
-| Why | Check | Tags |
-|---|---|---|
-| a shape cut from a large one changes whenever the large one does, and hides which fields its consumer really needs. | review | [] |
-
-## types-live-with-their-consumer · SHOULD
-A type lives beside the unit whose signature introduces it, and every other unit imports it from there. It moves to its own file when a second consumer appears, and never gets a second home through a re-export.
-
-| Why | Check | Tags |
-|---|---|---|
-| one home per type means one place to change it and no copy to drift. | review | [] |
-
-## immutable-by-default · SHOULD
-Values are immutable by default; a change makes a new value. Mutation is local and deliberate.
-
-| Why | Check | Tags |
-|---|---|---|
-| a value no one can change can be shared and reasoned about without tracing who else holds it. | review | [] |
 
 ## Async
 
@@ -402,6 +390,13 @@ Behaviour is composed from small units. Inheritance is used only for error types
 |---|---|---|
 | inheritance couples a child to its parent's internals and resists every change the hierarchy did not foresee. | review | [] |
 
+## override-marked-where-declared · MUST
+A method that overrides one of its base class carries the language's mark of an override where it is declared, so the type checker fails on a mark that overrides nothing and on an override without one.
+
+| Why | Check | Tags |
+|---|---|---|
+| an override that stops overriding, or a new method that overrides one by accident, then fails the check instead of changing behaviour silently. | review | [] |
+
 ## canonical-patterns-by-need · SHOULD
 A pattern answers a present problem, and then the canonical one: strategy plus registry for vendors and kinds, reducer for transitions, transition table for state machines, builder for test data.
 
@@ -417,11 +412,11 @@ Don't-repeat-yourself applies to knowledge, not to text that merely looks alike.
 | two copies of one fact drift, but two similar pieces with different reasons to change are coupled wrongly by one abstraction. | review | [] |
 
 ## function-answers-or-changes-state · SHOULD
-A function either answers a question or changes state, never both. One that answers has no side effect; one that changes state takes its data as input and never calls one that answers.
+A function either answers a question or changes state, never both. One that answers has no side effect; one that changes state reads nothing but what it changes, and decides only on that and on its input.
 
 | Why | Check | Tags |
 |---|---|---|
-| a question that changes something cannot be asked twice safely, and a caller cannot tell which calls are safe. | review | [] |
+| a question that changes something cannot be asked twice safely, a change that reads beyond what it changes decides on data its caller never saw, and a caller cannot tell which calls are safe. | review | [] |
 
 ## talk-only-to-neighbours · SHOULD
 A unit calls its own collaborators, never the collaborators of their collaborators: no chain that walks into another object's internals.

@@ -2,21 +2,21 @@
 
 > **Vocabulary:** folder `sinks`, suffix `.sink`.
 
-## sinks-behind-one-contract → set-folder-holds-only-members
+## sinks-behind-one-contract → extension-by-addition
 Each analytics service is one sink, one `.sink` file in `sinks/`, under one contract beside the folder; a registry chooses the active sinks.
 
 | Why | Check | Tags |
 |---|---|---|
 | a service is added or removed as one file, and nothing else knows which services exist. | review | [] |
 
-## sinks-folder-holds-sink-files → sinks-behind-one-contract
+## sinks-folder-holds-sink-files → set-folder-holds-only-members
 `sinks/` holds only `.sink` files, a surface and `__tests__/`.
 
 | Why | Check | Tags |
 |---|---|---|
 | a service is then one file of one form. | tool/names | [] |
 
-## features-never-track → features-blind-to-each-other
+## features-never-track → code-lives-with-its-reason-to-change
 A feature never sends an event; the composing layer translates the feature's intents and outcomes into events.
 
 | Why | Check | Tags |

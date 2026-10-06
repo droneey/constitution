@@ -3,7 +3,7 @@
 > Images scanned beside the lockfiles.
 
 ## images-scanned-in-the-check → known-vulnerabilities-fail-the-check
-The check scans each image the project builds or pulls with `osv-scanner scan image`, so a known vulnerability in an image's system packages fails the check like one in a lockfile.
+OSV-Scanner reads each image the project builds or pulls, so a known vulnerability in an image's system packages is a finding like one in a lockfile.
 
 | Why | Check | Tags |
 |---|---|---|

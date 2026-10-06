@@ -6,6 +6,8 @@ from typing import TextIO
 from python_check.findings import Finding, render
 from python_check.imports import import_findings
 from python_check.lines import line_findings
+from python_check.packages import package_findings
+from python_check.settings import Settings
 
 USAGE = 'usage: python-check <path>...\n'
 SKIPPED = '__pycache__'
@@ -21,7 +23,7 @@ def python_files(path: Path) -> Iterator[Path]:
       yield file
 
 
-def file_findings(path: Path) -> tuple[Finding, ...]:
+def file_findings(*, path: Path, settings: Settings) -> tuple[Finding, ...]:
   source = path.read_bytes()
 
   try:
@@ -30,13 +32,14 @@ def file_findings(path: Path) -> tuple[Finding, ...]:
     line = error.lineno or 1  # pragma: no mutate -- ast.parse gives every SyntaxError its line
     return (Finding(path=path, line=line, message=f'the file does not parse: {error.msg}'),)
 
-  return line_findings(path=path, tree=tree, lines=len(source.splitlines())) + import_findings(
-    path=path,
-    tree=tree,
+  return (
+    line_findings(path=path, tree=tree, lines=len(source.splitlines()))
+    + import_findings(path=path, tree=tree)
+    + package_findings(path=path, settings=settings, tree=tree)
   )
 
 
-def run(arguments: Sequence[str], *, output: TextIO) -> int:
+def run(arguments: Sequence[str], *, output: TextIO, settings: Settings) -> int:
   if not arguments:
     output.write(USAGE)
     return 2
@@ -45,7 +48,7 @@ def run(arguments: Sequence[str], *, output: TextIO) -> int:
     finding
     for argument in arguments
     for file in python_files(Path(argument))
-    for finding in file_findings(file)
+    for finding in file_findings(path=file, settings=settings)
   ]
 
   output.writelines(f'{render(finding)}\n' for finding in findings)

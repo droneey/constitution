@@ -1,0 +1,4 @@
+# pydantic: the edge, and shared/ where it parses
+[homes]
+pydantic = ["edge", "shared"]
+pydantic_settings = ["edge", "shared"]

@@ -7,7 +7,7 @@ abstract: false
 checks: [types]
 languages: [typescript]
 roles: []
-dictionary: [tsc]
+dictionary: [tsc, .tsc-cache]
 governs: ["tsconfig.json", "tsconfig.src.json", "tsconfig.test.json"]
 ---
 

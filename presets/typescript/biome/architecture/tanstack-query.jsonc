@@ -1,6 +1,14 @@
 {
   "plugins": [
     {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/keys-only-from-the-key-factory.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/cache.utils.ts",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/query-client-built-by-the-root.grit",
       "includes": [
         "**/*.ts",

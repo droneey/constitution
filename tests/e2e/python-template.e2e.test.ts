@@ -192,8 +192,8 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/order_entity.py': 'from pydantic import BaseModel\n',
       },
-      finding: 'pydantic-kept-out-of-the-domain BROKEN',
-      task: 'architecture:check',
+      finding: 'features/orders/domain imports no package, and pydantic is one',
+      task: 'code:check',
     },
     {
       condition: 'the kernel reads its settings through pydantic-settings',
@@ -201,7 +201,17 @@ describe('the python template', () => {
         'src/shop/kernel/__init__.py': '',
         'src/shop/kernel/limits.py': 'from pydantic_settings import BaseSettings\n',
       },
-      finding: 'pydantic-kept-out-of-the-domain BROKEN',
+      finding: 'kernel imports no package, and pydantic_settings is one',
+      task: 'code:check',
+    },
+    {
+      condition: "a feature's domain imports logging",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/domain/__init__.py': '',
+        'src/shop/features/orders/domain/order_entity.py': 'import logging\n',
+      },
+      finding: 'domain-imports-no-logging BROKEN',
       task: 'architecture:check',
     },
     {
@@ -211,8 +221,8 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_logs.py': 'import structlog\n',
       },
-      finding: 'structlog-imported-only-by-the-root BROKEN',
-      task: 'architecture:check',
+      finding: 'structlog is imported in features/orders/app, outside its home: root',
+      task: 'code:check',
     },
     {
       condition: "a feature's application layer imports httpx2",
@@ -221,7 +231,32 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_client.py': 'import httpx2\n',
       },
-      finding: 'httpx2-kept-to-the-edge BROKEN',
+      finding:
+        'httpx2 is imported in features/orders/app, outside its home: adapters, libs, shared, root',
+      task: 'code:check',
+    },
+    {
+      condition: "a feature's application layer imports a package no block gives a home",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_dates.py': 'import arrow\n',
+      },
+      finding:
+        'arrow has no home in features/orders/app; a package without one is imported at the edge',
+      task: 'code:check',
+    },
+    {
+      condition: 'a feature imports the integration of a host framework',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_router.py':
+          'from shop.integrations.fastapi import router\n',
+        'src/shop/integrations/__init__.py': '',
+        'src/shop/integrations/fastapi/__init__.py': 'router = 1\n',
+      },
+      finding: 'nothing-imports-an-integration BROKEN',
       task: 'architecture:check',
     },
     {
@@ -234,6 +269,62 @@ describe('the python template', () => {
       },
       finding: 'root-imported-only-by-entry-and-delivery-wiring BROKEN',
       task: 'architecture:check',
+    },
+    {
+      condition: 'a read use-case imports a write one',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/domain/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/commands/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/commands/place_order_use_case.py': '',
+        'src/shop/features/orders/domain/use_cases/queries/__init__.py': '',
+        'src/shop/features/orders/domain/use_cases/queries/list_orders_use_case.py':
+          'from ..commands import place_order_use_case\n',
+      },
+      finding: 'reads-and-writes-apart BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the root imports a layer folder',
+      changes: {
+        ...FEATURE,
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py': 'from shop import features\n',
+      },
+      finding: 'layer-folder-never-imported BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the root reaches past the surface of the kernel',
+      changes: {
+        'src/shop/kernel/__init__.py': '',
+        'src/shop/kernel/money.py': 'MONEY = 1\n',
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py': 'from shop.kernel.money import MONEY\n',
+      },
+      finding: 'surface-is-the-only-way-in BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'a feature imports the composition above it',
+      changes: {
+        'src/shop/composition/__init__.py': '',
+        'src/shop/composition/checkout.py': 'CHECKOUT = 1\n',
+        'src/shop/features/__init__.py': '',
+        'src/shop/features/orders/__init__.py': 'from shop.composition import checkout\n',
+      },
+      finding: 'dependencies-point-inward BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'the program imports a module of the specs',
+      changes: {
+        'src/shop/kernel.py': python('import orders_fixtures', '', 'ORDERS = orders_fixtures'),
+        'tests/orders_fixtures.py': 'ORDER = 1\n',
+      },
+      finding: 'DEP001',
+      task: 'dependencies:check',
     },
     {
       condition: 'the program imports a tool of the dev group',
@@ -362,7 +453,7 @@ describe('the python template', () => {
           'from pydantic import BaseModel',
         ),
       },
-      task: 'architecture:check',
+      task: 'code:check',
     },
     {
       condition: 'the root configures structlog and reads the settings through pydantic-settings',
@@ -371,7 +462,7 @@ describe('the python template', () => {
         'src/shop/root/logs.py': 'import structlog\n',
         'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
       },
-      task: 'architecture:check',
+      task: 'code:check',
     },
     {
       condition: 'the only mutants of a new line are marked equivalent',

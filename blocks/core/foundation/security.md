@@ -5,25 +5,25 @@
 ## Secrets
 
 ## no-secret-in-repository · MUST
-No secret is committed — not in code, documents, tests, fixtures or history. A secret scanner runs on every change, through the check.
+No secret is written into the repository — not in code, documents, tests or fixtures.
 
 | Why | Check | Tags |
 |---|---|---|
-| a committed secret is readable by everyone who ever clones the repository, long after it is deleted. | tool/secrets | [security] |
+| a secret in the repository is readable by everyone who can read the repository, and by every copy made of it. | tool/secrets | [security] |
 
 ## secret-never-in-url-or-artefact · MUST
-A secret never travels in a URL, and never reaches a build artefact: an image layer, a client bundle, a variable baked in at build time.
+A secret never travels in a URL, and never reaches a build artefact: an image layer, a variable baked in at build time.
 
 | Why | Check | Tags |
 |---|---|---|
 | URLs are logged by every proxy and browser, and whatever ships in an artefact is readable by whoever receives it. | review | [security] |
 
 ## leaked-secret-rotated-at-once · MUST
-A secret that leaked — into a commit, a log, a message — is rotated at once, and the access made with it while it was exposed is checked. Rewriting the history does not undo a leak into a commit.
+A secret that leaked — into the repository, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.
 
 | Why | Check | Tags |
 |---|---|---|
-| a leaked secret is compromised whether or not the leak is undone — every clone and every cache already holds it — and only its access log says whether it was used. | review | [security] |
+| a leaked secret is compromised whether or not the leak is undone — every copy and every cache already holds it — and only its access log says whether it was used. | review | [security] |
 
 ## no-secret-or-personal-data-in-output · MUST
 No secret and no personal data appear in logs, errors, test data or documents. An error carries identifiers, not the values it rejected.
@@ -32,12 +32,12 @@ No secret and no personal data appear in logs, errors, test data or documents. A
 |---|---|---|
 | output is copied to places with weaker access than the data it came from. | review | [security, data] |
 
-## local-environment-file-ignored · SHOULD
-The local environment file is ignored by version control; its committed example carries placeholders only.
+## scanner-reports-redacted → no-secret-or-personal-data-in-output
+A secret scanner's report shows a finding by its rule, file and line, never by its value.
 
 | Why | Check | Tags |
 |---|---|---|
-| the real values stay on the machine they belong to, and a real value never lands in the example. | review | [security] |
+| a report that prints the secret leaks it again, into every log that captures it. | review | [] |
 
 ## least-privilege-credentials · SHOULD
 A credential belongs to one identity and one purpose, per environment, with only the permissions its job needs, documented beside its use. Access is granted to people and services, never through a shared credential.
@@ -46,14 +46,107 @@ A credential belongs to one identity and one purpose, per environment, with only
 |---|---|---|
 | a narrow credential limits what a leak can do, and one identity per credential says who did what. | review | [security] |
 
-## Dependencies
-
-## dependencies-pinned-by-lockfile · MUST
-A language uses one package manager, and one lockfile, committed. Installs, in CI and locally, follow the lockfile exactly and fail when it drifts from the manifest.
+## environment-names-declared-in-one-place · SHOULD
+Every environment variable the program reads is declared in one place, and code reads only declared names.
 
 | Why | Check | Tags |
 |---|---|---|
-| two package managers resolve differently, and an install that ignores the lockfile runs code nobody reviewed. | review | [security] |
+| one declaration shows what a deployment must provide, and no module reads a name nobody knows it needs. | review | [security] |
+
+## configuration-parsed-once-at-boot · MUST
+Configuration is parsed once, at boot, into a typed value the rest of the program receives, and a missing or malformed setting fails the start.
+
+| Why | Check | Tags |
+|---|---|---|
+| a setting checked where it is first used fails in the middle of a request, long after the deployment that broke it, and one parsed in two places can be read two ways. | review | [security] |
+
+## Addresses from outside
+
+## outside-addresses-trusted-only-on-an-allowlist · MUST
+An address or an origin that comes from outside the program — a redirect target, the origin of a message, a host a caller names — is followed, trusted or reached only when it is on an allowlist of the program's own.
+
+| Why | Check | Tags |
+|---|---|---|
+| whoever chooses the address chooses where the program sends its user, whom it believes, or what it reaches on their behalf. | review | [security] |
+
+## Dependencies
+
+## dependencies-pinned-by-lockfile · MUST
+A language uses one package manager and one lockfile, kept in the repository, and the lockfile always matches the manifests.
+
+| Why | Check | Tags |
+|---|---|---|
+| two package managers resolve differently, and a lockfile that drifts from its manifests installs versions nobody reviewed. | review | [security] |
+
+## downloads-pinned-by-version-and-checksum · MUST
+A file the program or its build downloads outside a package manager — a binary, an archive, an engine — is pinned to a version and checked against its checksum before it is used.
+
+| Why | Check | Tags |
+|---|---|---|
+| an unverified download runs whatever the address serves that day, and a swapped file fails its checksum. | review | [security] |
+
+## tools-pinned-exactly-by-the-repository · MUST
+Every build, test and lint tool is pinned to one exact version in a file of the repository — a development dependency of the manifest, or the toolchain's file for a tool outside the package manager — never installed globally, and production code imports none of them.
+
+| Why | Check | Tags |
+|---|---|---|
+| a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change someone reviews, and a tool in the program's dependencies ships to every installation. | review | [security] |
+
+## tools-run-on-the-pinned-runtime → tools-pinned-exactly-by-the-repository
+The runtime every tool needs is pinned by the repository; no tool brings one of its own or takes whichever the machine has.
+
+| Why | Check | Tags |
+|---|---|---|
+| a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | review | [] |
+
+## shared-configuration-from-one-pinned-source · SHOULD
+A repository takes its tools' configuration, and any other file a shared source offers, from that one source, pinned by version like a dependency — a released archive or a package — and extends or imports it there; it keeps no copy but a template.
+
+| Why | Check | Tags |
+|---|---|---|
+| a copy drifts and is fixed in one repository at a time; a pinned source is fixed once and reaches every repository with an update. | review | [security] |
+
+## shared-configuration-taken-by-the-tools-own-mechanism → shared-configuration-from-one-pinned-source
+A repository takes a shared configuration through the tool's own way of extending one, else through a one-line module that re-exports it, else through the tool's remote configuration.
+
+| Why | Check | Tags |
+|---|---|---|
+| the closer to the tool's own mechanism, the less glue each repository writes and keeps. | review | [] |
+
+## template-copied-once-owned-by-consumer · SHOULD
+A file no tool can extend is a template: kept canonical in the source that offers it, copied once, then owned by the repository that copied it. Copies stay alike by convention, with no checker; a template that needs a checker should have been a file a tool extends.
+
+| Why | Check | Tags |
+|---|---|---|
+| a template is for files a tool cannot share, and pretending to keep copies in sync costs more than the drift. | review | [] |
+
+## program-dependencies-ranged-lockfile-pins · SHOULD
+A dependency of the program is declared in the manifest by the range of versions it works with, and the lockfile pins the exact version installed.
+
+| Why | Check | Tags |
+|---|---|---|
+| the manifest says what is compatible, the lockfile what is installed, so an update within the range touches the lockfile alone. | review | [security] |
+
+## one-version-per-dependency · MUST
+Each dependency has one version across every manifest of the repository.
+
+| Why | Check | Tags |
+|---|---|---|
+| two versions of one dependency behave differently in two places, and the difference is found in production. | review | [] |
+
+## dependencies-imported-from-their-entries · MUST
+A dependency is imported only from the entries it publishes, never from its internal paths.
+
+| Why | Check | Tags |
+|---|---|---|
+| internal paths change between releases without notice, and an update then breaks the program. | review | [] |
+
+## package-entries-curated → module-hides-much-behind-small-public-entry · MUST
+A package others import offers its consumers its entries and nothing else, and its manifest lists them wherever its language's manifest can say so.
+
+| Why | Check | Tags |
+|---|---|---|
+| every path a consumer can reach becomes part of the contract, and cannot change without breaking someone. | review | [] |
 
 ## ci-steps-pinned-to-immutable-references · MUST
 A third-party step of CI is pinned to an immutable reference, never to a moving tag or branch.
@@ -63,11 +156,11 @@ A third-party step of CI is pinned to an immutable reference, never to a moving 
 | a moving reference lets its owner, or an attacker who owns it, change the code the pipeline runs with its secrets. | review | [security] |
 
 ## dependency-release-cooldown · SHOULD
-A new release of a dependency is adopted only after a cooldown of some days, except a fix for a known vulnerability.
+A new release of a dependency is adopted only after a cooldown of some days. A fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, and the exemption leaves at the next update.
 
 | Why | Check | Tags |
 |---|---|---|
-| most hijacked releases are found and pulled within days; waiting lets others find them first. | review | [security] |
+| most hijacked releases are found and pulled within days, and waiting lets others find them first; an exemption holds for every later release of its name, so one left behind lifts the cooldown for good. | review | [security] |
 
 ## new-dependency-vetted · SHOULD
 A new dependency is a decision: it needs a reason it cannot be a few lines of the project's own, and it is checked against the risk signs of a new package — a name one typo from a popular one, younger than thirty days, under a hundred weekly downloads, a recent change of owner, no source repository, obfuscated code.
@@ -76,7 +169,7 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 |---|---|---|
 | each dependency is code the project runs with its own rights, and these signs mark most malicious packages. | review | [security] |
 
-## deprecated-packages-replaced → new-dependency-vetted
+## deprecated-packages-replaced · SHOULD
 A dependency deprecated as a whole is replaced — by its successor, another package, or the project's own code.
 
 | Why | Check | Tags |
@@ -98,7 +191,7 @@ A dependency's install scripts run only when the dependency is listed by name as
 | an install script runs with the developer's rights before anyone reviews what it does. | review | [security] |
 
 ## known-vulnerabilities-fail-the-check · MUST
-A known vulnerability of any severity in any dependency, development dependencies included, fails the check.
+No dependency, development dependencies included, has a known vulnerability of any severity.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -111,17 +204,10 @@ Every dependency the program ships or loads at runtime has a licence on the proj
 |---|---|---|
 | a licence the project cannot honour is a legal obligation it took on without knowing; a tool that never ships passes no obligation on. | tool/audit | [security] |
 
-## Operations and access
+## Operations
 
-## access-denied-unless-granted · MUST
-Access is denied unless a rule grants it, and a test proves the access of each operation a caller outside the program can reach: a route, an endpoint, a command.
-
-| Why | Check | Tags |
-|---|---|---|
-| access open by default is open wherever someone forgot a rule, and only a test notices the operation that forgot. | test | [security] |
-
-## irreversible-operations-behind-flag-and-human · MUST
-An operation a person or an agent runs against a system — a script, a command line, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only with an explicit flag and a person's go-ahead; its default is to show what it would do.
+## irreversible-operations-behind-a-flag · MUST
+An operation a person or an agent runs against a system — a script, a command line, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only behind an explicit flag; without it, the operation is a dry run that shows what it would do.
 
 | Why | Check | Tags |
 |---|---|---|

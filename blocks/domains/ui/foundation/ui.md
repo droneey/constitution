@@ -2,19 +2,54 @@
 
 ## Screens
 
-## four-data-states · MUST
+## data-states-shown · MUST
 Every data view shows loading, error and content, and the empty or not-found state its data can have.
 
 | Why | Check | Tags |
 |---|---|---|
 | an empty screen cannot otherwise be told from a slow one, and the user does not know what to do. | test | [ux, a11y] |
 
+## failure-contained-to-its-screen · MUST
+A failure while a screen loads or renders costs that screen alone: the screen shows it in its own place, and the rest of the application stays usable.
+
+| Why | Check | Tags |
+|---|---|---|
+| a failure in one screen then costs that screen, not the whole application, and the user is never left with a blank page. | review | [errors, ux] |
+
 ## state-messages-guide-the-user · SHOULD
-An error says what happened and what to do next. An empty state names the situation and offers an action; a state with no results repeats the query. A long load names what it is doing and shows progress when it is known.
+An empty state names the situation and offers an action; a state with no results repeats the query. A long load names what it is doing and shows progress when it is known.
 
 | Why | Check | Tags |
 |---|---|---|
 | each state is a moment the user decides what to do, and a message that does not help them leaves them stuck. | review | [ux] |
+
+## unknown-address-shows-the-not-found-screen · SHOULD
+An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
+
+| Why | Check | Tags |
+|---|---|---|
+| a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. | review | [ux] |
+
+## address-parsed-as-untrusted-input → outside-values-untyped-until-parsed
+A screen's address — its path and its parameters, in a URL or a deep link — reaches the screen only after a schema parses it; an address that fails the parse opens the screen with its defaults or a fallback screen, never a crash or a half-filled one.
+
+| Why | Check | Tags |
+|---|---|---|
+| anyone can write a link and send it to the user, so a malformed one is to be expected, and it must not break the program. | review | [data] |
+
+## address-write-keeps-the-other-parameters · MUST
+A write to a screen's address changes only the parameter it is for and keeps every other one as it was.
+
+| Why | Check | Tags |
+|---|---|---|
+| a screen that changes its page must keep the filter another piece set, or the link no longer reproduces the view the user built. | review | [ux] |
+
+## view-state-homes → one-home-per-datum
+View state a link or a restart must reproduce lives in the platform's navigation state, and ephemeral state in the component that shows it.
+
+| Why | Check | Tags |
+|---|---|---|
+| state kept in the wrong home is lost on reload, shared by accident, or copied until the copies disagree. | review | [] |
 
 ## button-names-its-result · SHOULD
 A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action; a confirmation of a destructive action names the action; a payment button shows the amount.
@@ -40,7 +75,7 @@ A primitive's markup is never re-created.
 | each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | review | [ux, a11y] |
 
 ## complex-patterns-on-accessible-primitives · MUST
-A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the platform's own element where it carries the whole pattern — `<dialog>`, `popover`, `<details>` — and otherwise on the accessible primitive library; never with roles and keys written by hand.
+A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the active library of accessible primitives; where none is active, on the platform's own element where it carries the whole pattern, and otherwise on such a library; never with roles and keys written by hand.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -68,7 +103,7 @@ A boolean prop starts with `is` for a state, `has` for content, `with` for an op
 | the prefix says what kind of switch a prop is, so a reader knows its effect from the call site. | review | [] |
 
 ## event-props-named-on-event → no-empty-verbs · MUST
-A callback prop is named `on<Event>`, and the handler inside the component may be `handle<Event>`. A prop is never an action verb, a `handle` name or a past tense.
+A callback prop is named `on<Event>`, and the handler inside the component may be `handle<Event>`. A prop is never an action verb, a `handle` name or a bare past tense (`submitted`).
 
 | Why | Check | Tags |
 |---|---|---|
@@ -95,7 +130,7 @@ A component installed as source is, in the change that installs it, restyled to 
 |---|---|---|
 | code copied in as it came brings another project's names and looks, and stays foreign until someone changes it. | review | [ux] |
 
-## props-drilled-at-most-two-levels → talk-only-to-neighbours
+## props-drilled-at-most-two-levels · SHOULD
 A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself.
 
 | Why | Check | Tags |
@@ -130,6 +165,13 @@ Every target meets the platform's minimum size, counting its padding.
 |---|---|---|
 | a target smaller than a finger or a tremor allows is missed, and the wrong action runs. | review | [a11y, ux] |
 
+## primitives-take-text-by-props · MUST
+The primitive library holds no user-facing text; text arrives through props.
+
+| Why | Check | Tags |
+|---|---|---|
+| a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |
+
 ## stateful-component-controllable-or-not · SHOULD
 A component that holds a value can be driven from outside or left to itself through one interface — the value, its initial value and a change callback — and never switches between the two.
 
@@ -144,6 +186,13 @@ A primitive accepts its element's own props and reference, and merges its own pr
 |---|---|---|
 | without it every consumer wraps or forks the primitive for one attribute. | review | [ux] |
 
+## long-lists-virtualised · SHOULD
+A list that can grow renders only the rows in view and those near them, through a virtualised list.
+
+| Why | Check | Tags |
+|---|---|---|
+| a list that mounts every row at once grows slower with every item, and a long one freezes the device. | review | [performance] |
+
 ## loading-never-replaces-shown-content · SHOULD
 A refetch or a transition keeps the content already shown in place, and a first-load indicator appears only after a short delay, in the content's own space.
 
@@ -151,12 +200,26 @@ A refetch or a transition keeps the content already shown in place, and a first-
 |---|---|---|
 | content that blinks to a skeleton on every refresh reads as a failure, and a late indicator that moves the layout makes the user lose their place. | review | [ux] |
 
-## submit-busy-while-submitting · SHOULD
-A form never submits twice: while it submits, a repeat submit is ignored, and the button shows it is busy with `aria-disabled` and a busy label, keeping its focus.
+## fields-validated-on-leave-or-submit · MUST
+A form validates a field when the field is left or the form is submitted, not on every keystroke.
 
 | Why | Check | Tags |
 |---|---|---|
-| a disabled button drops focus to the page and says nothing; a busy one keeps both. | review | [ux, a11y] |
+| a user told off while still typing learns to ignore the message. | review | [ux] |
+
+## form-validated-by-its-own-schema · SHOULD
+A form validates its fields through its schema.
+
+| Why | Check | Tags |
+|---|---|---|
+| the form refuses bad input before it is sent, by the same rules that decide what it sends. | review | [ux] |
+
+## submit-busy-while-submitting · SHOULD
+A form never submits twice: while it submits, a repeat submit is ignored, and the button shows it is busy with a busy label, keeping its focus.
+
+| Why | Check | Tags |
+|---|---|---|
+| a button taken out of reach drops focus to the page and says nothing; a busy one keeps both. | review | [ux, a11y] |
 
 ## How a user interface is proven
 
@@ -174,7 +237,7 @@ A reusable component's spec proves the variants that change behaviour or meaning
 |---|---|---|
 | a component used on many screens breaks all of them at once; its spec is where that is caught. | test | [a11y] |
 
-## elements-found-by-role-label-text → assert-what-a-caller-observes
+## elements-found-by-role-label-text → assert-what-a-caller-observes · MUST
 A spec finds elements by role, label and text, never by class or internal state.
 
 | Why | Check | Tags |

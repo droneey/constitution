@@ -1,36 +1,43 @@
 # structlog
 
-## one-chain-for-every-record → no-secret-or-personal-data-in-output
-structlog is configured over the standard library: `structlog.stdlib.LoggerFactory()` makes its loggers, and one handler on the root logger formats with a `structlog.stdlib.ProcessorFormatter` whose `foreign_pre_chain` runs the same processors, `ExtraAdder` among them, so a record of the program, of a library or of the server is enriched, masked and rendered alike. No other handler writes a record.
+## code-logs-through-the-standard-logger → diagnostics-through-the-logging-facade
+Code logs through `logging.getLogger(__name__)`, the logger every library writes to, never through a logger of structlog's own.
 
 | Why | Check | Tags |
 |---|---|---|
-| a record that bypasses the chain skips the masking and the trace id, and lands in a second format nobody parses. | review | [security] |
+| the standard logger is the facade every library already speaks, so the program's records and theirs pass one chain. | review | [] |
 
-## secret-keys-masked-by-a-processor → no-secret-or-personal-data-in-output
-A processor of the chain, before the renderer, replaces the value of every key the project lists as secret — `password`, `token`, `authorization`, `cookie`, `secret` — compared without case and in nested maps.
+## one-chain-for-every-record → log-records-pass-one-pipeline
+The pipeline is structlog's chain over the standard library: `structlog.stdlib.LoggerFactory()` makes its loggers, and one handler on the root logger formats with a `structlog.stdlib.ProcessorFormatter` whose `foreign_pre_chain` runs the same processors, `ExtraAdder` among them. No other handler writes a record.
 
 | Why | Check | Tags |
 |---|---|---|
-| a secret passed as a field by mistake is masked before it reaches any output, whichever logger wrote it. | review | [security] |
+| `foreign_pre_chain` is what runs the processors over a record a library or the server wrote through the standard logger; without it, those records skip them. | review | [security] |
 
-## json-in-production-console-in-development · SHOULD
+## secret-keys-masked-by-a-processor → log-secrets-masked-by-key
+The mask is a processor of the chain, placed before the renderer, that walks the event's nested maps.
+
+| Why | Check | Tags |
+|---|---|---|
+| a processor before the renderer sees every event as a map, the foreign ones included, and the renderer writes only what it leaves. | review | [security] |
+
+## json-in-production-console-in-development → log-output-structured-in-production
 The chain ends in `dict_tracebacks` and `JSONRenderer` in production, and in `ConsoleRenderer` in development, as a setting read at the program's start chooses.
 
 | Why | Check | Tags |
 |---|---|---|
-| a collector parses one object per line and a person reads aligned lines; a setting, not a guess from the terminal, says which one a run writes. | review | [] |
+| `dict_tracebacks` turns an exception into fields, so a JSON line keeps its traceback as data a collector reads, not as one escaped string. | review | [] |
 
-## trace-id-bound-through-contextvars · SHOULD
+## trace-id-bound-through-contextvars → log-records-carry-the-trace-id
 `merge_contextvars` is the chain's first processor, and the middleware of each request or task clears the context with `clear_contextvars` and binds its trace id — the caller's, from its header, or a new one — with `bind_contextvars`.
 
 | Why | Check | Tags |
 |---|---|---|
-| every record the request writes then carries its id, through every await and every library, with no logger passed down. | review | [] |
+| every record the request writes then carries its id, through every await and every library, with no logger passed down, and the cleared context carries no id of the request before. | review | [] |
 
-## record-is-an-event-with-fields · SHOULD
-A record's message is a fixed phrase that names what happened, and its values are fields passed in `extra`; nothing is formatted into the message.
+## fields-passed-in-extra → log-record-is-an-event-with-fields
+A record's values are fields passed in `extra` — `logger.info('order paid', extra={'order_id': order_id})` — never `%s` arguments or an f-string in the message.
 
 | Why | Check | Tags |
 |---|---|---|
-| a fixed message is counted and searched as one event and a field is filtered by its value, while a formatted message is a new string every time. | review | [] |
+| `extra` is how the standard logger carries a field, and `ExtraAdder` lifts it into the event; a value formatted into the message reaches the collector as text. | review | [] |

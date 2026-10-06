@@ -32,28 +32,21 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 |---|---|---|
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | review | [] |
 
-## screen-guards-through-auth-surface → access-denied-unless-granted
-Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.
+## root-boundary-catches-the-rest → one-error-handler-per-transport
+One error boundary in `root/` catches what no screen's own boundary does.
 
 | Why | Check | Tags |
 |---|---|---|
-| access is decided before the screen renders, in one layer, and no feature reaches into the session's internals. | review | [] |
+| a failure no screen contained still reaches a handler that shows it, and the user is never left with a blank page. | review | [] |
 
-## error-boundary-per-screen → one-error-handler-per-transport · MUST
-Every screen sits inside an error boundary of its own, and one boundary in `root/` catches what the screens do not.
-
-| Why | Check | Tags |
-|---|---|---|
-| a failure in one screen then costs that screen, not the whole application, and the user is never left with a blank page. | review | [] |
-
-## view-state-homes → one-home-per-datum
-Each kind of state has one home: remote data in its cache; view state a link or a restart must reproduce in the platform's navigation state; ephemeral state in its component; the few global concerns the client owns — theme, whether a session exists, notices — in small stores the root builds, while the session's data stays in the cache.
+## client-concerns-in-root-built-stores → one-home-per-datum
+The few global concerns the client owns — theme, notices — live in small stores the root builds, one store per concern.
 
 | Why | Check | Tags |
 |---|---|---|
-| state kept in the wrong home is lost on reload, shared by accident, or copied until the copies disagree. | review | [] |
+| a concern every screen shares has one home, which the root hands to the screens and a spec replaces; a store built anywhere else is a second copy of it. | review | [] |
 
-## form-reuses-domain-predicates → invariant-checked-at-construction
+## form-reuses-domain-predicates → value-object-built-only-by-its-check
 A form's schema composes the predicates of the value objects and sits with the form; it never restates an invariant.
 
 | Why | Check | Tags |
@@ -61,6 +54,13 @@ A form's schema composes the predicates of the value objects and sits with the f
 | a rule checked in two places drifts, and the form then accepts what the domain rejects. | review | [data] |
 
 ## Components
+
+## primitives-are-a-set-of-components → module-has-one-form
+A set of interface primitives is a set of components, each a module of its own in `components/<name>/`, and grows `features/` only when it gains behaviour of the product.
+
+| Why | Check | Tags |
+|---|---|---|
+| a primitive offers mechanism, not behaviour, so it needs no feature's layers, and a component found in its own folder is found the same way in every kit. | review | [] |
 
 ## component-home-by-knowledge → code-lives-with-its-reason-to-change
 A component lives where its knowledge lives: used by one screen, beside it; knows a feature, in that feature's `ui/`; a generic primitive, in `libs/ui`; specific to the application and used by two or more features, in `shared/ui`; the application's shell, in `root/ui`.
@@ -125,7 +125,7 @@ A feature's `ui/` never imports its adapters, contracts or domain use-cases, nor
 |---|---|---|
 | these are the mechanisms the UI reaches only through its binding units. | tool/imports | [] |
 
-## component-in-its-own-folder → file-carries-its-role-suffix
+## component-in-its-own-folder → access-only-through-curated-surface
 A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.
 
 | Why | Check | Tags |
@@ -133,7 +133,7 @@ A component has its own folder: the component file, its `.types`, `.variants` an
 | everything about one component is in one place, and its internals stay private. | review | [] |
 
 ## component-folders-hold-their-files → component-in-its-own-folder
-`components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `__tests__/` and its surface.
+`components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `components/` folder of sub-components, its `__tests__/` and its surface.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -153,16 +153,39 @@ A deep component never reads a store to spare a prop its path; the state stays i
 |---|---|---|
 | state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | review | [] |
 
-## primitives-take-text-by-props → libs-import-no-application-code
-The primitive library holds no user-facing text and no message catalog; text arrives through props.
-
-| Why | Check | Tags |
-|---|---|---|
-| a primitive with its own text cannot be translated or reworded by the application that uses it. | review | [ux] |
-
 ## theme-in-the-design-system-library → tokens-single-source-of-appearance
-The theme module lives in `libs/ui/theme/`: its stylesheet, its tokens, its constants and its hooks.
+The theme module lives in `libs/ui/theme/`: its tokens, its constants and the code that applies them.
 
 | Why | Check | Tags |
 |---|---|---|
 | the theme knows nothing of the application, and one home lets a tool and a reviewer find every token. | review | [ux] |
+
+## configuration-provider-reads-environment → environment-read-only-by-the-root
+The configuration provider reads the environment for the screens and components, which never read it themselves.
+
+| Why | Check | Tags |
+|---|---|---|
+| a screen or component then depends on typed configuration it receives, and a missing setting fails before any of them renders. | review | [] |
+
+## Binding units
+
+## providers-compose-the-ui-application → one-explicit-composition-root
+The providers are the application's composition root: they build the configuration, build each adapter from its dependencies, and hand the adapters to the binding units. No adapter imports a provider or a shared instance.
+
+| Why | Check | Tags |
+|---|---|---|
+| every concrete choice is made in one place, and a test hands the same binding unit a different adapter without touching it. | review | [] |
+
+## binding-unit-composes-its-operation · SHOULD
+A binding unit binds one operation: it takes its adapter from the providers and calls the use-case, or the port when there is none. A plain function form of it is added only when a caller that is not reactive appears.
+
+| Why | Check | Tags |
+|---|---|---|
+| each operation is bound once, and the screen never learns which adapter serves it. | review | [] |
+
+## binding-units-import-no-adapter-or-ui → binding-unit-composes-its-operation
+A binding unit imports neither an adapter, which the providers hand it, nor anything of `ui/`, which imports it.
+
+| Why | Check | Tags |
+|---|---|---|
+| an adapter imported directly bypasses the composition root, so a spec cannot replace it; a binding unit that imports UI points against the layers. | tool/imports | [] |

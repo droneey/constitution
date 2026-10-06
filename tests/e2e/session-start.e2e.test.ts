@@ -228,12 +228,12 @@ const FOUNDATION_ONLY: AxesView = {
   ],
   warnings: [],
 };
-const axesConfigOf = (input: { apps?: string; axes: string }): string =>
+const axesConfigOf = (input: { axes: string; packages?: string }): string =>
   configOf({
-    ...(input.apps === undefined
+    ...(input.packages === undefined
       ? {}
       : {
-          apps: input.apps,
+          packages: input.packages,
         }),
     axes: input.axes,
     domains: '[ui, version-control]',
@@ -508,14 +508,14 @@ describe('session-start hook', () => {
     {
       condition: 'an application path is repeated',
       config: configOf({
-        apps: '\n  web:\n    domains: [ui]\n  web:\n    domains: [i18n]',
+        packages: '\n  web:\n    domains: [ui]\n  web:\n    domains: [i18n]',
       }),
       line: 10,
     },
     {
       condition: "an application's key is repeated",
       config: configOf({
-        apps: '\n  web:\n    domains: [ui]\n    domains: [i18n]',
+        packages: '\n  web:\n    domains: [ui]\n    domains: [i18n]',
       }),
       line: 10,
     },
@@ -536,7 +536,7 @@ describe('session-start hook', () => {
     {
       condition: 'an application has a key outside the grammar',
       config: configOf({
-        apps: '\n  web:\n    stack: [react]',
+        packages: '\n  web:\n    stack: [react]',
       }),
       line: 9,
     },
@@ -628,7 +628,7 @@ describe('session-start hook', () => {
     {
       condition: 'empty flow collections with blanks inside',
       config: configOf({
-        apps: '{ }',
+        packages: '{ }',
         domains: '[ ]',
         overrides: '[ ]',
       }),
@@ -859,7 +859,8 @@ describe('session-start hook', () => {
       condition: "an application's block lacks a block it requires",
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains: [untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
+          packages:
+            '\n  web:\n    domains: [untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
         }),
       },
       warnings: [
@@ -962,7 +963,7 @@ describe('session-start hook', () => {
       condition: 'a local block requires a local block active only in an application',
       layout: {
         config: configOf({
-          apps: `\n  packages/x:\n    implementations: [${localPath('beta')}]`,
+          packages: `\n  packages/x:\n    implementations: [${localPath('beta')}]`,
           implementations: `[${localPath('alpha')}]`,
         }),
         files: {
@@ -1148,7 +1149,7 @@ describe('session-start hook', () => {
       condition: 'an application adds nothing the repository lacks for a missing block',
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains: [i18n]',
+          packages: '\n  web:\n    domains: [i18n]',
           domains: '[untrusted-client, unreliable-network]',
           implementations: '[react-dom]',
           platforms: '[browser]',
@@ -1166,7 +1167,7 @@ describe('session-start hook', () => {
           domains: '[analytics, version-control]',
           implementations: `[_react, tanstak-query, ui, ${PARAGLIDE}, matomo, git, react-dom]`,
           languages: '[typescript]',
-          omit: ConfigKey.Apps,
+          omit: ConfigKey.Packages,
           overrides: fourDataStatesOverride(
             '    level: MAY\n    reason: "later"\n    until: 2020-01-01',
           ),
@@ -1178,7 +1179,7 @@ describe('session-start hook', () => {
         '- abstract: _react cannot be listed — list react-dom',
         '- unknown: tanstak-query is not a block — check the name',
         '- wrong-key: ui is a domain — move it from implementations to domains',
-        '- config: constitution.yaml has no apps key — add apps: {}',
+        '- config: constitution.yaml has no packages key — add packages: {}',
         `- local-block: ${PARAGLIDE} does not exist — create it or remove it from implementations`,
         '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
         '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
@@ -1200,7 +1201,7 @@ describe('session-start hook', () => {
       condition: "an application's key holds nothing",
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains:',
+          packages: '\n  web:\n    domains:',
         }),
       },
       warnings: [
@@ -1209,15 +1210,15 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'apps holds nothing',
+      condition: 'packages holds nothing',
       layout: {
         config: configOf({
-          apps: '',
+          packages: '',
         }),
       },
       warnings: [
         WARNINGS,
-        '- config: constitution.yaml leaves apps empty — write apps: {}',
+        '- config: constitution.yaml leaves packages empty — write packages: {}',
       ],
     },
     {
@@ -1535,7 +1536,8 @@ describe('session-start hook', () => {
       condition: 'an application needs a role that a top-level local tool checks',
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains: [ui, untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
+          packages:
+            '\n  web:\n    domains: [ui, untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
           domains: '[version-control]',
           implementations: `[git, betterleaks, ${localPath('lint-kit')}]`,
           languages: '[typescript]',
@@ -1567,7 +1569,8 @@ describe('session-start hook', () => {
       condition: "an application's override lowers the rule no tool checks there",
       layout: {
         config: configOf({
-          apps: '\n  web:\n    languages: [typescript]\n    overrides:\n      - rule: no-secret-in-code\n        level: MAY\n        reason: "none yet"',
+          packages:
+            '\n  web:\n    languages: [typescript]\n    overrides:\n      - rule: no-secret-in-code\n        level: MAY\n        reason: "none yet"',
           domains: '[version-control]',
           implementations: '[git]',
         }),
@@ -1578,7 +1581,8 @@ describe('session-start hook', () => {
       condition: "an application's override lowers the requirement its library does not meet",
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains: [analytics]\n    implementations: [matomo]\n    overrides:\n      - rule: analytics-consent-first\n        level: SHOULD\n        reason: "no banner yet"',
+          packages:
+            '\n  web:\n    domains: [analytics]\n    implementations: [matomo]\n    overrides:\n      - rule: analytics-consent-first\n        level: SHOULD\n        reason: "no banner yet"',
         }),
       },
       warnings: [],
@@ -1587,7 +1591,7 @@ describe('session-start hook', () => {
       condition: 'an application needs a tool that the rest of the repository does not',
       layout: {
         config: configOf({
-          apps: '\n  web:\n    languages: [typescript]',
+          packages: '\n  web:\n    languages: [typescript]',
           domains: '[version-control]',
           implementations: '[git]',
         }),
@@ -1601,7 +1605,7 @@ describe('session-start hook', () => {
       condition: 'an application lacks the tool the repository lacks',
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains: [ui]',
+          packages: '\n  web:\n    domains: [ui]',
           domains: '[version-control]',
           implementations: '[git]',
           languages: '[typescript]',
@@ -1616,7 +1620,7 @@ describe('session-start hook', () => {
       condition: 'an application shares the library that misses a requirement',
       layout: {
         config: configOf({
-          apps: '\n  web:\n    domains: [ui]',
+          packages: '\n  web:\n    domains: [ui]',
           domains: '[analytics]',
           implementations: '[matomo]',
         }),
@@ -1896,7 +1900,8 @@ describe('session-start hook', () => {
     // Arrange
     const project = createProject({
       config: configOf({
-        apps: '\n  web:\n    overrides:\n      - rule: four-data-states\n        level: SHOULD\n        reason: "the kit decides"',
+        packages:
+          '\n  web:\n    overrides:\n      - rule: four-data-states\n        level: SHOULD\n        reason: "the kit decides"',
         domains: '[ui]',
         overrides: fourDataStatesOverride('    level: MAY\n    reason: "a prototype"'),
       }),
@@ -2106,7 +2111,7 @@ describe('session-start hook', () => {
       condition: "a top-level block's with/ file is active only in an application",
       layout: {
         config: configOf({
-          apps: '\n  packages/web:\n    domains: [remote-data]',
+          packages: '\n  packages/web:\n    domains: [remote-data]',
           domains: '[ui]',
         }),
       },
@@ -2216,7 +2221,8 @@ describe('session-start hook', () => {
       condition:
         'an application follows an axis the repository leaves out, for its own block and a top-level one',
       config: axesConfigOf({
-        apps: '\n  packages/web:\n    axes: [foundation, architecture]\n    domains: [remote-data]',
+        packages:
+          '\n  packages/web:\n    axes: [foundation, architecture]\n    domains: [remote-data]',
         axes: '[foundation]',
       }),
       view: {
@@ -2243,7 +2249,7 @@ describe('session-start hook', () => {
     {
       condition: 'an application leaves foundation out of its axes',
       config: axesConfigOf({
-        apps: '\n  packages/web:\n    axes: [workflow]\n    domains: [remote-data]',
+        packages: '\n  packages/web:\n    axes: [workflow]\n    domains: [remote-data]',
         axes: '[foundation]',
       }),
       view: {

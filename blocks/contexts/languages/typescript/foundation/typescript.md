@@ -2,14 +2,35 @@
 
 ## Modules and files
 
-## hash-alias-from-package-imports · MUST
-`#/` is declared in `imports` of `package.json` (`"#/*": "./src/*"`), the source the runtime reads. `paths` in `tsconfig.json` repeats it word for word, only because the compiler does not resolve a folder's `index.ts` through `imports`. No alias in a bundler.
+## alias-declared-in-package-imports · MUST
+An import alias, where the program has one, is declared once, in `imports` of `package.json`, the source the runtime reads. A tool that cannot read `imports` repeats it word for word, and no configuration declares an alias of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| one declaration is the source and the mirror is checked against it on sight; a third alias elsewhere drifts unseen. | review | [] |
+| one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | review | [] |
 
-## file-named-after-its-export → file-is-one-semantic-unit
+## hash-alias-for-the-source-root → alias-declared-in-package-imports
+The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | review | [] |
+
+## exports-map-each-entry → package-entries-curated
+`exports` in the `package.json` of a package others import maps each of its entries to its file, so a consumer reaches the package only through the entries it lists.
+
+| Why | Check | Tags |
+|---|---|---|
+| a path `exports` does not map cannot be imported, so the curated entries are the whole of what a consumer can couple to. | review | [] |
+
+## exported-types-have-type-tests · SHOULD
+The exported generic and conditional types of a package others import are proven by type cases the compiler checks.
+
+| Why | Check | Tags |
+|---|---|---|
+| a consumer relies on what such a type computes, and nothing else fails when a change computes something else. | review | [testing] |
+
+## file-named-after-its-export · SHOULD
 A file with one export is named after it — `order-status.ts` exports `OrderStatus`; a file with several exports names the unit they form.
 
 | Why | Check | Tags |
@@ -17,7 +38,7 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 | a reader who knows the name of a thing knows the name of its file. | review | [] |
 
 ## typescript-file-forms → kebab-case-file-names
-Source files are kebab-case `.ts` or `.tsx`. In `__tests__/`, a spec is `<file name>.test.ts`, `<name>.integration.test.ts` or `<name>.e2e.test.ts`, a fake `<contract>.fake.ts`, fixtures `<name>.fixtures.ts`.
+Source files are kebab-case `.ts` or `.tsx`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -33,7 +54,7 @@ A file is `.tsx` only where it writes markup.
 ## Names
 
 ## identifier-case-by-kind · SHOULD
-PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. An enum is named in the singular.
+PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. A function a framework renders by the case of its name takes the case that framework's block names. An enum is named in the singular.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -56,11 +77,11 @@ A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` o
 ## Values and types
 
 ## undefined-is-the-only-absence → absence-has-one-value
-Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. `null` appears only in a comparison with what a platform API returns, in the type of an external format that uses it, and where an API's types demand it — the language's `Object.create(null)`, a signature a library imposes. The compiler runs with `exactOptionalPropertyTypes`.
+Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. An optional field that is absent is left out, never set to `undefined`. `null` appears only in a comparison with what a platform API returns, in the type of an external format that uses it, and where an API's types demand it — the language's `Object.create(null)`, a signature a library imposes.
 
 | Why | Check | Tags |
 |---|---|---|
-| one spelling of absence means one check, and the compiler option stops an absent field from being set to `undefined` by accident. | tool/lint | [] |
+| one spelling of absence means one check, and an optional field is then present or missing, never set to `undefined` by accident. | tool/lint | [] |
 
 ## brand-is-an-intersection-or-unique-symbol → identifiers-branded-by-entity
 A brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol.
@@ -70,7 +91,7 @@ A brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol.
 | one form of brand reads the same in every file. | review | [] |
 
 ## invariant-value-is-a-branded-type → invariant-values-are-plain-immutable-data
-A value that keeps an invariant is a branded type, built by `create<Name>`, which throws the kit's error when the invariant fails, and narrowed by `is<Name>`.
+A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the kit's error when the invariant fails, and narrowed by `is<Name>`.
 
 ```ts
 type Email = string & { readonly __brand: 'Email' };
@@ -86,7 +107,7 @@ const createEmail = (text: string): Email => {
 | the brand is reachable only through the check, and the value stays a plain string every boundary can carry. | review | [] |
 
 ## semantic-alias-names-a-shared-meaning · SHOULD
-A semantic alias — `type ChatTitle = string` — names a meaning without an invariant and is never branded; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type.
+A semantic alias — `type ChatTitle = string` — names a meaning without an invariant and is never branded; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type, and imports it with `import type`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -120,12 +141,12 @@ A default for an absent value is given with `??`, not `||`.
 |---|---|---|
 | a logical or also replaces `0`, an empty string and `false`, which are values, not absence. | tool/lint | [] |
 
-## no-any · MUST
-No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, in tests too; `noImplicitAny` is never turned off.
+## no-any → no-any-type
+No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, and no parameter left without a type for the compiler to read as `any`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `any` switches the type checker off for everything it touches, and it spreads. | tool/lint | [] |
+| these are the places `any` is written, and a parameter without a type is an `any` nobody wrote. | tool/lint | [] |
 
 ## no-unchecked-escape-hatches → suppression-states-its-reason
 No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@ts-nocheck`. `@ts-expect-error` and any other exception carry a suppression that states why.
@@ -134,12 +155,26 @@ No `as` cast except `as const`, no `!` non-null assertion, no `@ts-ignore` or `@
 |---|---|---|
 | each escape hatch is a place where the code tells the compiler it knows better; without a reason nobody can check whether it still does. | review | [] |
 
+## overrides-marked-by-keyword → override-marked-where-declared
+A method that overrides one of its base class carries `override`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an override then says so where it is declared, and a base method renamed or removed leaves no method that silently overrides nothing. | tool/types | [] |
+
 ## casts-and-assertions-refused → no-unchecked-escape-hatches
 No `as` cast except `as const`, no `!` non-null assertion and no `@ts-ignore`.
 
 | Why | Check | Tags |
 |---|---|---|
 | each is a place where the code tells the compiler it knows better. | tool/lint | [] |
+
+## boundary-values-unknown-until-parsed → outside-values-untyped-until-parsed
+A value from outside the program — `JSON.parse`'s result included — is `unknown`, and its plain checks are `typeof`, `in` and `Array.isArray`; `.json<T>()` and `as Promise<T>` are casts.
+
+| Why | Check | Tags |
+|---|---|---|
+| the compiler refuses every use of an `unknown` value until a check narrows it. | review | [] |
 
 ## exhaustive-branching-over-unions → illegal-states-unrepresentable
 A branch over a union handles every member: a `switch` whose default proves `never`, or an `if` chain that ends in a `never` check.
@@ -214,7 +249,7 @@ A value becomes text through a function that names its form — a formatter, `St
 |---|---|---|
 | `'Total: ' + order` prints `[object Object]`, and a number joined to a string is printed in no locale's form. | review | [] |
 
-## dates-through-temporal · MUST
+## dates-through-temporal → instants-carry-their-zone
 A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appears only where an API demands one, converted at that call; no date library is used. A runtime the program supports that lacks `Temporal` loads its polyfill once, in the entry file, before any code reads a date.
 
 | Why | Check | Tags |
@@ -222,11 +257,11 @@ A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appear
 | `Date` mixes an instant with the machine's time zone and mutates in place, which is where date bugs come from; `Temporal` keeps each meaning in its own immutable type. | review | [data] |
 
 ## no-date-library → dates-through-temporal
-No module imports `moment`, `dayjs`, `date-fns` or `luxon`, or a path inside them.
+No module imports a date library, one that wraps `Date`, or a path inside one.
 
 | Why | Check | Tags |
 |---|---|---|
-| each of them wraps the `Date` that `Temporal` replaces. | tool/lint | [] |
+| a date library wraps the `Date` that `Temporal` replaces. | tool/lint | [] |
 
 ## no-object-joined-into-text → text-made-deliberately
 No object reaches text through its default `toString`, by `+` or in a template, and `+` never mixes a `bigint` with a `number`.
@@ -291,12 +326,12 @@ A value whose type implements `Disposable` or `AsyncDisposable` is declared with
 |---|---|---|
 | the type says the value must be released, so the lint can hold it; a reader or a handle whose type says nothing stays with review. | tool/lint | [] |
 
-## options-object-typed-as-function-input → at-most-three-positional-arguments
-An object of values that travel together is typed by an interface named `<Function>Input`.
+## options-object-has-a-named-type → parameters-at-most-three-wholes-as-one-object
+An object of values that travel together is typed by a named type, never by an object type written inline in the signature.
 
 | Why | Check | Tags |
 |---|---|---|
-| the interface names the whole the values make, and the call site reads each of them by name. | review | [] |
+| the type names the whole the values make, and the call site reads each of them by name. | review | [] |
 
 ## jsdoc-only-for-non-obvious-public-entry → docs-only-for-non-obvious-public-entry
 JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter; a `@deprecated` tag aside.
@@ -306,27 +341,34 @@ JSDoc documents only a public entry whose use is not obvious, never a self-descr
 | JSDoc that repeats a signature drifts from it, and the editor already shows the types. | review | [] |
 
 ## deprecated-by-jsdoc-tag → retired-code-marked-deprecated
-The mark is a JSDoc `@deprecated` tag that names the replacement.
+Code kept only for its old callers is marked by a JSDoc `@deprecated` tag that names its replacement.
 
 | Why | Check | Tags |
 |---|---|---|
 | editors strike the call through, and the tooling reads the tag. | review | [] |
 
-## no-deprecated-import → retired-code-marked-deprecated
-No module imports an export marked `@deprecated`.
+## no-deprecated-import → deprecated-forms-never-used
+No new import names an export marked `@deprecated`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a new caller of retired code is the one the mark exists to stop. | tool/lint | [] |
+| the tag is where TypeScript marks a deprecated export, and the linter reads it at the import. | tool/lint | [] |
 
 ## Dependencies
 
-## tools-are-dev-dependencies · MUST
-Build, test and lint tools are development dependencies, and production code imports none of them.
+## tools-are-dev-dependencies → tools-pinned-exactly-by-the-repository
+The tools are `devDependencies` of `package.json`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a tool in production dependencies ships to every installation, and one imported by production code ships inside it. | review | [security] |
+| a package's `devDependencies` are installed in its repository and never with the package. | review | [] |
+
+## tools-pinned-without-a-range → tools-pinned-exactly-by-the-repository
+Every tool in `devDependencies` is an exact version, with no range.
+
+| Why | Check | Tags |
+|---|---|---|
+| a range lets the lockfile move a tool to a new version without a change to the manifest. | tool/versions | [] |
 
 ## production-imports-no-development-dependency → tools-are-dev-dependencies
 Production code imports no development dependency.
@@ -335,19 +377,12 @@ Production code imports no development dependency.
 |---|---|---|
 | a tool imported by production code ships inside it. | tool/imports | [security] |
 
-## one-version-per-dependency · MUST
-Each dependency has one version across every manifest of the repository.
+## caret-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
+The range of a dependency of the program is a caret range.
 
 | Why | Check | Tags |
 |---|---|---|
-| two versions of one dependency behave differently in two places, and the difference is found in production. | tool/versions | [] |
-
-## caret-ranges-lockfile-pins · SHOULD
-A manifest's ranges are caret ranges; the lockfile pins the exact versions.
-
-| Why | Check | Tags |
-|---|---|---|
-| the manifest says what is compatible, the lockfile what is installed; pinning in both makes every update touch two files. | tool/versions | [security] |
+| a caret takes every release of the same major, which promises to keep the dependency compatible. | tool/versions | [] |
 
 ## shared-state-packages-once-in-lockfile · SHOULD
 A package that holds state or types across the program — the schema engine, the user-interface framework — resolves to one version in the lockfile.

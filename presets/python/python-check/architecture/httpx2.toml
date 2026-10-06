@@ -1,0 +1,3 @@
+# httpx2: the adapters, the client under libs/, the shared mapper of its failures and the root that builds the clients
+[homes]
+httpx2 = ["adapters", "libs", "shared", "root"]

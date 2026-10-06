@@ -4,7 +4,7 @@
 
 ## Modules and files
 
-## relative-imports-stay-in-the-feature → import-only-through-surface
+## relative-imports-stay-in-the-feature → folder-files-import-each-other-directly
 An import that leaves its feature — or, outside `features/`, the top-level folder it sits in — is absolute, from the import package's name; files inside one feature import each other by relative path, at any depth, and a relative import never climbs out of it. A feature never imports itself by its absolute path.
 
 | Why | Check | Tags |
@@ -25,6 +25,34 @@ A surface `__init__.py` holds only `from .<module> import <Name>` lines and an `
 |---|---|---|
 | `__all__` is the list of what the folder offers, and a sorted list shows an added or removed name in one line of a diff. | review | [] |
 
+## import-package-holds-the-tree → top-level-folders-from-the-tree
+The import package `src/<name>/` holds only the top-level folders of the tree and the role folders it needs, the delivery layer its blocks name, `__init__.py`, `__main__.py`, `main.py` and `py.typed`.
+
+| Why | Check | Tags |
+|---|---|---|
+| the import package's name is the project's own, so no check of names can tell its folder from the folders inside it, and a reviewer holds the rule. | review | [] |
+
+## feature-package-holds-its-layers → feature-root-holds-its-layers
+A feature's package holds only its layer packages and its `__init__.py`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a module left beside the layers belongs to none of them; the feature's name is the project's own, so no check of names holds its folder apart, and a reviewer does. | review | [] |
+
+## init-never-imported-from-inside → own-surface-never-imported
+A file never imports from the `__init__.py` of the module it belongs to: its relative import names the file that defines the name, never `from .. import Order` at the module's root.
+
+| Why | Check | Tags |
+|---|---|---|
+| the `__init__.py` imports the files below it, so a file that imports it back starts a cycle; no import contract tells a module's own files from the others, so a reviewer holds the rule. | review | [] |
+
+## init-is-the-way-in-within-a-layer → surface-is-the-only-way-in
+A module is reached from another module of its own layer, and a domain role folder from the rest of its feature, only through their `__init__.py`.
+
+| Why | Check | Tags |
+|---|---|---|
+| an import contract holds the kernel and a module reached from outside its layer, but tells neither one module of a layer from another nor a package's `__init__.py` from a module, so a reviewer holds the rest. | review | [] |
+
 ## layer-init-empty → layer-folder-has-no-surface
 A layer folder's `__init__.py` is empty: it makes the folder a package and offers nothing.
 
@@ -34,16 +62,16 @@ A layer folder's `__init__.py` is empty: it makes the folder a package and offer
 
 ## Values and configuration
 
-## boundary-values-object-until-parsed → untrusted-input-parsed-at-edge
-A value from beyond the boundary — `json.loads`, a response body, a file, a message — is `object` until the project's model parses it or plain checks — `isinstance`, `in` — narrow it, in specs as in production; `cast` stands in for neither.
+## environment-read-only-under-root → environment-read-only-by-the-root
+`os.environ` and `os.getenv` are read only under `root/`, in the entry files and in specs.
 
 | Why | Check | Tags |
 |---|---|---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | review | [] |
+| these are where Python reads a variable, so a search for them outside `root/`, the entry files and the specs finds every read the rule forbids. | review | [] |
 
-## environment-read-only-under-root → environment-read-once-at-boot · MUST
-`os.environ` and `os.getenv` are read only under `root/`, where one settings object is built at boot, and in the entry files; a spec may read them to drive the program.
+## domain-imports-no-logging → diagnostics-through-the-logging-port
+A feature's `domain/` imports no `logging`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a variable read deep in the program is a dependency no signature shows, and the settings built by the root are bypassed. | review | [] |
+| the domain logs nothing, and an import contract holds what a reviewer would otherwise have to find. | tool/imports | [] |

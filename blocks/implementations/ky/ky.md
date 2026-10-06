@@ -1,7 +1,7 @@
 ---
 id: ky
 summary: ky, the HTTP client — one instance per system, errors mapped.
-requires: [typescript, remote-data]
+requires: [typescript, remote-service]
 extends: null
 abstract: false
 checks: []
@@ -19,6 +19,6 @@ governs: ["**/providers/**", "**/adapters/**"]
 
 | Requirement | How | Met |
 |---|---|---|
-| `remote-data-transport-timeout-and-cancel` | `timeout` per request, `signal` for cancellation | yes |
-| `remote-data-transport-typed-failures` | `HTTPError`, `TimeoutError`, and a `TypeError` for a network failure | yes |
-| `remote-data-transport-retries-only-transient` | `retry` by method, status and limit, with backoff | yes |
+| `transport-timeout-and-cancel` | `timeout` per request, `signal` for cancellation | yes |
+| `transport-typed-failures` | `HTTPError`, `TimeoutError`, and a `TypeError` for a network failure | yes |
+| `transport-retries-only-transient` | `retry` by method, status and limit, with backoff | yes |

@@ -1,0 +1,9 @@
+ls:
+  src/api:
+    .dir: kebab-case | regex:^__tests__$
+    .*: kebab-case
+    .*.*: kebab-case
+    .ts: kebab-case
+    .*.ts: kebab-case
+    .*.*.ts: kebab-case
+    .yml: regex:^$

@@ -1,21 +1,14 @@
 # TanStack Query
 
 ## query-for-reads-mutation-for-writes · SHOULD
-A read goes through `useQuery`, and a write through `useMutation`.
+A read goes through `useQuery`, or `useSuspenseQuery` where the read suspends, and a write through `useMutation`.
 
 | Why | Check | Tags |
 |---|---|---|
 | the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. | review | [data] |
 
-## keys-only-from-the-key-factory · MUST
-No key array is written inline; every key comes from the key factory, built from the parameters of the operation it caches.
-
-| Why | Check | Tags |
-|---|---|---|
-| an inline key drifts from the factory's, and an invalidation misses it. | tool/lint | [data] |
-
 ## query-result-returned-as-status-union → data-result-is-union-by-status
-What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. The error type is registered once for the cache, and no default is invented.
+What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. Or the read suspends — `useSuspenseQuery` — and the boundary above it handles the pending and failed states. The error type is registered once for the cache, and no default is invented.
 
 | Why | Check | Tags |
 |---|---|---|

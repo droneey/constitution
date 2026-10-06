@@ -20,8 +20,11 @@ interface Installed {
 
 interface Project {
   files: Readonly<Record<string, string>>;
+  // A link's path, then the folder it points to, as a package manager links a workspace's units.
+  links?: Readonly<Record<string, string>>;
   parts?: readonly string[];
   roots?: readonly string[];
+  workspaces?: readonly string[];
 }
 
 interface Cruise {
@@ -76,6 +79,9 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   ky: {
     declaration: Declaration.Production,
   },
+  react: {
+    declaration: Declaration.Production,
+  },
   doubled: {
     declaration: Declaration.Both,
   },
@@ -126,8 +132,8 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
 const configOf = (parts: readonly string[]): string =>
   `export default {\n  extends: ${JSON.stringify(
     [
-      ...FOUNDATION_PARTS,
       ...parts,
+      ...FOUNDATION_PARTS,
     ].map(
       (part) => `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
     ),
@@ -158,6 +164,7 @@ const cruise = (project: Project): Cruise => {
         Declaration.PeerAndDevelopment,
       ]),
       type: 'module',
+      workspaces: project.workspaces,
     }),
   };
 
@@ -166,6 +173,13 @@ const cruise = (project: Project): Cruise => {
       recursive: true,
     });
     writeFileSync(join(folder, path), text);
+  }
+
+  for (const [path, target] of Object.entries(project.links ?? {})) {
+    mkdirSync(dirname(join(folder, path)), {
+      recursive: true,
+    });
+    symlinkSync(join(folder, target), join(folder, path));
   }
 
   mkdirSync(join(folder, '.droneey'));

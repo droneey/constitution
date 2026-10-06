@@ -1,0 +1,8 @@
+ls:
+  src/*/api:
+    .dir: snake_case | regex:^__pycache__$
+    .*: kebab-case
+    .*.*: kebab-case
+    .py: snake_case
+    .pyi: snake_case
+    .*.pyc: snake_case

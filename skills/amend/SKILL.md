@@ -15,7 +15,7 @@ The rule, when given: $ARGUMENTS
 
 ## What an override is
 
-An override lowers one constitution rule, for the whole repository or for one application, and records why. Every session's digest shows it, and the reminders mark the rule with its new level. It is the only way a repository departs from a rule, so it is written with the owner's explicit consent in this chat, for this override — never implied from a reason, a request to proceed, or consent to another override.
+An override lowers one constitution rule, for the whole repository or for one unit, and records why. Every session's digest shows it, and the reminders mark the rule with its new level. It is the only way a repository departs from a rule, so it is written with the owner's explicit consent in this chat, for this override — never implied from a reason, a request to proceed, or consent to another override.
 
 If there is no `constitution.yaml` above, look for it at the repository root — the folder, going up from the project folder, that holds `.git`. If there is none, stop and suggest `/ratify`.
 
@@ -36,7 +36,7 @@ grep "^rule$(printf '\t')<slug>$(printf '\t')" "${CLAUDE_PLUGIN_ROOT}/digests/in
 
 ### 2. Add, change or remove
 
-Look for an override of this rule in the scope the owner means — the top-level `overrides`, or those under an application in `apps:`.
+Look for an override of this rule in the scope the owner means — the top-level `overrides`, or those under a unit in `packages:`.
 
 - **None there**: this adds one. Go on with steps 3 to 6.
 - **One there**: show it and ask whether to change it or remove it. To change it, ask only for the fields the owner wants changed and keep the rest. To remove it, go to step 7.
@@ -55,7 +55,7 @@ Ask whether the override ends on a date. It is optional; when given, it is a dat
 
 ### 6. The scope
 
-Ask whether the override applies to the whole repository or to one application — one of the paths under `apps:`. An override under an application applies to the files under its path only.
+Ask whether the override applies to the whole repository or to one unit — one of the paths under `packages:`. An override under a unit applies to the files under its path only.
 
 ### 7. Show the change, then write
 
@@ -65,20 +65,20 @@ An override at the top level:
 
 ```yaml
 overrides:
-  - rule: four-data-states
+  - rule: data-states-shown
     level: SHOULD
     reason: "The admin screens show their state in the shared toolbar"
     until: 2026-12-31
 ```
 
-Under an application, the same shape two levels deeper:
+Under a unit, the same shape two levels deeper:
 
 ```yaml
-apps:
+packages:
   packages/web:
     implementations: [react-dom]
     overrides:
-      - rule: four-data-states
+      - rule: data-states-shown
         level: MAY
         reason: "The kit renders the states its caller passes"
 ```
@@ -86,7 +86,7 @@ apps:
 The hook reads a fixed subset of YAML, so keep this form exactly:
 - `- rule:` opens an override, and `level:`, `reason:` and `until:` sit two spaces deeper than its `-`; omit `until:` when there is no date;
 - the reason is double-quoted, with a `"` or `\` inside it written as `\"` or `\\`;
-- `overrides: []` becomes `overrides:` with the entries below it; when the last top-level override goes, write `overrides: []` again; when the last override of an application goes, remove its `overrides:` line;
+- `overrides: []` becomes `overrides:` with the entries below it; when the last top-level override goes, write `overrides: []` again; when the last override of a unit goes, remove its `overrides:` line;
 - change nothing else in the file.
 
 ### 8. Check it

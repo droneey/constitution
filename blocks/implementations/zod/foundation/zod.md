@@ -1,29 +1,36 @@
 # zod
 
-## strict-objects-for-owned-documents → document-schema-strict
-A document the program owns is parsed with `z.strictObject`; a vendor's response with `z.object`, so a new field from the vendor is ignored, not fatal.
+## schema-never-brands → invariant-value-is-a-branded-type
+A schema never calls `.brand()`; it produces a branded value through the value's own `create<Name>`, as in `z.string().transform(createEmail)`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the program's own document must not carry unknown keys, while a vendor may add fields at any time. | test | [] |
+| zod's brand is a type of its own, so `.brand()` makes a second definition of the value that skips its check. | tool/lint | [] |
 
-## json-schema-from-zod → published-schema-generated-from-code
-The published JSON Schema is built by `z.toJSONSchema` from the document's schema.
-
-| Why | Check | Tags |
-|---|---|---|
-| the schema editors read then comes from the code, and cannot drift from it. | test | [] |
-
-## zod-issues-become-error-details → expected-failures-typed-with-codes
-Input is parsed with `safeParse`, and each issue becomes a detail of one coded error, with its path.
+## strict-objects-for-owned-documents → documents-strict-vendor-answers-tolerant
+A document the program owns is parsed with `z.strictObject`; a vendor's response with `z.object`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the user sees every problem of the input at once, each pointing at its place. | test | [] |
+| `z.strictObject` fails on an unknown key, and `z.object` drops it. | test | [] |
 
-## zod-four-forms-only · MUST
+## schema-held-exactly-to-its-model → domain-values-never-typed-again
+A schema over one of the program's types is held to it exactly — `conformingTo<Model>()(schema)`, or `z.ZodType<Model>` where assignability is enough — and an enum's schema is `z.enum(TheEnum)`.
+
+| Why | Check | Tags |
+|---|---|---|
+| exact conformance fails both a stricter and a looser schema, so the schema can never say something the type does not. | review | [] |
+
+## zod-issues-become-error-details → parse-failure-is-one-coded-error
+Input is parsed with `safeParse`, and each of the error's `issues` becomes a detail, with its `path`.
+
+| Why | Check | Tags |
+|---|---|---|
+| `safeParse` returns every issue as a value, and each carries the path to its place. | test | [] |
+
+## zod-four-forms-only → deprecated-forms-never-used
 A schema uses Zod 4's forms — `z.enum`, `z.strictObject` and `z.looseObject`, `A.extend(B.shape)`, a format such as `z.email()` on its own — never `z.nativeEnum`, `.strict()`, `.passthrough()`, `.merge()` or a format chained on `z.string()`.
 
 | Why | Check | Tags |
 |---|---|---|
-| Zod 4 deprecates these forms and replaces `.strict()` with `z.strictObject`, and two spellings of one schema double what a reader must know. | tool/lint | [] |
+| Zod 4 deprecates these forms, and replaces `.strict()` with `z.strictObject`. | tool/lint | [] |

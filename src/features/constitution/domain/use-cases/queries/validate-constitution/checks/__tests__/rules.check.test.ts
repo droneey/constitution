@@ -8,6 +8,7 @@ const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
 const I18N = 'blocks/domains/i18n/foundation/i18n.md';
 const ANATOMY = 'blocks/core/architecture/anatomy.md';
+const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
 
 describe('rulesCheck', () => {
   it('should report every empty or malformed field when rules break the rule format', () => {
@@ -135,6 +136,42 @@ describe('rulesCheck', () => {
       },
     ]);
   });
+
+  it.each([
+    {
+      expected:
+        'rule "portals-for-overlays" carries out "optimistic-writes-roll-back" of ui with remote-data, which its place does not reach',
+      parent: 'optimistic-writes-roll-back',
+    },
+    {
+      expected:
+        'rule "portals-for-overlays" carries out "i18n-plurals-by-cldr" of i18n, which its block may not refer to',
+      parent: 'i18n-plurals-by-cldr',
+    },
+  ])(
+    'should report "$expected" when a rule carries out a parent its place cannot reach',
+    ({ expected, parent }) => {
+      // Arrange
+      const files = validFiles();
+      files[PORTALS] = `# Portals\n\n${rule({
+        parent,
+        slug: 'portals-for-overlays',
+        statement: 'React DOM renders an overlay through a portal.',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: expected,
+          path: PORTALS,
+        },
+      ]);
+    },
+  );
 
   it('should report each rule of a cycle and no rule that only leads into it when parents come back around', () => {
     // Arrange
@@ -299,4 +336,54 @@ describe('rulesCheck', () => {
       },
     ]);
   });
+
+  it.each([
+    {
+      condition: 'its parent states it',
+      level: 'SHOULD',
+      principles: [
+        rule({
+          level: 'SHOULD',
+          slug: 'dependencies-point-inward',
+        }),
+      ],
+    },
+    {
+      condition: 'its parent takes it from its own parent',
+      level: 'MUST',
+      principles: [
+        rule({
+          slug: 'names-reveal-intent',
+        }),
+        rule({
+          parent: 'names-reveal-intent',
+          slug: 'dependencies-point-inward',
+        }),
+      ],
+    },
+  ])(
+    'should report a rule that states the level it inherits when $condition',
+    ({ level, principles }) => {
+      // Arrange
+      const files = validFiles();
+      files[PRINCIPLES] = `# Principles\n\n${principles.join('\n')}`;
+      files[WORKFLOW] = `# Workflow\n\n${rule({
+        level,
+        parent: 'dependencies-point-inward',
+        slug: 'rules-bind',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "rules-bind" states ${level}, the level it already takes from "dependencies-point-inward"; a rule states a level only to be stricter than the rule it carries out`,
+          path: WORKFLOW,
+        },
+      ]);
+    },
+  );
 });

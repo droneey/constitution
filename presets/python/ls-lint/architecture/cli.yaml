@@ -1,0 +1,8 @@
+ls:
+  src/*/cli:
+    .dir: regex:^(cli|__pycache__)$
+    .*: kebab-case
+    .*.*: kebab-case
+    .py: regex:^__init__$ | regex:^[a-z0-9_]+_cli$ | regex:^[a-z0-9]+$
+    .pyi: regex:^$
+    .*.pyc: regex:^__init__$ | regex:^[a-z0-9_]+_cli$ | regex:^[a-z0-9]+$

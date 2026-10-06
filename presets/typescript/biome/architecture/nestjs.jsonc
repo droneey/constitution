@@ -1,0 +1,19 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/*.use-case.ts",
+        "**/*.adapter.ts",
+        "**/*.repository.ts",
+        "**/*.sink.ts",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useMaxParams": "off",
+          },
+        },
+      },
+    },
+  ],
+}

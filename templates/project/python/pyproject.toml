@@ -19,7 +19,6 @@ dev = [
   "hypothesis==6.168.3",
   "import-linter==2.15",
   "mutmut==3.8.0",
-  "poethepoet==0.48.0",
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
   "pytest-randomly==5.0.0",
@@ -64,7 +63,7 @@ timeout = "10"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["**/main.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py"]
+omit = ["**/main.py", "**/__main__.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -93,31 +92,38 @@ ancestors = ["<package>"]
 name = "kernel-imports-only-itself"
 type = "forbidden"
 source_modules = ["*.kernel"]
-forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.libs", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "libs-import-no-application-code"
 type = "forbidden"
 source_modules = ["*.libs"]
-forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.integrations", "*.kernel", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
-name = "shared-imports-no-feature-or-root"
+name = "shared-imports-no-feature-adapter-contract-or-root"
 type = "forbidden"
 source_modules = ["*.shared"]
-forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.root"]
+forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.integrations", "*.root"]
 
 [[tool.importlinter.contracts]]
 name = "contracts-know-no-vendor-or-other-contract"
 type = "forbidden"
 source_modules = ["*.contracts"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
-name = "domain-imports-only-itself-and-kernel"
+name = "domain-imports-only-itself-kernel-and-contracts"
 type = "forbidden"
 source_modules = ["*.features.*.domain"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.libs", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.integrations", "*.libs", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "domain-imports-no-logging"
+type = "forbidden"
+source_modules = ["*.features.*.domain"]
+forbidden_modules = ["logging"]
+allow_indirect_imports = true
 
 [[tool.importlinter.contracts]]
 name = "features-blind-to-each-other"
@@ -152,29 +158,108 @@ name = "nothing-imports-an-entrypoint"
 type = "independence"
 modules = ["*.entrypoints.*"]
 
-# pydantic: the models kept out of the domain
 [[tool.importlinter.contracts]]
-name = "pydantic-kept-out-of-the-domain"
+name = "nothing-imports-an-integration"
+type = "protected"
+protected_modules = ["*.integrations"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "nothing-imports-an-integration"
+type = "independence"
+modules = ["*.integrations.*"]
+
+[[tool.importlinter.contracts]]
+name = "dependencies-point-inward"
 type = "forbidden"
-source_modules = ["*.contracts", "*.features.*.domain", "*.kernel"]
-forbidden_modules = ["pydantic", "pydantic_settings"]
+source_modules = ["*.adapters", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.composition"]
+
+[[tool.importlinter.contracts]]
+name = "reads-and-writes-apart"
+type = "forbidden"
+source_modules = ["**.repositories.queries", "**.use_cases.queries"]
+forbidden_modules = ["**.repositories.commands", "**.use_cases.commands"]
+
+[[tool.importlinter.contracts]]
+name = "reads-and-writes-apart"
+type = "forbidden"
+source_modules = ["**.repositories.commands", "**.use_cases.commands"]
+forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
+
+# a layer folder's __init__.py, the import package's own among them, is never imported
+[[tool.importlinter.contracts]]
+name = "layer-folder-never-imported"
+type = "forbidden"
+source_modules = ["**"]
+forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.libs"]
+as_packages = false
 allow_indirect_imports = true
 
-# structlog: configured by the root alone
+# the kernel and a module of each layer are reached from outside only through their __init__.py
 [[tool.importlinter.contracts]]
-name = "structlog-imported-only-by-the-root"
-type = "forbidden"
-source_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.libs", "*.shared"]
-forbidden_modules = ["structlog"]
-allow_indirect_imports = true
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.kernel.*"]
+allowed_importers = ["*.kernel"]
 
-# httpx2: the client kept to the edge
 [[tool.importlinter.contracts]]
-name = "httpx2-kept-to-the-edge"
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.adapters.*.*"]
+allowed_importers = ["*.adapters.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.composition.*.*"]
+allowed_importers = ["*.composition.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.contracts.*.*"]
+allowed_importers = ["*.contracts.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.features.*.*"]
+allowed_importers = ["*.features.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.libs.*.*"]
+allowed_importers = ["*.libs.*"]
+
+[[tool.importlinter.contracts]]
+name = "surface-is-the-only-way-in"
+type = "protected"
+protected_modules = ["*.shared.*.*"]
+allowed_importers = ["*.shared.*"]
+
+# cli: the commands reached only from the entries
+[[tool.importlinter.contracts]]
+name = "dependencies-point-inward"
 type = "forbidden"
-source_modules = ["*.composition", "*.contracts", "*.features.*.app", "*.features.*.domain", "*.kernel"]
-forbidden_modules = ["httpx2"]
-allow_indirect_imports = true
+source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.cli"]
+
+# api: the handlers reached only from the entries
+[[tool.importlinter.contracts]]
+name = "dependencies-point-inward"
+type = "forbidden"
+source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.api"]
+
+# python-check: the home of each block's package
+[tool.python-check]
+extend = [
+  ".droneey/constitution/presets/python/python-check/architecture/httpx2.toml",
+  ".droneey/constitution/presets/python/python-check/architecture/pydantic.toml",
+  ".droneey/constitution/presets/python/python-check/architecture/structlog.toml",
+]
 
 # vulture: the code nothing in src/ uses
 [tool.vulture]
@@ -185,30 +270,3 @@ min_confidence = 60
 [tool.complexipy]
 max-complexity-allowed = 10
 
-# poethepoet: the check
-[tool.poe.tasks]
-"format:check" = "ruff format --check"
-"format:fix" = "ruff format"
-"lint:check" = "ruff check"
-"lint:fix" = "ruff check --fix"
-"type:check" = "ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml"
-"code:check" = "python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests"
-"complexity:check" = "complexipy src tests"
-"architecture:check" = "lint-imports --no-logo"
-"dependencies:check" = "deptry src"
-"unused:check" = "vulture"
-"test:check" = "pytest --cov"
-"mutation:check" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz"
-"mutation:all" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz all"
-check = [
-  "format:check",
-  "lint:check",
-  "type:check",
-  "code:check",
-  "complexity:check",
-  "architecture:check",
-  "dependencies:check",
-  "unused:check",
-  "test:check",
-  "mutation:check",
-]

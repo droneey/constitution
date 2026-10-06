@@ -55,10 +55,6 @@ foundation:
       - noAlert
       - noConsole
       - noDebugger
-    no-empty-names:
-      - no-empty-names.grit
-    no-empty-verbs:
-      - no-empty-verbs.grit
     no-secret-in-repository:
       - noSecrets
     no-skipped-or-empty-tests:
@@ -66,6 +62,9 @@ foundation:
       - noFocusedTests
       - noSkippedTests
       - useExpect
+  browser:
+    no-raw-html-injection:
+      - no-raw-html-injection.grit
   css:
     stylesheet-classes-declared-and-used:
       - noUndeclaredClasses
@@ -89,6 +88,8 @@ foundation:
     web-first-assertions-awaited:
       - noPlaywrightMissingAwait
   react-dom:
+    no-dangerously-set-inner-html:
+      - noDangerouslySetInnerHtml
     aria-attributes-as-the-dom-spells-them:
       - noUnknownAttribute
     jsx-controls-named:
@@ -119,18 +120,25 @@ foundation:
       - useValidAriaProps
       - useValidAriaRole
       - useValidAriaValues
-    no-inline-style:
-      - no-inline-style.grit
+    inline-style-only-custom-properties-and-geometry:
+      - inline-style-only-custom-properties-and-geometry.grit
     jsx-images-declare-their-size:
       - useImageSize
     jsx-viewport-never-blocks-zoom:
       - noNonScalableViewport
+  self:
+    biome-refuses-empty-names:
+      - biome-refuses-empty-names.grit
+    biome-refuses-empty-verbs:
+      - biome-refuses-empty-verbs.grit
   react-native:
+    react-native-imported-from-its-entry:
+      - noReactNativeDeepImports
     no-literal-colour-in-a-style:
       - noReactNativeLiteralColors
   tailwind:
-    dynamic-viewport-classes:
-      - dynamic-viewport-classes.grit
+    no-screen-sized-classes:
+      - no-screen-sized-classes.grit
     mobile-first-breakpoints:
       - mobile-first-breakpoints.grit
     no-arbitrary-utility-value:
@@ -141,13 +149,12 @@ foundation:
       - no-outline-none-in-class-lists.grit
     no-important-modifier-in-class-lists:
       - no-important-modifier-in-class-lists.grit
-  tanstack-query:
-    keys-only-from-the-key-factory:
-      - keys-only-from-the-key-factory.grit
   tanstack-router:
     link-targets-never-built:
       - link-targets-never-built.grit
   testing-library:
+    no-document-selectors-in-specs:
+      - queries-by-role-label-text.grit
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
   typescript:
@@ -191,25 +198,26 @@ foundation:
       - noUselessUndefined
       - undefined-is-the-only-absence.grit
   zod:
+    schema-never-brands:
+      - schema-never-brands.grit
     zod-four-forms-only:
       - zod-four-forms-only.grit
 architecture:
-  browser:
-    no-raw-html-injection:
-      - no-raw-html-injection.grit
   _react:
     component-file-calls-no-effect-hook:
       - component-effects-in-its-hooks-file.grit
+  bun:
+    process-env-read-only-in-root:
+      - noProcessEnv
   core:
     surface-only-re-exports:
       - noReExportAll
-  react-dom:
-    no-dangerously-set-inner-html:
-      - noDangerouslySetInnerHtml
-  react-native:
-    react-native-imported-from-its-entry:
-      - noReactNativeDeepImports
+  ui:
+    components-call-no-global-fetch:
+      - noRestrictedGlobals
   tanstack-query:
+    keys-only-from-the-key-factory:
+      - keys-only-from-the-key-factory.grit
     query-client-built-by-the-root:
       - query-client-built-by-the-root.grit
     query-function-only-in-cache-utils:
@@ -217,10 +225,5 @@ architecture:
   typescript:
     domain-type-fields-readonly:
       - domain-type-fields-readonly.grit
-    environment-read-only-in-root:
-      - noProcessEnv
     surface-only-re-exports:
       - surface-only-re-exports.grit
-  zod:
-    schema-never-brands:
-      - schema-never-brands.grit

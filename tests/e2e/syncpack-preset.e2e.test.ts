@@ -3,6 +3,66 @@ import { describe, expect, it } from 'bun:test';
 import self from '../../presets/typescript/syncpack/foundation/self.mjs';
 import { versionIssues } from './syncpack-preset.fixtures';
 
+describe('the syncpack typescript part', () => {
+  it.each([
+    {
+      condition: 'a tool takes a caret range',
+      manifest: {
+        devDependencies: {
+          tool: '^1.0.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    },
+    {
+      condition: 'a dependency of the program is pinned exactly',
+      manifest: {
+        dependencies: {
+          library: '1.0.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    },
+  ])('should report SemverRangeMismatch when $condition', ({ manifest }) => {
+    // Arrange
+    const repository = [
+      manifest,
+    ];
+
+    // Act
+    const found = versionIssues(repository);
+
+    // Assert
+    expect(found).toStrictEqual([
+      'SemverRangeMismatch',
+    ]);
+  });
+
+  it("should report nothing when the tools are pinned exactly and the program's dependencies take caret ranges", () => {
+    // Arrange
+    const repository = [
+      {
+        dependencies: {
+          library: '^1.0.0',
+        },
+        devDependencies: {
+          tool: '1.0.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    ];
+
+    // Act
+    const found = versionIssues(repository);
+
+    // Assert
+    expect(found).toStrictEqual([]);
+  });
+});
+
 describe('the syncpack self part', () => {
   it('should leave the scripts in the order the author chose when a manifest is formatted', () => {
     // Arrange
@@ -16,51 +76,31 @@ describe('the syncpack self part', () => {
   });
 });
 
-describe('the syncpack parts of a repository of packages', () => {
-  it.each([
-    {
-      condition: 'two packages are at different versions',
-      packages: [
-        {
-          name: 'a',
-          version: '1.0.0',
-        },
-        {
-          name: 'b',
-          version: '1.1.0',
-        },
-      ],
-      reported: 'SameRangeMismatch',
-    },
-    {
-      condition: "a package takes the repository's own package from the registry",
-      packages: [
-        {
-          name: 'a',
-          version: '1.0.0',
-        },
-        {
-          devDependencies: {
-            a: '^1.0.0',
-          },
-          name: 'b',
-          version: '1.0.0',
-        },
-      ],
-      reported: 'DiffersToPin',
-    },
-  ])('should report $reported when $condition', ({ packages, reported }) => {
+describe('the syncpack parts of a workspace', () => {
+  it("should report DiffersToPin when a unit takes the repository's own unit from the registry", () => {
     // Arrange
-    const repository = packages;
+    const repository = [
+      {
+        name: 'a',
+        version: '1.0.0',
+      },
+      {
+        devDependencies: {
+          a: '^1.0.0',
+        },
+        name: 'b',
+        version: '1.0.0',
+      },
+    ];
 
     // Act
     const found = versionIssues(repository);
 
     // Assert
-    expect(found).toContain(reported);
+    expect(found).toContain('DiffersToPin');
   });
 
-  it('should report nothing when the packages share a version, link each other and keep wide peer ranges', () => {
+  it('should report nothing when the units link each other and keep wide peer ranges', () => {
     // Arrange
     const repository = [
       {

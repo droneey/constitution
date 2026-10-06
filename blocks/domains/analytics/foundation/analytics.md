@@ -7,12 +7,12 @@ Nothing is tracked, and no identifier is stored, before the user consents; decli
 |---|---|---|
 | tracking is the user's choice, and a product that tracks first and asks later has already taken it from them. | review | [security] |
 
-## refusal-as-easy-as-consent → tracking-waits-for-consent · MUST
-Refusing sits beside accepting, on the first screen, with the same weight; every purpose is chosen on its own, and nothing is chosen in advance.
+## refusal-as-easy-as-consent → tracking-waits-for-consent
+Refusing takes no more steps than accepting, where consent is first asked; every purpose is chosen on its own, and nothing is chosen in advance.
 
 | Why | Check | Tags |
 |---|---|---|
-| a refusal hidden behind a second screen is consent taken, not given. | review | [security, ux] |
+| a refusal hidden behind a second step is consent taken, not given. | review | [security, ux] |
 
 ## consent-withdrawable-and-recorded · MUST
 Consent can be withdrawn at any time as easily as it was given, and each choice is recorded with its time and purposes. A recorded refusal is not asked again for about six months, or until the purposes change.
@@ -21,7 +21,7 @@ Consent can be withdrawn at any time as easily as it was given, and each choice 
 |---|---|---|
 | the law asks both, and a record is the only proof the choice was the user's; asking again after a refusal wears the user down into a consent that is not free. | review | [security] |
 
-## events-from-a-closed-vocabulary → illegal-states-unrepresentable
+## events-from-a-closed-vocabulary · MUST
 Every event belongs to one closed vocabulary, each with its typed parameters; no free-form name or value is sent.
 
 | Why | Check | Tags |
@@ -63,8 +63,8 @@ Context shared by every event — signed in or not, the mode — is set once, as
 |---|---|---|
 | every event then carries it without every call passing it. | review | [data] |
 
-## event-names-object-action · SHOULD
-An event is named after its object and the action done to it, in the past tense — `order_placed` — and its parameters in the same case.
+## event-names-object-action → events-named-in-past-tense
+An analytics event is named after its object and the action done to it — `order_placed` — and its parameters in the same case.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -89,7 +89,7 @@ Addresses are anonymised, and no user identifier is sent unless configured.
 | a library that identifies users by default leaks personal data on its first event. | review | [security] |
 
 ## analytics-loads-without-blocking · SHOULD
-The library loads and sends without delaying rendering.
+The library loads and sends without delaying what the user waits for: a render, a response, a command.
 
 | Why | Check | Tags |
 |---|---|---|

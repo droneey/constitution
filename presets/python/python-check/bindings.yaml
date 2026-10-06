@@ -1,0 +1,11 @@
+architecture:
+  httpx2:
+    httpx2-only-at-the-edge:
+      - httpx2
+  pydantic:
+    pydantic-only-at-the-edge:
+      - pydantic
+      - pydantic_settings
+  structlog:
+    only-the-root-imports-structlog:
+      - structlog

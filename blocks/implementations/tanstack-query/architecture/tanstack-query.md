@@ -1,7 +1,7 @@
 # TanStack Query
 
 ## query-hooks-only-in-binding-units → binding-unit-composes-its-operation
-A read's binding unit wraps `useQuery`, and a write's wraps `useMutation`. No screen, widget or component calls either directly.
+`useQuery`, `useSuspenseQuery` and `useMutation` are called only in binding units; no screen, widget or component calls any of them directly.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -21,26 +21,19 @@ Each feature's key factory lives in its `app/utils/cache.utils.ts`.
 |---|---|---|
 | every binding unit of the feature takes its keys from one known module, so a read and the invalidation that refreshes it build the same key. | review | [] |
 
-## cache-is-the-only-home-of-server-data → server-owns-remote-data
-Server data lives only in the cache: never copied into state, a context or a store.
+## keys-only-from-the-key-factory → cache-keys-from-feature-factory
+Outside the key factory's `cache.utils.ts`, no key array is written inline — as a `queryKey`, or to the query client's `getQueryData`, `getQueryState` or `setQueryData`; every key comes from the factory.
 
 | Why | Check | Tags |
 |---|---|---|
-| a copy stops updating when the cache does, and the screen shows the copy. | review | [] |
+| these are the places a key is written, and an inline one drifts from the factory's, so an invalidation misses it. | tool/lint | [data] |
 
-## unauthorized-handled-once-in-the-cache → unauthorized-handled-once-in-cache
-`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, turns an unauthorized error into session state through the auth feature's surface, once.
-
-| Why | Check | Tags |
-|---|---|---|
-| an expired session is handled the same way for every read and write. | review | [] |
-
-## components-import-no-query-library → components-dumb-widgets-smart
-A component in `components/` imports no query library.
+## query-library-home-is-the-binding-units → packages-imported-by-folder-role
+The query library's home is the binding units of `app/` and `composition/`, and `root/`, which builds the client; no other folder imports it — no component, adapter or code of `libs/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a component that queries can no longer be shown or tested with plain data. | tool/imports | [] |
+| caching belongs to the binding units: a component that queries can no longer be shown with plain data, an adapter that caches holds a second cache, and a library that caches takes the application's data into code every program shares. | tool/imports | [] |
 
 ## read-declared-once-as-query-options → cache-keys-from-feature-factory
 Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its adapter as input; the hook, the loader and the guard all use it.
@@ -56,23 +49,16 @@ A `queryFn` is written only in `cache.utils.ts`, inside the read's `queryOptions
 |---|---|---|
 | an inline `queryFn` is a second declaration of the read, and its options drift from the loader's. | tool/lint | [] |
 
-## adapters-never-import-the-cache-library → one-reason-per-unit
-An adapter never imports the cache library; caching belongs to the binding units.
-
-| Why | Check | Tags |
-|---|---|---|
-| an adapter that caches mixes how data is fetched with how long it is kept, and two layers then hold the cache. | tool/imports | [] |
-
-## libs-import-no-query-library → libs-import-no-application-code
-`libs/` never imports the query library.
-
-| Why | Check | Tags |
-|---|---|---|
-| what `libs/` wraps is one vendor's client; the application's cached data stays out. | tool/imports | [] |
-
 ## query-client-built-by-the-root → stateful-clients-built-by-the-root
 `new QueryClient` is written only in `root/`, in the program's entry files and in specs.
 
 | Why | Check | Tags |
 |---|---|---|
 | the library's own examples build the client at a module's top level, where it is shared by every request on the server and every spec. | tool/lint | [] |
+
+## unauthorized-handled-once-in-the-cache → unauthorized-acted-on-once-by-the-cache
+`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, is the one place that acts on an unauthorized error.
+
+| Why | Check | Tags |
+|---|---|---|
+| every read and write then ends in the same handler, and no query or mutation acts on the error on its own. | review | [] |

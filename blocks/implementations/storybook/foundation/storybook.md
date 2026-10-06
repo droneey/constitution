@@ -7,7 +7,7 @@ Every UI-kit component has `<name>.stories.tsx` beside it, with a story per vari
 |---|---|---|
 | the catalogue shows every state a designer and a reviewer need to see; the spec proves the behaviour. | review | [ux, testing] |
 
-## stories-render-from-fixtures → tests-run-in-a-sandbox
+## stories-render-from-fixtures · SHOULD
 Stories render from fixtures and fakes; no request leaves a story.
 
 | Why | Check | Tags |
@@ -21,7 +21,7 @@ Screenshots are compared over the UI kit's stories, where the look is the contra
 |---|---|---|
 | the kit's look is the one place a changed pixel is a changed contract. | review | [] |
 
-## stories-outside-coverage · MUST
+## stories-outside-coverage → coverage-holds-all-logic
 Stories are outside coverage.
 
 | Why | Check | Tags |
@@ -34,3 +34,12 @@ Production code never imports a story.
 | Why | Check | Tags |
 |---|---|---|
 | a story in production ships fixtures and fakes to users. | tool/imports | [] |
+
+## Accessibility
+
+## stories-fail-on-a11y-violations → ui-specs-scan-accessibility
+The accessibility check of the stories is set to fail — `parameters.a11y.test: 'error'` — for the whole project.
+
+| Why | Check | Tags |
+|---|---|---|
+| Storybook's default runs no check, and a report nobody fails on is ignored. | review | [a11y] |

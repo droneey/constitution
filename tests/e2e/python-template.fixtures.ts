@@ -159,15 +159,40 @@ const runInTemplate = (input: { changes: Files; command: readonly string[] }): R
     withTools: true,
   });
 
-// One task of the template's check, through Poe the Poet as a project runs it.
+// The command of each area a project's check runs over the template's
+// configuration; the template prescribes none, so the specs name their own.
+const TASKS: Readonly<Record<string, string>> = {
+  'format:check': 'ruff format --check',
+  'lint:check': 'ruff check',
+  'type:check':
+    'ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml',
+  'code:check': 'python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests',
+  'complexity:check': 'complexipy src tests',
+  'architecture:check': 'lint-imports --no-logo',
+  'dependencies:check': 'deptry src',
+  'unused:check': 'vulture',
+  'test:check': 'pytest --cov',
+  'mutation:check': 'python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz',
+};
+
+const commandOf = (task: string): string => {
+  const command = task === 'check' ? Object.values(TASKS).join(' && ') : TASKS[task];
+
+  if (command === undefined) {
+    throw new Error(`no command for ${task}`);
+  }
+
+  return command;
+};
+
+// One area of the check, or the whole of it, over the template.
 const runTask = (input: { changes: Files; task: string }): Run =>
   runInTemplate({
     changes: input.changes,
     command: [
-      'poe',
-      '--executor',
-      'simple',
-      input.task,
+      'sh',
+      '-c',
+      commandOf(input.task),
     ],
   });
 

@@ -9,6 +9,7 @@
         "useImageSize": "error",
       },
       "security": {
+        "noDangerouslySetInnerHtml": "error",
         "noDangerouslySetInnerHtmlWithChildren": "error",
         "noBlankTarget": "error",
       },
@@ -48,7 +49,7 @@
     },
   },
   "plugins": [
-    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/no-inline-style.grit",
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/inline-style-only-custom-properties-and-geometry.grit",
     "./.droneey/constitution/presets/typescript/biome/foundation/plugins/labels-bound-with-use-id.grit",
     "./.droneey/constitution/presets/typescript/biome/foundation/plugins/fields-declare-autocomplete.grit",
   ],

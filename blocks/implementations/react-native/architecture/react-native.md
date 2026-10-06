@@ -1,8 +1,8 @@
 # React Native
 
-## react-native-imported-from-its-entry → dependencies-imported-from-their-entries
-React Native is imported from `react-native`, never from its internal paths.
+## react-native-imported-by-the-ui → packages-imported-by-folder-role
+React Native's home reaches past the edge into a UI's components and widgets and the binding units of `app/` and `composition/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the internal paths of React Native move between releases, and the linter refuses them. | tool/lint | [] |
+| its primitives are what a native component is built from, and its hooks — the window's size, the appearance — what a binding unit reads. | tool/imports | [] |

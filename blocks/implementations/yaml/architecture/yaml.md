@@ -1,6 +1,6 @@
 # yaml
 
-## yaml-only-at-the-edge → domain-imports-only-itself-and-kernel
+## yaml-only-at-the-edge → untrusted-input-parsed-at-edge
 The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses.
 
 | Why | Check | Tags |

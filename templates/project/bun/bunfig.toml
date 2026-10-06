@@ -11,6 +11,7 @@ coveragePathIgnorePatterns = [
   "**/main.*",
   "**/entrypoints/*/main.*",
   "**/root/wiring.*",
+  "**/root/root.module.*",
   "**/*.gen.*",
 ]
 

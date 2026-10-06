@@ -1,9 +1,0 @@
-{
-  "linter": {
-    "rules": {
-      "security": {
-        "noDangerouslySetInnerHtml": "error",
-      },
-    },
-  },
-}

@@ -19,5 +19,5 @@ governs: ["bunfig.toml", "package.json"]
 
 | Requirement | How | Met |
 |---|---|---|
-| `workspace-packages-linked-locally` | `workspace:*` resolves a package from the working tree | yes |
-| `publishing-with-provenance-supported` | Bun does not publish; npm publishes, through trusted publishing | partly |
+| `units-linked-from-the-working-tree` | `workspace:*` resolves a unit from the working tree | yes |
+| `publishing-with-provenance-supported` | `bun publish` has no provenance and no trusted publishing, so npm publishes (`units-published-by-npm`) | no |

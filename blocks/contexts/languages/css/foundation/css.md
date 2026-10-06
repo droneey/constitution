@@ -10,7 +10,7 @@ Every style rule sits in a named cascade layer: none is left outside a layer, an
 | layers decide which rule wins by the order they are declared in, not by specificity or by the file that loaded last, so a reset or a library never overrides a component by accident. | tool/lint | [] |
 
 ## layer-order-declared-once · SHOULD
-The order of the layers is declared once, at the top of the entry stylesheet, before any layer is filled: `@layer reset, base, components, utilities;`.
+The order of the layers is declared once, at the top of the entry stylesheet, before any layer is filled — for example `@layer reset, base, components, utilities;`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -82,17 +82,3 @@ A class the project declares is kebab-case and names what the element is — `.o
 | Why | Check | Tags |
 |---|---|---|
 | a name that says what an element is stays true when its look changes; one that says how it looks lies after the first redesign. | review | [] |
-
-## components-adapt-by-container-queries · SHOULD
-A component adapts to the space its container gives it with a container query; a media query adapts the page's layout and follows the user's preferences.
-
-| Why | Check | Tags |
-|---|---|---|
-| a component placed in a sidebar and in the main column then fits both, while the viewport says nothing about the space it was given. | review | [ux] |
-
-## global-styles-only-in-the-entry · SHOULD
-Only the entry stylesheet and the theme it imports style elements and the document globally; every other stylesheet is scoped to one component.
-
-| Why | Check | Tags |
-|---|---|---|
-| a global rule in a component's stylesheet reaches every screen and changes whenever that component is loaded. | review | [] |

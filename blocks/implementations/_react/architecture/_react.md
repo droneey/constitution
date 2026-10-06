@@ -4,13 +4,6 @@
 
 ## State and effects
 
-## derived-state-computed-in-render → one-home-per-datum
-A value that can be derived is computed during render, never stored in state and synchronised by an effect.
-
-| Why | Check | Tags |
-|---|---|---|
-| a derived copy in state is a second home of the same fact, one render behind the first. | review | [performance] |
-
 ## component-effects-in-its-hooks-file → side-effects-at-the-edges
 A component file calls no effect hook: its effects live in hooks in `<name>.hooks.ts` beside it, and input or output goes only through binding units.
 
@@ -25,18 +18,29 @@ A component file calls no effect hook.
 |---|---|---|
 | a component then reads as its markup. | tool/lint | [] |
 
-## Composition
+## Binding units
 
-## slot-and-container-children-typed → navigation-passed-by-slot
-A slot that keeps control of its element takes a `ReactElement`; a container takes `ReactNode`; a render-prop slot is `(children, …data) => ReactElement`.
-
-| Why | Check | Tags |
-|---|---|---|
-| the type says what the caller may pass, and the compiler refuses the rest. | review | [] |
-
-## compound-parts-reached-through-the-root → compound-over-prop-regions
-A compound's surface exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
+## binding-unit-is-a-hook → binding-unit-composes-its-operation
+An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its adapter from the providers' context and calls the use-case, or the port when there is none. A plain `<op>.ts` exists only for a caller outside React — a loader, a guard — and not before one exists.
 
 | Why | Check | Tags |
 |---|---|---|
-| a part used without its root loses the root's context, and the dot names the compound it belongs to. | review | [] |
+| a hook is the framework's reactive unit; the adapter comes from the composition root, so a spec hands it another. | review | [] |
+
+## Adapters
+
+## adapter-is-a-factory-or-module-object → adapter-is-a-factory-module-object-or-class
+An adapter is a factory function that takes its dependencies and returns the adapter, or a module object where it has no dependency; never a class.
+
+| Why | Check | Tags |
+|---|---|---|
+| a React program is built of functions, a factory shows every dependency in its signature, and a method of a factory's object handed to a hook or a handler keeps working where a class's loses its `this`. | review | [] |
+
+## Packages
+
+## react-imported-by-the-ui-and-binding-units → packages-imported-by-folder-role
+React's home reaches past the edge into a UI's components and widgets and the binding units of `app/` and `composition/`, which are hooks.
+
+| Why | Check | Tags |
+|---|---|---|
+| the view library is what a component is written in and what a binding unit is built on; every other folder below the edge stays free of it. | tool/imports | [] |

@@ -24,10 +24,3 @@ ls:
     .yml: regex:^$
   tests: *tests
   tests/*: *tests
-ignore:
-  - node_modules
-  # TODO(loeffel-io/ls-lint#86): keep only the root's line once ls-lint reads .gitignore.
-  - "*/node_modules"
-  - "*/*/node_modules"
-  - "*/*/*/node_modules"
-  - "*/*/*/*/node_modules"

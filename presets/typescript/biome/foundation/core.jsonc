@@ -64,13 +64,6 @@
     },
   },
   "plugins": [
-    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/no-empty-verbs.grit",
-    {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/no-empty-names.grit",
-      "includes": [
-        "**",
-      ],
-    },
     {
       "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/cases-named-should-when.grit",
       "includes": [

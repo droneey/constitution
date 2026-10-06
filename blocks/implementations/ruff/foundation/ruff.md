@@ -1,11 +1,11 @@
 # Ruff
 
-## ruff-format-is-the-formatter → rules-held-by-tools
-Ruff formats every Python file, and the check runs `ruff format --check`: two spaces, single quotes, docstrings in double quotes, lines of at most 100.
+## ruff-format-is-the-formatter → code-formatted-by-one-formatter
+Ruff formats every Python file: two spaces, single quotes, docstrings in double quotes, lines of at most 100.
 
 | Why | Check | Tags |
 |---|---|---|
-| a formatter in the check ends every argument about layout, and one that only checks never passes code nobody reviewed. | tool/format | [] |
+| one formatter for Python ends every argument about its layout. | tool/format | [] |
 
 ## rule-families-selected-by-name · MUST
 The rules are selected by family or code, never with `ALL`.
@@ -21,16 +21,9 @@ A preview rule is selected only by its exact code, with `explicit-preview-rules 
 |---|---|---|
 | a family in preview grows with each release; a code names one rule someone read. | review | [] |
 
-## noqa-names-its-codes → suppression-names-its-code-and-reason
-A `# noqa` names its codes and silences a finding the check would report, and a `# type: ignore` names its code.
+## noqa-names-its-codes → suppression-silences-one-finding
+A `# noqa` names its codes and silences a finding Ruff would report.
 
 | Why | Check | Tags |
 |---|---|---|
 | a blanket suppression silences rules nobody meant to, and one that silences nothing stays after the finding it was for is gone. | tool/lint | [] |
-
-## ruff-check-never-fixes → check-only-checks
-The check runs `ruff check` and `ruff format --check` without `--fix`; the fix tasks write.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check that fixes what it checks passes code nobody reviewed. | review | [] |

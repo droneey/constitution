@@ -82,6 +82,26 @@ describe('the tsconfig preset', () => {
       ],
     },
     {
+      condition: 'a type is imported without `import type`, though Nest reads decorator metadata',
+      main: TYPE_IMPORTED_AS_VALUE,
+      parts: [
+        'self',
+        'core',
+        'bun',
+        'nestjs',
+      ],
+    },
+    {
+      condition: 'a class field has no initializer, though Nest fills request classes',
+      main: FIELD_WITHOUT_INITIALIZER,
+      parts: [
+        'self',
+        'core',
+        'bun',
+        'nestjs',
+      ],
+    },
+    {
       condition: 'an import names its .ts extension',
       main: IMPORT_WITH_TS_EXTENSION,
       parts: [
@@ -220,26 +240,6 @@ describe('the tsconfig preset', () => {
         'self',
         'core',
         'bun',
-      ],
-    },
-    {
-      condition: 'a type is imported without `import type`',
-      main: TYPE_IMPORTED_AS_VALUE,
-      parts: [
-        'self',
-        'core',
-        'bun',
-        'nestjs',
-      ],
-    },
-    {
-      condition: 'a class field has no initializer, as the framework fills it',
-      main: FIELD_WITHOUT_INITIALIZER,
-      parts: [
-        'self',
-        'core',
-        'bun',
-        'nestjs',
       ],
     },
     {

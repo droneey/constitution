@@ -1,5 +1,5 @@
 ls:
-  src/*/**/components:
+  src/**/components:
     <<: &holder
       .dir: regex:^components$
       .*: exists:0
@@ -7,11 +7,11 @@ ls:
       .tsx: exists:0
       .*.ts: exists:0
       .*.tsx: exists:0
-  src/*/**/widgets:
+  src/**/widgets:
     <<: *holder
     .dir: regex:^widgets$
 
-  src/{features,shared,libs,composition,entrypoints}/**/components/[!_]*:
+  src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*:
     <<: &component
       .dir: kebab-case | regex:^__tests__$
       .*: regex:^${0}$
@@ -20,14 +20,15 @@ ls:
       .tsx: regex:^${0}$
       .*.ts: regex:^${0}$
       .*.tsx: regex:^${0}$
-  src/*/**/widgets/[!_]*:
+  src/components/[!_]*: *component
+  src/**/widgets/[!_]*:
     <<: *component
     .dir: regex:^[a-z0-9]+(-[a-z0-9]+)*-widget$ | regex:^__tests__$
   src/root/**/components/[!_]*:
     <<: *component
     .dir: regex:^root-[a-z0-9]+(-[a-z0-9]+)*$ | regex:^__tests__$
 
-  src/*/**/assets:
+  src/**/assets:
     .dir: kebab-case
     .*: kebab-case
     .*.*: kebab-case

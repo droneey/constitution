@@ -4,10 +4,14 @@ import { Layer } from '#/kernel';
 import type { RequirementAnswer, Rule } from '../../../../entities';
 import { Met } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { mayReferTo } from '../../../../utils';
+import { inlineCodeSpans, mayReferTo } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const METS: readonly string[] = Object.values(Met);
+const SHORT_OF: readonly string[] = [
+  Met.Partly,
+  Met.No,
+];
 
 const at = (input: { answer: RequirementAnswer; message: string }): Finding => ({
   message: `answers "${input.answer.requirement}"${input.message}`,
@@ -36,14 +40,27 @@ const targetMessage = (input: {
     : ` of ${input.target.block}, which its block may not refer to`;
 };
 
+// A partly or no answer names, in backticks, the rule of its own block that
+// covers what the library misses or replaces the requirement.
+const coverMessage = (input: {
+  answer: RequirementAnswer;
+  ownSlugs: ReadonlySet<string>;
+}): string | undefined =>
+  !SHORT_OF.includes(input.answer.met) ||
+  inlineCodeSpans(input.answer.how).some((slug) => input.ownSlugs.has(slug))
+    ? undefined
+    : ` ${input.answer.met} without naming the rule that covers the rest`;
+
 const formMessages = (input: {
   answer: RequirementAnswer;
   isRepeated: boolean;
+  ownSlugs: ReadonlySet<string>;
 }): readonly (string | undefined)[] => [
   METS.includes(input.answer.met)
     ? undefined
     : ` with Met "${input.answer.met}"; Met is ${Met.Yes}, ${Met.Partly} or ${Met.No}`,
   input.answer.how === '' ? ' without saying how' : undefined,
+  coverMessage(input),
   input.isRepeated ? ' twice' : undefined,
 ];
 
@@ -75,6 +92,9 @@ const answerFindings = (input: {
       ...formMessages({
         answer,
         isRepeated,
+        ownSlugs: new Set(
+          input.rules.filter((rule) => rule.block === answer.block).map((rule) => rule.slug),
+        ),
       }),
     ].flatMap((message) =>
       message === undefined

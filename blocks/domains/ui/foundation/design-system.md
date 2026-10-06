@@ -51,7 +51,7 @@ Durations and easings are tokens of two kinds, micro and macro; motion driven fr
 |---|---|---|
 | motion defined in one place feels consistent and can be turned off in one place. | review | [ux, a11y] |
 
-## theme-follows-system-until-chosen → light-and-dark-one-token-set
+## theme-follows-system-until-chosen · SHOULD
 The theme follows the system's preference until the user chooses one; the choice persists and is applied before the first paint.
 
 | Why | Check | Tags |

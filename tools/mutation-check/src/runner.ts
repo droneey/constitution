@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join, matchesGlob, relative } from 'node:path';
 
-import { INSTRUMENTER_CONSTANTS } from '@stryker-mutator/api/core';
 import { declareFactoryPlugin, PluginKind } from '@stryker-mutator/api/plugin';
 import type {
   DryRunResult,
@@ -14,6 +13,10 @@ import { DryRunStatus, MutantRunStatus, TestStatus } from '@stryker-mutator/api/
 
 import { importsOf } from './imports.ts';
 import { specsByFile } from './loaded.ts';
+
+// Stryker's INSTRUMENTER_CONSTANTS.ACTIVE_MUTANT_ENV_VARIABLE: its module reads Stryker's schema
+// beside it when imported, and the archive's bundle of this runner carries no schema.
+const ACTIVE_MUTANT = '__STRYKER_ACTIVE_MUTANT__';
 
 interface Run {
   failed: boolean;
@@ -54,7 +57,6 @@ const settingsOf = (
   };
 };
 
-// The specs `bun test` finds under the configuration's root, as paths from the project.
 const specsOf = (text: string): readonly string[] => {
   const { ignored, root } = settingsOf(text);
 
@@ -165,7 +167,7 @@ const specsRunner = (): TestRunner => {
 
       const { failed, output } = await runSpecs({
         env: {
-          [INSTRUMENTER_CONSTANTS.ACTIVE_MUTANT_ENV_VARIABLE]: options.activeMutant.id,
+          [ACTIVE_MUTANT]: options.activeMutant.id,
         },
         specs: loaders,
         started,

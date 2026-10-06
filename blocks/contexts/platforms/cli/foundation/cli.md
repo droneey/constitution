@@ -7,7 +7,7 @@ Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a us
 
 | Why | Check | Tags |
 |---|---|---|
-| a script decides what to do from the exit code alone, so each code must mean one thing in every command. | test | [errors, ux] |
+| a script decides what to do from the exit code alone, so each code must mean one thing in every command; 2 is the usage code of the shell's utilities and argument parsers, and 70 is `EX_SOFTWARE` of sysexits, the code for an internal error. | test | [errors, ux] |
 
 ## stdout-data-stderr-diagnostics · SHOULD
 Data goes to standard output; diagnostics and failures go to standard error.
@@ -22,6 +22,13 @@ A command that reports data prints it as JSON when given `--json`.
 | Why | Check | Tags |
 |---|---|---|
 | another program can then read the result without parsing text meant for people. | test | [ux] |
+
+## progressive-report-printed-as-events-arrive · SHOULD
+The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
+
+| Why | Check | Tags |
+|---|---|---|
+| a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. | review | [ux] |
 
 ## output-masks-secret-values → no-secret-or-personal-data-in-output
 Every value the run knows to be secret is masked in all output, an engine's output included, before it is printed.
@@ -54,3 +61,28 @@ A command's spec runs the program on an argument list with a fake command contex
 | Why | Check | Tags |
 |---|---|---|
 | that is the command's boundary, so the spec proves what a user of the command sees. | test | [] |
+
+## Requirements for implementation
+
+What any command framework must provide.
+
+## command-framework-parses-flags-by-schema · SHOULD
+Flags are declared with a schema and parsed before the handler runs.
+
+| Why | Check | Tags |
+|---|---|---|
+| a handler then receives typed, validated input, and a bad flag is a usage error before any work starts. | review | [ux] |
+
+## command-framework-leaves-exits-to-the-handler · MUST
+The program's handler decides every exit code, the framework's own failures included.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it, the one map of exit codes cannot hold. | review | [errors] |
+
+## command-framework-runs-in-a-test-sandbox · MUST
+The framework's terminal, prompts, clock and process hooks can be replaced in a spec.
+
+| Why | Check | Tags |
+|---|---|---|
+| without it, a command's spec reaches the real process and breaks the test sandbox. | review | [testing] |

@@ -373,7 +373,7 @@ describe('the Biome foundation parts', () => {
 
   it.each([
     'common/biome/foundation/git.jsonc',
-    'typescript/biome/architecture/react-dom.jsonc',
+    'typescript/biome/foundation/react-dom.jsonc',
   ])('should parse when a project extends %s', (path) => {
     // Arrange
     const text = presetText(path);
@@ -853,7 +853,7 @@ describe('the Biome foundation parts', () => {
     "z.string().brand<'Email'>()",
     "z.string().email().brand('Email')",
   ])(
-    'should report a plugin finding when a schema brands a value object with %s and a project extends the zod part',
+    'should report a plugin finding when a schema brands a value with %s and a project extends the zod part',
     (schema) => {
       // Arrange
       const project = {
@@ -862,7 +862,7 @@ describe('the Biome foundation parts', () => {
         },
         parts: [
           ...FOUNDATION_PARTS,
-          'typescript/architecture/zod',
+          'typescript/foundation/zod',
         ],
       };
 
@@ -871,7 +871,9 @@ describe('the Biome foundation parts', () => {
 
       // Assert
       expect(
-        plugins.some((finding) => finding.startsWith('Build the value object through the domain')),
+        plugins.some((finding) =>
+          finding.startsWith('Build the value through its create function'),
+        ),
       ).toBe(true);
     },
   );
@@ -1512,7 +1514,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: true,
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/typescript',
+        'typescript/architecture/bun',
       ],
       rule: 'noProcessEnv',
     },
@@ -1525,9 +1527,35 @@ describe('the Biome part that needs each setting', () => {
       isReported: false,
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/typescript',
+        'typescript/architecture/bun',
       ],
       rule: 'noProcessEnv',
+    },
+    {
+      condition: 'a component calls the global fetch',
+      files: {
+        'src/features/orders/ui/components/order-card/order-card.ts':
+          "export const load = (): Promise<Response> => fetch('/orders');\n",
+      },
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/ui',
+      ],
+      rule: 'noRestrictedGlobals',
+    },
+    {
+      condition: 'an adapter calls the global fetch',
+      files: {
+        'src/features/orders/adapters/http/orders.adapter.ts':
+          "export const load = (): Promise<Response> => fetch('/orders');\n",
+      },
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/ui',
+      ],
+      rule: 'noRestrictedGlobals',
     },
     {
       condition: 'an element without children is closed by a tag',
@@ -1839,7 +1867,7 @@ describe('the Biome tanstack-query part', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/foundation/tanstack-query',
+        'typescript/architecture/tanstack-query',
       ],
     };
 
@@ -1877,7 +1905,7 @@ describe('the Biome browser part', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/browser',
+        'typescript/foundation/browser',
       ],
     };
 
@@ -2492,7 +2520,7 @@ describe('the Biome architecture parts', () => {
       },
       parts: [
         ...FOUNDATION_PARTS,
-        'typescript/architecture/react-native',
+        'typescript/foundation/react-native',
       ],
       rule: 'noReactNativeDeepImports',
     },
@@ -2587,6 +2615,58 @@ describe('the Biome architecture parts', () => {
 
       // Assert
       expect(rules.includes('noParameterProperties')).toBe(isReported);
+    },
+  );
+
+  it.each([
+    {
+      isReported: true,
+      parts: FOUNDATION_PARTS,
+      path: 'src/orders.controller.ts',
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/nestjs',
+      ],
+      path: 'src/orders.controller.ts',
+    },
+    {
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/nestjs',
+        'typescript/architecture/nestjs',
+      ],
+      path: 'src/place-order.use-case.ts',
+    },
+    {
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/foundation/nestjs',
+        'typescript/architecture/nestjs',
+      ],
+      path: 'src/orders.ts',
+    },
+  ])(
+    'should report useMaxParams $isReported when $path holds a constructor of four dependencies and a project extends $parts',
+    ({ isReported, parts, path }) => {
+      // Arrange
+      const project = {
+        files: {
+          [path]:
+            'export class Orders {\n  public constructor(\n    private readonly clock: Date,\n    private readonly region: string,\n    private readonly limit: number,\n    private readonly label: string,\n  ) {}\n}\n',
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('useMaxParams')).toBe(isReported);
     },
   );
 });

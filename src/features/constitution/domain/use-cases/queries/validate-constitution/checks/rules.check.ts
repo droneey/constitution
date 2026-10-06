@@ -3,7 +3,7 @@ import { Axis, LEVELS, ROLES, Tag } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { checkOf, mayReferTo } from '../../../../utils';
+import { checkOf, mayCarryOut } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -118,21 +118,27 @@ const parentMessage = (input: {
   }
 
   if (
-    !mayReferTo({
+    !mayCarryOut({
       byId: input.byId,
       from: input.rule,
-      to: target.block,
+      to: target,
     })
   ) {
-    return `carries out "${parent}" of ${target.block}, which its block may not refer to`;
+    return target.with === undefined
+      ? `carries out "${parent}" of ${target.block}, which its block may not refer to`
+      : `carries out "${parent}" of ${target.block} with ${target.with}, which its place does not reach`;
   }
 
   if (target.axis !== input.rule.axis && target.axis !== Axis.Foundation) {
     return `carries out "${parent}" on ${target.axis}, which a rule on ${input.rule.axis} may not refer to`;
   }
 
-  return LEVELS.indexOf(input.rule.level) > LEVELS.indexOf(target.level)
-    ? `is ${input.rule.level} while it carries out the ${target.level} rule "${parent}"; a rule is never looser than the rule it carries out`
+  if (LEVELS.indexOf(input.rule.level) > LEVELS.indexOf(target.level)) {
+    return `is ${input.rule.level} while it carries out the ${target.level} rule "${parent}"; a rule is never looser than the rule it carries out`;
+  }
+
+  return input.rule.statedLevel === target.level
+    ? `states ${target.level}, the level it already takes from "${parent}"; a rule states a level only to be stricter than the rule it carries out`
     : undefined;
 };
 

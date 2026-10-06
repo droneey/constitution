@@ -34,26 +34,12 @@ The inner layer declares, in its own words, the contracts it needs; the outer la
 |---|---|---|
 | the business rules then choose what they need, and a vendor or engine can be replaced without touching them. | review | [] |
 
-## domain-imports-only-itself-and-kernel · MUST
+## domain-imports-only-itself-kernel-and-contracts · MUST
 The domain imports only itself, the shared kernel and the shared ports of `contracts/`: no framework, no input or output, no vendor library, however pure. A tool's types stop at its boundary; a validation engine conforms to the domain's types and never declares them.
 
 | Why | Check | Tags |
 |---|---|---|
 | a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/imports | [] |
-
-## one-reason-to-change · MUST
-Each layer and each module has one reason to change.
-
-| Why | Check | Tags |
-|---|---|---|
-| a layer or module with two reasons changes for both, and every change risks the other purpose. | review | [] |
-
-## one-home-per-datum · MUST
-Every datum and every piece of state lives in one place; everything else reads it or derives from it.
-
-| Why | Check | Tags |
-|---|---|---|
-| two copies of one fact drift apart, and then the program is wrong in one of them. | review | [data] |
 
 ## features-blind-to-each-other · MUST
 A feature never imports another feature. Features are combined only by the layer above them.
@@ -91,7 +77,7 @@ Input and output, network, storage, clock, randomness and processes live in adap
 | code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | review | [] |
 
 ## one-explicit-composition-root · MUST
-Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies, typed by their contracts, and never builds an adapter itself. No container magic.
+Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies typed by their contracts, and never builds an adapter itself or asks for one; reading a typed scope the root fills — the context a component tree provides, the context a router passes to its routes — is receiving, not asking. A container may do the wiring only from bindings written in the declarations the root composes — its own, or those of a feature's module the root names in its imports; one that finds its bindings by scanning, by name or by convention, or that a unit asks for what it needs, is the magic this rule forbids.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -118,19 +104,12 @@ A contract is shaped by the role that uses it: a reader sees only reads, a write
 |---|---|---|
 | a wide contract couples every caller to operations it never uses, and hides which caller can change what. | review | [] |
 
-## untrusted-input-parsed-at-edge · MUST
-Input from outside the program — a request, a response, a file, the environment — is parsed once, at the edge, into a known type. Inside, it is trusted and never checked again.
+## untrusted-input-parsed-at-edge → outside-values-untyped-until-parsed
+Input from outside the program is parsed once, at the edge; inside, it is trusted and never checked again.
 
 | Why | Check | Tags |
 |---|---|---|
-| a value parsed once cannot carry an unexpected shape into the domain, and the checks do not scatter through the code. | review | [security] |
-
-## extension-by-addition · MUST
-A new kind of thing — a vendor, a command, a format, a rule — is added as a new member and its registration, without editing the code that handles the other kinds. A long branch by kind becomes a strategy and a registry.
-
-| Why | Check | Tags |
-|---|---|---|
-| code that grows by addition keeps every existing member untouched, so adding one cannot break another. | review | [] |
+| the checks do not scatter through the code, and the domain receives only values of a known shape. | review | [] |
 
 ## The modelling vocabulary
 
@@ -138,7 +117,7 @@ A new kind of thing — a vendor, a command, a format, a rule — is added as a 
 - **A feature is a bounded context.** One word may mean different things in two features.
 - **Ports and adapters.** A port names what the domain needs, in the domain's words. An adapter implements it over one external system.
 - **Entities, value objects, use-cases.** Business types with identity; small values that guard an invariant; the operations that carry business rules. Their form is the language's.
-- **Aggregates and domain events** where the program owns the data it changes: an aggregate is the unit a change keeps consistent, reached through its root; a domain event records, in the past tense, what the domain decided.
+- **Domain events.** A domain event records, in the past tense, what happened, in the domain's words.
 
 ## duplication-across-contexts-by-default · SHOULD
 Across bounded contexts, duplication is the default and sharing the exception. A context that needs another's entity keeps its own narrow view of it, such as a reference by identifier. The shared kernel stays small and holds only what is universal and stable.
@@ -146,13 +125,6 @@ Across bounded contexts, duplication is the default and sharing the exception. A
 | Why | Check | Tags |
 |---|---|---|
 | a type shared by two contexts must satisfy both, so every change to it is negotiated, and the contexts stop being able to change apart. | review | [] |
-
-## entities-guarded-where-the-program-owns-them · SHOULD
-Where the program owns the data it changes, every change goes through its aggregate's root, which keeps the aggregate consistent; an aggregate stays small, and a child with a life of its own becomes an aggregate referenced by identifier.
-
-| Why | Check | Tags |
-|---|---|---|
-| one entrance per aggregate means one place holds its invariants, and small aggregates keep a change from locking unrelated data. | review | [data] |
 
 ## entity-behaviour-beside-entity · SHOULD
 What concerns one entity alone — a predicate, a derived value, a transition of state the program owns — is a pure function in that entity's file, never a method and never repeated in use-cases or screens; a use-case orchestrates entities and ports.

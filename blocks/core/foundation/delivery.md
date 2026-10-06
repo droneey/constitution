@@ -18,13 +18,6 @@ A change does what the task asks and nothing else: no unrelated refactor, reform
 |---|---|---|
 | a change that does one thing is reviewed, reverted and understood as one thing. | review | [] |
 
-## move-files-never-recreate · MUST
-A file that moves is moved, never deleted and written anew, and a moved file is not rewritten in the same step.
-
-| Why | Check | Tags |
-|---|---|---|
-| a move keeps the file's history and shows the reviewer that nothing changed but its place. | review | [] |
-
 ## documents-change-with-what-they-describe · SHOULD
 A change that makes a document false — the README, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
 
@@ -35,18 +28,11 @@ A change that makes a document false — the README, `PROJECT.md`, an example of
 ## The check
 
 ## one-check-command · MUST
-One command runs every check of the repository — format, lint, types, tests, coverage, mutation, the rest of the project's tools — and `constitution.yaml` names it.
+The project has one check that runs every tool holding a rule and fails on a violation, and `constitution.yaml` names its command.
 
 | Why | Check | Tags |
 |---|---|---|
-| one command means nobody has to know which checks exist, and everyone who runs it runs the same checks. | review | [] |
-
-## check-only-checks · MUST
-The check verifies and never changes a tracked file: it generates nothing, formats nothing and rewrites nothing. A tool's cache in an ignored folder is not a change.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check that writes can pass by changing what it checks, and leaves a change nobody made on purpose. | review | [] |
+| one check means nobody has to know which tools exist, and everyone who runs it is held to the same rules. | review | [] |
 
 ## check-passes-before-hand-back · MUST
 The check passes, with no error and no warning, before a change is reported done. Completion is never claimed without it.
@@ -84,31 +70,3 @@ A repository keeps at its root `constitution.yaml`, the blocks it follows and th
 | Why | Check | Tags |
 |---|---|---|
 | knowledge beside its module changes with it; one folder of everything drifts from the code it describes. | review | [] |
-
-## generated-files-not-committed · SHOULD
-Generated files are not committed; the build produces them. A file an author's step generates and the program's code imports — not a build output — is the exception, and is committed.
-
-| Why | Check | Tags |
-|---|---|---|
-| a committed copy of something the build produces drifts from its source and fills every diff, but the type check of a fresh clone needs the files the code imports, and the check may not generate them. | review | [] |
-
-## kebab-case-file-names · MUST
-Files and folders are named in kebab-case. Root files that convention names in upper case — `README.md`, `LICENSE.md` — keep it, and the language block fixes the case of source files.
-
-| Why | Check | Tags |
-|---|---|---|
-| one case removes a decision from every new file and keeps names portable across file systems. | tool/names | [] |
-
-## public-repository-carries-a-licence · SHOULD
-A public repository carries a licence file that names its author.
-
-| Why | Check | Tags |
-|---|---|---|
-| code without a licence can be read but not lawfully used, and without an author nobody can ask. | review | [] |
-
-## public-repository-states-security-policy · SHOULD
-A public repository carries `SECURITY.md`, which says how to report a vulnerability privately and which versions get fixes.
-
-| Why | Check | Tags |
-|---|---|---|
-| a finder with no private channel reports in public or not at all, and either way the users learn last. | review | [security] |

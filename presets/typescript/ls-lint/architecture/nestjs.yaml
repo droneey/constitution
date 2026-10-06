@@ -1,0 +1,17 @@
+ls:
+  src/**/providers:
+    .dir: kebab-case | regex:^__tests__$
+    .*: kebab-case
+    .*.*: kebab-case
+    .ts: regex:^index$
+    .tsx: exists:0
+    .*.ts: exists:0
+    .*.tsx: exists:0
+    .*.*.ts: exists:0
+    .*.*.tsx: exists:0
+    .yml: regex:^$
+    .provider.ts: kebab-case
+    .filter.ts: kebab-case
+    .pipe.ts: kebab-case
+    .guard.ts: kebab-case
+    .interceptor.ts: kebab-case
