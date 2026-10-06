@@ -118,6 +118,26 @@ const workspaceOf = (folder: string): void => {
 
 const HEADERS = /^(?:\+\+\+|@@) .*$/gm;
 
+interface Failure {
+  readonly causeCode: unknown;
+  readonly message: string;
+}
+
+const failureOf = (read: () => unknown): Failure | undefined => {
+  try {
+    read();
+  } catch (error) {
+    if (error instanceof Error && error.cause instanceof Error && 'code' in error.cause) {
+      return {
+        causeCode: error.cause.code,
+        message: error.message,
+      };
+    }
+  }
+
+  return undefined;
+};
+
 const workspace = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-branch-')));
 
 workspaceOf(workspace);
@@ -177,5 +197,19 @@ describe('branchIn', () => {
 
     // Assert
     expect(text).toBe('export const total = 1;\n');
+  });
+
+  test('should fail when git cannot run in the folder', () => {
+    // Arrange
+    const missing = join(workspace, 'missing');
+
+    // Act
+    const failure = failureOf(() => branchIn(missing));
+
+    // Assert
+    expect(failure).toStrictEqual({
+      causeCode: 'ENOENT',
+      message: `git merge-base HEAD origin/main failed in ${missing}`,
+    });
   });
 });
