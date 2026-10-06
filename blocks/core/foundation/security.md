@@ -141,8 +141,8 @@ A dependency is imported only from the entries it publishes, never from its inte
 |---|---|---|
 | internal paths change between releases without notice, and an update then breaks the program. | review | [] |
 
-## library-entries-curated → module-hides-much-behind-small-public-entry · MUST
-A library offers its consumers its entries and nothing else, and its manifest lists them wherever its language's manifest can say so.
+## package-entries-curated → module-hides-much-behind-small-public-entry · MUST
+A package others import offers its consumers its entries and nothing else, and its manifest lists them wherever its language's manifest can say so.
 
 | Why | Check | Tags |
 |---|---|---|

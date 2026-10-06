@@ -16,15 +16,15 @@ The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
 |---|---|---|
 | an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | review | [] |
 
-## exports-map-each-entry → library-entries-curated
-`exports` in a library's `package.json` maps each of its entries to its file, so a consumer reaches the library only through the entries it lists.
+## exports-map-each-entry → package-entries-curated
+`exports` in the `package.json` of a package others import maps each of its entries to its file, so a consumer reaches the package only through the entries it lists.
 
 | Why | Check | Tags |
 |---|---|---|
 | a path `exports` does not map cannot be imported, so the curated entries are the whole of what a consumer can couple to. | review | [] |
 
 ## exported-types-have-type-tests · SHOULD
-A library's exported generic and conditional types are proven by type cases the compiler checks.
+The exported generic and conditional types of a package others import are proven by type cases the compiler checks.
 
 | Why | Check | Tags |
 |---|---|---|

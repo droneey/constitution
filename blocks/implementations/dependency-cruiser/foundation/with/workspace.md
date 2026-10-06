@@ -1,10 +1,10 @@
 # dependency-cruiser with workspace
 
-> The configuration of each unit of a workspace.
+> The configuration of each package of a workspace.
 
 ## cruiser-configuration-per-unit → unit-checked-by-its-own-parts
-In a workspace, each unit has a configuration of its own that extends the parts of its blocks, and the parts count a unit's folder as the unit whatever it holds, so the imports between the members inside one unit are the unit's own.
+In a workspace, each package has a configuration of its own, in its folder, that extends the parts of its blocks.
 
 | Why | Check | Tags |
 |---|---|---|
-| the layers inside a unit are its own blocks' to hold, and a member with a manifest of its own is still part of the unit around it. | review | [] |
+| the parts name the tree from the package's own `src/`, and one configuration for the whole repository would hold every package by one package's parts. | review | [] |

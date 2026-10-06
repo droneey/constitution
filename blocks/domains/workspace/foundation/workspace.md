@@ -9,17 +9,24 @@ The root of a workspace is private and never published.
 |---|---|---|
 | the root is the repository's workspace, not a unit, and a consumer who installed it would get the repository's tooling instead of a unit. | review | [] |
 
-## unit-anatomy · SHOULD
-Each unit holds its manifest, its source, and its specs where its language keeps them.
+## one-workspace-per-language · SHOULD
+The root holds one workspace for each language, whose members are every package of that language in the repository, and no package holds a workspace of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| every unit looks the same inside, so a reader and a tool know where each part is. | review | [] |
+| a package manager links and resolves the packages of one workspace together, and a workspace nested in a package is refused by one manager and ignored by another, so its packages are never linked. | review | [] |
+
+## unit-anatomy · SHOULD
+Each package holds its manifest, its source, and its specs where its language keeps them.
+
+| Why | Check | Tags |
+|---|---|---|
+| every package looks the same inside, so a reader and a tool know where each part is. | review | [] |
 
 ## Imports between units
 
 ## units-imported-by-their-entries → dependencies-imported-from-their-entries
-A unit, and a script of the root, imports another unit by the unit's package name, through its entries, never by a path into its folder.
+A unit, and a script of the root, imports another unit by its name, through its entries, never by a path into its folder.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -28,30 +35,23 @@ A unit, and a script of the root, imports another unit by the unit's package nam
 ## The tools
 
 ## unit-checked-by-its-own-parts → rules-held-by-tools
-In a workspace, the files of each unit are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no unit's parts reach another unit's files.
+In a workspace, the files of each package are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no package's parts reach another package's files.
 
 | Why | Check | Tags |
 |---|---|---|
-| a part applied from the root either misses a unit's paths, as one that names `src/` does, and passes in silence, or applies one unit's parts to the others and changes their rules. | review | [] |
+| a part applied from the root either misses a package's paths, as one that names `src/` does, and passes in silence, or applies one package's parts to the others and changes their rules. | review | [] |
 
 ## What units share
 
 ## file-lives-once-across-units → one-home-per-datum
-A file several units need lives once in the repository, and a unit that must ship it holds only a copy generated from it.
+A file several packages need lives once in the repository; a package that needs it at run time takes it from there in its build, and no copy of it is committed.
 
 | Why | Check | Tags |
 |---|---|---|
-| one source means a fix is made once and reaches every unit, and no copy becomes a second original. | review | [] |
-
-## generated-copy-guarded-by-spec → file-lives-once-across-units
-A copy a unit ships of a shared file is rebuilt by the unit's build, never edited by hand, and a spec asserts it equals its source.
-
-| Why | Check | Tags |
-|---|---|---|
-| a copy that drifts from its source ships a different file than the one reviewed. | test | [testing] |
+| one source means a fix is made once and reaches every package, and a committed copy becomes a second original that drifts from the one reviewed. | review | [] |
 
 ## shared-data-parsed-by-each-reader → outside-values-untyped-until-parsed
-Data in no language that several units read — a schema, a table of cases — is parsed by each unit that reads it, at its edge, and that unit's specs read the file itself, never a copy of it.
+Data in no language that several packages read — a schema, a table of cases — is parsed by each package that reads it, at its edge, and that package's specs read the file itself by its path, never a copy of it.
 
 | Why | Check | Tags |
 |---|---|---|

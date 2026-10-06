@@ -1,0 +1,25 @@
+{
+  // Biome 2.5.13 refuses a global by path only in an override; a later override of the same rule
+  // over the same files replaces its denied globals, so no other part denies one in components.
+  "overrides": [
+    {
+      "includes": [
+        "**/components/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "fetch": "A component takes its data and callbacks as props; input and output go through binding units.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ],
+}

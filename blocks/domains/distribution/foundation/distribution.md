@@ -37,6 +37,13 @@ A distributed unit's README shows the install line and the shortest use: for a c
 |---|---|---|
 | a consumer adopts a unit from its README; one that must be read in full to start is not adopted. | review | [] |
 
+## integration-is-an-entry-with-an-optional-framework · SHOULD
+A distributed package's integration into a host framework is an entry of its own, and the framework is an optional dependency of the package.
+
+| Why | Check | Tags |
+|---|---|---|
+| a consumer who uses the framework imports the entry and already has the framework, and one who does not never installs it. | review | [] |
+
 ## Consumers
 
 ## configured-tool-is-a-peer-with-floor · MUST

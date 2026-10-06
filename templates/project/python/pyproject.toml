@@ -92,31 +92,31 @@ ancestors = ["<package>"]
 name = "kernel-imports-only-itself"
 type = "forbidden"
 source_modules = ["*.kernel"]
-forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.libs", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "libs-import-no-application-code"
 type = "forbidden"
 source_modules = ["*.libs"]
-forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.integrations", "*.kernel", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "shared-imports-no-feature-adapter-contract-or-root"
 type = "forbidden"
 source_modules = ["*.shared"]
-forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.root"]
+forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.integrations", "*.root"]
 
 [[tool.importlinter.contracts]]
 name = "contracts-know-no-vendor-or-other-contract"
 type = "forbidden"
 source_modules = ["*.contracts"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "domain-imports-only-itself-kernel-and-contracts"
 type = "forbidden"
 source_modules = ["*.features.*.domain"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.libs", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "domain-imports-no-logging"
@@ -159,6 +159,17 @@ type = "independence"
 modules = ["*.entrypoints.*"]
 
 [[tool.importlinter.contracts]]
+name = "nothing-imports-an-integration"
+type = "protected"
+protected_modules = ["*.integrations"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "nothing-imports-an-integration"
+type = "independence"
+modules = ["*.integrations.*"]
+
+[[tool.importlinter.contracts]]
 name = "dependencies-point-inward"
 type = "forbidden"
 source_modules = ["*.adapters", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
@@ -181,7 +192,7 @@ forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
 name = "layer-folder-never-imported"
 type = "forbidden"
 source_modules = ["**"]
-forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.libs"]
+forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.libs"]
 as_packages = false
 allow_indirect_imports = true
 
@@ -242,29 +253,13 @@ type = "forbidden"
 source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
 forbidden_modules = ["*.api"]
 
-# pydantic: the models kept out of the domain
-[[tool.importlinter.contracts]]
-name = "pydantic-kept-out-of-the-domain"
-type = "forbidden"
-source_modules = ["*.contracts", "*.features.*.domain", "*.kernel"]
-forbidden_modules = ["pydantic", "pydantic_settings"]
-allow_indirect_imports = true
-
-# structlog: configured by the root alone
-[[tool.importlinter.contracts]]
-name = "structlog-imported-only-by-the-root"
-type = "forbidden"
-source_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.kernel", "*.libs", "*.shared"]
-forbidden_modules = ["structlog"]
-allow_indirect_imports = true
-
-# httpx2: the client kept to the edge
-[[tool.importlinter.contracts]]
-name = "httpx2-kept-to-the-edge"
-type = "forbidden"
-source_modules = ["*.composition", "*.contracts", "*.features.*.app", "*.features.*.domain", "*.kernel"]
-forbidden_modules = ["httpx2"]
-allow_indirect_imports = true
+# python-check: the home of each block's package
+[tool.python-check]
+extend = [
+  ".droneey/constitution/presets/python/python-check/architecture/httpx2.toml",
+  ".droneey/constitution/presets/python/python-check/architecture/pydantic.toml",
+  ".droneey/constitution/presets/python/python-check/architecture/structlog.toml",
+]
 
 # vulture: the code nothing in src/ uses
 [tool.vulture]

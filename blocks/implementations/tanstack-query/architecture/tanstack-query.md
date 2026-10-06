@@ -28,12 +28,12 @@ Outside the key factory's `cache.utils.ts`, no key array is written inline — a
 |---|---|---|
 | these are the places a key is written, and an inline one drifts from the factory's, so an invalidation misses it. | tool/lint | [data] |
 
-## components-import-no-query-library → components-dumb-widgets-smart
-A component in `components/` imports no query library.
+## query-library-home-is-the-binding-units → packages-imported-by-folder-role
+The query library's home is the binding units of `app/` and `composition/`, and `root/`, which builds the client; no other folder imports it — no component, adapter or code of `libs/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a component that queries can no longer be shown or tested with plain data. | tool/imports | [] |
+| caching belongs to the binding units: a component that queries can no longer be shown with plain data, an adapter that caches holds a second cache, and a library that caches takes the application's data into code every program shares. | tool/imports | [] |
 
 ## read-declared-once-as-query-options → cache-keys-from-feature-factory
 Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its adapter as input; the hook, the loader and the guard all use it.
@@ -48,20 +48,6 @@ A `queryFn` is written only in `cache.utils.ts`, inside the read's `queryOptions
 | Why | Check | Tags |
 |---|---|---|
 | an inline `queryFn` is a second declaration of the read, and its options drift from the loader's. | tool/lint | [] |
-
-## adapters-never-import-the-cache-library → one-reason-per-unit
-An adapter never imports the cache library; caching belongs to the binding units.
-
-| Why | Check | Tags |
-|---|---|---|
-| an adapter that caches mixes how data is fetched with how long it is kept, and two layers then hold the cache. | tool/imports | [] |
-
-## libs-import-no-query-library → libs-import-no-application-code
-`libs/` never imports the query library.
-
-| Why | Check | Tags |
-|---|---|---|
-| what `libs/` wraps is one vendor's client; the application's cached data stays out. | tool/imports | [] |
 
 ## query-client-built-by-the-root → stateful-clients-built-by-the-root
 `new QueryClient` is written only in `root/`, in the program's entry files and in specs.

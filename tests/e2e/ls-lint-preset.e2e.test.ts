@@ -14,6 +14,8 @@ const WELL_FORMED = [
   'src/root/wiring.ts',
   'src/kernel/index.ts',
   'src/kernel/money.types.ts',
+  'src/types/order.types.ts',
+  'src/integrations/nestjs/index.ts',
   'src/kernel/__tests__/money.types.test.ts',
   'src/contracts/mail/index.ts',
   'src/contracts/mail/mail.port.ts',
@@ -107,9 +109,9 @@ describe('the ls-lint preset', () => {
       reported: 'src/helpers',
     },
     {
-      condition: 'a role folder sits at the top level',
-      path: 'src/types/order.types.ts',
-      reported: 'src/types',
+      condition: 'a file of a role folder at the top level has no role suffix',
+      path: 'src/types/order.ts',
+      reported: 'src/types/order.ts',
     },
     {
       condition: "a feature's domain holds a folder of no role",

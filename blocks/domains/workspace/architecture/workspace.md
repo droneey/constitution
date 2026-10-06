@@ -3,20 +3,35 @@
 ## The tree
 
 ```
-packages/<name>/   the product's units: its applications and the packages it distributes
-shared/            one unit with what two or more of them need, laid out by meaning
-libs/<name>/       what knows nothing of the product
+packages/<name>/          a product, blind to the others
+shared/                   what two or more products need
+libs/<name>/              what knows nothing of the product
+
+packages/<name>/          a unit in one language: the package itself
+├── <manifest>
+└── src/
+
+packages/<name>/          a unit in several languages
+├── shared/               its data in no language, laid out by meaning: schema/, conformance/
+└── <language>/           one package for each language, each with its manifest and the tree in src/
 ```
 
 ## workspace-units-placed-by-reach · SHOULD
-A workspace holds its units in three places at its root: `packages/<name>/`, the product's units — its applications and the packages it distributes; `shared/`, one unit with what two or more of them need; and `libs/<name>/`, what knows nothing of the product. What a unit holds inside its folder, members with manifests of their own included, is its own structure.
+A workspace holds its units in three places at its root, with the roles and the direction they have inside a program: `packages/<name>/`, the products, blind to each other; `shared/`, what two or more products need; and `libs/<name>/`, what knows nothing of the product.
 
 | Why | Check | Tags |
 |---|---|---|
-| a unit's folder says who may use it before it is opened, and the direction of the imports follows from the folders. | review | [] |
+| a unit's folder says who may use it before it is opened, and the direction of the imports follows from the folders as it does between `features/`, `shared/` and `libs/`. | review | [] |
+
+## unit-is-one-package-per-language · SHOULD
+A unit in one language is the package itself, its manifest and `src/` in the unit's folder. A unit in several languages holds `shared/`, its data in no language laid out by meaning — `schema/`, `conformance/` — and a folder for each language, `<language>/`, each one package with the tree in its `src/`; the language's folder appears with the second language. Whatever a unit offers — its core, its wire shapes, its integrations into host frameworks — is a module of that package, an integration in `integrations/<framework>/`, never a package of its own.
+
+| Why | Check | Tags |
+|---|---|---|
+| a unit is then found in one folder whatever its languages, its data in no language is written once beside the packages that read it, and a consumer installs one package and imports the entries it needs. | review | [] |
 
 ## unit-named-after-its-folder · SHOULD
-A unit's package name follows its folder, under the repository's scope: `packages/<name>/` is named `<name>`, `shared/` is named `shared`, and `libs/<name>/` is named `libs-<name>`. Another unit reaches a part of `shared/` through an entry named after the part.
+A unit is imported by its name, which follows its folder under the repository's scope: a product by its own name, in each of its languages; `shared/` as `shared`; a unit of `libs/` as `libs-<name>`. An integration is an entry of the unit's package.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -30,11 +45,11 @@ The root of a workspace holds only the workspace and the configuration of its to
 | a root with no code of its own has nothing a unit could import by accident, and nothing that leaks into a consumer. | review | [] |
 
 ## shared-part-on-the-second-consumer → code-lives-with-its-reason-to-change
-What two or more units of the product need lives in `shared/`, laid out by meaning as a program's `shared/` is — `contracts/`, `kinds/`, the protocol two of them speak — and a part of it appears when a second unit needs it. In a repository of one language `shared/` is a unit of that language; in one of several, it holds a member for each language, with a manifest of its own, and the data in no language beside them.
+What two or more products need lives in `shared/`, laid out by meaning as a program's `shared/` is — `contracts/`, `kinds/`, the protocol two of them speak — and a part of it appears when a second product needs it.
 
 | Why | Check | Tags |
 |---|---|---|
-| kept with its one user, a piece changes with it; moved when a second one needs it, it is written once, in the one place every unit looks for what it shares. | review | [] |
+| kept with its one user, a piece changes with it; moved when a second one needs it, it is written once, in the one place every product looks for what it shares. | review | [] |
 
 ## Direction
 

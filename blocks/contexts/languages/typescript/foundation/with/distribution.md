@@ -22,3 +22,10 @@ Wherever a consumer imports code, an entry of `exports` carries a `types` condit
 | Why | Check | Tags |
 |---|---|---|
 | without the list, every file the ignore rules leave in is packed, and ships by accident. | review | [] |
+
+## integration-is-a-subpath-with-an-optional-peer → integration-is-an-entry-with-an-optional-framework
+An integration is an `exports` subpath named after its framework; the framework is a `peerDependencies` entry marked `optional` in `peerDependenciesMeta`, and a `devDependencies` entry at the exact version the package's specs run on.
+
+| Why | Check | Tags |
+|---|---|---|
+| no package manager installs an optional peer, so the specs and the compiler need the development copy, while a consumer that imports the subpath brings the framework it already uses. | review | [] |

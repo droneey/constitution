@@ -55,6 +55,13 @@ A form's schema composes the predicates of the value objects and sits with the f
 
 ## Components
 
+## primitives-are-a-set-of-components → module-has-one-form
+A set of interface primitives is a set of components, each a module of its own in `components/<name>/`, and grows `features/` only when it gains behaviour of the product.
+
+| Why | Check | Tags |
+|---|---|---|
+| a primitive offers mechanism, not behaviour, so it needs no feature's layers, and a component found in its own folder is found the same way in every kit. | review | [] |
+
 ## component-home-by-knowledge → code-lives-with-its-reason-to-change
 A component lives where its knowledge lives: used by one screen, beside it; knows a feature, in that feature's `ui/`; a generic primitive, in `libs/ui`; specific to the application and used by two or more features, in `shared/ui`; the application's shell, in `root/ui`.
 

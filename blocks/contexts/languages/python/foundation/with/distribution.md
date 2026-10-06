@@ -10,7 +10,7 @@ A published package whose code a consumer imports ships `py.typed` in its import
 | without the marker a consumer's type checker ignores the package's annotations. | review | [] |
 
 ## requires-python-floor-in-the-support-window · SHOULD
-A package published for the public, on an index anyone installs from — a library, or an application distributed through it — floors its `requires-python` at the oldest minor released within the last three years, as SPEC 0 counts them, and never at a minor past its end of life.
+A package published for the public, on an index anyone installs from — one whose code its consumers import, or an application distributed through it — floors its `requires-python` at the oldest minor released within the last three years, as SPEC 0 counts them, and never at a minor past its end of life.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -22,3 +22,10 @@ A published package's `Programming Language :: Python :: 3.<minor>` classifiers 
 | Why | Check | Tags |
 |---|---|---|
 | a classifier tells a consumer which Python the package supports, and a minor the toolchain does not pin is one the package manager downloads or finds on the machine, unverified. | review | [] |
+
+## integration-is-a-submodule-and-an-extra → integration-is-an-entry-with-an-optional-framework
+An integration is a submodule of the import package named after its framework, and the framework is an extra of the same name in `[project.optional-dependencies]`.
+
+| Why | Check | Tags |
+|---|---|---|
+| a consumer installs `<package>[<framework>]` to bring the framework along, and the build writes the extra into the package's metadata as `Provides-Extra`, so nobody else installs it. | review | [] |

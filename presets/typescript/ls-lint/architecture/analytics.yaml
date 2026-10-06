@@ -1,5 +1,5 @@
 ls:
-  src/*/**/sinks:
+  src/**/sinks:
     .dir: kebab-case | regex:^__tests__$
     .ts: regex:^index$
     .*.ts: exists:0

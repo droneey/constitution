@@ -35,3 +35,12 @@ An adapter is a factory function that takes its dependencies and returns the ada
 | Why | Check | Tags |
 |---|---|---|
 | a React program is built of functions, a factory shows every dependency in its signature, and a method of a factory's object handed to a hook or a handler keeps working where a class's loses its `this`. | review | [] |
+
+## Packages
+
+## react-imported-by-the-ui-and-binding-units → packages-imported-by-folder-role
+React's home reaches past the edge into a UI's components and widgets and the binding units of `app/` and `composition/`, which are hooks.
+
+| Why | Check | Tags |
+|---|---|---|
+| the view library is what a component is written in and what a binding unit is built on; every other folder below the edge stays free of it. | tool/imports | [] |

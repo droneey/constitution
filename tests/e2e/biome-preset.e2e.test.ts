@@ -1532,6 +1532,32 @@ describe('the Biome part that needs each setting', () => {
       rule: 'noProcessEnv',
     },
     {
+      condition: 'a component calls the global fetch',
+      files: {
+        'src/features/orders/ui/components/order-card/order-card.ts':
+          "export const load = (): Promise<Response> => fetch('/orders');\n",
+      },
+      isReported: true,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/ui',
+      ],
+      rule: 'noRestrictedGlobals',
+    },
+    {
+      condition: 'an adapter calls the global fetch',
+      files: {
+        'src/features/orders/adapters/http/orders.adapter.ts':
+          "export const load = (): Promise<Response> => fetch('/orders');\n",
+      },
+      isReported: false,
+      parts: [
+        ...FOUNDATION_PARTS,
+        'typescript/architecture/ui',
+      ],
+      rule: 'noRestrictedGlobals',
+    },
+    {
       condition: 'an element without children is closed by a tag',
       files: {
         'src/panel.tsx': component('<div></div>'),

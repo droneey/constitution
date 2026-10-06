@@ -8,8 +8,8 @@
 | a handler added elsewhere writes records past the chain, and `logging.basicConfig` adds one. | review | [] |
 
 ## only-the-root-imports-structlog → diagnostics-through-the-logging-port
-Only `root/` imports structlog.
+structlog's home is `root/`: no other folder imports it.
 
 | Why | Check | Tags |
 |---|---|---|
-| no code below the root then depends on a logging library. | review | [] |
+| no code below the root then depends on a logging library. | tool/imports | [] |

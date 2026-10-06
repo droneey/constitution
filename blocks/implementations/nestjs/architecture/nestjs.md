@@ -61,3 +61,12 @@ The handler is one exception filter whose `@Catch()` names no class, registered 
 | Why | Check | Tags |
 |---|---|---|
 | a filter that names no class receives every exception, the `NotFoundException` of an unknown route and the `BadRequestException` of a malformed body included, while a filter bound to one controller answers its failures in a second shape. | review | [errors, security] |
+
+## Packages
+
+## nestjs-imported-by-modules-and-providers → packages-imported-by-folder-role
+NestJS's home reaches past the edge into `app/` and `composition/`, which hold the modules, controllers and injectable use-cases, and into every `providers/` folder.
+
+| Why | Check | Tags |
+|---|---|---|
+| the injector's decorators are written on the classes these folders hold; the domain, which they never reach, stays free of the framework. | tool/imports | [] |

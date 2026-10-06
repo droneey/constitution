@@ -192,8 +192,8 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/order_entity.py': 'from pydantic import BaseModel\n',
       },
-      finding: 'pydantic-kept-out-of-the-domain BROKEN',
-      task: 'architecture:check',
+      finding: 'features/orders/domain imports no package, and pydantic is one',
+      task: 'code:check',
     },
     {
       condition: 'the kernel reads its settings through pydantic-settings',
@@ -201,8 +201,8 @@ describe('the python template', () => {
         'src/shop/kernel/__init__.py': '',
         'src/shop/kernel/limits.py': 'from pydantic_settings import BaseSettings\n',
       },
-      finding: 'pydantic-kept-out-of-the-domain BROKEN',
-      task: 'architecture:check',
+      finding: 'kernel imports no package, and pydantic_settings is one',
+      task: 'code:check',
     },
     {
       condition: "a feature's domain imports logging",
@@ -221,8 +221,8 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_logs.py': 'import structlog\n',
       },
-      finding: 'structlog-imported-only-by-the-root BROKEN',
-      task: 'architecture:check',
+      finding: 'structlog is imported in features/orders/app, outside its home: root',
+      task: 'code:check',
     },
     {
       condition: "a feature's application layer imports httpx2",
@@ -231,7 +231,32 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_client.py': 'import httpx2\n',
       },
-      finding: 'httpx2-kept-to-the-edge BROKEN',
+      finding:
+        'httpx2 is imported in features/orders/app, outside its home: adapters, libs, shared, root',
+      task: 'code:check',
+    },
+    {
+      condition: "a feature's application layer imports a package no block gives a home",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_dates.py': 'import arrow\n',
+      },
+      finding:
+        'arrow has no home in features/orders/app; a package without one is imported at the edge',
+      task: 'code:check',
+    },
+    {
+      condition: 'a feature imports the integration of a host framework',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_router.py':
+          'from shop.integrations.fastapi import router\n',
+        'src/shop/integrations/__init__.py': '',
+        'src/shop/integrations/fastapi/__init__.py': 'router = 1\n',
+      },
+      finding: 'nothing-imports-an-integration BROKEN',
       task: 'architecture:check',
     },
     {
@@ -428,7 +453,7 @@ describe('the python template', () => {
           'from pydantic import BaseModel',
         ),
       },
-      task: 'architecture:check',
+      task: 'code:check',
     },
     {
       condition: 'the root configures structlog and reads the settings through pydantic-settings',
@@ -437,7 +462,7 @@ describe('the python template', () => {
         'src/shop/root/logs.py': 'import structlog\n',
         'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
       },
-      task: 'architecture:check',
+      task: 'code:check',
     },
     {
       condition: 'the only mutants of a new line are marked equivalent',

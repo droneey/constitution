@@ -34,11 +34,11 @@ block	cli	platform	A program run from a command line, one command per invocation
 block	mobile	platform	Code that runs as an application on a phone or tablet.	foundation/mobile.md architecture/mobile.md	foundation/ui	untrusted-client unreliable-network		false						
 block	css	language	How stylesheets are layered, named and written.	foundation/css.md architecture/css.md	foundation/i18n foundation/ui architecture/ui			false				format lint names		**/*.css
 block	python	language	How Python is written, resolved, typed and packaged.	foundation/python.md architecture/python.md	foundation/distribution architecture/cli architecture/workspace workflow/distribution			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.py **/*.pyi pyproject.toml
-block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/distribution foundation/i18n foundation/workspace architecture/workspace			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json
+block	typescript	language	How TypeScript is written, resolved, typed and packaged.	foundation/typescript.md architecture/typescript.md	foundation/distribution foundation/i18n foundation/workspace architecture/ui architecture/workspace			false				format lint types imports names unused versions tests coverage mutation secrets audit commits		**/*.ts **/*.tsx package.json
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	foundation/_react.md architecture/_react.md	foundation/remote-data	ui typescript		true	react-dom react-native					**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.	foundation/betterleaks.md		git		false		secrets				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	foundation/biome.md architecture/biome.md	foundation/workspace	typescript		false		format lint names	typescript css			biome.json biome.*.jsonc **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md	foundation/distribution foundation/workspace	typescript		false						bunfig.toml package.json
+block	bun	implementation	Bun as runtime, package manager and script runner.	foundation/bun.md architecture/bun.md	foundation/distribution foundation/workspace architecture/workspace	typescript		false						bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	foundation/bun-test.md architecture/bun-test.md	foundation/workspace	bun		false		tests coverage	typescript			**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	foundation/bunli.md architecture/bunli.md		bun cli		false						**/cli/**
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.	foundation/complexipy.md		python		false		lint	python			
@@ -53,9 +53,9 @@ block	git	implementation	Git's ignores, tags, large files and worktrees.	foundat
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.	foundation/hadolint.md		docker		false		lint				.hadolint.yaml
 block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	foundation/httpx2.md architecture/httpx2.md		python remote-service		false						**/adapters/** **/root/**
 block	hypothesis	implementation	Hypothesis writes Python's property tests.	foundation/hypothesis.md		python		false						
-block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md	architecture/httpx2 architecture/pydantic architecture/structlog architecture/workspace	python		false		imports	python			
-block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md		typescript		false		unused	typescript			knip.config.ts
-block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md	architecture/ui	typescript remote-service		false						**/providers/** **/adapters/**
+block	import-linter	implementation	import-linter holds the import rules between Python's modules.	foundation/import-linter.md architecture/import-linter.md	architecture/workspace	python		false		imports	python			
+block	knip	implementation	Finds unused files, dependencies and exports.	foundation/knip.md	foundation/distribution	typescript		false		unused	typescript			knip.config.ts
+block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	foundation/ky.md architecture/ky.md		typescript remote-service		false						**/providers/** **/adapters/**
 block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks	git		false		commits				lefthook.yaml
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.	foundation/lingui.md	foundation/_react foundation/bun-test foundation/vite architecture/ui	i18n typescript		false						lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.	foundation/ls-lint.md architecture/ls-lint.md				false		names				.ls-lint.yaml
@@ -70,11 +70,11 @@ block	pydantic	implementation	pydantic parses what crosses the program's edge in
 block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	foundation/pytest.md architecture/pytest.md		python		false		tests coverage	python			**/tests/**
 block	python-check	implementation	The constitution's own check of what no Python tool holds.	foundation/python-check.md architecture/python-check.md		python		false		lint imports	python			
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	foundation/react-dom.md architecture/react-dom.md	foundation/bun-test	browser	_react	false					_react	**/*.tsx
-block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md		mobile	_react	false					_react	**/*.tsx
+block	react-native	implementation	React on a device — host components, virtualised lists, modules.	foundation/react-native.md architecture/react-native.md		mobile	_react	false					_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot.	foundation/renovate.md workflow/renovate.md		git		false						renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.	foundation/ruff.md	foundation/fastapi foundation/pytest	python		false		format lint	python			pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	foundation/shadcn.md architecture/shadcn.md		react-dom tailwind		false						components.json **/libs/ui/components/**
-block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md		_react		false						**/*.stories.tsx .storybook/**
+block	storybook	implementation	Storybook — a story for every state of a UI kit component.	foundation/storybook.md architecture/storybook.md		_react		false						**/*.stories.tsx .storybook/**
 block	structlog	implementation	structlog renders the records of Python's logging as events.	foundation/structlog.md architecture/structlog.md		python observability		false						**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.	foundation/stryker.md	foundation/bun-test foundation/workspace	typescript		false		mutation	typescript			stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.	foundation/syncpack.md		typescript		false		versions format	typescript			.syncpackrc.mjs
@@ -87,12 +87,12 @@ block	testing-library	implementation	Testing Library — specs that use the UI t
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.	foundation/ts-reset.md		typescript		false						src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.	foundation/tsc.md	foundation/bun-test foundation/workspace	typescript		false		types	typescript			tsconfig.json tsconfig.src.json tsconfig.test.json
 block	ty	implementation	ty checks the types of Python.	foundation/ty.md		python		false		types	python			ty.toml
-block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/distribution foundation/workspace	python		false						pyproject.toml uv.lock
+block	uv	implementation	uv as Python's package manager, resolver and build backend.	foundation/uv.md	foundation/distribution foundation/workspace architecture/workspace	python		false						pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.	foundation/vite.md	foundation/browser	typescript		false						vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.	foundation/vulture.md		python		false		unused	python			
 block	yaml	implementation	The yaml package reads and writes YAML.	foundation/yaml.md architecture/yaml.md	foundation/convergence	typescript		false						**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.	foundation/yamllint.md				false						.yamllint.yaml
-block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md	foundation/convergence	typescript		false						**/models/** **/adapters/**
+block	zod	implementation	zod parses untrusted input into the program's types.	foundation/zod.md	foundation/convergence architecture/convergence architecture/ui	typescript		false						**/models/** **/adapters/**
 rule	intention-revealing-names	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	names-from-the-glossary	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
 rule	one-word-per-concept	core	blocks/core/foundation/code.md		SHOULD	review				foundation		true
@@ -173,6 +173,7 @@ rule	kebab-case-file-names	core	blocks/core/foundation/files.md		MUST	tool	names
 rule	yaml-files-end-in-yaml	core	blocks/core/foundation/files.md		SHOULD	tool	names			foundation		true
 rule	folder-named-for-its-purpose	core	blocks/core/foundation/files.md		SHOULD	review				foundation		true
 rule	one-purpose-per-folder	core	blocks/core/foundation/files.md		SHOULD	review				foundation		true
+rule	folder-appears-with-its-first-file	core	blocks/core/foundation/files.md		SHOULD	review				foundation		true
 rule	set-folder-holds-only-members	core	blocks/core/foundation/files.md		SHOULD	review				foundation		true
 rule	illegal-states-unrepresentable	core	blocks/core/foundation/principles.md		MUST	review				foundation		true
 rule	errors-surfaced-never-swallowed	core	blocks/core/foundation/principles.md		MUST	review			errors	foundation		true
@@ -204,7 +205,7 @@ rule	template-copied-once-owned-by-consumer	core	blocks/core/foundation/security
 rule	program-dependencies-ranged-lockfile-pins	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	one-version-per-dependency	core	blocks/core/foundation/security.md		MUST	review				foundation		true
 rule	dependencies-imported-from-their-entries	core	blocks/core/foundation/security.md		MUST	review				foundation		true
-rule	library-entries-curated	core	blocks/core/foundation/security.md		MUST	review				foundation	module-hides-much-behind-small-public-entry	true
+rule	package-entries-curated	core	blocks/core/foundation/security.md		MUST	review				foundation	module-hides-much-behind-small-public-entry	true
 rule	ci-steps-pinned-to-immutable-references	core	blocks/core/foundation/security.md		MUST	review			security	foundation		true
 rule	dependency-release-cooldown	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
 rule	new-dependency-vetted	core	blocks/core/foundation/security.md		SHOULD	review			security	foundation		true
@@ -263,13 +264,14 @@ rule	immutable-by-default	core	blocks/core/foundation/types.md		SHOULD	review			
 rule	documents-strict-vendor-answers-tolerant	core	blocks/core/foundation/types.md		MUST	review			data	foundation		true
 rule	no-any-type	core	blocks/core/foundation/types.md		MUST	review				foundation		true
 rule	instants-carry-their-zone	core	blocks/core/foundation/types.md		MUST	review			data	foundation		true
+rule	module-has-one-form	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	anatomy-top-level-by-concern	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	top-level-folders-from-the-tree	core	blocks/core/architecture/anatomy.md		SHOULD	tool	names			architecture	anatomy-top-level-by-concern	false
 rule	root-imported-only-by-entry-and-delivery-wiring	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
 rule	nothing-imports-an-entrypoint	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
+rule	nothing-imports-an-integration	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
 rule	kernel-imports-only-itself	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
 rule	libs-import-no-application-code	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
-rule	library-has-the-form-of-libs	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	shared-imports-no-feature-adapter-contract-or-root	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture		true
 rule	kernel-or-shared-by-meaning	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	composition-on-the-second-consumer	core	blocks/core/architecture/anatomy.md		MUST	review				architecture	code-lives-with-its-reason-to-change	false
@@ -289,6 +291,7 @@ rule	layer-folder-has-no-surface	core	blocks/core/architecture/anatomy.md		MUST	
 rule	layer-folder-never-imported	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture	layer-folder-has-no-surface	false
 rule	surface-only-re-exports	core	blocks/core/architecture/anatomy.md		MUST	tool	lint			architecture		true
 rule	surface-offers-operations-not-mechanisms	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
+rule	packages-imported-by-folder-role	core	blocks/core/architecture/anatomy.md		MUST	tool	imports			architecture	dependencies-point-inward	false
 rule	contract-lifts-on-the-second-feature	core	blocks/core/architecture/anatomy.md		MUST	review				architecture	code-lives-with-its-reason-to-change	false
 rule	one-adapter-per-system	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
 rule	adapter-is-a-factory-module-object-or-class	core	blocks/core/architecture/anatomy.md		SHOULD	review				architecture		true
@@ -399,6 +402,7 @@ rule	ships-only-the-files-it-names	distribution	blocks/domains/distribution/foun
 rule	ships-its-types	distribution	blocks/domains/distribution/foundation/distribution.md		MUST	review				foundation		true
 rule	ships-its-licence	distribution	blocks/domains/distribution/foundation/distribution.md		SHOULD	review				foundation		true
 rule	readme-shows-install-and-first-use	distribution	blocks/domains/distribution/foundation/distribution.md		SHOULD	review				foundation	readme-is-the-front-door	false
+rule	integration-is-an-entry-with-an-optional-framework	distribution	blocks/domains/distribution/foundation/distribution.md		SHOULD	review				foundation		true
 rule	configured-tool-is-a-peer-with-floor	distribution	blocks/domains/distribution/foundation/distribution.md		MUST	review				foundation		true
 rule	shipped-configuration-asserted-by-spec	distribution	blocks/domains/distribution/foundation/distribution.md		MUST	test			testing	foundation	spec-per-boundary	true
 rule	breaking-change-ships-its-migration	distribution	blocks/domains/distribution/foundation/distribution.md		MUST	review				foundation		true
@@ -533,6 +537,7 @@ rule	screen-private-pieces-beside-screen	ui	blocks/domains/ui/architecture/ui.md
 rule	root-boundary-catches-the-rest	ui	blocks/domains/ui/architecture/ui.md		MUST	review			errors security ux	architecture	one-error-handler-per-transport	false
 rule	client-concerns-in-root-built-stores	ui	blocks/domains/ui/architecture/ui.md		MUST	review			data	architecture	one-home-per-datum	false
 rule	form-reuses-domain-predicates	ui	blocks/domains/ui/architecture/ui.md		MUST	review			data	architecture	value-object-built-only-by-its-check	false
+rule	primitives-are-a-set-of-components	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	module-has-one-form	false
 rule	component-home-by-knowledge	ui	blocks/domains/ui/architecture/ui.md		MUST	review				architecture	code-lives-with-its-reason-to-change	false
 rule	component-named-by-location	ui	blocks/domains/ui/architecture/ui.md		SHOULD	review				architecture	folder-named-for-purpose-or-role	false
 rule	root-components-prefixed	ui	blocks/domains/ui/architecture/ui.md		SHOULD	tool	names			architecture	component-named-by-location	false
@@ -608,14 +613,15 @@ rule	sub-agent-never-commits-pushes-or-merges	version-control	blocks/domains/ver
 rule	agent-never-force-pushes	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	shared-history-never-rewritten	false
 rule	no-attribution-in-commits-or-pull-requests	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	review				workflow	no-tool-attribution	false
 rule	workspace-root-private	workspace	blocks/domains/workspace/foundation/workspace.md		SHOULD	review				foundation		true
+rule	one-workspace-per-language	workspace	blocks/domains/workspace/foundation/workspace.md		SHOULD	review				foundation		true
 rule	unit-anatomy	workspace	blocks/domains/workspace/foundation/workspace.md		SHOULD	review				foundation		true
 rule	units-imported-by-their-entries	workspace	blocks/domains/workspace/foundation/workspace.md		MUST	tool	imports			foundation	dependencies-imported-from-their-entries	false
 rule	unit-checked-by-its-own-parts	workspace	blocks/domains/workspace/foundation/workspace.md		MUST	review				foundation	rules-held-by-tools	false
 rule	file-lives-once-across-units	workspace	blocks/domains/workspace/foundation/workspace.md		MUST	review			data	foundation	one-home-per-datum	false
-rule	generated-copy-guarded-by-spec	workspace	blocks/domains/workspace/foundation/workspace.md		MUST	test			testing data	foundation	file-lives-once-across-units	false
 rule	shared-data-parsed-by-each-reader	workspace	blocks/domains/workspace/foundation/workspace.md		MUST	test			testing security	foundation	outside-values-untyped-until-parsed	false
 rule	units-linked-from-the-working-tree	workspace	blocks/domains/workspace/foundation/workspace.md		SHOULD	review				foundation		true
 rule	workspace-units-placed-by-reach	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD	review				architecture		true
+rule	unit-is-one-package-per-language	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD	review				architecture		true
 rule	unit-named-after-its-folder	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD	review				architecture		true
 rule	root-holds-only-the-workspace	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD	review				architecture		true
 rule	shared-part-on-the-second-consumer	workspace	blocks/domains/workspace/architecture/workspace.md		MUST	review				architecture	code-lives-with-its-reason-to-change	false
@@ -758,12 +764,13 @@ rule	domain-imports-no-logging	python	blocks/contexts/languages/python/architect
 rule	py-typed-where-code-is-imported	python	blocks/contexts/languages/python/foundation/with/distribution.md	distribution	MUST	review		python		foundation	ships-its-types	false
 rule	requires-python-floor-in-the-support-window	python	blocks/contexts/languages/python/foundation/with/distribution.md	distribution	SHOULD	review		python		foundation		true
 rule	supported-minors-classified-and-pinned	python	blocks/contexts/languages/python/foundation/with/distribution.md	distribution	MUST	review		python		foundation		true
+rule	integration-is-a-submodule-and-an-extra	python	blocks/contexts/languages/python/foundation/with/distribution.md	distribution	SHOULD	review		python		foundation	integration-is-an-entry-with-an-optional-framework	false
 rule	python-commands-in-cli-modules	python	blocks/contexts/languages/python/architecture/with/cli.md	cli	SHOULD	review		python		architecture	commands-in-the-cli-folder	false
 rule	python-unit-names-under-the-scope	python	blocks/contexts/languages/python/architecture/with/workspace.md	workspace	SHOULD	review		python		architecture	unit-named-after-its-folder	false
 rule	requires-python-raised-in-a-minor	python	blocks/contexts/languages/python/workflow/with/distribution.md	distribution	MUST	review		python		workflow	versions-follow-semver	false
 rule	alias-declared-in-package-imports	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation		true
 rule	hash-alias-for-the-source-root	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation	alias-declared-in-package-imports	false
-rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation	library-entries-curated	false
+rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	review		typescript		foundation	package-entries-curated	false
 rule	exported-types-have-type-tests	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript	testing	foundation		true
 rule	file-named-after-its-export	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		SHOULD	review		typescript		foundation		true
 rule	typescript-file-forms	typescript	blocks/contexts/languages/typescript/foundation/typescript.md		MUST	tool	names	typescript		foundation	kebab-case-file-names	false
@@ -823,10 +830,12 @@ rule	semantic-alias-exported-where-it-belongs	typescript	blocks/contexts/languag
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/foundation/with/distribution.md	distribution	MUST	review		typescript		foundation	configured-tool-is-a-peer-with-floor	false
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/foundation/with/distribution.md	distribution	MUST	review		typescript		foundation	ships-its-types	false
 rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/foundation/with/distribution.md	distribution	MUST	review		typescript	security	foundation	ships-only-the-files-it-names	false
+rule	integration-is-a-subpath-with-an-optional-peer	typescript	blocks/contexts/languages/typescript/foundation/with/distribution.md	distribution	SHOULD	review		typescript		foundation	integration-is-an-entry-with-an-optional-framework	false
 rule	intl-calls-take-a-locale	typescript	blocks/contexts/languages/typescript/foundation/with/i18n.md	i18n	MUST	tool	lint	typescript	ux	foundation	formatters-take-the-active-locale	false
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/foundation/with/workspace.md	workspace	SHOULD	review		typescript		foundation	workspace-root-private	false
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/foundation/with/workspace.md	workspace	MUST	review		typescript		foundation	unit-checked-by-its-own-parts	false
 rule	own-units-are-no-tools	typescript	blocks/contexts/languages/typescript/foundation/with/workspace.md	workspace	SHOULD	review		typescript		foundation	units-linked-from-the-working-tree	false
+rule	components-call-no-global-fetch	typescript	blocks/contexts/languages/typescript/architecture/with/ui.md	ui	MUST	tool	lint	typescript		architecture	components-dumb-widgets-smart	false
 rule	typescript-unit-names-under-the-scope	typescript	blocks/contexts/languages/typescript/architecture/with/workspace.md	workspace	SHOULD	review		typescript		architecture	unit-named-after-its-folder	false
 rule	react-compiler-on	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript	performance	foundation		true
 rule	render-is-pure	_react	blocks/implementations/_react/foundation/_react.md		MUST	review		typescript		foundation		true
@@ -856,6 +865,7 @@ rule	component-effects-in-its-hooks-file	_react	blocks/implementations/_react/ar
 rule	component-file-calls-no-effect-hook	_react	blocks/implementations/_react/architecture/_react.md		MUST	tool	lint	typescript		architecture	component-effects-in-its-hooks-file	false
 rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
 rule	adapter-is-a-factory-or-module-object	_react	blocks/implementations/_react/architecture/_react.md		SHOULD	review		typescript		architecture	adapter-is-a-factory-module-object-or-class	false
+rule	react-imported-by-the-ui-and-binding-units	_react	blocks/implementations/_react/architecture/_react.md		MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 rule	data-failures-rendered-as-state	_react	blocks/implementations/_react/foundation/with/remote-data.md	remote-data	MUST	review		typescript	errors ux	foundation	data-result-is-union-by-status	false
 rule	allowlisted-finding-states-its-reason	betterleaks	blocks/implementations/betterleaks/foundation/betterleaks.md		MUST	review			security	foundation	suppression-silences-one-finding	false
 rule	biome-formats-every-file-it-reads	biome	blocks/implementations/biome/foundation/biome.md		MUST	tool	format	typescript		foundation	code-formatted-by-one-formatter	false
@@ -877,6 +887,8 @@ rule	process-env-read-only-in-root	bun	blocks/implementations/bun/architecture/b
 rule	units-published-by-npm	bun	blocks/implementations/bun/foundation/with/distribution.md	distribution	MUST	review		typescript	security	foundation	publishing-by-workflow-identity	false
 rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/foundation/with/workspace.md	workspace	SHOULD	review		typescript		foundation	units-linked-from-the-working-tree	false
 rule	own-units-at-workspace-version	bun	blocks/implementations/bun/foundation/with/workspace.md	workspace	SHOULD	tool	versions	typescript		foundation	units-linked-from-the-working-tree	false
+rule	shared-data-bundled-by-the-build	bun	blocks/implementations/bun/foundation/with/workspace.md	workspace	MUST	review		typescript	data	foundation	file-lives-once-across-units	false
+rule	workspaces-globbed-by-the-tree	bun	blocks/implementations/bun/architecture/with/workspace.md	workspace	SHOULD	review		typescript		architecture	workspaces-declared-in-the-root	false
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript	testing	foundation	one-intent-per-case	false
 rule	no-module-mocks	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	tool	lint	typescript		foundation	effects-faked-never-mocked	false
 rule	integration-specs-ignored-by-bunfig	bun-test	blocks/implementations/bun-test/foundation/bun-test.md		SHOULD	review		typescript	testing	foundation	integration-tested-against-the-real-engine	false
@@ -959,23 +971,20 @@ rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/found
 rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python		architecture	one-transport-instance-per-system	false
 rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python	errors	architecture	transport-failures-mapped-once	false
 rule	retries-written-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	review		python	errors	architecture	httpx2-retries-kept-to-transient-failures	false
-rule	httpx2-only-at-the-edge	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	review		python		architecture	side-effects-at-the-edges	false
+rule	httpx2-only-at-the-edge	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	tool	imports	python		architecture	side-effects-at-the-edges	false
 rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-tests-where-they-pay	false
 rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	property-counterexample-kept-as-case	false
 rule	ci-profile-left-to-hypothesis	hypothesis	blocks/implementations/hypothesis/foundation/hypothesis.md		SHOULD	review		python	testing	foundation	flaky-test-fixed-or-removed	false
 rule	contract-named-after-its-rule	import-linter	blocks/implementations/import-linter/foundation/import-linter.md		SHOULD	review		python		foundation		true
-rule	httpx2-kept-to-the-edge	import-linter	blocks/implementations/import-linter/architecture/with/httpx2.md	httpx2	MUST	tool	imports	python		architecture	httpx2-only-at-the-edge	false
-rule	pydantic-kept-out-of-the-domain	import-linter	blocks/implementations/import-linter/architecture/with/pydantic.md	pydantic	MUST	tool	imports	python	security	architecture	pydantic-only-at-the-edge	false
-rule	structlog-imported-only-by-the-root	import-linter	blocks/implementations/import-linter/architecture/with/structlog.md	structlog	MUST	tool	imports	python		architecture	only-the-root-imports-structlog	false
 rule	units-blind-by-an-independence-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST	tool	imports	python		architecture	product-units-blind-to-each-other	false
 rule	units-ordered-by-a-layers-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST	tool	imports	python		architecture	units-import-toward-libs	false
 rule	production-set-marked-in-the-entries	knip	blocks/implementations/knip/foundation/knip.md		MUST	tool	unused	typescript		foundation	no-dead-code	false
+rule	optional-peer-ignored-in-production	knip	blocks/implementations/knip/foundation/with/distribution.md	distribution	MUST	review		typescript		foundation	production-set-marked-in-the-entries	false
 rule	ky-timeout-and-signal-kept	ky	blocks/implementations/ky/foundation/ky.md		MUST	review		typescript	performance errors	foundation	io-has-timeout-and-cancellation	true
 rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/foundation/ky.md		SHOULD	review		typescript	performance errors	foundation	retry-only-transient-failures	false
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/foundation/ky.md		MUST	tool	lint	typescript	security	foundation	boundary-values-unknown-until-parsed	false
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript		architecture	one-transport-instance-per-system	false
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	review		typescript	errors	architecture	transport-failures-mapped-once	false
-rule	components-import-no-http-client	ky	blocks/implementations/ky/architecture/with/ui.md	ui	MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
 rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	review			security	workflow	hooks-and-release-automation-from-the-shared-source	false
 rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	review				workflow		true
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	review			testing	workflow	commit-checked-by-the-hooks	false
@@ -989,7 +998,7 @@ rule	t-never-at-module-level	lingui	blocks/implementations/lingui/foundation/lin
 rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/foundation/with/_react.md	_react	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	false
 rule	macros-expanded-by-the-test-preload	lingui	blocks/implementations/lingui/foundation/with/bun-test.md	bun-test	MUST	review		typescript	testing ux	foundation	messages-through-lingui-macros	false
 rule	macros-expanded-by-the-lingui-plugin	lingui	blocks/implementations/lingui/foundation/with/vite.md	vite	MUST	review		typescript	ux	foundation	messages-through-lingui-macros	false
-rule	primitives-import-no-message-catalog	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	primitives-take-text-by-props	false
+rule	lingui-only-where-text-is-rendered	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	tool	imports	typescript	ux	architecture	domain-returns-codes-not-text	false
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/foundation/ls-lint.md		SHOULD	tool	names			foundation	yaml-files-end-in-yaml	false
 rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	security	foundation	tracking-waits-for-consent	false
 rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/foundation/matomo.md		MUST	review		typescript	security data	foundation	no-personal-data-in-events	false
@@ -1019,6 +1028,7 @@ rule	injector-never-asked-for-a-dependency	nestjs	blocks/implementations/nestjs/
 rule	no-global-module	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript		architecture	one-explicit-composition-root	false
 rule	contracts-injected-by-token	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	testing	architecture	one-explicit-composition-root	false
 rule	error-kit-mapped-by-one-exception-filter	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	review		typescript	errors security ux	architecture	one-error-handler-registered-by-the-root	false
+rule	nestjs-imported-by-modules-and-providers	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 rule	decorator-options-where-bun-reads	nestjs	blocks/implementations/nestjs/foundation/with/bun-test.md	bun-test	MUST	review		typescript	errors	foundation	compiler-keeps-decorator-metadata	false
 rule	nest-logs-through-the-pino-instance	nestjs	blocks/implementations/nestjs/foundation/with/pino.md	pino	MUST	review		typescript	security data	foundation	one-instance-writes-every-record	false
 rule	every-lockfile-scanned-for-vulnerabilities	osv-scanner	blocks/implementations/osv-scanner/foundation/osv-scanner.md		MUST	tool	audit		security	foundation	known-vulnerabilities-fail-the-check	false
@@ -1049,7 +1059,7 @@ rule	settings-model-prefixed-and-closed	pydantic	blocks/implementations/pydantic
 rule	models-frozen	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		SHOULD	review		python		foundation	immutable-by-default	false
 rule	secrets-typed-secret-str	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	review		python	security data	foundation	no-secret-or-personal-data-in-output	false
 rule	pydantic-two-forms-only	pydantic	blocks/implementations/pydantic/foundation/pydantic.md		MUST	review		python		foundation	deprecated-forms-never-used	false
-rule	pydantic-only-at-the-edge	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	untrusted-input-parsed-at-edge	false
+rule	pydantic-only-at-the-edge	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	tool	imports	python	security	architecture	untrusted-input-parsed-at-edge	false
 rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	data	architecture	external-shapes-mapped-at-boundary	false
 rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	review		python	security	architecture	environment-read-only-by-the-root	false
 rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/foundation/with/convergence.md	convergence	MUST	test		python	data	foundation	published-schema-generated-from-code	false
@@ -1064,6 +1074,7 @@ rule	no-module-patching	pytest	blocks/implementations/pytest/foundation/pytest.m
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/foundation/pytest.md		SHOULD	review		python	errors	foundation	structured-concurrency	false
 rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/foundation/python-check.md		MUST	tool	lint	python		foundation	function-file-and-complexity-limits	false
 rule	relative-import-kept-in-its-feature	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	tool	imports	python		architecture	relative-imports-stay-in-the-feature	false
+rule	packages-kept-to-their-homes	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	tool	imports	python		architecture	packages-imported-by-folder-role	false
 rule	no-dangerously-set-inner-html	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	security	foundation	no-raw-html-injection	false
 rule	one-writer-of-the-head	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	review		typescript	ux	foundation	browser-resources-have-one-writer	false
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/foundation/react-dom.md		MUST	tool	lint	typescript	a11y	foundation		true
@@ -1085,6 +1096,7 @@ rule	dom-registered-before-the-sandbox	react-dom	blocks/implementations/react-do
 rule	list-never-mapped-in-a-scroll-view	react-native	blocks/implementations/react-native/foundation/react-native.md		SHOULD	review		typescript	performance	foundation	long-lists-virtualised	false
 rule	no-literal-colour-in-a-style	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript	ux	foundation	tokens-single-source-of-appearance	false
 rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/foundation/react-native.md		MUST	tool	lint	typescript		foundation	dependencies-imported-from-their-entries	false
+rule	react-native-imported-by-the-ui	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 rule	update-cooldown-configured	renovate	blocks/implementations/renovate/foundation/renovate.md		SHOULD	review			security	foundation	dependency-release-cooldown	false
 rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	review			security	workflow	hooks-and-release-automation-from-the-shared-source	false
 rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovate/workflow/renovate.md		MUST	review				workflow	commit-header-type-and-subject	false
@@ -1111,6 +1123,7 @@ rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storyboo
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	review		typescript	testing	foundation	coverage-holds-all-logic	false
 rule	stories-unreachable-from-production	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	tool	imports	typescript	testing	foundation	test-code-unreachable-from-production	false
 rule	stories-fail-on-a11y-violations	storybook	blocks/implementations/storybook/foundation/storybook.md		MUST	review		typescript	a11y	foundation	ui-specs-scan-accessibility	false
+rule	stories-import-what-they-render-with	storybook	blocks/implementations/storybook/architecture/storybook.md		MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python		foundation	diagnostics-through-the-logging-facade	false
 rule	one-chain-for-every-record	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	log-records-pass-one-pipeline	false
 rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlog/foundation/structlog.md		MUST	review		python	security data	foundation	log-secrets-masked-by-key	false
@@ -1118,7 +1131,7 @@ rule	json-in-production-console-in-development	structlog	blocks/implementations/
 rule	trace-id-bound-through-contextvars	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-records-carry-the-trace-id	false
 rule	fields-passed-in-extra	structlog	blocks/implementations/structlog/foundation/structlog.md		SHOULD	review		python		foundation	log-record-is-an-event-with-fields	false
 rule	structlog-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	logging-configured-by-the-root	false
-rule	only-the-root-imports-structlog	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	review		python		architecture	diagnostics-through-the-logging-port	false
+rule	only-the-root-imports-structlog	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST	tool	imports	python		architecture	diagnostics-through-the-logging-port	false
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/foundation/stryker.md		MUST	review		typescript		foundation	suppression-silences-one-finding	false
 rule	stryker-runs-the-archive-runner	stryker	blocks/implementations/stryker/foundation/with/bun-test.md	bun-test	MUST	tool	mutation	typescript	testing	foundation	mutants-all-killed	false
 rule	stryker-configuration-per-unit	stryker	blocks/implementations/stryker/foundation/with/workspace.md	workspace	MUST	review		typescript		foundation	unit-checked-by-its-own-parts	false
@@ -1143,6 +1156,7 @@ rule	no-outline-none-in-class-lists	tailwind	blocks/implementations/tailwind/fou
 rule	logical-utilities-for-direction	tailwind	blocks/implementations/tailwind/foundation/with/i18n.md	i18n	SHOULD	tool	lint	css typescript	ux	foundation	logical-properties-for-direction	false
 rule	form-state-in-the-form-instance	tanstack-form	blocks/implementations/tanstack-form/foundation/tanstack-form.md		MUST	review		typescript	data	foundation	one-home-per-datum	false
 rule	form-submits-through-a-binding-unit	tanstack-form	blocks/implementations/tanstack-form/architecture/tanstack-form.md		MUST	review		typescript		architecture	components-dumb-widgets-smart	false
+rule	form-library-imported-by-the-ui	tanstack-form	blocks/implementations/tanstack-form/architecture/tanstack-form.md		MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 rule	query-for-reads-mutation-for-writes	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		SHOULD	review		typescript	data	foundation		true
 rule	query-result-returned-as-status-union	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		MUST	review		typescript	data ux	foundation	data-result-is-union-by-status	false
 rule	optimism-in-the-mutation-lifecycle	tanstack-query	blocks/implementations/tanstack-query/foundation/tanstack-query.md		MUST	review		typescript	ux data	foundation	optimistic-lifecycle-safe-under-concurrency	false
@@ -1156,11 +1170,9 @@ rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tan
 rule	query-functions-call-the-handed-adapter	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	review		typescript		architecture	binding-unit-composes-its-operation	false
 rule	key-factory-in-cache-utils	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	cache-keys-from-feature-factory	false
 rule	keys-only-from-the-key-factory	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript	data	architecture	cache-keys-from-feature-factory	false
-rule	components-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	components-dumb-widgets-smart	false
+rule	query-library-home-is-the-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 rule	read-declared-once-as-query-options	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	data	architecture	cache-keys-from-feature-factory	false
 rule	query-function-only-in-cache-utils	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript	data	architecture	read-declared-once-as-query-options	false
-rule	adapters-never-import-the-cache-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	one-reason-per-unit	false
-rule	libs-import-no-query-library	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
 rule	query-client-built-by-the-root	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	tool	lint	typescript		architecture	stateful-clients-built-by-the-root	false
 rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	review		typescript	errors	architecture	unauthorized-acted-on-once-by-the-cache	false
 rule	layout-lives-in-route-file	tanstack-router	blocks/implementations/tanstack-router/foundation/tanstack-router.md		SHOULD	review		typescript		foundation		true
@@ -1186,7 +1198,6 @@ rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementation
 rule	screen-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	names	typescript		architecture	screen-private-pieces-in-dash-folders	false
 rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	review		typescript	ux	architecture	document-metadata-owned-by-screen	false
 rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	tool	imports	typescript		architecture	screen-private-pieces-beside-screen	false
-rule	libs-import-no-router	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	libs-import-no-application-code	false
 rule	routes-imported-by-no-inner-layer	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	tool	imports	typescript		architecture	dependencies-point-inward	false
 rule	services-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST	review		typescript		architecture	one-explicit-composition-root	false
 rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/foundation/with/access-control.md	access-control	MUST	review		typescript	security	foundation	access-denied-unless-granted	false
@@ -1226,8 +1237,10 @@ rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/foundation/uv.md
 rule	files-shipped-named-in-pyproject	uv	blocks/implementations/uv/foundation/with/distribution.md	distribution	MUST	review		python	security	foundation	ships-only-the-files-it-names	false
 rule	distribution-uploaded-with-its-attestation	uv	blocks/implementations/uv/foundation/with/distribution.md	distribution	MUST	review		python	security	foundation	publishing-by-workflow-identity	false
 rule	workspace-root-has-no-project	uv	blocks/implementations/uv/foundation/with/workspace.md	workspace	SHOULD	review		python		foundation	workspace-root-private	false
-rule	members-linked-by-workspace-source	uv	blocks/implementations/uv/foundation/with/workspace.md	workspace	SHOULD	review		python		foundation	units-linked-from-the-working-tree	false
+rule	packages-linked-by-workspace-source	uv	blocks/implementations/uv/foundation/with/workspace.md	workspace	SHOULD	review		python		foundation	units-linked-from-the-working-tree	false
 rule	one-lock-for-the-workspace	uv	blocks/implementations/uv/foundation/with/workspace.md	workspace	MUST	review		python		foundation	one-version-per-dependency	false
+rule	shared-data-linked-into-the-import-package	uv	blocks/implementations/uv/foundation/with/workspace.md	workspace	MUST	test		python	data	foundation	file-lives-once-across-units	false
+rule	uv-workspace-globbed-by-the-tree	uv	blocks/implementations/uv/architecture/with/workspace.md	workspace	SHOULD	review		python		architecture	packages-linked-by-workspace-source	false
 rule	manifest-declares-side-effects	vite	blocks/implementations/vite/foundation/vite.md		SHOULD	review		typescript		foundation		true
 rule	build-env-holds-only-build-facts	vite	blocks/implementations/vite/foundation/with/browser.md	browser	MUST	review		typescript	security	foundation	runtime-configuration-served-beside-bundle	false
 rule	process-env-never-read-in-the-bundle	vite	blocks/implementations/vite/foundation/with/browser.md	browser	MUST	review		typescript	security	foundation	bundle-reads-no-build-environment	false
@@ -1245,6 +1258,8 @@ rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/foundation/
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/foundation/zod.md		SHOULD	test		typescript	errors	foundation	parse-failure-is-one-coded-error	false
 rule	zod-four-forms-only	zod	blocks/implementations/zod/foundation/zod.md		MUST	tool	lint	typescript		foundation	deprecated-forms-never-used	false
 rule	json-schema-from-zod	zod	blocks/implementations/zod/foundation/with/convergence.md	convergence	MUST	test		typescript	data	foundation	published-schema-generated-from-code	false
+rule	zod-imported-by-the-document	zod	blocks/implementations/zod/architecture/with/convergence.md	convergence	MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
+rule	zod-imported-by-forms	zod	blocks/implementations/zod/architecture/with/ui.md	ui	MUST	tool	imports	typescript		architecture	packages-imported-by-folder-role	false
 answer	bun	units-linked-from-the-working-tree	yes
 answer	bun	publishing-with-provenance-supported	no
 answer	bunli	command-framework-parses-flags-by-schema	yes

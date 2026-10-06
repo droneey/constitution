@@ -13,4 +13,4 @@ governs: []
 
 # Distribution
 
-> A unit others install from a package registry: a library whose code they import or whose configuration they extend, or an application such as a command-line tool its users install. Its version is a contract with everyone who installs it, and every release reaches them all.
+> A unit others install from a package registry: a package whose code they import or whose configuration they extend, or an application such as a command-line tool its users install. Its version is a contract with everyone who installs it, and every release reaches them all.

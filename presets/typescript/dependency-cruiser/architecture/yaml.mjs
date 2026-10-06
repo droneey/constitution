@@ -1,3 +1,5 @@
+import { ADAPTERS, SPECS } from './core.mjs';
+
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
   forbidden: [
@@ -6,9 +8,9 @@ export default {
       severity: 'error',
       from: {
         pathNot: [
-          '/adapters/',
+          ...ADAPTERS,
           '^src/libs/yaml/',
-          '(^|/)__tests__/',
+          ...SPECS,
         ],
       },
       to: {

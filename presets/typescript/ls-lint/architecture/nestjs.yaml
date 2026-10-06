@@ -1,5 +1,5 @@
 ls:
-  src/*/**/providers:
+  src/**/providers:
     .dir: kebab-case | regex:^__tests__$
     .*: kebab-case
     .*.*: kebab-case

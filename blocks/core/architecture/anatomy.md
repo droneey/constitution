@@ -4,18 +4,28 @@
 
 ## What the anatomy governs
 
-- **An application.** The tree below lays out one application, whether or not a package registry distributes it — a command-line tool its users install is an application all the same. The block that owns its entry surface names its delivery layer: a command-line platform names its commands' folder, an API domain its handlers', a router its screens'.
-- **A tooling program** with no entry surface of its own — the scripts of a repository — has only entrypoints: each command is `entrypoints/<name>/`, and its entry file builds `root/`.
-- **A library** — code its consumers import, or configuration they extend — has the form of `libs/<name>/` taken out of a program.
-- **A repository of several units** keeps each unit's tree in the unit's own folder.
+- **A package** — an application, whether or not a registry distributes it, the scripts of a repository, or code and configuration others import or extend — has the tree below, with the folders it needs. The block that owns a program's entry surface names its delivery layer: a command-line platform names its commands' folder, an API domain its handlers', a router its screens'. A tooling program with no entry surface of its own has only entrypoints: each command is `entrypoints/<name>/`, and its entry file builds `root/`. A package that nothing runs, whose consumers import it, has no `root/` and no `entrypoints/`.
+- **A repository of several units** keeps each unit's tree in the unit's own folder, and a unit imports another by its name, through its entries.
 
-A folder appears when its first member does. The trees show every place a file may go, not folders to create in advance.
+The trees show every place a file may go.
+
+## One form of a module
+
+A module is a folder with a surface, the role folders of the vocabulary it needs, and modules of the same form inside it. The source root of a package is a module whose folders are the layers of the top-level tree; a feature is a module with layers of its own; `kernel/`, a module of `shared/`, `libs/`, `contracts/` or `adapters/`, and a module inside any of them have the same form.
+
+## module-has-one-form · SHOULD
+Every module has one form at any depth — its surface, the role folders it needs, and modules of the same form. Behaviour, what a package does, lives in a feature with its layers, whether anything runs the package or its consumers import it. Vocabulary — types, constants, kinds — lives in `kernel/` and the role folders, and `utils/` holds only pure helpers that carry no meaning of the product.
+
+| Why | Check | Tags |
+|---|---|---|
+| a reader who knows one module knows them all, a role folder means the same thing wherever it appears, and behaviour found only in features is found with its domain, its adapters and its binding units around it. | review | [] |
 
 ## The top level
 
 ```
 src/
-├── main.*             the entry: builds root and runs it
+├── main.*             the entry of a program: builds root and runs it
+├── index.*            the surface of a package others import: its main entry
 ├── root/              the composition root: the wiring file, providers, configuration parsed at boot,
 │                      the boundary error handler
 ├── <delivery>/        the delivery layer, named by the block that owns the entry surface
@@ -26,18 +36,19 @@ src/
 ├── kernel/            shared business vocabulary: pure, small, stable
 ├── shared/            application plumbing without business, used by two or more features
 ├── libs/              project-agnostic code: primitives, vendor clients, a UI kit; publishable
+├── integrations/<fw>/ the package's integration into a host framework
 └── entrypoints/<n>/   another artifact of the program, or a command of a tooling program
 ```
 
 ## anatomy-top-level-by-concern · SHOULD
-A program's source is laid out by concern in the folders of the top-level tree, and in no other top-level folder. The wiring file is `root/wiring` with the language's extension, unless a framework's block names its own.
+The source of a package is laid out by concern in the folders of the top-level tree and the role folders it needs, and in no other top-level folder. The wiring file is `root/wiring` with the language's extension, unless a framework's block names its own.
 
 | Why | Check | Tags |
 |---|---|---|
 | a reader who knows one repository finds their way in every other, and a file has one obvious place. | review | [] |
 
 ## top-level-folders-from-the-tree → anatomy-top-level-by-concern
-`src/` holds only the top-level folders of the tree.
+`src/` holds only the top-level folders of the tree and role folders.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -57,26 +68,26 @@ No code imports an entrypoint. An entrypoint composes features through their sur
 |---|---|---|
 | an entrypoint is a separate artifact; importing it drags that artifact into another one. | tool/imports | [] |
 
+## nothing-imports-an-integration · MUST
+A package's integration into a host framework — the module, provider or dependency the framework calls to use the package — lives in `integrations/<framework>/`, a module whose surface is an entry of its own. No other code of the package imports an integration; an integration imports the package's surfaces as a consumer would, and never another integration.
+
+| Why | Check | Tags |
+|---|---|---|
+| the framework calls the package, not the package the framework, so an integration is no adapter of a port; offered as an entry of its own, it loads the framework only for the consumers that use it. | tool/imports | [] |
+
 ## kernel-imports-only-itself · MUST
-`kernel/` imports only itself. It holds business types and values every feature shares — money, an email address, a date range — and structural types such as a paginated result.
+`kernel/` imports only itself and the data files its values are read from. It holds business types and values every feature shares — money, an email address, a date range, the kinds a schema lists — and structural types such as a paginated result.
 
 | Why | Check | Tags |
 |---|---|---|
 | everything depends on the kernel, so it must depend on nothing that changes. | tool/imports | [] |
 
 ## libs-import-no-application-code · MUST
-`libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/` or `root/` — and knows nothing of the repository that uses it; a library, which has its form, knows nothing of those that use it.
+`libs/` imports no application code — no feature, `kernel/`, `shared/`, `contracts/`, `adapters/`, `integrations/` or `root/` — and knows nothing of the repository that uses it, as a package others import knows nothing of those that use it.
 
 | Why | Check | Tags |
 |---|---|---|
-| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good, and a library that knows its consumer changes whenever the consumer does and serves no one else. | tool/imports | [] |
-
-## library-has-the-form-of-libs · SHOULD
-A library has the form of `libs/<name>/` taken out of a program: a surface, and modules by meaning, each with its own entities, value objects and errors in their usual forms and its input and output behind contracts of its own. It has no `root/`, `entrypoints/` or `features/`.
-
-| Why | Check | Tags |
-|---|---|---|
-| a library has no program of its own to wire or deliver: whatever uses it composes it, and a reader finds its parts where a program's `libs/` keeps them. | review | [] |
+| code in `libs/` could be published tomorrow; one import of the application ties it to this program for good, and a package that knows its consumer changes whenever the consumer does and serves no one else. | tool/imports | [] |
 
 ## shared-imports-no-feature-adapter-contract-or-root · MUST
 `shared/` imports no feature, adapter or contract and not `root/`. It holds application plumbing without business: helpers, constants and types two or more features use.
@@ -203,7 +214,7 @@ A file never imports the surface of the module it belongs to.
 | a module that imports its own surface imports itself, and that is where a cycle begins. | tool/imports | [] |
 
 ## layer-folder-has-no-surface · MUST
-A layer folder — `domain/`, `app/`, `adapters/`, `src/`, `features/`, `libs/` — has no surface and is never an import target. A caller imports the role folder inside it, so the feature's root surface is the only one that re-exports a whole feature.
+A layer folder — `domain/`, `app/`, `adapters/`, `features/`, `libs/` — has no surface and is never an import target, and neither has the `src/` of a package that nothing imports. A caller imports the role folder inside it, so the feature's root surface is the only one that re-exports a whole feature. The `src/` of a package others import has a surface, its main entry, which only its consumers import.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -229,6 +240,15 @@ A feature's surface offers its operations and its presentation — use-cases, bi
 | Why | Check | Tags |
 |---|---|---|
 | a caller that reaches a mechanism depends on how the feature works rather than on what it does. | review | [] |
+
+## Packages by folder role
+
+## packages-imported-by-folder-role → dependencies-point-inward
+An external package — a dependency the program installs, not the language's standard library or the runtime's own modules — is imported by the role of the folder that imports it. `domain/`, `kernel/` and `contracts/` import none. The edge — `adapters/`, `libs/<name>/`, `root/` and the entry files, the delivery folder and `integrations/<framework>/` — imports any. Every other folder — `app/`, `composition/`, `shared/`, a UI's components and widgets — imports only a package that a block gives a home there. A block gives its package a home by naming every folder it is imported in, the edge's among them, so a home may reach past the edge or keep to a part of it; a package whose block names no home, and one with no block, is imported only at the edge. Specs import what they need to run.
+
+| Why | Check | Tags |
+|---|---|---|
+| a package is volatile, and an inner folder that imports one changes when it does; a table by folder role holds every package at once, those nobody has written a rule for included, and a block says only where its own package belongs. | tool/imports | [] |
 
 ## Placement
 
@@ -274,6 +294,8 @@ A vendor client without application knowledge lives in `libs/<system>/`.
 |---|---|---|
 | it can be reused by every adapter of that system and by other programs, and the adapters stay thin. | review | [] |
 
+**The path of a client.** The wrapper of a vendor's client lives in `libs/<system>/`; `root/`, the only reader of the environment, builds its one instance from the configuration it parsed (`environment-read-only-by-the-root`, `stateful-clients-built-by-the-root`); an adapter receives that instance as a parameter of its factory or its constructor (`adapter-receives-its-dependencies`); and a UI reaches what the root built through the root's providers, never by an import.
+
 ## delivery-unit-beside-what-it-serves · SHOULD
 A delivery unit that serves one feature lives in that feature's `app/`, where the entry surface allows it; one that composes several lives in the delivery layer or in `composition/`.
 
@@ -298,7 +320,7 @@ What an operation reports is a value it returns — for a progressive report, a 
 ## Names
 
 **Folders of core's vocabulary:**
-- layers: `root`, `features`, `composition`, `contracts`, `adapters`, `kernel`, `shared`, `libs`, `entrypoints`, `domain`, `app`;
+- layers: `root`, `features`, `composition`, `contracts`, `adapters`, `kernel`, `shared`, `libs`, `integrations`, `entrypoints`, `domain`, `app`;
 - roles: `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `models` (wire and persistence shapes inside adapters), `providers` (framework providers and the instances they wire).
 
 **Suffixes of core's vocabulary:** `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is not a repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`. The language fixes the spelling. Each block names its own folders and suffixes in its chapter, and a project adds its own the same way.

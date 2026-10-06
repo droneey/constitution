@@ -1,8 +1,8 @@
 # Lingui with UI
 
-## primitives-import-no-message-catalog → primitives-take-text-by-props
-The primitive library imports no message catalog.
+## lingui-only-where-text-is-rendered → domain-returns-codes-not-text
+Lingui and the message catalogs have their home where text is rendered — a UI's components and widgets, the screens, and `root/`, which provides the active locale — and no other folder imports them: no domain, no binding unit, no adapter and no primitive of `libs/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a catalog in the primitives puts one application's text into a library every application shares. | tool/imports | [ux] |
+| the code below the presentation returns codes that each screen words for its locale, and a catalog in the primitives would put one application's text into a library every application shares. | tool/imports | [ux] |

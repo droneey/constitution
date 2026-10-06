@@ -79,6 +79,9 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   ky: {
     declaration: Declaration.Production,
   },
+  react: {
+    declaration: Declaration.Production,
+  },
   doubled: {
     declaration: Declaration.Both,
   },
@@ -129,8 +132,8 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
 const configOf = (parts: readonly string[]): string =>
   `export default {\n  extends: ${JSON.stringify(
     [
-      ...FOUNDATION_PARTS,
       ...parts,
+      ...FOUNDATION_PARTS,
     ].map(
       (part) => `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
     ),
