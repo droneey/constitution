@@ -22,6 +22,7 @@ block	mobile	platform	Code that runs as an application on a phone or tablet.	arc
 block	css	language	How stylesheets are layered, named and written.	architecture/css.md	i18n ui architecture/ui			false				**/*.css
 block	python	language	How Python is written, resolved, typed and packaged.	architecture/python.md	distribution architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
 block	typescript	language	How TypeScript is written, resolved, typed and packaged.	architecture/typescript.md	distribution i18n workspace architecture/ui architecture/workspace			false				**/*.ts **/*.tsx package.json
+block	yaml	language	How YAML files are named.					false				**/*.yaml **/*.yml
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	architecture/_react.md	remote-data	ui typescript		true	react-dom react-native			**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	architecture/biome.md	workspace	typescript		false		typescript css		biome.json biome.*.jsonc **/*.grit
@@ -77,7 +78,7 @@ block	ty	implementation	ty checks the types of Python.			python		false		python		
 block	uv	implementation	uv as Python's package manager, resolver and build backend.		distribution workspace architecture/workspace	python		false				pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.		browser	typescript		false				vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.			python		false		python		
-block	yaml	implementation	The yaml package reads and writes YAML.	architecture/yaml.md	convergence	typescript		false				**/adapters/**
+block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md	convergence	typescript		false				**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.					false				.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types.		convergence architecture/convergence architecture/ui	typescript		false				**/models/** **/adapters/**
 rule	agent-asks-before-an-irreversible-action	core	blocks/core/agents.md		MUST	security			true
@@ -790,6 +791,7 @@ rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/types
 rule	own-units-are-no-tools	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD			units-linked-from-the-working-tree	false
 rule	components-call-no-global-fetch	typescript	blocks/contexts/languages/typescript/architecture/with/ui.md	ui	MUST		architecture	components-dumb-widgets-smart	false
 rule	typescript-unit-names-under-the-scope	typescript	blocks/contexts/languages/typescript/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	false
+rule	yaml-file-ends-in-yaml	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD			format-has-one-extension	false
 rule	react-compiler-on	_react	blocks/implementations/_react/_react.md		MUST	performance			true
 rule	render-is-pure	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST				true
@@ -1185,10 +1187,10 @@ rule	process-env-never-read-in-the-bundle	vite	blocks/implementations/vite/with/
 rule	each-entry-has-a-size-budget	vite	blocks/implementations/vite/with/browser.md	browser	SHOULD	performance		bundle-size-budget	false
 rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/vulture.md		MUST			dead-code-deleted	false
 rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/vulture.md		MUST			suppression-states-its-reason	false
-rule	yaml-failures-become-one-coded-error	yaml	blocks/implementations/yaml/yaml.md		SHOULD	errors		parse-failure-lists-every-problem	false
-rule	yaml-written-without-folding	yaml	blocks/implementations/yaml/yaml.md		SHOULD	data			true
-rule	yaml-only-at-the-edge	yaml	blocks/implementations/yaml/architecture/yaml.md		MUST	security	architecture	outside-value-untyped-until-parsed	false
-rule	document-header-names-its-schema	yaml	blocks/implementations/yaml/with/convergence.md	convergence	SHOULD	ux		document-points-editors-at-the-schema	false
+rule	yaml-failures-become-one-coded-error	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	errors		parse-failure-lists-every-problem	false
+rule	yaml-written-without-folding	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	data			true
+rule	yaml-only-at-the-edge	yaml-js	blocks/implementations/yaml-js/architecture/yaml-js.md		MUST	security	architecture	outside-value-untyped-until-parsed	false
+rule	document-header-names-its-schema	yaml-js	blocks/implementations/yaml-js/with/convergence.md	convergence	SHOULD	ux		document-points-editors-at-the-schema	false
 rule	yamllint-rules-set-as-errors	yamllint	blocks/implementations/yamllint/yamllint.md		MUST			rule-held-by-a-tool-where-one-can	false
 rule	schema-never-brands	zod	blocks/implementations/zod/zod.md		MUST	data		invariant-value-is-a-branded-type	false
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/zod.md		MUST	data		own-shape-strict-other-shape-tolerant	false

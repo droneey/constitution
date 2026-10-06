@@ -766,7 +766,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/architecture/yaml',
+        'typescript/architecture/yaml-js',
         'typescript/architecture/core',
       ],
       rule: 'yaml-only-at-the-edge',
@@ -995,7 +995,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/tanstack-query',
         'typescript/storybook',
         'typescript/architecture/storybook',
-        'typescript/architecture/yaml',
+        'typescript/architecture/yaml-js',
         'typescript/architecture/core',
       ],
     };

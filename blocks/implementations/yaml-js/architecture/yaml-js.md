@@ -1,4 +1,4 @@
-# yaml
+# yaml-js
 
 ### yaml-only-at-the-edge → outside-value-untyped-until-parsed
 The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses.

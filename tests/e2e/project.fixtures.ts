@@ -471,7 +471,7 @@ const REAL_CLI: ProjectLayout = {
     'domains: [convergence, remote-data, version-control]',
     'platforms: [cli]',
     'languages: [typescript]',
-    'implementations: [bun, bun-test, bunli, zod, yaml, yamllint, tsc, biome, dependency-cruiser,',
+    'implementations: [bun, bun-test, bunli, zod, yaml-js, yamllint, tsc, biome, dependency-cruiser,',
     '                  ls-lint, knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
     'packages: {}',

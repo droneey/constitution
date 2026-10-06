@@ -4,7 +4,7 @@ export default {
     './.droneey/constitution/presets/typescript/dependency-cruiser/bun.mjs',
     './.droneey/constitution/presets/typescript/dependency-cruiser/core.mjs',
     './.droneey/constitution/presets/typescript/dependency-cruiser/typescript.mjs',
-    './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/yaml.mjs',
+    './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/yaml-js.mjs',
     './.droneey/constitution/presets/typescript/dependency-cruiser/architecture/core.mjs',
   ],
   allowed: [

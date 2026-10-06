@@ -1,4 +1,4 @@
-# yaml with convergence
+# yaml-js with convergence
 
 > The document a convergence program reads, written in YAML.
 

@@ -42,7 +42,7 @@ A file or a folder takes the case its owner fixes — the language for its sourc
 | one case removes a decision from every new file and keeps names portable across file systems. | [] |
 
 ### format-has-one-extension · SHOULD
-A format has one extension across the repository, the one its own specification recommends — `.yaml`, never `.yml` — unless a tool reads a file only by a fixed name.
+A format has one extension across the repository, the one its own specification recommends, unless a tool reads a file only by a fixed name.
 
 | Why | Tags |
 |---|---|

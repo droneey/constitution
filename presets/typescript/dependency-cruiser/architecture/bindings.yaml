@@ -110,7 +110,7 @@ ui:
     - feature-root-reached-only-through-its-layers
   ui-layer-imports:
     - ui-reaches-no-mechanism
-yaml:
+yaml-js:
   yaml-only-at-the-edge:
     - yaml-only-at-the-edge
 zod:
