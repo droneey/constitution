@@ -5,7 +5,7 @@
 ## Files
 
 ## nestjs-files-in-the-tree → anatomy-top-level-by-concern
-The root's module is `root/root.module.ts`, and `api/api.module.ts` mounts the controllers of `api/`; a feature's module is `<feature>.module.ts` in its `app/`, and a module that joins features is `composition/<name>/<name>.module.ts`. A controller is `<name>.controller.ts`, in `api/`, or in a feature's `app/` when it serves that feature alone. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role.
+The root's module, `root/root.module.ts`, is the program's wiring file, and `api/api.module.ts` mounts the controllers of `api/`; a feature's module is `<feature>.module.ts` in its `app/`, and a module that joins features is `composition/<name>/<name>.module.ts`. A controller is `<name>.controller.ts`, in `api/`, or in a feature's `app/` when it serves that feature alone. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role.
 
 | Why | Check | Tags |
 |---|---|---|

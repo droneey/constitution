@@ -10,8 +10,8 @@ Stryker runs each mutant through the archive's runner, which runs `bun --config=
 | Stryker's own runners do not run `bun test`, and the whole suite run for every mutant makes a run cost its mutants times the program's every spec; the specs that load a file are the ones that prove it, and the nearest of them fails first. An entry file's spec starts processes and can cost most of a run, while every mutant it could kill sits in logic whose own boundary's spec must kill it. | review | [] |
 
 ## stryker-runs-the-archive-runner → stryker-runs-each-mutant-against-the-specs-that-load-it
-Stryker's `testRunner` is `bun-specs`, its `plugins` load `./.droneey/constitution/tools/mutation-check/dist/runner.js`, and `coverageAnalysis` is `"off"`.
+Stryker's `testRunner` is `bun-specs`, its `plugins` load the archive's `tools/mutation-check/dist/runner.js` by its path from the preset's own file, and `coverageAnalysis` is `"off"`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the runner is what keeps each mutant to the specs that load its file and stops at their first failure. | tool/mutation | [] |
+| the runner is what keeps each mutant to the specs that load its file and stops at their first failure; Stryker resolves a relative plugin from the folder it runs in, and a path from the preset finds the runner from any folder. | tool/mutation | [] |

@@ -46,15 +46,8 @@ The consumer installs the tool a package configures: the package never depends o
 |---|---|---|
 | the consumer owns the tool's version; a package that installs its own copy splits the consumer's tooling in two. | review | [] |
 
-## root-dogfoods-its-configuration · SHOULD
-A repository that distributes configuration installs it from its working tree and extends it as a consumer would.
-
-| Why | Check | Tags |
-|---|---|---|
-| configuration the repository does not use itself is broken first in a consumer's repository. | review | [testing] |
-
-## shipped-configuration-asserted-by-spec → coverage-holds-all-logic
-Each distributed configuration has a spec that parses it and asserts its intent; code a distributed unit runs is held by the coverage gate like any other.
+## shipped-configuration-asserted-by-spec → spec-per-boundary · MUST
+Each distributed configuration has a spec that parses it and asserts its intent.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -1,6 +1,6 @@
 # Observability
 
-## logging-configured-by-the-root → diagnostics-through-the-logging-port · MUST
+## logging-configured-by-the-root → diagnostics-through-the-logging-port
 `root/` builds the logging pipeline once, at boot — the steps every record passes and what binds the trace id to it — and no library of the program adds an output of its own.
 
 | Why | Check | Tags |

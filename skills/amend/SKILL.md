@@ -65,7 +65,7 @@ An override at the top level:
 
 ```yaml
 overrides:
-  - rule: four-data-states
+  - rule: data-states-shown
     level: SHOULD
     reason: "The admin screens show their state in the shared toolbar"
     until: 2026-12-31
@@ -78,7 +78,7 @@ packages:
   packages/web:
     implementations: [react-dom]
     overrides:
-      - rule: four-data-states
+      - rule: data-states-shown
         level: MAY
         reason: "The kit renders the states its caller passes"
 ```

@@ -56,7 +56,7 @@ No class opens with a `max-*:` variant: base classes serve small screens and are
 |---|---|---|
 | styles that only widen never undo each other, and the smallest screen is always the base. | tool/lint | [] |
 
-## dynamic-viewport-classes → dynamic-viewport-units
+## dynamic-viewport-classes → viewport-sizes-in-small-viewport-units
 No class sizes with `h-screen` or `w-screen`.
 
 | Why | Check | Tags |
@@ -107,7 +107,7 @@ The motion tokens collapse under reduced motion, in the theme.
 |---|---|---|
 | every animation reads the tokens, so one rule in the theme stops them all. | review | [] |
 
-## type-tokens-in-rem → type-sized-in-rem
+## type-tokens-in-rem → text-scales-and-content-reflows
 Font-size and line-height tokens are in `rem`.
 
 | Why | Check | Tags |

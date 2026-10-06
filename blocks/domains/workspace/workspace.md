@@ -8,7 +8,7 @@ checks: []
 languages: []
 roles: []
 dictionary: []
-governs: ["packages/**", "shared/**", "libs/**", "package.json", "pyproject.toml"]
+governs: []
 ---
 
 # Workspace

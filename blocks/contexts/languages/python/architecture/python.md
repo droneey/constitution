@@ -62,7 +62,7 @@ A layer folder's `__init__.py` is empty: it makes the folder a package and offer
 
 ## Values and configuration
 
-## environment-read-only-under-root → environment-read-once-at-boot
+## environment-read-only-under-root → environment-read-only-by-the-root
 `os.environ` and `os.getenv` are read only under `root/`, in the entry files and in specs.
 
 | Why | Check | Tags |

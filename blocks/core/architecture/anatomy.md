@@ -26,7 +26,7 @@ src/
 ├── kernel/            shared business vocabulary: pure, small, stable
 ├── shared/            application plumbing without business, used by two or more features
 ├── libs/              project-agnostic code: primitives, vendor clients, a UI kit; publishable
-└── entrypoints/<n>/   another artifact of the repository, or a command of a tooling program
+└── entrypoints/<n>/   another artifact of the program, or a command of a tooling program
 ```
 
 ## anatomy-top-level-by-concern · SHOULD
@@ -100,7 +100,7 @@ Composition across features lives in the delivery unit that needs it, which asse
 | someone above the features must assemble them, and a composition layer made before a second consumer is one nobody needs yet. | review | [] |
 
 ## protocol-between-artifacts-in-shared · SHOULD
-A protocol two artifacts of one repository speak — the messages an embedded frame and its host exchange — lives in `shared/<protocol>/`, imported by both.
+A protocol two artifacts of one program speak — the messages an embedded frame of its `entrypoints/` and its host exchange — lives in the program's `shared/<protocol>/`, imported by both.
 
 | Why | Check | Tags |
 |---|---|---|

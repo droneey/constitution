@@ -41,10 +41,10 @@ An identifier's brand is set only in the mapper at the boundary.
 |---|---|---|
 | a brand set in one place is a proof that the value came through it; set anywhere, it proves nothing. | review | [] |
 
-## ambient-aliases-are-project-vocabulary → semantic-alias-names-a-shared-meaning
-A project's semantic aliases live in one ambient `types.d.ts` at its source root, and code in `libs/` never references them.
+## semantic-alias-exported-where-it-belongs → semantic-alias-names-a-shared-meaning
+A semantic alias is a type exported by the module whose meaning it names, and a vocabulary several features share lives in `kernel/`. A term that keeps an invariant is a value object, never an alias.
 
 | Why | Check | Tags |
 |---|---|---|
-| one file holds the program's vocabulary, and `libs/` stays free of a hidden dependency on it. | review | [] |
+| an alias imported from its module shows in every file where its meaning comes from, and the import rules hold it like any other type; an ambient alias reaches every file unseen, `libs/` included, and no rule can keep it out. | review | [] |
 

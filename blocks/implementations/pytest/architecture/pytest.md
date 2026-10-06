@@ -1,3 +1,3 @@
 # pytest
 
-> Core's exclusions from coverage are `**/main.py`, `**/__main__.py`, `**/entrypoints/*/main.py`, `**/root/wiring.py` and `**/*_gen.py`.
+> The anatomy adds to core's exclusions from coverage the entry file of each artifact, `**/entrypoints/*/main.py`, and the wiring file, `**/root/wiring.py`.

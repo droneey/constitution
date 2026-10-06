@@ -57,14 +57,15 @@ const WELL_FORMED = {
   }),
 };
 
-// A workspace of four units and a group of two, each linked by its name as a
-// package manager links them, with the workspace's parts of both axes.
+// A workspace of five units, one of them holding two members with manifests of
+// their own, each linked by its name as a package manager links them, with the
+// workspace's parts of both axes.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'packages/admin',
-  core: 'packages/eros/core',
-  nestjs: 'packages/eros/nestjs',
-  proto: 'shared/proto',
-  smtp: 'libs/smtp',
+  'eros-core': 'packages/eros/core',
+  'eros-nestjs': 'packages/eros/nestjs',
+  'libs-smtp': 'libs/smtp',
+  shared: 'shared',
   web: 'packages/web',
 };
 
@@ -110,7 +111,7 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
   workspaces: [
     'packages/*',
     'packages/eros/*',
-    'shared/*',
+    'shared',
     'libs/*',
   ],
 });
@@ -947,9 +948,9 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'product-units-blind-to-each-other',
     },
     {
-      condition: 'a unit of shared imports a unit of packages by its name',
+      condition: 'shared imports a unit of packages by its name',
       files: {
-        'shared/proto/src/messages.ts': importing({
+        'shared/src/messages.ts': importing({
           from: '@shop/web',
           name: 'unit',
         }),
@@ -957,10 +958,10 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'shared-knows-no-product-unit',
     },
     {
-      condition: 'a unit of libs imports a unit of shared by its name',
+      condition: 'a unit of libs imports shared by its name',
       files: {
         'libs/smtp/src/send.ts': importing({
-          from: '@shop/proto',
+          from: '@shop/shared',
           name: 'unit',
         }),
       },
@@ -970,17 +971,27 @@ describe('the dependency-cruiser layer set', () => {
       condition: 'a unit imports another by a path into its folder',
       files: {
         'packages/web/src/orders.ts': importing({
-          from: '../../../shared/proto/src/index',
+          from: '../../../shared/src/index',
           name: 'unit',
         }),
       },
       rule: 'units-imported-by-name',
     },
     {
-      condition: 'a member of a group imports another by a path into its folder',
+      condition: 'shared imports a unit by a path into its folder',
+      files: {
+        'shared/src/messages.ts': importing({
+          from: '../../libs/smtp/src/index',
+          name: 'unit',
+        }),
+      },
+      rule: 'units-imported-by-name',
+    },
+    {
+      condition: 'a member of a unit imports another unit by a path into its folder',
       files: {
         'packages/eros/nestjs/src/filter.ts': importing({
-          from: '../../core/src/index',
+          from: '../../../admin/src/index',
           name: 'unit',
         }),
       },
@@ -1011,18 +1022,18 @@ describe('the dependency-cruiser layer set', () => {
     // Arrange
     const project = workspaceProject({
       'packages/eros/nestjs/src/filter.ts': importing({
-        from: '@shop/core',
+        from: '@shop/eros-core',
         name: 'unit',
       }),
       'packages/web/src/orders.ts':
-        "import { unit } from '@shop/proto';\nimport { unit as smtp } from '@shop/smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
+        "import { unit } from '@shop/shared';\nimport { unit as smtp } from '@shop/libs-smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
       'packages/web/src/line.ts': exported('line'),
       'scripts/release.ts': importing({
         from: '@shop/web',
         name: 'unit',
       }),
-      'shared/proto/src/messages.ts': importing({
-        from: '@shop/smtp',
+      'shared/src/messages.ts': importing({
+        from: '@shop/libs-smtp',
         name: 'unit',
       }),
     });

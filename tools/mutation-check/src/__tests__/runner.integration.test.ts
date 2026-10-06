@@ -104,6 +104,14 @@ describe('the specs runner', () => {
     expect(plugin.name).toBe(bunTest.testRunner);
   });
 
+  // Stryker resolves a relative plugin from the folder it runs in, which a unit of a workspace
+  // changes.
+  test('should be named to Stryker by the path of its build beside the preset', () => {
+    expect(bunTest.plugins).toStrictEqual([
+      join(import.meta.dirname, '..', '..', 'dist', 'runner.js'),
+    ]);
+  });
+
   test('should ask for a new process for each run', () => {
     expect(plugin.factory().capabilities()).toStrictEqual({
       reloadEnvironment: true,

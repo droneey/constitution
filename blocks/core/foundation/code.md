@@ -324,21 +324,11 @@ An error library gives every error a stable code, its cause and structured detai
 ## Types
 
 ## guard-proves-every-property-it-claims · MUST
-A type guard checks every property of the type it claims. A guard that checks one field and claims the whole type is a cast.
+A type guard checks every property of the type it claims, as running the type's whole schema does. A guard that checks one field — an identifier present, and the value called a user — and claims the whole type is a cast.
 
 | Why | Check | Tags |
 |---|---|---|
 | code after the guard trusts every property, so a guard that checks one is a lie the type system repeats. | review | [] |
-
-**Example:**
-```ts
-// bad: claims a User, checks only the id
-const isUser = (candidate: unknown): candidate is User =>
-  typeof candidate === 'object' && candidate !== null && 'id' in candidate;
-
-// good: the schema checks every property it claims
-const isUser = (candidate: unknown): candidate is User => userSchema.safeParse(candidate).success;
-```
 
 ## outside-values-untyped-until-parsed · MUST
 A value from outside the program — parsed text, a response body, a file, a message — has no known type until a schema parses it or plain checks narrow it, in specs as in production; no cast and no annotation stands in for either.
@@ -354,7 +344,7 @@ An entity's identifier is a type of its own, branded by its entity, so an order'
 |---|---|---|
 | two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | review | [] |
 
-## domain-values-never-typed-again · MUST
+## domain-values-never-typed-again → one-home-per-datum
 A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces. A vocabulary another party owns — an analytics report's, a wire format's — is not the program's: a total table maps the program's values to it, and the compiler checks the table.
 
 | Why | Check | Tags |

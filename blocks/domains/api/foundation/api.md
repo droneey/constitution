@@ -38,14 +38,14 @@ A spec of a server drives it in process, through its real middleware, parsing an
 
 ## Callers from other origins
 
-## cross-origin-callers-from-an-allowlist · MUST
+## cross-origin-callers-from-an-allowlist → outside-addresses-trusted-only-on-an-allowlist
 Over HTTP, a request from another origin is allowed only for an origin on the program's allowlist, named exactly: the server never echoes a request's `Origin` unchecked, and never answers `Access-Control-Allow-Origin: *` beside `Access-Control-Allow-Credentials: true`.
 
 | Why | Check | Tags |
 |---|---|---|
 | a browser sends a user's cookies with a cross-origin request, so an origin the server allows unchecked reads its answers in that user's name. | review | [security] |
 
-## state-changes-refused-from-other-origins · MUST
+## state-changes-refused-from-other-origins → outside-addresses-trusted-only-on-an-allowlist
 Over HTTP, a request that changes state is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, and a `GET`, `HEAD` or `OPTIONS` request changes no state.
 
 | Why | Check | Tags |

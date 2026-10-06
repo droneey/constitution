@@ -54,7 +54,7 @@ A file is `.tsx` only where it writes markup.
 ## Names
 
 ## identifier-case-by-kind · SHOULD
-PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. An enum is named in the singular.
+PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. A function a framework renders by the case of its name takes the case that framework's block names. An enum is named in the singular.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -107,7 +107,7 @@ const createEmail = (text: string): Email => {
 | the brand is reachable only through the check, and the value stays a plain string every boundary can carry. | review | [] |
 
 ## semantic-alias-names-a-shared-meaning · SHOULD
-A semantic alias — `type ChatTitle = string` — names a meaning without an invariant and is never branded; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type.
+A semantic alias — `type ChatTitle = string` — names a meaning without an invariant and is never branded; it is declared only when the code uses it, for a meaning found in two or more places, never for a string that is just a string. Where an alias exists, code uses it, not the bare type, and imports it with `import type`.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -364,7 +364,7 @@ The tools are `devDependencies` of `package.json`.
 | a package's `devDependencies` are installed in its repository and never with the package. | review | [] |
 
 ## tools-pinned-without-a-range → tools-pinned-exactly-by-the-repository
-Every tool in `devDependencies` is an exact version, with no range; the workspace's own packages, at `workspace:*`, are not tools.
+Every tool in `devDependencies` is an exact version, with no range.
 
 | Why | Check | Tags |
 |---|---|---|

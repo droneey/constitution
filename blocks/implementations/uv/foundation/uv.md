@@ -16,13 +16,6 @@ CI and every script install with `uv sync --locked`, which fails when `uv.lock` 
 |---|---|---|
 | an install that may update the lockfile runs code nobody reviewed. | review | [] |
 
-## one-lock-for-the-workspace → one-version-per-dependency
-`uv.lock` resolves one version of each dependency for the root and every member of its workspace.
-
-| Why | Check | Tags |
-|---|---|---|
-| uv resolves the workspace as one whole, so a second version of a dependency cannot enter while every manifest is a member. | review | [] |
-
 ## uv-build-backend-capped · SHOULD
 A package builds with `uv_build`, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.12,<0.13`.
 

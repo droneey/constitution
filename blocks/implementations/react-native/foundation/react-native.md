@@ -1,11 +1,11 @@
 # React Native
 
-## long-lists-virtualised · SHOULD
-A list that can grow renders through a virtualised list, never `map` inside a scroll view.
+## list-never-mapped-in-a-scroll-view → long-lists-virtualised
+A list that can grow is never `map` in a `ScrollView`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a mapped list mounts every row at once, and a long one freezes the device. | review | [performance] |
+| a `ScrollView` mounts every child at once, so a mapped list in it renders every row however long it grows. | review | [] |
 
 ## no-literal-colour-in-a-style → tokens-single-source-of-appearance
 A style names no literal colour.

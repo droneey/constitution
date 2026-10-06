@@ -9,7 +9,7 @@ Every change goes through its aggregate's root, which keeps the aggregate consis
 |---|---|---|
 | one entrance per aggregate means one place holds its invariants, and small aggregates keep a change from locking unrelated data. | review | [data] |
 
-## command-repository-per-aggregate-root → data-ports-split-by-reads-and-writes
+## command-repository-per-aggregate-root → changes-through-the-aggregate-root · MUST
 Only an aggregate's root has a command repository; the entities inside the aggregate change through their root.
 
 | Why | Check | Tags |

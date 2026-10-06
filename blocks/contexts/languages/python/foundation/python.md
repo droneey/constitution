@@ -188,7 +188,7 @@ The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `p
 | a dependency group is installed in the repository and never published with a package built from it. | review | [] |
 
 ## requires-python-at-the-pinned-minor · SHOULD
-An application that no registry distributes floors its `requires-python` in `[project]` at the minor of the interpreter the repository pins: `>=3.14`.
+A unit that no registry distributes floors its `requires-python` in `[project]` at the minor of the interpreter the repository pins: `>=3.14`.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -32,19 +32,19 @@ Pieces and binding units private to one screen live beside it, private to it. A 
 |---|---|---|
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | review | [] |
 
-## root-boundary-catches-the-rest → one-error-handler-per-transport · MUST
+## root-boundary-catches-the-rest → one-error-handler-per-transport
 One error boundary in `root/` catches what no screen's own boundary does.
 
 | Why | Check | Tags |
 |---|---|---|
 | a failure no screen contained still reaches a handler that shows it, and the user is never left with a blank page. | review | [] |
 
-## view-state-homes → one-home-per-datum
-Each kind of state has one home: view state a link or a restart must reproduce in the platform's navigation state; ephemeral state in its component; the few global concerns the client owns — theme, notices — in small stores the root builds.
+## client-concerns-in-root-built-stores → one-home-per-datum
+The few global concerns the client owns — theme, notices — live in small stores the root builds, one store per concern.
 
 | Why | Check | Tags |
 |---|---|---|
-| state kept in the wrong home is lost on reload, shared by accident, or copied until the copies disagree. | review | [] |
+| a concern every screen shares has one home, which the root hands to the screens and a spec replaces; a store built anywhere else is a second copy of it. | review | [] |
 
 ## form-reuses-domain-predicates → value-object-built-only-by-its-check
 A form's schema composes the predicates of the value objects and sits with the form; it never restates an invariant.
@@ -153,7 +153,7 @@ The theme module lives in `libs/ui/theme/`: its tokens, its constants and the co
 |---|---|---|
 | the theme knows nothing of the application, and one home lets a tool and a reviewer find every token. | review | [ux] |
 
-## configuration-provider-reads-environment → environment-read-once-at-boot
+## configuration-provider-reads-environment → environment-read-only-by-the-root
 The configuration provider reads the environment for the screens and components, which never read it themselves.
 
 | Why | Check | Tags |

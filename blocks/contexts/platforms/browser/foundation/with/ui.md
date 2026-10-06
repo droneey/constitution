@@ -68,7 +68,7 @@ Unless another active block brings accessible primitives for these patterns, the
 | each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong; a library of primitives adds what they lack, so where one is active these patterns are built on it. | review | [] |
 
 ## native-popover-anchored-to-its-trigger · SHOULD
-Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning, never by a script that measures; a supported browser that lacks anchor positioning loads its polyfill once, in the entry file.
+Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning — `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover — never by a script that measures; a supported browser that lacks anchor positioning loads its polyfill once, in the entry file.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -129,3 +129,10 @@ The viewport declaration never blocks zooming: no `user-scalable=no`, and no `ma
 | Why | Check | Tags |
 |---|---|---|
 | a page that cannot be zoomed fails the people who need it larger. | review | [a11y] |
+
+## url-holds-shareable-view-state → view-state-homes
+View state a link or a reload must reproduce — filters, sort, page, selection, the open tab — lives in the URL, and nothing else does.
+
+| Why | Check | Tags |
+|---|---|---|
+| a view in the URL can be shared, bookmarked and restored with the back button; a view kept elsewhere is lost on reload. | review | [ux] |

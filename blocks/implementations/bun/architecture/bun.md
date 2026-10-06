@@ -2,7 +2,7 @@
 
 ## Running
 
-## process-env-read-only-in-root → environment-read-once-at-boot
+## process-env-read-only-in-root → environment-read-only-by-the-root
 The environment is `process.env`, read only under `root/`, in the entry files and in specs.
 
 | Why | Check | Tags |

@@ -2,7 +2,7 @@
 
 ## Screens
 
-## four-data-states · MUST
+## data-states-shown · MUST
 Every data view shows loading, error and content, and the empty or not-found state its data can have.
 
 | Why | Check | Tags |
@@ -43,6 +43,13 @@ A write to a screen's address changes only the parameter it is for and keeps eve
 | Why | Check | Tags |
 |---|---|---|
 | a screen that changes its page must keep the filter another piece set, or the link no longer reproduces the view the user built. | review | [ux] |
+
+## view-state-homes → one-home-per-datum
+View state a link or a restart must reproduce lives in the platform's navigation state, and ephemeral state in the component that shows it.
+
+| Why | Check | Tags |
+|---|---|---|
+| state kept in the wrong home is lost on reload, shared by accident, or copied until the copies disagree. | review | [] |
 
 ## button-names-its-result · SHOULD
 A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action; a confirmation of a destructive action names the action; a payment button shows the amount.
@@ -96,7 +103,7 @@ A boolean prop starts with `is` for a state, `has` for content, `with` for an op
 | the prefix says what kind of switch a prop is, so a reader knows its effect from the call site. | review | [] |
 
 ## event-props-named-on-event → no-empty-verbs · MUST
-A callback prop is named `on<Event>`, and the handler inside the component may be `handle<Event>`. A prop is never an action verb, a `handle` name or a past tense.
+A callback prop is named `on<Event>`, and the handler inside the component may be `handle<Event>`. A prop is never an action verb, a `handle` name or a bare past tense (`submitted`).
 
 | Why | Check | Tags |
 |---|---|---|
@@ -123,7 +130,7 @@ A component installed as source is, in the change that installs it, restyled to 
 |---|---|---|
 | code copied in as it came brings another project's names and looks, and stays foreign until someone changes it. | review | [ux] |
 
-## props-drilled-at-most-two-levels → talk-only-to-neighbours
+## props-drilled-at-most-two-levels · SHOULD
 A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself.
 
 | Why | Check | Tags |
@@ -178,6 +185,13 @@ A primitive accepts its element's own props and reference, and merges its own pr
 | Why | Check | Tags |
 |---|---|---|
 | without it every consumer wraps or forks the primitive for one attribute. | review | [ux] |
+
+## long-lists-virtualised · SHOULD
+A list that can grow renders only the rows in view and those near them, through a virtualised list.
+
+| Why | Check | Tags |
+|---|---|---|
+| a list that mounts every row at once grows slower with every item, and a long one freezes the device. | review | [performance] |
 
 ## loading-never-replaces-shown-content · SHOULD
 A refetch or a transition keeps the content already shown in place, and a first-load indicator appears only after a short delay, in the content's own space.

@@ -19,7 +19,7 @@ Each unit holds its manifest, its source, and its specs where its language keeps
 ## Imports between units
 
 ## units-imported-by-their-entries → dependencies-imported-from-their-entries
-A unit, and a script of the root, imports another unit by its name, through an entry the other's manifest lists, never by a path into its folder.
+A unit, and a script of the root, imports another unit by the unit's package name, through its entries, never by a path into its folder.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -28,7 +28,7 @@ A unit, and a script of the root, imports another unit by its name, through an e
 ## The check
 
 ## unit-checked-by-its-own-parts → check-chains-one-entry-per-area
-In a workspace, the files of each unit are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no unit's parts reach another unit's files; each area's entry runs its tools for every unit. A tool that reads the whole repository — its manifests, its lockfiles, its history — runs once, from the root.
+In a workspace, the files of each unit are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no unit's parts reach another unit's files; each area's entry runs each of its tools for every unit that holds files of a language the tool covers. A tool that reads the whole repository — its manifests, its lockfiles, its history — runs once, from the root.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -36,7 +36,7 @@ In a workspace, the files of each unit are held by the parts of its own blocks �
 
 ## What units share
 
-## file-lives-once-across-units · MUST
+## file-lives-once-across-units → one-home-per-datum
 A file several units need lives once in the repository, and a unit that must ship it holds only a copy generated from it.
 
 | Why | Check | Tags |

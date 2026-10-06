@@ -1,10 +1,10 @@
 # Bun with distribution
 
-> How a Bun repository uses the configuration it distributes.
+> How a Bun repository publishes the units it distributes.
 
-## own-configuration-as-workspace-dependency → root-dogfoods-its-configuration
-The root installs the configuration packages the repository distributes as `workspace:*` development dependencies.
+## npm-publishes-in-the-release-workflow → publishing-by-workflow-identity
+The release workflow publishes with `npm publish`, through the registry's trusted publishing and with provenance, never with `bun publish`.
 
 | Why | Check | Tags |
 |---|---|---|
-| the root then uses each package as a consumer does, from the working tree. | review | [] |
+| `bun publish` has neither provenance nor trusted publishing, and npm, run only in the release workflow, publishes the unit Bun installed and built. | review | [] |

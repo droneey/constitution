@@ -30,12 +30,12 @@ The root declares `color-scheme` for the themes it supports.
 |---|---|---|
 | native controls, scrollbars and the page's canvas then follow the theme. | review | [ux] |
 
-## no-literal-colour-outside-the-theme → stylesheet-values-from-theme-properties
-No hexadecimal colour is written outside the theme's stylesheet.
+## no-hexadecimal-colour → stylesheet-values-from-theme-properties
+No stylesheet writes a hexadecimal colour, the theme's included: the theme writes its colours as `oklch()`, and every other stylesheet reads them from the theme's properties.
 
 | Why | Check | Tags |
 |---|---|---|
-| a literal colour is a value the next theme change misses. | tool/lint | [ux] |
+| hexadecimal is the form a colour copied from a design tool arrives in, and the one the lint can see; outside the theme it is a value the next theme change misses, inside it a colour the derivation by rule cannot read. | tool/lint | [ux] |
 
 ## theme-colours-in-oklch → light-and-dark-one-token-set
 The theme writes its colours as `oklch()`.
@@ -43,13 +43,6 @@ The theme writes its colours as `oklch()`.
 | Why | Check | Tags |
 |---|---|---|
 | OKLCH is the colour space where one lightness reads as equally light in every hue, which the derivation by rule needs. | review | [ux, a11y] |
-
-## theme-writes-no-hexadecimal-colour → theme-colours-in-oklch
-The theme writes no hexadecimal colour.
-
-| Why | Check | Tags |
-|---|---|---|
-| hexadecimal is the form a colour copied from a design tool arrives in, and the one the lint can see. | tool/lint | [] |
 
 ## components-adapt-by-container-queries → components-size-to-their-container
 A component adapts to the space its container gives it with a container query; a media query adapts the page's layout and follows the user's preferences.
@@ -74,7 +67,7 @@ The focus ring is the design system's, shown on `:focus-visible`; `outline: none
 |---|---|---|
 | one ring looks the same everywhere and is always visible to keyboard users. | review | [] |
 
-## type-sized-in-rem → wcag-aa-conformance
+## text-scales-and-content-reflows → wcag-aa-conformance
 Type sizes are in `rem`, text spacing may be overridden by the user, and at 320 CSS pixels content reflows without scrolling sideways.
 
 | Why | Check | Tags |
@@ -104,13 +97,6 @@ Content that stays on screen while the page scrolls — a header, a footer, a ba
 
 ## Layout
 
-## popover-placed-by-anchor-positioning · SHOULD
-A popover placed against its trigger by the stylesheet is placed by anchor positioning: `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover.
-
-| Why | Check | Tags |
-|---|---|---|
-| the browser places it and flips it at the viewport's edge from three declarations, with no measuring script and no frame of the wrong position. | review | [ux, performance] |
-
 ## mobile-first-additive-breakpoints · SHOULD
 Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out.
 
@@ -118,9 +104,16 @@ Base styles serve the smallest screen, and wider screens add overrides from a mi
 |---|---|---|
 | styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | review | [] |
 
-## dynamic-viewport-units · MUST
-Heights use the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`, and no layout width is fixed in pixels outside the tokens.
+## viewport-sizes-in-small-viewport-units · MUST
+A size taken from the viewport uses the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`.
 
 | Why | Check | Tags |
 |---|---|---|
 | `100vh` ignores the browser's own toolbars on phones, and content slides under them. | review | [] |
+
+## layout-width-from-the-tokens → stylesheet-values-from-theme-properties
+No layout width is fixed in pixels outside the tokens.
+
+| Why | Check | Tags |
+|---|---|---|
+| a width fixed in a component overflows a narrower screen, and is a size the theme no longer owns. | review | [] |

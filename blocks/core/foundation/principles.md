@@ -60,7 +60,7 @@ A new kind of thing — a vendor, a command, a format, a rule — is added as a 
 |---|---|---|
 | code that grows by addition keeps every existing member untouched, so adding one cannot break another. | review | [] |
 
-## numbers-in-text-from-data · MUST
+## numbers-in-text-from-data → one-home-per-datum
 A number shown in a text — a count, a total, a limit — is read from the data it describes, never typed again.
 
 | Why | Check | Tags |

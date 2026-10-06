@@ -14,7 +14,7 @@ An adapter maps its wire model to the domain's dataclass, and the dataclass back
 |---|---|---|
 | the domain's types then change with the business and the wire's with the vendor, each without the other. | review | [] |
 
-## settings-model-built-by-the-root → environment-read-once-at-boot
+## settings-model-built-by-the-root → environment-read-only-by-the-root
 The environment is read by one `BaseSettings` of pydantic-settings, built once by `root/` at boot; the rest of the program receives it, or the part of it that it needs.
 
 | Why | Check | Tags |

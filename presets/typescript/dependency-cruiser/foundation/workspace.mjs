@@ -5,7 +5,7 @@ export default {
       name: 'units-imported-by-name',
       severity: 'error',
       from: {
-        path: '^((?:packages|shared|libs)/.+?)/src/',
+        path: '^((?:packages|libs)/[^/]+|shared)/',
       },
       to: {
         path: '^(?:packages|shared|libs)/',

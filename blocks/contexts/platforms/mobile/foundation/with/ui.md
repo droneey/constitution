@@ -68,22 +68,29 @@ Text follows the system's text size, and layouts reflow to fit it.
 | people who set a larger text size need it in every app, not only in the system's own. | review | [] |
 
 ## system-reduced-motion-honoured → reduced-motion-honoured
-The system's reduced-motion setting is honoured.
+The user's request for reduced motion is the system's setting — Reduce Motion on iOS, Remove animations on Android — read when the app starts and again when it changes.
 
 | Why | Check | Tags |
 |---|---|---|
 | the setting is the user's request, made once for every app. | test | [] |
 
-## system-increased-contrast-honoured → wcag-aa-conformance
-The system's increased-contrast setting is honoured.
+## system-increased-contrast-honoured · MUST
+The app follows the system's contrast setting — Increase Contrast on iOS, High contrast text on Android — with the higher-contrast colours of its theme, read when it starts and again when the setting changes.
 
 | Why | Check | Tags |
 |---|---|---|
 | the setting is the user's request, made once for every app, and the contrast it asks for is what lets a person with low vision read the screen. | test | [] |
 
 ## device-checklist-before-shipping → interactive-checked-by-hand
-Before a new interactive component ships, a person operates it with each system's screen reader, and with a switch or a keyboard.
+Before a new interactive component ships, a person operates it with VoiceOver on iOS and TalkBack on Android, and with Switch Control or Switch Access.
 
 | Why | Check | Tags |
 |---|---|---|
 | each system's screen reader behaves differently, and a scan catches none of it. | review | [] |
+
+## navigation-params-hold-view-state → view-state-homes
+View state a deep link or a restart must reproduce lives in the navigation parameters.
+
+| Why | Check | Tags |
+|---|---|---|
+| a view that is not in its parameters cannot be linked or restored. | review | [data] |

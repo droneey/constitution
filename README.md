@@ -29,8 +29,8 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `checks`, `languages`, `roles`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a heading in one of them:
 
 ```markdown
-## four-data-states · MUST
-Every data view shows four states: loading, empty, error and content.
+## data-states-shown · MUST
+Every data view shows loading, error and content, and the empty or not-found state its data can have.
 
 | Why | Check | Tags |
 |---|---|---|

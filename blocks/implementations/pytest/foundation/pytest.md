@@ -1,5 +1,7 @@
 # pytest
 
+> Core's exclusions from coverage are the entry file, `**/main.py` and `**/__main__.py`, and generated files, `**/*_gen.py`.
+
 ## The run
 
 ## pytest-runs-strict → tests-pass-in-check

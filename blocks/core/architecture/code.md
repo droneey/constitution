@@ -20,7 +20,7 @@ A layer that only passes a call through to the next one is removed. A domain use
 
 ## Comments and leftovers
 
-## diagnostics-through-the-logging-port → no-debug-output-in-shipped-code
+## diagnostics-through-the-logging-port → side-effects-at-the-edges
 Diagnostics a program keeps on purpose go through the logging port, never straight to the console or a stream. The port is the language's standard logging facade, whose sinks only `root/` configures, where the language has one, and a contract of the program's own where it has none. The domain, its use-cases included, logs nothing: it returns a result or an error, or emits an event, and a binding unit of `app/` or the delivery layer logs what happened.
 
 | Why | Check | Tags |
@@ -45,7 +45,7 @@ Universal failures live in `kernel/errors`, a feature's in its `domain/errors`, 
 |---|---|---|
 | a failure declared where its contract lives is found with it, and a raw transport failure that passes the boundary couples its caller to the vendor. | review | [] |
 
-## one-error-handler-per-transport → failure-shown-as-what-happened-and-what-next
+## one-error-handler-per-transport → failure-shown-as-what-happened-and-what-next · MUST
 Defects travel to the boundary. Each transport has one handler of last resort that turns a failure into what its user sees, and a program exits only there. A handler nested below it — a screen's error boundary — only renders a failure within its own part, in the same shape.
 
 | Why | Check | Tags |
@@ -70,7 +70,7 @@ A schema over a domain type or enum derives its values from it, so the edge depe
 
 ## Effects
 
-## environment-read-once-at-boot → configuration-parsed-once-at-boot
+## environment-read-only-by-the-root → configuration-parsed-once-at-boot
 Only `root/` — or the configuration provider a lower block names — and the entry files read the environment; a spec may read it to drive the program.
 
 | Why | Check | Tags |
@@ -94,8 +94,15 @@ A behaviour wrapped around an implementation is a decorator, applied at the comp
 | the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps. | review | [] |
 
 ## ports-and-use-cases-answer-or-change → function-answers-or-changes-state · MUST
-A port or use-case answers a question or changes state, never both, without exception.
+A port or use-case answers a question or changes state, never both. A command may load what it changes — the entity, or the aggregate whose invariants it keeps — through its own port of the write side, and decides only on what it loaded and what its caller passed.
 
 | Why | Check | Tags |
 |---|---|---|
-| a read that writes cannot be retried or cached, and a command that reads decides on data its caller never saw. | review | [] |
+| a read that writes cannot be retried or cached, and a command that reads beyond what it changes decides on data its caller never saw, while what it changes it must load to keep its invariants. | review | [] |
+
+## command-returns-nothing → function-answers-or-changes-state
+A command returns nothing. Returning the identity of what it created is strongly discouraged, and avoided wherever the caller can supply the identity: the caller makes the identifier and passes it in.
+
+| Why | Check | Tags |
+|---|---|---|
+| a command that returns data is half a query its caller comes to depend on; an identifier the caller makes lets it retry the command safely and read the result through a query. | review | [] |

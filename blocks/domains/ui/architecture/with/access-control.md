@@ -9,7 +9,7 @@ Guards and redirects of a screen live in the screens layer and use the surface o
 |---|---|---|
 | access is decided before the screen renders, in one layer, and no feature reaches into the session's internals. | review | [] |
 
-## session-presence-in-a-root-store → view-state-homes
+## session-presence-in-a-root-store → client-concerns-in-root-built-stores
 Whether a session exists is one of the global concerns the client owns, in a small store the root builds; what the session carries — the user, their rights — keeps the home of the data it is.
 
 | Why | Check | Tags |
