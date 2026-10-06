@@ -1,4 +1,4 @@
-# Tree
+# Layout
 
 > Governs the tree of a package: its folders, their names and its surfaces.
 

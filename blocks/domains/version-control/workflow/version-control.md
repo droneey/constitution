@@ -152,7 +152,7 @@ An agent never force-pushes, to any branch.
 |---|---|
 | history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | [] |
 
-### no-attribution-in-commits-or-pull-requests → submission-follows-the-receivers-disclosure-policy
+### no-attribution-in-commits-or-pull-requests → submission-carries-no-tool-attribution
 No commit, its trailers included, and no pull request names the tool or model that helped write it.
 
 | Why | Tags |

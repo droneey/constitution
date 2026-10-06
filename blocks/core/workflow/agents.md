@@ -48,12 +48,12 @@ The project’s permission settings for agents, deny rules included, live in the
 |---|---|
 | settings kept with the project give every person’s agent the same limits. | [security] |
 
-### submission-follows-the-receivers-disclosure-policy · MUST
-A submission made with an agent’s help follows the receiving project’s policy on disclosing that help, and the person who submits it answers for it; where the receiver has no policy, it carries no attribution to the tool.
+### submission-carries-no-tool-attribution · MUST
+A submission made under a person’s name — a change, its description, a document — carries no attribution to the tool or the model that helped write it.
 
 | Why | Tags |
 |---|---|
-| the person answers for the submission, and a project that asks for disclosure is owed it. | [] |
+| the person who submits a change answers for it, and an attribution line adds noise and no accountability. | [] |
 
 ## Delegating
 

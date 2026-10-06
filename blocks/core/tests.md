@@ -117,8 +117,8 @@ A suite is named after its boundary, and a case reads `should <behaviour>`, with
 |---|---|
 | a failing case then says which behaviour broke and under what condition, without opening it. | [testing] |
 
-### case-marks-arrange-act-assert · SHOULD
-A case has three parts — Arrange, Act, Assert — each marked and present once, and its Act makes one call; a lifecycle case repeats a marked Act and Assert for each transition.
+### case-split-by-arrange-act-assert-comments · MUST
+A case is split into three sections, each opened by a comment that names it — `Arrange`, `Act`, `Assert` — present once and in that order, and its Act makes one call; a lifecycle case repeats an Act and an Assert, each opened by its comment, for each transition.
 
 | Why | Tags |
 |---|---|
