@@ -9,7 +9,7 @@
 |---|---|
 | a secret stopped before the commit never reaches history, where it is compromised for good. | [] |
 
-### commit-scan-redacted → scanner-reports-redacted
+### commit-scan-redacted → secret-and-personal-data-kept-out-of-output
 The commit hook's scan passes `--redact`.
 
 | Why | Tags |

@@ -1,5 +1,5 @@
 python:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - '.*'
     - '.*.*'
   python-file-forms:

@@ -2,7 +2,7 @@ browser:
   runtime-configuration-served-beside-bundle:
     - types
 core:
-  no-dead-code:
+  dead-code-deleted:
     - allowUnreachableCode
     - allowUnusedLabels
 nestjs:
@@ -24,7 +24,7 @@ self:
     - verbatimModuleSyntax
   no-any:
     - strict
-  no-dead-code:
+  dead-code-deleted:
     - noUnusedLocals
     - noUnusedParameters
   overrides-marked-by-keyword:

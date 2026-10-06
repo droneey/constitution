@@ -13,14 +13,14 @@ governs: []
 
 > A property several platforms share: a request can be slow, fail, or never arrive. The program treats each of these as a normal outcome.
 
-### every-request-has-a-timeout → io-has-timeout-and-cancellation · MUST
+### every-request-has-a-timeout → outside-call-has-a-timeout
 Every request over the network has a timeout and can be cancelled.
 
 | Why | Tags |
 |---|---|
 | on an unreliable network a request without a timeout eventually hangs, and the user waits for nothing. | [] |
 
-### connection-loss-is-an-expected-failure → expected-failures-typed-with-codes · MUST
+### connection-loss-is-an-expected-failure → expected-failure-is-part-of-the-contract · MUST
 A timeout or a lost connection is an expected, typed failure the user sees and can retry, never a hang or a silent loss.
 
 | Why | Tags |
@@ -34,7 +34,7 @@ Input the user entered survives a failed request and is sent again without being
 |---|---|
 | a user who loses their input to a dropped connection does not type it twice. | [ux] |
 
-### network-failures-have-cases → every-declared-failure-has-a-case
+### network-failures-have-cases → declared-failure-has-a-case
 A request's timeout and its lost connection each have a test case.
 
 | Why | Tags |

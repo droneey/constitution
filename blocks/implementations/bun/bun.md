@@ -15,21 +15,21 @@ governs: ["bunfig.toml", "package.json"]
 
 ## Packages and installs
 
-### bun-is-the-only-package-manager → dependencies-pinned-by-lockfile
+### bun-is-the-only-package-manager → dependencies-locked-by-one-lockfile
 `bun.lock` is the only lockfile of the repository's TypeScript; no lockfile of npm, yarn or pnpm is kept.
 
 | Why | Tags |
 |---|---|
 | two package managers resolve differently, and a second lockfile is a second truth about what is installed. | [] |
 
-### trusted-dependencies-listed-by-name → install-scripts-only-for-listed-dependencies
+### trusted-dependencies-listed-by-name → install-scripts-run-only-for-listed-dependencies
 `package.json` always declares `trustedDependencies`, naming each dependency whose install script may run, and `[]` when none may: without the field, Bun runs the scripts of its own list of popular packages.
 
 | Why | Tags |
 |---|---|
 | an install script runs with the developer's rights; listing each package keeps that a decision, not a default. | [] |
 
-### release-age-set-for-installs → dependency-release-cooldown
+### release-age-set-for-installs → new-release-adopted-after-a-cooldown
 `minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases, and `minimumReleaseAgeExcludes` holds the exemptions, each with any new dependency it brings.
 
 | Why | Tags |
@@ -38,14 +38,14 @@ governs: ["bunfig.toml", "package.json"]
 
 ## Running
 
-### every-tool-runs-on-bun → tools-run-on-the-pinned-runtime
+### every-tool-runs-on-bun → tool-pinned-exactly-by-the-repository
 `bunfig.toml` sets `[run] bun = true`, so a tool with a Node shebang runs on the pinned Bun.
 
 | Why | Tags |
 |---|---|
 | a tool with a Node shebang otherwise runs on whichever Node the machine finds, and one runtime for the program and its tools means one version to pin. | [] |
 
-### no-automatic-env-file → configuration-parsed-once-at-boot
+### no-automatic-env-file → configuration-parsed-once-at-start
 Bun's automatic loading of the local environment file is off — `--no-env-file` in the entry's shebang — so the program parses only the variables its deployment provides.
 
 | Why | Tags |

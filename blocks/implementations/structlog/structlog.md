@@ -13,7 +13,7 @@ governs: ["**/root/**"]
 
 > Renders every record of the standard library's `logging` — the program's, its libraries' and its server's — through one chain of processors: the context of the request bound through `contextvars`, secrets masked, JSON in production and readable lines in development. Code logs through `logging.getLogger(__name__)`, and only the program's start configures structlog.
 
-### code-logs-through-the-standard-logger → diagnostics-through-the-logging-facade
+### code-logs-through-the-standard-logger → diagnostics-written-through-a-logger
 Code logs through `logging.getLogger(__name__)`, the logger every library writes to, never through a logger of structlog's own.
 
 | Why | Tags |

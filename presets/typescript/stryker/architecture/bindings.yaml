@@ -1,6 +1,6 @@
 nestjs:
-  mutants-all-killed:
+  every-mutant-killed:
     - mutate
 tanstack-start:
-  mutants-all-killed:
+  every-mutant-killed:
     - mutate

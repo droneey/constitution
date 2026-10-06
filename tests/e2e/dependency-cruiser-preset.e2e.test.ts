@@ -251,7 +251,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'invoice',
         }),
       },
-      rule: 'features-blind-to-each-other',
+      rule: 'feature-never-imports-a-feature',
     },
     {
       condition: 'a module reaches past another module’s surface',

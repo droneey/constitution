@@ -20,14 +20,14 @@ A spec finds elements with `getByRole`, then `getByLabel` and `getByText`; never
 |---|---|
 | a locator that finds elements as a user does breaks only when the user's experience does. | [a11y] |
 
-### waits-through-locators-and-assertions → no-fixed-sleeps-in-tests
+### waits-through-locators-and-assertions → test-never-sleeps-a-fixed-time
 A spec calls neither `waitForTimeout`, `waitForSelector` nor `waitForNavigation`, and never waits for `networkidle`; it waits through locators and web-first assertions.
 
 | Why | Tags |
 |---|---|
 | locators and web-first assertions retry until the page is ready, while a fixed wait, a selector or a quiet network guesses when it is. | [] |
 
-### web-first-assertions-awaited → async-work-awaited-or-deliberately-detached
+### web-first-assertions-awaited → async-work-awaited-or-detached-on-purpose
 Every web-first assertion — an `expect` on a locator or a page — is awaited.
 
 | Why | Tags |
@@ -41,7 +41,7 @@ No action passes `force: true`.
 |---|---|
 | a forced action skips the checks a person's click meets — visible, enabled, not covered — so the spec passes on an element nobody can use. | [a11y] |
 
-### retries-off-in-the-config → flaky-test-fixed-or-removed
+### retries-off-in-the-config → flaky-test-fixed-never-retried
 `playwright.config` sets no retries — the scaffold's `CI ? 2 : 0` goes — so a case that fails once fails the run.
 
 | Why | Tags |

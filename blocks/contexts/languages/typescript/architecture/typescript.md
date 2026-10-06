@@ -4,7 +4,7 @@
 
 ## Modules and files
 
-### hash-imports-leave-the-module → folder-files-import-each-other-directly
+### hash-imports-leave-the-module → module-files-import-each-other-directly
 An import that leaves its module uses `#/`; files inside one module import each other by relative path. A module never imports itself through `#/`.
 
 | Why | Tags |
@@ -20,7 +20,7 @@ A role file is `<name>.<role>.ts`, and a folder's surface is `index.ts`.
 
 ## Values and types
 
-### null-mapped-to-undefined-at-boundary → wire-absence-mapped-at-boundary
+### null-mapped-to-undefined-at-boundary → outside-shape-mapped-in-the-adapter
 `null` lives only in wire types and in the adapters that read them, which map it to `undefined` at the boundary.
 
 | Why | Tags |
@@ -34,7 +34,7 @@ A field of an interface or an object type declared in a `*.entity.ts` or `*.valu
 |---|---|
 | the role suffix marks the business data, so the lint holds its fields; lists and maps stay with review. | [] |
 
-### brands-set-at-the-boundary → identifiers-branded-by-entity
+### brands-set-at-the-boundary → identifier-branded-by-entity
 An identifier's brand is set only in the mapper at the boundary.
 
 | Why | Tags |

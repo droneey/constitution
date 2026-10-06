@@ -1,6 +1,6 @@
 # zod with convergence
 
-### zod-imported-by-the-document → packages-imported-by-folder-role
+### zod-imported-by-the-document → layer-imports-dependencies-by-its-role
 zod's home reaches past the edge into `composition/`, where the document's schema sits.
 
 | Why | Tags |

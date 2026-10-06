@@ -21,7 +21,7 @@ The adapter retries its calls, not the client.
 |---|---|
 | the adapter knows which of its calls repeat safely, while the transport's own retries know no status, no backoff and no method. | [errors] |
 
-### httpx2-only-at-the-edge → side-effects-at-the-edges
+### httpx2-only-at-the-edge → effects-held-only-by-the-edge
 httpx2's home is the adapters, the client of a system under `libs/`, the mapper of its failures in `shared/` and `root/`, which builds the clients: no other folder imports it.
 
 | Why | Tags |

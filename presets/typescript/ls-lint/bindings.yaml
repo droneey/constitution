@@ -1,14 +1,14 @@
 expo:
   expo-router-file-names-kept:
     - _layout
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - app
     - 'src/app'
 tanstack-router:
   tanstack-router-file-names-kept:
     - 'src/routes'
 typescript:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - '.dir'
   test-folder-files-in-test-forms:
     - 'src/**/__tests__'
@@ -20,5 +20,5 @@ typescript:
     - 'src/**/__tests__'
     - tests
     - 'tests/*'
-  yaml-files-end-in-yaml:
+  format-has-one-extension:
     - '.yml'

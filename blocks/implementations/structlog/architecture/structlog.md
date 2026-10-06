@@ -7,7 +7,7 @@
 |---|---|
 | a handler added elsewhere writes records past the chain, and `logging.basicConfig` adds one. | [] |
 
-### only-the-root-imports-structlog → diagnostics-through-the-logging-port
+### only-the-root-imports-structlog → root-alone-configures-logging
 structlog's home is `root/`: no other folder imports it.
 
 | Why | Tags |

@@ -8,6 +8,6 @@ implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryk
 packages: {}
 check: bun run check
 overrides:
-  - rule: no-agent-file-in-project
+  - rule: agent-file-restates-no-rule
     level: MAY
     reason: "The constitution's authors read the working-tree blocks they edit, not the installed ones"

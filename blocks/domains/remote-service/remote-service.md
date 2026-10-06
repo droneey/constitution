@@ -13,7 +13,7 @@ governs: []
 
 > Another system the program reaches over a network and does not run itself. This block says how the transport is built and bounded, how its answers are parsed and its failures mapped, how a stream of its events reaches the domain, and how the specs stand in for a system they cannot run, with its captured answers, and keep those answers true. An engine the project owns and runs, such as its database, is not a remote service; core's integration rules hold it.
 
-### stream-ends-with-terminal-event → errors-surfaced-never-swallowed
+### stream-ends-with-terminal-event → failure-is-expected-or-defect
 A stream that ends without its terminal event fails with a typed error.
 
 | Why | Tags |
@@ -36,7 +36,7 @@ Each captured response of a remote vendor is verified against the vendor: captur
 |---|---|
 | a vendor changes its answers without telling anyone, and a spec on an old capture keeps passing while the program breaks; a system the repository holds changes in the same change as its contract, so a spec can hold the two together. | [testing] |
 
-### unmatched-request-fails-the-spec → tests-run-in-a-sandbox
+### unmatched-request-fails-the-spec → test-runs-in-a-sandbox
 A transport replaced by captured responses throws on a request none of them matches, naming its method and address.
 
 | Why | Tags |

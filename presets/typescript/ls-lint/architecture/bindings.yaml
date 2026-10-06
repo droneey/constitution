@@ -1,26 +1,26 @@
 analytics:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/**/sinks'
   sinks-folder-holds-sink-files:
     - 'src/**/sinks'
 api:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/api'
-  anatomy-top-level-by-concern:
+  package-laid-out-by-the-tree:
     - 'src/api'
 cli:
   commands-in-the-cli-folder:
     - 'src/cli'
     - 'exists:0'
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/cli'
 core:
-  anatomy-top-level-by-concern:
+  package-laid-out-by-the-tree:
     - src
-  data-ports-split-by-reads-and-writes:
+  data-port-one-per-entity-and-side:
     - 'src/**/repositories'
     - 'src/**/repositories/{queries,commands}'
-  feature-anatomy:
+  feature-laid-out-by-its-tree:
     - 'src/features/*/domain'
   file-carries-its-role-suffix:
     - 'src/**/constants'
@@ -34,7 +34,7 @@ core:
     - 'src/features/*/app/use-cases/{queries,commands}/*'
     - 'src/**/utils'
     - 'src/**/value-objects'
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - '.*'
     - '.*.*'
     - '.dir'
@@ -52,7 +52,7 @@ core:
     - 'src/features/*/app/use-cases/{queries,commands}/*'
     - 'src/**/utils'
     - 'src/**/value-objects'
-  yaml-files-end-in-yaml:
+  format-has-one-extension:
     - '.yml'
 expo:
   expo-router-file-names-kept:
@@ -61,10 +61,10 @@ expo:
     - 'app'
     - 'src/app'
     - 'src/routes'
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/routes'
 nestjs:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/**/providers'
   nestjs-files-in-the-tree:
     - 'src/**/providers'
@@ -74,7 +74,7 @@ nestjs:
     - '.guard.ts'
     - '.interceptor.ts'
 tanstack-router:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/routes'
   screen-private-pieces-in-dash-folders:
     - 'src/routes'
@@ -94,7 +94,7 @@ ui:
   component-named-by-location:
     - 'src/**/widgets/[!_]*'
     - 'src/root/**/components/[!_]*'
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - 'src/**/assets'
     - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
     - 'src/components/[!_]*'

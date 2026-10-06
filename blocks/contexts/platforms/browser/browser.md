@@ -27,14 +27,14 @@ A credential in the tab lives only in a cookie its script cannot read, never in 
 |---|---|
 | a cookie the page's script cannot read is the one store of a tab that no script in the page can reach. | [security] |
 
-### cross-window-messages-check-origin → outside-addresses-trusted-only-on-an-allowlist
+### cross-window-messages-check-origin → outside-address-followed-only-from-an-allowlist
 A message from another window is accepted only from an expected origin, and parsed; an outgoing message names its target origin.
 
 | Why | Tags |
 |---|---|
 | any page can post a message to any window; without the origin check, any page can drive the program. | [] |
 
-### redirect-targets-allowlisted → outside-addresses-trusted-only-on-an-allowlist
+### redirect-targets-allowlisted → outside-address-followed-only-from-an-allowlist
 A redirect target taken from the address or a form — `returnTo`, `redirect`, `next` — is followed only when it is a path of the program's own or on an allowlist; anything else falls back to the home screen.
 
 | Why | Tags |
@@ -90,7 +90,7 @@ Hashed assets are served as immutable; the HTML and the runtime configuration ar
 |---|---|
 | hashed files never change, so they are cached for good, while what points at them must be fresh. | [performance] |
 
-### browser-resources-have-one-writer → one-writer-per-shared-resource
+### browser-resources-have-one-writer → shared-resource-has-one-writer
 In the browser, the resources the program shares with its host include the document's head, the URL, focus, the scroll position, the root element's classes and attributes, and the service worker; each has one writer.
 
 | Why | Tags |

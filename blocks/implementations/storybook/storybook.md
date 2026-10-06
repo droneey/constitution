@@ -34,14 +34,14 @@ Screenshots are compared over the UI kit's stories, where the look is the contra
 |---|---|
 | the kit's look is the one place a changed pixel is a changed contract. | [] |
 
-### stories-outside-coverage → coverage-holds-all-logic
+### stories-outside-coverage → logic-fully-covered
 Stories are outside coverage.
 
 | Why | Tags |
 |---|---|
 | a story renders a component without asserting anything, so a line it covers would count as proven when no spec proves it. | [testing] |
 
-### stories-unreachable-from-production → test-code-unreachable-from-production
+### stories-unreachable-from-production → test-code-never-reached-from-production
 Production code never imports a story.
 
 | Why | Tags |

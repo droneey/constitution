@@ -1,6 +1,6 @@
 # yaml
 
-### yaml-only-at-the-edge → untrusted-input-parsed-at-edge
+### yaml-only-at-the-edge → outside-value-untyped-until-parsed
 The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses.
 
 | Why | Tags |

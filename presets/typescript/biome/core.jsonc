@@ -65,7 +65,7 @@
   },
   "plugins": [
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/cases-named-should-when.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/case-named-should-when.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -73,7 +73,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-logic-in-cases.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/case-holds-no-logic.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",

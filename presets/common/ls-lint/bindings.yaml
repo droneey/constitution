@@ -1,9 +1,9 @@
 core:
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - '.*'
     - '.*.*'
     - '.*.*.*'
     - '.dir'
     - '.md'
-  yaml-files-end-in-yaml:
+  format-has-one-extension:
     - '.yml'

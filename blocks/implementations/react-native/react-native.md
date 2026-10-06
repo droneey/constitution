@@ -27,7 +27,7 @@ A style names no literal colour.
 |---|---|
 | a literal colour is a second palette the next theme misses. | [ux] |
 
-### react-native-imported-from-its-entry → dependencies-imported-from-their-entries
+### react-native-imported-from-its-entry → dependency-reached-through-its-public-entry
 React Native is imported from `react-native`, never from its internal paths.
 
 | Why | Tags |

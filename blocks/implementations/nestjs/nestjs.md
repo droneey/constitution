@@ -27,7 +27,7 @@ A class a decorated constructor names is imported as a value, never with `import
 |---|---|
 | the metadata of a class imported as a type is `Object`, which the injector cannot resolve, and the compiler reports nothing. | [errors] |
 
-### decorated-constructor-takes-every-dependency → parameters-at-most-three-wholes-as-one-object
+### decorated-constructor-takes-every-dependency → function-takes-at-most-three-positions
 A constructor the injector calls takes one parameter for each dependency, however many: the injector imposes its signature, so the limit of three positions leaves it out, and the linter's limit is lifted in the files that hold such classes.
 
 | Why | Tags |
@@ -59,6 +59,6 @@ The program throws the error kit's errors, never `HttpException` or one of its s
 
 | Requirement | How | Met |
 |---|---|---|
-| `one-explicit-composition-root` | the modules' `providers` are where the program is wired: the root module names each feature's module in its `imports`, each provider binds a token to its implementation with `useClass` or `useFactory` (`contracts-injected-by-token`), and the injector follows only those declarations; a provider takes its dependencies through its constructor (`providers-injected-through-the-constructor`), never asks the injector for one (`injector-never-asked-for-a-dependency`), and no module of the program is global (`no-global-module`) | yes |
+| `composition-root-wires-everything` | the modules' `providers` are where the program is wired: the root module names each feature's module in its `imports`, each provider binds a token to its implementation with `useClass` or `useFactory` (`contracts-injected-by-token`), and the injector follows only those declarations; a provider takes its dependencies through its constructor (`providers-injected-through-the-constructor`), never asks the injector for one (`injector-never-asked-for-a-dependency`), and no module of the program is global (`no-global-module`) | yes |
 | `every-failure-reaches-one-handler` | a global exception filter whose `@Catch()` names no class receives every exception, the `NotFoundException` of an unknown route or method and the `BadRequestException` of a malformed body included | yes |
 | `request-parsed-before-its-handler` | a pipe, global or bound to a parameter, parses it before the controller's method runs, and the error it throws reaches the filter | yes |

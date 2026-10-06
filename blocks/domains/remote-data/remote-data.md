@@ -13,7 +13,7 @@ governs: []
 
 > Data another system owns and decides on, which the program reads, caches and changes through that system. This block says how the data is cached, keyed and invalidated, and how a stream of it is folded before it reaches the cache.
 
-### reads-cancellable-latest-wins → io-has-timeout-and-cancellation
+### reads-cancellable-latest-wins → outside-call-can-be-cancelled
 Every read can be cancelled; a read superseded for the same key is cancelled, and only the latest answer reaches the cache.
 
 | Why | Tags |

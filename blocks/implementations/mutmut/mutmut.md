@@ -20,14 +20,14 @@ An equivalent mutant is marked on its line — `# pragma: no mutate -- <reason>`
 |---|---|
 | the pragma names no mutator, so its line is the narrowest mark mutmut has, and its other forms reach a whole block, function, class or file. | [] |
 
-### mutants-run-without-the-gates → mutants-all-killed
+### mutants-run-without-the-gates → every-mutant-killed
 mutmut runs pytest with `pytest_add_cli_args = ["-p", "no:randomly"]`, and `addopts` holds no `--cov`.
 
 | Why | Tags |
 |---|---|
 | a run per mutant must stop at its first failing case, which a coverage gate over one mutant's specs fails first and a shuffled order makes differ from one mutant to the next. | [] |
 
-### spec-finds-files-by-searching-up → mutants-all-killed
+### spec-finds-files-by-searching-up → every-mutant-killed
 A spec reaches a file outside `tests/` by searching up from its own file for the folder that holds it, never by a fixed count of `Path(__file__).parents`.
 
 | Why | Tags |

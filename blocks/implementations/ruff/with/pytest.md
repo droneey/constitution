@@ -2,7 +2,7 @@
 
 > The specs' rules. The part `presets/python/ruff/pytest.toml` extends `python.toml` with pytest's style (`PT`) and the bans below, and a project that tests with pytest extends it, the last link of the chain.
 
-### skips-and-expected-failures-banned → no-skipped-or-empty-tests
+### skips-and-expected-failures-banned → test-never-skipped-or-empty
 `pytest.skip`, `pytest.xfail`, `pytest.importorskip` and the marks `skip`, `skipif` and `xfail` are banned.
 
 | Why | Tags |

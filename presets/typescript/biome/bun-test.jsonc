@@ -15,7 +15,7 @@
   ],
   "plugins": [
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-skipped-or-empty-tests.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/test-never-skipped-or-empty.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",

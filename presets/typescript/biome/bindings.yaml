@@ -22,8 +22,8 @@ _react:
 bun-test:
   no-module-mocks:
     - no-module-mocks.grit
-  no-skipped-or-empty-tests:
-    - no-skipped-or-empty-tests.grit
+  test-never-skipped-or-empty:
+    - test-never-skipped-or-empty.grit
   no-sleep-in-specs:
     - no-sleep-in-specs.grit
   no-test-retries:
@@ -31,32 +31,33 @@ bun-test:
   strict-matcher-only:
     - strict-matcher-only.grit
 core:
-  async-work-awaited-or-deliberately-detached:
+  async-work-awaited-or-detached-on-purpose:
     - noFloatingPromises
     - noMisusedPromises
-  parameters-at-most-three-wholes-as-one-object:
+  function-takes-at-most-three-positions:
     - useMaxParams
-  cases-named-should-when:
-    - cases-named-should-when.grit
-  no-logic-in-cases:
-    - no-logic-in-cases.grit
-  error-cause-preserved:
+  case-named-should-when:
+    - case-named-should-when.grit
+  case-holds-no-logic:
+    - case-holds-no-logic.grit
+  error-keeps-its-cause:
     - useErrorCause
-  errors-surfaced-never-swallowed:
+  catch-handles-only-what-it-recognises:
     - noEmptyBlockStatements
-  function-file-and-complexity-limits:
-    - noExcessiveCognitiveComplexity
+  file-within-500-lines:
     - noExcessiveLinesPerFile
+  function-within-its-limits:
+    - noExcessiveCognitiveComplexity
     - noExcessiveLinesPerFunction
-  kebab-case-file-names:
+  file-name-in-its-owners-case:
     - useFilenamingConvention
-  no-debug-output-in-shipped-code:
+  diagnostics-written-through-a-logger:
     - noAlert
     - noConsole
     - noDebugger
-  no-secret-in-repository:
+  secret-never-in-the-repository:
     - noSecrets
-  no-skipped-or-empty-tests:
+  test-never-skipped-or-empty:
     - noConditionalExpect
     - noFocusedTests
     - noSkippedTests

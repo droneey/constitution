@@ -36,7 +36,7 @@ Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref cal
 |---|---|
 | two forms of one thing double what a reader must know, and the legacy forms are on their way out. | [] |
 
-### function-components-only → inheritance-only-for-errors-and-framework-points · MUST
+### function-components-only → behaviour-composed-not-inherited · MUST
 Components are functions, composed, never inherited; a class only for an error boundary.
 
 | Why | Tags |
@@ -71,7 +71,7 @@ A component is named in PascalCase.
 |---|---|
 | React renders a lower-case name as an element of the platform, never as the component. | [] |
 
-### nothing-rendered-as-null → absence-has-one-value
+### nothing-rendered-as-null → absence-shown-by-the-type
 A component that renders nothing returns `null` and says so in its return type, `ReactElement | null`, or renders the `null` branch of a conditional, or is given inline as a value — `{ hr: () => null }`; with a ref object that holds `null` as React's types demand — `useRef<T>(null)`, `RefObject<T | null>` — these are the places internal code writes it.
 
 | Why | Tags |
@@ -94,7 +94,7 @@ A value that can be derived is computed during render, never stored in state and
 |---|---|
 | a derived copy in state renders twice and is one render behind the value it copies. | [performance] |
 
-### effect-cleans-up-and-cancels → resources-released-on-every-path · MUST
+### effect-cleans-up-and-cancels → resource-released-on-every-path
 Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
 
 | Why | Tags |
@@ -145,7 +145,7 @@ A screen's error boundary is a React error boundary, which catches what is throw
 |---|---|
 | React unmounts the whole tree below the boundary that catches, so a boundary per screen costs one screen. | [errors, ux] |
 
-### handler-and-effect-failures-handled-where-they-happen → errors-surfaced-never-swallowed
+### handler-and-effect-failures-handled-where-they-happen → failure-is-expected-or-defect
 An expected failure in an event handler or an effect is handled where it happens, never left for an error boundary; a defect there travels on to the root's report.
 
 | Why | Tags |

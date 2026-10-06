@@ -7,7 +7,7 @@ Submission calls the command's binding unit or an `on<Event>` callback; the form
 |---|---|
 | the form stays presentational, and serves whichever operation it is handed. | [] |
 
-### form-library-imported-by-the-ui → packages-imported-by-folder-role
+### form-library-imported-by-the-ui → layer-imports-dependencies-by-its-role
 The form library's home reaches past the edge into a UI's components and widgets, where a form is built.
 
 | Why | Tags |

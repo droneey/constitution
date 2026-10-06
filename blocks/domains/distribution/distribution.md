@@ -66,12 +66,19 @@ The consumer installs the tool a package configures: the package never depends o
 |---|---|
 | the consumer owns the tool's version; a package that installs its own copy splits the consumer's tooling in two. | [] |
 
-### shipped-configuration-asserted-by-spec → spec-per-boundary · MUST
+### shipped-configuration-asserted-by-spec → spec-proves-one-boundary · MUST
 Each distributed configuration has a spec that parses it and asserts its intent.
 
 | Why | Tags |
 |---|---|
 | a configuration has no behaviour to call, so its spec proves it says what it means. | [] |
+
+### dependencies-declared-by-range · SHOULD
+A dependency of a package others install is declared in its manifest by the range of versions it works with, and the lockfile pins the exact version the package is developed against.
+
+| Why | Tags |
+|---|---|
+| a consumer's package manager can then share one compatible version among every package that needs it, while the package itself is still built from versions someone reviewed. | [security] |
 
 ## Versions and releases
 
@@ -89,7 +96,7 @@ A deprecated entry names its replacement and the version that removes it.
 |---|---|
 | a deprecation without a replacement leaves the consumer stuck, and one without a removal version never ends. | [] |
 
-### publishing-by-workflow-identity → least-privilege-credentials · MUST
+### publishing-by-workflow-identity → credential-has-least-privilege · MUST
 No stored token publishes. A new unit's first version is published once by a person with two-factor authentication; every later version only by an identity issued to the run that publishes, and the registry records its provenance.
 
 | Why | Tags |

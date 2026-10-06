@@ -2,7 +2,7 @@
 
 > **Vocabulary:** folder `sinks`, suffix `.sink`.
 
-### sinks-behind-one-contract → extension-by-addition
+### sinks-behind-one-contract → new-kind-added-as-a-member
 Each analytics service is one sink, one `.sink` file in `sinks/`, under one contract beside the folder; a registry chooses the active sinks.
 
 | Why | Tags |
@@ -16,7 +16,7 @@ Each analytics service is one sink, one `.sink` file in `sinks/`, under one cont
 |---|---|
 | a service is then one file of one form. | [] |
 
-### features-never-track → code-lives-with-its-reason-to-change
+### features-never-track → code-placed-by-its-reason-to-change
 A feature never sends an event; the composing layer translates the feature's intents and outcomes into events.
 
 | Why | Tags |

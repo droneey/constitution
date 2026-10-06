@@ -28,7 +28,7 @@ Outside the key factory's `cache.utils.ts`, no key array is written inline — a
 |---|---|
 | these are the places a key is written, and an inline one drifts from the factory's, so an invalidation misses it. | [data] |
 
-### query-library-home-is-the-binding-units → packages-imported-by-folder-role
+### query-library-home-is-the-binding-units → layer-imports-dependencies-by-its-role
 The query library's home is the binding units of `app/` and `composition/`, and `root/`, which builds the client; no other folder imports it — no component, adapter or code of `libs/`.
 
 | Why | Tags |
@@ -42,7 +42,7 @@ Each read is declared once as `queryOptions`, beside the key factory in `cache.u
 |---|---|
 | one declaration keeps the key, the function and the options of a read the same wherever it runs. | [] |
 
-### query-client-built-by-the-root → stateful-clients-built-by-the-root
+### query-client-built-by-the-root → root-builds-every-stateful-client
 `new QueryClient` is written only in `root/`, in the program's entry files and in specs.
 
 | Why | Tags |

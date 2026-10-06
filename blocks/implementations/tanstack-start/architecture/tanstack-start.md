@@ -7,7 +7,7 @@ The application runs in SPA mode: the root route renders on the client, and ther
 |---|---|
 | a server tier with logic of its own is a second backend nobody designed. | [security] |
 
-### root-route-is-the-delivery-wiring → root-imported-only-by-entry-and-delivery-wiring
+### root-route-is-the-delivery-wiring → root-imported-only-by-entries-and-delivery-wiring
 The root route is the delivery layer's wiring: it builds the shell — `<HeadContent/>`, `<Scripts/>`, the document's language — and mounts the providers of `root/`.
 
 | Why | Tags |

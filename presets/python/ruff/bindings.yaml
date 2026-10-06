@@ -1,14 +1,14 @@
 core:
-  error-cause-preserved:
+  error-keeps-its-cause:
     - B904
-  no-dead-code:
+  dead-code-deleted:
     - ARG
     - F401
     - F841
-  no-debug-output-in-shipped-code:
+  diagnostics-written-through-a-logger:
     - T10
     - T20
-  parameters-at-most-three-wholes-as-one-object:
+  function-takes-at-most-three-positions:
     - PLR0917
     - max-positional-args
 fastapi:

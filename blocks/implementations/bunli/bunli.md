@@ -20,7 +20,7 @@ A command's spec builds the program with a fake terminal and prompt session — 
 |---|---|
 | the spec drives the command as a user does, and reads what the user would see. | [] |
 
-### bunli-flags-declared-by-schema → outside-values-untyped-until-parsed
+### bunli-flags-declared-by-schema → outside-value-untyped-until-parsed
 Every flag is `option(schema, { short, description })`, its schema a standard schema, and the handler receives the parsed flags.
 
 | Why | Tags |
@@ -41,7 +41,7 @@ The program's entry adds a listener to the process's `exit` that turns an exit `
 |---|---|
 | bunli ends its own usage failures with `process.exit(1)`, the code the map gives to a failure the user can act on, and offers no hook to change it. | [] |
 
-### program-keeps-no-bunli-config → one-home-per-datum
+### program-keeps-no-bunli-config → fact-has-one-source
 The program keeps no `bunli.config.*`: its configuration lives only in the code that builds it.
 
 | Why | Tags |

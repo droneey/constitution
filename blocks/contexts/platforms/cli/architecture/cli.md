@@ -4,7 +4,7 @@
 
 ## Commands
 
-### commands-in-the-cli-folder → anatomy-top-level-by-concern
+### commands-in-the-cli-folder → package-laid-out-by-the-tree
 The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag definitions in files beside them, reused and never declared twice, and the list of commands registered beside the files. `cli/` holds no file of another role.
 
 | Why | Tags |

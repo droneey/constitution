@@ -13,21 +13,21 @@ governs: ["**/adapters/**", "**/root/**"]
 
 > The HTTP client of the transport: an `httpx2.AsyncClient` per remote system, open for the program's life, with a timeout on every call.
 
-### timeout-on-every-client-and-call → io-has-timeout-and-cancellation · MUST
+### timeout-on-every-client-and-call → outside-call-has-a-timeout
 Every client is built with its own `httpx2.Timeout`, and a call that needs another passes `timeout=`; no client and no call passes `timeout=None`.
 
 | Why | Tags |
 |---|---|
 | the default of five seconds is nobody's choice for a given system, and `None` lets a call hang for as long as the server keeps the connection open. | [errors, performance] |
 
-### client-open-for-the-program-life → resources-released-on-every-path
+### client-open-for-the-program-life → resource-released-on-every-path
 A client is opened once, with `async with`, for as long as the program runs, and closed with it; no call opens a client of its own — `httpx2.get` and the other functions of the module included — and no client is left unclosed.
 
 | Why | Tags |
 |---|---|
 | a client pools its connections, so a client per call pays for a new connection and handshake each time, and one never closed leaks its sockets. | [performance] |
 
-### httpx2-retries-kept-to-transient-failures → retry-only-transient-failures
+### httpx2-retries-kept-to-transient-failures → failure-retried-only-when-transient
 A call is retried only after a timeout, a lost connection, a `429` or a `503` — after the `Retry-After` the answer gives — with backoff and a limit, and only when it repeats safely.
 
 | Why | Tags |

@@ -1,7 +1,7 @@
 core:
-  no-import-cycles:
+  module-imports-form-no-cycle:
     - no-circular
-  test-code-unreachable-from-production:
+  test-code-never-reached-from-production:
     - no-test-code-in-production
 storybook:
   tools-are-dev-dependencies:

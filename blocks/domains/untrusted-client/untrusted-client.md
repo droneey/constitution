@@ -13,7 +13,7 @@ governs: []
 
 > A property several platforms share: the program runs on a device its user controls. Whatever it holds, the user can read; whatever it checks, the user can skip.
 
-### client-holds-nothing-hidden → secret-never-in-url-or-artefact
+### client-holds-nothing-hidden → secret-and-personal-data-kept-out-of-output
 Nothing shipped to the client — code, configuration, a variable the build inlines under a public prefix, data in memory or in storage — is treated as hidden from its user, so none of it holds a secret; configuration the client receives at runtime is public.
 
 | Why | Tags |

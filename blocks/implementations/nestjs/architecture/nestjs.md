@@ -4,7 +4,7 @@
 
 ## Files
 
-### nestjs-files-in-the-tree → anatomy-top-level-by-concern
+### nestjs-files-in-the-tree → package-laid-out-by-the-tree
 The root's module, `root/root.module.ts`, is the program's wiring file, and `api/api.module.ts` mounts the controllers of `api/`; a feature's module is `<feature>.module.ts` in its `app/`, and a module that joins features is `composition/<name>/<name>.module.ts`. A controller is `<name>.controller.ts`, in `api/`, or in a feature's `app/` when it serves that feature alone. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role. A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `.interceptor` files, and its surface.
 
 | Why | Tags |
@@ -13,35 +13,35 @@ The root's module, `root/root.module.ts`, is the program's wiring file, and `api
 
 ## Wiring
 
-### adapter-is-an-injectable-class → adapter-is-a-factory-module-object-or-class
+### adapter-is-an-injectable-class → adapter-built-by-factory-object-or-class
 An adapter is an `@Injectable()` class, a provider like any other: it takes its dependencies through its constructor (`providers-injected-through-the-constructor`) and is bound in a module (`contracts-injected-by-token`).
 
 | Why | Tags |
 |---|---|
 | every other part a NestJS program wires is an injectable class, so an adapter in the same form is declared, bound and replaced in a spec as any of them is. | [testing] |
 
-### providers-injected-through-the-constructor → one-explicit-composition-root
+### providers-injected-through-the-constructor → composition-root-wires-everything
 A provider takes its dependencies as `private readonly` parameters of its constructor, and a module's providers are its wiring; a provider never builds a dependency or reaches a global.
 
 | Why | Tags |
 |---|---|
 | a dependency the constructor names is one the injector replaces in a spec; one taken from elsewhere is fixed for good. | [testing] |
 
-### injector-never-asked-for-a-dependency → one-explicit-composition-root
+### injector-never-asked-for-a-dependency → composition-root-wires-everything
 No provider, controller or guard takes `ModuleRef` and calls its `get` or `resolve`, or takes `DiscoveryService` to find providers by scanning.
 
 | Why | Tags |
 |---|---|
 | a dependency asked for at run time appears in no constructor and no module, so neither a reader nor a spec sees it until it fails. | [testing] |
 
-### no-global-module → one-explicit-composition-root
+### no-global-module → composition-root-wires-everything
 No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — the adapter of a contract of `contracts/` — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
 
 | Why | Tags |
 |---|---|
 | a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; a library's, imported by the root alone, is wiring the root shows, as a logger is; and a feature's module that imports another feature's ties the two features as an import of code would. | [] |
 
-### contracts-injected-by-token → one-explicit-composition-root
+### contracts-injected-by-token → composition-root-wires-everything
 A dependency that stands for a contract is injected by a token — an abstract class, or a `Symbol` named by `@Inject` — and bound to its implementation with `useClass` or `useFactory` in a module's `providers`; a constructor never names a concrete adapter class.
 
 | Why | Tags |
@@ -57,7 +57,7 @@ The handler is one exception filter whose `@Catch()` names no class, registered 
 
 ## Packages
 
-### nestjs-imported-by-modules-and-providers → packages-imported-by-folder-role
+### nestjs-imported-by-modules-and-providers → layer-imports-dependencies-by-its-role
 NestJS's home reaches past the edge into `app/` and `composition/`, which hold the modules, controllers and injectable use-cases, and into every `providers/` folder.
 
 | Why | Tags |

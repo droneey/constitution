@@ -1,6 +1,6 @@
 # CSS
 
-### module-stylesheet-surface → access-only-through-curated-surface
+### module-stylesheet-surface → module-reached-only-through-its-surface
 A module that ships styles offers them through a stylesheet surface, `index.css`, beside its script surface; the program's root imports it by path, and inside the module the stylesheet imports its parts.
 
 | Why | Tags |

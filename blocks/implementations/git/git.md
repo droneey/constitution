@@ -24,7 +24,7 @@ A worktree holds one branch, and no folder of it is a link into another checkout
 
 ## Ignores, tags and large files
 
-### gitignore-covers-key-files → no-secret-in-repository
+### gitignore-covers-key-files → secret-never-in-the-repository
 `.gitignore` covers key and credential files — `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets`, `.htpasswd` — in nested ignore files too.
 
 | Why | Tags |

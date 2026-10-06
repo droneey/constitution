@@ -13,7 +13,7 @@ governs: []
 
 > Compares what a package's `src/` imports with what its `pyproject.toml` declares. It fails on a dependency declared and never imported, one imported and never declared, and a tool of the `dev` group the program imports.
 
-### unused-dependency-fails → no-dead-code
+### unused-dependency-fails → dead-code-deleted
 deptry fails on a dependency of `[project]` that nothing in `src/` imports (`DEP002`).
 
 | Why | Tags |
@@ -27,7 +27,7 @@ deptry fails when code in `src/` imports a package of the `dev` group (`DEP004`)
 |---|---|
 | the program then breaks wherever it is installed without the tools. | [] |
 
-### spec-modules-unreachable-from-src → test-code-unreachable-from-production
+### spec-modules-unreachable-from-src → test-code-never-reached-from-production
 deptry fails when code in `src/` imports a module of `tests/`, which is neither the package's own nor a declared dependency (`DEP001`).
 
 | Why | Tags |

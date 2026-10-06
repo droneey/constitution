@@ -1,11 +1,11 @@
 # Renovate
 
-### updates-from-the-shared-preset → hooks-and-release-automation-from-the-shared-source
+### updates-from-the-shared-preset · SHOULD
 `renovate.json` extends the fleet's preset, pinned to a release.
 
 | Why | Tags |
 |---|---|
-| one policy for every repository, changed in one place. | [] |
+| one policy for every repository, changed in one place. | [security] |
 
 ### update-commits-in-the-commit-format → commit-header-type-and-subject
 Update commits and titles follow the commit format: `chore: Update …`, no scope, sentence case.

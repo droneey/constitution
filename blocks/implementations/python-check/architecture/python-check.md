@@ -7,7 +7,7 @@ A relative import whose target lies outside the importing file's module fails th
 |---|---|
 | the linter bans relative imports only all at once, or those that climb past the package. | [] |
 
-### packages-kept-to-their-homes → packages-imported-by-folder-role
+### packages-kept-to-their-homes → layer-imports-dependencies-by-its-role
 An import of a package — neither the standard library, the import package itself nor a unit of the workspace — fails the check in `domain/`, `kernel/` and `contracts/`; outside the edge, in a folder its home does not name; and, where its home is narrower than the edge, in a folder of the edge its home leaves out. The edge is `adapters/`, `libs/`, `root/`, `integrations/`, the entry files and the top-level folder that is neither a layer nor a role folder, the delivery layer.
 
 | Why | Tags |

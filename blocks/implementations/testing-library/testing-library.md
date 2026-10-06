@@ -27,21 +27,21 @@ Interactions go through `userEvent`, never `fireEvent`.
 |---|---|
 | `userEvent` produces the whole sequence a person's action does — focus, keys, pointer — so the spec meets the bugs they would. | [testing] |
 
-### async-ui-awaited-with-find → no-fixed-sleeps-in-tests
+### async-ui-awaited-with-find → test-never-sleeps-a-fixed-time
 What appears asynchronously is awaited with `findBy…` or `waitFor`, never a fixed sleep.
 
 | Why | Tags |
 |---|---|
 | a sleep is too short on a slow machine and wasted on a fast one. | [testing] |
 
-### hooks-proven-through-their-screen → spec-per-boundary
+### hooks-proven-through-their-screen → spec-proves-one-boundary
 A hook that loads or writes data is proven through the screen or component that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
 
 | Why | Tags |
 |---|---|
 | the screen is the boundary a user meets, and a hook tested alone repeats what its screen's spec proves. | [] |
 
-### render-helper-builds-fresh-providers → specs-independent-of-order · MUST
+### render-helper-builds-fresh-providers → case-independent-of-order · MUST
 One render helper in `__tests__/<name>.fixtures` mounts the providers a spec needs, fresh for each spec.
 
 | Why | Tags |

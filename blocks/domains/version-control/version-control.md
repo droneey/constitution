@@ -82,7 +82,7 @@ History others have is never rewritten.
 |---|---|
 | a rewritten shared history breaks every copy built on it and can lose others' work. | [] |
 
-### no-secret-in-history → no-secret-in-repository
+### no-secret-in-history → secret-never-in-the-repository
 No commit of the history holds a secret, even one a later commit removed it from.
 
 | Why | Tags |
@@ -111,13 +111,6 @@ Large binary files live outside the history, stored by reference.
 | a large file in history is downloaded by every clone forever, even after it is deleted. | [performance] |
 
 ## Files
-
-### move-files-never-recreate · MUST
-A file that moves is moved, never deleted and written anew, and a moved file is not rewritten in the same step.
-
-| Why | Tags |
-|---|---|
-| a move keeps the file's history and shows the reviewer that nothing changed but its place. | [] |
 
 ### generated-files-not-committed · SHOULD
 Generated files are not committed; the build produces them. Two kinds are the exception, and are committed: a file an author's step generates and the program's code imports — not a build output — and a generated copy kept for readers outside the code, such as a schema an editor fetches by its address.

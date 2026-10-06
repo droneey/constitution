@@ -1,11 +1,11 @@
 # Lefthook
 
-### hooks-from-the-shared-preset → hooks-and-release-automation-from-the-shared-source
+### hooks-from-the-shared-preset · SHOULD
 The hooks come from the shared preset, pinned, never from scripts copied into the repository.
 
 | Why | Tags |
 |---|---|
-| a fix to a hook reaches every repository with one update, and no copy drifts. | [] |
+| a fix to a hook reaches every repository with one update, and no copy drifts. | [security] |
 
 ### hooks-installed-with-dependencies · SHOULD
 Installing the repository's dependencies installs the hooks, so no clone commits without them.

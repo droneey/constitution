@@ -24,7 +24,7 @@ Every failure of a request is answered from what failed: an expected error with 
 |---|---|
 | a caller branches on a code that stays when the message is reworded, every failure arrives in one shape a client parses once, and an unexpected one shows nothing of how the program works. | [errors, security] |
 
-### errors-carry-codes-not-statuses → framework-errors-never-raised
+### errors-carry-codes-not-statuses → expected-failure-is-part-of-the-contract
 No error the code of a request raises carries a status or an answer of the protocol, whether the framework's or one of the program's own.
 
 | Why | Tags |
@@ -42,7 +42,7 @@ A server of tools that models call describes every tool — what it does and whe
 
 ## Specs
 
-### server-specs-run-in-process → tests-run-in-a-sandbox
+### server-specs-run-in-process → test-runs-in-a-sandbox
 A spec of a server drives it in process, through its real middleware, parsing and handler, on a server built with fakes, and opens no port.
 
 | Why | Tags |
@@ -51,14 +51,14 @@ A spec of a server drives it in process, through its real middleware, parsing an
 
 ## Callers from other origins
 
-### cross-origin-callers-from-an-allowlist → outside-addresses-trusted-only-on-an-allowlist
+### cross-origin-callers-from-an-allowlist → outside-address-followed-only-from-an-allowlist
 Over HTTP, a request from another origin is allowed only for an origin on the program's allowlist, named exactly: the server never echoes a request's `Origin` unchecked, and never answers `Access-Control-Allow-Origin: *` beside `Access-Control-Allow-Credentials: true`.
 
 | Why | Tags |
 |---|---|
 | a browser sends a user's cookies with a cross-origin request, so an origin the server allows unchecked reads its answers in that user's name. | [security] |
 
-### state-changes-refused-from-other-origins → outside-addresses-trusted-only-on-an-allowlist
+### state-changes-refused-from-other-origins → outside-address-followed-only-from-an-allowlist
 Over HTTP, a request that changes state is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, and a `GET`, `HEAD` or `OPTIONS` request changes no state.
 
 | Why | Tags |
@@ -67,7 +67,7 @@ Over HTTP, a request that changes state is refused when its `Origin` names an or
 
 ## Outbound requests
 
-### outbound-addresses-from-callers-allowlisted → outside-addresses-trusted-only-on-an-allowlist
+### outbound-addresses-from-callers-allowlisted → outside-address-followed-only-from-an-allowlist
 A request the server sends to an address a caller gave — a webhook, a file to fetch, a link to preview — goes only to a host on an allowlist and follows no redirect off it, and the address it resolves to is never private, loopback or link-local.
 
 | Why | Tags |

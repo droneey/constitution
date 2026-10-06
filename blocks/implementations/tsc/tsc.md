@@ -13,7 +13,7 @@ governs: ["tsconfig.json", "tsconfig.src.json", "tsconfig.test.json"]
 
 > The compiler checks the `types` role. `tsconfig.json` — or `tsconfig.src.json`, where the specs have a configuration of their own — extends the parts of the constitution's release archive — `presets/typescript/tsc/self.json`, the compiler's own options and the strict ones, `core.json`, the options that refuse dead code, and the part of each other active block that has options of its own, `<block>.json` — of the platforms, only the one the program runs on. `presets/typescript/tsc/bindings.yaml` says which option holds which rule.
 
-### compiler-is-the-type-gate → rules-held-by-tools
+### compiler-is-the-type-gate → rule-held-by-a-tool-where-one-can
 The compiler, not a bundler or the runtime, is the type gate, and its configuration sets the strict options — `strict`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `noImplicitOverride`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `verbatimModuleSyntax`.
 
 | Why | Tags |

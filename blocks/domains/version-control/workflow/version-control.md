@@ -30,7 +30,7 @@ The commit hooks hold what can be checked of a commit before it is made: its bra
 |---|---|
 | a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. | [testing] |
 
-### secrets-scanned-before-each-commit → no-secret-in-repository
+### secrets-scanned-before-each-commit → secret-never-in-the-repository
 The commit hooks scan the staged changes for secrets before each commit.
 
 | Why | Tags |
@@ -76,7 +76,7 @@ A repository integrates by one strategy, which the protection enforces, and no w
 |---|---|
 | one strategy keeps the history readable the same way everywhere, and work in progress on the main line is a state nobody meant to ship. | [] |
 
-### small-reviewable-change-requests → scope-limited-to-the-task
+### small-reviewable-change-requests → change-limited-to-its-task
 A pull request is small enough to review in one sitting; one that mixes concerns is split.
 
 | Why | Tags |
@@ -152,7 +152,7 @@ An agent never force-pushes, to any branch.
 |---|---|
 | history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | [] |
 
-### no-attribution-in-commits-or-pull-requests → no-tool-attribution
+### no-attribution-in-commits-or-pull-requests → submission-follows-the-receivers-disclosure-policy
 No commit, its trailers included, and no pull request names the tool or model that helped write it.
 
 | Why | Tags |

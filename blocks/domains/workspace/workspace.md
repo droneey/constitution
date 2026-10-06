@@ -36,9 +36,16 @@ Each package holds its manifest, its source, and its specs where its language ke
 |---|---|
 | every package looks the same inside, so a reader and a tool know where each part is. | [] |
 
+### one-version-per-dependency · MUST
+A dependency has one version across every manifest of the repository.
+
+| Why | Tags |
+|---|---|
+| two versions of one dependency behave differently in two units, and the difference is found in production. | [] |
+
 ## Imports between units
 
-### units-imported-by-their-entries → dependencies-imported-from-their-entries
+### units-imported-by-their-entries → dependency-reached-through-its-public-entry
 A unit, and a script of the root, imports another unit by its name, through its entries, never by a path into its folder.
 
 | Why | Tags |
@@ -47,7 +54,7 @@ A unit, and a script of the root, imports another unit by its name, through its 
 
 ## The tools
 
-### unit-checked-by-its-own-parts → rules-held-by-tools
+### unit-checked-by-its-own-parts → rule-held-by-a-tool-where-one-can
 In a workspace, the files of each package are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no package's parts reach another package's files.
 
 | Why | Tags |
@@ -56,14 +63,14 @@ In a workspace, the files of each package are held by the parts of its own block
 
 ## What units share
 
-### file-lives-once-across-units → one-home-per-datum
+### file-lives-once-across-units → fact-has-one-source
 A file several packages need lives once in the repository; a package that needs it at run time takes it from there in its build, and no copy of it is committed.
 
 | Why | Tags |
 |---|---|
 | one source means a fix is made once and reaches every package, and a committed copy becomes a second original that drifts from the one reviewed. | [] |
 
-### shared-data-parsed-by-each-reader → outside-values-untyped-until-parsed
+### shared-data-parsed-by-each-reader → outside-value-untyped-until-parsed
 Data in no language that several packages read — a schema, a table of cases — is parsed by each package that reads it, at its edge, and that package's specs read the file itself by its path, never a copy of it.
 
 | Why | Tags |

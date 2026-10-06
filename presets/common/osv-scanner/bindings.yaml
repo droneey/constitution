@@ -1,5 +1,5 @@
 core:
-  licences-from-an-allowlist:
+  dependency-licence-on-the-allowlist:
     - 0BSD
     - Apache-2.0
     - BlueOak-1.0.0

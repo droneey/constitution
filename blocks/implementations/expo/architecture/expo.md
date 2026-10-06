@@ -1,6 +1,6 @@
 # Expo
 
-### expo-router-root-is-routes → anatomy-top-level-by-concern
+### expo-router-root-is-routes → package-laid-out-by-the-tree
 Expo Router's root is `src/routes/`, so `app` keeps its meaning as a feature's layer.
 
 | Why | Tags |

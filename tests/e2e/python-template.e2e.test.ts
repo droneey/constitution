@@ -162,7 +162,7 @@ describe('the python template', () => {
         'src/shop/features/billing/__init__.py': 'from shop.features.orders import ORDER\n',
         'src/shop/features/orders/__init__.py': 'ORDER = 1\n',
       },
-      finding: 'features-blind-to-each-other BROKEN',
+      finding: 'feature-never-imports-a-feature BROKEN',
       task: 'architecture:check',
     },
     {
@@ -182,7 +182,7 @@ describe('the python template', () => {
         'src/shop/kernel/currency.py': 'from shop.kernel import money\n',
         'src/shop/kernel/money.py': 'from shop.kernel import currency\n',
       },
-      finding: 'no-import-cycles BROKEN',
+      finding: 'module-imports-form-no-cycle BROKEN',
       task: 'architecture:check',
     },
     {
@@ -256,7 +256,7 @@ describe('the python template', () => {
         'src/shop/integrations/__init__.py': '',
         'src/shop/integrations/fastapi/__init__.py': 'router = 1\n',
       },
-      finding: 'nothing-imports-an-integration BROKEN',
+      finding: 'integration-never-imported BROKEN',
       task: 'architecture:check',
     },
     {
@@ -267,7 +267,7 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'WIRED = 1\n',
       },
-      finding: 'root-imported-only-by-entry-and-delivery-wiring BROKEN',
+      finding: 'root-imported-only-by-entries-and-delivery-wiring BROKEN',
       task: 'architecture:check',
     },
     {
@@ -282,7 +282,7 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/use_cases/queries/list_orders_use_case.py':
           'from ..commands import place_order_use_case\n',
       },
-      finding: 'reads-and-writes-apart BROKEN',
+      finding: 'query-and-command-apart BROKEN',
       task: 'architecture:check',
     },
     {
@@ -303,7 +303,7 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop.kernel.money import MONEY\n',
       },
-      finding: 'access-only-through-curated-surface BROKEN',
+      finding: 'module-reached-only-through-its-surface BROKEN',
       task: 'architecture:check',
     },
     {
@@ -314,7 +314,7 @@ describe('the python template', () => {
         'src/shop/features/__init__.py': '',
         'src/shop/features/orders/__init__.py': 'from shop.composition import checkout\n',
       },
-      finding: 'dependencies-point-inward BROKEN',
+      finding: 'import-points-inward BROKEN',
       task: 'architecture:check',
     },
     {

@@ -44,14 +44,14 @@ A route's private binding units, in `-hooks/`, reach its params and search throu
 |---|---|
 | a binding unit that imports its route file pulls the whole route into its module and ties the two into a cycle, and a component that reached the route would bind itself to data it should be given. | [] |
 
-### routes-imported-by-no-inner-layer → dependencies-point-inward
+### routes-imported-by-no-inner-layer → import-points-inward
 Nothing under `features/`, `shared/`, `libs/`, `kernel/`, `contracts/` or `composition/` imports a file of `routes/`.
 
 | Why | Tags |
 |---|---|
 | these are the layers the router's screens sit above. | [] |
 
-### services-reach-loaders-through-router-context → one-explicit-composition-root
+### services-reach-loaders-through-router-context → composition-root-wires-everything
 Every service the providers build — the adapters, the cache client, analytics, the configuration — reaches loaders and guards through the router's context.
 
 | Why | Tags |

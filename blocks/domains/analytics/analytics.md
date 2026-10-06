@@ -41,14 +41,14 @@ Every event belongs to one closed vocabulary, each with its typed parameters; no
 |---|---|
 | a mistyped event name is a report that silently reads zero. | [data] |
 
-### analytics-fault-isolated → errors-surfaced-never-swallowed
+### analytics-fault-isolated → catch-handles-only-what-it-recognises
 A failing analytics destination, or a failure of the code that sends to it, neither breaks the user's action nor silences the other destinations; the fault is reported out of band.
 
 | Why | Tags |
 |---|---|
 | measurement must never cost the user the thing they came to do. | [] |
 
-### no-personal-data-in-events → no-secret-or-personal-data-in-output
+### no-personal-data-in-events → secret-and-personal-data-kept-out-of-output
 No personal data and no content a person wrote is sent in an event.
 
 | Why | Tags |
@@ -76,7 +76,7 @@ Context shared by every event — signed in or not, the mode — is set once, as
 |---|---|
 | every event then carries it without every call passing it. | [data] |
 
-### event-names-object-action → events-named-in-past-tense
+### event-names-object-action → event-name-in-past-tense
 An analytics event is named after its object and the action done to it — `order_placed` — and its parameters in the same case.
 
 | Why | Tags |

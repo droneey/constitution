@@ -22,7 +22,7 @@ Every Dockerfile and every Compose file of the repository is held by a linter, a
 
 ## Images
 
-### images-pinned-by-version-and-digest → downloads-pinned-by-version-and-checksum
+### images-pinned-by-version-and-digest → download-pinned-by-version-and-checksum
 A base image in a Dockerfile, an image in a Compose file and an image a script runs name the most specific version the image is published under — `major.minor.patch` where it has one — and its digest, `image:x.y.z@sha256:<digest>`; never `latest`, never a floating major or minor, never a tag alone and never a digest alone.
 
 | Why | Tags |
@@ -36,7 +36,7 @@ No Dockerfile uses `ADD`: local files and folders enter an image with `COPY`.
 |---|---|
 | `COPY` does one visible thing; `ADD` also fetches addresses and unpacks archives, unseen. | [security] |
 
-### downloads-verified-archives-unpacked → downloads-pinned-by-version-and-checksum
+### downloads-verified-archives-unpacked → download-pinned-by-version-and-checksum
 A file from the network is downloaded in a `RUN` step that checks its checksum, and an archive is unpacked with `tar`.
 
 | Why | Tags |
@@ -71,7 +71,7 @@ The final stage of an image sets `USER` to the numeric id of an unprivileged use
 |---|---|
 | a process that runs as root inside a container turns any flaw of the program into control of the container, and a misconfigured one into control of the host; only a numeric id can be verified as not root before the process starts. | [security] |
 
-### secrets-never-baked-into-images → secret-never-in-url-or-artefact
+### secrets-never-baked-into-images → secret-and-personal-data-kept-out-of-output
 A build takes a secret through a secret mount, `RUN --mount=type=secret`, never through `ARG`, `ENV` or a copied file.
 
 | Why | Tags |

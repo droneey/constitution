@@ -29,7 +29,7 @@ The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
 |---|---|
 | an import that leaves its module then reads the same in every program, and `#` is the prefix `imports` requires. | [] |
 
-### exports-map-each-entry → package-entries-curated
+### exports-map-each-entry · MUST
 `exports` in the `package.json` of a package others import maps each of its entries to its file, so a consumer reaches the package only through the entries it lists.
 
 | Why | Tags |
@@ -50,7 +50,7 @@ A file with one export is named after it — `order-status.ts` exports `OrderSta
 |---|---|
 | a reader who knows the name of a thing knows the name of its file. | [] |
 
-### typescript-file-forms → kebab-case-file-names
+### typescript-file-forms → file-name-in-its-owners-case
 Source files are kebab-case `.ts` or `.tsx`.
 
 | Why | Tags |
@@ -66,7 +66,7 @@ A file is `.tsx` only where it writes markup.
 
 ## Names
 
-### identifier-case-by-kind · SHOULD
+### identifier-case-by-kind → name-case-by-kind
 PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. A function a framework renders by the case of its name takes the case that framework's block names. An enum is named in the singular. A type parameter is `T` or starts with it.
 
 | Why | Tags |
@@ -82,21 +82,21 @@ A type is a noun, undecorated: no `I` prefix, on interfaces too, and no `Type` o
 
 ## Values and types
 
-### undefined-is-the-only-absence → absence-has-one-value
+### undefined-is-the-only-absence → absence-shown-by-the-type
 Code spells absence as `undefined`: `?: T` for what may be absent, `T | undefined` only where an explicit `undefined` means something, `return;` for no result. An optional field that is absent is left out, never set to `undefined`. `null` appears only in a comparison with what a platform API returns, in the type of an external format that uses it, and where an API's types demand it — the language's `Object.create(null)`, a signature a library imposes.
 
 | Why | Tags |
 |---|---|
 | one spelling of absence means one check, and an optional field is then present or missing, never set to `undefined` by accident. | [] |
 
-### brand-is-an-intersection-or-unique-symbol → identifiers-branded-by-entity
+### brand-is-an-intersection-or-unique-symbol → identifier-branded-by-entity
 A brand is `string & { readonly __brand: 'OrderId' }` or a unique symbol.
 
 | Why | Tags |
 |---|---|
 | one form of brand reads the same in every file. | [] |
 
-### invariant-value-is-a-branded-type → invariant-values-are-plain-immutable-data
+### invariant-value-is-a-branded-type → invariant-value-is-plain-immutable-data
 A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the kit's error when the invariant fails, and narrowed by `is<Name>`.
 
 ```ts
@@ -140,7 +140,7 @@ Comparisons are strict — `===` and `!==`, with `null` too; never `==`.
 |---|---|
 | `!value` also treats `0` and the empty string as absent, which is a bug waiting for its input. | [] |
 
-### no-any → no-any-type
+### no-any → unchecked-type-never-used
 No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, and no parameter left without a type for the compiler to read as `any`.
 
 | Why | Tags |
@@ -161,14 +161,14 @@ A method that overrides one of its base class carries `override`.
 |---|---|
 | an override then says so where it is declared, and a base method renamed or removed leaves no method that silently overrides nothing. | [] |
 
-### boundary-values-unknown-until-parsed → outside-values-untyped-until-parsed
+### boundary-values-unknown-until-parsed → outside-value-untyped-until-parsed
 A value from outside the program — `JSON.parse`'s result included — is `unknown`, and its plain checks are `typeof`, `in` and `Array.isArray`; `.json<T>()` and `as Promise<T>` are casts.
 
 | Why | Tags |
 |---|---|
 | the compiler refuses every use of an `unknown` value until a check narrows it. | [] |
 
-### exhaustive-branching-over-unions → illegal-states-unrepresentable
+### exhaustive-branching-over-unions → closed-set-branched-exhaustively
 A branch over a union handles every member: a `switch` whose default proves `never`, or an `if` chain that ends in a `never` check.
 
 | Why | Tags |
@@ -189,14 +189,14 @@ A type derivable from an exported parent in one or two indexed accesses is deriv
 |---|---|
 | an exported copy of a derivable type is one more name to keep in sync with its parent. | [] |
 
-### business-types-readonly → immutable-by-default
+### business-types-readonly → value-immutable-by-default
 The fields of a type of the program's business data are `readonly`, its lists `readonly T[]` and its maps `ReadonlyMap`.
 
 | Why | Tags |
 |---|---|
 | the compiler then refuses a mutation the domain never meant. | [] |
 
-### no-mutable-export → immutable-by-default
+### no-mutable-export → state-never-global-and-mutable
 No module declares an export with `export let` or `export var`.
 
 | Why | Tags |
@@ -217,7 +217,7 @@ A value becomes text through a function that names its form — a formatter, `St
 |---|---|
 | `'Total: ' + order` prints `[object Object]`, and a number joined to a string is printed in no locale's form. | [] |
 
-### dates-through-temporal → instants-carry-their-zone
+### dates-through-temporal → instant-carries-its-zone
 A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appears only where an API demands one, converted at that call; no date library is used. A runtime the program supports that lacks `Temporal` loads its polyfill once, in the entry file, before any code reads a date.
 
 | Why | Tags |
@@ -231,14 +231,14 @@ A declared return type is no wider than what the function returns.
 |---|---|
 | a wider annotation throws away what the compiler knew, and every caller narrows again. | [] |
 
-### no-literal-thrown → only-errors-thrown
+### no-literal-thrown → thrown-value-is-an-error
 No literal, template or object literal is thrown.
 
 | Why | Tags |
 |---|---|
 | these are the thrown non-errors the linter can see without types; a variable holding one is left to review. | [] |
 
-### return-awaited-inside-try → errors-surfaced-never-swallowed
+### return-awaited-inside-try → catch-handles-only-what-it-recognises
 Inside a `try`, a returned promise is awaited — `return await` — so its rejection reaches the `catch`.
 
 | Why | Tags |
@@ -252,28 +252,28 @@ A module exports by name. A default export appears only in a configuration file 
 |---|---|
 | one name for one thing in every import, so a rename reaches every place it is used. | [] |
 
-### cancellation-by-abort-signal → io-has-timeout-and-cancellation
+### cancellation-by-abort-signal → outside-call-can-be-cancelled
 An operation that can be cancelled takes an `AbortSignal` in its options object and hands it to every I/O call it makes.
 
 | Why | Tags |
 |---|---|
 | one signal from the caller stops all the work below it, and every API of the platform takes one. | [] |
 
-### resources-released-by-using → resources-released-on-every-path
+### resources-released-by-using → resource-released-on-every-path
 A resource that must be released — a file handle, a lock, a subscription, a temporary folder — is held by `using` or `await using`, so it is released on every path.
 
 | Why | Tags |
 |---|---|
 | a `finally` is forgotten on the next path added; `using` releases at the end of the scope whatever the path. | [] |
 
-### options-object-has-a-named-type → parameters-at-most-three-wholes-as-one-object
+### options-object-has-a-named-type → function-takes-at-most-three-positions
 An object of values that travel together is typed by a named type, never by an object type written inline in the signature.
 
 | Why | Tags |
 |---|---|
 | the type names the whole the values make, and the call site reads each of them by name. | [] |
 
-### jsdoc-only-for-non-obvious-public-entry → docs-only-for-non-obvious-public-entry
+### jsdoc-only-for-non-obvious-public-entry → public-entry-documented-only-where-not-obvious
 JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter; a `@deprecated` tag aside.
 
 | Why | Tags |
@@ -287,7 +287,7 @@ Code kept only for its old callers is marked by a JSDoc `@deprecated` tag that n
 |---|---|
 | editors strike the call through, and the tooling reads the tag. | [] |
 
-### no-deprecated-import → deprecated-forms-never-used
+### no-deprecated-import → deprecated-form-never-used
 No new import names an export marked `@deprecated`.
 
 | Why | Tags |
@@ -296,26 +296,26 @@ No new import names an export marked `@deprecated`.
 
 ## Dependencies
 
-### tools-are-dev-dependencies → tools-pinned-exactly-by-the-repository
+### tools-are-dev-dependencies → tool-pinned-exactly-by-the-repository
 The tools are `devDependencies` of `package.json`. Production code imports no development dependency.
 
 | Why | Tags |
 |---|---|
 | a package's `devDependencies` are installed in its repository and never with the package. | [] |
 
-### tools-pinned-without-a-range → tools-pinned-exactly-by-the-repository
+### tools-pinned-without-a-range → tool-pinned-exactly-by-the-repository
 Every tool in `devDependencies` is an exact version, with no range.
 
 | Why | Tags |
 |---|---|
 | a range lets the lockfile move a tool to a new version without a change to the manifest. | [] |
 
-### caret-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
+### caret-ranges-lockfile-pins · SHOULD
 The range of a dependency of the program is a caret range.
 
 | Why | Tags |
 |---|---|
-| a caret takes every release of the same major, which promises to keep the dependency compatible. | [] |
+| a caret takes every release of the same major, which promises to keep the dependency compatible. | [security] |
 
 ### shared-state-packages-once-in-lockfile · SHOULD
 A package that holds state or types across the program — the schema engine, the user-interface framework — resolves to one version in the lockfile.
@@ -331,7 +331,7 @@ The fields of `package.json` follow the shared order.
 |---|---|
 | every manifest reads the same way, and a diff shows a change of content, not of order. | [] |
 
-### test-folder-files-in-test-forms → test-files-named-by-role
+### test-folder-files-in-test-forms → file-named-for-its-kind
 A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`, `.fake` or `.fixtures` file.
 
 | Why | Tags |

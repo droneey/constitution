@@ -58,14 +58,14 @@ export default {
   allowed: [
     {
       comment:
-        'packages-imported-by-folder-role: what is no package of a registry, the forbidden rules hold',
+        'layer-imports-dependencies-by-its-role: what is no package of a registry, the forbidden rules hold',
       from: {},
       to: {
         dependencyTypesNot: PACKAGES,
       },
     },
     {
-      comment: 'packages-imported-by-folder-role: the edge and the specs import any package',
+      comment: 'layer-imports-dependencies-by-its-role: the edge and the specs import any package',
       from: {
         path: [
           ...EDGE,
@@ -205,7 +205,7 @@ export default {
       },
     },
     {
-      name: 'features-blind-to-each-other',
+      name: 'feature-never-imports-a-feature',
       severity: 'error',
       from: {
         path: '^src/features/([^/]+)/',

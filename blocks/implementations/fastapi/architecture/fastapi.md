@@ -1,6 +1,6 @@
 # FastAPI
 
-### app-assembled-by-the-root → one-explicit-composition-root
+### app-assembled-by-the-root → composition-root-wires-everything
 `root/` builds the app — its `lifespan`, middleware and error handlers — includes the router that `api/` assembles, and builds the dependencies its handlers take through `Depends`; a handler never builds an adapter or a client.
 
 | Why | Tags |

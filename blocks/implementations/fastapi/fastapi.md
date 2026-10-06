@@ -36,7 +36,7 @@ A handler whose work blocks is a `def` handler, which FastAPI runs in its thread
 |---|---|
 | FastAPI runs an `async def` handler on the event loop that serves every request, and a `def` handler in a thread. | [] |
 
-### lifespan-opens-and-closes → resources-released-on-every-path
+### lifespan-opens-and-closes → resource-released-on-every-path
 What the app keeps open — clients, pools, connections — is opened and closed by the app's `lifespan`, an async context manager around its `yield`, never by `on_event` and never at import.
 
 | Why | Tags |
@@ -59,7 +59,7 @@ The program raises the error kit's errors, never `HTTPException`.
 |---|---|
 | an `HTTPException` carries a status and no code, and ties the code that raises it to HTTP. | [errors] |
 
-### unexpected-error-logged-once → error-logged-once
+### unexpected-error-logged-once → failure-reported-once
 The handler of an unexpected failure logs it, and a filter on the `uvicorn.error` logger drops the record of the same exception, which Starlette raises again after the handler has answered.
 
 | Why | Tags |

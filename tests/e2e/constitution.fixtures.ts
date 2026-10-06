@@ -138,7 +138,7 @@ const coreFiles = (): Files =>
       'architecture/principles.md': section({
         rules: [
           {
-            slug: 'dependencies-point-inward',
+            slug: 'import-points-inward',
             statement: 'Dependencies point inward.',
           },
         ],

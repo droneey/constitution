@@ -15,21 +15,21 @@ governs: ["**/*.py", "**/*.pyi", "pyproject.toml"]
 
 ## Modules and files
 
-### python-file-forms → kebab-case-file-names
+### python-file-forms → file-name-in-its-owners-case
 Python sets the case of its import tree: a module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and its stub a `.pyi`, and the folders of the source root `src/` are snake_case packages, imported by their folders' names, while those of `tests/` are snake_case folders and no packages. The bytecode the interpreter writes keeps the names it gives it: `__pycache__/`, `<module>.cpython-314.pyc`. Every other file and folder is kebab-case.
 
 | Why | Tags |
 |---|---|
 | a module's name is the name it is imported by, and the language allows no hyphen in it; outside the import tree, core's case holds. | [] |
 
-### test-folder-files-in-python-forms → test-files-named-by-role
+### test-folder-files-in-python-forms → file-named-for-its-kind
 A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`, fixtures `<name>_fixtures.py`, or the file the test runner reads for the fixtures the specs of its folder share.
 
 | Why | Tags |
 |---|---|
 | the runner collects a spec by its `test_` prefix, so a spec named otherwise never runs, and a helper named like a spec would. | [testing] |
 
-### spec-kind-named-by-its-folder → test-files-named-by-role
+### spec-kind-named-by-its-folder → file-named-for-its-kind
 A unit spec sits in `tests/`, an integration spec in `tests/integration/` and an end-to-end spec in `tests/e2e/`, each named `test_<name>.py`.
 
 | Why | Tags |
@@ -45,21 +45,21 @@ No code reads or changes `sys.path`.
 
 ## Names and values
 
-### none-is-the-only-absence → absence-has-one-value
+### none-is-the-only-absence → absence-shown-by-the-type
 Code spells absence as `None`, typed `T | None`; no sentinel object of the code's own stands for it.
 
 | Why | Tags |
 |---|---|
 | a second spelling of absence needs a second check, and an annotation that names `None` makes the type checker ask for the first. | [] |
 
-### no-any-annotation → no-any-type
+### no-any-annotation → unchecked-type-never-used
 No `Any`: not in an annotation, a `cast` or a generic's arguments — `dict[str, Any]`. An unannotated parameter or return is `Any` as well, and so is the argument a generic is written without.
 
 | Why | Tags |
 |---|---|
 | these are the places `Any` enters a Python program, the last two without the word written. | [] |
 
-### boundary-values-object-until-parsed → outside-values-untyped-until-parsed
+### boundary-values-object-until-parsed → outside-value-untyped-until-parsed
 A value from outside the program — `json.loads`'s result included — is `object`, and its plain checks are `isinstance` and `in`; `cast` is no check.
 
 | Why | Tags |
@@ -73,7 +73,7 @@ A generic class, function or alias is declared in the form of PEP 695 — `class
 |---|---|
 | the parameters are declared where they are used, and nothing outside the declaration can reach them. | [] |
 
-### aware-datetimes-only → instants-carry-their-zone
+### aware-datetimes-only → instant-carries-its-zone
 A `datetime` carries its time zone: `now`, `fromtimestamp` and the constructor are given one, `strptime` reads one, and `utcnow`, `utcfromtimestamp` and `today` are never called.
 
 | Why | Tags |
@@ -87,14 +87,14 @@ A method that overrides one of a base class is marked `@override`, `__init__`, `
 |---|---|
 | `@override` is the mark the type checker reads, and the methods aside are ones every class has, which no mark would make clearer. | [] |
 
-### business-types-frozen-dataclasses → immutable-by-default
+### business-types-frozen-dataclasses → value-immutable-by-default
 A type of the program's business data is a dataclass with `frozen=True, slots=True, kw_only=True`, its sequences tuples and its maps typed `Mapping`.
 
 | Why | Tags |
 |---|---|
 | the runtime then refuses a mutation the business never meant, and each field is set by its name. | [] |
 
-### invariant-value-is-a-frozen-dataclass → invariant-values-are-plain-immutable-data
+### invariant-value-is-a-frozen-dataclass → invariant-value-is-plain-immutable-data
 A value that keeps an invariant is a dataclass of the form `business-types-frozen-dataclasses` gives, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset` or another such value — so the generated `__eq__` and `__hash__` compare and hash it by its data. Its `__post_init__` checks the invariant and raises the kit's error. It is never a `NamedTuple` or a parsing library's model.
 
 | Why | Tags |
@@ -103,21 +103,21 @@ A value that keeps an invariant is a dataclass of the form `business-types-froze
 
 ## Functions
 
-### keyword-only-past-three → parameters-at-most-three-wholes-as-one-object
+### keyword-only-past-three → function-takes-at-most-three-positions
 A parameter past the third is keyword-only, after a bare `*`, and values that make one whole travel as one frozen dataclass.
 
 | Why | Tags |
 |---|---|
 | a keyword-only parameter is named at every call, so its position is no order the caller must remember. | [] |
 
-### awaitable-never-dropped → async-work-awaited-or-deliberately-detached
+### awaitable-never-dropped → async-work-awaited-or-detached-on-purpose
 A call that returns an awaitable is never a statement of its own: its result is awaited, or kept to be awaited.
 
 | Why | Tags |
 |---|---|
 | a coroutine nobody awaits never runs, and its failure is never seen. | [errors] |
 
-### concurrency-by-task-groups → structured-concurrency
+### concurrency-by-task-groups → concurrent-work-bound-to-its-scope
 Concurrent work starts in a task group — `asyncio.TaskGroup`, or the one of the async library the project uses — never by a bare `asyncio.create_task` or `ensure_future`, and a deadline is a timeout scope such as `asyncio.timeout`.
 
 | Why | Tags |
@@ -131,7 +131,7 @@ An `async def` function makes no blocking call: it awaits its input and output, 
 |---|---|
 | one blocking call in a coroutine stalls everything else the event loop runs. | [performance] |
 
-### except-never-only-passes → errors-surfaced-never-swallowed
+### except-never-only-passes → catch-handles-only-what-it-recognises
 No `except` body is only `pass` or `continue`.
 
 | Why | Tags |
@@ -140,14 +140,14 @@ No `except` body is only `pass` or `continue`.
 
 ## Specs
 
-### case-named-test-should → cases-named-should-when
+### case-named-test-should → case-named-should-when
 A case is `test_should_<behaviour>`, and `_when_<condition>` follows where it has one.
 
 | Why | Tags |
 |---|---|
 | the runner collects a case by its `test_` prefix, so the rule's words follow it; no linter of Python checks a case's name. | [] |
 
-### no-branch-or-loop-in-a-test → no-logic-in-cases
+### no-branch-or-loop-in-a-test → case-holds-no-logic
 A `test_` function holds no `if`, `for`, `while`, `match` or conditional expression; its variants are the rows of a parametrized table.
 
 | Why | Tags |
@@ -156,7 +156,7 @@ A `test_` function holds no `if`, `for`, `while`, `match` or conditional express
 
 ## Comments and suppressions
 
-### docstring-only-for-non-obvious-public-entry → docs-only-for-non-obvious-public-entry
+### docstring-only-for-non-obvious-public-entry → public-entry-documented-only-where-not-obvious
 A docstring documents only a public entry whose use is not obvious, in the Google form, its summary on the first line.
 
 | Why | Tags |
@@ -179,7 +179,7 @@ A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608
 
 ## Dependencies
 
-### tools-in-the-dev-group → tools-pinned-exactly-by-the-repository
+### tools-in-the-dev-group → tool-pinned-exactly-by-the-repository
 The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `pyproject.toml`.
 
 | Why | Tags |
@@ -193,9 +193,9 @@ A unit that no registry distributes floors its `requires-python` in `[project]` 
 |---|---|
 | the linter and the type checker read the language's version from it, and hold the code to an older language when the floor is lower. | [] |
 
-### floor-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
+### floor-ranges-lockfile-pins · SHOULD
 A dependency of the program is declared with a `>=` floor, capped only with the reason beside the cap.
 
 | Why | Tags |
 |---|---|
-| a floor takes every later release, so a cap is a decision, and one with no reason blocks every later fix. | [] |
+| a floor takes every later release, so a cap is a decision, and one with no reason blocks every later fix. | [security] |
