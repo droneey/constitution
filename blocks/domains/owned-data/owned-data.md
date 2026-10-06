@@ -4,9 +4,7 @@ summary: "Data the program decides on: aggregates changed through their roots."
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

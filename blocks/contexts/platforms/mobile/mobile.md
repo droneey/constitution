@@ -4,9 +4,7 @@ summary: Code that runs as an application on a phone or tablet.
 requires: [untrusted-client, unreliable-network]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

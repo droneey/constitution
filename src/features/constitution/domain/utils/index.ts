@@ -15,7 +15,6 @@ export {
   inlineCodeSpans,
   withoutInlineCode,
 } from './inline-code.utils';
-export { languagesOf, ruleLanguagesOf } from './languages.utils';
 export { resolveLink, targetFromRoot } from './link-paths.utils';
 export { localLinkTargets, rewriteLocalLinks } from './links.utils';
 export {
@@ -27,7 +26,5 @@ export {
 } from './paths.utils';
 export type { PresetPath } from './preset-paths.utils';
 export { PresetFileKind, presetPathOf } from './preset-paths.utils';
-export type { RuleCheck } from './rule-labels.utils';
-export { checkOf } from './rule-labels.utils';
 export type { MarkdownSection } from './sections.utils';
 export { isHeading, sectionsOf } from './sections.utils';

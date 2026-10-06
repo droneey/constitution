@@ -4,9 +4,7 @@ summary: vulture finds the Python code nothing uses.
 requires: [python]
 extends: null
 abstract: false
-checks: [unused]
 languages: [python]
-roles: []
 dictionary: [vulture]
 governs: []
 ---

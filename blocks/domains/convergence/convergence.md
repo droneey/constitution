@@ -4,9 +4,7 @@ summary: A declared document converged by validate, render, plan and apply.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

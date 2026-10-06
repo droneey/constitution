@@ -4,9 +4,7 @@ summary: What holds for any program, in any language, of any kind.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---
@@ -18,7 +16,7 @@ The rules a droneey repository is built by. The digest lists the active blocks a
 ## How to use it
 
 1. Before a change, read core's chapters and the files of the blocks that govern it, on the project's axes. Before handing it back, check it against every active rule, not only those it seemed to touch.
-2. A rule is `<slug> · <level>`, or `<slug> → <rule>` with that rule's level, then its Why, Check and Tags. MUST binds; SHOULD is left only with a reason; MAY is a choice.
+2. A rule is `### <slug> · <level>`, or `### <slug> → <rule>` with that rule's level, then its statement, Why and Tags. MUST binds; SHOULD is left only with a reason; MAY is a choice.
 3. A request against a MUST gets the conflict and an alternative, never silent obedience.
 4. A case no rule covers follows the nearest principle; a real gap is amended or written as a local block, never kept as a silent habit.
 

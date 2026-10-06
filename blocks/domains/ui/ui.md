@@ -4,9 +4,7 @@ summary: Screens, components and the design system of any user interface.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: ["**/ui/**", "**/components/**", "**/widgets/**"]
 ---

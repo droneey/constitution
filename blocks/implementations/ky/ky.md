@@ -4,9 +4,7 @@ summary: ky, the HTTP client — one instance per system, errors mapped.
 requires: [typescript, remote-service]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [ky]
 governs: ["**/providers/**", "**/adapters/**"]
 ---

@@ -4,9 +4,7 @@ summary: Code that runs where its user can read and change it.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

@@ -1,5 +1,4 @@
-import type { Finding, Role } from '#/kernel';
-import { ROLES } from '#/kernel';
+import type { Finding } from '#/kernel';
 
 import type { FrontMatterFields, FrontMatterParser } from '../../../contracts';
 import type { FieldIssue, FrontMatter } from '../../../entities';
@@ -13,9 +12,7 @@ interface FrontMatterLoaded {
 
 enum ListField {
   Requires = 'requires',
-  Checks = 'checks',
   Languages = 'languages',
-  Roles = 'roles',
   Dictionary = 'dictionary',
   Governs = 'governs',
 }
@@ -26,17 +23,13 @@ const FIELDS: readonly string[] = [
   'requires',
   'extends',
   'abstract',
-  'checks',
   'languages',
-  'roles',
   'dictionary',
   'governs',
 ];
 const LIST_FIELDS: readonly ListField[] = [
   ListField.Requires,
-  ListField.Checks,
   ListField.Languages,
-  ListField.Roles,
   ListField.Dictionary,
   ListField.Governs,
 ];
@@ -47,9 +40,6 @@ const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
 const WHITESPACE = /\s/;
 const SUMMARY_LENGTH = 70;
 const OPENING_LINES = 1;
-
-const oneOf = <T extends string>(input: { value: string; values: readonly T[] }): T | undefined =>
-  input.values.find((candidate) => candidate === input.value);
 
 const keyAt = (input: { line: number; lines: readonly string[] }): string | undefined =>
   input.lines
@@ -133,17 +123,6 @@ const repeatsOf = (values: readonly string[]): readonly string[] => [
   ...new Set(values.filter((entry, index) => values.indexOf(entry) !== index)),
 ];
 
-const notRoles = (input: { field: ListField; values: readonly string[] }): readonly string[] =>
-  input.values
-    .filter(
-      (role) =>
-        oneOf({
-          value: role,
-          values: ROLES,
-        }) === undefined,
-    )
-    .map((role) => `front matter: ${input.field} "${role}", which is not a role`);
-
 const notBlockIds = (input: { field: ListField; values: readonly string[] }): readonly string[] =>
   input.values
     .filter((id) => !BLOCK_ID.test(id))
@@ -157,14 +136,6 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
   ...notBlockIds({
     field: ListField.Languages,
     values: fields.languages,
-  }),
-  ...notRoles({
-    field: ListField.Checks,
-    values: fields.checks,
-  }),
-  ...notRoles({
-    field: ListField.Roles,
-    values: fields.roles,
   }),
   ...[
     ...fields.dictionary,
@@ -182,15 +153,6 @@ const entryMessages = (fields: FrontMatterFields): readonly string[] => [
     repeatsOf(fields[field]).map((repeat) => `front matter: ${field} lists "${repeat}" twice`),
   ),
 ];
-
-const rolesOf = (values: readonly string[]): readonly Role[] =>
-  values.flatMap((name) => ROLES.filter((role) => role === name));
-
-const typedOf = (fields: FrontMatterFields): FrontMatter => ({
-  ...fields,
-  checks: rolesOf(fields.checks),
-  roles: rolesOf(fields.roles),
-});
 
 const fieldMessages = (fields: FrontMatterFields): readonly string[] => [
   ...scalarMessages(fields),
@@ -250,7 +212,7 @@ const readFrontMatter = (input: {
     : {
         body: parts.body,
         findings: [],
-        frontMatter: typedOf(read.fields),
+        frontMatter: read.fields,
       };
 };
 

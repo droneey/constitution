@@ -4,9 +4,7 @@ summary: structlog renders the records of Python's logging as events.
 requires: [python, observability]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [structlog]
 governs: ["**/root/**"]
 ---

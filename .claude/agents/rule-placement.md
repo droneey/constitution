@@ -9,7 +9,7 @@ You review the placement of rules in the droneey constitution. `vocabulary.yaml`
 
 ## Input
 
-A git range, `origin/main...HEAD` unless you are given another. Read the rules it adds or changes: every `## <slug> · <LEVEL>` or `## <slug> → <parent>` heading under `blocks/` whose heading, statement or table appears in `git diff <range> -- blocks/`, and every rule of a file the range moves.
+A git range, `origin/main...HEAD` unless you are given another. Read the rules it adds or changes: every `### <slug> · <LEVEL>` or `### <slug> → <parent>` heading under `blocks/` whose heading, statement or table appears in `git diff <range> -- blocks/`, and every rule of a file the range moves.
 
 ## What to read first
 
@@ -31,7 +31,7 @@ Judge the meaning, not the words. A foundation rule about a network port, a Dock
 
 ## The same rule in another block
 
-This step is required. For every rule the range adds or rewrites, search the rules of every other block for one with the same requirement: the same meaning in another tool's or another language's words. `rg -n '^## ' blocks/` lists every rule, and the similar rules `bun run blocks:check` prints are a start, never the whole search. Where one exists and no common parent states that meaning, report the pair as a lift to the most general block where the shared meaning keeps its meaning, asked by the layer question; each block then keeps a child that states only its own form. Do the same when a child adds a meaning its parent lacks and a sibling under the same parent repeats it: that meaning belongs in the parent, or in a child of it in the most general block.
+This step is required. For every rule the range adds or rewrites, search the rules of every other block for one with the same requirement: the same meaning in another tool's or another language's words. `rg -n '^### ' blocks/` lists every rule, and the similar rules `bun run blocks:check` prints are a start, never the whole search. Where one exists and no common parent states that meaning, report the pair as a lift to the most general block where the shared meaning keeps its meaning, asked by the layer question; each block then keeps a child that states only its own form. Do the same when a child adds a meaning its parent lacks and a sibling under the same parent repeats it: that meaning belongs in the parent, or in a child of it in the most general block.
 
 ## Preset settings
 

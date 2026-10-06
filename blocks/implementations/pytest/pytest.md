@@ -4,9 +4,7 @@ summary: pytest runs Python's specs and holds the coverage gate.
 requires: [python]
 extends: null
 abstract: false
-checks: [tests, coverage]
 languages: [python]
-roles: []
 dictionary: [pytest, pytest-cov, pytest-randomly, pytest-timeout, anyio, conftest.py]
 governs: ["**/tests/**"]
 ---

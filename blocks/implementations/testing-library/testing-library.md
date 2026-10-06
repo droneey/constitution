@@ -4,9 +4,7 @@ summary: Testing Library — specs that use the UI the way a person does.
 requires: [_react]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Testing Library, userEvent]
 governs: ["**/__tests__/**/*.test.tsx"]
 ---

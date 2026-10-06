@@ -34,16 +34,16 @@ interface RulesParsed {
   rules: readonly StatedRule[];
 }
 
-const HEADING = /^## (\S+)(?: → (\S+))?(?: · (\S+))?$/;
+const HEADING = /^### (\S+)(?: → (\S+))?(?: · (\S+))?$/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
 const HEADING_FORMS =
-  '"## <slug> · <LEVEL>", "## <slug> → <parent>" or "## <slug> → <parent> · <LEVEL>"';
+  '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';
 const TABLE_LINE = /^\|/;
 const DASHES = /^:?-+:?$/;
 const LABEL_LINE = /^\*\*([^*]+):\*\*/;
 const EXAMPLE = 'Example';
-const HEADER = '| Why | Check | Tags |';
-const CELLS = 3;
+const HEADER = '| Why | Tags |';
+const CELLS = 2;
 
 const headingOf = (text: string): Heading | undefined => {
   const match = HEADING.exec(text);
@@ -143,7 +143,7 @@ const labelProblems = (lines: readonly string[]): readonly string[] =>
     return name === undefined || name === EXAMPLE
       ? []
       : [
-          `has the label "${name}"; a rule states Why, Check and Tags in its table and holds no label but ${EXAMPLE}`,
+          `has the label "${name}"; a rule states Why and Tags in its table and holds no label but ${EXAMPLE}`,
         ];
   });
 
@@ -183,7 +183,7 @@ const readSection = (input: { section: MarkdownSection; source: Source }): Secti
 
   const { lines } = input.section;
   const table = tableOf(lines);
-  const [why = '', check = '', cell = '[]'] = table.cells;
+  const [why = '', cell = '[]'] = table.cells;
   const tags = tagsOf(cell);
 
   return {
@@ -201,7 +201,6 @@ const readSection = (input: { section: MarkdownSection; source: Source }): Secti
     })),
     draft: {
       block: input.source.block,
-      check,
       file: input.source.file,
       ownTags: tags ?? [],
       parent: heading.parent,

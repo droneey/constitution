@@ -4,9 +4,7 @@ summary: The yaml package reads and writes YAML.
 requires: [typescript]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: ["**/adapters/**"]
 ---

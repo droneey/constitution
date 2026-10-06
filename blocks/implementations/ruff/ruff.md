@@ -4,9 +4,7 @@ summary: Formats and lints Python, with its rule families chosen by name.
 requires: [python]
 extends: null
 abstract: false
-checks: [format, lint]
 languages: [python]
-roles: []
 dictionary: [Ruff, ruff, ruff.toml, .ruff_cache]
 governs: ["pyproject.toml", "ruff.toml"]
 ---

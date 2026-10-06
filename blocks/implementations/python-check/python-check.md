@@ -4,9 +4,7 @@ summary: The constitution's own check of what no Python tool holds.
 requires: [python]
 extends: null
 abstract: false
-checks: [lint, imports]
 languages: [python]
-roles: []
 dictionary: [python-check]
 governs: []
 ---

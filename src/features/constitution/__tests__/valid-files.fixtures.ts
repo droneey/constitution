@@ -1,5 +1,3 @@
-import { ROLES } from '#/kernel';
-
 import type { Files } from './constitution.fixtures';
 import { blockFiles, mainFile, rule } from './constitution.fixtures';
 import { digestFiles } from './valid-digests.fixtures';
@@ -100,7 +98,6 @@ const upperFiles = (): Files => ({
         tags: '[ux]',
       })}`,
       'foundation/ui.md': `# UI\n\n${rule({
-        check: 'test',
         slug: 'four-data-states',
         tags: '[ux, a11y]',
       })}`,
@@ -126,13 +123,9 @@ const upperFiles = (): Files => ({
 const contextFiles = (): Files => ({
   ...blockFiles({
     body: '# TypeScript\n',
-    checks: [
-      'types',
-    ],
     dir: 'blocks/contexts/languages/typescript',
     files: {
       'foundation/typescript.md': `# TypeScript\n\n${rule({
-        check: 'tool/types',
         slug: 'no-any',
         statement: 'A TypeScript value is never typed `any`.',
       })}`,
@@ -143,10 +136,6 @@ const contextFiles = (): Files => ({
       '.ts',
       'index.ts',
     ],
-    languages: [
-      'typescript',
-    ],
-    roles: ROLES,
   }),
   ...blockFiles({
     body: '# Browser\n',
@@ -170,7 +159,6 @@ const implementationFiles = (): Files => ({
     dir: 'blocks/implementations/_react',
     files: {
       'foundation/hooks.md': `# Hooks\n\n${rule({
-        check: 'tool/lint',
         slug: 'hooks-at-top-level',
         statement: 'A React hook is called only at the top level.',
       })}`,
@@ -185,10 +173,6 @@ const implementationFiles = (): Files => ({
   }),
   'blocks/implementations/biome/biome.md': mainFile({
     body: '# Biome\n\nBiome checks every `.ts` file.\n',
-    checks: [
-      'format',
-      'lint',
-    ],
     id: 'biome',
     dictionary: [
       'Biome',

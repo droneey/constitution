@@ -8,7 +8,6 @@ import { resolveRules } from '../rule-chain.utils';
 const stated = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: 'core',
-  check: 'review',
   file: 'blocks/core/foundation/principles.md',
   ownTags: [],
   parent: undefined,

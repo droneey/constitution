@@ -1,15 +1,13 @@
-import type { Axis, Layer, Role } from '#/kernel';
+import type { Axis, Layer } from '#/kernel';
 
 interface FrontMatter {
   readonly abstract: boolean;
-  readonly checks: readonly Role[];
   readonly dictionary: readonly string[];
   readonly extends: string | undefined;
   readonly governs: readonly string[];
   readonly id: string;
   readonly languages: readonly string[];
   readonly requires: readonly string[];
-  readonly roles: readonly Role[];
   readonly summary: string;
 }
 

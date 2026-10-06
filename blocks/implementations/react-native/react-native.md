@@ -4,9 +4,7 @@ summary: React on a device — host components, virtualised lists, modules.
 requires: [mobile]
 extends: _react
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [React Native]
 governs: ["**/*.tsx"]
 ---

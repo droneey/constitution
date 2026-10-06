@@ -4,9 +4,7 @@ summary: "Units installed from a registry: their contents, versions, releases."
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

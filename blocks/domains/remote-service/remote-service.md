@@ -4,9 +4,7 @@ summary: "Another system the program calls: transport, failures, streams, specs.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

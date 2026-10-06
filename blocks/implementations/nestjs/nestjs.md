@@ -4,9 +4,7 @@ summary: NestJS — modules, providers and the injector that wires them.
 requires: [typescript, tsc, api]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [NestJS, Nest, "@nestjs", nestjs-pino, nest-cli.json, .swcrc]
 governs: ["nest-cli.json", ".swcrc", "**/api/**", "**/root/**", "**/*.module.ts", "**/*.controller.ts"]
 ---

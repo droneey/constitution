@@ -8,6 +8,7 @@ import { frontMatterCheck } from '../front-matter.check';
 const UI = 'blocks/domains/ui/ui.md';
 const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
 const BIOME = 'blocks/implementations/biome/biome.md';
+const TYPESCRIPT = 'blocks/contexts/languages/typescript/typescript.md';
 
 describe('frontMatterCheck', () => {
   it.each<{
@@ -54,14 +55,14 @@ describe('frontMatterCheck', () => {
     },
     {
       block: {
-        body: '# Browser\n',
-        checks: [
-          'lint',
+        body: '# TypeScript\n',
+        id: 'typescript',
+        languages: [
+          'typescript',
         ],
-        id: 'browser',
       },
-      expected: 'sets "checks", which a platform block leaves empty',
-      path: BROWSER,
+      expected: 'sets "languages", which a language block leaves empty',
+      path: TYPESCRIPT,
     },
     {
       block: {
@@ -77,38 +78,6 @@ describe('frontMatterCheck', () => {
     {
       block: {
         body: '# Biome\n',
-        checks: [
-          'lint',
-        ],
-        id: 'biome',
-        languages: [
-          'typescript',
-        ],
-        roles: [
-          'lint',
-        ],
-      },
-      expected: 'sets "roles", which an implementation block leaves empty',
-      path: BIOME,
-    },
-    {
-      block: {
-        body: '# Biome\n',
-        id: 'biome',
-        languages: [
-          'typescript',
-        ],
-      },
-      expected:
-        'sets "languages" but checks no role; only a block that checks roles covers languages',
-      path: BIOME,
-    },
-    {
-      block: {
-        body: '# Biome\n',
-        checks: [
-          'lint',
-        ],
         id: 'biome',
         languages: [
           'ui',
@@ -120,9 +89,6 @@ describe('frontMatterCheck', () => {
     {
       block: {
         body: '# Biome\n',
-        checks: [
-          'lint',
-        ],
         id: 'biome',
         languages: [
           'kotlin',

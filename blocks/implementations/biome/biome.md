@@ -4,9 +4,7 @@ summary: Formats and lints TypeScript and CSS, with GritQL rules of our own.
 requires: [typescript]
 extends: null
 abstract: false
-checks: [format, lint, names]
 languages: [typescript, css]
-roles: []
 dictionary: [Biome, biome.json, biome-ignore, GritQL, .grit]
 governs: ["biome.json", "biome.*.jsonc", "**/*.grit"]
 ---

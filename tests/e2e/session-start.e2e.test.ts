@@ -994,7 +994,6 @@ describe('session-start hook', () => {
         }),
         files: localBlockFiles({
           fields: {
-            checks: '[lint]',
             languages: '[typescript]',
           },
           id: 'lint-tool',
@@ -1013,43 +1012,17 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             fields: {
-              checks: '[secrets]',
               languages: '[elixir]',
             },
             id: 'mix-audit',
           }),
           ...localBlockFiles({
-            fields: {
-              roles: '[secrets]',
-            },
             folder: 'contexts/languages',
             id: 'elixir',
           }),
         },
       },
       warnings: [],
-    },
-    {
-      condition: 'a local tool requires its language but names none',
-      layout: {
-        config: configOf({
-          domains: '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: `[react-dom, git, ${localPath('lint-tool')}]`,
-          languages: '[typescript]',
-          platforms: '[browser]',
-        }),
-        files: localBlockFiles({
-          fields: {
-            checks: '[lint, secrets]',
-            requires: '[typescript]',
-          },
-          id: 'lint-tool',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-      ],
     },
     {
       condition: "a local block's languages name blocks that are no language",
@@ -1062,7 +1035,6 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             fields: {
-              checks: '[lint]',
               languages: '[typescript, ui, kit, kotlin]',
             },
             id: 'lint-tool',
@@ -1077,27 +1049,6 @@ describe('session-start hook', () => {
         `- local-block: ${localPath('lint-tool')} covers ui, which is not a language block — fix its front matter`,
         `- local-block: ${localPath('lint-tool')} covers kit, which is not a language block — fix its front matter`,
         `- local-block: ${localPath('lint-tool')} covers kotlin, which is not a language block — fix its front matter`,
-      ],
-    },
-    {
-      condition: "a local language's roles name no role",
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git, betterleaks]',
-          languages: `[${localPath('elixir', 'contexts/languages')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[secrets, style]',
-          },
-          folder: 'contexts/languages',
-          id: 'elixir',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('elixir', 'contexts/languages')} is held to style, which is not a role — fix its front matter`,
       ],
     },
     {
@@ -1181,8 +1132,6 @@ describe('session-start hook', () => {
         '- wrong-key: ui is a domain — move it from implementations to domains',
         '- config: constitution.yaml has no packages key — add packages: {}',
         `- local-block: ${PARAGLIDE} does not exist — create it or remove it from implementations`,
-        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
         '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
         '- override: four-data-states expired on 2020-01-01 — renew or remove it',
       ],
@@ -1358,7 +1307,7 @@ describe('session-start hook', () => {
         }),
         files: localBlockFiles({
           headings: [
-            '## kit-rule → no-such-rule · MUST',
+            '### kit-rule → no-such-rule · MUST',
           ],
           id: 'kit',
         }),
@@ -1377,14 +1326,14 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             headings: [
-              '## kit-rule → no-secret-in-code',
-              '## kit-child → base-rule · MUST',
+              '### kit-rule → no-secret-in-code',
+              '### kit-child → base-rule · MUST',
             ],
             id: 'kit',
           }),
           ...localBlockFiles({
             headings: [
-              '## base-rule · MUST',
+              '### base-rule · MUST',
             ],
             id: 'base-kit',
           }),
@@ -1450,110 +1399,6 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: "a local language's roles leave out the role of an active rule",
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: `[${localPath('elixir', 'contexts/languages')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[format, lint]',
-          },
-          folder: 'contexts/languages',
-          id: 'elixir',
-        }),
-      },
-      warnings: [],
-    },
-    {
-      condition:
-        'a local language outside every layer folder has no tool for a role of an active rule',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: `[${localPath('elixir', '')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[secrets]',
-          },
-          folder: '',
-          id: 'elixir',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for elixir — add one, such as betterleaks, or override them',
-      ],
-    },
-    {
-      condition: 'a tool of no language lists a role tied to a language',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git, betterleaks, markdownlint]',
-          languages: '[python]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for python — add one, such as ruff, or override them',
-      ],
-    },
-    {
-      condition: 'two languages are active and a rule of the role holds for one',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git, betterleaks]',
-          languages: '[typescript, python]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for python — add one, such as ruff, or override them',
-      ],
-    },
-    {
-      condition: 'the first tool of the role in the index is abstract',
-      layout: {
-        config: configOf({
-          domains: '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: '[react-dom, git, betterleaks]',
-          languages: '[typescript]',
-          platforms: '[browser]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-      ],
-    },
-    {
-      condition: 'an application needs a role that a top-level local tool checks',
-      layout: {
-        config: configOf({
-          packages:
-            '\n  web:\n    domains: [ui, untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
-          domains: '[version-control]',
-          implementations: `[git, betterleaks, ${localPath('lint-kit')}]`,
-          languages: '[typescript]',
-        }),
-        files: localBlockFiles({
-          fields: {
-            checks: '[lint]',
-            languages: '[typescript]',
-            requires: '[typescript]',
-          },
-          id: 'lint-kit',
-        }),
-      },
-      warnings: [],
-    },
-    {
       condition: 'an override ends today',
       layout: {
         config: configOf({
@@ -1561,18 +1406,6 @@ describe('session-start hook', () => {
           implementations: '[git]',
           languages: '[typescript]',
           overrides: `\n  - rule: no-secret-in-code\n    level: MAY\n    reason: "none yet"\n    until: ${HOOK_TODAY}`,
-        }),
-      },
-      warnings: [],
-    },
-    {
-      condition: "an application's override lowers the rule no tool checks there",
-      layout: {
-        config: configOf({
-          packages:
-            '\n  web:\n    languages: [typescript]\n    overrides:\n      - rule: no-secret-in-code\n        level: MAY\n        reason: "none yet"',
-          domains: '[version-control]',
-          implementations: '[git]',
         }),
       },
       warnings: [],
@@ -1586,35 +1419,6 @@ describe('session-start hook', () => {
         }),
       },
       warnings: [],
-    },
-    {
-      condition: 'an application needs a tool that the rest of the repository does not',
-      layout: {
-        config: configOf({
-          packages: '\n  web:\n    languages: [typescript]',
-          domains: '[version-control]',
-          implementations: '[git]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript in web — add one, such as betterleaks, or override them',
-      ],
-    },
-    {
-      condition: 'an application lacks the tool the repository lacks',
-      layout: {
-        config: configOf({
-          packages: '\n  web:\n    domains: [ui]',
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: '[typescript]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
-      ],
     },
     {
       condition: 'an application shares the library that misses a requirement',

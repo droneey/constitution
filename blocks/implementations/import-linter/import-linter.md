@@ -4,9 +4,7 @@ summary: import-linter holds the import rules between Python's modules.
 requires: [python]
 extends: null
 abstract: false
-checks: [imports]
 languages: [python]
-roles: []
 dictionary: [import-linter, lint-imports, .import_linter_cache]
 governs: []
 ---

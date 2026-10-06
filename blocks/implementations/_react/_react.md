@@ -4,9 +4,7 @@ summary: React as every renderer shares it — hooks, effects, state, boundaries
 requires: [ui, typescript]
 extends: null
 abstract: true
-checks: []
 languages: []
-roles: []
 dictionary: [React, JSX, React Compiler, .hooks, .context]
 governs: ["**/*.tsx", "**/*.hooks.ts", "**/*.context.ts"]
 ---

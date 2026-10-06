@@ -4,9 +4,7 @@ summary: httpx2, the HTTP client — one per system, a timeout on every call.
 requires: [python, remote-service]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [httpx2]
 governs: ["**/adapters/**", "**/root/**"]
 ---

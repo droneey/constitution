@@ -4,9 +4,7 @@ summary: "A public repository: its licence and a private channel for reports."
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

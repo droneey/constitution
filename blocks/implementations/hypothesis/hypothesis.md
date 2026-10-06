@@ -4,9 +4,7 @@ summary: Hypothesis writes Python's property tests.
 requires: [python]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Hypothesis, .hypothesis]
 governs: []
 ---

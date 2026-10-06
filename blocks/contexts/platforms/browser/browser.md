@@ -4,9 +4,7 @@ summary: Code that runs in a browser tab.
 requires: [untrusted-client, unreliable-network]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

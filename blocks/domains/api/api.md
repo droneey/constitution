@@ -4,9 +4,7 @@ summary: "A program that serves requests: its handlers, failures and callers."
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: ["**/api/**"]
 ---

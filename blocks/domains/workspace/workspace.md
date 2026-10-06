@@ -4,9 +4,7 @@ summary: "Several units in one repository: their folders, imports and links."
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

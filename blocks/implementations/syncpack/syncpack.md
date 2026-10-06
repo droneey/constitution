@@ -4,9 +4,7 @@ summary: Holds dependency versions and the shape of every manifest.
 requires: [typescript]
 extends: null
 abstract: false
-checks: [versions, format]
 languages: [typescript]
-roles: []
 dictionary: [Syncpack, syncpack, .syncpackrc.mjs]
 governs: [".syncpackrc.mjs"]
 ---

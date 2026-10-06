@@ -4,9 +4,7 @@ summary: Typed product events, sent to replaceable analytics services.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: ["**/sinks/**"]
 ---

@@ -4,9 +4,7 @@ summary: Changes checked, history and releases kept, and what agents may do.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

@@ -4,9 +4,7 @@ summary: FastMCP serves the program's tools to models over MCP.
 requires: [python, pydantic, api]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [FastMCP, fastmcp, MCP]
 governs: ["**/api/**", "**/root/**"]
 ---

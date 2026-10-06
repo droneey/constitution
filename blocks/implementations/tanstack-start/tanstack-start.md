@@ -4,9 +4,7 @@ summary: The TanStack app shell — SPA mode, root shell, runtime configuration.
 requires: [tanstack-router]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [TanStack Start, createServerFn, Nitro]
 governs: ["src/routes/__root.tsx", "src/router.tsx"]
 ---

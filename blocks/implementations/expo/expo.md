@@ -4,9 +4,7 @@ summary: Expo on React Native — app config, native builds, secure storage.
 requires: [react-native]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Expo, EAS, Expo Router, app.config.ts, eas.json]
 governs: ["app.config.ts", "eas.json"]
 ---

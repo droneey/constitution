@@ -4,9 +4,7 @@ summary: UI kit from shadcn source on Base UI primitives, adapted on arrival.
 requires: [react-dom, tailwind]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [shadcn, Base UI, components.json]
 governs: ["components.json", "**/libs/ui/components/**"]
 ---

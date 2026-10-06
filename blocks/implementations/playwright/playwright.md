@@ -4,9 +4,7 @@ summary: Drives the built program in real browsers for end-to-end specs.
 requires: [browser, ui, typescript]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Playwright]
 governs: ["tests/e2e/**", "playwright.config.*"]
 ---

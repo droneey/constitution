@@ -4,9 +4,7 @@ summary: yamllint holds the style of YAML files.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [yamllint, .yamllint.yaml]
 governs: [".yamllint.yaml"]
 ---

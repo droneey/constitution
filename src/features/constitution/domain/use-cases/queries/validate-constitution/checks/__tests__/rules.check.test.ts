@@ -17,19 +17,17 @@ describe('rulesCheck', () => {
     files[PRINCIPLES] = [
       '# Principles',
       '',
-      '## not_Kebab · MUST',
+      '### not_Kebab · MUST',
       '',
-      '| Why | Check | Tags |',
-      '|---|---|---|',
-      '|  | tool/spelling | [vibes, ux] |',
+      '| Why | Tags |',
+      '|---|---|',
+      '|  | [vibes, ux] |',
       '',
       rule({
-        check: 'by eye',
         slug: 'b',
         tags: '[types]',
       }),
       rule({
-        check: '',
         slug: 'c',
         why: '',
       }),
@@ -54,15 +52,7 @@ describe('rulesCheck', () => {
         path: PRINCIPLES,
       },
       {
-        message: 'rule "not_Kebab" names the role "spelling", which is not a role',
-        path: PRINCIPLES,
-      },
-      {
         message: 'rule "not_Kebab" has the tag "vibes", which is not a lens',
-        path: PRINCIPLES,
-      },
-      {
-        message: 'rule "b" has the check "by eye"; a check is test, review or tool/<role>',
         path: PRINCIPLES,
       },
       {
@@ -71,10 +61,6 @@ describe('rulesCheck', () => {
       },
       {
         message: 'rule "c" has no Why',
-        path: PRINCIPLES,
-      },
-      {
-        message: 'rule "c" has no Check',
         path: PRINCIPLES,
       },
     ]);

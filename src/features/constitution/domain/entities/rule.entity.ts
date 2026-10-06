@@ -3,7 +3,6 @@ import type { Axis, Level } from '#/kernel';
 interface StatedRule {
   readonly axis: Axis;
   readonly block: string;
-  readonly check: string;
   readonly file: string;
   readonly ownTags: readonly string[];
   readonly parent: string | undefined;

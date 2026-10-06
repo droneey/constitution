@@ -70,24 +70,10 @@ describe('generateDigests', () => {
 
   it.each<RecordCase>([
     {
-      condition: 'a rule has a check that is no test, review or tool',
-      files: {
-        [PRINCIPLES]: `# Principles\n\n${rule({
-          check: 'by eye',
-          slug: 'dependencies-point-inward',
-        })}`,
-      },
-      key: 'rule\tdependencies-point-inward',
-      record:
-        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\t\tfoundation\t\ttrue',
-      what: 'an empty check kind and role',
-    },
-    {
       condition: 'the chain of bases comes back to the block',
       files: CYCLE,
       key: 'block\talpha',
-      record:
-        'block\talpha\timplementation\tThe alpha block.\t\t\t\tbeta\tfalse\tbeta\t\t\t\tbeta\t',
+      record: 'block\talpha\timplementation\tThe alpha block.\t\t\t\tbeta\tfalse\tbeta\t\tbeta\t',
       what: 'the ancestors up to the block',
     },
     {
@@ -101,7 +87,7 @@ describe('generateDigests', () => {
       },
       key: 'block\tgamma',
       record:
-        'block\tgamma\timplementation\tThe gamma block.\t\t\t\talpha\tfalse\t\t\t\t\talpha beta\t',
+        'block\tgamma\timplementation\tThe gamma block.\t\t\t\talpha\tfalse\t\t\talpha beta\t',
       what: 'each ancestor once',
     },
     {
@@ -111,8 +97,7 @@ describe('generateDigests', () => {
         id: 'orphan',
       }),
       key: 'block\torphan',
-      record:
-        'block\torphan\timplementation\tThe orphan block.\t\t\t\tghost\tfalse\t\t\t\t\tghost\t',
+      record: 'block\torphan\timplementation\tThe orphan block.\t\t\t\tghost\tfalse\t\t\tghost\t',
       what: 'the unknown base as the only ancestor',
     },
     {
@@ -129,7 +114,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\tlayers-point-inward',
       record:
-        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\treview\t\t\t\tfoundation\tdependencies-point-inward\ttrue',
+        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\tfoundation\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
     },
   ])('should write $what in the record when $condition', ({ files, key, record }) => {

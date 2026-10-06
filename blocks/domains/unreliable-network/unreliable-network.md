@@ -4,9 +4,7 @@ summary: Code whose requests can time out, fail or lose the connection.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

@@ -55,7 +55,6 @@ describe('loadConstitution', () => {
         presets: [],
         requirementAnswers: [],
         rules: [],
-        templates: [],
       },
       findings: [],
     });
@@ -358,7 +357,7 @@ describe('loadConstitution', () => {
           {
             axis: undefined,
             body: '\n# UI\n',
-            lines: 14,
+            lines: 12,
             path: 'blocks/domains/ui/ui.md',
             role: BlockFileRole.Main,
             with: undefined,
@@ -548,7 +547,7 @@ describe('loadConstitution', () => {
       'blocks/implementations/lingui/workflow/catalogs.md': [
         '# Catalogs',
         '',
-        '### loose · MUST',
+        '## loose · MUST',
         '',
         rule({
           slug: 'catalogs-are-compiled',
@@ -596,7 +595,7 @@ describe('loadConstitution', () => {
       findings: [
         {
           message:
-            'heading "### loose · MUST" looks like a rule but is not "## <slug> · <LEVEL>", "## <slug> → <parent>" or "## <slug> → <parent> · <LEVEL>"',
+            'heading "## loose · MUST" looks like a rule but is not "### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"',
           path: 'blocks/implementations/lingui/workflow/catalogs.md',
         },
         {

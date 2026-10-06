@@ -4,9 +4,7 @@ summary: How stylesheets are layered, named and written.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: [format, lint, names]
 dictionary: [.css, "@layer", "@property"]
 governs: ["**/*.css"]
 ---

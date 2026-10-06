@@ -4,9 +4,7 @@ summary: Bun's test runner, its coverage gate and its specs.
 requires: [bun]
 extends: null
 abstract: false
-checks: [tests, coverage]
 languages: [typescript]
-roles: []
 dictionary: [bun:test]
 governs: ["**/__tests__/**"]
 ---

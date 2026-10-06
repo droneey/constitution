@@ -22,7 +22,7 @@ The droneey constitution: the engineering rules every droneey repository is buil
 ## Core entities and relationships
 
 - **Block** — a folder under `blocks/` with a main file, its front matter and its rules; it `requires` or `extends` blocks of the layers above.
-- **Rule** — a slug, a level, a statement, Why, Check and Tags; it belongs to one block.
+- **Rule** — a slug, a level, a statement, Why and Tags; it belongs to one block.
 - **Requirement answer** — a library block's answer to a requirement of a block above it.
 - **Digest** — what the hook prints: the active blocks of a project, core's part and MUST headlines.
 - **Preset part** — a file of `presets/<scope>/<tool>/<axis>/`, named after the block its settings need.
@@ -46,7 +46,6 @@ The droneey constitution: the engineering rules every droneey repository is buil
 - **Active set** — the blocks a project follows: core, the declared blocks and the bases of their `extends` chains.
 - **Override** — a project's recorded lowering of one rule, with the user's consent and a reason.
 - **Local block** — a block file inside a project, under `rules/`.
-- **Role** — the kind of tool that holds a rule: `lint`, `types`, `architecture` and the rest.
 - **Lens** — a tag on a rule, for reviewing across all layers at once.
 - **Owned word** — a brand, language or file name only its block and the blocks that depend on it may write.
 

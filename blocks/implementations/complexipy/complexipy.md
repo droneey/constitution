@@ -4,9 +4,7 @@ summary: complexipy holds the cognitive complexity of Python's functions.
 requires: [python]
 extends: null
 abstract: false
-checks: [lint]
 languages: [python]
-roles: []
 dictionary: [complexipy, .complexipy_cache]
 governs: []
 ---

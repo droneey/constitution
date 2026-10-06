@@ -4,9 +4,7 @@ summary: Matomo as one of the product's analytics services.
 requires: [analytics, browser, typescript]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Matomo, _mtm, _paq]
 governs: ["**/matomo.sink.ts"]
 ---

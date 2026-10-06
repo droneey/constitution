@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ROLES } from '#/kernel';
-
-import type { Files, RuleFixture } from '../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, mainFile, rule } from '../../../../../__tests__/constitution.fixtures';
+import type { RuleFixture } from '../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, rule } from '../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { adviseConstitution } from '../advise-constitution.use-case';
 
@@ -11,56 +9,13 @@ const I18N = 'blocks/domains/i18n/foundation/i18n.md';
 const UI = 'blocks/domains/ui/foundation/ui.md';
 const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
-const BROWSER_WITH_TYPESCRIPT = 'blocks/contexts/platforms/browser/foundation/with/typescript.md';
 const TYPESCRIPT = 'blocks/contexts/languages/typescript/foundation/typescript.md';
-const TYPESCRIPT_WITH_CSS = 'blocks/contexts/languages/typescript/workflow/with/css.md';
-const PYTHON = 'blocks/contexts/languages/python/python.md';
-const CSS = 'blocks/contexts/languages/css/css.md';
-const BIOME = 'blocks/implementations/biome/biome.md';
-const PRETTIER = 'blocks/implementations/prettier/prettier.md';
 const STATEMENT = 'Every visible label comes from a message catalog.';
 
-// A second language no tool is built for: the lint rule of _react holds for
-// every language, so python has no tool for lint.
-const pythonFile = (roles: readonly string[]): string =>
-  mainFile({
-    body: '# Python\n',
-    id: 'python',
-    roles,
-  });
-
-const PYTHON_FILE = pythonFile(ROLES);
-
-// A stylesheet is held to fewer roles than a program.
-const CSS_FILE = mainFile({
-  body: '# CSS\n',
-  id: 'css',
-  roles: [
-    'format',
-    'lint',
-    'names',
-  ],
-});
-
-const prettierFile = (input: { checks: readonly string[]; requires?: readonly string[] }): string =>
-  mainFile({
-    body: '# Prettier\n',
-    checks: input.checks,
-    id: 'prettier',
-    languages: [
-      'typescript',
-      'css',
-    ],
-    requires: input.requires ?? [
-      'typescript',
-    ],
-  });
-
 interface Scenario {
-  files?: Readonly<Files>;
   // Rules added at the end of a file; a with/ file not there yet starts as a
   // bare seam.
-  rules?: Readonly<Record<string, readonly RuleFixture[]>>;
+  rules: Readonly<Record<string, readonly RuleFixture[]>>;
 }
 
 interface Row extends Scenario {
@@ -69,15 +24,12 @@ interface Row extends Scenario {
 }
 
 const inputOf = (scenario: Scenario) => {
-  const files = {
-    ...validFiles(),
-    ...scenario.files,
-  };
+  const files = validFiles();
 
   return checkInputOf({
     ...files,
     ...Object.fromEntries(
-      Object.entries(scenario.rules ?? {}).map(([path, rules]) => [
+      Object.entries(scenario.rules).map(([path, rules]) => [
         path,
         [
           files[path] ?? '# Seam\n',
@@ -111,211 +63,6 @@ const pairOf = (input: {
 });
 
 describe('adviseConstitution', () => {
-  it.each<Row>([
-    {
-      expected: [
-        'role coverage: typescript has no tool for unused, imports',
-      ],
-      name: 'MUST rules of blocks with no language need roles no tool checks, one of them twice',
-      rules: {
-        [I18N]: [
-          {
-            check: 'tool/unused',
-            slug: 'every-message-is-used',
-          },
-        ],
-        [UI]: [
-          {
-            check: 'tool/imports',
-            slug: 'screens-hold-no-logic',
-          },
-          {
-            check: 'tool/unused',
-            slug: 'no-unused-screen',
-          },
-        ],
-      },
-    },
-    {
-      expected: [
-        'role coverage: python has no tool for lint',
-        'role coverage: typescript has no tool for imports',
-      ],
-      name: 'a MUST rule sits in a with/ file named after typescript, its own block has no language and python has no tool',
-      files: {
-        [PYTHON]: PYTHON_FILE,
-      },
-      rules: {
-        [BROWSER_WITH_TYPESCRIPT]: [
-          {
-            check: 'tool/imports',
-            slug: 'layers-import-downward',
-          },
-        ],
-      },
-    },
-    {
-      expected: [
-        'role coverage: typescript has no tool for imports',
-      ],
-      name: "a MUST rule sits in a with/ file that pairs typescript with css, whose roles leave the rule's role out",
-      files: {
-        [CSS]: CSS_FILE,
-        [PRETTIER]: prettierFile({
-          checks: [
-            'lint',
-          ],
-        }),
-      },
-      rules: {
-        [TYPESCRIPT_WITH_CSS]: [
-          {
-            check: 'tool/imports',
-            slug: 'layers-import-downward',
-          },
-        ],
-      },
-    },
-    {
-      expected: [
-        'role coverage: css has no tool for lint',
-      ],
-      name: 'a tool names typescript and css and checks the role a MUST rule needs',
-      files: {
-        [CSS]: CSS_FILE,
-        [PRETTIER]: prettierFile({
-          checks: [
-            'imports',
-          ],
-        }),
-      },
-      rules: {
-        [UI]: [
-          {
-            check: 'tool/imports',
-            slug: 'screens-hold-no-logic',
-          },
-        ],
-      },
-    },
-    {
-      expected: [
-        'role coverage: python has no tool for lint',
-        'role coverage: typescript has no tool for lint',
-      ],
-      name: 'a tool with no language checks lint and names, which MUST rules need',
-      files: {
-        [BIOME]: mainFile({
-          body: '# Biome\n',
-          checks: [
-            'lint',
-            'names',
-          ],
-          id: 'biome',
-        }),
-        [PYTHON]: PYTHON_FILE,
-      },
-      rules: {
-        [UI]: [
-          {
-            check: 'tool/names',
-            slug: 'names-follow-the-glossary',
-          },
-        ],
-      },
-    },
-    {
-      expected: [],
-      name: 'a tool names css, which it does not require',
-      files: {
-        [CSS]: CSS_FILE,
-        [PRETTIER]: prettierFile({
-          checks: [
-            'lint',
-          ],
-          requires: [],
-        }),
-      },
-    },
-    {
-      expected: [
-        'role coverage: typescript has no tool for lint',
-      ],
-      name: 'a tool requires typescript but names no language',
-      files: {
-        [BIOME]: mainFile({
-          body: '# Biome\n',
-          checks: [
-            'format',
-            'lint',
-          ],
-          id: 'biome',
-          requires: [
-            'typescript',
-          ],
-        }),
-      },
-    },
-    {
-      expected: [
-        'role coverage: typescript has no tool for imports',
-      ],
-      name: 'a domain lists a role, which only a language is held to',
-      files: {
-        'blocks/domains/ui/ui.md': mainFile({
-          body: '# UI\n',
-          governs: [
-            '**/ui/**',
-          ],
-          id: 'ui',
-          roles: [
-            'imports',
-          ],
-        }),
-      },
-      rules: {
-        [UI]: [
-          {
-            check: 'tool/imports',
-            slug: 'screens-hold-no-logic',
-          },
-        ],
-      },
-    },
-    {
-      expected: [],
-      name: 'a language is held to no role',
-      files: {
-        [PYTHON]: pythonFile([]),
-      },
-    },
-    {
-      expected: [],
-      name: 'a SHOULD rule needs a role no tool checks',
-      rules: {
-        [UI]: [
-          {
-            check: 'tool/imports',
-            level: 'SHOULD',
-            slug: 'screens-hold-no-logic',
-          },
-        ],
-      },
-    },
-  ])(
-    'should name the roles each language needs and no tool holds when $name',
-    ({ expected, ...scenario }) => {
-      // Arrange
-      const input = inputOf(scenario);
-
-      // Act
-      const advice = adviseConstitution(input);
-
-      // Assert
-      expect(advice).toStrictEqual(expected);
-    },
-  );
-
   it.each<Row>([
     {
       expected: [
@@ -416,35 +163,5 @@ describe('adviseConstitution', () => {
 
     // Assert
     expect(advice).toStrictEqual(expected);
-  });
-
-  it('should give the role coverage before the similar rules when both apply', () => {
-    // Arrange
-    const input = inputOf({
-      rules: {
-        [I18N]: [
-          {
-            slug: 'labels-come-from-catalogs',
-            statement: 'Every visible label comes from the message catalog.',
-          },
-        ],
-        [UI]: [
-          {
-            check: 'tool/imports',
-            slug: 'labels-from-catalogs',
-            statement: STATEMENT,
-          },
-        ],
-      },
-    });
-
-    // Act
-    const advice = adviseConstitution(input);
-
-    // Assert
-    expect(advice).toStrictEqual([
-      'role coverage: typescript has no tool for imports',
-      'similar rules: labels-come-from-catalogs (i18n) and labels-from-catalogs (ui)',
-    ]);
   });
 });

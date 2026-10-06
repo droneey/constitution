@@ -61,45 +61,6 @@ const LEVELS: readonly Level[] = [
   Level.May,
 ];
 
-enum Role {
-  Format = 'format',
-  Lint = 'lint',
-  Types = 'types',
-  Imports = 'imports',
-  Names = 'names',
-  Unused = 'unused',
-  Versions = 'versions',
-  Tests = 'tests',
-  Coverage = 'coverage',
-  Mutation = 'mutation',
-  Secrets = 'secrets',
-  Audit = 'audit',
-  Commits = 'commits',
-}
-
-const ROLES: readonly Role[] = [
-  Role.Format,
-  Role.Lint,
-  Role.Types,
-  Role.Imports,
-  Role.Names,
-  Role.Unused,
-  Role.Versions,
-  Role.Tests,
-  Role.Coverage,
-  Role.Mutation,
-  Role.Secrets,
-  Role.Audit,
-  Role.Commits,
-];
-
-const LANGUAGE_FREE_ROLES: readonly Role[] = [
-  Role.Names,
-  Role.Secrets,
-  Role.Audit,
-  Role.Commits,
-];
-
 enum Tag {
   Security = 'security',
   A11y = 'a11y',
@@ -110,18 +71,4 @@ enum Tag {
   Errors = 'errors',
 }
 
-export {
-  AXES,
-  Axis,
-  KIND_OF_LAYER,
-  Kind,
-  LANGUAGE_FREE_ROLES,
-  LAYER_RANK,
-  LAYERS,
-  Layer,
-  LEVELS,
-  Level,
-  ROLES,
-  Role,
-  Tag,
-};
+export { AXES, Axis, KIND_OF_LAYER, Kind, LAYER_RANK, LAYERS, Layer, LEVELS, Level, Tag };

@@ -4,9 +4,7 @@ summary: uv as Python's package manager, resolver and build backend.
 requires: [python]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [uv, uvx, uv.lock, uv_build]
 governs: ["pyproject.toml", "uv.lock"]
 ---

@@ -4,9 +4,7 @@ summary: zod parses untrusted input into the program's types.
 requires: [typescript]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [zod, Zod]
 governs: ["**/models/**", "**/adapters/**"]
 ---

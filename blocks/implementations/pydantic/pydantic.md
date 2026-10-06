@@ -4,9 +4,7 @@ summary: pydantic parses what crosses the program's edge into models.
 requires: [python]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [pydantic, Pydantic, pydantic-settings, BaseSettings, SecretStr]
 governs: ["**/models/**", "**/adapters/**", "**/root/**"]
 ---

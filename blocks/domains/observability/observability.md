@@ -4,9 +4,7 @@ summary: "Logs a collector reads: one pipeline, events with fields, trace ids."
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

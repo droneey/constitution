@@ -4,9 +4,7 @@ summary: React in the browser — the DOM, the document, labels and portals.
 requires: [browser]
 extends: _react
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [React DOM]
 governs: ["**/*.tsx"]
 ---

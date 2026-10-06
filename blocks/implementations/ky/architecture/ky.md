@@ -1,15 +1,15 @@
 # ky
 
-## one-ky-instance-per-system → one-transport-instance-per-system
+### one-ky-instance-per-system → one-transport-instance-per-system
 One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter imports it or uses ky's default export.
 
-| Why | Check | Tags |
-|---|---|---|
-| every adapter speaks to the system the same way, and a spec passes another instance. | review | [] |
+| Why | Tags |
+|---|---|
+| every adapter speaks to the system the same way, and a spec passes another instance. | [] |
 
-## ky-errors-mapped-in-the-adapter → transport-failures-mapped-once
+### ky-errors-mapped-in-the-adapter → transport-failures-mapped-once
 `HTTPError`, `TimeoutError` and network failures are mapped to domain errors in the adapter, through the shared mapper.
 
-| Why | Check | Tags |
-|---|---|---|
-| the domain handles its own errors, whatever client the transport uses. | review | [] |
+| Why | Tags |
+|---|---|
+| the domain handles its own errors, whatever client the transport uses. | [] |

@@ -4,9 +4,7 @@ summary: mutmut measures Python's specs by the mutants they kill.
 requires: [pytest]
 extends: null
 abstract: false
-checks: [mutation]
 languages: [python]
-roles: []
 dictionary: [mutmut, mutants/]
 governs: []
 ---

@@ -9,12 +9,12 @@ import { parseRules } from '../rules.utils';
 const FILE = 'blocks/core/foundation/principles.md';
 const CARD = 'blocks/core/core.md';
 const HEADING_FORMS =
-  '"## <slug> · <LEVEL>", "## <slug> → <parent>" or "## <slug> → <parent> · <LEVEL>"';
+  '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';
 const TABLE = [
   '',
-  '| Why | Check | Tags |',
-  '|---|---|---|',
-  '| it keeps the code honest. | review | [] |',
+  '| Why | Tags |',
+  '|---|---|',
+  '| it keeps the code honest. | [] |',
 ];
 
 const sourceOf = (
@@ -36,7 +36,6 @@ const sourceOf = (
 const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: 'core',
-  check: 'review',
   file: FILE,
   ownTags: [],
   parent: undefined,
@@ -59,13 +58,13 @@ describe('parseRules', () => {
     const source = {
       ...sourceOf([
         '# Principles',
-        '## four-data-states · MUST',
+        '### four-data-states · MUST',
         'Every data view shows',
         '  four states.  ',
         '',
-        '| Why | Check | Tags |',
-        '| --- | :-: | --- |',
-        '|  an empty screen cannot be told from a slow one. | test |  [ux,  a11y ] |',
+        '| Why | Tags |',
+        '| :-: | --- |',
+        '|  an empty screen cannot be told from a slow one. |  [ux,  a11y ] |',
         '',
         '**Example:**',
         'Prose after the example.',
@@ -84,7 +83,6 @@ describe('parseRules', () => {
       rules: [
         ruleOf({
           axis: Axis.Architecture,
-          check: 'test',
           file: 'blocks/core/architecture/with/ui.md',
           ownTags: [
             'ux',
@@ -105,17 +103,17 @@ describe('parseRules', () => {
     parent: string | undefined;
   }>([
     {
-      heading: '## a · SHOULD',
+      heading: '### a · SHOULD',
       level: Level.Should,
       parent: undefined,
     },
     {
-      heading: '## a → b',
+      heading: '### a → b',
       level: undefined,
       parent: 'b',
     },
     {
-      heading: '## a → b · MAY',
+      heading: '### a → b · MAY',
       level: Level.May,
       parent: 'b',
     },
@@ -148,7 +146,7 @@ describe('parseRules', () => {
   it('should keep a pipe and a bold label in the statement when they sit inside a line', () => {
     // Arrange
     const source = sourceOf([
-      '## a · MUST',
+      '### a · MUST',
       'A rule names its reason after **Why:** and splits a | b.',
       ...TABLE,
     ]);
@@ -168,11 +166,13 @@ describe('parseRules', () => {
   });
 
   it.each([
-    '## x - MUST',
-    '## x · MUST.',
+    '### x - MUST',
+    '### x · MUST.',
     '# x · SHOULD',
-    '## x → y → z',
-    '## x → ',
+    '## x · MUST',
+    '#### x → y',
+    '### x → y → z',
+    '### x → ',
   ])('should report %p as a stray heading when it misses the rule heading forms', (heading) => {
     // Arrange
     const source = sourceOf([
@@ -194,8 +194,9 @@ describe('parseRules', () => {
 
   it.each([
     '## MUST, SHOULD and MAY in practice',
-    '## levels · MUST in practice',
+    '### levels · MUST in practice',
     '## Components',
+    '### Components',
   ])('should neither read nor report the heading %p when it is no rule', (heading) => {
     // Arrange
     const source = sourceOf([
@@ -222,11 +223,10 @@ describe('parseRules', () => {
     {
       lines: [],
       messages: [
-        'has no table "| Why | Check | Tags |"',
+        'has no table "| Why | Tags |"',
       ],
       name: 'no table',
       rule: {
-        check: '',
         why: '',
       },
     },
@@ -241,41 +241,39 @@ describe('parseRules', () => {
       ],
       name: 'two tables',
       rule: {
-        check: '',
         why: '',
       },
     },
     {
       lines: [
-        '| Why | Check | Lens |',
+        '| Why | Check | Tags |',
         '|---|---|---|',
-        '| it keeps the code honest. | review | [] |',
+        '| it keeps the code honest. | [] |',
       ],
       messages: [
-        'has a table whose header is not "| Why | Check | Tags |"',
+        'has a table whose header is not "| Why | Tags |"',
       ],
-      name: 'a wrong header',
+      name: 'the header of the old form',
       rule: {},
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '| it keeps the code honest. | review | [] |',
+        '| Why | Tags |',
+        '| it keeps the code honest. | [] |',
       ],
       messages: [
-        'has a table whose header is not "| Why | Check | Tags |"',
+        'has a table whose header is not "| Why | Tags |"',
         "has 0 rows in its table; a rule's table has one",
       ],
       name: 'no delimiter row',
       rule: {
-        check: '',
         why: '',
       },
     },
     {
       lines: [
         ...TABLE,
-        '| it keeps the tests honest. | test | [] |',
+        '| it keeps the tests honest. | [] |',
       ],
       messages: [
         "has 2 rows in its table; a rule's table has one",
@@ -285,21 +283,21 @@ describe('parseRules', () => {
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '|---|---|---|',
-        '| it keeps the code honest. | review |',
+        '| Why | Tags |',
+        '|---|---|',
+        '| it keeps the code honest. |',
       ],
       messages: [
-        "has a row of 2 cells; a rule's table has 3",
+        "has a row of 1 cells; a rule's table has 2",
       ],
-      name: 'a row of two cells',
+      name: 'a row of one cell',
       rule: {},
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '|---|---|---|',
-        '|  | review | [] |',
+        '| Why | Tags |',
+        '|---|---|',
+        '|  | [] |',
       ],
       messages: [],
       name: 'an empty Why, which the rules check reports',
@@ -309,9 +307,9 @@ describe('parseRules', () => {
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '|---|---|---|',
-        '| it keeps the code honest. | review | ux, data |',
+        '| Why | Tags |',
+        '|---|---|',
+        '| it keeps the code honest. | ux, data |',
       ],
       messages: [
         'has the Tags "ux, data"; Tags is a list, such as [security, ux] or []',
@@ -321,33 +319,33 @@ describe('parseRules', () => {
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '| x- | --- | --- |',
-        '| it keeps the code honest. | review | [] |',
+        '| Why | Tags |',
+        '| x- | --- |',
+        '| it keeps the code honest. | [] |',
       ],
       messages: [
-        'has a table whose header is not "| Why | Check | Tags |"',
+        'has a table whose header is not "| Why | Tags |"',
       ],
       name: 'a delimiter cell with a word before its dashes',
       rule: {},
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '| --- | -x | --- |',
-        '| it keeps the code honest. | review | [] |',
+        '| Why | Tags |',
+        '| --- | -x |',
+        '| it keeps the code honest. | [] |',
       ],
       messages: [
-        'has a table whose header is not "| Why | Check | Tags |"',
+        'has a table whose header is not "| Why | Tags |"',
       ],
       name: 'a delimiter cell with a word after its dashes',
       rule: {},
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '|---|---|---|',
-        '| it keeps the code honest. | review | see [ux] |',
+        '| Why | Tags |',
+        '|---|---|',
+        '| it keeps the code honest. | see [ux] |',
       ],
       messages: [
         'has the Tags "see [ux]"; Tags is a list, such as [security, ux] or []',
@@ -357,9 +355,9 @@ describe('parseRules', () => {
     },
     {
       lines: [
-        '| Why | Check | Tags |',
-        '|---|---|---|',
-        '| it keeps the code honest. | review | [ux] too |',
+        '| Why | Tags |',
+        '|---|---|',
+        '| it keeps the code honest. | [ux] too |',
       ],
       messages: [
         'has the Tags "[ux] too"; Tags is a list, such as [security, ux] or []',
@@ -374,8 +372,8 @@ describe('parseRules', () => {
         '**Implements:** `b`',
       ],
       messages: [
-        'has the label "Why"; a rule states Why, Check and Tags in its table and holds no label but Example',
-        'has the label "Implements"; a rule states Why, Check and Tags in its table and holds no label but Example',
+        'has the label "Why"; a rule states Why and Tags in its table and holds no label but Example',
+        'has the label "Implements"; a rule states Why and Tags in its table and holds no label but Example',
       ],
       name: 'labels of the old form',
       rule: {},
@@ -385,7 +383,7 @@ describe('parseRules', () => {
     ({ lines, messages, rule }) => {
       // Arrange
       const source = sourceOf([
-        '## a · MUST',
+        '### a · MUST',
         'A.',
         ...lines,
       ]);
@@ -408,11 +406,11 @@ describe('parseRules', () => {
     const source = {
       ...sourceOf([
         '# Core',
-        '## rules-bind · MUST',
+        '### rules-bind · MUST',
         'The rules bind.',
         ...TABLE,
-        '## x - MUST',
-        '## reasons-are-given → rules-bind',
+        '### x - MUST',
+        '### reasons-are-given → rules-bind',
         'A rule names its reason.',
         ...TABLE,
       ]),
@@ -427,7 +425,7 @@ describe('parseRules', () => {
     expect(parsed).toStrictEqual({
       findings: [
         {
-          message: `heading "## x - MUST" looks like a rule but is not ${HEADING_FORMS}`,
+          message: `heading "### x - MUST" looks like a rule but is not ${HEADING_FORMS}`,
           path: CARD,
         },
         {

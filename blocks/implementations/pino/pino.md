@@ -4,9 +4,7 @@ summary: pino writes the program's log records as JSON lines.
 requires: [typescript, observability]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [pino, pino-http, pino-pretty]
 governs: ["**/root/**"]
 ---

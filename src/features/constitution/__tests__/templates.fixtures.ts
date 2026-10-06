@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 const TEMPLATES = join(import.meta.dir, '..', '..', '..', '..', 'templates');
 const PLACEHOLDER = /<[^>\n]+>/;
-const RULE_HEADING = /^## \S+ · /m;
+const RULE_HEADING = /^### \S+ · /m;
 const PARAGLIDE_DIR = 'blocks/implementations/paraglide';
 
 // What /ratify writes for Paraglide, a library the constitution has no block for.
@@ -60,10 +60,6 @@ const PARAGLIDE: ReadonlyArray<
   [
     '<the reason>',
     'the compiler checks a function call, and a key is only a string.',
-  ],
-  [
-    '<tool/role, test or review>',
-    'tool/types',
   ],
   [
     '[<lens>, <lens>]',

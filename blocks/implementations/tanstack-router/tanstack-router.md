@@ -4,9 +4,7 @@ summary: File routes as screens — URL state, layouts, guards and links.
 requires: [react-dom]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [TanStack Router, routeTree.gen.ts]
 governs: ["src/routes/**", "src/router.tsx"]
 ---

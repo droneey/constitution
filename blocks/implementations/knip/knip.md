@@ -4,9 +4,7 @@ summary: Finds unused files, dependencies and exports.
 requires: [typescript]
 extends: null
 abstract: false
-checks: [unused]
 languages: [typescript]
-roles: []
 dictionary: [knip, knip.config.ts]
 governs: ["knip.config.ts"]
 ---

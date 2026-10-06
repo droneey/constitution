@@ -42,7 +42,6 @@ interface Parsed {
 
 const BLOCKS = 'blocks/';
 const PRESETS = 'presets/';
-const TEMPLATES = 'templates/project/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
@@ -265,7 +264,6 @@ const loadConstitution = (input: {
       presets,
       requirementAnswers: parsed.answers,
       rules: parsed.rules,
-      templates: filesUnder(TEMPLATES),
     },
     findings: [
       ...underBlocks

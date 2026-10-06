@@ -1,22 +1,19 @@
-import { Axis, ROLES } from '#/kernel';
+import { Axis } from '#/kernel';
 
 type Files = Record<string, string>;
 
 interface BlockFixture {
   abstract?: boolean;
   body: string;
-  checks?: readonly string[];
   extends?: string;
   governs?: readonly string[];
   id: string;
   languages?: readonly string[];
   requires?: readonly string[];
-  roles?: readonly string[];
   summary: string;
 }
 
 interface RuleFixture {
-  check?: string;
   level?: string;
   parent?: string;
   slug: string;
@@ -37,9 +34,7 @@ const mainFile = (block: BlockFixture): string =>
     `requires: ${list(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
-    `checks: ${list(block.checks)}`,
     `languages: ${list(block.languages)}`,
-    `roles: ${list(block.roles)}`,
     'dictionary: []',
     `governs: [${(block.governs ?? []).map((glob) => JSON.stringify(glob)).join(', ')}]`,
     '---',
@@ -49,17 +44,17 @@ const mainFile = (block: BlockFixture): string =>
 
 const headingOf = (input: RuleFixture): string =>
   input.parent === undefined
-    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
-    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+    ? `### ${input.slug} · ${input.level ?? 'MUST'}`
+    : `### ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
 
 const rule = (input: RuleFixture): string =>
   [
     headingOf(input),
     input.statement,
     '',
-    '| Why | Check | Tags |',
-    '|---|---|---|',
-    `| it keeps the fixture honest. | ${input.check ?? 'review'} | [] |`,
+    '| Why | Tags |',
+    '|---|---|',
+    '| it keeps the fixture honest. | [] |',
     '',
   ].join('\n');
 
@@ -129,7 +124,6 @@ const coreFiles = (): Files =>
       'foundation/code.md': section({
         rules: [
           {
-            check: 'tool/secrets',
             slug: 'no-secret-in-code',
             statement: 'No secret is written into the code.',
           },
@@ -220,7 +214,6 @@ const domainFiles = (): Files => ({
     id: 'ui',
     rules: [
       {
-        check: 'test',
         slug: 'four-data-states',
         statement: 'Every data view shows loading, empty, error and content.',
       },
@@ -319,33 +312,15 @@ enum ContextFolder {
 
 const context = (input: {
   axis?: Axis;
-  checks?: readonly string[];
   folder: ContextFolder;
   id: string;
-  languages?: readonly string[];
   requires?: readonly string[];
-  roles?: readonly string[];
   rules: readonly RuleFixture[];
   summary: string;
   title: string;
 }): Files =>
   blockFiles({
     body: `# ${input.title}\n`,
-    ...(input.checks === undefined
-      ? {}
-      : {
-          checks: input.checks,
-        }),
-    ...(input.languages === undefined
-      ? {}
-      : {
-          languages: input.languages,
-        }),
-    ...(input.roles === undefined
-      ? {}
-      : {
-          roles: input.roles,
-        }),
     dir: `blocks/contexts/${input.folder}/${input.id}`,
     files: rulesFile(input),
     id: input.id,
@@ -359,18 +334,10 @@ const context = (input: {
 
 const contextFiles = (): Files => ({
   ...context({
-    checks: [
-      'types',
-    ],
     folder: ContextFolder.Languages,
     id: 'typescript',
-    languages: [
-      'typescript',
-    ],
-    roles: ROLES,
     rules: [
       {
-        check: 'tool/types',
         slug: 'no-any',
         statement: 'A value is never typed `any`.',
       },
@@ -381,10 +348,8 @@ const contextFiles = (): Files => ({
   ...context({
     folder: ContextFolder.Languages,
     id: 'python',
-    roles: ROLES,
     rules: [
       {
-        check: 'tool/lint',
         slug: 'no-bare-except',
         statement: 'An except clause names what it catches.',
       },
@@ -430,7 +395,6 @@ const implementation = (input: {
   abstract?: boolean;
   axis?: Axis;
   body?: string;
-  checks?: readonly string[];
   extends?: string;
   governs?: readonly string[];
   id: string;
@@ -463,9 +427,6 @@ const implementation = (input: {
 const implementationFiles = (): Files => ({
   ...implementation({
     abstract: true,
-    checks: [
-      'lint',
-    ],
     id: '_lint-base',
     languages: [
       'typescript',
@@ -476,17 +437,11 @@ const implementationFiles = (): Files => ({
     summary: 'What every TypeScript linter shares.',
   }),
   ...implementation({
-    checks: [
-      'lint',
-    ],
     id: 'markdownlint',
     requires: [],
     summary: 'Lints Markdown, which is no language block.',
   }),
   ...implementation({
-    checks: [
-      'lint',
-    ],
     id: 'ruff',
     languages: [
       'python',
@@ -504,7 +459,6 @@ const implementationFiles = (): Files => ({
     ],
     rules: [
       {
-        check: 'tool/lint',
         slug: 'hooks-at-top-level',
         statement: 'A hook is called only at the top level.',
       },
@@ -545,10 +499,6 @@ const implementationFiles = (): Files => ({
     summary: 'Server state in React.',
   }),
   ...implementation({
-    checks: [
-      'format',
-      'lint',
-    ],
     id: 'biome',
     languages: [
       'typescript',
@@ -601,9 +551,6 @@ const implementationFiles = (): Files => ({
     summary: 'Git hooks.',
   }),
   ...implementation({
-    checks: [
-      'secrets',
-    ],
     id: 'betterleaks',
     requires: [
       'version-control',

@@ -8,11 +8,10 @@ const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
 const UI = 'blocks/domains/ui/foundation/ui.md';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
-// A MUST rule whose role, architecture, no tool of typescript checks: the
-// advice names it whenever the checks run.
-const UNTOOLED_RULE = rule({
-  check: 'tool/imports',
-  slug: 'screens-import-inward',
+// A rule of ui that says nearly what a rule of i18n says: the advice names the
+// pair whenever the checks run.
+const SIMILAR_RULE = rule({
+  slug: 'screens-plurals-by-cldr',
 });
 
 describe('validateConstitution', () => {
@@ -26,7 +25,7 @@ describe('validateConstitution', () => {
     files[UI] = `${textOf({
       files,
       path: UI,
-    })}\n${UNTOOLED_RULE}`;
+    })}\n${SIMILAR_RULE}`;
     files['blocks/domains/ui/notes.txt'] = 'notes\n';
     const source = sourceOf(files);
 
@@ -89,13 +88,13 @@ describe('validateConstitution', () => {
     });
   });
 
-  it('should give the advice beside the stale index when an added MUST rule has no tool', () => {
+  it("should give the advice beside the stale index when an added rule says nearly what a sibling block's does", () => {
     // Arrange
     const files = validFiles();
     files[UI] = `${textOf({
       files,
       path: UI,
-    })}\n${UNTOOLED_RULE}`;
+    })}\n${SIMILAR_RULE}`;
     const source = sourceOf(files);
 
     // Act
@@ -104,7 +103,7 @@ describe('validateConstitution', () => {
     // Assert
     expect(validation).toStrictEqual({
       advice: [
-        'role coverage: typescript has no tool for imports',
+        'similar rules: i18n-plurals-by-cldr (i18n) and screens-plurals-by-cldr (ui)',
       ],
       findings: [
         {

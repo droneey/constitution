@@ -1,14 +1,13 @@
 import type { Finding } from '#/kernel';
-import { Axis, LEVELS, ROLES, Tag } from '#/kernel';
+import { Axis, LEVELS, Tag } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { checkOf, mayCarryOut } from '../../../../utils';
+import { mayCarryOut } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const roles: readonly string[] = ROLES;
 const tags: readonly string[] = Object.values(Tag);
 
 const at = (input: { message: string; rule: Rule }): Finding => ({
@@ -16,28 +15,11 @@ const at = (input: { message: string; rule: Rule }): Finding => ({
   path: input.rule.file,
 });
 
-const checkMessage = (rule: Rule): string | undefined => {
-  const read = checkOf(rule);
-
-  if (rule.check === '') {
-    return 'has no Check';
-  }
-
-  if (read.kind === 'unknown') {
-    return `has the check "${rule.check}"; a check is test, review or tool/<role>`;
-  }
-
-  return read.kind !== 'tool' || roles.includes(read.role)
-    ? undefined
-    : `names the role "${read.role}", which is not a role`;
-};
-
 const fieldFindings = (rule: Rule): readonly Finding[] => {
   const messages = [
     SLUG.test(rule.slug) ? undefined : 'is not a kebab-case slug',
     rule.statement === '' ? 'has no statement' : undefined,
     rule.why === '' ? 'has no Why' : undefined,
-    checkMessage(rule),
     ...rule.ownTags
       .filter((tag) => !tags.includes(tag))
       .map((tag) => `has the tag "${tag}", which is not a lens`),

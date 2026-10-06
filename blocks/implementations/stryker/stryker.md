@@ -4,9 +4,7 @@ summary: Stryker measures the tests by the mutants they kill.
 requires: [typescript]
 extends: null
 abstract: false
-checks: [mutation]
 languages: [typescript]
-roles: []
 dictionary: [Stryker, stryker.config.mjs]
 governs: ["stryker.config.mjs"]
 ---

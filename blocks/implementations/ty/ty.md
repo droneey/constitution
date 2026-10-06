@@ -4,9 +4,7 @@ summary: ty checks the types of Python.
 requires: [python]
 extends: null
 abstract: false
-checks: [types]
 languages: [python]
-roles: []
 dictionary: [ty, ty.toml]
 governs: ["ty.toml"]
 ---

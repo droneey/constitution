@@ -4,9 +4,7 @@ summary: Git's ignores, tags, large files and worktrees.
 requires: [version-control]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Git, git, .gitignore, .gitattributes, .gitkeep, Git LFS]
 governs: [".gitignore", ".gitattributes"]
 ---

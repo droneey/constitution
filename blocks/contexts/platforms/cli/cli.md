@@ -4,9 +4,7 @@ summary: A program run from a command line, one command per invocation.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: ["**/cli/**"]
 ---

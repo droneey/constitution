@@ -4,9 +4,7 @@ summary: "Callers who sign in with different rights: identity, sessions, access.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

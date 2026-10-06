@@ -4,9 +4,7 @@ summary: FastAPI serves the program over HTTP, run by Uvicorn.
 requires: [python, pydantic, api]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [FastAPI, fastapi, Starlette, starlette, Uvicorn, uvicorn]
 governs: ["**/api/**", "**/root/**"]
 ---

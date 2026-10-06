@@ -4,9 +4,7 @@ summary: deptry checks the dependencies a Python package declares and imports.
 requires: [python]
 extends: null
 abstract: false
-checks: [unused]
 languages: [python]
-roles: []
 dictionary: [deptry]
 governs: []
 ---

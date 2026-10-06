@@ -20,96 +20,96 @@
 
 The laws are the only MUST rules of this chapter. Each one is binding in every project; a project lowers one only by an override written with the user's consent.
 
-## dependencies-point-inward · MUST
+### dependencies-point-inward · MUST
 Imports point inward, toward stability: an outer part imports an inner one, never the reverse.
 
-| Why | Check | Tags |
-|---|---|---|
-| an outward import lets a volatile detail break a stable rule. | tool/imports | [] |
+| Why | Tags |
+|---|---|
+| an outward import lets a volatile detail break a stable rule. | [] |
 
-## inner-layers-declare-their-contracts · MUST
+### inner-layers-declare-their-contracts · MUST
 The inner layer declares, in its own words, the contracts it needs; the outer layer implements them. Both depend on the contract, never the inner layer on the implementation.
 
-| Why | Check | Tags |
-|---|---|---|
-| the business rules then choose what they need, and a vendor or engine can be replaced without touching them. | review | [] |
+| Why | Tags |
+|---|---|
+| the business rules then choose what they need, and a vendor or engine can be replaced without touching them. | [] |
 
-## domain-imports-only-itself-kernel-and-contracts · MUST
+### domain-imports-only-itself-kernel-and-contracts · MUST
 The domain imports only itself, the shared kernel and the shared ports of `contracts/`: no framework, no input or output, no vendor library, however pure. A tool's types stop at its boundary; a validation engine conforms to the domain's types and never declares them.
 
-| Why | Check | Tags |
-|---|---|---|
-| a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/imports | [] |
+| Why | Tags |
+|---|---|
+| a domain that imports a library changes when the library does, and cannot be read or tested without it. | [] |
 
-## features-blind-to-each-other · MUST
+### features-blind-to-each-other · MUST
 A feature never imports another feature. Features are combined only by the layer above them.
 
-| Why | Check | Tags |
-|---|---|---|
-| a feature that knows another cannot change, be tested or be removed alone. | tool/imports | [] |
+| Why | Tags |
+|---|---|
+| a feature that knows another cannot change, be tested or be removed alone. | [] |
 
-## access-only-through-curated-surface · MUST
+### access-only-through-curated-surface · MUST
 A module is reached from outside only through its surface, and the surface is curated: it offers what a caller may couple to and nothing else. Its internals are private.
 
-| Why | Check | Tags |
-|---|---|---|
-| whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | review | [] |
+| Why | Tags |
+|---|---|
+| whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | [] |
 
-## surface-is-the-only-way-in → access-only-through-curated-surface
+### surface-is-the-only-way-in → access-only-through-curated-surface
 A module, a domain role folder and the kernel are reached from outside only through their surface.
 
-| Why | Check | Tags |
-|---|---|---|
-| an import past the surface couples to an internal the module is free to change. | tool/imports | [] |
+| Why | Tags |
+|---|---|
+| an import past the surface couples to an internal the module is free to change. | [] |
 
-## external-shapes-mapped-at-boundary · MUST
+### external-shapes-mapped-at-boundary · MUST
 An external shape — a response, a row, a message, a file format — is mapped to the inner model at the edge, in both directions. A wire shape never travels inward.
 
-| Why | Check | Tags |
-|---|---|---|
-| a vendor's shape inside the domain turns every change of the vendor into a change of the business rules. | review | [data] |
+| Why | Tags |
+|---|---|
+| a vendor's shape inside the domain turns every change of the vendor into a change of the business rules. | [data] |
 
-## side-effects-at-the-edges · MUST
+### side-effects-at-the-edges · MUST
 Input and output, network, storage, clock, randomness and processes live in adapters. The domain is free of effects.
 
-| Why | Check | Tags |
-|---|---|---|
-| code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | review | [] |
+| Why | Tags |
+|---|---|
+| code without effects is deterministic, so it can be tested fast, reasoned about locally and reused. | [] |
 
-## one-explicit-composition-root · MUST
+### one-explicit-composition-root · MUST
 Concrete implementations are chosen and wired in one known place, the composition root. A unit receives its dependencies typed by their contracts, and never builds an adapter itself or asks for one; reading a typed scope the root fills — the context a component tree provides, the context a router passes to its routes — is receiving, not asking. A container may do the wiring only from bindings written in the declarations the root composes — its own, or those of a feature's module the root names in its imports; one that finds its bindings by scanning, by name or by convention, or that a unit asks for what it needs, is the magic this rule forbids.
 
-| Why | Check | Tags |
-|---|---|---|
-| one place that names every concrete choice makes the program's shape readable and every choice replaceable, in production and in tests. | review | [] |
+| Why | Tags |
+|---|---|
+| one place that names every concrete choice makes the program's shape readable and every choice replaceable, in production and in tests. | [] |
 
-## reads-and-writes-apart · MUST
+### reads-and-writes-apart · MUST
 Where one operation reads and another writes, the read path and the write path never import each other, directly or through a surface that joins them.
 
-| Why | Check | Tags |
-|---|---|---|
-| reads and writes change for different reasons and scale differently; kept apart, each can change without the other. | tool/imports | [] |
+| Why | Tags |
+|---|---|
+| reads and writes change for different reasons and scale differently; kept apart, each can change without the other. | [] |
 
-## code-lives-with-its-reason-to-change · MUST
+### code-lives-with-its-reason-to-change · MUST
 Code lives in the layer that owns its reason to change, beside its consumer when they share that reason, and lifts to the nearest common level only when a second consumer appears. A tool is placed by the same rule. Business rules stay in the domain even with a single consumer: their reason to change is the business, not the caller.
 
-| Why | Check | Tags |
-|---|---|---|
-| code placed by its reason to change is found where it is needed and moves only when that reason moves. | review | [] |
+| Why | Tags |
+|---|---|
+| code placed by its reason to change is found where it is needed and moves only when that reason moves. | [] |
 
-## contracts-shaped-by-role · MUST
+### contracts-shaped-by-role · MUST
 A contract is shaped by the role that uses it: a reader sees only reads, a writer only writes, and no caller receives an operation it has no reason to call.
 
-| Why | Check | Tags |
-|---|---|---|
-| a wide contract couples every caller to operations it never uses, and hides which caller can change what. | review | [] |
+| Why | Tags |
+|---|---|
+| a wide contract couples every caller to operations it never uses, and hides which caller can change what. | [] |
 
-## untrusted-input-parsed-at-edge → outside-values-untyped-until-parsed
+### untrusted-input-parsed-at-edge → outside-values-untyped-until-parsed
 Input from outside the program is parsed once, at the edge; inside, it is trusted and never checked again.
 
-| Why | Check | Tags |
-|---|---|---|
-| the checks do not scatter through the code, and the domain receives only values of a known shape. | review | [] |
+| Why | Tags |
+|---|---|
+| the checks do not scatter through the code, and the domain receives only values of a known shape. | [] |
 
 ## The modelling vocabulary
 
@@ -119,16 +119,16 @@ Input from outside the program is parsed once, at the edge; inside, it is truste
 - **Entities, value objects, use-cases.** Business types with identity; small values that guard an invariant; the operations that carry business rules. Their form is the language's.
 - **Domain events.** A domain event records, in the past tense, what happened, in the domain's words.
 
-## duplication-across-contexts-by-default · SHOULD
+### duplication-across-contexts-by-default · SHOULD
 Across bounded contexts, duplication is the default and sharing the exception. A context that needs another's entity keeps its own narrow view of it, such as a reference by identifier. The shared kernel stays small and holds only what is universal and stable.
 
-| Why | Check | Tags |
-|---|---|---|
-| a type shared by two contexts must satisfy both, so every change to it is negotiated, and the contexts stop being able to change apart. | review | [] |
+| Why | Tags |
+|---|---|
+| a type shared by two contexts must satisfy both, so every change to it is negotiated, and the contexts stop being able to change apart. | [] |
 
-## entity-behaviour-beside-entity · SHOULD
+### entity-behaviour-beside-entity · SHOULD
 What concerns one entity alone — a predicate, a derived value, a transition of state the program owns — is a pure function in that entity's file, never a method and never repeated in use-cases or screens; a use-case orchestrates entities and ports.
 
-| Why | Check | Tags |
-|---|---|---|
-| a rule about one entity written once is changed once, and a screen asks the entity instead of repeating the check. | review | [] |
+| Why | Tags |
+|---|---|
+| a rule about one entity written once is changed once, and a screen asks the entity instead of repeating the check. | [] |

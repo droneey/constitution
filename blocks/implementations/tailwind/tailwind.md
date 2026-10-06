@@ -4,9 +4,7 @@ summary: Styling with Tailwind — tokens, variant maps and class merging.
 requires: [ui, browser, typescript, css]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [Tailwind, cva, tailwind-merge, clsx, "@utility", "@theme"]
 governs: ["**/*.css", "**/*.variants.ts"]
 ---

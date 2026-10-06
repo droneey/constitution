@@ -4,9 +4,7 @@ summary: Data another system owns — cache keys, invalidation, streams.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---

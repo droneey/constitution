@@ -4,9 +4,7 @@ summary: bunli declares each command, its flags and its handler.
 requires: [bun, cli]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: [bunli]
 governs: ["**/cli/**"]
 ---
