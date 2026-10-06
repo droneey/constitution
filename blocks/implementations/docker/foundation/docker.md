@@ -1,11 +1,11 @@
 # Docker
 
 ## docker-files-linted-in-the-check · MUST
-The check lints every Dockerfile and every Compose file of the repository, and any finding fails it.
+Every Dockerfile and every Compose file of the repository is held by a linter, and any finding is a violation.
 
 | Why | Check | Tags |
 |---|---|---|
-| a file the check skips is held by nothing, and a warning that passes is one nobody fixes. | tool/lint | [] |
+| a file no linter reads is held by nothing, and a warning that passes is one nobody fixes. | tool/lint | [] |
 
 ## Images
 
@@ -24,18 +24,18 @@ No image in a Dockerfile or a Compose file is untagged or tagged `latest`.
 | these are the floating forms the linters see; a floating major or minor and a missing digest are left to review, since neither linter can require a digest. | tool/lint | [] |
 
 ## files-copied-never-added · MUST
-Local files and folders enter an image with `COPY`, never `ADD`.
+No Dockerfile uses `ADD`: local files and folders enter an image with `COPY`.
 
 | Why | Check | Tags |
 |---|---|---|
 | `COPY` does one visible thing; `ADD` also fetches addresses and unpacks archives, unseen. | tool/lint | [security] |
 
 ## downloads-verified-archives-unpacked → downloads-pinned-by-version-and-checksum
-A file from the network is downloaded in a `RUN` step that checks its checksum, and an archive is unpacked with `tar`; `ADD` never fetches an address or unpacks an archive.
+A file from the network is downloaded in a `RUN` step that checks its checksum, and an archive is unpacked with `tar`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a `RUN` step shows the version, the checksum and the unpacking in one place, while `ADD` unpacks a local archive without saying so. | review | [security] |
+| a `RUN` step shows the version, the checksum and the unpacking in one place. | review | [security] |
 
 ## commands-in-exec-form · MUST
 `CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.

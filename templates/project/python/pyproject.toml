@@ -19,7 +19,6 @@ dev = [
   "hypothesis==6.168.3",
   "import-linter==2.15",
   "mutmut==3.8.0",
-  "poethepoet==0.48.0",
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
   "pytest-randomly==5.0.0",
@@ -276,30 +275,3 @@ min_confidence = 60
 [tool.complexipy]
 max-complexity-allowed = 10
 
-# poethepoet: the check
-[tool.poe.tasks]
-"format:check" = "ruff format --check"
-"format:fix" = "ruff format"
-"lint:check" = "ruff check"
-"lint:fix" = "ruff check --fix"
-"type:check" = "ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml"
-"code:check" = "python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests"
-"complexity:check" = "complexipy src tests"
-"architecture:check" = "lint-imports --no-logo"
-"dependencies:check" = "deptry src"
-"unused:check" = "vulture"
-"test:check" = "pytest --cov"
-"mutation:check" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz"
-"mutation:all" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz all"
-check = [
-  "format:check",
-  "lint:check",
-  "type:check",
-  "code:check",
-  "complexity:check",
-  "architecture:check",
-  "dependencies:check",
-  "unused:check",
-  "test:check",
-  "mutation:check",
-]

@@ -7,8 +7,8 @@
 |---|---|---|
 | every adapter speaks to the system the same way, and a spec passes them a client over a mock transport. | review | [] |
 
-## httpx2-errors-mapped-in-the-adapter → transport-failures-mapped-once · MUST
-`HTTPStatusError`, `TimeoutException` and `TransportError` are mapped to domain errors in the adapter, through the shared mapper; nothing of httpx2 crosses the adapter.
+## httpx2-errors-mapped-in-the-adapter → transport-failures-mapped-once
+`HTTPStatusError`, `TimeoutException` and `TransportError` are mapped to domain errors in the adapter, through the shared mapper.
 
 | Why | Check | Tags |
 |---|---|---|

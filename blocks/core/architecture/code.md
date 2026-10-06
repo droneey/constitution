@@ -1,14 +1,5 @@
 # Code
 
-## Naming
-
-## domain-names-free-of-vendor-and-storage · SHOULD
-A domain name names the concept, never the vendor or the storage behind it: `UserRecord`, not `UserMongoDocument`.
-
-| Why | Check | Tags |
-|---|---|---|
-| a vendor in a domain name must be renamed everywhere when the vendor changes, and leaks it into code that should not know it. | review | [] |
-
 ## Units
 
 ## deep-modules-no-pass-through → module-hides-much-behind-small-public-entry
@@ -18,14 +9,14 @@ A layer that only passes a call through to the next one is removed. A domain use
 |---|---|---|
 | a pass-through adds a place to read and change without hiding anything. | review | [] |
 
-## Comments and leftovers
+## Diagnostics
 
-## diagnostics-through-the-logging-port → side-effects-at-the-edges
-Diagnostics a program keeps on purpose go through the logging port, never straight to the console or a stream. The port is the language's standard logging facade, whose sinks only `root/` configures, where the language has one, and a contract of the program's own where it has none. The domain, its use-cases included, logs nothing: it returns a result or an error, or emits an event, and a binding unit of `app/` or the delivery layer logs what happened.
+## diagnostics-through-the-logging-port → diagnostics-through-the-logging-facade
+The logging facade, or the program's own logger where the language has none, is the program's logging port, and only `root/` configures its sinks. The domain, its use-cases included, logs nothing: it returns a result or an error, or emits an event, and a binding unit of `app/` or the delivery layer logs what happened.
 
 | Why | Check | Tags |
 |---|---|---|
-| a port decides in one place where diagnostics go and what they may carry, and a test replaces it without touching the code; a facade every library already writes to is that port, so the program's records and theirs pass one pipeline, and a domain that logs would decide what is worth telling an operator, which is the caller's to know. | review | [] |
+| sinks configured in one place decide where every record goes, and a test replaces them without touching the code; a domain that logs would decide what is worth telling an operator, which is the caller's to know. | review | [] |
 
 ## Absence
 
@@ -44,13 +35,6 @@ Universal failures live in `kernel/errors`, a feature's in its `domain/errors`, 
 | Why | Check | Tags |
 |---|---|---|
 | a failure declared where its contract lives is found with it, and a raw transport failure that passes the boundary couples its caller to the vendor. | review | [] |
-
-## one-error-handler-per-transport → failure-shown-as-what-happened-and-what-next · MUST
-Defects travel to the boundary. Each transport has one handler of last resort that turns a failure into what its user sees, and a program exits only there. A handler nested below it — a screen's error boundary — only renders a failure within its own part, in the same shape.
-
-| Why | Check | Tags |
-|---|---|---|
-| one handler gives every failure the same shape and the same next step, and no internal detail leaks past it; a nested one that only renders keeps a failure to the part it broke. | review | [] |
 
 ## Types
 

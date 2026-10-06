@@ -7,5 +7,12 @@
         "**/*.tsx",
       ],
     },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/schema-never-brands.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
   ],
 }

@@ -26,21 +26,21 @@ No `catch` block is empty.
 | an empty catch swallows every error that reaches it. | tool/lint | [errors] |
 
 ## rules-held-by-tools · MUST
-Every rule whose Check names a role is held by a tool of that role in the project's check, configured to fail on a violation. A rule no configured tool holds is reviewed, or lowered by an override.
+Every rule whose Check names a role is held by a tool of that role, configured to fail on a violation. A rule no configured tool holds is reviewed, or lowered by an override.
 
 | Why | Check | Tags |
 |---|---|---|
 | a rule held only by prose is broken as soon as nobody reads it, and a tool never tires. | review | [] |
 
 ## code-formatted-by-one-formatter · MUST
-The files of each language are formatted by one formatter, and the check fails on a file it would change.
+The files of each language are formatted by one formatter, and a file it would change is a violation.
 
 | Why | Check | Tags |
 |---|---|---|
 | a formatter ends every argument about layout, and a diff then shows a change of content, never one of layout. | tool/format | [] |
 
 ## one-reason-per-unit · MUST
-Each unit — a function, a class, a file — has one reason to change.
+Each unit — a function, a class, a file, a module, a layer — has one reason to change.
 
 | Why | Check | Tags |
 |---|---|---|

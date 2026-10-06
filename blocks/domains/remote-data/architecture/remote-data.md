@@ -1,7 +1,7 @@
 # Remote data
 
 ## server-owns-remote-data → one-home-per-datum
-The remote system owns its data: it lives only in the cache of remote data, is never copied into a store, and the program never becomes a second source of it.
+The remote system owns its data: it lives only in the cache of remote data, is never copied into state, a context or a store, and the program never becomes a second source of it.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -15,13 +15,16 @@ rules:
     min-spaces-inside: 0
     max-spaces-inside: 0
   comments:
+    level: error
     min-spaces-from-content: 1
-  comments-indentation: enable
+  comments-indentation:
+    level: error
   document-start: disable
   document-end: disable
   empty-lines:
     max: 1
   key-duplicates: enable
   truthy:
+    level: error
     allowed-values: ['true', 'false']
     check-keys: false

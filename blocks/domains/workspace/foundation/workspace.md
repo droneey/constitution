@@ -25,10 +25,10 @@ A unit, and a script of the root, imports another unit by the unit's package nam
 |---|---|---|
 | a path inside a unit is not part of its contract, and an import by path proves an entry no consumer can reach. | tool/imports | [] |
 
-## The check
+## The tools
 
-## unit-checked-by-its-own-parts → check-chains-one-entry-per-area
-In a workspace, the files of each unit are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no unit's parts reach another unit's files; each area's entry runs each of its tools for every unit that holds files of a language the tool covers. A tool that reads the whole repository — its manifests, its lockfiles, its history — runs once, from the root.
+## unit-checked-by-its-own-parts → rules-held-by-tools
+In a workspace, the files of each unit are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no unit's parts reach another unit's files.
 
 | Why | Check | Tags |
 |---|---|---|

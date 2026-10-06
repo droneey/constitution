@@ -41,13 +41,6 @@ The domain imports only itself, the shared kernel and the shared ports of `contr
 |---|---|---|
 | a domain that imports a library changes when the library does, and cannot be read or tested without it. | tool/imports | [] |
 
-## layer-and-module-have-one-reason → one-reason-per-unit
-A layer and a module have one reason to change each, as every unit does.
-
-| Why | Check | Tags |
-|---|---|---|
-| a layer or module with two reasons changes for both, and every change risks the other purpose. | review | [] |
-
 ## features-blind-to-each-other · MUST
 A feature never imports another feature. Features are combined only by the layer above them.
 

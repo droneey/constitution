@@ -13,4 +13,4 @@ governs: ["mise.toml", "mise.lock"]
 
 # mise
 
-> Pins the tools outside the package manager. A newcomer runs `mise trust && mise install`.
+> Pins the tools outside the package manager.

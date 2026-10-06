@@ -1,6 +1,6 @@
 # import-linter with structlog
 
-## structlog-imported-only-by-the-root → code-logs-through-the-standard-logger
+## structlog-imported-only-by-the-root → only-the-root-imports-structlog
 A contract of the template's structlog section forbids `structlog` to `kernel/`, `libs/`, `shared/`, `contracts/`, `adapters/`, `features/`, `composition/` and `entrypoints/`.
 
 | Why | Check | Tags |

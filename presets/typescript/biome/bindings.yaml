@@ -137,8 +137,8 @@ foundation:
     no-literal-colour-in-a-style:
       - noReactNativeLiteralColors
   tailwind:
-    dynamic-viewport-classes:
-      - dynamic-viewport-classes.grit
+    no-screen-sized-classes:
+      - no-screen-sized-classes.grit
     mobile-first-breakpoints:
       - mobile-first-breakpoints.grit
     no-arbitrary-utility-value:
@@ -198,6 +198,8 @@ foundation:
       - noUselessUndefined
       - undefined-is-the-only-absence.grit
   zod:
+    schema-never-brands:
+      - schema-never-brands.grit
     zod-four-forms-only:
       - zod-four-forms-only.grit
 architecture:
@@ -222,6 +224,3 @@ architecture:
       - domain-type-fields-readonly.grit
     surface-only-re-exports:
       - surface-only-re-exports.grit
-  zod:
-    schema-never-brands:
-      - schema-never-brands.grit

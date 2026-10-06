@@ -69,13 +69,6 @@ A deprecated entry names its replacement and the version that removes it.
 |---|---|---|
 | a deprecation without a replacement leaves the consumer stuck, and one without a removal version never ends. | review | [] |
 
-## publish-skips-published-versions → operations-idempotent-by-design
-Publishing skips a version the registry already holds, so a failed publish is repaired by running it again.
-
-| Why | Check | Tags |
-|---|---|---|
-| a publish that fails on a version already out cannot be rerun, and a half-published release stays half published. | review | [] |
-
 ## publishing-by-workflow-identity → least-privilege-credentials · MUST
 No stored token publishes. A new unit's first version is published once by a person with two-factor authentication; every later version only by an identity issued to the run that publishes, and the registry records its provenance.
 

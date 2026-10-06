@@ -1,18 +1,18 @@
 # Testing
 
-> How behaviour is proven. Tests prove what a caller observes at the program's boundaries; coverage and mutation measure them, and the check runs them on every change.
+> How behaviour is proven. Tests prove what a caller observes at the program's boundaries; and coverage and mutation measure them.
 
 ## Levels
 
-- **Unit** — one boundary, with fakes of the contracts through which it reaches the outside. Run by the check.
-- **Integration** — the code that talks to an external system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container. A step of the check of its own.
+- **Unit** — one boundary, with fakes of the contracts through which it reaches the outside.
+- **Integration** — the code that talks to an external system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container.
 - **End-to-end** — a critical scenario of `PROJECT.md`, through the built program, the way its users reach it.
-- **Evals** — the behaviour of a model, measured apart from the check.
+- **Evals** — the behaviour of a model, measured by a score rather than proven by a case.
 
 ## What a spec proves
 
 ## spec-per-boundary · SHOULD
-A spec proves one boundary and is named after it. A boundary is a unit a caller relies on, reached through its public entry. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get no spec. Every boundary has a spec; a reviewer checks it, since the coverage gate cannot.
+A spec proves one boundary and is named after it. A boundary is a unit a caller relies on, reached through its public entry. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files and generated files get no spec of their own unless a rule asks for one, and third-party code gets none. Every boundary has a spec; a reviewer checks it, since the coverage gate cannot.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -96,11 +96,11 @@ An invariant is proven by a property test where one pays — the guard of a valu
 | a property test tries inputs no author thought of, where a few examples would miss the one that breaks. | review | [testing] |
 
 ## property-counterexample-kept-as-case → property-tests-where-they-pay
-A counterexample a property test finds becomes a row of the unit's table of cases.
+A counterexample a property test finds is kept as a fixed case of the unit's spec.
 
 | Why | Check | Tags |
 |---|---|---|
-| a property test draws new inputs each run, so only a row keeps the input that broke the code from coming back unseen. | review | [testing] |
+| a property test draws new inputs each run, so only a fixed case keeps the input that broke the code from coming back unseen. | review | [testing] |
 
 ## lifecycle-tested-to-final-state · SHOULD
 A lifecycle test takes an object made by its factory through every transition to its final state, and checks each step. The path is one intent, so its steps are checked in one case.
@@ -147,7 +147,7 @@ A case passes alone and in any order; no state survives from one case or one fil
 | a case that leans on another passes or fails by the order the runner picks, and fails alone when someone runs it to find a bug. | review | [testing] |
 
 ## case-order-shuffled-with-a-seed → specs-independent-of-order
-Every run of the specs shuffles the order of the cases and prints the seed that replays it; only a mutation tool's run of a single mutant keeps one order.
+The runner of the specs shuffles the order of the cases and reports the seed that replays it; only the mutation tool keeps one order.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -170,14 +170,14 @@ A unit case finishes in milliseconds; a slower case reaches something outside it
 ## The sandbox
 
 ## tests-run-in-a-sandbox · MUST
-Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is exercised only by a person, or by a scheduled run outside the check, one a lower block names.
+Tests touch no network, no real file system outside a temporary folder, no real clock, no process they did not start and no credential. The repository's own files are read-only fixtures. A real vendor is reached only apart from the tests, by a person or by a verification a lower block names.
 
 | Why | Check | Tags |
 |---|---|---|
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | review | [testing, security] |
 
-## network-refused-in-the-unit-run → tests-run-in-a-sandbox
-The unit run replaces every call that opens a connection with one that throws, set once for all its specs; the integration run keeps the real calls to engines inside the sandbox.
+## network-refused-in-unit-specs → tests-run-in-a-sandbox
+In a unit spec, every call that opens a connection is replaced with one that throws, set once for all the unit specs; an integration spec keeps the real calls to engines inside the sandbox.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -203,13 +203,6 @@ Each implementation of a contract over an external system whose engine can run i
 | Why | Check | Tags |
 |---|---|---|
 | a fake proves the code that relies on the contract; only the real engine proves that the implementation keeps it. | review | [testing] |
-
-## integration-specs-in-their-own-run → integration-tested-against-the-real-engine
-The unit run leaves the integration specs out, and they run as their own entry of the check.
-
-| Why | Check | Tags |
-|---|---|---|
-| the fast run stays fast, and the slower integration run fails on its own. | review | [] |
 
 ## end-to-end-per-critical-scenario · SHOULD
 Each critical scenario `PROJECT.md` names has one end-to-end test through the built program, the way its users reach it, in `tests/e2e/<name>.e2e.test` beside `src/`; `tests/` holds one folder per kind of suite that drives the built program.
@@ -272,11 +265,11 @@ Production code never imports a file of `__tests__/` or of `tests/`.
 ## The gates
 
 ## tests-pass-in-check · MUST
-The project's check runs the tests, and fails when one fails.
+Every spec passes.
 
 | Why | Check | Tags |
 |---|---|---|
-| a test that runs only when someone remembers protects nothing. | tool/tests | [testing] |
+| a spec left failing proves nothing from then on, and hides the next behaviour that breaks behind it. | tool/tests | [testing] |
 
 ## coverage-holds-all-logic · MUST
 All logic — the program's own rules, the code that talks to external systems, the libraries, the user interface — is held at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the tests of its boundaries. Excluded: the entry file of each artifact, the file that wires the program together, generated files, declarations and vendored code. A line no behaviour reaches is a missing behaviour test, or code nothing needs, which is deleted; never a reason for a test of its own.
@@ -286,7 +279,7 @@ All logic — the program's own rules, the code that talks to external systems, 
 | tests of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code and a missing behaviour test. | review | [testing] |
 
 ## mutants-all-killed · MUST
-Mutation testing measures the tests, and every mutant of the logic is killed. A mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor fails the check. It runs in the check over the lines a change touches, every new file and every file whose spec a change touches.
+Mutation testing measures the tests, and every mutant of the logic is killed. A mutant no behaviour can tell apart is marked in the code, with its reason, as equivalent; any other survivor is a violation.
 
 | Why | Check | Tags |
 |---|---|---|

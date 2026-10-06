@@ -23,7 +23,7 @@ A unit's package name follows its folder, under the repository's scope: `package
 | an import then names the folder it reaches, so a reader sees which way it points; the direction itself is held by the folders an import resolves to, so a wrong name never hides a wrong direction. | review | [] |
 
 ## root-holds-only-the-workspace · SHOULD
-The root of a workspace holds only the workspace and the scripts of the check.
+The root of a workspace holds only the workspace and the configuration of its tools.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -51,3 +51,10 @@ Imports between units point from `packages/` to `shared/` to `libs/`: `shared/` 
 | Why | Check | Tags |
 |---|---|---|
 | the more units need a piece, the more stable it must be; an import upward makes it change whenever one of its users does. | tool/imports | [] |
+
+## no-unit-reached-by-path → units-imported-by-their-entries
+No file of a unit of `packages/`, of `shared/`, of a unit of `libs/` or of the root reaches into the folder of another unit by a path.
+
+| Why | Check | Tags |
+|---|---|---|
+| the tree tells one unit's folder from another's, so an import whose path crosses into another unit is the one a tool can refuse. | tool/imports | [] |

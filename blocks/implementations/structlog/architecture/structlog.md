@@ -7,9 +7,9 @@
 |---|---|---|
 | a handler added elsewhere writes records past the chain, and `logging.basicConfig` adds one. | review | [] |
 
-## code-logs-through-the-standard-logger → diagnostics-through-the-logging-port
-Code logs through `logging.getLogger(__name__)`, the logger every library writes to; only `root/` imports structlog.
+## only-the-root-imports-structlog → diagnostics-through-the-logging-port
+Only `root/` imports structlog.
 
 | Why | Check | Tags |
 |---|---|---|
-| the standard logger is the port every library already speaks, so the program's records and theirs pass one chain, and no code below the root depends on a logging library. | review | [] |
+| no code below the root then depends on a logging library. | review | [] |

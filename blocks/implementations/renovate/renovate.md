@@ -1,6 +1,6 @@
 ---
 id: renovate
-summary: Dependency updates proposed by a bot on a schedule.
+summary: Dependency updates proposed by a bot.
 requires: [git]
 extends: null
 abstract: false

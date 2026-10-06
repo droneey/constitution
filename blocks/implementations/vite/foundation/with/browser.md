@@ -16,9 +16,9 @@ The bundle's code never reads `process.env`.
 |---|---|---|
 | Vite writes the build's `process.env.NODE_ENV` into the bundle and leaves every other name undefined, so a read there is a value of the build or nothing. | review | [] |
 
-## bundle-measured-against-budget → bundle-size-budget
-The build's output is measured against the bundle's size budget in the check, entry by entry.
+## each-entry-has-a-size-budget → bundle-size-budget
+Each entry of the build has a size budget of its own.
 
 | Why | Check | Tags |
 |---|---|---|
-| the budget holds only if every build is measured against it. | review | [] |
+| a budget for the whole output lets one entry grow at another's expense, and a page pays for the entry it loads. | review | [] |

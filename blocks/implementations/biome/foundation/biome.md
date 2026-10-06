@@ -1,11 +1,11 @@
 # Biome
 
 ## biome-formats-every-file-it-reads → code-formatted-by-one-formatter
-Biome formats every TypeScript, CSS and JSON file, and the check runs `biome check`: two spaces, lines of at most 100, single quotes in TypeScript.
+Biome formats every TypeScript, CSS and JSON file: two spaces, lines of at most 100, single quotes in TypeScript.
 
 | Why | Check | Tags |
 |---|---|---|
-| one formatter for the languages Biome reads ends every argument about their layout, and the check refuses a file it would change. | tool/format | [] |
+| one formatter for the languages Biome reads ends every argument about their layout. | tool/format | [] |
 
 ## biome-suppression-states-its-reason → suppression-states-its-reason
 A `biome-ignore` comment states its reason after the colon.
@@ -21,19 +21,12 @@ A suppression names one rule, `// biome-ignore lint/<group>/<rule>`; never a gro
 |---|---|---|
 | Biome also takes a group, a whole file and a range, so only this form names one rule on one line. | review | [] |
 
-## biome-warnings-fail-the-check → check-passes-before-hand-back
-Warnings fail the check: every rule is an error, or the check passes `--error-on-warnings`.
+## biome-rules-set-as-errors → rules-held-by-tools
+Every rule the parts turn on is an error: no part sets a rule to `warn` or `info`, and a recommended rule whose default severity is lower is set to `error`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a warning that passes the check is ignored, and the rule it stands for is not held. | review | [] |
-
-## biome-check-never-writes → check-only-checks
-The check runs `biome check` without `--write`; `lint:fix` writes.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check that fixes what it checks passes code nobody reviewed. | review | [] |
+| Biome fails on errors alone, so a rule left at a warning is reported and passed, and the rule it stands for is not held. | review | [] |
 
 ## biome-refuses-empty-names → no-empty-names
 A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its part reaches.

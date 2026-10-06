@@ -7,7 +7,7 @@ abstract: false
 checks: []
 languages: []
 roles: []
-dictionary: [TanStack Query, QueryClient, useQuery, useMutation]
+dictionary: [TanStack Query, QueryClient, useQuery, useSuspenseQuery, useMutation]
 governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 ---
 

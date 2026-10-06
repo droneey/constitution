@@ -34,7 +34,6 @@ const DEPENDENCY_CRUISER = `export default {
       'foundation/self',
       'foundation/core',
       'foundation/typescript',
-      'foundation/workspace',
       'architecture/workspace',
     ].map((part) => `./${PRESETS}/dependency-cruiser/${part}.mjs`),
   )},

@@ -59,7 +59,7 @@ const WELL_FORMED = {
 
 // A workspace of five units, one of them holding two members with manifests of
 // their own, each linked by its name as a package manager links them, with the
-// workspace's parts of both axes.
+// workspace's architecture part.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'packages/admin',
   'eros-core': 'packages/eros/core',
@@ -99,7 +99,6 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
     ]),
   ),
   parts: [
-    'typescript/foundation/workspace',
     'typescript/architecture/workspace',
   ],
   roots: [

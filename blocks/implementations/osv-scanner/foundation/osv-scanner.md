@@ -1,14 +1,14 @@
 # OSV-Scanner
 
-## vulnerabilities-scanned-in-the-check → known-vulnerabilities-fail-the-check
-The check runs `osv-scanner scan source --no-ignore` over the repository, development dependencies included.
+## every-lockfile-scanned-for-vulnerabilities → known-vulnerabilities-fail-the-check
+OSV-Scanner reads every lockfile of the repository, in every language, development dependencies included, and a known vulnerability of any severity in any of them is a finding.
 
 | Why | Check | Tags |
 |---|---|---|
-| a vulnerability found by the check is dealt with before release, in every language the same way; osv-scanner takes the ignore files of a repository above the checkout as the checkout's own, so in one nested in an ignored folder — an agent's worktree — it finds no lockfile, and a scan that does not descend has no ignored folder to skip. | tool/audit | [] |
+| a vulnerability is then dealt with before release, in every language the same way. | tool/audit | [] |
 
 ## licences-checked-against-the-shared-allowlist → licences-from-an-allowlist
-The same run passes the allowlist of the constitution's release archive as `--licenses`, so a licence that is not on it fails the check.
+OSV-Scanner checks every licence against the allowlist of the constitution's release archive, so a licence that is not on it is a finding.
 
 | Why | Check | Tags |
 |---|---|---|

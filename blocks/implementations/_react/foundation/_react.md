@@ -133,7 +133,7 @@ A compound's parts are attached to its root with a typed `Object.assign`, and th
 | the parts read what the root decides, without props threaded through the consumer's markup. | review | [] |
 
 ## compound-parts-reached-through-the-root → compound-over-prop-regions
-A compound's surface exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
+A compound exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
 
 | Why | Check | Tags |
 |---|---|---|

@@ -56,7 +56,7 @@ No class opens with a `max-*:` variant: base classes serve small screens and are
 |---|---|---|
 | styles that only widen never undo each other, and the smallest screen is always the base. | tool/lint | [] |
 
-## dynamic-viewport-classes → viewport-sizes-in-small-viewport-units
+## no-screen-sized-classes → viewport-sizes-in-small-viewport-units
 No class sizes with `h-screen` or `w-screen`.
 
 | Why | Check | Tags |

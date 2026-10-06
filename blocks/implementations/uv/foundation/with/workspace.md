@@ -2,6 +2,13 @@
 
 > A workspace of Python units as a uv workspace.
 
+## workspace-root-has-no-project → workspace-root-private
+The root `pyproject.toml` of a uv workspace has no `[project]` table.
+
+| Why | Check | Tags |
+|---|---|---|
+| uv then takes the root as the workspace alone, with no package of its own to lock, build or publish. | review | [] |
+
 ## members-linked-by-workspace-source → units-linked-from-the-working-tree
 The root's `[tool.uv.workspace]` lists the members, and a member that depends on another names it in `[tool.uv.sources]` with `{ workspace = true }`.
 

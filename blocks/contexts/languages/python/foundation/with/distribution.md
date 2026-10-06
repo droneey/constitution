@@ -16,9 +16,9 @@ A package published for the public, on an index anyone installs from — a libra
 |---|---|---|
 | a public package's consumers are unknown, and the window keeps every Python they still run while dropping those the ecosystem has left. | review | [] |
 
-## specs-run-from-the-floor-to-the-newest · MUST
-Whatever `requires-python` floor a published package declares, its specs run on every minor from the floor to the newest, and once more on the floor with its direct dependencies at the lowest versions its manifest allows. Its `Programming Language :: Python :: 3.<minor>` classifiers list each minor its specs run on. The repository's toolchain pins each of those minors, and every run takes its interpreter from them.
+## supported-minors-classified-and-pinned · MUST
+A published package's `Programming Language :: Python :: 3.<minor>` classifiers list every minor from its `requires-python` floor to the newest, and the repository's toolchain pins each of them.
 
 | Why | Check | Tags |
 |---|---|---|
-| a floor no run proves is a guess, and the lowest versions the manifest allows are ones a consumer's resolver may pick; a classifier promises only what a run proves, and a minor the toolchain does not pin is one the package manager downloads or finds on the machine, unverified. | review | [testing] |
+| a classifier tells a consumer which Python the package supports, and a minor the toolchain does not pin is one the package manager downloads or finds on the machine, unverified. | review | [] |

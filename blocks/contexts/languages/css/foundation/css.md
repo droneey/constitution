@@ -10,7 +10,7 @@ Every style rule sits in a named cascade layer: none is left outside a layer, an
 | layers decide which rule wins by the order they are declared in, not by specificity or by the file that loaded last, so a reset or a library never overrides a component by accident. | tool/lint | [] |
 
 ## layer-order-declared-once · SHOULD
-The order of the layers is declared once, at the top of the entry stylesheet, before any layer is filled: `@layer reset, base, components, utilities;`.
+The order of the layers is declared once, at the top of the entry stylesheet, before any layer is filled — for example `@layer reset, base, components, utilities;`.
 
 | Why | Check | Tags |
 |---|---|---|

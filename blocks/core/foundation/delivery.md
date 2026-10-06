@@ -28,25 +28,11 @@ A change that makes a document false — the README, `PROJECT.md`, an example of
 ## The check
 
 ## one-check-command · MUST
-One command runs every check of the repository — format, lint, types, tests, coverage, mutation, the rest of the project's tools — and `constitution.yaml` names it.
+The project has one check that runs every tool holding a rule and fails on a violation, and `constitution.yaml` names its command.
 
 | Why | Check | Tags |
 |---|---|---|
-| one command means nobody has to know which checks exist, and everyone who runs it runs the same checks. | review | [] |
-
-## check-chains-one-entry-per-area → one-check-command
-Each area of the check — `format`, `lint`, `type`, `test`, `mutation`, `unused` and the rest — has one `<area>:check` entry of the repository's runner that only checks and runs every tool of that area, in each language of the repository, and an `<area>:fix` beside it where a tool can write; the check command chains the check entries.
-
-| Why | Check | Tags |
-|---|---|---|
-| CI, the hooks and a person run the same names, so the names stay stable, and a second language adds its tools to the areas rather than a second set of names. | review | [] |
-
-## check-only-checks · MUST
-The check verifies and never changes a file of the repository: it generates nothing, formats nothing and rewrites nothing. A tool's cache, in a folder of its own, is not a change.
-
-| Why | Check | Tags |
-|---|---|---|
-| a check that writes can pass by changing what it checks, and leaves a change nobody made on purpose. | review | [] |
+| one check means nobody has to know which tools exist, and everyone who runs it is held to the same rules. | review | [] |
 
 ## check-passes-before-hand-back · MUST
 The check passes, with no error and no warning, before a change is reported done. Completion is never claimed without it.

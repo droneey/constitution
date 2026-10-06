@@ -31,7 +31,7 @@ The root declares `color-scheme` for the themes it supports.
 | native controls, scrollbars and the page's canvas then follow the theme. | review | [ux] |
 
 ## no-hexadecimal-colour → stylesheet-values-from-theme-properties
-No stylesheet writes a hexadecimal colour, the theme's included: the theme writes its colours as `oklch()`, and every other stylesheet reads them from the theme's properties.
+No stylesheet writes a hexadecimal colour, the theme's included, and every stylesheet but the theme reads its colours from the theme's properties.
 
 | Why | Check | Tags |
 |---|---|---|

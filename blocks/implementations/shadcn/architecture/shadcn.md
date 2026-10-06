@@ -1,7 +1,7 @@
 # shadcn
 
 ## shadcn-source-added-into-the-kit → vendored-component-placed-by-its-home · MUST
-shadcn source is added with its CLI into the UI kit, never imported from a package, and before review is placed and named by the kit's homes, its imports rewritten to the project's alias. `components.json` points the CLI at the kit's folders.
+shadcn source is added into the UI kit as source, never imported from a package, and before review is placed and named by the kit's homes, its imports rewritten to the project's alias; `components.json` names the kit's folders.
 
 | Why | Check | Tags |
 |---|---|---|

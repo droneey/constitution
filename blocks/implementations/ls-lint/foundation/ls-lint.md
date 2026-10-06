@@ -1,7 +1,7 @@
 # ls-lint
 
 ## ls-lint-config-ends-in-yaml → yaml-files-end-in-yaml
-The configuration is `.ls-lint.yaml`, passed with `--config`.
+The project's configuration is `.ls-lint.yaml`.
 
 | Why | Check | Tags |
 |---|---|---|

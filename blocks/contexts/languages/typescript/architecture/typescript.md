@@ -1,6 +1,6 @@
 # TypeScript
 
-> A folder's surface is `index.ts`, a role file is `<name>.<role>.ts`, and the wiring file is `root/wiring.ts`.
+> A folder's surface is `index.ts`, a role file is `<name>.<role>.ts`, and the wiring file is `root/wiring.ts`, unless a framework's block names its own.
 
 ## Modules and files
 

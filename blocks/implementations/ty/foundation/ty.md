@@ -1,14 +1,14 @@
 # ty
 
 ## ty-is-the-type-gate → rules-held-by-tools
-`ty check` runs in the check with every rule an error, and a warning fails the run.
+ty's configuration makes every rule an error and fails on a warning.
 
 | Why | Check | Tags |
 |---|---|---|
 | a rule left at a warning or off is a rule the type checker sees broken and lets pass. | tool/types | [] |
 
 ## ty-ignore-names-its-rule → suppression-silences-one-finding
-A `# ty: ignore` names its rule and silences a finding the check would report, and a `# type: ignore` silences nothing.
+A `# ty: ignore` names its rule and silences a finding ty would report, and a `# type: ignore` silences nothing.
 
 | Why | Check | Tags |
 |---|---|---|

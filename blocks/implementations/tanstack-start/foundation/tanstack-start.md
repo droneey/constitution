@@ -15,7 +15,7 @@ Nitro's `routeRules` set the Content Security Policy on every document, beside t
 | the policy then lives in one configuration with the program, not in a proxy nobody here sees, and a test proves it is sent. | test | [security] |
 
 ## security-headers-set-in-route-rules → documents-sent-with-security-headers
-The same `routeRules` set the other security headers, and the same test reads them.
+Nitro's `routeRules` set the other security headers on every document — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy` and `Cross-Origin-Opener-Policy` — beside the Content Security Policy, and a test reads the headers the server sends.
 
 | Why | Check | Tags |
 |---|---|---|

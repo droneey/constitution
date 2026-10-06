@@ -10,8 +10,8 @@
 | import-linter knows a unit by its import name, not by its folder, so the project names them; one contract then refuses any import between two of them. | tool/imports | [] |
 
 ## units-ordered-by-a-layers-contract → units-import-toward-libs
-A `layers` contract of the same section orders the import packages from the units of `packages/`, separated by `|`, above the one of `shared/` and then those of `libs/`, separated by `:`; `lint-imports` runs from the root, in the environment where every unit is installed, besides each unit's own run.
+A `layers` contract of the same section orders the import packages from the units of `packages/`, separated by `|`, above the one of `shared/` and then those of `libs/`, separated by `:`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a lower layer imports no higher one, the units of a layer split by a bar never import each other while those split by a colon may, and only the root's environment holds every unit at once. | tool/imports | [] |
+| a lower layer imports no higher one, and the units of a layer split by a bar never import each other while those split by a colon may. | tool/imports | [] |

@@ -1,41 +1,13 @@
 # Git
 
-## Working with changes
+## Worktrees
 
-## move-with-git-mv → move-files-never-recreate
-With staged changes, a file is moved with `git mv`, so the index records a rename.
-
-| Why | Check | Tags |
-|---|---|---|
-| a recorded rename keeps the file's history and shows the reviewer a move, not a deletion and a new file. | review | [] |
-
-## stage-by-name-and-read-staged-diff · MUST
-Files are staged by name or by hunk, never with `git add .` or `-A`, and the staged diff and status are read before the commit.
+## worktree-one-branch-no-linked-folder · MUST
+A worktree holds one branch, and no folder of it is a link into another checkout.
 
 | Why | Check | Tags |
 |---|---|---|
-| staging everything commits whatever lies around — a scratch file, a key, a build output. | review | [security] |
-
-## worktree-one-branch-own-dependencies · MUST
-A worktree holds one branch, and its dependencies are installed in it, never linked from another checkout.
-
-| Why | Check | Tags |
-|---|---|---|
-| a linked dependency folder escapes the ignore pattern and gets committed, and two worktrees on one branch overwrite each other. | review | [] |
-
-## force-push-with-lease-to-own-branch-only → shared-history-never-rewritten
-A force push goes only to one's own branch that nobody else has, and always with `--force-with-lease`.
-
-| Why | Check | Tags |
-|---|---|---|
-| a force push to a shared branch erases others' work; the lease refuses when the branch moved. | review | [] |
-
-## clean-tree-with-safe-cleanup → working-copy-clean-at-hand-back
-A stash carries a message, and `git clean -n` precedes `git clean -fd`.
-
-| Why | Check | Tags |
-|---|---|---|
-| an unnamed stash is forgotten, and a blind clean deletes work that was never committed. | review | [] |
+| a linked folder escapes the ignore pattern and gets committed, and two worktrees on one branch overwrite each other. | review | [] |
 
 ## Ignores, tags and large files
 
@@ -54,11 +26,11 @@ A stash carries a message, and `git clean -n` precedes `git clean -fd`.
 | a local environment file holds one machine's settings and often its secrets, and one careless add commits them. | review | [] |
 
 ## gitignore-covers-dependencies-output-and-caches · SHOULD
-`.gitignore` covers dependencies, build output, coverage, logs, caches, temporary and backup files, and the files of the operating system and of personal editors. A tracked file that becomes ignored is untracked with `git rm --cached`.
+`.gitignore` covers dependencies, build output, coverage, logs, caches, temporary and backup files, and the files of the operating system and of personal editors. A file it covers is not tracked.
 
 | Why | Check | Tags |
 |---|---|---|
-| what the build or the machine produces never belongs in history, and an ignore rule alone does not untrack what is already there. | review | [] |
+| what the build or the machine produces never belongs in history, and an ignore rule alone leaves tracked what is already there. | review | [] |
 
 ## release-tags-annotated → release-marked-by-immutable-tag
 A release tag is annotated.

@@ -30,7 +30,7 @@ src/
 ```
 
 ## anatomy-top-level-by-concern · SHOULD
-A program's source is laid out by concern in the folders of the top-level tree, and in no other top-level folder. The wiring file is `root/wiring` with the language's extension.
+A program's source is laid out by concern in the folders of the top-level tree, and in no other top-level folder. The wiring file is `root/wiring` with the language's extension, unless a framework's block names its own.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -224,7 +224,7 @@ A surface re-exports by name what callers may use: no declaration, no logic, no 
 | a surface that declares or computes becomes a room of its own, and a wildcard re-export offers internals nobody chose to offer. | tool/lint | [] |
 
 ## surface-offers-operations-not-mechanisms · SHOULD
-A feature's surface offers its operations and its presentation — use-cases, binding units, entities, widgets — and never its mechanisms: repositories, mappers, wire types, cache keys.
+A feature's surface offers its operations and its presentation — use-cases, binding units, entities, the units that present them — and never its mechanisms: repositories, mappers, wire types.
 
 | Why | Check | Tags |
 |---|---|---|

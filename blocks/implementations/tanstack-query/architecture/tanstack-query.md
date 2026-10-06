@@ -1,7 +1,7 @@
 # TanStack Query
 
 ## query-hooks-only-in-binding-units → binding-unit-composes-its-operation
-`useQuery` and `useMutation` are called only in binding units; no screen, widget or component calls either directly.
+`useQuery`, `useSuspenseQuery` and `useMutation` are called only in binding units; no screen, widget or component calls any of them directly.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -27,13 +27,6 @@ Outside the key factory's `cache.utils.ts`, no key array is written inline — a
 | Why | Check | Tags |
 |---|---|---|
 | these are the places a key is written, and an inline one drifts from the factory's, so an invalidation misses it. | tool/lint | [data] |
-
-## cache-is-the-only-home-of-server-data → server-owns-remote-data
-Server data lives only in the cache: never copied into state, a context or a store.
-
-| Why | Check | Tags |
-|---|---|---|
-| a copy stops updating when the cache does, and the screen shows the copy. | review | [] |
 
 ## components-import-no-query-library → components-dumb-widgets-smart
 A component in `components/` imports no query library.

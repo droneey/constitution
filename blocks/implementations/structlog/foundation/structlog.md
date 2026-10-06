@@ -1,5 +1,12 @@
 # structlog
 
+## code-logs-through-the-standard-logger → diagnostics-through-the-logging-facade
+Code logs through `logging.getLogger(__name__)`, the logger every library writes to, never through a logger of structlog's own.
+
+| Why | Check | Tags |
+|---|---|---|
+| the standard logger is the facade every library already speaks, so the program's records and theirs pass one chain. | review | [] |
+
 ## one-chain-for-every-record → log-records-pass-one-pipeline
 The pipeline is structlog's chain over the standard library: `structlog.stdlib.LoggerFactory()` makes its loggers, and one handler on the root logger formats with a `structlog.stdlib.ProcessorFormatter` whose `foreign_pre_chain` runs the same processors, `ExtraAdder` among them. No other handler writes a record.
 

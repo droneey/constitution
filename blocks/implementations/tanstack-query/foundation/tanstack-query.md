@@ -1,7 +1,7 @@
 # TanStack Query
 
 ## query-for-reads-mutation-for-writes · SHOULD
-A read goes through `useQuery`, and a write through `useMutation`.
+A read goes through `useQuery`, or `useSuspenseQuery` where the read suspends, and a write through `useMutation`.
 
 | Why | Check | Tags |
 |---|---|---|

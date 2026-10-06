@@ -1,8 +1,8 @@
 # yamllint
 
-## yamllint-strict-over-every-file → rules-held-by-tools
-The check runs `yamllint --strict .` over every YAML file; the configuration is `.yamllint.yaml`, extending `presets/common/yamllint/foundation/self.yaml` of the constitution's release archive.
+## yamllint-rules-set-as-errors → rules-held-by-tools
+`.yamllint.yaml` extends `presets/common/yamllint/foundation/self.yaml` of the constitution's release archive, which sets every rule it turns on to the level `error`.
 
 | Why | Check | Tags |
 |---|---|---|
-| a warning that passes is a rule nobody holds, and every YAML file of the repository is read the same way. | review | [] |
+| yamllint passes on a warning, and its defaults leave some rules at one, so a rule left there is a rule nobody holds. | review | [] |

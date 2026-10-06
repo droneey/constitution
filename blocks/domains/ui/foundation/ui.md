@@ -75,7 +75,7 @@ A primitive's markup is never re-created.
 | each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | review | [ux, a11y] |
 
 ## complex-patterns-on-accessible-primitives · MUST
-A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the platform's own element where it carries the whole pattern, and otherwise on the accessible primitive library; never with roles and keys written by hand.
+A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the active library of accessible primitives; where none is active, on the platform's own element where it carries the whole pattern, and otherwise on such a library; never with roles and keys written by hand.
 
 | Why | Check | Tags |
 |---|---|---|

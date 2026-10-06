@@ -20,4 +20,4 @@ governs: ["pyproject.toml", "uv.lock"]
 | Requirement | How | Met |
 |---|---|---|
 | `units-linked-from-the-working-tree` | a member names another in `[tool.uv.sources]` with `{ workspace = true }`, and uv installs it from the working tree | yes |
-| `publishing-with-provenance-supported` | `uv publish` takes the registry's trusted publishing in CI, without a stored token, and uploads the attestations it finds beside the distributions but makes none; `pypi-attestations sign` makes them first (`distributions-attested-before-upload`) | partly |
+| `publishing-with-provenance-supported` | `uv publish` takes the registry's trusted publishing in CI, without a stored token, and uploads the attestations it finds beside the distributions but makes none (`distribution-uploaded-with-its-attestation`) | partly |

@@ -21,7 +21,7 @@ Consent can be withdrawn at any time as easily as it was given, and each choice 
 |---|---|---|
 | the law asks both, and a record is the only proof the choice was the user's; asking again after a refusal wears the user down into a consent that is not free. | review | [security] |
 
-## events-from-a-closed-vocabulary → illegal-states-unrepresentable
+## events-from-a-closed-vocabulary · MUST
 Every event belongs to one closed vocabulary, each with its typed parameters; no free-form name or value is sent.
 
 | Why | Check | Tags |

@@ -5,7 +5,7 @@
 ## Secrets
 
 ## no-secret-in-repository · MUST
-No secret is written into the repository — not in code, documents, tests or fixtures. A secret scanner runs on every change, through the check.
+No secret is written into the repository — not in code, documents, tests or fixtures.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -31,6 +31,13 @@ No secret and no personal data appear in logs, errors, test data or documents. A
 | Why | Check | Tags |
 |---|---|---|
 | output is copied to places with weaker access than the data it came from. | review | [security, data] |
+
+## scanner-reports-redacted → no-secret-or-personal-data-in-output
+A secret scanner's report shows a finding by its rule, file and line, never by its value.
+
+| Why | Check | Tags |
+|---|---|---|
+| a report that prints the secret leaks it again, into every log that captures it. | review | [] |
 
 ## least-privilege-credentials · SHOULD
 A credential belongs to one identity and one purpose, per environment, with only the permissions its job needs, documented beside its use. Access is granted to people and services, never through a shared credential.
@@ -65,11 +72,11 @@ An address or an origin that comes from outside the program — a redirect targe
 ## Dependencies
 
 ## dependencies-pinned-by-lockfile · MUST
-A language uses one package manager, and one lockfile, kept in the repository. Installs, in CI and locally, follow the lockfile exactly and fail when it drifts from the manifest.
+A language uses one package manager and one lockfile, kept in the repository, and the lockfile always matches the manifests.
 
 | Why | Check | Tags |
 |---|---|---|
-| two package managers resolve differently, and an install that ignores the lockfile runs code nobody reviewed. | review | [security] |
+| two package managers resolve differently, and a lockfile that drifts from its manifests installs versions nobody reviewed. | review | [security] |
 
 ## downloads-pinned-by-version-and-checksum · MUST
 A file the program or its build downloads outside a package manager — a binary, an archive, an engine — is pinned to a version and checked against its checksum before it is used.
@@ -86,7 +93,7 @@ Every build, test and lint tool is pinned to one exact version in a file of the 
 | a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change someone reviews, and a tool in the program's dependencies ships to every installation. | review | [security] |
 
 ## tools-run-on-the-pinned-runtime → tools-pinned-exactly-by-the-repository
-Every tool runs on a runtime the repository pins, never on one a tool downloads or finds on the machine.
+The runtime every tool needs is pinned by the repository; no tool brings one of its own or takes whichever the machine has.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -162,7 +169,7 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 |---|---|---|
 | each dependency is code the project runs with its own rights, and these signs mark most malicious packages. | review | [security] |
 
-## deprecated-packages-replaced → new-dependency-vetted
+## deprecated-packages-replaced · SHOULD
 A dependency deprecated as a whole is replaced — by its successor, another package, or the project's own code.
 
 | Why | Check | Tags |
@@ -184,7 +191,7 @@ A dependency's install scripts run only when the dependency is listed by name as
 | an install script runs with the developer's rights before anyone reviews what it does. | review | [security] |
 
 ## known-vulnerabilities-fail-the-check · MUST
-A known vulnerability of any severity in any dependency, development dependencies included, fails the check.
+No dependency, development dependencies included, has a known vulnerability of any severity.
 
 | Why | Check | Tags |
 |---|---|---|

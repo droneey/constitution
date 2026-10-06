@@ -15,7 +15,7 @@ An optimistic write happens only in the mutation's lifecycle, which can roll it 
 | an optimistic change without a rollback leaves the screen showing what the server refused. | review | [data] |
 
 ## optimistic-lifecycle-safe-under-concurrency · MUST
-Under concurrent writes, reads in flight for the touched keys are cancelled before the snapshot; a failure rolls back only its own changes; invalidation waits until the last write settles; and an item whose identifier the server assigns renders from the pending variables under a stable key.
+Under concurrent writes, reads in flight for the touched keys are cancelled before the snapshot; a failure rolls back only its own changes; invalidation waits until the last write settles; and an item whose identifier the server assigns renders from the input of the pending write under a stable key.
 
 | Why | Check | Tags |
 |---|---|---|

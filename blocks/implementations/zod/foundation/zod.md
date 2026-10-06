@@ -1,5 +1,12 @@
 # zod
 
+## schema-never-brands → invariant-value-is-a-branded-type
+A schema never calls `.brand()`; it produces a branded value through the value's own `create<Name>`, as in `z.string().transform(createEmail)`.
+
+| Why | Check | Tags |
+|---|---|---|
+| zod's brand is a type of its own, so `.brand()` makes a second definition of the value that skips its check. | tool/lint | [] |
+
 ## strict-objects-for-owned-documents → documents-strict-vendor-answers-tolerant
 A document the program owns is parsed with `z.strictObject`; a vendor's response with `z.object`.
 

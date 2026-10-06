@@ -16,6 +16,13 @@ A refactor and a change of behaviour are never one commit.
 |---|---|---|
 | a rollback of the behaviour then leaves the structure alone, and a reviewer sees which lines change what the program does. | review | [] |
 
+## commit-holds-only-its-task-files → commit-is-one-logical-change · MUST
+A commit holds only the files of its task.
+
+| Why | Check | Tags |
+|---|---|---|
+| a commit of whatever lies around carries a scratch file, a key or a build output into the history. | review | [security] |
+
 ## every-commit-passes-the-check · MUST
 Every commit passes the repository's check.
 
@@ -63,7 +70,7 @@ History others have is never rewritten.
 | a rewritten shared history breaks every copy built on it and can lose others' work. | review | [] |
 
 ## no-secret-in-history → no-secret-in-repository
-No commit of the history holds a secret, even one a later commit removed it from, and the secret scanner reads the whole history.
+No commit of the history holds a secret, even one a later commit removed it from.
 
 | Why | Check | Tags |
 |---|---|---|

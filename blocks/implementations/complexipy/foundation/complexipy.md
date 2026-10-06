@@ -1,7 +1,7 @@
 # complexipy
 
 ## cognitive-complexity-held-at-ten → function-file-and-complexity-limits
-complexipy fails on a function whose cognitive complexity passes 10, with `max-complexity-allowed = 10`, and the check never writes its snapshot, which would let the functions over the limit pass.
+complexipy fails on a function whose cognitive complexity passes 10, with `max-complexity-allowed = 10`, and no snapshot of the functions over the limit is kept to let them pass.
 
 | Why | Check | Tags |
 |---|---|---|

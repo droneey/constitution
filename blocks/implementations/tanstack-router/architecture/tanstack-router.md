@@ -52,11 +52,11 @@ A route declares its document metadata in `head`.
 | the metadata changes with the route that owns it. | review | [ux] |
 
 ## route-pieces-reach-the-route-by-its-api → screen-private-pieces-beside-screen
-A route's private pieces reach its params and search through `getRouteApi('<route id>')`, never by importing the route file.
+A route's private binding units, in `-hooks/`, reach its params and search through `getRouteApi('<route id>')`, never by importing the route file; its private components, in `-components/`, take them as props.
 
 | Why | Check | Tags |
 |---|---|---|
-| a piece that imports its route file pulls the whole route into its module and ties the two into a cycle. | tool/imports | [] |
+| a binding unit that imports its route file pulls the whole route into its module and ties the two into a cycle, and a component that reached the route would bind itself to data it should be given. | tool/imports | [] |
 
 ## libs-import-no-router → libs-import-no-application-code
 `libs/` never imports the router.

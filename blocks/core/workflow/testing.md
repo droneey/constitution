@@ -15,12 +15,3 @@ A bug fix begins with the test that reproduces the bug, seen failing before the 
 | Why | Check | Tags |
 |---|---|---|
 | the test proves the fix fixes this bug, and keeps it from coming back. | review | [testing] |
-
-## Scheduled runs
-
-## whole-program-mutated-periodically · SHOULD
-The whole program is mutated on a schedule and before each release; a survivor opens an issue.
-
-| Why | Check | Tags |
-|---|---|---|
-| the check mutates only what a change touches, so a case weakened or deleted leaves survivors in code no change has touched since. | review | [testing] |

@@ -7,7 +7,7 @@ Every UI-kit component has `<name>.stories.tsx` beside it, with a story per vari
 |---|---|---|
 | the catalogue shows every state a designer and a reviewer need to see; the spec proves the behaviour. | review | [ux, testing] |
 
-## stories-render-from-fixtures → tests-run-in-a-sandbox
+## stories-render-from-fixtures · SHOULD
 Stories render from fixtures and fakes; no request leaves a story.
 
 | Why | Check | Tags |

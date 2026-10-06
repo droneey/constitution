@@ -1,7 +1,7 @@
 # shadcn
 
 ## complex-widgets-on-base-ui → complex-patterns-on-accessible-primitives
-A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Base UI, through shadcn source created with Base UI (`shadcn init -b base`), the dialog, the popover and the accordion included: Base UI is the active block whose primitives the browser's `<dialog>`, `popover` and `<details>` give way to, and positions its popovers itself.
+A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Base UI, through shadcn source made for Base UI, the dialog, the popover and the accordion included: Base UI is the active library of accessible primitives that the browser's `<dialog>`, `popover` and `<details>` give way to, and it places its popovers itself.
 
 | Why | Check | Tags |
 |---|---|---|

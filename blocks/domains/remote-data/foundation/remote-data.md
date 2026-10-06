@@ -33,7 +33,7 @@ Reads in flight for a key can be cancelled.
 | without it, neither latest-wins reads nor safe optimistic writes are possible. | review | [data] |
 
 ## remote-data-cache-mutation-lifecycle · MUST
-A write has lifecycle callbacks of the cache — before it runs, on failure and after it settles — with a context for rollback, and the variables of pending writes can be read.
+A write has lifecycle callbacks of the cache — before it runs, on failure and after it settles — with a context for rollback, and the input of each pending write can be read.
 
 | Why | Check | Tags |
 |---|---|---|

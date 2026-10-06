@@ -1,17 +1,17 @@
 # uv with distribution
 
-> How uv publishes a distributed Python package and runs its specs from its floor.
+> What uv packs into a distributed Python package, and the attestation it uploads beside it.
 
-## distributions-attested-before-upload → publishing-by-workflow-identity
-The job that publishes signs each distribution with `pypi-attestations sign`, under the run's identity, which writes `<file>.publish.attestation` beside it, and `uv publish` uploads the two together.
-
-| Why | Check | Tags |
-|---|---|---|
-| `uv publish` uploads the attestations it finds but makes none, so without this step a package is published with no provenance. | review | [security] |
-
-## lowest-direct-run-isolated → specs-run-from-the-floor-to-the-newest
-The run on the floor is `uv run --isolated --python <floor> --resolution lowest-direct` before the spec command, and each other run passes its minor to `--python`.
+## files-shipped-named-in-pyproject → ships-only-the-files-it-names
+A distributed package names in `pyproject.toml` what it ships beyond its code: `uv_build` packs the import package's folder whole, so `source-exclude` under `[tool.uv.build-backend]` leaves out each file of that folder that does not ship, `source-include` adds a file from outside it, and `license-files` under `[project]` names the licence.
 
 | Why | Check | Tags |
 |---|---|---|
-| without `--isolated`, `--resolution lowest-direct` resolves the project again and rewrites `uv.lock`, which `--locked` then refuses. | review | [testing] |
+| `uv_build` puts every file of the import package's folder into the source distribution and the wheel alike, a local configuration left there included, and ships the licence only when `license-files` names it. | review | [] |
+
+## distribution-uploaded-with-its-attestation → publishing-by-workflow-identity
+Every distribution uv uploads carries an attestation made under the identity of the run that publishes it.
+
+| Why | Check | Tags |
+|---|---|---|
+| `uv publish` uploads the attestations it finds beside the distributions but makes none, so a distribution without one is published with no provenance. | review | [security] |

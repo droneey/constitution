@@ -14,15 +14,15 @@ Installing the repository's dependencies installs the hooks, so no clone commits
 |---|---|---|
 | hooks a person must remember to install are missing on exactly the machine that needs them. | review | [] |
 
-## hooks-never-bypassed → check-run-by-hooks-and-ci
+## hooks-never-bypassed → commit-checked-by-the-hooks
 No commit skips the hooks — no `--no-verify`, no `LEFTHOOK=0` — except the release automation's version commit.
 
 | Why | Check | Tags |
 |---|---|---|
 | a skipped hook lets through exactly the commit the hook exists to stop. | review | [] |
 
-## hook-rewrites-only-staged-files → check-only-checks
-A hook that formats rewrites only the staged files and stages them again; the check itself never writes.
+## hook-rewrites-only-staged-files → commit-holds-only-its-task-files
+A hook that formats rewrites only the staged files and stages them again.
 
 | Why | Check | Tags |
 |---|---|---|

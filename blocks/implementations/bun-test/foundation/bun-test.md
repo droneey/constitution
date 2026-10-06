@@ -16,22 +16,15 @@ No `mock.module` and no `spyOn` over a real module.
 |---|---|---|
 | these are Bun's two ways to put another function in a module's place. | tool/lint | [] |
 
-## integration-specs-run-apart → integration-specs-in-their-own-run
-The unit run leaves out `*.integration.test.ts` and `tests/` by `pathIgnorePatterns` in `bunfig.toml`; integration specs run as their own script of the check, `bun --config=./bunfig.integration.toml test .integration.test`.
+## integration-specs-ignored-by-bunfig → integration-tested-against-the-real-engine
+`pathIgnorePatterns` in `bunfig.toml` leaves out `*.integration.test.ts` and `tests/`.
 
 | Why | Check | Tags |
 |---|---|---|
-| `bun test` runs every spec file under the folder it starts in, so only an ignored pattern keeps the integration specs out of the unit run. | review | [] |
-
-## check-writes-no-snapshot → check-only-checks
-The check runs `bun test` with `CI=1`, so a snapshot the specs lack fails the run instead of being written.
-
-| Why | Check | Tags |
-|---|---|---|
-| outside CI, Bun writes a missing snapshot file and fills an inline snapshot into the spec, so a local check would change the files it checks. | review | [] |
+| `bun test` takes every spec file under the folder it starts in, so only an ignored pattern keeps the integration and end-to-end specs out of the unit specs, their sandbox and their coverage gate. | review | [] |
 
 ## coverage-gate-on-loaded-files → coverage-holds-all-logic
-`bun test` fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions.
+Bun's coverage gate fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions.
 
 | Why | Check | Tags |
 |---|---|---|
@@ -58,9 +51,9 @@ A spec calls neither `Bun.sleep`, `Bun.sleepSync` nor the `setTimeout` of `node:
 |---|---|---|
 | these are the fixed delays a spec reaches for; the fake clock of `bun:test` or a wait on a condition replaces them. | tool/lint | [] |
 
-## network-refused-by-the-test-preload → network-refused-in-the-unit-run
-`bunfig.toml` preloads a fixture that replaces with functions that throw every way the runtime opens a connection: `fetch`, `WebSocket`, `Bun.connect` and `Bun.SQL`; `node:net`'s `Socket.prototype.connect`, `connect` and `createConnection`; `node:tls`'s `connect`; and `request` and `get` of `node:http` and `node:https`. The integration run does not preload it.
+## network-refused-by-the-test-preload → network-refused-in-unit-specs
+`bunfig.toml` preloads a fixture that replaces with functions that throw every way the runtime opens a connection: `fetch`, `WebSocket`, `Bun.connect` and `Bun.SQL`; `node:net`'s `Socket.prototype.connect`, `connect` and `createConnection`; `node:tls`'s `connect`; and `request` and `get` of `node:http` and `node:https`. A configuration for the integration specs does not preload it.
 
 | Why | Check | Tags |
 |---|---|---|
-| a preload runs before every spec file of the run, so the refusal holds for each of them with no line in the spec. | review | [] |
+| a preload runs before every spec file the configuration takes, so the refusal holds for each of them with no line in the spec. | review | [] |

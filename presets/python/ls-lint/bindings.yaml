@@ -12,6 +12,11 @@ foundation:
     test-folder-files-in-python-forms:
       - tests
 architecture:
+  api:
+    kebab-case-file-names:
+      - 'src/*/api'
+    python-file-forms:
+      - 'src/*/api'
   cli:
     command-files-in-cli:
       - 'src/*/cli'

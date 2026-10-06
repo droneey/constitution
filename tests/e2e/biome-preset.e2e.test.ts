@@ -853,7 +853,7 @@ describe('the Biome foundation parts', () => {
     "z.string().brand<'Email'>()",
     "z.string().email().brand('Email')",
   ])(
-    'should report a plugin finding when a schema brands a value object with %s and a project extends the zod part',
+    'should report a plugin finding when a schema brands a value with %s and a project extends the zod part',
     (schema) => {
       // Arrange
       const project = {
@@ -862,7 +862,7 @@ describe('the Biome foundation parts', () => {
         },
         parts: [
           ...FOUNDATION_PARTS,
-          'typescript/architecture/zod',
+          'typescript/foundation/zod',
         ],
       };
 
@@ -871,7 +871,9 @@ describe('the Biome foundation parts', () => {
 
       // Assert
       expect(
-        plugins.some((finding) => finding.startsWith('Build the value object through the domain')),
+        plugins.some((finding) =>
+          finding.startsWith('Build the value through its create function'),
+        ),
       ).toBe(true);
     },
   );

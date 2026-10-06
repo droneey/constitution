@@ -9,8 +9,8 @@ Every response is parsed against its wire schema in the adapter before it is map
 |---|---|---|
 | an unparsed response carries whatever the server sent into the domain, and it fails far from the cause. | review | [data] |
 
-## transport-failures-mapped-once → expected-failures-typed-with-codes
-One shared mapper, in `shared/<transport>/`, turns transport failures into domain errors: it maps unauthorized and unexpected failures to shared domain errors itself and takes each feature's map of codes. It only maps, and acts on none of the errors it returns.
+## transport-failures-mapped-once → expected-failures-typed-with-codes · MUST
+One shared mapper, in `shared/<transport>/`, turns transport failures into domain errors, and nothing of the transport's library crosses the adapter: the mapper maps unauthorized and unexpected failures to shared domain errors itself and takes each feature's map of codes. It only maps, and acts on none of the errors it returns.
 
 | Why | Check | Tags |
 |---|---|---|

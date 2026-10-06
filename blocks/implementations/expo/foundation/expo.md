@@ -1,14 +1,7 @@
 # Expo
 
-## native-projects-generated-by-prebuild → generated-files-marked-never-edited
-The native projects are a build output, generated from `app.config.ts` and config plugins, never edited by hand.
-
-| Why | Check | Tags |
-|---|---|---|
-| a hand-edited native project drifts from the configuration and is lost on the next generation. | review | [] |
-
 ## native-modules-at-sdk-versions · SHOULD
-Native modules are installed at the versions the SDK supports, and the check verifies them with `expo install --check`.
+Native modules are at the versions the SDK supports.
 
 | Why | Check | Tags |
 |---|---|---|

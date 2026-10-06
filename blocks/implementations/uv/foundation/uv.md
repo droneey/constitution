@@ -3,18 +3,11 @@
 ## Packages and installs
 
 ## uv-is-the-only-python-package-manager → dependencies-pinned-by-lockfile
-uv installs (`uv sync`), adds (`uv add`) and runs the tools (`uv run`); never pip, Poetry or Pipenv. `uv.lock` is the only lockfile, and no `requirements.txt` is kept.
+`uv.lock` is the only lockfile of the repository's Python; no `requirements.txt` and no lockfile of pip, Poetry or Pipenv is kept.
 
 | Why | Check | Tags |
 |---|---|---|
 | two package managers resolve differently, and a second lockfile is a second truth about what is installed. | review | [] |
-
-## installs-follow-uv-lock → dependencies-pinned-by-lockfile
-CI and every script install with `uv sync --locked`, which fails when `uv.lock` has drifted from the manifests.
-
-| Why | Check | Tags |
-|---|---|---|
-| an install that may update the lockfile runs code nobody reviewed. | review | [] |
 
 ## uv-build-backend-capped · SHOULD
 A package builds with `uv_build`, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.12,<0.13`.
