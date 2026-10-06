@@ -8,7 +8,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | What holds for any program, always active: `core.md`, how to use the constitution, and its chapters on each axis, `principles` first |
+| `blocks/core` | What holds for any program, always active: its card `core.md`, how to use the constitution, which holds no rule; its chapters at its root, `principles` first; and those of `architecture/` and `workflow/` |
 | `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `remote-data`, `version-control` |
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css`, `python` |
@@ -17,7 +17,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
 | `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
-| `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<axis>/<block>.*`, and the bindings that say which setting holds which rule |
+| `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis, and beside each axis's parts the bindings that say which setting holds which rule |
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
 | `tools` | Programs the release archive carries: `mutation-check`, which mutates only the lines a change touches; for Python, `mutmut-check`, its twin over mutmut, and `python-check`, which holds the lengths of functions and files, where a relative import may reach and where a package may be imported — each a member of the repository's uv workspace with its own specs |
 | `.claude-plugin` | The plugin and marketplace manifests |
@@ -26,7 +26,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
 | `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
 
-A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `languages`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes, one folder each: `foundation/` holds what any team wants, `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release. A project follows the axes it lists in `constitution.yaml`; a team with its own architecture or workflow leaves that axis out. Each axis folder holds the block's chapters — `<id>.md` and any other file, one topic each — and its seams in `with/`. A rule is a third-level heading in one of them, its statement, and a table of its Why and its Tags; a second-level heading opens a section that groups rules, and is no rule:
+A block is a folder. Its card `<id>.md` opens with a front matter that declares every field — `id`, `summary`, `requires`, `extends`, `abstract`, `languages`, `dictionary`, `governs` — and then its summary; its layer is its folder. Its rules sit on three axes. The base, what any team wants, is always followed and sits at the block's root: the card itself holds the rules of its main chapter, after the summary, beside the base's other chapters, one topic each, and its seams in `with/`. The two optional axes keep a folder each: `architecture/` the structure of a system — its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree — and `workflow/` how a change travels from the idea to the release; each holds its chapters — `<id>.md` and any other file — and its seams in `with/`. A project lists in `constitution.yaml` the optional axes it follows; a team with its own architecture or workflow leaves that axis out. A rule is a third-level heading in one of these files, its statement, and a table of its Why and its Tags; a second-level heading opens a section that groups rules, and is no rule:
 
 ```markdown
 ### data-states-shown · MUST
@@ -47,26 +47,26 @@ A rule's Tags are lenses for the concerns that cross every axis and layer — `a
 
 A domain, a platform or core may list, under a chapter's heading `Requirements for implementation`, the rules it asks of any library that does its job. An implementation's card answers those of the blocks above it in a Requirements table, one row each: the rule, how the library meets it, and whether it does. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the answering block covers the part it misses; `no` — it cannot meet the rule, and a rule of the answering block replaces it. A `partly` or `no` row names that rule in its How by its slug in backticks, so a project that takes the block follows the rule instead, with no override.
 
-A block refers, through its front matter, only to the layers above it and, among implementations, to the host it requires and the abstract base it extends. The rules at its seam with another block of its own layer or above live in its `<axis>/with/<other>.md`. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
+A block refers, through its front matter, only to the layers above it and, among implementations, to the host it requires and the abstract base it extends. The rules at its seam with another block of its own layer or above live in its `with/<other>.md`, or `<axis>/with/<other>.md` on an optional axis. A brand, a language or a file form belongs to the block whose `dictionary` holds it, and only that block and the blocks that depend on it may name it.
 
 ## 🧰 Presets
 
-A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*`:
+A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
 - the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css`, `python` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
 - the tool folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `tsc` for the compiler;
-- the axis folder is the axis whose rules the part holds, so a project that leaves an axis out leaves out its parts;
-- a part is named after the block its settings need, the one without which they mean nothing: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s; settings that need no block beyond the tool sit in `core` when they hold a rule of core and in `self` when they are the tool's own; GritQL rules are `<axis>/plugins/<rule-slug>.grit`.
+- a part of the base sits at the tool's root, and a part of an optional axis in `architecture/` or `workflow/`, the axis whose rules it holds, so a project that leaves an axis out leaves out its parts;
+- a part is named after the block its settings need, the one without which they mean nothing: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s; settings that need no block beyond the tool sit in `core` when they hold a rule of core and in `self` when they are the tool's own; GritQL rules are `plugins/<rule-slug>.grit` beside the parts of their axis.
 
-A project's configuration extends the parts of its active blocks on its axes, foundation first:
+A project's configuration extends the parts of its active blocks on its axes, the base first:
 
 ```json
 {
   "extends": [
-    "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/react-dom.jsonc",
+    "./.droneey/constitution/presets/common/biome/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/typescript.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/core.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/react-dom.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc"
   ]
 }
@@ -74,14 +74,13 @@ A project's configuration extends the parts of its active blocks on its axes, fo
 
 A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists. Ruff, whose `extend` takes one file, chains its parts, each extending the one before; ty, which takes one `--config-file`, gets one part; python-check lists its parts in `extend` of `[tool.python-check]`; a tool with neither starts from a template of `templates/project/<block>/`.
 
-Beside its parts, a preset holds `presets/<scope>/<tool>/bindings.yaml`: which setting of which part holds which rule, by axis, part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
+Beside the parts of each axis, a preset holds a `bindings.yaml` — `presets/<scope>/<tool>/bindings.yaml` for the base, `presets/<scope>/<tool>/architecture/bindings.yaml` for the architecture axis: which setting of which part holds which rule, by part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
 
 ```yaml
-foundation:
-  typescript:
-    no-any: [noExplicitAny]
-  core:
-    biome-refuses-empty-verbs: [biome-refuses-empty-verbs.grit]
+typescript:
+  no-any: [noExplicitAny]
+core:
+  biome-refuses-empty-verbs: [biome-refuses-empty-verbs.grit]
 ```
 
 ## 🧭 What a session receives
@@ -135,18 +134,18 @@ The release commit writes the version into `package.json`, `constitution.yaml` a
 The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
-- a file outside a block folder, a stray file inside one, or two blocks with one id;
+- a file outside a block folder, a stray file inside one — anything but the card, a chapter and a `with/` file at its root or in `architecture/` or `workflow/` — or two blocks with one id;
 - a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty, and a `languages` entry that is no language block;
 - a `requires` that points down, or sideways where the layer allows no peer, an `extends` of anything but an abstract implementation, a `with/` file named after a block below its own layer, and a cycle between implementations;
 - a link or a rule slug that refers to another block anywhere but the front matter, a `with/` name or the arrow of a rule heading;
 - an abstract block without an heir, or one that names its heirs;
 - an owned word outside its owner and the blocks that depend on it;
 - a rule without a statement, a Why or a known tag, a slug used twice, a heading or table that misses the rule format, and a heading that looks like a rule at another level than the third;
-- a rule that carries out a rule of its own block or a rule on an axis it may not refer to, a stated level looser than the one it inherits or equal to it, a cycle and a missing rule;
-- a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and either in a card;
+- a rule that carries out a rule of its own block or a rule on an axis it may not refer to — a rule of the base carries out only a rule of the base, one of `architecture/` or `workflow/` one of its own axis or of the base — a stated level looser than the one it inherits or equal to it, a cycle and a missing rule;
+- a word of `vocabulary.yaml` outside its axis: an `architecture` word anywhere but `architecture/`, a `workflow` word anywhere but `workflow/`, and so either at a block's root;
 - a malformed Requirements row, an answer to a rule its block may not answer, a `partly` or `no` answer that names in backticks no rule of its own block, or a Requirements table outside an implementation's card and chapters;
-- a preset file that is not a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
-- a binding whose rule, axis, part or setting does not hold, or whose rule belongs to a block below its part; a setting that holds no rule is never reported;
+- a preset file that is not, at the tool's root or in `architecture/` or `workflow/`, a part named after a block or `self`, a plugin in `plugins/` named after a rule of that axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
+- a binding whose rule, part or setting does not hold, or whose rule sits on an axis its file's folder may not hold — the base's bindings hold rules of the base, an optional axis's those of its axis or of the base — or whose rule belongs to a block below its part; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository at a release tag, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;

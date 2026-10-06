@@ -164,8 +164,7 @@ const runInTemplate = (input: { changes: Files; command: readonly string[] }): R
 const TASKS: Readonly<Record<string, string>> = {
   'format:check': 'ruff format --check',
   'lint:check': 'ruff check',
-  'type:check':
-    'ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml',
+  'type:check': 'ty check --config-file .droneey/constitution/presets/python/ty/self.toml',
   'code:check': 'python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests',
   'complexity:check': 'complexipy src tests',
   'architecture:check': 'lint-imports --no-logo',

@@ -1,0 +1,129 @@
+analytics:
+  features-never-track:
+    - features-never-track
+api:
+  adapters-never-import-each-other-or-callers:
+    - adapters-know-no-handlers
+  dependencies-point-inward:
+    - handlers-reached-only-from-entries
+cli:
+  adapters-never-import-each-other-or-callers:
+    - adapters-know-no-commands
+  dependencies-point-inward:
+    - commands-reached-only-from-entries
+_react:
+  react-imported-by-the-ui-and-binding-units:
+    - react-imported-by-the-ui-and-binding-units
+core:
+  packages-imported-by-folder-role:
+    - 'packages-imported-by-folder-role: what is no package of a registry, the forbidden rules hold'
+    - 'packages-imported-by-folder-role: the edge and the specs import any package'
+  nothing-imports-an-integration:
+    - integration-never-imported
+    - integrations-blind-to-each-other
+  access-only-through-curated-surface:
+    - domain-role-reached-through-its-surface
+    - kernel-reached-through-its-surface
+    - module-reached-through-its-surface
+    - module-reached-through-its-surface-from-outside-modules
+  adapters-never-import-each-other-or-callers:
+    - adapters-blind-to-each-other
+    - adapters-know-no-caller
+    - feature-adapters-blind-to-each-other
+  contracts-know-no-vendor-or-other-contract:
+    - contract-knows-only-itself-and-kernel
+  dependencies-point-inward:
+    - adapters-know-no-caller
+    - domain-reaches-only-itself-and-kernel
+    - kernel-reaches-only-itself
+    - libs-know-no-application
+    - shared-knows-no-feature-or-root
+  domain-imports-only-itself-kernel-and-contracts:
+    - domain-reaches-only-itself-and-kernel
+  feature-anatomy:
+    - feature-root-reached-only-through-its-layers
+  features-blind-to-each-other:
+    - features-blind-to-each-other
+  folder-files-import-each-other-directly:
+    - module-never-imports-its-own-surface
+  kernel-imports-only-itself:
+    - kernel-reaches-only-itself
+  layer-folder-has-no-surface:
+    - layer-folder-never-a-target
+  libs-import-no-application-code:
+    - libs-know-no-application
+  nothing-imports-an-entrypoint:
+    - entry-never-imported
+    - entrypoint-reached-only-from-itself
+    - entrypoints-blind-to-each-other
+  reads-and-writes-apart:
+    - reads-never-reach-writes
+    - writes-never-reach-reads
+  root-imported-only-by-entry-and-delivery-wiring:
+    - root-reached-only-from-entries
+  shared-imports-no-feature-adapter-contract-or-root:
+    - shared-knows-no-feature-or-root
+expo:
+  adapters-never-import-each-other-or-callers:
+    - adapters-know-no-routes
+  dependencies-point-inward:
+    - routes-reached-only-from-expo-router
+lingui:
+  lingui-only-where-text-is-rendered:
+    - lingui-only-where-text-is-rendered
+    - lingui-only-in-its-home
+nestjs:
+  nestjs-imported-by-modules-and-providers:
+    - nestjs-imported-by-modules-and-providers
+react-native:
+  react-native-imported-by-the-ui:
+    - react-native-imported-by-the-ui
+storybook:
+  stories-import-what-they-render-with:
+    - stories-import-what-they-render-with
+tanstack-form:
+  form-library-imported-by-the-ui:
+    - form-library-imported-by-the-ui
+tanstack-query:
+  query-library-home-is-the-binding-units:
+    - query-library-home-is-the-binding-units
+    - query-library-only-in-its-home
+tanstack-router:
+  adapters-never-import-each-other-or-callers:
+    - adapters-know-no-routes
+  route-pieces-reach-the-route-by-its-api:
+    - route-pieces-never-import-route-files
+  routes-imported-by-no-inner-layer:
+    - routes-reached-only-from-the-router
+  root-imported-only-by-entry-and-delivery-wiring:
+    - root-reached-only-from-entries
+  router-primitives-only-in-screens-and-widgets:
+    - router-primitives-only-in-screens-and-widgets
+    - router-only-in-its-home
+ui:
+  binding-unit-composes-its-operation:
+    - binding-units-reach-no-adapter-or-ui
+  components-dumb-widgets-smart:
+    - components-take-data-and-callbacks
+    - components-never-import-widgets
+  feature-anatomy:
+    - feature-root-reached-only-through-its-layers
+  ui-layer-imports:
+    - ui-reaches-no-mechanism
+yaml:
+  yaml-only-at-the-edge:
+    - yaml-only-at-the-edge
+zod:
+  zod-imported-by-forms:
+    - zod-imported-by-forms
+  zod-imported-by-the-document:
+    - zod-imported-by-the-document
+workspace:
+  no-unit-reached-by-path:
+    - root-imports-units-by-name
+    - units-imported-by-name
+  product-units-blind-to-each-other:
+    - product-units-blind-to-each-other
+  units-import-toward-libs:
+    - libs-know-no-product
+    - shared-knows-no-product-unit

@@ -13,7 +13,7 @@ describe('seamsCheck', () => {
     },
     {
       expected: 'is named after its own block',
-      path: 'blocks/domains/ui/foundation/with/ui.md',
+      path: 'blocks/domains/ui/with/ui.md',
     },
     {
       expected: 'is named after core, which is not a block it may pair with',
@@ -25,7 +25,7 @@ describe('seamsCheck', () => {
     },
     {
       expected: 'is a with/ file of core, which pairs with no block',
-      path: 'blocks/core/foundation/with/ui.md',
+      path: 'blocks/core/with/ui.md',
     },
   ])('should report "$expected" when $path pairs with a block it may not', ({ expected, path }) => {
     // Arrange
@@ -46,7 +46,7 @@ describe('seamsCheck', () => {
   });
 
   it.each([
-    'blocks/contexts/platforms/browser/foundation/with/typescript.md',
+    'blocks/contexts/platforms/browser/with/typescript.md',
     'blocks/contexts/platforms/browser/workflow/with/ui.md',
   ])('should accept %p when it pairs with a block of its own rank or above', (path) => {
     // Arrange

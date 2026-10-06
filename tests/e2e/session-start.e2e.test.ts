@@ -192,7 +192,7 @@ const OPTIMISTIC_WRITES_ROLL_BACK = 'optimistic-writes-roll-back';
 const COMMITS_ARE_ATOMIC = 'commits-are-atomic';
 const EVERY_AXIS: AxesView = {
   core: [
-    `${CORE_FILES}; foundation: code, principles; architecture: principles; workflow: delivery.`,
+    `${CORE_FILES}, code, principles; architecture: principles; workflow: delivery.`,
   ],
   musts: [
     READS_ARE_CANCELLABLE,
@@ -206,14 +206,14 @@ const EVERY_AXIS: AxesView = {
     DOMAINS,
     KEY,
     `${REMOTE_DATA} (architecture)`,
-    `${UI} (foundation, architecture/forms, architecture/with/remote-data)`,
+    `${UI} (architecture/forms, architecture/with/remote-data)`,
     `${VERSION_CONTROL} (workflow)`,
   ],
   warnings: [],
 };
-const FOUNDATION_ONLY: AxesView = {
+const BASE_ONLY: AxesView = {
   core: [
-    `${CORE_FILES}; foundation: code, principles.`,
+    `${CORE_FILES}, code, principles.`,
   ],
   musts: [
     FOUR_DATA_STATES,
@@ -223,7 +223,7 @@ const FOUNDATION_ONLY: AxesView = {
     DOMAINS,
     KEY,
     REMOTE_DATA,
-    `${UI} (foundation)`,
+    `${UI}`,
     VERSION_CONTROL,
   ],
   warnings: [],
@@ -426,7 +426,7 @@ describe('session-start hook', () => {
     {
       condition: 'axes leaves architecture and workflow out and a later list item is an alias',
       config: configOf({
-        axes: '[foundation]',
+        axes: '[]',
         platforms: '[*browser]',
       }),
       line: 4,
@@ -1726,20 +1726,20 @@ describe('session-start hook', () => {
   });
 
   // Core's part sets how much room is left: the line naming core's files takes
-  // 138 bytes, the gap and heading of the block list 42, the line under that
-  // heading 85 and a synthetic domain's line 101.
+  // 126 bytes, the gap and heading of the block list 42, the line under that
+  // heading 85 and a synthetic domain's line 88.
   it.each<EdgeCase>([
     {
       condition: 'the last line of the block list ends on the budget, reserve kept',
-      corePart: 8834,
+      corePart: 8859,
       domains: '[synthetic-001]',
       tail: [
-        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up. (foundation)',
+        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up.',
       ],
     },
     {
       condition: 'the last line of the block list passes the budget by one byte',
-      corePart: 8835,
+      corePart: 8860,
       domains: '[synthetic-001]',
       tail: [
         KEY,
@@ -1748,7 +1748,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list ends on the budget',
-      corePart: 9020,
+      corePart: 9032,
       domains: '[synthetic-001]',
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
@@ -1757,7 +1757,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list passes the budget by one byte',
-      corePart: 9021,
+      corePart: 9033,
       domains: '[synthetic-001]',
       tail: [
         '',
@@ -1796,7 +1796,7 @@ describe('session-start hook', () => {
   it('should fill the budget to its last byte when the last line of the block list ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8834),
+      corePart: corePartOfBytes(8859),
     });
     const project = createProject({
       config: configOf({
@@ -1922,7 +1922,7 @@ describe('session-start hook', () => {
       lines: [
         '## Domains (blocks/domains/<id>/<id>.md)',
         KEY,
-        '- ui: Screens and what a user sees on them. (foundation, architecture/forms)',
+        '- ui: Screens and what a user sees on them. (architecture/forms)',
         '## packages/web',
         '- remote-data (domains): Data another system owns. (architecture)',
         '- ui (domains): Also: architecture/with/remote-data',
@@ -1956,12 +1956,12 @@ describe('session-start hook', () => {
       view: EVERY_AXIS,
     },
     {
-      condition: 'the repository follows only foundation',
+      condition: 'the repository follows only the base',
       config: configOf({
-        axes: '[foundation]',
+        axes: '[]',
         domains: AXIS_DOMAINS,
       }),
-      view: FOUNDATION_ONLY,
+      view: BASE_ONLY,
     },
     {
       condition: 'constitution.yaml has no axes key',
@@ -1973,33 +1973,33 @@ describe('session-start hook', () => {
         ...EVERY_AXIS,
         warnings: [
           WARNINGS,
-          '- config: constitution.yaml has no axes key — add axes: [foundation, architecture, workflow]',
+          '- config: constitution.yaml has no axes key — add axes: [architecture, workflow]',
         ],
       },
     },
     {
       condition: 'axes names an axis that does not exist',
       config: configOf({
-        axes: '[foundation, design]',
+        axes: '[design]',
         domains: AXIS_DOMAINS,
       }),
       view: {
-        ...FOUNDATION_ONLY,
+        ...BASE_ONLY,
         warnings: [
           WARNINGS,
-          '- config: axes names design — write foundation, architecture or workflow',
+          '- config: axes names design — write architecture or workflow',
         ],
       },
     },
     {
-      condition: 'axes leaves foundation out',
+      condition: 'axes lists foundation',
       config: configOf({
-        axes: '[architecture]',
+        axes: '[foundation, architecture]',
         domains: AXIS_DOMAINS,
       }),
       view: {
         core: [
-          `${CORE_FILES}; foundation: code, principles; architecture: principles.`,
+          `${CORE_FILES}, code, principles; architecture: principles.`,
         ],
         musts: [
           READS_ARE_CANCELLABLE,
@@ -2012,12 +2012,12 @@ describe('session-start hook', () => {
           DOMAINS,
           KEY,
           `${REMOTE_DATA} (architecture)`,
-          `${UI} (foundation, architecture/forms, architecture/with/remote-data)`,
+          `${UI} (architecture/forms, architecture/with/remote-data)`,
           VERSION_CONTROL,
         ],
         warnings: [
           WARNINGS,
-          '- config: constitution.yaml leaves foundation out of axes — foundation is always followed, add it',
+          "- config: constitution.yaml lists foundation in axes — a block's root is always followed, remove it",
         ],
       },
     },
@@ -2025,12 +2025,11 @@ describe('session-start hook', () => {
       condition:
         'an application follows an axis the repository leaves out, for its own block and a top-level one',
       config: axesConfigOf({
-        packages:
-          '\n  packages/web:\n    axes: [foundation, architecture]\n    domains: [remote-data]',
-        axes: '[foundation]',
+        packages: '\n  packages/web:\n    axes: [architecture]\n    domains: [remote-data]',
+        axes: '[]',
       }),
       view: {
-        core: FOUNDATION_ONLY.core,
+        core: BASE_ONLY.core,
         musts: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
@@ -2041,7 +2040,7 @@ describe('session-start hook', () => {
         list: [
           DOMAINS,
           KEY,
-          `${UI} (foundation)`,
+          `${UI}`,
           VERSION_CONTROL,
           '## packages/web',
           '- remote-data (domains): Data another system owns. (architecture)',
@@ -2051,13 +2050,38 @@ describe('session-start hook', () => {
       },
     },
     {
-      condition: 'an application leaves foundation out of its axes',
+      condition: 'an application follows only the base while the repository follows every axis',
       config: axesConfigOf({
-        packages: '\n  packages/web:\n    axes: [workflow]\n    domains: [remote-data]',
-        axes: '[foundation]',
+        packages: '\n  packages/web:\n    axes: []\n    domains: [remote-data]',
+        axes: '[architecture, workflow]',
       }),
       view: {
-        core: FOUNDATION_ONLY.core,
+        core: EVERY_AXIS.core,
+        musts: [
+          FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
+          LABELS_ON_FIELDS,
+          COMMITS_ARE_ATOMIC,
+        ],
+        list: [
+          DOMAINS,
+          KEY,
+          `${UI} (architecture/forms)`,
+          `${VERSION_CONTROL} (workflow)`,
+          '## packages/web',
+          '- remote-data (domains): Data another system owns.',
+        ],
+        warnings: [],
+      },
+    },
+    {
+      condition: 'an application lists foundation in its axes',
+      config: axesConfigOf({
+        packages: '\n  packages/web:\n    axes: [foundation, workflow]\n    domains: [remote-data]',
+        axes: '[]',
+      }),
+      view: {
+        core: BASE_ONLY.core,
         musts: [
           FOUR_DATA_STATES,
           ...BELOW_FOUR_DATA_STATES,
@@ -2066,7 +2090,7 @@ describe('session-start hook', () => {
         list: [
           DOMAINS,
           KEY,
-          `${UI} (foundation)`,
+          `${UI}`,
           VERSION_CONTROL,
           '## packages/web',
           '- remote-data (domains): Data another system owns.',
@@ -2074,7 +2098,7 @@ describe('session-start hook', () => {
         ],
         warnings: [
           WARNINGS,
-          '- config: packages/web leaves foundation out of axes — foundation is always followed, add it',
+          "- config: packages/web lists foundation in axes — a block's root is always followed, remove it",
         ],
       },
     },

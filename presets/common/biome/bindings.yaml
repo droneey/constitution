@@ -1,4 +1,3 @@
-foundation:
-  self:
-    biome-formats-every-file-it-reads:
-      - formatter
+self:
+  biome-formats-every-file-it-reads:
+    - formatter

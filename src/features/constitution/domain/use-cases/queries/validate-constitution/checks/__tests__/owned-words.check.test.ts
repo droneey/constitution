@@ -7,7 +7,7 @@ import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { ownedWordsCheck } from '../owned-words.check';
 
 const UI = 'blocks/domains/ui/ui.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 
 const named = (input: { owner: string; path: string; word: string }): Finding => ({
   message: `names "${input.word}", which ${input.owner} owns; only ${input.owner} and the blocks that depend on it may`,
@@ -148,7 +148,7 @@ describe('ownedWordsCheck', () => {
     },
     {
       name: 'a with/ file named after the owner holds one',
-      path: 'blocks/contexts/platforms/browser/foundation/with/typescript.md',
+      path: 'blocks/contexts/platforms/browser/with/typescript.md',
       text: '# Browser with TypeScript\n\nEach `index.ts` runs in the tab.\n',
     },
     {

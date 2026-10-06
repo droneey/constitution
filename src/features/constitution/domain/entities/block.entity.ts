@@ -18,7 +18,7 @@ enum BlockFileRole {
 }
 
 interface BlockFile {
-  readonly axis: Axis | undefined;
+  readonly axis: Axis;
   readonly body: string;
   readonly lines: number;
   readonly path: string;

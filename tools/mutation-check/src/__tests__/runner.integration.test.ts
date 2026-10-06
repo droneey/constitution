@@ -7,7 +7,7 @@ import { describe, expect, test } from 'bun:test';
 import type { DryRunOptions, MutantRunResult, TestRunner } from '@stryker-mutator/api/test-runner';
 import { DryRunStatus, MutantRunStatus, TestStatus } from '@stryker-mutator/api/test-runner';
 
-import bunTest from '../../../../presets/typescript/stryker/foundation/bun-test.mjs';
+import bunTest from '../../../../presets/typescript/stryker/bun-test.mjs';
 import { strykerPlugins } from '../runner.ts';
 
 type Files = Readonly<Record<string, string>>;

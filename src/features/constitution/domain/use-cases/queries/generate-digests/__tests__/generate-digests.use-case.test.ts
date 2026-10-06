@@ -12,8 +12,8 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { generateDigests } from '../generate-digests.use-case';
 
 const CORE = 'blocks/core/core.md';
-const I18N = 'blocks/domains/i18n/foundation/i18n.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const I18N = 'blocks/domains/i18n/plurals.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
 
 const coreFile = (body: string): string =>
@@ -117,7 +117,7 @@ describe('generateDigests', () => {
       },
       key: 'rule\ti18n-plurals-by-cldr',
       record:
-        'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/foundation/i18n.md\t\tMUST\tux\tfoundation\tdependencies-point-inward\ttrue',
+        'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/plurals.md\t\tMUST\tux\t\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
     },
   ])('should write $what in the record when $condition', ({ files, key, record }) => {

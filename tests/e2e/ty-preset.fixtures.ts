@@ -9,7 +9,7 @@ interface CheckOutcome {
 }
 
 const TY = uvBinary('ty');
-const PART = '.droneey/constitution/presets/python/ty/foundation/self.toml';
+const PART = '.droneey/constitution/presets/python/ty/self.toml';
 const FAILED = 2;
 const FINDING = /^[^:\n]+:\d+:\d+: (?:error|warning)\[(?<rule>[a-z-]+)\]/gm;
 

@@ -14,7 +14,7 @@ The droneey constitution: the engineering rules every droneey repository is buil
 
 ## Domains of the business
 
-- **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis: `foundation`, `architecture`, `workflow`.
+- **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis: the base at its root, and the optional `architecture` and `workflow` in a folder each.
 - **Validation** — the checks that keep every block sound and consistent with the others.
 - **Presets** — the tool configurations that hold the tool-checked rules, split into parts by scope, tool and axis, with the bindings that say which setting holds which rule.
 - **Delivery** — the digests generated from the blocks, the session-start hook that reads them, the skills that write a project's files, and the release archive that carries the presets and templates.
@@ -42,7 +42,7 @@ The droneey constitution: the engineering rules every droneey repository is buil
 ## Glossary
 
 - **Layer** — one of core, domain, context, implementation: the folder a block sits in.
-- **Axis** — `foundation`, `architecture` or `workflow`: the folder a rule sits in inside its block; a project follows `foundation` and the axes it chooses.
+- **Axis** — the base, `architecture` or `workflow`: where a rule sits in its block, the base at the block's root and each optional axis in its folder; a project always follows the base and lists the optional axes it chooses.
 - **Active set** — the blocks a project follows: core, the declared blocks and the bases of their `extends` chains.
 - **Override** — a project's recorded lowering of one rule, with the user's consent and a reason.
 - **Local block** — a block file inside a project, under `rules/`.

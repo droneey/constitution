@@ -6,7 +6,7 @@ import { Axis, Level } from '#/kernel';
 import type { StatedRule } from '../../../../entities';
 import { parseRules } from '../rules.utils';
 
-const FILE = 'blocks/core/foundation/principles.md';
+const FILE = 'blocks/core/principles.md';
 const CARD = 'blocks/core/core.md';
 const HEADING_FORMS =
   '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';
@@ -20,7 +20,7 @@ const TABLE = [
 const sourceOf = (
   lines: readonly string[],
 ): {
-  axis: Axis | undefined;
+  axis: Axis;
   block: string;
   file: string;
   text: string;
@@ -401,7 +401,7 @@ describe('parseRules', () => {
     },
   );
 
-  it('should report every rule and return none when the rules sit in the card', () => {
+  it('should read the rules of the card on the base and report a heading that looks like a rule when the rules sit in the card', () => {
     // Arrange
     const source = {
       ...sourceOf([
@@ -410,11 +410,7 @@ describe('parseRules', () => {
         'The rules bind.',
         ...TABLE,
         '### x - MUST',
-        '### reasons-are-given → rules-bind',
-        'A rule names its reason.',
-        ...TABLE,
       ]),
-      axis: undefined,
       file: CARD,
     };
 
@@ -428,18 +424,14 @@ describe('parseRules', () => {
           message: `heading "### x - MUST" looks like a rule but is not ${HEADING_FORMS}`,
           path: CARD,
         },
-        {
-          message:
-            'rule "rules-bind" sits in the card; a block\'s rules live in foundation/, architecture/ or workflow/',
-          path: CARD,
-        },
-        {
-          message:
-            'rule "reasons-are-given" sits in the card; a block\'s rules live in foundation/, architecture/ or workflow/',
-          path: CARD,
-        },
       ],
-      rules: [],
+      rules: [
+        ruleOf({
+          file: CARD,
+          slug: 'rules-bind',
+          statement: 'The rules bind.',
+        }),
+      ],
     });
   });
 });

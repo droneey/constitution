@@ -1,229 +1,203 @@
-foundation:
-  _react:
-    render-is-pure:
-      - noReactPropAssignments
-    undefined-is-the-only-absence:
-      - nothing-rendered-as-null.grit
-    function-components-only:
-      - useReactFunctionComponents
-    hooks-at-top-level:
-      - useHookAtTopLevel
-    list-keys-from-identity:
-      - noArrayIndexKey
-      - useJsxKeyInIterable
-    modern-react-api-only:
-      - modern-react-api-only.grit
-      - noReactForwardRef
-      - noReactStringRefs
-    no-component-defined-inside-component:
-      - noComponentHookFactories
-      - noNestedComponentDefinitions
-    react-compiler-on:
-      - react-compiler-on.grit
-  bun-test:
-    no-module-mocks:
-      - no-module-mocks.grit
-    no-skipped-or-empty-tests:
-      - no-skipped-or-empty-tests.grit
-    no-sleep-in-specs:
-      - no-sleep-in-specs.grit
-    no-test-retries:
-      - no-test-retries.grit
-    strict-matcher-only:
-      - strict-matcher-only.grit
-  core:
-    async-work-awaited-or-deliberately-detached:
-      - noFloatingPromises
-      - noMisusedPromises
-    parameters-at-most-three-wholes-as-one-object:
-      - useMaxParams
-    cases-named-should-when:
-      - cases-named-should-when.grit
-    no-logic-in-cases:
-      - no-logic-in-cases.grit
-    error-cause-preserved:
-      - useErrorCause
-    errors-surfaced-never-swallowed:
-      - noEmptyBlockStatements
-    function-file-and-complexity-limits:
-      - noExcessiveCognitiveComplexity
-      - noExcessiveLinesPerFile
-      - noExcessiveLinesPerFunction
-    kebab-case-file-names:
-      - useFilenamingConvention
-    no-debug-output-in-shipped-code:
-      - noAlert
-      - noConsole
-      - noDebugger
-    no-secret-in-repository:
-      - noSecrets
-    no-skipped-or-empty-tests:
-      - noConditionalExpect
-      - noFocusedTests
-      - noSkippedTests
-      - useExpect
-  browser:
-    no-raw-html-injection:
-      - no-raw-html-injection.grit
-  css:
-    classes-declared-and-used:
-      - noUndeclaredClasses
-  ky:
-    ky-body-parsed-by-schema:
-      - ky-body-parsed-by-schema.grit
-  i18n:
-    intl-calls-take-a-locale:
-      - intl-calls-take-a-locale.grit
-  lingui:
-    module-level-messages-are-descriptors:
-      - module-level-messages-are-descriptors.grit
-  playwright:
-    no-forced-actions:
-      - noPlaywrightForceOption
-    waits-through-locators-and-assertions:
-      - noPlaywrightNetworkidle
-      - noPlaywrightWaitForNavigation
-      - noPlaywrightWaitForSelector
-      - noPlaywrightWaitForTimeout
-    web-first-assertions-awaited:
-      - noPlaywrightMissingAwait
-  react-dom:
-    no-dangerously-set-inner-html:
-      - noDangerouslySetInnerHtml
-    aria-attributes-as-the-dom-spells-them:
-      - noUnknownAttribute
-    jsx-controls-named:
-      - noLabelWithoutControl
-      - noSvgWithoutTitle
-      - useAltText
-      - useAnchorContent
-      - useControlLabel
-      - useIframeTitle
-    known-fields-declare-autocomplete:
-      - fields-declare-autocomplete.grit
-      - useValidAutocomplete
-    ids-from-use-id:
-      - labels-bound-with-use-id.grit
-      - useUniqueElementIds
-    handlers-and-links-on-native-elements:
-      - noStaticElementInteractions
-      - useSemanticElements
-      - useValidAnchor
-    jsx-roles-and-aria-valid:
-      - noAriaHiddenOnFocusable
-      - noInteractiveElementToNoninteractiveRole
-      - noNoninteractiveElementInteractions
-      - noNoninteractiveElementToInteractiveRole
-      - noRedundantRoles
-      - useAriaPropsForRole
-      - useFocusableInteractive
-      - useValidAriaProps
-      - useValidAriaRole
-      - useValidAriaValues
-    inline-style-only-custom-properties-and-geometry:
-      - inline-style-only-custom-properties-and-geometry.grit
-    jsx-images-declare-their-size:
-      - useImageSize
-    jsx-viewport-never-blocks-zoom:
-      - noNonScalableViewport
-  self:
-    biome-refuses-empty-names:
-      - biome-refuses-empty-names.grit
-    biome-refuses-empty-verbs:
-      - biome-refuses-empty-verbs.grit
-  react-native:
-    react-native-imported-from-its-entry:
-      - noReactNativeDeepImports
-    no-literal-colour-in-a-style:
-      - noReactNativeLiteralColors
-  tailwind:
-    no-screen-sized-classes:
-      - no-screen-sized-classes.grit
-    mobile-first-breakpoints:
-      - mobile-first-breakpoints.grit
-    utilities-only-from-tokens:
-      - noTailwindArbitraryValue
-    logical-utilities-for-direction:
-      - logical-utilities-for-direction.grit
-    focus-shown-by-focusable-utility:
-      - focus-shown-by-focusable-utility.grit
-    no-important-modifier-in-class-lists:
-      - no-important-modifier-in-class-lists.grit
-  tanstack-router:
-    links-name-typed-targets:
-      - links-name-typed-targets.grit
-  testing-library:
-    no-document-selectors-in-specs:
-      - queries-by-role-label-text.grit
-    queries-by-role-label-text:
-      - queries-by-role-label-text.grit
-  typescript:
-    resources-released-by-using:
-      - useDisposables
-    dates-through-temporal:
-      - noRestrictedImports
-    no-deprecated-import:
-      - noDeprecatedImports
-    no-mutable-export:
-      - no-mutable-export.grit
-    named-exports-only:
-      - noDefaultExport
-    return-type-no-wider-than-returned:
-      - noMisleadingReturnType
-    text-made-deliberately:
-      - noBaseToString
-      - noUnsafePlusOperands
-    no-literal-thrown:
-      - useThrowOnlyError
-    enums-for-named-value-groups:
-      - enums-for-named-value-groups.grit
-      - useEnumInitializers
-    exhaustive-branching-over-unions:
-      - useExhaustiveSwitchCases
-    identifier-case-by-kind:
-      - useNamingConvention
-    no-any:
-      - noExplicitAny
-    no-unchecked-escape-hatches:
-      - noNonNullAssertion
-      - noTsIgnore
-      - noUnsafeTypeAssertion
-    nullish-operators-for-absence:
-      - useNullishCoalescing
-    strict-equality-only:
-      - noDoubleEquals
-    type-names-undecorated:
-      - type-names-undecorated.grit
-    undefined-is-the-only-absence:
-      - noUselessUndefined
-      - undefined-is-the-only-absence.grit
-  zod:
-    schema-never-brands:
-      - schema-never-brands.grit
-    zod-four-forms-only:
-      - zod-four-forms-only.grit
-architecture:
-  _react:
-    component-effects-in-its-hooks-file:
-      - component-effects-in-its-hooks-file.grit
-  bun:
-    process-env-read-only-in-root:
-      - noProcessEnv
-  core:
-    surface-only-re-exports:
-      - noReExportAll
-  ui:
-    components-call-no-global-fetch:
-      - noRestrictedGlobals
-  tanstack-query:
-    keys-only-from-the-key-factory:
-      - keys-only-from-the-key-factory.grit
-    query-client-built-by-the-root:
-      - query-client-built-by-the-root.grit
-    read-declared-once-as-query-options:
-      - read-declared-once-as-query-options.grit
-  typescript:
-    domain-type-fields-readonly:
-      - domain-type-fields-readonly.grit
-    surface-only-re-exports:
-      - surface-only-re-exports.grit
+_react:
+  render-is-pure:
+    - noReactPropAssignments
+  undefined-is-the-only-absence:
+    - nothing-rendered-as-null.grit
+  function-components-only:
+    - useReactFunctionComponents
+  hooks-at-top-level:
+    - useHookAtTopLevel
+  list-keys-from-identity:
+    - noArrayIndexKey
+    - useJsxKeyInIterable
+  modern-react-api-only:
+    - modern-react-api-only.grit
+    - noReactForwardRef
+    - noReactStringRefs
+  no-component-defined-inside-component:
+    - noComponentHookFactories
+    - noNestedComponentDefinitions
+  react-compiler-on:
+    - react-compiler-on.grit
+bun-test:
+  no-module-mocks:
+    - no-module-mocks.grit
+  no-skipped-or-empty-tests:
+    - no-skipped-or-empty-tests.grit
+  no-sleep-in-specs:
+    - no-sleep-in-specs.grit
+  no-test-retries:
+    - no-test-retries.grit
+  strict-matcher-only:
+    - strict-matcher-only.grit
+core:
+  async-work-awaited-or-deliberately-detached:
+    - noFloatingPromises
+    - noMisusedPromises
+  parameters-at-most-three-wholes-as-one-object:
+    - useMaxParams
+  cases-named-should-when:
+    - cases-named-should-when.grit
+  no-logic-in-cases:
+    - no-logic-in-cases.grit
+  error-cause-preserved:
+    - useErrorCause
+  errors-surfaced-never-swallowed:
+    - noEmptyBlockStatements
+  function-file-and-complexity-limits:
+    - noExcessiveCognitiveComplexity
+    - noExcessiveLinesPerFile
+    - noExcessiveLinesPerFunction
+  kebab-case-file-names:
+    - useFilenamingConvention
+  no-debug-output-in-shipped-code:
+    - noAlert
+    - noConsole
+    - noDebugger
+  no-secret-in-repository:
+    - noSecrets
+  no-skipped-or-empty-tests:
+    - noConditionalExpect
+    - noFocusedTests
+    - noSkippedTests
+    - useExpect
+browser:
+  no-raw-html-injection:
+    - no-raw-html-injection.grit
+css:
+  classes-declared-and-used:
+    - noUndeclaredClasses
+ky:
+  ky-body-parsed-by-schema:
+    - ky-body-parsed-by-schema.grit
+i18n:
+  intl-calls-take-a-locale:
+    - intl-calls-take-a-locale.grit
+lingui:
+  module-level-messages-are-descriptors:
+    - module-level-messages-are-descriptors.grit
+playwright:
+  no-forced-actions:
+    - noPlaywrightForceOption
+  waits-through-locators-and-assertions:
+    - noPlaywrightNetworkidle
+    - noPlaywrightWaitForNavigation
+    - noPlaywrightWaitForSelector
+    - noPlaywrightWaitForTimeout
+  web-first-assertions-awaited:
+    - noPlaywrightMissingAwait
+react-dom:
+  no-dangerously-set-inner-html:
+    - noDangerouslySetInnerHtml
+  aria-attributes-as-the-dom-spells-them:
+    - noUnknownAttribute
+  jsx-controls-named:
+    - noLabelWithoutControl
+    - noSvgWithoutTitle
+    - useAltText
+    - useAnchorContent
+    - useControlLabel
+    - useIframeTitle
+  known-fields-declare-autocomplete:
+    - fields-declare-autocomplete.grit
+    - useValidAutocomplete
+  ids-from-use-id:
+    - labels-bound-with-use-id.grit
+    - useUniqueElementIds
+  handlers-and-links-on-native-elements:
+    - noStaticElementInteractions
+    - useSemanticElements
+    - useValidAnchor
+  jsx-roles-and-aria-valid:
+    - noAriaHiddenOnFocusable
+    - noInteractiveElementToNoninteractiveRole
+    - noNoninteractiveElementInteractions
+    - noNoninteractiveElementToInteractiveRole
+    - noRedundantRoles
+    - useAriaPropsForRole
+    - useFocusableInteractive
+    - useValidAriaProps
+    - useValidAriaRole
+    - useValidAriaValues
+  inline-style-only-custom-properties-and-geometry:
+    - inline-style-only-custom-properties-and-geometry.grit
+  jsx-images-declare-their-size:
+    - useImageSize
+  jsx-viewport-never-blocks-zoom:
+    - noNonScalableViewport
+self:
+  biome-refuses-empty-names:
+    - biome-refuses-empty-names.grit
+  biome-refuses-empty-verbs:
+    - biome-refuses-empty-verbs.grit
+react-native:
+  react-native-imported-from-its-entry:
+    - noReactNativeDeepImports
+  no-literal-colour-in-a-style:
+    - noReactNativeLiteralColors
+tailwind:
+  no-screen-sized-classes:
+    - no-screen-sized-classes.grit
+  mobile-first-breakpoints:
+    - mobile-first-breakpoints.grit
+  utilities-only-from-tokens:
+    - noTailwindArbitraryValue
+  logical-utilities-for-direction:
+    - logical-utilities-for-direction.grit
+  focus-shown-by-focusable-utility:
+    - focus-shown-by-focusable-utility.grit
+  no-important-modifier-in-class-lists:
+    - no-important-modifier-in-class-lists.grit
+tanstack-router:
+  links-name-typed-targets:
+    - links-name-typed-targets.grit
+testing-library:
+  no-document-selectors-in-specs:
+    - queries-by-role-label-text.grit
+  queries-by-role-label-text:
+    - queries-by-role-label-text.grit
+typescript:
+  resources-released-by-using:
+    - useDisposables
+  dates-through-temporal:
+    - noRestrictedImports
+  no-deprecated-import:
+    - noDeprecatedImports
+  no-mutable-export:
+    - no-mutable-export.grit
+  named-exports-only:
+    - noDefaultExport
+  return-type-no-wider-than-returned:
+    - noMisleadingReturnType
+  text-made-deliberately:
+    - noBaseToString
+    - noUnsafePlusOperands
+  no-literal-thrown:
+    - useThrowOnlyError
+  enums-for-named-value-groups:
+    - enums-for-named-value-groups.grit
+    - useEnumInitializers
+  exhaustive-branching-over-unions:
+    - useExhaustiveSwitchCases
+  identifier-case-by-kind:
+    - useNamingConvention
+  no-any:
+    - noExplicitAny
+  no-unchecked-escape-hatches:
+    - noNonNullAssertion
+    - noTsIgnore
+    - noUnsafeTypeAssertion
+  nullish-operators-for-absence:
+    - useNullishCoalescing
+  strict-equality-only:
+    - noDoubleEquals
+  type-names-undecorated:
+    - type-names-undecorated.grit
+  undefined-is-the-only-absence:
+    - noUselessUndefined
+    - undefined-is-the-only-absence.grit
+zod:
+  schema-never-brands:
+    - schema-never-brands.grit
+  zod-four-forms-only:
+    - zod-four-forms-only.grit

@@ -4,7 +4,7 @@ import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { referencesCheck } from '../references.check';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 const UI = 'blocks/domains/ui/ui.md';
 
 const uiWith = (body: string): string =>
@@ -17,10 +17,10 @@ describe('referencesCheck', () => {
   it.each([
     {
       expected:
-        'links to ../../implementations/react-dom/react-dom.md, a file of the block react-dom; a block refers to another only through its front matter and with/ file names',
+        'links to ../implementations/react-dom/react-dom.md, a file of the block react-dom; a block refers to another only through its front matter and with/ file names',
       name: 'a file',
       path: PRINCIPLES,
-      text: '# Principles\n\nSee [portals](../../implementations/react-dom/react-dom.md).\n',
+      text: '# Principles\n\nSee [portals](../implementations/react-dom/react-dom.md).\n',
     },
     {
       expected:
@@ -136,7 +136,7 @@ describe('referencesCheck', () => {
     {
       name: 'a link leads into a folder whose name only begins with the folder of a block',
       path: PRINCIPLES,
-      text: '# Principles\n\nSee [the kit](../../domains/ui-kit/kit.md).\n',
+      text: '# Principles\n\nSee [the kit](../domains/ui-kit/kit.md).\n',
     },
   ])('should find nothing when $name', ({ path, text }) => {
     // Arrange

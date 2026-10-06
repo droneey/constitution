@@ -4,11 +4,11 @@ import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fix
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { rulesCheck } from '../rules.check';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
-const I18N = 'blocks/domains/i18n/foundation/i18n.md';
+const I18N = 'blocks/domains/i18n/plurals.md';
 const REMOTE_DATA = 'blocks/domains/remote-data/architecture/remote-data.md';
-const UI = 'blocks/domains/ui/foundation/ui.md';
+const UI = 'blocks/domains/ui/screens.md';
 const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
 
@@ -206,7 +206,7 @@ describe('rulesCheck', () => {
         parent: 'dependencies-point-inward',
         slug: 'portals-for-overlays',
       },
-      condition: 'a rule on workflow carries out a MUST rule on foundation',
+      condition: 'a rule on workflow carries out a MUST rule of the base',
       parentLevel: 'MUST',
     },
     {
@@ -241,9 +241,9 @@ describe('rulesCheck', () => {
         file: I18N,
         slug: 'i18n-plurals-by-cldr',
       },
-      condition: 'a foundation rule carries out a workflow rule',
+      condition: 'a rule of the base carries out a workflow rule',
       expected:
-        'rule "i18n-plurals-by-cldr" carries out "rules-bind" on workflow, which a rule on foundation may not refer to',
+        'rule "i18n-plurals-by-cldr" carries out "rules-bind" on workflow, which a rule on the base may not refer to',
       parent: 'rules-bind',
     },
     {

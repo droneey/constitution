@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/intl-calls-take-a-locale.grit",
+  ],
+}

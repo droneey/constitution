@@ -1,7 +1,7 @@
 import type { Block, Constitution, RequirementAnswer, Rule } from '../../../entities';
 import { BlockFileRole } from '../../../entities';
 import type { BlocksById } from '../../../utils';
-import { fileNameOf } from '../../../utils';
+import { axisFolderOf, fileNameOf } from '../../../utils';
 import { ancestorsOf } from './ancestors.utils';
 
 const TAB = '\t';
@@ -24,14 +24,14 @@ const blockRecord = (input: {
     block.frontMatter.summary,
     block.files
       .filter((file) => file.role === BlockFileRole.Chapter)
-      .map((file) => `${file.axis}/${fileNameOf(file.path)}`)
+      .map((file) => `${axisFolderOf(file.axis)}${fileNameOf(file.path)}`)
       .join(LIST),
     block.files
       .flatMap((file) =>
         file.with === undefined
           ? []
           : [
-              `${file.axis}/${file.with}`,
+              `${axisFolderOf(file.axis)}${file.with}`,
             ],
       )
       .join(LIST),
@@ -60,7 +60,7 @@ const ruleRecord = (rule: Rule): string =>
     rule.with ?? '',
     rule.level,
     rule.tags.join(LIST),
-    rule.axis,
+    axisFolderOf(rule.axis).slice(0, -1),
     rule.parent ?? '',
     String(rule.statedLevel !== undefined),
   ]);

@@ -68,11 +68,16 @@ const blockFiles = (
   },
 ): Files => {
   const { dir, files = {}, ...card } = input;
+  const { [`${input.id}.md`]: base, ...others } = files;
 
+  // The rules of the base's main chapter sit in the card, under its title.
   return {
-    [`${dir}/${input.id}.md`]: mainFile(card),
+    [`${dir}/${input.id}.md`]: mainFile({
+      ...card,
+      body: base === undefined ? card.body : `${card.body}\n${base.slice(base.indexOf('\n') + 1)}`,
+    }),
     ...Object.fromEntries(
-      Object.entries(files).map(([path, text]) => [
+      Object.entries(others).map(([path, text]) => [
         `${dir}/${path}`,
         text,
       ]),
@@ -107,7 +112,7 @@ const coreFiles = (): Files =>
     body: CORE_BODY,
     dir: 'blocks/core',
     files: {
-      'foundation/principles.md': section({
+      'principles.md': section({
         rules: [
           {
             slug: 'names-reveal-intent',
@@ -121,7 +126,7 @@ const coreFiles = (): Files =>
         ],
         title: 'Principles',
       }),
-      'foundation/code.md': section({
+      'code.md': section({
         rules: [
           {
             slug: 'no-secret-in-code',
@@ -154,7 +159,7 @@ const coreFiles = (): Files =>
   });
 
 const rulesFile = (input: { axis?: Axis; id: string; rules: readonly RuleFixture[] }): Files => ({
-  [`${input.axis ?? Axis.Foundation}/${input.id}.md`]: section({
+  [`${input.axis === undefined ? '' : `${input.axis}/`}${input.id}.md`]: section({
     rules: input.rules,
     title: input.id,
   }),

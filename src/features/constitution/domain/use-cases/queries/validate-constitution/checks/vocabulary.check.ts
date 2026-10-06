@@ -3,7 +3,7 @@ import { Axis } from '#/kernel';
 
 import { DocumentPath } from '../../../../constants';
 import type { BlockFile, Vocabulary, VocabularySection } from '../../../../entities';
-import { isHeading, withoutCodeFences } from '../../../../utils';
+import { axisNameOf, isHeading, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { collapseWhitespace, WordKind, wordMatcher } from '../tokens.utils';
 
@@ -27,7 +27,6 @@ interface Section {
 const CONCEPT = /^[a-z]+(?:[ -][a-z]+)*$/;
 const FOLDER_END = '/';
 const SUFFIX_START = '.';
-const CARD = 'the card';
 
 const SECTIONS: readonly Section[] = [
   {
@@ -133,7 +132,7 @@ const usageFindings = (input: {
 
   return input.files.flatMap((file) => {
     const text = proseOf(file);
-    const place = file.axis ?? CARD;
+    const place = axisNameOf(file.axis);
 
     return [
       ...new Set(

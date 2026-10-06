@@ -752,7 +752,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/foundation/storybook',
+        'typescript/storybook',
         'typescript/architecture/core',
       ],
       rule: 'stories-unreachable-from-production',
@@ -993,7 +993,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/analytics',
         'typescript/architecture/lingui',
         'typescript/architecture/tanstack-query',
-        'typescript/foundation/storybook',
+        'typescript/storybook',
         'typescript/architecture/storybook',
         'typescript/architecture/yaml',
         'typescript/architecture/core',
@@ -1116,7 +1116,7 @@ describe('the dependency-cruiser layer set', () => {
   });
 });
 
-describe('the dependency-cruiser foundation parts', () => {
+describe("the parts of dependency-cruiser's base", () => {
   it.each([
     {
       condition: 'two modules import each other',

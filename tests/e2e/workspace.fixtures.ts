@@ -68,9 +68,7 @@ const tsconfigOf = (input: {
   root?: string;
 }): string =>
   jsonFileOf({
-    extends: input.parts.map(
-      (part) => `${input.root ?? '../..'}/${PRESETS}/tsc/foundation/${part}.json`,
-    ),
+    extends: input.parts.map((part) => `${input.root ?? '../..'}/${PRESETS}/tsc/${part}.json`),
     compilerOptions: {
       ...input.extra,
       paths: {
@@ -602,8 +600,8 @@ const WORKSPACE: Files = {
   ].join('\n'),
   'biome.json': jsonFileOf({
     extends: [
-      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
+      './.droneey/constitution/presets/common/biome/self.jsonc',
+      './.droneey/constitution/presets/common/biome/git.jsonc',
     ],
     files: {
       includes: [
@@ -614,12 +612,12 @@ const WORKSPACE: Files = {
   }),
   'biome.packages-api.jsonc': jsonFileOf({
     extends: [
-      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
-      './.droneey/constitution/presets/typescript/biome/foundation/self.jsonc',
+      './.droneey/constitution/presets/common/biome/self.jsonc',
+      './.droneey/constitution/presets/common/biome/git.jsonc',
+      './.droneey/constitution/presets/typescript/biome/self.jsonc',
     ],
   }),
-  'knip.config.mjs': `import core from './${PRESETS}/knip/foundation/core.mjs';
+  'knip.config.mjs': `import core from './${PRESETS}/knip/core.mjs';
 import architecture from './${PRESETS}/knip/architecture/core.mjs';
 
 const unit = (entry) => ({ entry: [...core.entry, ...architecture.entry, ...entry], project: core.project });

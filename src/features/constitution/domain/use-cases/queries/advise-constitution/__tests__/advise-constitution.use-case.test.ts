@@ -5,11 +5,11 @@ import { checkInputOf, rule } from '../../../../../__tests__/constitution.fixtur
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { adviseConstitution } from '../advise-constitution.use-case';
 
-const I18N = 'blocks/domains/i18n/foundation/i18n.md';
-const UI = 'blocks/domains/ui/foundation/ui.md';
+const I18N = 'blocks/domains/i18n/plurals.md';
+const UI = 'blocks/domains/ui/screens.md';
 const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
-const TYPESCRIPT = 'blocks/contexts/languages/typescript/foundation/typescript.md';
+const TYPESCRIPT = 'blocks/contexts/languages/typescript/types.md';
 const STATEMENT = 'Every visible label comes from a message catalog.';
 
 interface Scenario {

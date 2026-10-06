@@ -25,7 +25,7 @@ const coveredBy = (rows: readonly string[]): CheckInput => {
     files,
     path: LINGUI,
   }).replace(ANSWER, rows.join('\n'));
-  files['blocks/implementations/lingui/foundation/catalogs.md'] = `# Catalogs\n\n${rule({
+  files['blocks/implementations/lingui/catalogs.md'] = `# Catalogs\n\n${rule({
     slug: 'catalogs-compile',
   })}`;
 
@@ -62,7 +62,7 @@ describe('requirementsCheck', () => {
 
   it('should report a with/ file once when an implementation answers two requirements in it', () => {
     // Arrange
-    const path = 'blocks/implementations/biome/foundation/with/lingui.md';
+    const path = 'blocks/implementations/biome/with/lingui.md';
     const files = validFiles();
     files[path] = [
       '# Biome with Lingui',

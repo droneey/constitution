@@ -45,7 +45,7 @@ const PRESETS = 'presets/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
-  'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md';
+  "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md";
 // <directory>/<skill>/SKILL.md, where no folder is hidden
 const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;

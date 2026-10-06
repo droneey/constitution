@@ -1,0 +1,36 @@
+api:
+  kebab-case-file-names:
+    - 'src/*/api'
+  python-file-forms:
+    - 'src/*/api'
+cli:
+  commands-in-the-cli-folder:
+    - 'src/*/cli'
+  kebab-case-file-names:
+    - 'src/*/cli'
+core:
+  data-ports-split-by-reads-and-writes:
+    - 'src/*/**/repositories'
+    - 'src/*/**/repositories/{queries,commands}'
+  feature-anatomy:
+    - 'src/*/features/*/domain'
+  python-role-and-surface-files:
+    - 'src/*/**/constants'
+    - 'src/*/**/contracts'
+    - 'src/*/**/entities'
+    - 'src/*/**/errors'
+    - 'src/*/**/models'
+    - 'src/*/**/repositories/{queries,commands}'
+    - 'src/*/**/types'
+    - 'src/*/**/utils'
+    - 'src/*/**/value_objects'
+  file-carries-its-role-suffix:
+    - 'src/*/**/constants'
+    - 'src/*/**/contracts'
+    - 'src/*/**/entities'
+    - 'src/*/**/errors'
+    - 'src/*/**/models'
+    - 'src/*/**/repositories/{queries,commands}'
+    - 'src/*/**/types'
+    - 'src/*/**/utils'
+    - 'src/*/**/value_objects'

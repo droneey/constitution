@@ -1,0 +1,24 @@
+_react:
+  component-effects-in-its-hooks-file:
+    - component-effects-in-its-hooks-file.grit
+bun:
+  process-env-read-only-in-root:
+    - noProcessEnv
+core:
+  surface-only-re-exports:
+    - noReExportAll
+ui:
+  components-call-no-global-fetch:
+    - noRestrictedGlobals
+tanstack-query:
+  keys-only-from-the-key-factory:
+    - keys-only-from-the-key-factory.grit
+  query-client-built-by-the-root:
+    - query-client-built-by-the-root.grit
+  read-declared-once-as-query-options:
+    - read-declared-once-as-query-options.grit
+typescript:
+  domain-type-fields-readonly:
+    - domain-type-fields-readonly.grit
+  surface-only-re-exports:
+    - surface-only-re-exports.grit

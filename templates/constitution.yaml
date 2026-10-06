@@ -1,6 +1,6 @@
 version: <installed version>
 
-axes: [foundation, architecture, workflow]
+axes: [architecture, workflow]
 domains: []
 platforms: []
 languages: []

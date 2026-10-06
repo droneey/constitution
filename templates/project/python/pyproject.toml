@@ -37,7 +37,7 @@ python-preference = "only-system"
 
 # ruff: the constitution's chain of parts
 [tool.ruff]
-extend = ".droneey/constitution/presets/python/ruff/foundation/pytest.toml"
+extend = ".droneey/constitution/presets/python/ruff/pytest.toml"
 
 # ruff: what the specs lift
 [tool.ruff.lint.extend-per-file-ignores]

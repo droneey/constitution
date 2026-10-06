@@ -3,7 +3,7 @@ import { Axis, LEVELS, Tag } from '#/kernel';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { mayCarryOut } from '../../../../utils';
+import { axisNameOf, mayCarryOut } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -101,7 +101,7 @@ const placementMessage = (input: {
   }
 
   if (target.axis !== rule.axis && target.axis !== Axis.Foundation) {
-    return `carries out "${parent}" on ${target.axis}, which a rule on ${rule.axis} may not refer to`;
+    return `carries out "${parent}" on ${target.axis}, which a rule on ${axisNameOf(rule.axis)} may not refer to`;
   }
 
   if (LEVELS.indexOf(rule.level) > LEVELS.indexOf(target.level)) {

@@ -3,7 +3,13 @@ import { Axis } from '#/kernel';
 
 import type { Binding, PresetFile, Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { mayReferTo, PresetFileKind, presetPathOf } from '../../../../utils';
+import {
+  axisFolderOf,
+  axisNameOf,
+  mayReferTo,
+  PresetFileKind,
+  presetPathOf,
+} from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const partOf = (input: {
@@ -69,9 +75,9 @@ const bindingMessage = (input: {
     return `binds "${binding.rule}", which is not a rule`;
   }
 
-  // A part holds a rule of its own axis or of foundation, as rules refer.
+  // A part holds a rule of its own axis or of the base, as rules refer.
   if (rule.axis !== binding.axis && rule.axis !== Axis.Foundation) {
-    return `binds ${rule.slug}, a rule of ${rule.axis}, under ${binding.axis}`;
+    return `binds ${rule.slug}, a rule of ${rule.axis}, under ${axisNameOf(binding.axis)}`;
   }
 
   if (
@@ -87,7 +93,7 @@ const bindingMessage = (input: {
   const part = partOf(input);
 
   if (part === undefined) {
-    return `binds ${rule.slug} to the part ${binding.part}, which presets/${binding.scope}/${binding.tool}/${binding.axis}/ does not hold`;
+    return `binds ${rule.slug} to the part ${binding.part}, which presets/${binding.scope}/${binding.tool}/${axisFolderOf(binding.axis)} does not hold`;
   }
 
   return part.text.includes(binding.setting)

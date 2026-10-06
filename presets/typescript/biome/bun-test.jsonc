@@ -1,0 +1,58 @@
+{
+  "overrides": [
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "domains": {
+          "test": "all",
+        },
+      },
+    },
+  ],
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-skipped-or-empty-tests.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-module-mocks.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/strict-matcher-only.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-test-retries.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-sleep-in-specs.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+  ],
+}

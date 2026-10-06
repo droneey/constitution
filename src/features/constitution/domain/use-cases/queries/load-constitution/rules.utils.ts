@@ -6,7 +6,7 @@ import type { MarkdownSection } from '../../../utils';
 import { sectionsOf } from '../../../utils';
 
 interface Source {
-  axis: Axis | undefined;
+  axis: Axis;
   block: string;
   file: string;
   text: string;
@@ -227,25 +227,13 @@ const parseRules = (source: Source): RulesParsed => {
           section.draft,
         ],
   );
-  const { axis } = source;
 
   return {
-    findings: [
-      ...read.flatMap((section) => section.findings),
-      ...(axis === undefined
-        ? drafts.map((draft) => ({
-            message: `rule "${draft.slug}" sits in the card; a block's rules live in foundation/, architecture/ or workflow/`,
-            path: source.file,
-          }))
-        : []),
-    ],
-    rules:
-      axis === undefined
-        ? []
-        : drafts.map((draft) => ({
-            ...draft,
-            axis,
-          })),
+    findings: read.flatMap((section) => section.findings),
+    rules: drafts.map((draft) => ({
+      ...draft,
+      axis: source.axis,
+    })),
   };
 };
 

@@ -5,8 +5,8 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
-const UI = 'blocks/domains/ui/foundation/ui.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const UI = 'blocks/domains/ui/screens.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 
 // A rule of ui that says nearly what a rule of i18n says: the advice names the
 // pair whenever the checks run.
@@ -42,7 +42,7 @@ describe('validateConstitution', () => {
         },
         {
           message:
-            'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md',
+            "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md",
           path: 'blocks/domains/ui/notes.txt',
         },
       ],

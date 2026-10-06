@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/module-level-messages-are-descriptors.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

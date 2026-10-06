@@ -80,9 +80,7 @@ const secondaryFile = ({ entry, text }: Secondary): BlockFile => ({
   with: entry.block.with,
 });
 
-const axisRank = (entry: Located): number =>
-  // Stryker disable next-line ConditionalExpression: a secondary file always has an axis
-  entry.block.axis === undefined ? AXES.length : AXES.indexOf(entry.block.axis);
+const axisRank = (entry: Located): number => AXES.indexOf(entry.block.axis);
 
 const nameRank = (input: { entry: Located; id: string }): 0 | 1 =>
   fileNameOf(input.entry.path) === `${input.id}.md` ? 0 : 1;
@@ -159,7 +157,7 @@ const loadBlock = (input: {
       files: filesOf({
         id,
         main: {
-          axis: undefined,
+          axis: main.block.axis,
           body: read.body,
           lines: lineCount(text),
           path: main.path,

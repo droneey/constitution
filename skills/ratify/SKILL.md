@@ -40,7 +40,7 @@ Tell the owner the installed version and the blocks above, grouped by layer, in 
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
-Every block's rules sit on three axes: `foundation` — what holds for any team; `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which the repository follows. `foundation` is always followed; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`.
+Every block holds at its root its base — what holds for any team, always followed — and may add two optional axes, a folder each: `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
 
 
 Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.

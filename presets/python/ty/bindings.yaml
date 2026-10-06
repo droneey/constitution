@@ -1,16 +1,15 @@
-foundation:
-  self:
-    awaitable-never-dropped:
-      - all
-    deprecated-calls-fail-the-types:
-      - all
-    no-any-annotation:
-      - all
-    overrides-marked-by-decorator:
-      - all
-    ty-ignore-names-its-rule:
-      - all
-      - respect-type-ignore-comments
-    ty-is-the-type-gate:
-      - all
-      - error-on-warning
+self:
+  awaitable-never-dropped:
+    - all
+  deprecated-calls-fail-the-types:
+    - all
+  no-any-annotation:
+    - all
+  overrides-marked-by-decorator:
+    - all
+  ty-ignore-names-its-rule:
+    - all
+    - respect-type-ignore-comments
+  ty-is-the-type-gate:
+    - all
+    - error-on-warning

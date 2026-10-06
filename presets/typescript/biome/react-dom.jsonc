@@ -1,0 +1,56 @@
+{
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noUnknownAttribute": "error",
+      },
+      "correctness": {
+        "useUniqueElementIds": "error",
+        "useImageSize": "error",
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "error",
+        "noDangerouslySetInnerHtmlWithChildren": "error",
+        "noBlankTarget": "error",
+      },
+      "a11y": {
+        "useValidAutocomplete": "error",
+        "useButtonType": "error",
+        "useAnchorContent": "error",
+        "useValidAnchor": "error",
+        "useAriaPropsForRole": "error",
+        "useAltText": "error",
+        "useHtmlLang": "error",
+        "useHeadingContent": "error",
+        "noRedundantRoles": "error",
+        "noAutofocus": "error",
+        "useKeyWithClickEvents": "error",
+        "noPositiveTabindex": "error",
+        "noRedundantAlt": "error",
+        "noLabelWithoutControl": "error",
+        "noInteractiveElementToNoninteractiveRole": "error",
+        "useIframeTitle": "error",
+        "noSvgWithoutTitle": "error",
+        "useValidAriaValues": "error",
+        "noAriaHiddenOnFocusable": "error",
+        "useSemanticElements": "error",
+        "useValidAriaProps": "error",
+        "useValidAriaRole": "error",
+        "noStaticElementInteractions": "error",
+        "useFocusableInteractive": "error",
+        "noNoninteractiveElementInteractions": "error",
+        "noNoninteractiveElementToInteractiveRole": "error",
+      },
+      "nursery": {
+        "noNonScalableViewport": "error",
+        "useControlLabel": "error",
+        "noInvalidFileInputAccept": "error",
+      },
+    },
+  },
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/inline-style-only-custom-properties-and-geometry.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/labels-bound-with-use-id.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/fields-declare-autocomplete.grit",
+  ],
+}

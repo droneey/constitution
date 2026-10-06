@@ -1,5 +1,4 @@
-import type { Axis } from '#/kernel';
-import { AXES, Layer } from '#/kernel';
+import { Axis, Layer, OPTIONAL_AXES } from '#/kernel';
 
 enum BlockPathFile {
   Main = 'main',
@@ -9,7 +8,7 @@ enum BlockPathFile {
 }
 
 interface PathInBlock {
-  axis: Axis | undefined;
+  axis: Axis;
   file: BlockPathFile;
   name: string;
   with: string | undefined;
@@ -72,8 +71,7 @@ const LAYER_FOLDERS: readonly LayerFolder[] = [
 const MARKDOWN = /^[^.].*\.md$/;
 const MARKDOWN_EXTENSION = '.md';
 const SEAM_FOLDER = 'with';
-const CHAPTER_DEPTH = 2;
-const SEAM_DEPTH = 3;
+const SEAM_DEPTH = 2;
 
 const startsWith = (input: { prefix: readonly string[]; segments: readonly string[] }): boolean =>
   input.prefix.every((segment, index) => input.segments[index] === segment);
@@ -122,47 +120,40 @@ const layerFolder = (segments: readonly string[]): Folder | undefined => {
       };
 };
 
-const axisOf = (segment: string): Axis | undefined => AXES.find((axis) => axis === segment);
-
+// The base sits at the block's root; an optional axis keeps a folder of its own.
 const fileOf = (folder: Folder): PathInBlock => {
+  // Stryker disable next-line StringLiteral: an empty rest names no folder
+  const [first = ''] = folder.rest;
+  const optional = OPTIONAL_AXES.find((candidate) => candidate === first);
+  const inAxis = optional === undefined ? folder.rest : folder.rest.slice(1);
+  const prefix = optional === undefined ? '' : `${optional}/`;
+  const axis = optional ?? Axis.Foundation;
   // Stryker disable next-line StringLiteral: a length check guards every read
-  const [first = '', second = '', third = ''] = folder.rest;
-  const axis = axisOf(first);
+  const [name = '', seam = ''] = inAxis;
 
-  if (folder.rest.length === 1 && first === `${folder.id}${MARKDOWN_EXTENSION}`) {
-    return {
-      axis: undefined,
-      file: BlockPathFile.Main,
-      name: first,
-      with: undefined,
-    };
-  }
-
-  if (axis !== undefined && folder.rest.length === CHAPTER_DEPTH && MARKDOWN.test(second)) {
+  if (inAxis.length === 1 && MARKDOWN.test(name)) {
     return {
       axis,
-      file: BlockPathFile.Chapter,
-      name: `${first}/${second}`,
+      file:
+        optional === undefined && name === `${folder.id}${MARKDOWN_EXTENSION}`
+          ? BlockPathFile.Main
+          : BlockPathFile.Chapter,
+      name: `${prefix}${name}`,
       with: undefined,
     };
   }
 
-  if (
-    axis !== undefined &&
-    folder.rest.length === SEAM_DEPTH &&
-    second === SEAM_FOLDER &&
-    MARKDOWN.test(third)
-  ) {
+  if (inAxis.length === SEAM_DEPTH && name === SEAM_FOLDER && MARKDOWN.test(seam)) {
     return {
       axis,
       file: BlockPathFile.With,
-      name: `${first}/${second}/${third}`,
-      with: third.slice(0, -MARKDOWN_EXTENSION.length),
+      name: `${prefix}${name}/${seam}`,
+      with: seam.slice(0, -MARKDOWN_EXTENSION.length),
     };
   }
 
   return {
-    axis: undefined,
+    axis,
     file: BlockPathFile.Stray,
     // Stryker disable next-line StringLiteral: nothing reads the name of a stray file
     name: folder.rest.join('/'),

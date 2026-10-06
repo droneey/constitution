@@ -10,7 +10,7 @@ BEGIN {
   KEYS = "version axes domains platforms languages implementations packages check overrides"
   FIELDS = "id summary requires extends abstract languages dictionary governs"
   LAYERS = "domain platform language implementation"
-  AXES = "foundation architecture workflow"
+  AXES = "architecture workflow"
   TODAY = ENVIRON["CONSTITUTION_TODAY"]
   split("domains platforms languages implementations", keys, " ")
   split(LAYERS, layers, " ")
@@ -27,12 +27,12 @@ BEGIN {
     FILL[keys[k]] = "write " keys[k] ": []"
   }
   ADD["version"] = "version: " ENVIRON["CONSTITUTION_INSTALLED"]
-  ADD["axes"] = "axes: [foundation, architecture, workflow]"
+  ADD["axes"] = "axes: [architecture, workflow]"
   ADD["packages"] = "packages: {}"
   ADD["check"] = "check: <the command that runs every check, or null>"
   ADD["overrides"] = "overrides: []"
   FILL["version"] = "write version: " ENVIRON["CONSTITUTION_INSTALLED"]
-  FILL["axes"] = "write axes: [foundation, architecture, workflow]"
+  FILL["axes"] = "write axes: [architecture, workflow], or axes: [] for neither"
   FILL["packages"] = "write packages: {}"
   FILL["check"] = "name the command that runs every check, or write check: null"
   FILL["overrides"] = "write overrides: []"
@@ -193,29 +193,28 @@ function active_rule(s, i) {
   return ON[s, RAXIS[i]] && IN[s, RBLOCK[i]] && (RWITH[i] == "" || IN[s, RWITH[i]])
 }
 
-function axes_of(s,   i, n, a, k, named) {
-  named = 0
+# The base, the files at a block's root, is always followed: its axis is "".
+# axes lists the optional ones; a scope without the key takes the default.
+function axes_of(s,   i, n, a, k, app, listed) {
+  app = s ? APP[s] : ""
+  listed = ((app, "axes") in LISTED)
+  delete PICKED
   for (i = 1; i <= nitems; i++) {
-    if (IKEY[i] != "axes" || IAPP[i] != (s ? APP[s] : "")) continue
-    if (!has(AXES, ITEXT[i])) {
-      warn("config", "axes names " ITEXT[i] " — write foundation, architecture or workflow")
-      continue
-    }
-    if (!named++) delete PICKED
-    PICKED[ITEXT[i]] = 1
+    if (IKEY[i] != "axes" || IAPP[i] != app) continue
+    if (ITEXT[i] == "foundation") warn("config", (s ? app : "constitution.yaml") " lists foundation in axes — a block's root is always followed, remove it")
+    else if (!has(AXES, ITEXT[i])) warn("config", "axes names " ITEXT[i] " — write architecture or workflow")
+    else PICKED[ITEXT[i]] = 1
   }
+  ON[s, ""] = 1
   n = split(AXES, a, " ")
   for (k = 1; k <= n; k++) {
-    if (named) ON[s, a[k]] = (a[k] in PICKED)
+    if (listed) ON[s, a[k]] = (a[k] in PICKED)
     else ON[s, a[k]] = s ? ON[0, a[k]] : 1
-  }
-  if (named && !ON[s, "foundation"]) {
-    warn("config", (s ? APP[s] : "constitution.yaml") " leaves foundation out of axes — foundation is always followed, add it")
-    ON[s, "foundation"] = 1
   }
 }
 
 function all_axes(   n, a, k) {
+  ON[0, ""] = 1
   n = split(AXES, a, " ")
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
@@ -290,7 +289,7 @@ function chapters(s, id,   out, n, a, k) {
 }
 
 function seam(entry) {
-  return axis_of(entry) "/with/" name_of(entry)
+  return (axis_of(entry) == "" ? "" : axis_of(entry) "/") "with/" name_of(entry)
 }
 
 function chapter(entry, id) {
@@ -435,9 +434,11 @@ record == "key" {
   SEENKEY[++nkeys] = $2
 }
 record == "value" { VALUE[$2] = text(2) }
+record == "list" { LISTED[$2, $3] = 1 }
 record == "empty" {
   EAPP[++nempty] = $2
   EKEY[nempty] = $3
+  delete LISTED[$2, $3]
 }
 record == "app" {
   APP[++napps] = $2

@@ -25,7 +25,7 @@ interface Sections {
 
 const VOCABULARY = 'vocabulary.yaml';
 const CARD = 'blocks/core/core.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 const ARCHITECTURE_PORTS = 'blocks/core/architecture/ports.md';
 const WORKFLOW_PORTS = 'blocks/core/workflow/ports.md';
 
@@ -54,10 +54,10 @@ const used = (input: { path: string; place: string; section: string; word: strin
   path: input.path,
 });
 
-const inFoundation = (word: string): Finding =>
+const inBase = (word: string): Finding =>
   used({
     path: PRINCIPLES,
-    place: 'foundation',
+    place: 'the base',
     section: 'architecture',
     word,
   });
@@ -203,7 +203,7 @@ describe('vocabularyCheck', () => {
     ]);
   });
 
-  it('should report a repeated word once where a foundation uses it when the vocabulary lists it twice', () => {
+  it("should report a repeated word once where a chapter at the block's root uses it when the vocabulary lists it twice", () => {
     // Arrange
     const files = validFiles();
     files[VOCABULARY] = vocabularyOf({
@@ -223,7 +223,7 @@ describe('vocabularyCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       listed('lists "port" twice in the architecture'),
-      inFoundation('port'),
+      inBase('port'),
     ]);
   });
 
@@ -236,7 +236,7 @@ describe('vocabularyCheck', () => {
   }>([
     {
       expected: [
-        inFoundation('port'),
+        inBase('port'),
       ],
       name: 'a chapter uses a concept in the plural and in capitals',
       path: PRINCIPLES,
@@ -244,7 +244,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inFoundation('class'),
+        inBase('class'),
       ],
       name: 'a chapter uses a concept in its plural with "es"',
       path: PRINCIPLES,
@@ -259,7 +259,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inFoundation('binding unit'),
+        inBase('binding unit'),
       ],
       name: 'a line break splits a concept of two words',
       path: PRINCIPLES,
@@ -267,7 +267,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inFoundation('adapters/'),
+        inBase('adapters/'),
       ],
       name: 'a path holds a folder',
       path: PRINCIPLES,
@@ -275,7 +275,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inFoundation('.port'),
+        inBase('.port'),
       ],
       name: 'a file name holds a suffix',
       path: PRINCIPLES,
@@ -290,7 +290,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inFoundation('port'),
+        inBase('port'),
       ],
       name: 'a line that is no heading holds a hash',
       path: PRINCIPLES,
@@ -300,19 +300,19 @@ describe('vocabularyCheck', () => {
       expected: [
         used({
           path: CARD,
-          place: 'the card',
+          place: 'the base',
           section: 'architecture',
           word: 'port',
         }),
         used({
           path: CARD,
-          place: 'the card',
+          place: 'the base',
           section: 'architecture',
           word: 'adapters/',
         }),
         used({
           path: CARD,
-          place: 'the card',
+          place: 'the base',
           section: 'workflow',
           word: 'squash merge',
         }),
@@ -328,18 +328,18 @@ describe('vocabularyCheck', () => {
       expected: [
         used({
           path: PRINCIPLES,
-          place: 'foundation',
+          place: 'the base',
           section: 'workflow',
           word: 'squash merge',
         }),
         used({
           path: PRINCIPLES,
-          place: 'foundation',
+          place: 'the base',
           section: 'workflow',
           word: 'feature/',
         }),
       ],
-      name: 'a foundation chapter uses words of the workflow',
+      name: "a chapter at the block's root uses words of the workflow",
       path: PRINCIPLES,
       text: '# Principles\n\nSquash merges land on feature/login.\n',
     },

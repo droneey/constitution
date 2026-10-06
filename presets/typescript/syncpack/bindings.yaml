@@ -1,11 +1,10 @@
-foundation:
-  bun:
-    own-units-at-workspace-version:
-      - versionGroups
-  typescript:
-    caret-ranges-lockfile-pins:
-      - semverGroups
-    manifest-fields-in-shared-order:
-      - sortFirst
-    tools-pinned-without-a-range:
-      - semverGroups
+bun:
+  own-units-at-workspace-version:
+    - versionGroups
+typescript:
+  caret-ranges-lockfile-pins:
+    - semverGroups
+  manifest-fields-in-shared-order:
+    - sortFirst
+  tools-pinned-without-a-range:
+    - semverGroups

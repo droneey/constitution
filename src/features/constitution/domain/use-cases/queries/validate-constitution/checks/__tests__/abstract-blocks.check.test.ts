@@ -56,7 +56,7 @@ describe('abstractBlocksCheck', () => {
           body: '# React\n',
           summary: 'The base of react-dom.',
         }),
-        'blocks/implementations/_react/foundation/with/browser.md': '# React in the browser\n',
+        'blocks/implementations/_react/with/browser.md': '# React in the browser\n',
       },
       name: 'its summary, which its other files do not repeat',
     },

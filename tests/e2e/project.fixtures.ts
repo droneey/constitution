@@ -52,7 +52,7 @@ interface ProjectLayout {
 const CONFIG = 'constitution.yaml';
 
 const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
-  axes: '[foundation, architecture, workflow]',
+  axes: '[architecture, workflow]',
   check: 'bun run check',
   domains: '[]',
   implementations: '[]',
@@ -251,7 +251,7 @@ const paraglideFiles = (input: { omit?: string; requires?: string }): Files =>
 const BROWSER_APP: ProjectLayout = {
   config: [
     'version: 1.0.0                    # the constitution release the project follows',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
@@ -274,7 +274,7 @@ const BROWSER_APP: ProjectLayout = {
 const CLI: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains:',
     '  - version-control',
     '  - untrusted-client',
@@ -293,7 +293,7 @@ const CLI: ProjectLayout = {
 const LIBRARY: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains: [version-control]',
     'platforms: []',
     'languages: [typescript]',
@@ -328,7 +328,7 @@ const HTML_SITE: ProjectLayout = {
 const LOCAL_PROJECT: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
@@ -446,7 +446,7 @@ const RATIFIED: ProjectLayout = {
 const REAL_WEB_APP: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     '',
     'domains: [ui, remote-data, remote-service, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
@@ -466,7 +466,7 @@ const REAL_WEB_APP: ProjectLayout = {
 const REAL_CLI: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     '',
     'domains: [convergence, remote-data, version-control]',
     'platforms: [cli]',

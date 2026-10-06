@@ -29,8 +29,8 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const PRESETS_FOLDER = join(REPOSITORY, 'presets');
 
 const PARTS = [
-  'common/foundation/core',
-  'typescript/foundation/typescript',
+  'common/core',
+  'typescript/typescript',
   'typescript/architecture/core',
 ];
 
@@ -64,7 +64,7 @@ const failedPaths = (project: Project): readonly string[] => {
   const linting = spawnSync(
     LS_LINT,
     [
-      'common/foundation/self',
+      'common/self',
       ...(project.parts ?? PARTS),
     ].flatMap((part) => [
       '--config',

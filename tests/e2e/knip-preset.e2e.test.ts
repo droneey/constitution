@@ -92,23 +92,23 @@ describe('the knip preset', () => {
   it.each([
     {
       binary: 'betterleaks',
-      part: 'typescript/foundation/betterleaks',
+      part: 'typescript/betterleaks',
     },
     {
       binary: 'ls-lint',
-      part: 'typescript/foundation/ls-lint',
+      part: 'typescript/ls-lint',
     },
     {
       binary: 'mise',
-      part: 'typescript/foundation/mise',
+      part: 'typescript/mise',
     },
     {
       binary: 'osv-scanner',
-      part: 'typescript/foundation/osv-scanner',
+      part: 'typescript/osv-scanner',
     },
     {
       binary: 'uv',
-      part: 'typescript/foundation/uv',
+      part: 'typescript/uv',
     },
     {
       binary: 'lefthook',

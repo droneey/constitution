@@ -54,10 +54,10 @@ const pluginFiles = (): Files => ({
 
 const upperFiles = (): Files => ({
   ...blockFiles({
-    body: '# Core\n\nRead [principles](foundation/principles.md).\n',
+    body: '# Core\n\nRead [principles](principles.md).\n',
     dir: 'blocks/core',
     files: {
-      'foundation/principles.md': `# Principles\n\n${rule({
+      'principles.md': `# Principles\n\n${rule({
         slug: 'dependencies-point-inward',
       })}`,
       'workflow/workflow.md': `# Workflow\n\n${rule({
@@ -70,7 +70,7 @@ const upperFiles = (): Files => ({
     body: '# i18n\n',
     dir: 'blocks/domains/i18n',
     files: {
-      'foundation/i18n.md': `# i18n\n\n${rule({
+      'plurals.md': `# Plurals\n\n${rule({
         slug: 'i18n-plurals-by-cldr',
         tags: '[ux]',
       })}`,
@@ -97,7 +97,7 @@ const upperFiles = (): Files => ({
         slug: 'optimistic-writes-roll-back',
         tags: '[ux]',
       })}`,
-      'foundation/ui.md': `# UI\n\n${rule({
+      'screens.md': `# Screens\n\n${rule({
         slug: 'four-data-states',
         tags: '[ux, a11y]',
       })}`,
@@ -108,14 +108,11 @@ const upperFiles = (): Files => ({
     id: 'ui',
   }),
   ...blockFiles({
-    body: '# Untrusted client\n',
+    body: `# Untrusted client\n\n${rule({
+      slug: 'no-secret-in-the-client',
+      tags: '[security]',
+    })}`,
     dir: 'blocks/domains/untrusted-client',
-    files: {
-      'foundation/untrusted-client.md': `# Untrusted client\n\n${rule({
-        slug: 'no-secret-in-the-client',
-        tags: '[security]',
-      })}`,
-    },
     id: 'untrusted-client',
   }),
 });
@@ -125,7 +122,7 @@ const contextFiles = (): Files => ({
     body: '# TypeScript\n',
     dir: 'blocks/contexts/languages/typescript',
     files: {
-      'foundation/typescript.md': `# TypeScript\n\n${rule({
+      'types.md': `# Types\n\n${rule({
         slug: 'no-any',
         statement: 'A TypeScript value is never typed `any`.',
       })}`,
@@ -158,7 +155,7 @@ const implementationFiles = (): Files => ({
     body: '# React\n',
     dir: 'blocks/implementations/_react',
     files: {
-      'foundation/hooks.md': `# Hooks\n\n${rule({
+      'hooks.md': `# Hooks\n\n${rule({
         slug: 'hooks-at-top-level',
         statement: 'A React hook is called only at the top level.',
       })}`,
