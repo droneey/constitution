@@ -16,13 +16,6 @@ A base image in a Dockerfile, an image in a Compose file and an image a script r
 |---|---|
 | any tag, a patch's included, can be pushed again under the same name, so only the digest fixes what runs; the version beside it tells a reader and an updater which release the digest is. | [security] |
 
-### image-never-untagged-or-latest → images-pinned-by-version-and-digest
-No image in a Dockerfile or a Compose file is untagged or tagged `latest`.
-
-| Why | Tags |
-|---|---|
-| these are the floating forms the linters see; a floating major or minor and a missing digest are left to review, since neither linter can require a digest. | [] |
-
 ### files-copied-never-added · MUST
 No Dockerfile uses `ADD`: local files and folders enter an image with `COPY`.
 

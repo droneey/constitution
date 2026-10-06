@@ -46,20 +46,6 @@ No `Any`: not in an annotation, a `cast` or a generic's arguments — `dict[str,
 |---|---|
 | these are the places `Any` enters a Python program, the last two without the word written. | [] |
 
-### signatures-annotated-without-any → no-any-annotation
-Every parameter and return of a function is annotated, and never as `Any`.
-
-| Why | Tags |
-|---|---|
-| a parameter without an annotation is `Any` to the type checker, so an annotated signature is where `Any` stops entering. | [] |
-
-### generics-written-with-their-arguments → no-any-annotation
-A generic class in an annotation takes its type arguments: `list[Order]`, never `list`.
-
-| Why | Tags |
-|---|---|
-| a generic written without its arguments is a generic of `Any`. | [] |
-
 ### boundary-values-object-until-parsed → outside-values-untyped-until-parsed
 A value from outside the program — `json.loads`'s result included — is `object`, and its plain checks are `isinstance` and `in`; `cast` is no check.
 
@@ -132,7 +118,7 @@ An `async def` function makes no blocking call: it awaits its input and output, 
 |---|---|
 | one blocking call in a coroutine stalls everything else the event loop runs. | [performance] |
 
-### except-never-only-passes → catch-never-empty
+### except-never-only-passes → errors-surfaced-never-swallowed
 No `except` body is only `pass` or `continue`.
 
 | Why | Tags |
@@ -141,14 +127,14 @@ No `except` body is only `pass` or `continue`.
 
 ## Specs
 
-### case-named-test-should → case-reads-should-when
+### case-named-test-should → cases-named-should-when
 A case is `test_should_<behaviour>`, and `_when_<condition>` follows where it has one.
 
 | Why | Tags |
 |---|---|
 | the runner collects a case by its `test_` prefix, so the rule's words follow it; no linter of Python checks a case's name. | [] |
 
-### no-branch-or-loop-in-a-test → no-branch-or-loop-in-a-case
+### no-branch-or-loop-in-a-test → no-logic-in-cases
 A `test_` function holds no `if`, `for`, `while`, `match` or conditional expression; its variants are the rows of a parametrized table.
 
 | Why | Tags |

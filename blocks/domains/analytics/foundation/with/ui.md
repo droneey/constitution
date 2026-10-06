@@ -2,14 +2,14 @@
 
 > Consent asked and changed in a user interface.
 
-### consent-reachable-from-every-screen → consent-withdrawable-and-recorded
+### consent-reachable-from-every-screen · MUST
 The way to change consent is a link that stays on every screen.
 
 | Why | Tags |
 |---|---|
 | withdrawing is then as easy as giving, wherever the user is. | [security, ux] |
 
-### refusal-shown-beside-consent → refusal-as-easy-as-consent
+### refusal-shown-beside-consent · MUST
 The control that refuses sits beside the one that accepts, with the same size and the same weight.
 
 | Why | Tags |

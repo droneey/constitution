@@ -3,18 +3,11 @@
 > **Vocabulary:** folder `routes`, the delivery layer of a browser application.
 
 ### screens-are-file-routes · SHOULD
-Screens are file routes under `routes/`, the delivery layer, from which the router generates `routeTree.gen.ts`; `router.tsx` creates the router.
+Screens are file routes under `routes/`, the delivery layer, from which the router generates `routeTree.gen.ts`; `router.tsx` creates the router. `routes/` holds only file routes, their groups and parameters, and their dash folders.
 
 | Why | Tags |
 |---|---|
 | the file tree is the route tree, so a screen is found by its URL. | [] |
-
-### routes-folder-holds-file-routes → screens-are-file-routes
-`routes/` holds only file routes, their groups and parameters, and their dash folders.
-
-| Why | Tags |
-|---|---|
-| the file tree is then the route tree. | [] |
 
 ### route-owns-its-url → screen-composes-the-page
 A route owns its URL: it reads and validates its search, runs its loader, and composes the page.
@@ -31,18 +24,11 @@ The router's home is the route files, their private hooks in `-hooks/`, widgets,
 | a presentational component that navigates works on one screen only, and what `libs/` or an adapter wraps knows nothing of the application's navigation. | [] |
 
 ### screen-private-pieces-in-dash-folders → screen-private-pieces-beside-screen
-A screen's private pieces live beside its route in `-components/`, its private binding units in `-hooks/`, and the specs of both in the `__tests__/` of those folders, never in a `__tests__/` of the route folder.
+A screen's private pieces live beside its route in `-components/`, its private binding units in `-hooks/`, and the specs of both in the `__tests__/` of those folders, never in a `__tests__/` of the route folder. `-components/` holds component folders and a surface, as `components/` does, and `-hooks/` holds hooks files and a surface.
 
 | Why | Tags |
 |---|---|
 | the dash keeps them out of the route tree, and beside the screen they serve; the generator takes a `__tests__/` outside a dash folder for routes and warns on every run. | [] |
-
-### screen-pieces-in-dash-folders → screen-private-pieces-in-dash-folders
-A screen's private folders beside its route are `-components/` and `-hooks/`: `-components/` holds component folders and a surface, as `components/` does, and `-hooks/` holds hooks files and a surface.
-
-| Why | Tags |
-|---|---|
-| the dash keeps them out of the route tree. | [] |
 
 ### document-head-declared-by-route → document-metadata-owned-by-screen
 A route declares its document metadata in `head`.

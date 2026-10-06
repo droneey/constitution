@@ -9,33 +9,26 @@ A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with on
 |---|---|
 | four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong. | [] |
 
-### commit-header-format → commit-header-type-and-subject
-A commit's header is `type: Subject` or `type!: Subject`, with one of `feat`, `fix`, `refactor` and `chore`, no scope, at most 100 characters, and a subject that starts with a capital letter.
-
-| Why | Tags |
-|---|---|
-| a header in one form is read the same way by people and by the release automation. | [] |
-
-### commit-body-empty-reason-in-pull-request → reason-for-change-recorded · MUST
+### commit-body-empty-reason-in-pull-request · MUST
 A commit's body and footer are empty. The reason for the change, the migration of a breaking change and the issue it closes live in the pull request description.
 
 | Why | Tags |
 |---|---|
 | the pull request is where the reason is reviewed, and a squash merge keeps one clean subject per change. | [] |
 
-### commit-type-matches-the-diff → refactor-apart-from-behaviour-change
+### commit-type-matches-the-diff · SHOULD
 The type matches the diff: `feat` adds behaviour, `fix` corrects it, `refactor` and `chore` change none; `!` marks every change a consumer must adapt to.
 
 | Why | Tags |
 |---|---|
 | the type tells a reader and the project's release tooling what the change does, so a wrong type mislabels it in the history. | [] |
 
-### commit-checked-by-the-hooks → every-commit-passes-the-check
+### commit-checked-by-the-hooks · MUST
 The commit hooks hold what can be checked of a commit before it is made: its branch's name, its message and its staged files.
 
 | Why | Tags |
 |---|---|
-| a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. | [] |
+| a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. | [testing] |
 
 ### secrets-scanned-before-each-commit → no-secret-in-repository
 The commit hooks scan the staged changes for secrets before each commit.
@@ -69,12 +62,12 @@ Every change reaches the main line through a reviewed pull request. The one exce
 |---|---|
 | review is the last point where a person sees the change before it ships; a change that skips it ships unseen. | [] |
 
-### main-line-takes-no-direct-push → main-line-protected
+### main-line-takes-no-direct-push · MUST
 The protection also refuses a direct push to the main line; only the release automation pushes its version commit and tag.
 
 | Why | Tags |
 |---|---|
-| a direct push skips the review and the required check that every other change passes through. | [] |
+| a direct push skips the review and the required check that every other change passes through. | [security] |
 
 ### one-integration-strategy-no-work-in-progress · MUST
 A repository integrates by one strategy, which the protection enforces, and no work-in-progress or fix-up commit reaches the main line.
@@ -90,7 +83,7 @@ A pull request is small enough to review in one sitting; one that mixes concerns
 |---|---|
 | a reviewer reads a small change closely and skims a large one. | [] |
 
-### squash-merge-titled-in-commit-format → one-integration-strategy-no-work-in-progress
+### squash-merge-titled-in-commit-format · MUST
 Pull requests are squash-merged; the title becomes the commit's subject and follows the commit format.
 
 | Why | Tags |
@@ -138,12 +131,12 @@ An agent pushes a branch, its own or one others share, and opens a pull request 
 |---|---|
 | pushing and opening a pull request share a change, and the person who answers for it decides when it is shared. | [] |
 
-### agent-never-pushes-to-the-main-line → main-line-takes-no-direct-push
+### agent-never-pushes-to-the-main-line · MUST
 An agent never pushes to the main line, even where its rights would pass the protection.
 
 | Why | Tags |
 |---|---|
-| a holder of admin rights may pass the protection, so an agent that holds them is the last guard against the push. | [] |
+| a holder of admin rights may pass the protection, so an agent that holds them is the last guard against the push. | [security] |
 
 ### sub-agent-never-commits-pushes-or-merges → sub-agent-only-does-the-work
 A sub-agent never commits, never pushes and never merges.
@@ -152,7 +145,7 @@ A sub-agent never commits, never pushes and never merges.
 |---|---|
 | a sub-agent acts without the person watching, so every decision about the history stays with the agent the person talks to. | [] |
 
-### agent-never-force-pushes → shared-history-never-rewritten
+### agent-never-force-pushes · MUST
 An agent never force-pushes, to any branch.
 
 | Why | Tags |

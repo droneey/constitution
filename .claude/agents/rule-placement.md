@@ -25,7 +25,7 @@ A git range, `origin/main...HEAD` unless you are given another. Read the rules i
    - Workflow is how a change travels from the idea to the release: branch, commit, review, merge, version and release, CI gates, the hooks run on each commit, updates, and the working agreement with people and agents.
    - A rule that carries out an architecture or workflow rule is on that axis. Test layout is foundation. Strictness is not an axis.
 
-Also check the arrow: `foundation/` refers only to `foundation/`; `architecture/` and `workflow/` refer to `foundation/`, never to each other. A child states no looser level than its parent.
+Also check the arrow: a rule never carries out a rule of its own block; `foundation/` refers only to `foundation/`; `architecture/` and `workflow/` refer to `foundation/`, never to each other. A child states no looser level than its parent.
 
 Judge the meaning, not the words. A foundation rule about a network port, a Docker `ENTRYPOINT` or an attack surface is fine; a foundation rule that says "code talking to the outside world lives apart from the logic" is architecture though it names no folder.
 

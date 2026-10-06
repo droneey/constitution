@@ -9,7 +9,7 @@ foundation:
     no-debug-output-in-shipped-code:
       - T10
       - T20
-    positional-parameters-at-most-three:
+    parameters-at-most-three-wholes-as-one-object:
       - PLR0917
       - max-positional-args
   fastapi:
@@ -31,7 +31,7 @@ foundation:
       - UP040
       - UP046
       - UP047
-    signatures-annotated-without-any:
+    no-any-annotation:
       - ANN
     sys-path-never-touched:
       - TID251

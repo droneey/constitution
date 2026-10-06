@@ -76,84 +76,42 @@ A component's folder name carries its location and role: no prefix in `libs/ui` 
 |---|---|
 | the name alone tells where a component comes from and whether it holds logic. | [] |
 
-### root-components-prefixed → component-named-by-location
-A component of `root/ui` is in a folder named `root-<name>`.
-
-| Why | Tags |
-|---|---|
-| this is the location prefix a folder pattern can hold; a feature's prefix names its own folder, which only review sees. | [] |
-
-### widget-folder-ends-in-widget → component-named-by-location
-A widget's folder name ends in `-widget`.
-
-| Why | Tags |
-|---|---|
-| the name alone tells that it holds logic. | [] |
-
 ### components-dumb-widgets-smart → side-effects-at-the-edges
-A component in `components/` takes data and callbacks, performs no input or output, and imports no binding unit. Only a widget consumes binding units, and it works wherever it is placed.
+A component in `components/` takes data and callbacks, performs no input or output, and imports no binding unit. Only a widget consumes binding units, and it works wherever it is placed. A component never imports a widget. A component in `components/` imports no adapter, no shared contract of `contracts/` and no application layer.
 
 | Why | Tags |
 |---|---|
 | a presentational component can then be shown, reused and tested with any data; the logic lives in widgets, where it is expected. | [] |
 
-### components-never-import-widgets → components-dumb-widgets-smart
-A component never imports a widget; a widget composes components.
-
-| Why | Tags |
-|---|---|
-| a component that holds a widget holds its logic too, and stops being dumb. | [] |
-
-### components-import-no-adapter → components-dumb-widgets-smart
-A component in `components/` imports no adapter, no shared contract of `contracts/` and no application layer.
-
-| Why | Tags |
-|---|---|
-| a component that reaches a mechanism can no longer be shown or tested with plain data. | [] |
-
 ### ui-layer-imports → dependencies-point-inward
-A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities — their types, enums and functions — and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`.
+A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities — their types, enums and functions — and `kernel/`; never adapters, contracts or domain use-cases. Screens and `root/` may import `kernel/`. A feature's `ui/` never imports `contracts/` or `adapters/` either.
 
 | Why | Tags |
 |---|---|
 | the user interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | [] |
 
-### ui-reaches-no-mechanism-of-its-feature → ui-layer-imports
-A feature's `ui/` never imports its adapters, contracts or domain use-cases, nor `contracts/` or `adapters/`.
-
-| Why | Tags |
-|---|---|
-| these are the mechanisms the UI reaches only through its binding units. | [] |
-
 ### component-in-its-own-folder → access-only-through-curated-surface
-A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API.
+A component has its own folder: the component file, its `.types`, `.variants` and `.constants` when it needs them, its sub-components prefixed with its name in `components/`, and a surface offering only its public API. `components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `components/` folder of sub-components, its `__tests__/` and its surface.
 
 | Why | Tags |
 |---|---|
 | everything about one component is in one place, and its internals stay private. | [] |
 
-### component-folders-hold-their-files → component-in-its-own-folder
-`components/` and `widgets/` hold only component folders and a surface, and a component folder holds only files named after it, its `components/` folder of sub-components, its `__tests__/` and its surface.
-
-| Why | Tags |
-|---|---|
-| a component's files are then found by its name. | [] |
-
-### vendored-component-placed-by-its-home → vendored-components-adapted-on-arrival
+### vendored-component-placed-by-its-home · SHOULD
 A component installed as source is, before review, moved to the home its knowledge gives it and named by that home, never left where its installer put it.
 
 | Why | Tags |
 |---|---|
-| an installer's folder follows another project's layout, and a component left there is not where any reader looks for it. | [] |
+| an installer's folder follows another project's layout, and a component left there is not where any reader looks for it. | [ux] |
 
-### store-never-replaces-a-drilled-prop → props-drilled-at-most-two-levels
+### store-never-replaces-a-drilled-prop · SHOULD
 A deep component never reads a store to spare a prop its path; the state stays in its home and reaches the component by composition or a nearer widget.
 
 | Why | Tags |
 |---|---|
 | state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | [] |
 
-### theme-in-the-design-system-library → tokens-single-source-of-appearance
+### theme-in-the-design-system-library · MUST
 The theme module lives in `libs/ui/theme/`: its tokens, its constants and the code that applies them.
 
 | Why | Tags |
@@ -177,15 +135,8 @@ The providers are the application's composition root: they build the configurati
 | every concrete choice is made in one place, and a test hands the same binding unit a different adapter without touching it. | [] |
 
 ### binding-unit-composes-its-operation · SHOULD
-A binding unit binds one operation: it takes its adapter from the providers and calls the use-case, or the port when there is none. A plain function form of it is added only when a caller that is not reactive appears.
+A binding unit binds one operation: it takes its adapter from the providers and calls the use-case, or the port when there is none. A plain function form of it is added only when a caller that is not reactive appears. A binding unit imports neither an adapter, which the providers hand it, nor anything of `ui/`, which imports it.
 
 | Why | Tags |
 |---|---|
 | each operation is bound once, and the screen never learns which adapter serves it. | [] |
-
-### binding-units-import-no-adapter-or-ui → binding-unit-composes-its-operation
-A binding unit imports neither an adapter, which the providers hand it, nor anything of `ui/`, which imports it.
-
-| Why | Tags |
-|---|---|
-| an adapter imported directly bypasses the composition root, so a spec cannot replace it; a binding unit that imports UI points against the layers. | [] |

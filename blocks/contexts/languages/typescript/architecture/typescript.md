@@ -27,7 +27,7 @@ A role file is `<name>.<role>.ts`, and a folder's surface is `index.ts`.
 |---|---|
 | a `null` that travels inward brings a second absence into code that checks only for `undefined`. | [] |
 
-### domain-type-fields-readonly → business-types-readonly
+### domain-type-fields-readonly · SHOULD
 A field of an interface or an object type declared in a `*.entity.ts` or `*.value-object.ts` file is `readonly`.
 
 | Why | Tags |
@@ -41,7 +41,7 @@ An identifier's brand is set only in the mapper at the boundary.
 |---|---|
 | a brand set in one place is a proof that the value came through it; set anywhere, it proves nothing. | [] |
 
-### semantic-alias-exported-where-it-belongs → semantic-alias-names-a-shared-meaning
+### semantic-alias-exported-where-it-belongs · SHOULD
 A semantic alias is a type exported by the module whose meaning it names, and a vocabulary several features share lives in `kernel/`. A term that keeps an invariant is a value object, never an alias.
 
 | Why | Tags |

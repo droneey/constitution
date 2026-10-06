@@ -4,7 +4,7 @@ foundation:
       - all
     deprecated-calls-fail-the-types:
       - all
-    generics-written-with-their-arguments:
+    no-any-annotation:
       - all
     overrides-marked-by-decorator:
       - all

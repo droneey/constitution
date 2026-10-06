@@ -3,7 +3,7 @@
 ## Compiler and API
 
 ### react-compiler-on · MUST
-The build runs the React Compiler over every component and hook, except one the Compiler refuses, whose `'use no memo'` states why.
+The build runs the React Compiler over every component and hook, except one the Compiler refuses, whose `'use no memo'` states why. No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
 
 | Why | Tags |
 |---|---|
@@ -16,33 +16,12 @@ A component or hook returns the same output for the same props, state and contex
 |---|---|
 | the Compiler, concurrent rendering and `StrictMode` run a render more than once; one that is not pure behaves differently each time. | [] |
 
-### props-never-assigned → render-is-pure
-A component never assigns to its props.
-
-| Why | Tags |
-|---|---|
-| props belong to the caller; this is the change to existing data the linter can see. | [] |
-
-### no-manual-memoisation → react-compiler-on
-No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
-
-| Why | Tags |
-|---|---|
-| hand-written memoisation is noise the Compiler makes useless, and it hides the real dependencies of the code. | [performance] |
-
 ### modern-react-api-only · MUST
 Only the modern API: `use(Context)`, `<Context value>`, `ref` as a prop, ref callbacks that return their cleanup, actions. The legacy form of each is forbidden.
 
 | Why | Tags |
 |---|---|
 | two forms of one thing double what a reader must know, and the legacy forms are on their way out. | [] |
-
-### legacy-react-api-refused → modern-react-api-only
-No `useContext`, `Context.Provider`, `forwardRef`, `defaultProps`, `createRef` or string ref.
-
-| Why | Tags |
-|---|---|
-| each has a current form — `use` reads a context and can be called conditionally, a ref is a prop — and two forms of one thing double what a reader must know. | [] |
 
 ### function-components-only → inheritance-only-for-errors-and-framework-points · MUST
 Components are functions, composed, never inherited; a class only for an error boundary.
@@ -95,7 +74,7 @@ An effect synchronises with a system outside React — never state from state, n
 |---|---|
 | an effect that sets state from state renders twice and races; an event's response belongs in its handler. | [] |
 
-### derived-state-computed-in-render → effects-only-for-external-systems
+### derived-state-computed-in-render · MUST
 A value that can be derived is computed during render, never stored in state and synchronised by an effect.
 
 | Why | Tags |

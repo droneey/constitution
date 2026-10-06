@@ -47,13 +47,6 @@ The source of a package is laid out by concern in the folders of the top-level t
 |---|---|
 | a reader who knows one repository finds their way in every other, and a file has one obvious place. | [] |
 
-### top-level-folders-from-the-tree → anatomy-top-level-by-concern
-`src/` holds only the top-level folders of the tree and role folders.
-
-| Why | Tags |
-|---|---|
-| a reader who knows one repository finds their way in every other. | [] |
-
 ### root-imported-only-by-entry-and-delivery-wiring · MUST
 `root/` is imported only by entry files and by the delivery layer's own wiring. Nothing else reaches back to the composition root.
 
@@ -103,7 +96,7 @@ A shared piece with business meaning goes to `kernel/`; one without goes to `sha
 |---|---|
 | the folder then says what a piece means, and the kernel does not grow into a second domain every feature depends on. | [] |
 
-### composition-on-the-second-consumer → code-lives-with-its-reason-to-change
+### composition-on-the-second-consumer · MUST
 Composition across features lives in the delivery unit that needs it, which assembles features through their surfaces. It moves to `composition/<name>/` when a second consumer needs it, and facts derived from several features are derived there.
 
 | Why | Tags |
@@ -133,27 +126,13 @@ features/<f>/
 ```
 
 ### feature-anatomy · SHOULD
-A feature is laid out as `domain/`, `adapters/<system>/` and `app/` with the role folders of the tree, and a surface at its root. A block adds its own layers, such as a UI's.
+A feature is laid out as `domain/`, `adapters/<system>/` and `app/` with the role folders of the tree, and a surface at its root. A block adds its own layers, such as a UI's. A feature's root holds only its layer folders, its `__tests__/` and its surface, and nothing in it is imported from anywhere else. A feature's `domain/` holds only the role folders of the tree and no file of its own.
 
 | Why | Tags |
 |---|---|
 | a use-case, a port or an adapter is found in the same place in every feature. | [] |
 
-### feature-root-holds-its-layers → feature-anatomy
-A feature's root holds only its layer folders, its `__tests__/` and its surface; nothing is imported from anywhere else in it.
-
-| Why | Tags |
-|---|---|
-| a file or folder left loose beside the layers belongs to none of them, and the layer rules never see it. | [] |
-
-### feature-domain-holds-its-role-folders → feature-anatomy
-A feature's `domain/` holds only the role folders of the tree and no file of its own.
-
-| Why | Tags |
-|---|---|
-| a use-case, a port or an entity is found in the same place in every feature. | [] |
-
-### data-ports-split-by-reads-and-writes → contracts-shaped-by-role
+### data-ports-split-by-reads-and-writes · MUST
 A data port is a repository per entity, one file per side: `repositories/queries/<entity>.repository` for reads and `repositories/commands/<entity>.repository` for writes, each declaring its operations' parameters and results. The folder carries the side, never the file name, and `repositories/` has no surface that joins the two sides; a shape both sides use — the page a read returns and a write updates in the cache — is an entity.
 
 | Why | Tags |
@@ -188,7 +167,7 @@ An adapter imports its contracts, `kernel/`, `shared/` and `libs/`, and never a 
 |---|---|
 | adapters that know each other or their callers form a second, hidden program beside the domain. | [] |
 
-### feature-speaks-in-its-own-contracts → features-blind-to-each-other
+### feature-speaks-in-its-own-contracts · MUST
 A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature's surface.
 
 | Why | Tags |
@@ -199,19 +178,12 @@ A feature that needs an answer from another declares a contract in its own words
 
 A surface is the file the language resolves when a folder is imported. It re-exports and does nothing else.
 
-### folder-files-import-each-other-directly → access-only-through-curated-surface
-Inside a folder, files import each other directly.
+### folder-files-import-each-other-directly · MUST
+Inside a folder, files import each other directly. A file never imports the surface of the module it belongs to.
 
 | Why | Tags |
 |---|---|
 | the surface is the folder's offer to callers outside it; a file inside that goes through it imports its own folder, and that is where import cycles begin. | [] |
-
-### own-surface-never-imported → folder-files-import-each-other-directly
-A file never imports the surface of the module it belongs to.
-
-| Why | Tags |
-|---|---|
-| a module that imports its own surface imports itself, and that is where a cycle begins. | [] |
 
 ### layer-folder-has-no-surface · MUST
 A layer folder — `domain/`, `app/`, `adapters/`, `features/`, `libs/` — has no surface and is never an import target, and neither has the `src/` of a package that nothing imports. A caller imports the role folder inside it, so the feature's root surface is the only one that re-exports a whole feature. The `src/` of a package others import has a surface, its main entry, which only its consumers import.
@@ -219,13 +191,6 @@ A layer folder — `domain/`, `app/`, `adapters/`, `features/`, `libs/` — has 
 | Why | Tags |
 |---|---|
 | an import then names the role it couples to, and no surface that gathers several roles hides an edge the layer rules forbid. | [] |
-
-### layer-folder-never-imported → layer-folder-has-no-surface
-A layer folder is never an import target, and a feature's `domain/` has no surface.
-
-| Why | Tags |
-|---|---|
-| an import then names the role it couples to. | [] |
 
 ### surface-only-re-exports · MUST
 A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
@@ -243,7 +208,7 @@ A feature's surface offers its operations and its presentation — use-cases, bi
 
 ## Packages by folder role
 
-### packages-imported-by-folder-role → dependencies-point-inward
+### packages-imported-by-folder-role · MUST
 An external package — a dependency the program installs, not the language's standard library or the runtime's own modules — is imported by the role of the folder that imports it. `domain/`, `kernel/` and `contracts/` import none. The edge — `adapters/`, `libs/<name>/`, `root/` and the entry files, the delivery folder and `integrations/<framework>/` — imports any. Every other folder — `app/`, `composition/`, `shared/`, a UI's components and widgets — imports only a package that a block gives a home there. A block gives its package a home by naming every folder it is imported in, the edge's among them, so a home may reach past the edge or keep to a part of it; a package whose block names no home, and one with no block, is imported only at the edge. Specs import what they need to run.
 
 | Why | Tags |
@@ -252,7 +217,7 @@ An external package — a dependency the program installs, not the language's st
 
 ## Placement
 
-### contract-lifts-on-the-second-feature → code-lives-with-its-reason-to-change
+### contract-lifts-on-the-second-feature · MUST
 A contract belongs to the feature that needs it. When two features need it, it lifts to `contracts/`; a business type two features share lifts to `kernel/`, never sideways into one of them.
 
 | Why | Tags |
@@ -273,21 +238,21 @@ An adapter's form is a factory, a module object for one with no dependency, or a
 |---|---|
 | each form builds the adapter in one signature that names what it takes, so a reader finds an adapter's dependencies in the same place in every program. | [] |
 
-### adapter-receives-its-dependencies → one-explicit-composition-root
+### adapter-receives-its-dependencies · MUST
 An adapter receives its dependencies explicitly — the transport, the clients it speaks through — from the composition root, as a factory's parameters or through its constructor, and keeps no hidden state; it never imports a shared instance of them.
 
 | Why | Tags |
 |---|---|
 | a dependency the adapter receives is visible and replaceable, in production and in tests, and nothing it holds outlives a test or leaks between its callers unseen; a shared instance it imports is neither. | [] |
 
-### real-effects-chosen-at-composition-root → side-effects-at-the-edges
+### real-effects-chosen-at-composition-root · MUST
 A port for an effect — clock, randomness, identifiers, environment, file system, processes, network — is a contract placed like any other, its real implementation is an adapter, and only a composition root chooses the real one. Logic never calls the effect directly.
 
 | Why | Tags |
 |---|---|
 | everything else receives the effect through its port, so a test replaces it without touching the code and runs deterministically. | [testing] |
 
-### vendor-clients-in-libs → kernel-or-shared-by-meaning
+### vendor-clients-in-libs · SHOULD
 A vendor client without application knowledge lives in `libs/<system>/`.
 
 | Why | Tags |
@@ -310,7 +275,7 @@ A delivery unit — a screen, a command, a handler, a tool function — parses i
 |---|---|
 | business logic in a delivery unit cannot be reused by another transport or tested without it; kept out, it runs the same from a test, another command or another transport. | [] |
 
-### report-returned-as-a-value → delivery-units-stay-thin
+### report-returned-as-a-value · SHOULD
 What an operation reports is a value it returns — for a progressive report, a sequence of events — and the delivery unit presents it, as text or as data; the logic prints nothing along the way.
 
 | Why | Tags |
@@ -325,7 +290,7 @@ What an operation reports is a value it returns — for a progressive report, a 
 
 **Suffixes of core's vocabulary:** `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is not a repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`. The language fixes the spelling. Each block names its own folders and suffixes in its chapter, and a project adds its own the same way.
 
-### folder-named-for-purpose-or-role → folder-named-for-its-purpose
+### folder-named-for-purpose-or-role · SHOULD
 A folder whose purpose a layer or a role of the vocabulary of the project's active blocks names takes that name; the layer names are fixed words, whatever their grammatical number.
 
 | Why | Tags |
@@ -338,13 +303,6 @@ A file carries its role's suffix, whatever its folder: `entities/chat.entity`. N
 | Why | Tags |
 |---|---|
 | the name tells the role before the file is opened, and a tool can check it. | [] |
-
-### role-folder-files-carry-its-suffix → file-carries-its-role-suffix
-A file in a role folder — `entities/`, `contracts/`, `errors/`, `models/`, `repositories/` and the rest — carries the role's suffix.
-
-| Why | Tags |
-|---|---|
-| the name tells the role before the file is opened. | [] |
 
 ## The layer matrix
 

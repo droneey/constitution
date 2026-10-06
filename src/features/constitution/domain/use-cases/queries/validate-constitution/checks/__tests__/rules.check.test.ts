@@ -7,7 +7,9 @@ import { rulesCheck } from '../rules.check';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
 const I18N = 'blocks/domains/i18n/foundation/i18n.md';
-const ANATOMY = 'blocks/core/architecture/anatomy.md';
+const REMOTE_DATA = 'blocks/domains/remote-data/architecture/remote-data.md';
+const UI = 'blocks/domains/ui/foundation/ui.md';
+const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
 
 describe('rulesCheck', () => {
@@ -173,11 +175,11 @@ describe('rulesCheck', () => {
         parent: 'dependencies-point-inward',
         slug: 'names-reveal-intent',
       }),
-      rule({
-        parent: 'names-reveal-intent',
-        slug: 'names-are-short',
-      }),
     ].join('\n');
+    files[UI] = `# UI\n\n${rule({
+      parent: 'names-reveal-intent',
+      slug: 'four-data-states',
+    })}`;
     const input = checkInputOf(files);
 
     // Act
@@ -202,7 +204,7 @@ describe('rulesCheck', () => {
     {
       child: {
         parent: 'dependencies-point-inward',
-        slug: 'rules-bind',
+        slug: 'portals-for-overlays',
       },
       condition: 'a rule on workflow carries out a MUST rule on foundation',
       parentLevel: 'MUST',
@@ -211,50 +213,47 @@ describe('rulesCheck', () => {
       child: {
         level: 'MUST',
         parent: 'dependencies-point-inward',
-        slug: 'rules-bind',
+        slug: 'portals-for-overlays',
       },
       condition: 'a MUST rule carries out a SHOULD rule',
       parentLevel: 'SHOULD',
     },
-  ])(
-    'should accept a parent when $condition in another file of the same block',
-    ({ child, parentLevel }) => {
-      // Arrange
-      const files = validFiles();
-      files[PRINCIPLES] = `# Principles\n\n${rule({
-        level: parentLevel,
-        slug: 'dependencies-point-inward',
-      })}`;
-      files[WORKFLOW] = `# Workflow\n\n${rule(child)}`;
-      const input = checkInputOf(files);
+  ])('should accept a parent when $condition in another block', ({ child, parentLevel }) => {
+    // Arrange
+    const files = validFiles();
+    files[PRINCIPLES] = `# Principles\n\n${rule({
+      level: parentLevel,
+      slug: 'dependencies-point-inward',
+    })}`;
+    files[PORTALS] = `# Portals\n\n${rule(child)}`;
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = rulesCheck(input);
+    // Act
+    const findings = rulesCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 
   it.each([
     {
       child: {
-        file: PRINCIPLES,
-        slug: 'dependencies-point-inward',
+        file: I18N,
+        slug: 'i18n-plurals-by-cldr',
       },
       condition: 'a foundation rule carries out a workflow rule',
       expected:
-        'rule "dependencies-point-inward" carries out "rules-bind" on workflow, which a rule on foundation may not refer to',
+        'rule "i18n-plurals-by-cldr" carries out "rules-bind" on workflow, which a rule on foundation may not refer to',
       parent: 'rules-bind',
     },
     {
       child: {
-        file: ANATOMY,
-        slug: 'layers-point-inward',
+        file: REMOTE_DATA,
+        slug: 'reads-are-cancellable',
       },
       condition: 'an architecture rule carries out a workflow rule',
       expected:
-        'rule "layers-point-inward" carries out "rules-bind" on workflow, which a rule on architecture may not refer to',
+        'rule "reads-are-cancellable" carries out "rules-bind" on workflow, which a rule on architecture may not refer to',
       parent: 'rules-bind',
     },
   ])('should report the reference when $condition', ({ child, expected, parent }) => {
@@ -281,32 +280,25 @@ describe('rulesCheck', () => {
   it.each([
     {
       condition: 'its parent states MUST',
-      principles: [
-        rule({
-          slug: 'dependencies-point-inward',
-        }),
-      ],
+      parent: rule({
+        slug: 'four-data-states',
+      }),
     },
     {
       condition: 'its parent takes MUST from its own parent',
-      principles: [
-        rule({
-          slug: 'names-reveal-intent',
-        }),
-        rule({
-          parent: 'names-reveal-intent',
-          slug: 'dependencies-point-inward',
-        }),
-      ],
+      parent: rule({
+        parent: 'dependencies-point-inward',
+        slug: 'four-data-states',
+      }),
     },
-  ])('should report a rule that states a looser level when $condition', ({ principles }) => {
+  ])('should report a rule that states a looser level when $condition', ({ parent }) => {
     // Arrange
     const files = validFiles();
-    files[PRINCIPLES] = `# Principles\n\n${principles.join('\n')}`;
-    files[WORKFLOW] = `# Workflow\n\n${rule({
+    files[UI] = `# UI\n\n${parent}`;
+    files[PORTALS] = `# Portals\n\n${rule({
       level: 'SHOULD',
-      parent: 'dependencies-point-inward',
-      slug: 'rules-bind',
+      parent: 'four-data-states',
+      slug: 'portals-for-overlays',
     })}`;
     const input = checkInputOf(files);
 
@@ -317,8 +309,8 @@ describe('rulesCheck', () => {
     expect(findings).toStrictEqual([
       {
         message:
-          'rule "rules-bind" is SHOULD while it carries out the MUST rule "dependencies-point-inward"; a rule is never looser than the rule it carries out',
-        path: WORKFLOW,
+          'rule "portals-for-overlays" is SHOULD while it carries out the MUST rule "four-data-states"; a rule is never looser than the rule it carries out',
+        path: PORTALS,
       },
     ]);
   });
@@ -327,36 +319,29 @@ describe('rulesCheck', () => {
     {
       condition: 'its parent states it',
       level: 'SHOULD',
-      principles: [
-        rule({
-          level: 'SHOULD',
-          slug: 'dependencies-point-inward',
-        }),
-      ],
+      parent: rule({
+        level: 'SHOULD',
+        slug: 'four-data-states',
+      }),
     },
     {
       condition: 'its parent takes it from its own parent',
       level: 'MUST',
-      principles: [
-        rule({
-          slug: 'names-reveal-intent',
-        }),
-        rule({
-          parent: 'names-reveal-intent',
-          slug: 'dependencies-point-inward',
-        }),
-      ],
+      parent: rule({
+        parent: 'dependencies-point-inward',
+        slug: 'four-data-states',
+      }),
     },
   ])(
     'should report a rule that states the level it inherits when $condition',
-    ({ level, principles }) => {
+    ({ level, parent }) => {
       // Arrange
       const files = validFiles();
-      files[PRINCIPLES] = `# Principles\n\n${principles.join('\n')}`;
-      files[WORKFLOW] = `# Workflow\n\n${rule({
+      files[UI] = `# UI\n\n${parent}`;
+      files[PORTALS] = `# Portals\n\n${rule({
         level,
-        parent: 'dependencies-point-inward',
-        slug: 'rules-bind',
+        parent: 'four-data-states',
+        slug: 'portals-for-overlays',
       })}`;
       const input = checkInputOf(files);
 
@@ -366,8 +351,45 @@ describe('rulesCheck', () => {
       // Assert
       expect(findings).toStrictEqual([
         {
-          message: `rule "rules-bind" states ${level}, the level it already takes from "dependencies-point-inward"; a rule states a level only to be stricter than the rule it carries out`,
-          path: WORKFLOW,
+          message: `rule "portals-for-overlays" states ${level}, the level it already takes from "four-data-states"; a rule states a level only to be stricter than the rule it carries out`,
+          path: PORTALS,
+        },
+      ]);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'in another file on another axis',
+      file: WORKFLOW,
+      parent: 'dependencies-point-inward',
+      slug: 'rules-bind',
+    },
+    {
+      condition: 'in its seam with another block',
+      file: UI_WITH_REMOTE_DATA,
+      parent: 'four-data-states',
+      slug: 'optimistic-writes-roll-back',
+    },
+  ])(
+    'should report a rule that carries out a rule of its own block when it sits $condition',
+    ({ file, parent, slug }) => {
+      // Arrange
+      const files = validFiles();
+      files[file] = `# Chapter\n\n${rule({
+        parent,
+        slug,
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "${slug}" carries out "${parent}", a rule of its own block; a rule carries out only a rule of another block`,
+          path: file,
         },
       ]);
     },

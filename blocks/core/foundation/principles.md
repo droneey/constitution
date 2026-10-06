@@ -18,13 +18,6 @@ A caught error is handled, rethrown, or mapped to a typed error. Code branches o
 |---|---|
 | a swallowed error turns a failure into wrong data that shows up far from its cause, and a message is text a person may reword. | [errors] |
 
-### catch-never-empty → errors-surfaced-never-swallowed
-No `catch` block is empty.
-
-| Why | Tags |
-|---|---|
-| an empty catch swallows every error that reaches it. | [errors] |
-
 ### rules-held-by-tools · MUST
 A rule a tool can hold is held by one, configured to fail on a violation. A rule no configured tool holds is reviewed, or lowered by an override.
 
@@ -60,7 +53,7 @@ A new kind of thing — a vendor, a command, a format, a rule — is added as a 
 |---|---|
 | code that grows by addition keeps every existing member untouched, so adding one cannot break another. | [] |
 
-### numbers-in-text-from-data → one-home-per-datum
+### numbers-in-text-from-data · MUST
 A number shown in a text — a count, a total, a limit — is read from the data it describes, never typed again.
 
 | Why | Tags |

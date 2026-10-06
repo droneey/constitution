@@ -292,7 +292,7 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop import features\n',
       },
-      finding: 'layer-folder-never-imported BROKEN',
+      finding: 'layer-folder-has-no-surface BROKEN',
       task: 'architecture:check',
     },
     {
@@ -303,7 +303,7 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop.kernel.money import MONEY\n',
       },
-      finding: 'surface-is-the-only-way-in BROKEN',
+      finding: 'access-only-through-curated-surface BROKEN',
       task: 'architecture:check',
     },
     {

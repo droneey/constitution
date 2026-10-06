@@ -21,9 +21,9 @@ A write invalidates only its own feature's keys. A refresh across features is co
 |---|---|
 | a feature that invalidates another's keys knows that feature, which the laws forbid. | [data] |
 
-### no-second-model-of-remote-data → server-owns-remote-data
+### no-second-model-of-remote-data · MUST
 Whoever decides whether a change is valid owns the data. Where another system decides, the program keeps no model of its own that guards that data's consistency, and no domain events, event sourcing or specifications for it; what the program decides itself — a draft, an optimistic item, the folding of a stream, a grouping by period — it models in its domain.
 
 | Why | Tags |
 |---|---|
-| a second model of someone else's data duplicates their rules, and disagrees with them the first time they change. | [] |
+| a second model of someone else's data duplicates their rules, and disagrees with them the first time they change. | [data] |

@@ -32,23 +32,23 @@ architecture:
   api:
     kebab-case-file-names:
       - 'src/api'
-    top-level-folders-from-the-tree:
+    anatomy-top-level-by-concern:
       - 'src/api'
   cli:
-    command-files-in-cli:
+    commands-in-the-cli-folder:
       - 'src/cli'
       - 'exists:0'
     kebab-case-file-names:
       - 'src/cli'
   core:
-    top-level-folders-from-the-tree:
+    anatomy-top-level-by-concern:
       - src
     data-ports-split-by-reads-and-writes:
       - 'src/**/repositories'
       - 'src/**/repositories/{queries,commands}'
-    feature-domain-holds-its-role-folders:
+    feature-anatomy:
       - 'src/features/*/domain'
-    role-folder-files-carry-its-suffix:
+    file-carries-its-role-suffix:
       - 'src/**/constants'
       - 'src/**/contracts'
       - 'src/**/entities'
@@ -64,7 +64,7 @@ architecture:
       - '.*'
       - '.*.*'
       - '.dir'
-    layer-folder-never-imported:
+    layer-folder-has-no-surface:
       - 'src/features/*/domain'
     typescript-role-and-surface-files:
       - 'src/**/constants'
@@ -92,7 +92,7 @@ architecture:
   nestjs:
     kebab-case-file-names:
       - 'src/**/providers'
-    providers-folder-holds-provider-files:
+    nestjs-files-in-the-tree:
       - 'src/**/providers'
       - '.provider.ts'
       - '.filter.ts'
@@ -102,24 +102,23 @@ architecture:
   tanstack-router:
     kebab-case-file-names:
       - 'src/routes'
-    screen-pieces-in-dash-folders:
+    screen-private-pieces-in-dash-folders:
       - 'src/routes'
       - 'src/routes/**/-components'
       - 'src/routes/**/-components/[!_]*'
       - 'src/routes/**/-hooks'
-    routes-folder-holds-file-routes:
+    screens-are-file-routes:
       - 'src/routes'
   ui:
-    component-folders-hold-their-files:
+    component-in-its-own-folder:
       - 'src/**/components'
       - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
       - 'src/components/[!_]*'
       - 'src/root/**/components/[!_]*'
       - 'src/**/widgets'
       - 'src/**/widgets/[!_]*'
-    widget-folder-ends-in-widget:
+    component-named-by-location:
       - 'src/**/widgets/[!_]*'
-    root-components-prefixed:
       - 'src/root/**/components/[!_]*'
     kebab-case-file-names:
       - 'src/**/assets'

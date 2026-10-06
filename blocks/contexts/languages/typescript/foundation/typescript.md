@@ -9,7 +9,7 @@ An import alias, where the program has one, is declared once, in `imports` of `p
 |---|---|
 | one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | [] |
 
-### hash-alias-for-the-source-root → alias-declared-in-package-imports
+### hash-alias-for-the-source-root · MUST
 The source root's alias is `#/`: `"#/*": "./src/*"` in `imports`.
 
 | Why | Tags |
@@ -44,7 +44,7 @@ Source files are kebab-case `.ts` or `.tsx`.
 |---|---|
 | one spelling of every kind of file lets the tools and the reader find a file by its name. | [] |
 
-### tsx-only-where-markup-is-written → typescript-file-forms
+### tsx-only-where-markup-is-written · MUST
 A file is `.tsx` only where it writes markup.
 
 | Why | Tags |
@@ -54,14 +54,7 @@ A file is `.tsx` only where it writes markup.
 ## Names
 
 ### identifier-case-by-kind · SHOULD
-PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. A function a framework renders by the case of its name takes the case that framework's block names. An enum is named in the singular.
-
-| Why | Tags |
-|---|---|
-| the case tells what kind of thing a name is before its declaration is read. | [] |
-
-### names-in-the-case-of-their-kind → identifier-case-by-kind
-Types, classes, interfaces and enums are in PascalCase, a type parameter is `T` or starts with it, and no name is in snake_case.
+PascalCase for types, classes, enums and their members; camelCase for functions, variables and instances; SCREAMING_SNAKE_CASE for a constant value, camelCase for a constant object or function. A function a framework renders by the case of its name takes the case that framework's block names. An enum is named in the singular. A type parameter is `T` or starts with it.
 
 | Why | Tags |
 |---|---|
@@ -134,13 +127,6 @@ Comparisons are strict — `===` and `!==`, with `null` too; never `==`.
 |---|---|
 | `!value` also treats `0` and the empty string as absent, which is a bug waiting for its input. | [] |
 
-### nullish-default-over-or → nullish-operators-for-absence
-A default for an absent value is given with `??`, not `||`.
-
-| Why | Tags |
-|---|---|
-| a logical or also replaces `0`, an empty string and `false`, which are values, not absence. | [] |
-
 ### no-any → no-any-type
 No `any`: not `: any`, `as any`, `Record<string, any>` or `Promise<any>`, and no parameter left without a type for the compiler to read as `any`.
 
@@ -162,13 +148,6 @@ A method that overrides one of its base class carries `override`.
 |---|---|
 | an override then says so where it is declared, and a base method renamed or removed leaves no method that silently overrides nothing. | [] |
 
-### casts-and-assertions-refused → no-unchecked-escape-hatches
-No `as` cast except `as const`, no `!` non-null assertion and no `@ts-ignore`.
-
-| Why | Tags |
-|---|---|
-| each is a place where the code tells the compiler it knows better. | [] |
-
 ### boundary-values-unknown-until-parsed → outside-values-untyped-until-parsed
 A value from outside the program — `JSON.parse`'s result included — is `unknown`, and its plain checks are `typeof`, `in` and `Array.isArray`; `.json<T>()` and `as Promise<T>` are casts.
 
@@ -182,30 +161,6 @@ A branch over a union handles every member: a `switch` whose default proves `nev
 | Why | Tags |
 |---|---|
 | a new member then fails to compile at every branch that forgot it. | [] |
-
-### switch-over-union-exhaustive → exhaustive-branching-over-unions
-A `switch` over a union of literals handles every member.
-
-| Why | Tags |
-|---|---|
-| a member added later then fails the check at every switch that misses it. | [] |
-
-**Example:**
-```ts
-type Payment = { status: 'pending' } | { status: 'paid'; at: Temporal.Instant } | { status: 'failed'; reason: string };
-
-const label = (payment: Payment): string => {
-  switch (payment.status) {
-    case 'pending': return 'Waiting';
-    case 'paid': return `Paid ${payment.at.toString()}`;
-    case 'failed': return payment.reason;
-    default: {
-      const unreachable: never = payment;
-      return unreachable;
-    }
-  }
-};
-```
 
 ### satisfies-to-check-conformance · SHOULD
 Conformance to a type is checked with `satisfies`, which keeps the narrow type, not with `as` or a widening annotation.
@@ -243,7 +198,7 @@ A type parameter appears at least twice in its signature; one that appears once 
 | a parameter used once relates nothing, and only lets a caller claim a type the function never checks. | [] |
 
 ### text-made-deliberately · SHOULD
-A value becomes text through a function that names its form — a formatter, `String` of a primitive, a template of strings — never by `+` with a value that is not a string, or by an object's default `toString`.
+A value becomes text through a function that names its form — a formatter, `String` of a primitive, a template of strings — never by `+` with a value that is not a string, or by an object's default `toString`. `+` never mixes a `bigint` with a `number`.
 
 | Why | Tags |
 |---|---|
@@ -256,33 +211,12 @@ A date, a time, a duration or a time zone is a `Temporal` value; a `Date` appear
 |---|---|
 | `Date` mixes an instant with the machine's time zone and mutates in place, which is where date bugs come from; `Temporal` keeps each meaning in its own immutable type. | [data] |
 
-### no-date-library → dates-through-temporal
-No module imports a date library, one that wraps `Date`, or a path inside one.
-
-| Why | Tags |
-|---|---|
-| a date library wraps the `Date` that `Temporal` replaces. | [] |
-
-### no-object-joined-into-text → text-made-deliberately
-No object reaches text through its default `toString`, by `+` or in a template, and `+` never mixes a `bigint` with a `number`.
-
-| Why | Tags |
-|---|---|
-| these are the joins that print `[object Object]` or throw at run time, which the linter can see from the types. | [] |
-
 ### return-type-no-wider-than-returned · SHOULD
 A declared return type is no wider than what the function returns.
 
 | Why | Tags |
 |---|---|
 | a wider annotation throws away what the compiler knew, and every caller narrows again. | [] |
-
-### return-union-lists-only-returned-members → return-type-no-wider-than-returned
-A union or literal a function declares as its return type lists no member, `undefined` aside, that the function never returns.
-
-| Why | Tags |
-|---|---|
-| a member never returned is a case every caller handles for nothing, and the linter sees it from the returns. | [] |
 
 ### no-literal-thrown → only-errors-thrown
 No literal, template or object literal is thrown.
@@ -319,13 +253,6 @@ A resource that must be released — a file handle, a lock, a subscription, a te
 |---|---|
 | a `finally` is forgotten on the next path added; `using` releases at the end of the scope whatever the path. | [] |
 
-### disposable-held-by-using → resources-released-by-using
-A value whose type implements `Disposable` or `AsyncDisposable` is declared with `using` or `await using`.
-
-| Why | Tags |
-|---|---|
-| the type says the value must be released, so the lint can hold it; a reader or a handle whose type says nothing stays with review. | [] |
-
 ### options-object-has-a-named-type → parameters-at-most-three-wholes-as-one-object
 An object of values that travel together is typed by a named type, never by an object type written inline in the signature.
 
@@ -357,7 +284,7 @@ No new import names an export marked `@deprecated`.
 ## Dependencies
 
 ### tools-are-dev-dependencies → tools-pinned-exactly-by-the-repository
-The tools are `devDependencies` of `package.json`.
+The tools are `devDependencies` of `package.json`. Production code imports no development dependency.
 
 | Why | Tags |
 |---|---|
@@ -369,13 +296,6 @@ Every tool in `devDependencies` is an exact version, with no range.
 | Why | Tags |
 |---|---|
 | a range lets the lockfile move a tool to a new version without a change to the manifest. | [] |
-
-### production-imports-no-development-dependency → tools-are-dev-dependencies
-Production code imports no development dependency.
-
-| Why | Tags |
-|---|---|
-| a tool imported by production code ships inside it. | [security] |
 
 ### caret-ranges-lockfile-pins → program-dependencies-ranged-lockfile-pins
 The range of a dependency of the program is a caret range.

@@ -1,13 +1,13 @@
 foundation:
   browser:
-    bundle-reads-no-build-environment:
+    runtime-configuration-served-beside-bundle:
       - types
   core:
     no-dead-code:
       - allowUnreachableCode
       - allowUnusedLabels
   nestjs:
-    compiler-keeps-decorator-metadata:
+    nestjs-keeps-decorator-metadata:
       - emitDecoratorMetadata
       - experimentalDecorators
     framework-filled-fields-marked-definite:

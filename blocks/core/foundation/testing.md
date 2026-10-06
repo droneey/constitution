@@ -95,7 +95,7 @@ An invariant is proven by a property test where one pays — the guard of a valu
 |---|---|
 | a property test tries inputs no author thought of, where a few examples would miss the one that breaks. | [testing] |
 
-### property-counterexample-kept-as-case → property-tests-where-they-pay
+### property-counterexample-kept-as-case · SHOULD
 A counterexample a property test finds is kept as a fixed case of the unit's spec.
 
 | Why | Tags |
@@ -146,12 +146,12 @@ A case passes alone and in any order; no state survives from one case or one fil
 |---|---|
 | a case that leans on another passes or fails by the order the runner picks, and fails alone when someone runs it to find a bug. | [testing] |
 
-### case-order-shuffled-with-a-seed → specs-independent-of-order
+### case-order-shuffled-with-a-seed · SHOULD
 The runner of the specs shuffles the order of the cases and reports the seed that replays it; only the mutation tool keeps one order.
 
 | Why | Tags |
 |---|---|
-| a case that leans on another fails in some order, and the seed lets anyone run that order again; a mutant's run must stop at the same failing case whichever mutant it tests. | [] |
+| a case that leans on another fails in some order, and the seed lets anyone run that order again; a mutant's run must stop at the same failing case whichever mutant it tests. | [testing] |
 
 ### no-fixed-sleeps-in-tests · SHOULD
 A test waits for a condition or advances a fake clock, never a fixed delay.
@@ -176,12 +176,12 @@ Tests touch no network, no real file system outside a temporary folder, no real 
 |---|---|
 | a test that reaches the world is slow, flaky and can do real harm; a sandboxed one gives the same answer every run. | [testing, security] |
 
-### network-refused-in-unit-specs → tests-run-in-a-sandbox
+### network-refused-in-unit-specs · MUST
 In a unit spec, every call that opens a connection is replaced with one that throws, set once for all the unit specs; an integration spec keeps the real calls to engines inside the sandbox.
 
 | Why | Tags |
 |---|---|
-| a spec that reaches a server by mistake passes while the server answers and fails at random when it does not; refused at once, it fails where the mistake is. | [] |
+| a spec that reaches a server by mistake passes while the server answers and fails at random when it does not; refused at once, it fails where the mistake is. | [security, testing] |
 
 ### one-fake-per-contract · SHOULD
 Each faked contract has one fake, `<contract>.fake`, shared by every spec that needs it.
@@ -226,20 +226,6 @@ A suite is named after its boundary, and a case reads `should <behaviour>`, with
 | Why | Tags |
 |---|---|
 | a failing case then says which behaviour broke and under what condition, without opening it; a condition invented to fill the pattern says nothing. | [testing] |
-
-### case-reads-should-when → cases-named-should-when
-A case reads `should <behaviour>`, and `when <condition>` follows where it has one.
-
-| Why | Tags |
-|---|---|
-| a failing case then names what broke and under what condition. | [testing] |
-
-### no-branch-or-loop-in-a-case → no-logic-in-cases
-A case's body holds no branch, loop or conditional expression.
-
-| Why | Tags |
-|---|---|
-| a branch in a case runs one path and skips the other, so the case may assert nothing on the path it took. | [testing] |
 
 ### arrange-act-assert-marked · SHOULD
 A case has three parts — Arrange, Act, Assert — each marked and present once, and Act makes one call. A lifecycle case is the one exception: after its Arrange, it repeats a marked Act and Assert for each transition, each Act making one call.

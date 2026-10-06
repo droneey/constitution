@@ -67,7 +67,7 @@ Imports between units point from `packages/` to `shared/` to `libs/`: `shared/` 
 |---|---|
 | the more units need a piece, the more stable it must be; an import upward makes it change whenever one of its users does. | [] |
 
-### no-unit-reached-by-path → units-imported-by-their-entries
+### no-unit-reached-by-path · MUST
 No file of a unit of `packages/`, of `shared/`, of a unit of `libs/` or of the root reaches into the folder of another unit by a path.
 
 | Why | Tags |

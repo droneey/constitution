@@ -23,14 +23,14 @@ An entity's identifier is a type of its own, branded by its entity, so an order'
 |---|---|
 | two identifiers of one primitive type are swapped silently; a brand makes the compiler refuse it. | [] |
 
-### domain-values-never-typed-again → one-home-per-datum
+### domain-values-never-typed-again · MUST
 A set of values the program declares for its business is never typed out again. A subset of an enum is a named constant beside the enum, and a schema over one of the program's types is checked by type against the value it produces. A vocabulary another party owns — an analytics report's, a wire format's — is not the program's: a total table maps the program's values to it, and the compiler checks the table.
 
 | Why | Tags |
 |---|---|
-| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | [] |
+| a restated set drifts from its source, and a schema that is stricter or looser than its type locks out, or lets in, what the program does not mean. | [data] |
 
-### invariant-values-are-plain-immutable-data → invariant-checked-at-construction · MUST
+### invariant-values-are-plain-immutable-data · MUST
 A value that keeps an invariant is immutable, compared by value, and made of data alone, in its language's plain immutable record form: it has no identity and no state that changes.
 
 | Why | Tags |

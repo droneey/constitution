@@ -1,19 +1,19 @@
 foundation:
   tailwind:
-    theme-resets-every-default-scale:
-      - theme-resets-every-default-scale.grit
+    utilities-only-from-tokens:
+      - utilities-only-from-tokens.grit
   css:
     baseline-features-only:
       - useBaseline
-    stylesheet-classes-declared-and-used:
+    classes-declared-and-used:
       - noUnusedClasses
-    custom-properties-declared-and-read-by-var:
+    custom-properties-declared-before-use:
       - noUndeclaredCustomProperties
       - noInvalidPropertyInitValue
       - noMissingVarFunction
     no-important-declarations:
       - noImportantStyles
-    no-hexadecimal-colour:
+    stylesheet-values-from-theme-properties:
       - noHexColors
     selectors-stay-shallow:
       - noExcessiveSelectorClasses

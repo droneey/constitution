@@ -11,7 +11,7 @@ The document and its schema live in `composition/`, which knows every section. A
 
 ## The stages
 
-### stages-validate-render-plan-apply → stages-run-alone
+### stages-validate-render-plan-apply · SHOULD
 Validate, render, plan and apply are separate use-cases, and a later one calls the earlier ones.
 
 | Why | Tags |

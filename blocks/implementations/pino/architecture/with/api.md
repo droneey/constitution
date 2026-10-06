@@ -2,7 +2,7 @@
 
 > Where a server that logs with pino enters each request's trace id.
 
-### trace-middleware-registered-by-the-root → pino-configured-by-the-root
+### trace-middleware-registered-by-the-root · MUST
 `root/` registers the middleware that enters each request's trace id, beside the instance it creates.
 
 | Why | Tags |

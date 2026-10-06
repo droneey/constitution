@@ -2,7 +2,7 @@
 
 ## Versions and releases
 
-### versions-follow-semver → breaking-change-ships-its-migration
+### versions-follow-semver · MUST
 Versions follow semantic versioning: major for a breaking change of an entry, minor for an addition, patch for a fix.
 
 | Why | Tags |

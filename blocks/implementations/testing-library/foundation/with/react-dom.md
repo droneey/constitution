@@ -2,12 +2,12 @@
 
 > Specs that render into a document and query it.
 
-### no-document-selectors-in-specs → queries-by-role-label-text
+### no-document-selectors-in-specs · MUST
 `container.querySelector` and class selectors are forbidden.
 
 | Why | Tags |
 |---|---|
-| a selector finds what the document's structure holds, not what a person perceives, and breaks when the markup changes and the screen does not. | [] |
+| a selector finds what the document's structure holds, not what a person perceives, and breaks when the markup changes and the screen does not. | [a11y, testing] |
 
 ## Accessibility
 

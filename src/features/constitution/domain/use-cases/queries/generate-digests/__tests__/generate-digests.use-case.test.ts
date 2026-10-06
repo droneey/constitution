@@ -12,6 +12,7 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { generateDigests } from '../generate-digests.use-case';
 
 const CORE = 'blocks/core/core.md';
+const I18N = 'blocks/domains/i18n/foundation/i18n.md';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
 
@@ -103,18 +104,20 @@ describe('generateDigests', () => {
     {
       condition: 'a rule carries out a SHOULD rule and states MUST',
       files: {
+        [I18N]: `# i18n\n\n${rule({
+          level: 'MUST',
+          parent: 'dependencies-point-inward',
+          slug: 'i18n-plurals-by-cldr',
+          tags: '[ux]',
+        })}`,
         [PRINCIPLES]: `# Principles\n\n${rule({
           level: 'SHOULD',
           slug: 'dependencies-point-inward',
-        })}\n${rule({
-          level: 'MUST',
-          parent: 'dependencies-point-inward',
-          slug: 'layers-point-inward',
         })}`,
       },
-      key: 'rule\tlayers-point-inward',
+      key: 'rule\ti18n-plurals-by-cldr',
       record:
-        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\tfoundation\tdependencies-point-inward\ttrue',
+        'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/foundation/i18n.md\t\tMUST\tux\tfoundation\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
     },
   ])('should write $what in the record when $condition', ({ files, key, record }) => {

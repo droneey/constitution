@@ -10,7 +10,7 @@ A variant that restyles descendants is a `data-*` attribute on their ancestor, r
 | the stylesheet then reaches every descendant, and no prop is drilled for looks. | [] |
 
 ### stylesheet-values-from-theme-properties → tokens-single-source-of-appearance
-In a stylesheet, a colour, space, size, radius, shadow, duration or easing is read from a custom property of the theme, `var(--color-text-muted)`; a literal value appears only where the theme defines the property.
+In a stylesheet, a colour, space, size, radius, shadow, duration or easing is read from a custom property of the theme, `var(--color-text-muted)`; a literal value appears only where the theme defines the property. No stylesheet writes a hexadecimal colour, the theme's included.
 
 | Why | Tags |
 |---|---|
@@ -29,13 +29,6 @@ The root declares `color-scheme` for the themes it supports.
 | Why | Tags |
 |---|---|
 | native controls, scrollbars and the page's canvas then follow the theme. | [ux] |
-
-### no-hexadecimal-colour → stylesheet-values-from-theme-properties
-No stylesheet writes a hexadecimal colour, the theme's included, and every stylesheet but the theme reads its colours from the theme's properties.
-
-| Why | Tags |
-|---|---|
-| hexadecimal is the form a colour copied from a design tool arrives in, and the one the lint can see; outside the theme it is a value the next theme change misses, inside it a colour the derivation by rule cannot read. | [ux] |
 
 ### theme-colours-in-oklch → light-and-dark-one-token-set
 The theme writes its colours as `oklch()`.
@@ -111,9 +104,9 @@ A size taken from the viewport uses the small viewport unit or the container —
 |---|---|
 | `100vh` ignores the browser's own toolbars on phones, and content slides under them. | [] |
 
-### layout-width-from-the-tokens → stylesheet-values-from-theme-properties
+### layout-width-from-the-tokens · MUST
 No layout width is fixed in pixels outside the tokens.
 
 | Why | Tags |
 |---|---|
-| a width fixed in a component overflows a narrower screen, and is a size the theme no longer owns. | [] |
+| a width fixed in a component overflows a narrower screen, and is a size the theme no longer owns. | [ux] |

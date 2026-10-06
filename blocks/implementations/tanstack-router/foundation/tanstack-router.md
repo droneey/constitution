@@ -21,13 +21,6 @@ A link names its route by typed `to` and `params`, never a path built from strin
 |---|---|
 | a typed target fails the type check when the route moves; a built string fails in the user's hands. | [] |
 
-### link-targets-never-built → links-name-typed-targets
-A route's `to` is never a template with a substitution or a concatenation that starts with a path.
-
-| Why | Tags |
-|---|---|
-| the type check accepts a concatenated string, so only the lint sees a target that escapes the route types. | [] |
-
 ### routes-preload-on-intent · SHOULD
 The router is created with `defaultPreload: 'intent'`, so hovering, focusing or touching a link starts its route's loader.
 

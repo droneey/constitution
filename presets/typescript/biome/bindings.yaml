@@ -1,6 +1,6 @@
 foundation:
   _react:
-    props-never-assigned:
+    render-is-pure:
       - noReactPropAssignments
     undefined-is-the-only-absence:
       - nothing-rendered-as-null.grit
@@ -11,15 +11,15 @@ foundation:
     list-keys-from-identity:
       - noArrayIndexKey
       - useJsxKeyInIterable
-    legacy-react-api-refused:
+    modern-react-api-only:
       - modern-react-api-only.grit
       - noReactForwardRef
       - noReactStringRefs
     no-component-defined-inside-component:
       - noComponentHookFactories
       - noNestedComponentDefinitions
-    no-manual-memoisation:
-      - no-manual-memoisation.grit
+    react-compiler-on:
+      - react-compiler-on.grit
   bun-test:
     no-module-mocks:
       - no-module-mocks.grit
@@ -35,15 +35,15 @@ foundation:
     async-work-awaited-or-deliberately-detached:
       - noFloatingPromises
       - noMisusedPromises
-    positional-parameters-at-most-three:
+    parameters-at-most-three-wholes-as-one-object:
       - useMaxParams
-    case-reads-should-when:
+    cases-named-should-when:
       - cases-named-should-when.grit
-    no-branch-or-loop-in-a-case:
-      - no-branch-or-loop-in-a-case.grit
+    no-logic-in-cases:
+      - no-logic-in-cases.grit
     error-cause-preserved:
       - useErrorCause
-    catch-never-empty:
+    errors-surfaced-never-swallowed:
       - noEmptyBlockStatements
     function-file-and-complexity-limits:
       - noExcessiveCognitiveComplexity
@@ -66,7 +66,7 @@ foundation:
     no-raw-html-injection:
       - no-raw-html-injection.grit
   css:
-    stylesheet-classes-declared-and-used:
+    classes-declared-and-used:
       - noUndeclaredClasses
   ky:
     ky-body-parsed-by-schema:
@@ -75,8 +75,8 @@ foundation:
     intl-calls-take-a-locale:
       - intl-calls-take-a-locale.grit
   lingui:
-    t-never-at-module-level:
-      - t-never-at-module-level.grit
+    module-level-messages-are-descriptors:
+      - module-level-messages-are-descriptors.grit
   playwright:
     no-forced-actions:
       - noPlaywrightForceOption
@@ -141,26 +141,26 @@ foundation:
       - no-screen-sized-classes.grit
     mobile-first-breakpoints:
       - mobile-first-breakpoints.grit
-    no-arbitrary-utility-value:
+    utilities-only-from-tokens:
       - noTailwindArbitraryValue
     logical-utilities-for-direction:
       - logical-utilities-for-direction.grit
-    no-outline-none-in-class-lists:
-      - no-outline-none-in-class-lists.grit
+    focus-shown-by-focusable-utility:
+      - focus-shown-by-focusable-utility.grit
     no-important-modifier-in-class-lists:
       - no-important-modifier-in-class-lists.grit
   tanstack-router:
-    link-targets-never-built:
-      - link-targets-never-built.grit
+    links-name-typed-targets:
+      - links-name-typed-targets.grit
   testing-library:
     no-document-selectors-in-specs:
       - queries-by-role-label-text.grit
     queries-by-role-label-text:
       - queries-by-role-label-text.grit
   typescript:
-    disposable-held-by-using:
+    resources-released-by-using:
       - useDisposables
-    no-date-library:
+    dates-through-temporal:
       - noRestrictedImports
     no-deprecated-import:
       - noDeprecatedImports
@@ -168,9 +168,9 @@ foundation:
       - no-mutable-export.grit
     named-exports-only:
       - noDefaultExport
-    return-union-lists-only-returned-members:
+    return-type-no-wider-than-returned:
       - noMisleadingReturnType
-    no-object-joined-into-text:
+    text-made-deliberately:
       - noBaseToString
       - noUnsafePlusOperands
     no-literal-thrown:
@@ -178,17 +178,17 @@ foundation:
     enums-for-named-value-groups:
       - enums-for-named-value-groups.grit
       - useEnumInitializers
-    switch-over-union-exhaustive:
+    exhaustive-branching-over-unions:
       - useExhaustiveSwitchCases
-    names-in-the-case-of-their-kind:
+    identifier-case-by-kind:
       - useNamingConvention
     no-any:
       - noExplicitAny
-    casts-and-assertions-refused:
+    no-unchecked-escape-hatches:
       - noNonNullAssertion
       - noTsIgnore
       - noUnsafeTypeAssertion
-    nullish-default-over-or:
+    nullish-operators-for-absence:
       - useNullishCoalescing
     strict-equality-only:
       - noDoubleEquals
@@ -204,7 +204,7 @@ foundation:
       - zod-four-forms-only.grit
 architecture:
   _react:
-    component-file-calls-no-effect-hook:
+    component-effects-in-its-hooks-file:
       - component-effects-in-its-hooks-file.grit
   bun:
     process-env-read-only-in-root:
@@ -220,8 +220,8 @@ architecture:
       - keys-only-from-the-key-factory.grit
     query-client-built-by-the-root:
       - query-client-built-by-the-root.grit
-    query-function-only-in-cache-utils:
-      - query-function-only-in-cache-utils.grit
+    read-declared-once-as-query-options:
+      - read-declared-once-as-query-options.grit
   typescript:
     domain-type-fields-readonly:
       - domain-type-fields-readonly.grit

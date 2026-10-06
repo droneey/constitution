@@ -11,13 +11,6 @@ A component file calls no effect hook: its effects live in hooks in `<name>.hook
 |---|---|
 | a component then reads as its markup, and its effects are found and tested in one place. | [] |
 
-### component-file-calls-no-effect-hook → component-effects-in-its-hooks-file
-A component file calls no effect hook.
-
-| Why | Tags |
-|---|---|
-| a component then reads as its markup. | [] |
-
 ## Binding units
 
 ### binding-unit-is-a-hook → binding-unit-composes-its-operation

@@ -5,15 +5,8 @@
 ## Commands
 
 ### commands-in-the-cli-folder → anatomy-top-level-by-concern
-The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag definitions in files beside them, reused and never declared twice, and the list of commands registered beside the files.
+The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag definitions in files beside them, reused and never declared twice, and the list of commands registered beside the files. `cli/` holds no file of another role.
 
 | Why | Tags |
 |---|---|
 | every command is found in one place, and a flag means the same thing in every command that takes it. | [] |
-
-### command-files-in-cli → commands-in-the-cli-folder
-`cli/` holds `<name>.cli` files and plain files beside them, and no file of another role.
-
-| Why | Tags |
-|---|---|
-| every command is found in one place. | [] |

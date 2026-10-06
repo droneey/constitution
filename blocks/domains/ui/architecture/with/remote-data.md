@@ -2,7 +2,7 @@
 
 > Screens that show and change data another system owns: the cache the providers build, and what a write reloads.
 
-### cache-client-built-by-the-providers → providers-compose-the-ui-application
+### cache-client-built-by-the-providers · MUST
 The providers also build the cache client and hand it to the binding units.
 
 | Why | Tags |

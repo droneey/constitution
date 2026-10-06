@@ -1,18 +1,11 @@
 # Browser
 
 ### runtime-configuration-served-beside-bundle · MUST
-One bundle serves every environment: its configuration is served beside it, and no environment value is baked into the bundle.
+One bundle serves every environment: its configuration is served beside it, and no environment value is baked into the bundle. The compiler gives browser code the browser's globals and no runtime's.
 
 | Why | Tags |
 |---|---|
 | one tested bundle is promoted from staging to production unchanged, and nothing environment-specific is published inside it. | [security] |
-
-### bundle-reads-no-build-environment → runtime-configuration-served-beside-bundle
-Browser code reads no variable of the environment it is built in; the compiler gives it the browser's globals and no runtime's.
-
-| Why | Tags |
-|---|---|
-| a bundler fills such a read in at build time, and bakes one environment's values into the bundle. | [security] |
 
 ### no-credential-readable-by-script → credentials-only-in-the-protected-store
 A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.

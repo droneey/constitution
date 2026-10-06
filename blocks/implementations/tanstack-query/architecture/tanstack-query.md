@@ -36,18 +36,11 @@ The query library's home is the binding units of `app/` and `composition/`, and 
 | caching belongs to the binding units: a component that queries can no longer be shown with plain data, an adapter that caches holds a second cache, and a library that caches takes the application's data into code every program shares. | [] |
 
 ### read-declared-once-as-query-options → cache-keys-from-feature-factory
-Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its adapter as input; the hook, the loader and the guard all use it.
+Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its adapter as input; the hook, the loader and the guard all use it. A `queryFn` is written only there, inside the read's `queryOptions`.
 
 | Why | Tags |
 |---|---|
 | one declaration keeps the key, the function and the options of a read the same wherever it runs. | [] |
-
-### query-function-only-in-cache-utils → read-declared-once-as-query-options
-A `queryFn` is written only in `cache.utils.ts`, inside the read's `queryOptions`.
-
-| Why | Tags |
-|---|---|
-| an inline `queryFn` is a second declaration of the read, and its options drift from the loader's. | [] |
 
 ### query-client-built-by-the-root → stateful-clients-built-by-the-root
 `new QueryClient` is written only in `root/`, in the program's entry files and in specs.

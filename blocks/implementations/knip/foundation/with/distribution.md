@@ -2,7 +2,7 @@
 
 > A distributed package whose integration imports an optional peer.
 
-### optional-peer-ignored-in-production → production-set-marked-in-the-entries
+### optional-peer-ignored-in-production · MUST
 The framework an integration imports as an optional peer is listed in `ignoreDependencies` with `!`, `'<framework>!'`, in the configuration of the package that offers the integration.
 
 | Why | Tags |

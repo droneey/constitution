@@ -14,7 +14,7 @@
 |---|---|
 | the domain handles its own errors, whatever client the transport uses. | [] |
 
-### retries-written-in-the-adapter → httpx2-retries-kept-to-transient-failures
+### retries-written-in-the-adapter · SHOULD
 The adapter retries its calls, not the client.
 
 | Why | Tags |

@@ -18,7 +18,7 @@ architecture:
     python-file-forms:
       - 'src/*/api'
   cli:
-    command-files-in-cli:
+    commands-in-the-cli-folder:
       - 'src/*/cli'
     kebab-case-file-names:
       - 'src/*/cli'
@@ -26,7 +26,7 @@ architecture:
     data-ports-split-by-reads-and-writes:
       - 'src/*/**/repositories'
       - 'src/*/**/repositories/{queries,commands}'
-    feature-domain-holds-its-role-folders:
+    feature-anatomy:
       - 'src/*/features/*/domain'
     python-role-and-surface-files:
       - 'src/*/**/constants'
@@ -38,7 +38,7 @@ architecture:
       - 'src/*/**/types'
       - 'src/*/**/utils'
       - 'src/*/**/value_objects'
-    role-folder-files-carry-its-suffix:
+    file-carries-its-role-suffix:
       - 'src/*/**/constants'
       - 'src/*/**/contracts'
       - 'src/*/**/entities'

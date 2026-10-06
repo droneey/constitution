@@ -1,18 +1,11 @@
 # Tailwind
 
 ### utilities-only-from-tokens → tokens-single-source-of-appearance
-The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable is allowed with a suppression that says why.
+The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable is allowed with a suppression that says why. The same holds for an arbitrary value of any other kind.
 
 | Why | Tags |
 |---|---|
 | with the default scales gone, a value outside the tokens cannot be written by accident. | [] |
-
-### theme-resets-every-default-scale → utilities-only-from-tokens
-Every `@theme` block but an `inline` one holds `--*: initial`.
-
-| Why | Tags |
-|---|---|
-| one line resets the scales Tailwind adds in later versions too, where a list of namespaces misses the new ones. | [] |
 
 ### no-important-modifier-in-class-lists → no-important-declarations
 No class list uses the important modifier, `px-0!` or `!px-0`.
@@ -20,13 +13,6 @@ No class list uses the important modifier, `px-0!` or `!px-0`.
 | Why | Tags |
 |---|---|
 | the modifier writes an `!important` declaration the stylesheet rule never sees. | [] |
-
-### no-arbitrary-utility-value → utilities-only-from-tokens
-A class carries no arbitrary value; one that assigns a token's variable carries a suppression that states why.
-
-| Why | Tags |
-|---|---|
-| an arbitrary value is a visual value written outside the tokens. | [ux] |
 
 ### bare-utility-only-without-a-token · SHOULD
 A utility with no token behind it — `flex`, `items-center`, `truncate` — is used only where a token would make no sense.
@@ -77,7 +63,7 @@ A primitive merges its class with the caller's through `cn()`, the caller's last
 |---|---|
 | the merge keeps the last of two classes of one group, so the caller's utility replaces the primitive's instead of fighting it by its order in the stylesheet. | [ux] |
 
-### class-merger-knows-the-theme → utilities-only-from-tokens
+### class-merger-knows-the-theme · MUST
 The class merger is configured with every scale the theme defines — `extendTailwindMerge` given the theme's namespaces — and a spec proves that two classes of different groups both survive a merge.
 
 | Why | Tags |
@@ -113,10 +99,3 @@ Font-size and line-height tokens are in `rem`.
 | Why | Tags |
 |---|---|
 | the user's text size then scales every text of the user interface. | [] |
-
-### no-outline-none-in-class-lists → focus-shown-by-focusable-utility
-No class list writes `outline-none`.
-
-| Why | Tags |
-|---|---|
-| `outline-none` removes the outline outright, which only `focusable` may replace. | [] |

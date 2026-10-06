@@ -67,12 +67,12 @@ A need is met by existing components first, then by extending a primitive, and o
 |---|---|
 | an existing component is already proven and known to its users; each new one is more code the team keeps and more for users to learn. | [ux] |
 
-### primitive-markup-never-recreated → compose-before-authoring · MUST
+### primitive-markup-never-recreated · MUST
 A primitive's markup is never re-created.
 
 | Why | Tags |
 |---|---|
-| each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | [ux, a11y] |
+| each re-created primitive is a second version that drifts in look and behaviour, and in accessibility first. | [a11y, ux] |
 
 ### complex-patterns-on-accessible-primitives · MUST
 A dialog, popover, menu, combobox, select, tabs, tooltip, accordion and their kin are built on the active library of accessible primitives; where none is active, on the platform's own element where it carries the whole pattern, and otherwise on such a library; never with roles and keys written by hand.

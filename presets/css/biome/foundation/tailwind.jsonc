@@ -13,7 +13,7 @@
   },
   "plugins": [
     {
-      "path": "./.droneey/constitution/presets/css/biome/foundation/plugins/theme-resets-every-default-scale.grit",
+      "path": "./.droneey/constitution/presets/css/biome/foundation/plugins/utilities-only-from-tokens.grit",
       "includes": [
         "**/*.css",
       ],

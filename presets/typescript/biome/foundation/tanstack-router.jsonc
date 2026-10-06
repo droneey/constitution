@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/link-targets-never-built.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/links-name-typed-targets.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

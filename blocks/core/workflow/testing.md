@@ -9,7 +9,7 @@ When a behaviour is described before it is built — in an issue or a plan — a
 |---|---|
 | tests written from the description prove what was asked, not what was built. | [testing] |
 
-### bug-fix-starts-with-failing-test → test-seen-failing
+### bug-fix-starts-with-failing-test · SHOULD
 A bug fix begins with the test that reproduces the bug, seen failing before the fix.
 
 | Why | Tags |

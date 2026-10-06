@@ -87,7 +87,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/no-manual-memoisation.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/react-compiler-on.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

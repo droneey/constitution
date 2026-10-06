@@ -32,12 +32,12 @@ No secret and no personal data appear in logs, errors, test data or documents. A
 |---|---|
 | output is copied to places with weaker access than the data it came from. | [security, data] |
 
-### scanner-reports-redacted → no-secret-or-personal-data-in-output
+### scanner-reports-redacted · MUST
 A secret scanner's report shows a finding by its rule, file and line, never by its value.
 
 | Why | Tags |
 |---|---|
-| a report that prints the secret leaks it again, into every log that captures it. | [] |
+| a report that prints the secret leaks it again, into every log that captures it. | [data, security] |
 
 ### least-privilege-credentials · SHOULD
 A credential belongs to one identity and one purpose, per environment, with only the permissions its job needs, documented beside its use. Access is granted to people and services, never through a shared credential.
@@ -92,12 +92,12 @@ Every build, test and lint tool is pinned to one exact version in a file of the 
 |---|---|
 | a tool installed globally runs in another version on every machine, a tool's new version changes what the check reports and so is a change someone reviews, and a tool in the program's dependencies ships to every installation. | [security] |
 
-### tools-run-on-the-pinned-runtime → tools-pinned-exactly-by-the-repository
+### tools-run-on-the-pinned-runtime · MUST
 The runtime every tool needs is pinned by the repository; no tool brings one of its own or takes whichever the machine has.
 
 | Why | Tags |
 |---|---|
-| a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | [] |
+| a runtime nobody pinned differs from one machine to the next, and the tool's result with it. | [security] |
 
 ### shared-configuration-from-one-pinned-source · SHOULD
 A repository takes its tools' configuration, and any other file a shared source offers, from that one source, pinned by version like a dependency — a released archive or a package — and extends or imports it there; it keeps no copy but a template.
@@ -106,12 +106,12 @@ A repository takes its tools' configuration, and any other file a shared source 
 |---|---|
 | a copy drifts and is fixed in one repository at a time; a pinned source is fixed once and reaches every repository with an update. | [security] |
 
-### shared-configuration-taken-by-the-tools-own-mechanism → shared-configuration-from-one-pinned-source
+### shared-configuration-taken-by-the-tools-own-mechanism · SHOULD
 A repository takes a shared configuration through the tool's own way of extending one, else through a one-line module that re-exports it, else through the tool's remote configuration.
 
 | Why | Tags |
 |---|---|
-| the closer to the tool's own mechanism, the less glue each repository writes and keeps. | [] |
+| the closer to the tool's own mechanism, the less glue each repository writes and keeps. | [security] |
 
 ### template-copied-once-owned-by-consumer · SHOULD
 A file no tool can extend is a template: kept canonical in the source that offers it, copied once, then owned by the repository that copied it. Copies stay alike by convention, with no checker; a template that needs a checker should have been a file a tool extends.
@@ -141,7 +141,7 @@ A dependency is imported only from the entries it publishes, never from its inte
 |---|---|
 | internal paths change between releases without notice, and an update then breaks the program. | [] |
 
-### package-entries-curated → module-hides-much-behind-small-public-entry · MUST
+### package-entries-curated · MUST
 A package others import offers its consumers its entries and nothing else, and its manifest lists them wherever its language's manifest can say so.
 
 | Why | Tags |
@@ -176,7 +176,7 @@ A dependency deprecated as a whole is replaced — by its successor, another pac
 |---|---|
 | a deprecated package gets no more fixes, so its next vulnerability stays open. | [] |
 
-### agent-extensions-vetted-as-dependencies → new-dependency-vetted
+### agent-extensions-vetted-as-dependencies · SHOULD
 A server, plugin or skill that extends an agent is a dependency, vetted as one and pinned to a version even when it runs outside the lockfile.
 
 | Why | Tags |

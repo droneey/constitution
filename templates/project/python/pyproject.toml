@@ -189,7 +189,7 @@ forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
 
 # a layer folder's __init__.py, the import package's own among them, is never imported
 [[tool.importlinter.contracts]]
-name = "layer-folder-never-imported"
+name = "layer-folder-has-no-surface"
 type = "forbidden"
 source_modules = ["**"]
 forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.libs"]
@@ -198,43 +198,43 @@ allow_indirect_imports = true
 
 # the kernel and a module of each layer are reached from outside only through their __init__.py
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.kernel.*"]
 allowed_importers = ["*.kernel"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.adapters.*.*"]
 allowed_importers = ["*.adapters.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.composition.*.*"]
 allowed_importers = ["*.composition.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.contracts.*.*"]
 allowed_importers = ["*.contracts.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.features.*.*"]
 allowed_importers = ["*.features.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.libs.*.*"]
 allowed_importers = ["*.libs.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "access-only-through-curated-surface"
 type = "protected"
 protected_modules = ["*.shared.*.*"]
 allowed_importers = ["*.shared.*"]

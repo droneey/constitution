@@ -58,7 +58,7 @@ The theme follows the system's preference until the user chooses one; the choice
 |---|---|
 | a theme applied after the first paint flashes the wrong one, and a choice lost on reload is a choice the user makes every visit. | [ux] |
 
-### tokens-kept-in-the-interchange-format → tokens-single-source-of-appearance
+### tokens-kept-in-the-interchange-format · MUST
 Where a design tool or a second platform reads the tokens, their source is the design-token interchange format, and every output is generated from it.
 
 | Why | Tags |

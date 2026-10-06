@@ -5,12 +5,12 @@ foundation:
     test-code-unreachable-from-production:
       - no-test-code-in-production
   storybook:
-    production-imports-no-development-dependency:
+    tools-are-dev-dependencies:
       - no-development-dependency-in-production
     stories-unreachable-from-production:
       - stories-unreachable-from-production
   typescript:
-    production-imports-no-development-dependency:
+    tools-are-dev-dependencies:
       - no-development-dependency-in-production
 architecture:
   analytics:
@@ -36,7 +36,7 @@ architecture:
     nothing-imports-an-integration:
       - integration-never-imported
       - integrations-blind-to-each-other
-    surface-is-the-only-way-in:
+    access-only-through-curated-surface:
       - domain-role-reached-through-its-surface
       - kernel-reached-through-its-surface
       - module-reached-through-its-surface
@@ -55,15 +55,15 @@ architecture:
       - shared-knows-no-feature-or-root
     domain-imports-only-itself-kernel-and-contracts:
       - domain-reaches-only-itself-and-kernel
-    feature-root-holds-its-layers:
+    feature-anatomy:
       - feature-root-reached-only-through-its-layers
     features-blind-to-each-other:
       - features-blind-to-each-other
-    own-surface-never-imported:
+    folder-files-import-each-other-directly:
       - module-never-imports-its-own-surface
     kernel-imports-only-itself:
       - kernel-reaches-only-itself
-    layer-folder-never-imported:
+    layer-folder-has-no-surface:
       - layer-folder-never-a-target
     libs-import-no-application-code:
       - libs-know-no-application
@@ -116,15 +116,14 @@ architecture:
       - router-primitives-only-in-screens-and-widgets
       - router-only-in-its-home
   ui:
-    binding-units-import-no-adapter-or-ui:
+    binding-unit-composes-its-operation:
       - binding-units-reach-no-adapter-or-ui
-    components-import-no-adapter:
+    components-dumb-widgets-smart:
       - components-take-data-and-callbacks
-    components-never-import-widgets:
       - components-never-import-widgets
-    feature-root-holds-its-layers:
+    feature-anatomy:
       - feature-root-reached-only-through-its-layers
-    ui-reaches-no-mechanism-of-its-feature:
+    ui-layer-imports:
       - ui-reaches-no-mechanism
   yaml:
     yaml-only-at-the-edge:

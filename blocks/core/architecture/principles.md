@@ -49,18 +49,11 @@ A feature never imports another feature. Features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### access-only-through-curated-surface · MUST
-A module is reached from outside only through its surface, and the surface is curated: it offers what a caller may couple to and nothing else. Its internals are private.
+A module is reached from outside only through its surface, and the surface is curated: it offers what a caller may couple to and nothing else. Its internals are private. A domain role folder and the kernel are reached from outside only through their surface too.
 
 | Why | Tags |
 |---|---|
 | whatever a module exposes, a caller eventually depends on, and every exposed detail becomes one the module can no longer change. | [] |
-
-### surface-is-the-only-way-in → access-only-through-curated-surface
-A module, a domain role folder and the kernel are reached from outside only through their surface.
-
-| Why | Tags |
-|---|---|
-| an import past the surface couples to an internal the module is free to change. | [] |
 
 ### external-shapes-mapped-at-boundary · MUST
 An external shape — a response, a row, a message, a file format — is mapped to the inner model at the edge, in both directions. A wire shape never travels inward.
@@ -104,12 +97,12 @@ A contract is shaped by the role that uses it: a reader sees only reads, a write
 |---|---|
 | a wide contract couples every caller to operations it never uses, and hides which caller can change what. | [] |
 
-### untrusted-input-parsed-at-edge → outside-values-untyped-until-parsed
+### untrusted-input-parsed-at-edge · MUST
 Input from outside the program is parsed once, at the edge; inside, it is trusted and never checked again.
 
 | Why | Tags |
 |---|---|
-| the checks do not scatter through the code, and the domain receives only values of a known shape. | [] |
+| the checks do not scatter through the code, and the domain receives only values of a known shape. | [security] |
 
 ## The modelling vocabulary
 

@@ -7,19 +7,12 @@ The compiler and the build keep what Nest's injector reads: `experimentalDecorat
 |---|---|
 | Nest finds a provider by the type its constructor names, which only decorator metadata carries; without it the injector passes `undefined` and the program fails at its first request. | [errors] |
 
-### compiler-keeps-decorator-metadata → nestjs-keeps-decorator-metadata
-The compiler's options set `experimentalDecorators` and `emitDecoratorMetadata`.
-
-| Why | Tags |
-|---|---|
-| without them the injector reads no constructor types and wires nothing. | [] |
-
-### injected-classes-imported-as-values → nestjs-keeps-decorator-metadata
+### injected-classes-imported-as-values · MUST
 A class a decorated constructor names is imported as a value, never with `import type`, and no lint rule that asks for the type import runs on the program.
 
 | Why | Tags |
 |---|---|
-| the metadata of a class imported as a type is `Object`, which the injector cannot resolve, and the compiler reports nothing. | [] |
+| the metadata of a class imported as a type is `Object`, which the injector cannot resolve, and the compiler reports nothing. | [errors] |
 
 ### decorated-constructor-takes-every-dependency → parameters-at-most-three-wholes-as-one-object
 A constructor the injector calls takes one parameter for each dependency, however many: the injector imposes its signature, so the limit of three positions leaves it out, and the linter's limit is lifted in the files that hold such classes.

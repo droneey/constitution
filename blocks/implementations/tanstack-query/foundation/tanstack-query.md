@@ -56,9 +56,9 @@ A stream's events reach the cache in batches, with at most one cache write per f
 |---|---|
 | a cache write per event redraws every subscriber on every event. | [data] |
 
-### write-pending-until-its-refresh-lands → invalidation-in-on-settled
+### write-pending-until-its-refresh-lands · SHOULD
 A mutation's `onSettled` returns the invalidation's promise, so the write stays pending until the fresh data lands.
 
 | Why | Tags |
 |---|---|
-| a write that settles before its refresh shows the old data for a moment, as if it had failed. | [] |
+| a write that settles before its refresh shows the old data for a moment, as if it had failed. | [data] |

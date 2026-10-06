@@ -30,12 +30,12 @@ In the browser, a primitive passes its native attributes and its class through, 
 |---|---|
 | a caller then styles and sets attributes on a primitive as it would on the element underneath. | [ux] |
 
-### images-declare-their-size → core-web-vitals-within-budget
+### images-declare-their-size · SHOULD
 An image declares its width and height.
 
 | Why | Tags |
 |---|---|
-| the page reserves the image's space before it loads, so nothing moves when it arrives. | [performance] |
+| the page reserves the image's space before it loads, so nothing moves when it arrives. | [performance, ux] |
 
 ### core-web-vitals-within-budget · SHOULD
 Largest Contentful Paint stays within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1 at the 75th percentile, measured in the field.

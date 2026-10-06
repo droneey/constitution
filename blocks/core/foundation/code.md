@@ -62,7 +62,7 @@ A value with a unit carries the unit in its name: `timeoutMs`, `DEFAULT_TIMEOUT_
 |---|---|
 | a number without its unit is read in the wrong one sooner or later, and the bug looks like correct code. | [] |
 
-### file-is-one-semantic-unit → one-reason-per-unit
+### file-is-one-semantic-unit · MUST
 A file holds one semantic unit and is named after it; unrelated exports go to their own files.
 
 | Why | Tags |
@@ -91,13 +91,6 @@ A function takes at most three positional parameters. Values that make one whole
 | Why | Tags |
 |---|---|
 | each position is an order the caller must remember, and values that belong together are one concept; a call site of one object describes itself, and a field is added without touching callers. | [] |
-
-### positional-parameters-at-most-three → parameters-at-most-three-wholes-as-one-object
-A function takes at most three positional parameters.
-
-| Why | Tags |
-|---|---|
-| each position is an order the caller must remember. | [] |
 
 ### no-boolean-positional-parameter · SHOULD
 A boolean is never a positional parameter: it travels as a named field of the call's object, or the function becomes two that each say what they do.
@@ -282,28 +275,28 @@ An expected failure is typed, carries a stable code a caller can branch on and d
 |---|---|
 | a caller that branches on a typed code keeps working when the message is reworded, and a failure that is part of the contract is handled by design. | [errors] |
 
-### parse-failure-is-one-coded-error → expected-failures-typed-with-codes
+### parse-failure-is-one-coded-error · SHOULD
 A parser's failure becomes one coded error of the kit, with its cause, and each problem the parser reports becomes one of its details, with the path to where it was found and never the value it rejected.
 
 | Why | Tags |
 |---|---|
 | the caller handles one error type and sees every problem of the input at once, each pointing at its place. | [errors] |
 
-### framework-errors-never-raised → expected-failures-typed-with-codes
+### framework-errors-never-raised · SHOULD
 Code raises the error kit's errors, never the error types of the framework that serves it — a server's or a command-line framework's — which carry no code of the program's expected failures.
 
 | Why | Tags |
 |---|---|
 | a framework's error carries no code a caller can branch on, and the code that raises it is tied to that framework. | [errors] |
 
-### failures-listed-beside-the-contract → expected-failures-typed-with-codes
+### failures-listed-beside-the-contract · SHOULD
 A contract that can fail lists the expected failures it throws as one named type beside it, each an error of the kit with its code.
 
 | Why | Tags |
 |---|---|
 | the language cannot say what a function throws, so the list is where a caller and a spec find every failure to handle. | [errors] |
 
-### catch-narrows-and-rethrows → errors-surfaced-never-swallowed
+### catch-narrows-and-rethrows · MUST
 A catch handles only the failures it recognises by code, through the error kit's guard, and rethrows every other; a catch around a library's call maps that library's exceptions to the kit's coded errors.
 
 | Why | Tags |
@@ -324,12 +317,12 @@ What a user sees of a failure says what happened and what to do next, never a st
 |---|---|
 | a user can act on a next step but not on a trace, and internals shown to a user leak how the program works. | [errors, security, ux] |
 
-### one-error-handler-per-transport → failure-shown-as-what-happened-and-what-next · MUST
+### one-error-handler-per-transport · MUST
 Defects travel to the boundary. Each transport has one handler of last resort that turns a failure into what its user sees, and a program exits only there.
 
 | Why | Tags |
 |---|---|
-| one handler gives every failure the same shape and the same next step, and no internal detail leaks past it. | [] |
+| one handler gives every failure the same shape and the same next step, and no internal detail leaks past it. | [errors, security, ux] |
 
 ## Requirements for implementation
 

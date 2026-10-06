@@ -9,7 +9,7 @@ One document the user writes is the program's single input; every run reads it w
 |---|---|
 | one declared state is reviewable, repeatable and diffable; inputs scattered across flags and files are none of these. | [] |
 
-### field-constraints-checked-in-validation → declared-document-is-the-single-input
+### field-constraints-checked-in-validation · MUST
 Every constraint between fields of the document is checked in validation, before any stage runs, never at the point of use.
 
 | Why | Tags |

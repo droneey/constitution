@@ -16,7 +16,7 @@ A refactor and a change of behaviour are never one commit.
 |---|---|
 | a rollback of the behaviour then leaves the structure alone, and a reviewer sees which lines change what the program does. | [] |
 
-### commit-holds-only-its-task-files → commit-is-one-logical-change · MUST
+### commit-holds-only-its-task-files · MUST
 A commit holds only the files of its task.
 
 | Why | Tags |

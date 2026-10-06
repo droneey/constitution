@@ -9,7 +9,7 @@
 |---|---|
 | Vite writes `import.meta.env` into the bundle at build time, so a setting read there would need a build for each environment. | [] |
 
-### process-env-never-read-in-the-bundle → bundle-reads-no-build-environment
+### process-env-never-read-in-the-bundle → runtime-configuration-served-beside-bundle
 The bundle's code never reads `process.env`.
 
 | Why | Tags |
