@@ -30,6 +30,7 @@ const PRESETS_FOLDER = join(REPOSITORY, 'presets');
 
 const PARTS = [
   'common/core',
+  'common/yaml',
   'typescript/typescript',
   'typescript/architecture/core',
 ];

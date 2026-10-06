@@ -75,7 +75,7 @@ No `unittest.mock`, and no `monkeypatch` over a module of the program; `monkeypa
 |---|---|
 | these are pytest's and Python's ways to put another object in a module's place; the environment has no contract to fake, so `monkeypatch` stays for it. | [] |
 
-### async-specs-by-anyio → concurrent-work-bound-to-its-scope
+### async-specs-by-anyio → async-work-awaited-or-held-by-a-scope
 Async specs run on anyio's plugin, with `anyio_mode = "auto"`; pytest-asyncio is not installed.
 
 | Why | Tags |

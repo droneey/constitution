@@ -56,12 +56,12 @@ A use case exists only when its operation carries business logic; without any, i
 |---|---|
 | a use case that only passes a call through adds a place to read without hiding anything. | [] |
 
-### use-case-answers-or-changes · MUST
-A port or a use case answers a question or changes state, never both; a command may load what it changes — the entity, or the aggregate whose invariants it keeps — through its own port of the write side, and decides only on that and on its input.
+### command-loads-through-its-write-port · MUST
+A command loads what it changes — the entity, or the aggregate whose invariants it keeps — through its own port of the write side, and decides only on what it loaded and on its input.
 
 | Why | Tags |
 |---|---|
-| a read that writes cannot be retried or cached, while what a command changes it must load to keep its invariants. | [] |
+| what a command changes it must load to keep its invariants, and loading it through the write side keeps the command blind to the read side. | [] |
 
 ### command-returns-nothing · SHOULD
 A command returns nothing; the caller makes the identifier of what the command creates and passes it in.

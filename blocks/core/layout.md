@@ -80,8 +80,8 @@ A repository’s readme says what the repository is, how to install and run it, 
 |---|---|
 | the readme is the first page anyone opens. | [] |
 
-### knowledge-kept-with-what-it-describes · SHOULD
-Knowledge about one module lives in a readme beside it; writing for readers outside the code — users, integrators, operators — is kept apart from the code.
+### module-readme-holds-its-knowledge · SHOULD
+A module's readme, beside it, holds the knowledge about that module; writing for readers outside the code — users, integrators, operators — is kept apart from the code.
 
 | Why | Tags |
 |---|---|

@@ -4,7 +4,3 @@ ls:
   .*.*: kebab-case | regex:^\.[a-z0-9]+(-[a-z0-9]+)*$
   .*.*.*: kebab-case | regex:^\.[a-z0-9]+(-[a-z0-9]+)*$
   .md: kebab-case | regex:^[A-Z]+(_[A-Z]+)*$
-  # exists:0 counts only the key's own folder; a pattern no name matches refuses .yml in every folder.
-  .yml: regex:^$
-ignore:
-  - .github/ISSUE_TEMPLATE

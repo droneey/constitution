@@ -19,7 +19,7 @@ Modules form no import cycle, direct or through a chain of modules.
 | a cycle ties two modules into one unit that can be neither tested nor changed apart. | [] |
 
 ### dependency-points-toward-stability · SHOULD
-A unit depends only on units that change less often than itself: rules of the business on nothing volatile, and frameworks, transports and vendors on them.
+A unit depends only on units that change less often than itself.
 
 | Why | Tags |
 |---|---|
@@ -28,7 +28,7 @@ A unit depends only on units that change less often than itself: rules of the bu
 ## Contracts
 
 ### contract-offers-a-caller-only-what-it-calls · MUST
-A contract between units offers each caller only the operations it calls: a reader sees only reads, a writer only writes.
+A contract between units offers each caller only the operations it calls, never the whole of what an implementation can do.
 
 | Why | Tags |
 |---|---|
@@ -81,7 +81,7 @@ A method that overrides one of its base carries the language's mark of an overri
 | an override that stops overriding, or a new method that overrides one by accident, fails the check instead of changing behaviour silently. | [] |
 
 ### pattern-chosen-by-problem · SHOULD
-A pattern answers a problem the code has now, and it is then the one this table names: several interchangeable ways to do one job — a strategy and a registry keyed by kind; the states of a thing and the moves between them — a union of states and a pure transition function, a transition table when they grow; behaviour wrapped around an implementation — a decorator, applied where the implementation is chosen; an outside interface turned into the one the code needs — an adapter; a complicated subsystem behind a few operations — a facade; steps in a fixed order — a pipeline of functions; construction that depends on configuration — a factory, called where the program is wired; a fact others react to — an event; a request to run later, retry or undo — a command object. Never a global instance, a service locator, inheritance to reuse code, or a class of unrelated helpers.
+A pattern, where a problem calls for one, is the one this table names: several interchangeable ways to do one job — a strategy and a registry keyed by kind; the states of a thing and the moves between them — a union of states and a pure transition function, a transition table when they grow; behaviour wrapped around an implementation — a decorator; an outside interface turned into the one the code needs — an adapter; a complicated subsystem behind a few operations — a facade; steps in a fixed order — a pipeline of functions; construction that depends on configuration — a factory; a fact others react to — an event; a request to run later, retry or undo — a command object. Never a global instance, a service locator, inheritance to reuse code, or a class of unrelated helpers.
 
 | Why | Tags |
 |---|---|

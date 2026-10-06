@@ -33,7 +33,7 @@ A name is never only an empty word — `data`, `result`, `temp`, `info`, `item`,
 | an empty name makes the reader look up what it holds, every time. | [] |
 
 ### function-name-has-a-concrete-verb · SHOULD
-A function's name is a concrete verb and its object, never an empty verb alone — `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`; a name an implemented interface imposes is exempt.
+A function's name is a concrete verb and its object, never an empty verb alone — `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update`; a callback named after the event it answers, and a name an implemented interface imposes, are exempt.
 
 | Why | Tags |
 |---|---|
@@ -77,7 +77,7 @@ An event's name says what happened, in the past tense: `OrderPlaced`, not `Place
 | an event records a fact that already happened; a command asks for one. | [] |
 
 ### value-name-carries-its-unit · SHOULD
-A value with a unit carries the unit in its name: `timeoutMs`, `sizeBytes`.
+The name of a value with a unit carries the unit: `timeoutMs`, `sizeBytes`.
 
 | Why | Tags |
 |---|---|

@@ -27,7 +27,7 @@ A spec calls neither `waitForTimeout`, `waitForSelector` nor `waitForNavigation`
 |---|---|
 | locators and web-first assertions retry until the page is ready, while a fixed wait, a selector or a quiet network guesses when it is. | [] |
 
-### web-first-assertions-awaited → async-work-awaited-or-detached-on-purpose
+### web-first-assertions-awaited → async-work-awaited-or-held-by-a-scope
 Every web-first assertion — an `expect` on a locator or a page — is awaited.
 
 | Why | Tags |

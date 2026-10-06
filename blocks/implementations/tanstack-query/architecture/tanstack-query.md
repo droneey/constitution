@@ -42,7 +42,7 @@ Each read is declared once as `queryOptions`, beside the key factory in `cache.u
 |---|---|
 | one declaration keeps the key, the function and the options of a read the same wherever it runs. | [] |
 
-### query-client-built-by-the-root → root-builds-every-stateful-client
+### query-client-built-by-the-root → root-builds-and-hands-in-every-stateful-part
 `new QueryClient` is written only in `root/`, in the program's entry files and in specs.
 
 | Why | Tags |

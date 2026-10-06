@@ -18,8 +18,8 @@ A change that makes a document false — a readme, the project’s context, an e
 |---|---|
 | a document corrected later is not corrected, and a reader trusts the stale one until it costs them. | [] |
 
-### moved-file-moved-never-rewritten · MUST
-A file that moves is moved, never deleted and written anew, and it is not edited in the same step.
+### change-moves-a-file-never-rewrites-it · MUST
+A change that moves a file moves it, never deletes it and writes it anew, and edits it in another step.
 
 | Why | Tags |
 |---|---|

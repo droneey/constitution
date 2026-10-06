@@ -4,12 +4,12 @@
 
 ## Calls and resources
 
-### async-work-awaited-or-detached-on-purpose · MUST
-Asynchronous work is awaited, or detached on purpose with its failure handled.
+### async-work-awaited-or-held-by-a-scope · MUST
+Asynchronous work is awaited, or started within a scope that waits for it, cancels it and receives its failures — work that must outlive its caller in a longer-lived scope such as a supervisor; no task outlives every scope.
 
 | Why | Tags |
 |---|---|
-| forgotten work fails where nobody listens, and the program carries on as if it succeeded. | [errors] |
+| forgotten work fails where nobody listens, and a task no scope holds leaks resources and reports to nobody. | [errors] |
 
 ### outside-call-has-a-timeout · MUST
 Every call across a process boundary has a timeout.
@@ -38,13 +38,6 @@ Every read of a collection from outside the program — a query, a remote list, 
 | Why | Tags |
 |---|---|
 | an unbounded read works on test data and fails in production when the data grows. | [performance] |
-
-### concurrent-work-bound-to-its-scope · SHOULD
-Concurrent work starts within a scope that waits for it, cancels it and receives its failures; no task outlives the operation that started it.
-
-| Why | Tags |
-|---|---|
-| a task that outlives its scope leaks resources and reports its failures to nobody. | [errors] |
 
 ## Operations
 

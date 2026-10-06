@@ -110,14 +110,14 @@ A parameter past the third is keyword-only, after a bare `*`, and values that ma
 |---|---|
 | a keyword-only parameter is named at every call, so its position is no order the caller must remember. | [] |
 
-### awaitable-never-dropped → async-work-awaited-or-detached-on-purpose
+### awaitable-never-dropped → async-work-awaited-or-held-by-a-scope
 A call that returns an awaitable is never a statement of its own: its result is awaited, or kept to be awaited.
 
 | Why | Tags |
 |---|---|
 | a coroutine nobody awaits never runs, and its failure is never seen. | [errors] |
 
-### concurrency-by-task-groups → concurrent-work-bound-to-its-scope
+### concurrency-by-task-groups → async-work-awaited-or-held-by-a-scope
 Concurrent work starts in a task group — `asyncio.TaskGroup`, or the one of the async library the project uses — never by a bare `asyncio.create_task` or `ensure_future`, and a deadline is a timeout scope such as `asyncio.timeout`.
 
 | Why | Tags |
@@ -193,7 +193,7 @@ A unit that no registry distributes floors its `requires-python` in `[project]` 
 |---|---|
 | the linter and the type checker read the language's version from it, and hold the code to an older language when the floor is lower. | [] |
 
-### floor-ranges-lockfile-pins · SHOULD
+### dependency-declared-with-a-floor · SHOULD
 A dependency of the program is declared with a `>=` floor, capped only with the reason beside the cap.
 
 | Why | Tags |

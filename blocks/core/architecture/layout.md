@@ -55,7 +55,7 @@ The language fixes the spelling. Each block names its own folders and suffixes, 
 ## Form
 
 ### module-has-the-one-form · SHOULD
-Every module, at any depth — a package’s source, a feature, the kernel, a module of a shared layer — is a folder with a surface, the role folders it needs and modules of this same form, and every folder appears only when needed.
+Every module, at any depth — a package’s source, a feature, the kernel, a module of a shared layer — is a folder with a surface, the role folders it needs and modules of this same form.
 
 | Why | Tags |
 |---|---|

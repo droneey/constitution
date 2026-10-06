@@ -5,5 +5,6 @@ core:
     - '.*.*.*'
     - '.dir'
     - '.md'
-  format-has-one-extension:
+yaml:
+  yaml-file-ends-in-yaml:
     - '.yml'

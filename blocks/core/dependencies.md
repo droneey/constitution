@@ -19,14 +19,14 @@ A file the program or its build downloads outside a package manager — a binary
 | an unverified download runs whatever its address serves that day. | [security] |
 
 ### tool-pinned-exactly-by-the-repository · MUST
-Every build, test and lint tool, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally, and production code imports none of them.
+A dependency that builds, tests or lints, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally, and production code imports none of them.
 
 | Why | Tags |
 |---|---|
 | a tool installed globally runs in another version on every machine, and its new version changes what the check reports. | [security] |
 
 ### dependency-resolved-from-its-declared-registry · SHOULD
-The package manager names the registry of every scope, and a private package’s name is scoped so it never resolves from a public registry.
+A private dependency resolves only from the registry the project names for it, never from a public one.
 
 | Why | Tags |
 |---|---|

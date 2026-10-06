@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. An expected failure is part of the contract; a defect is never caught to carry on and never replaced by a fallback value, but travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A defect is never caught to carry on and never replaced by a fallback value; it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|
@@ -40,6 +40,13 @@ A catch handles only the failures it recognises by type or code — handling cha
 | Why | Tags |
 |---|---|
 | a swallowed failure turns into wrong data that shows up far from its cause. | [errors] |
+
+### optional-part-isolated-from-its-faults · SHOULD
+A failure inside an optional part — analytics, a preview, a recommendation — is contained at that part's boundary and reported, and the operation that called the part goes on.
+
+| Why | Tags |
+|---|---|
+| a part the user can do without must not take down the action it serves, and a fault reported out of band is still seen. | [errors] |
 
 ### error-keeps-its-cause · MUST
 An error that maps another keeps it as its cause.

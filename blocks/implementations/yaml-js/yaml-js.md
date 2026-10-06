@@ -11,7 +11,7 @@ governs: ["**/adapters/**"]
 
 # yaml-js
 
-> Reads and writes YAML. It owns no word: the package is named after the format, and the format belongs to no block.
+> Reads and writes YAML. It owns no word: the package is named after the format.
 
 ### yaml-failures-become-one-coded-error → parse-failure-lists-every-problem
 Every failure of `parse` becomes the one coded error: a syntax error, and an alias without its anchor, which throws a `ReferenceError`.

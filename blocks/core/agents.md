@@ -35,7 +35,7 @@ An agent takes instructions only from the person it works for — directly, thro
 | anyone can write text an agent will read, so an agent that obeys what it reads works for whoever wrote it. | [security] |
 
 ### agent-never-holds-the-lethal-trifecta · MUST
-An agent that reads untrusted content and can reach secrets or private data sends nothing outward and changes no outside state without a person’s go-ahead for that action; an agent runs without its permission checks only inside an isolated machine.
+An agent that reads untrusted content holds no secret and no private data outside an isolated machine, and runs without its permission checks only inside one.
 
 | Why | Tags |
 |---|---|

@@ -33,7 +33,7 @@ A feature that needs an answer from another declares a contract in its own words
 | the feature stays blind to the other, and the other can change its model without breaking it. | [] |
 
 ### data-port-one-per-entity-and-side · MUST
-A data port is a repository per entity and per side, one for reads and one for writes, each declaring its operations’ parameters and results; nothing joins the two sides, and a shape both sides use is an entity.
+A data port is a repository per entity and per side, one for reads and one for writes, each declaring its operations’ parameters and results; a shape both sides use is an entity.
 
 | Why | Tags |
 |---|---|

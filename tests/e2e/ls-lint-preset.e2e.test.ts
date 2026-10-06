@@ -567,7 +567,7 @@ describe("the parts of ls-lint's base", () => {
     {
       condition: 'a YAML file ends in .yml',
       parts: [
-        'common/core',
+        'common/yaml',
       ],
       path: 'config/app.yml',
       reported: 'config/app.yml',

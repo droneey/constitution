@@ -16,7 +16,7 @@ The rules a repository is built by. The digest lists the active blocks and their
 ## How to use it
 
 1. Before a change, read this file and every chapter whose name says the change touches what it governs, then the active blocks, from domains to implementations.
-2. Before handing a change back, its check passes and it is read against every active rule, not only those it seemed to touch.
+2. Before handing a change back, read it against every active rule, not only those it seemed to touch.
 3. A rule is `### <slug> · <level>`, or `### <slug> → <rule>` when it tightens a rule of a block it builds on and takes its level; then its statement, Why and Tags. MUST binds; SHOULD is left only with a stated reason; MAY is a choice.
 4. A request against a MUST gets the conflict and an alternative, never silent obedience.
 5. A case no rule covers follows the nearest rule, and between two choices the one that raises cohesion and lowers coupling wins; a real gap is amended or written as a local block, never kept as a habit.

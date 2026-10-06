@@ -2,7 +2,7 @@ bun:
   own-units-at-workspace-version:
     - versionGroups
 typescript:
-  caret-ranges-lockfile-pins:
+  dependency-declared-with-a-caret:
     - semverGroups
   manifest-fields-in-shared-order:
     - sortFirst

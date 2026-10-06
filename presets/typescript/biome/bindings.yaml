@@ -31,7 +31,7 @@ bun-test:
   strict-matcher-only:
     - strict-matcher-only.grit
 core:
-  async-work-awaited-or-detached-on-purpose:
+  async-work-awaited-or-held-by-a-scope:
     - noFloatingPromises
     - noMisusedPromises
   function-takes-at-most-three-positions:

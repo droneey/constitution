@@ -41,7 +41,7 @@ Every event belongs to one closed vocabulary, each with its typed parameters; no
 |---|---|
 | a mistyped event name is a report that silently reads zero. | [data] |
 
-### analytics-fault-isolated → catch-handles-only-what-it-recognises
+### analytics-fault-isolated → optional-part-isolated-from-its-faults · MUST
 A failing analytics destination, or a failure of the code that sends to it, neither breaks the user's action nor silences the other destinations; the fault is reported out of band.
 
 | Why | Tags |

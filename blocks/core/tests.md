@@ -53,7 +53,7 @@ Edge cases are chosen by risk and by the partitions of the input — empty input
 | bugs live at the edges, and choosing them by risk spends cases where a bug is likely. | [testing] |
 
 ### property-tested-where-it-pays · SHOULD
-An invariant is proven by a property test where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function — with its cases in the spec of its unit; a counterexample it finds is kept as a fixed case.
+A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function — with its cases in the spec of its unit, and a counterexample it finds is kept as a fixed case.
 
 | Why | Tags |
 |---|---|
@@ -161,8 +161,8 @@ Every test has been seen failing for the right reason: written before the code, 
 |---|---|
 | a test never seen failing may test nothing. | [testing] |
 
-### bug-fix-starts-with-a-failing-test · SHOULD
-A bug fix begins with the test that reproduces the bug, seen failing before the fix.
+### bug-fix-ships-with-its-regression-test · SHOULD
+A bug fix ships with a test that reproduces the bug and was seen failing without the fix.
 
 | Why | Tags |
 |---|---|

@@ -310,7 +310,7 @@ Every tool in `devDependencies` is an exact version, with no range.
 |---|---|
 | a range lets the lockfile move a tool to a new version without a change to the manifest. | [] |
 
-### caret-ranges-lockfile-pins · SHOULD
+### dependency-declared-with-a-caret · SHOULD
 The range of a dependency of the program is a caret range.
 
 | Why | Tags |

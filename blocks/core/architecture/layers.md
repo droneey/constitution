@@ -28,11 +28,11 @@ A feature never imports another feature; features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the clock, randomness and processes live in adapters, behind ports — and the domain is free of them.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes live in adapters, behind ports — and the domain and every other unit of logic reach them only through those ports.
 
 | Why | Tags |
 |---|---|
-| code without effects is deterministic, so it is tested fast, reasoned about locally and reused. | [] |
+| code without effects is deterministic, so it is tested fast, reasoned about locally and reused, and a test replaces an effect through its port. | [] |
 
 ### root-imported-only-by-entries-and-delivery-wiring · MUST
 The composition root is imported only by entry files and by the delivery layer’s own wiring.
