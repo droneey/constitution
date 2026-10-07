@@ -115,6 +115,13 @@ An instant carries its zone or offset and is kept apart from a calendar date or 
 |---|---|
 | an instant without its zone names a different moment on each machine, and a wall clock that jumps corrupts a measured duration. | [data] |
 
+### text-encoded-as-utf-8 · MUST
+Text the program reads or writes — a file, a stream, a message — is UTF-8, named explicitly wherever an interface takes an encoding, never the platform's default; an outside format that fixes another encoding is decoded in its adapter.
+
+| Why | Tags |
+|---|---|
+| a default encoding differs between machines, so the same bytes read as different text in development and in production. | [data] |
+
 ### exact-quantity-never-binary-float · MUST
 Money and every other exact decimal quantity is an integer of its smallest unit or a decimal type, with its currency or unit in the type, never binary floating point.
 

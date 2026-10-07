@@ -64,7 +64,7 @@ A command loads what it changes — the entity, or the aggregate whose invariant
 | what a command changes it must load to keep its invariants, and loading it through the write side keeps the command blind to the read side. | [] |
 
 ### command-returns-nothing · SHOULD
-A command returns nothing; the caller makes the identifier of what the command creates and passes it in.
+A command returns no data — only its success or its expected failure; the caller makes the identifier of what the command creates and passes it in.
 
 | Why | Tags |
 |---|---|

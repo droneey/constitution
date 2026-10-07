@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is the outer ring of the tree: adapters, libs, the root, the entry files, the delivery layer and integrations.
 
 ## Direction
 
@@ -28,7 +28,7 @@ A feature never imports another feature; features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes live in adapters, behind ports — and the domain and every other unit of logic reach them only through those ports. Reading the environment and writing diagnostics through the logging facade stand outside the ports.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. Reading the environment and writing diagnostics through the logging facade stand outside the ports.
 
 | Why | Tags |
 |---|---|
@@ -77,7 +77,7 @@ Shared plumbing imports no feature, adapter or contract, and not the root.
 | plumbing that knows a feature is part of that feature. | [] |
 
 ### layer-imports-dependencies-by-its-role · MUST
-Each folder of the tree imports installed dependencies by its role: the domain, the kernel and the contracts import none; the edge — adapters, libs, the root, the entry files, the delivery layer and integrations — imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
+Each folder of the tree imports installed dependencies by its role: the domain, the kernel and the contracts import none; the edge imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
 
 | Why | Tags |
 |---|---|

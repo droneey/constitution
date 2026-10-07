@@ -79,7 +79,7 @@ A failure is retried only when it is transient — a timeout, a dropped connecti
 ## At the edge
 
 ### last-resort-handler-one-per-entry · MUST
-A handler of last resort, one for each entry into the program — a command line, a server, a screen, a consumer of messages — turns every failure that reaches it into what that entry’s user sees, and the program exits only there.
+A handler of last resort, one for each entry into the program — a command line, a server, a screen, a consumer of messages — turns every failure that reaches it into what that entry’s user sees, and a failure ends the program only there.
 
 | Why | Tags |
 |---|---|

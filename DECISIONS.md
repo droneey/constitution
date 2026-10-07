@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0165 |
+| One home per rule | ADR-0160 – ADR-0166 |
 
 ---
 
@@ -944,4 +944,19 @@
   - Wording: a comment may label a section, and `function-does-one-thing` drops its sign of sections opened by comments, which a test case's steps contradicted; a case asserts strict equality, a property case its invariant; a unit case reads only its golden files; the logging facade is the one global and needs no handing in; a sub-agent may read an outside service (`sub-agent-never-acts-on-a-live-system`); the line limit binds code the project writes; the data port and the command's load through it are SHOULD, as the split of reads and writes is; a contract lifts to the shared contracts and a shared type follows the kernel's own rules; a spec is found from its unit's path; `core.md` says an override lowers the one rule it names and drops "names first" from the chapter test.
 - **Rejected.** A surface on every folder, which joins layers and isolated modules in one import; a surface at every layer but the kernel's role folders, the form ADR-0118 kept; a separate change request for every refactor and move, which a squash makes the only way to keep them apart and which small cleanups do not earn; exceptions that name another rule's case, which link two rules of one block.
 - **Why.** A surface is where a caller may couple, so it sits only where coupling to the whole is safe; every other rule was made to read alone and agree with its neighbours.
+
+## ADR-0166 — Core's third review: the seams of the second, and four gaps
+**Date:** 2026-10-07 · **Status:** Accepted
+
+- **Decision.** A third round of three reviews graded core 8.3 to 8.6 and found the seams the second round left.
+  - A file imports a file of its own folder directly and another folder of its module through that folder's surface; a module holds the layers or role folders it needs.
+  - `contracts` is a role, a folder of ports at the top of the source or in a domain, so it has a surface.
+  - A failure ends the program only at the handler of last resort; a clean stop and a success end it elsewhere.
+  - The edge is defined once, in the layers chapter, as adapters, libs, the root, the entry files, the delivery layer and integrations.
+  - A comment states what the code cannot show, or is one another rule asks for, and no other is kept.
+  - A command returns no data, only its success or its expected failure.
+  - A changed format reaches its readers before its writers.
+  - New: `write-lands-whole`, `write-on-read-data-is-conditional`, `text-encoded-as-utf-8`, `outside-input-matched-in-linear-time`, `cryptographic-algorithm-approved-by-current-guidance`.
+- **Rejected.** A comment rule that names the cases of other rules, which ties it to them; structured, correlated logs and tracing's globals in core, which belong to a domain of observability; a glossary in `core.md`, whose budget has no room.
+- **Why.** A seam between two rules is closed where both are read, and the gaps that three reviews in a row named are the ones core's other rules already assume.
 

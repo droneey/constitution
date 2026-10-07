@@ -46,8 +46,8 @@ A surface is the file the language resolves when a folder is imported. A binding
 
 ## The vocabulary
 
-- Layers: `root`, `features`, `composition`, `contracts`, `adapters`, `kernel`, `shared`, `libs`, `integrations`, `entrypoints`, `domain`, `app`.
-- Roles: `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `steps`, `models` (wire and stored shapes inside adapters), `providers` (framework providers and the instances they wire).
+- Layers: `root`, `features`, `composition`, `adapters`, `kernel`, `shared`, `libs`, `integrations`, `entrypoints`, `domain`, `app`.
+- Roles: `contracts` (ports, at the top of the source or in a domain), `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `steps`, `models` (wire and stored shapes inside adapters), `providers` (framework providers and the instances they wire).
 - Suffixes: `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is no repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`.
 
 The language fixes the spelling. Each block names its own folders and suffixes, and a project adds its own the same way.
@@ -55,7 +55,7 @@ The language fixes the spelling. Each block names its own folders and suffixes, 
 ## Form
 
 ### module-has-the-one-form · SHOULD
-Every module, at any depth — the source of a package others import, a feature, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the role folders it needs and modules of this same form.
+Every module, at any depth — the source of a package others import, a feature, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the layers or role folders it needs and modules of this same form.
 
 | Why | Tags |
 |---|---|
@@ -106,7 +106,7 @@ A module, and any other folder with a surface, is reached from outside only thro
 | whatever a module exposes, a caller eventually depends on. | [] |
 
 ### module-files-import-each-other-directly · MUST
-Inside a module, files import each other directly, and a file never imports the surface of its own module.
+Inside a module, a file imports a file of its own folder directly and anything else of the module through the surface of the role folder or module that holds it, and never the surface of its own module.
 
 | Why | Tags |
 |---|---|
@@ -127,7 +127,7 @@ A feature’s surface offers its operations and their presentation — use cases
 | a caller that reaches a mechanism depends on how the feature works rather than on what it does. | [] |
 
 ### surface-only-on-a-module-or-one-kind · MUST
-A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target, and neither has the source of an application, which only holds layers. The source of a package others import is a module, and only its consumers import its surface.
+A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target, and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
 
 | Why | Tags |
 |---|---|

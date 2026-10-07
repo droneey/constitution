@@ -40,7 +40,7 @@ A feature's package holds only its layer packages and its `__init__.py`.
 | a module left beside the layers belongs to none of them; the feature's name is the project's own, so no check of names holds its folder apart, and a reviewer does. | [] |
 
 ### init-never-imported-from-inside → module-files-import-each-other-directly · MUST
-A file never imports from the `__init__.py` of the module it belongs to: its relative import names the file that defines the name, never `from .. import Order` at the module's root.
+A file never imports from the `__init__.py` of the module it belongs to: a name of its own folder comes from the file that defines it, never `from .. import Order` at the module's root.
 
 | Why | Tags |
 |---|---|

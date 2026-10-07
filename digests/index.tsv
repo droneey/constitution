@@ -86,13 +86,13 @@ chapter	core	changes.md	a change, the work of one task: its scope, what it carri
 chapter	core	code.md	any code no other chapter governs.
 chapter	core	comments.md	a comment, the documentation of an entry, a mark of deprecation.
 chapter	core	dependencies.md	packages, downloads and tools taken from others.
-chapter	core	effects.md	calls, resources, concurrency, stopping, records, configuration.
+chapter	core	effects.md	calls, resources, concurrency, writes, stopping, records, configuration.
 chapter	core	errors.md	a failure: raised, caught, carried, shown.
 chapter	core	functions.md	a function.
 chapter	core	layout.md	a file or a folder: its kind, name, size and purpose; readmes.
 chapter	core	names.md	a name in the code.
 chapter	core	relations.md	how a unit is built, holds state, and depends on or calls another.
-chapter	core	security.md	secrets, credentials, and outside input: its size, and where it is run, rebuilt or followed.
+chapter	core	security.md	secrets, credentials, cryptography, and outside input: its size, its matching, and where it is run, rebuilt or followed.
 chapter	core	tests.md	specs, cases, fakes, fixtures and the test gates.
 chapter	core	tools.md	the tools that hold the rules, and their findings.
 chapter	core	types.md	a value and its type.
@@ -150,6 +150,8 @@ rule	kept-collection-bounded	core	blocks/core/effects.md		MUST	performance			tru
 rule	concurrent-fan-out-bounded	core	blocks/core/effects.md		MUST	performance			true
 rule	program-stops-cleanly	core	blocks/core/effects.md		MUST	errors data			true
 rule	operation-idempotent-by-design	core	blocks/core/effects.md		SHOULD	data			true
+rule	write-lands-whole	core	blocks/core/effects.md		MUST	data errors			true
+rule	write-on-read-data-is-conditional	core	blocks/core/effects.md		MUST	data			true
 rule	irreversible-operation-runs-dry-by-default	core	blocks/core/effects.md		MUST	security ux			true
 rule	shared-resource-has-one-writer	core	blocks/core/effects.md		MUST				true
 rule	diagnostics-written-through-a-logger	core	blocks/core/effects.md		MUST	security			true
@@ -215,9 +217,11 @@ rule	secret-and-personal-data-kept-out-of-output	core	blocks/core/security.md		M
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
 rule	credential-has-least-privilege	core	blocks/core/security.md		SHOULD	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
+rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
+rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
 rule	security-primitive-from-a-vetted-library	core	blocks/core/security.md		MUST	security			true
 rule	spec-proves-one-boundary	core	blocks/core/tests.md		SHOULD	testing			true
 rule	constant-specced-only-as-a-contract	core	blocks/core/tests.md		SHOULD	testing			true
@@ -276,6 +280,7 @@ rule	narrowing-proves-all-it-claims	core	blocks/core/types.md		MUST				true
 rule	own-shape-strict-other-shape-tolerant	core	blocks/core/types.md		MUST	data			true
 rule	absence-shown-by-the-type	core	blocks/core/types.md		MUST	data			true
 rule	instant-carries-its-zone	core	blocks/core/types.md		MUST	data			true
+rule	text-encoded-as-utf-8	core	blocks/core/types.md		MUST	data			true
 rule	exact-quantity-never-binary-float	core	blocks/core/types.md		MUST	data			true
 rule	business-rule-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	domain-logs-nothing	core	blocks/core/architecture/domain.md		MUST		architecture		true

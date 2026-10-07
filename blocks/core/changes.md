@@ -33,7 +33,7 @@ A tidying or a refactoring the task needs ships as its own change, before the ch
 | each diff then reads as one thing, and a reviewer sees the behaviour change alone. | [] |
 
 ### format-changed-in-steps · MUST
-A change to a format that is stored or that others read — a schema, a file, a message, a contract — keeps the old data and the running readers working: the new form is added beside the old one, the data and the readers move to it, and the old form is removed last.
+A change to a format that is stored or that others read — a schema, a file, a message, a contract — keeps the old data and the running readers working: the readers learn the new form beside the old one first, the writers and the stored data move to it next, and the old form is removed last.
 
 | Why | Tags |
 |---|---|

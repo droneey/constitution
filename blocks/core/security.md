@@ -1,6 +1,6 @@
 # Security
 
-> Governs secrets, credentials, and outside input: its size, and where it is run, rebuilt or followed.
+> Governs secrets, credentials, cryptography, and outside input: its size, its matching, and where it is run, rebuilt or followed.
 
 ## Secrets
 
@@ -41,6 +41,13 @@ Input a sender outside the program controls — a body, a file, a message — is
 |---|---|
 | a parser handed an input of any size or depth spends memory and time the sender chooses. | [security, performance] |
 
+### outside-input-matched-in-linear-time · MUST
+A pattern matched against outside input runs in time linear in its length: a regular-expression engine that never backtracks, or a pattern with no nested or overlapping repetition.
+
+| Why | Tags |
+|---|---|
+| a backtracking pattern turns one crafted string into minutes of work, and one request takes the program down. | [security, performance] |
+
 ### outside-input-reaches-interpreters-as-parameters · MUST
 Input from outside — a model’s output included — reaches a query, a shell command, a file path, markup or a template only through that interpreter’s parameters or its encoder, and a path is resolved and confined to its root before it is used.
 
@@ -63,6 +70,13 @@ An address or an origin from outside the program — a redirect target, the orig
 | whoever chooses the address chooses where the program sends its user, whom it believes, or what it reaches on their behalf. | [security] |
 
 ## Primitives
+
+### cryptographic-algorithm-approved-by-current-guidance · MUST
+A cryptographic algorithm, mode and key size are ones current guidance approves — NIST's or OWASP ASVS's lists — and one the guidance deprecates is never chosen for new data.
+
+| Why | Tags |
+|---|---|
+| a vetted library still offers broken algorithms, and data protected by one is open to whoever reads it later. | [security] |
 
 ### security-primitive-from-a-vetted-library · MUST
 A security primitive comes from the platform or a vetted library: a token, a nonce or an identifier that guards access from a cryptographic random source, a password stored only by a password-hashing function, a secret compared in constant time; the project writes no cryptography of its own.

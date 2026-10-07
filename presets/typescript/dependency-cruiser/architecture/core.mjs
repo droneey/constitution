@@ -279,7 +279,7 @@ export default {
       to: {
         path: [
           '^src/index\\.[^/]+$',
-          '^src/(features|libs|adapters|integrations|kernel|shared|contracts)/index\\.[^/]+$',
+          '^src/(features|libs|adapters|integrations|kernel|shared)/index\\.[^/]+$',
           '^src/features/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
         ],
       },

@@ -5,7 +5,7 @@
 ## Comments
 
 ### comment-explains-why · SHOULD
-A comment states what the code cannot show — a constraint, a workaround, a decision — or labels a section of a body; a comment that narrates the next line is removed.
+A comment states what the code cannot show — a constraint, a workaround, a decision — or is one another rule asks for; any other comment is removed.
 
 | Why | Tags |
 |---|---|

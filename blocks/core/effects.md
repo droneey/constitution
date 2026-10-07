@@ -1,6 +1,6 @@
 # Effects
 
-> Governs calls, resources, concurrency, stopping, records, configuration.
+> Governs calls, resources, concurrency, writes, stopping, records, configuration.
 
 ## Calls and resources
 
@@ -68,6 +68,20 @@ An operation that may be repeated is idempotent: a key is minted once per intent
 | Why | Tags |
 |---|---|
 | networks retry and users click twice; an idempotent operation turns a repeat into no change. | [data] |
+
+### write-lands-whole · MUST
+A write that changes several things — records, files, a record and the message about it — lands whole or not at all — in one transaction, by renaming a finished temporary file, or through an outbox — or is idempotent, so that a rerun completes what a stop left half done.
+
+| Why | Tags |
+|---|---|
+| a write that stops halfway leaves data no rule of the program expects, and nothing later can tell which half landed. | [data, errors] |
+
+### write-on-read-data-is-conditional · MUST
+A write decided on data read before it is made only if that data is unchanged — by a version, a compare-and-set or a lock — and is refused otherwise.
+
+| Why | Tags |
+|---|---|
+| two writers who read the same state otherwise overwrite each other, and the first update is lost without a trace. | [data] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
 An operation run against a system — a script, a command, a migration, a deployment — that destroys data, spends money, changes a live system or sends something outward runs only behind an explicit flag; without the flag it shows what it would do.
