@@ -6,6 +6,11 @@ _api:
     - adapters-know-no-handlers
   import-points-inward:
     - handlers-reached-only-from-entries
+messaging:
+  adapter-imports-only-its-owners-domain-and-shared-layers:
+    - adapters-know-no-consumers-or-jobs
+  import-points-inward:
+    - consumers-and-jobs-reached-only-from-entries
 cli:
   adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-commands

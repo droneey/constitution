@@ -527,6 +527,36 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'handlers-reached-only-from-entries',
     },
     {
+      condition: 'a feature imports a consumer',
+      files: {
+        'src/consumers/order-placed.consumer.ts': exported('onOrderPlaced'),
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '../../../consumers/order-placed.consumer',
+          name: 'onOrderPlaced',
+        }),
+      },
+      parts: [
+        'typescript/architecture/messaging',
+        'typescript/architecture/core',
+      ],
+      rule: 'consumers-and-jobs-reached-only-from-entries',
+    },
+    {
+      condition: 'an adapter imports a job',
+      files: {
+        'src/adapters/smtp/index.ts': importing({
+          from: '../../jobs/digest.job',
+          name: 'sendDigest',
+        }),
+        'src/jobs/digest.job.ts': exported('sendDigest'),
+      },
+      parts: [
+        'typescript/architecture/messaging',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-consumers-or-jobs',
+    },
+    {
       condition: 'an adapter imports a handler',
       files: {
         'src/adapters/smtp/index.ts': importing({

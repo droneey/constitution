@@ -55,6 +55,7 @@ const BLOCK_PARTS = [
   'typescript/architecture/analytics',
   'typescript/architecture/_api',
   'typescript/architecture/cli',
+  'typescript/architecture/messaging',
   'typescript/architecture/nestjs',
   'typescript/architecture/tanstack-router',
   'typescript/architecture/ui',

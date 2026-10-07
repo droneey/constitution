@@ -26,6 +26,7 @@ architecture:
     - cli/
     - commands/
     - components/
+    - consumers/
     - composition/
     - contracts/
     - domain/
@@ -33,6 +34,7 @@ architecture:
     - entrypoints/
     - features/
     - integrations/
+    - jobs/
     - kernel/
     - libs/
     - models/

@@ -8,6 +8,13 @@ _api:
     - 'src/api'
   package-laid-out-by-the-tree:
     - 'src/api'
+messaging:
+  file-name-in-its-owners-case:
+    - 'src/consumers'
+    - 'src/jobs'
+  consumers-and-jobs-are-the-delivery-layer:
+    - 'src/consumers'
+    - 'src/jobs'
 cli:
   commands-in-the-cli-folder:
     - 'src/cli'

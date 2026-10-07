@@ -9,7 +9,9 @@ block	design-system	domain	The tokens, variants and modes an interface's look is
 block	distribution	domain	Units installed from a registry: their contents, versions, releases.	contents.md manifest.md publishing.md releases.md workflow/releases.md	workspace			false				
 block	http-server	domain	A program that serves HTTP: methods, origins, bodies, caching, TLS.	origins.md	privacy			false				
 block	i18n	domain	Messages, plurals and locale for text a person reads.	formats.md locale.md messages.md architecture/i18n.md	ui			false				
+block	language-model	domain	A program that prompts language models and acts on their output.	agency.md budgets.md evals.md outputs.md prompts.md retrieval.md tests.md architecture/language-model.md workflow/language-model.md	access-control observability privacy ui			false				
 block	mcp-api	domain	A server of tools that models call over the Model Context Protocol.	answers.md interaction.md tests.md transport.md	access-control http-server		_api	false			_api	
+block	messaging	domain	Messages through a broker or a queue: sent, consumed, scheduled.	consuming.md failures.md jobs.md messages.md publishing.md tests.md architecture/messaging.md	observability owned-data			false				
 block	observability	domain	Logs, traces and metrics the people who operate a program read.	logs.md metrics.md traces.md architecture/observability.md				false				
 block	open-source	domain	A public repository: its licence, its policies and its contributors.					false				
 block	owned-data	domain	Data the program decides on: aggregates, migrations and backups.	consistency.md migrations.md architecture/owned-data.md				false				
@@ -548,6 +550,46 @@ rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md
 rule	locale-reachable-without-props	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD			props-drilled-at-most-two-levels	true
 rule	layout-mirrors-right-to-left	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	ux a11y			true
 rule	language-offered-in-its-own-name	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD	ux			true
+rule	model-pinned-to-a-snapshot	language-model	blocks/domains/language-model/language-model.md		MUST				true
+rule	model-client-sets-bounds-and-reports-the-stop	language-model	blocks/domains/language-model/language-model.md		MUST	errors performance			true
+rule	model-given-only-the-tools-its-task-needs	language-model	blocks/domains/language-model/agency.md		MUST	security			true
+rule	tool-acts-with-the-persons-rights	language-model	blocks/domains/language-model/agency.md		MUST	security		credential-has-least-privilege	true
+rule	consequential-tool-call-approved-by-its-person	language-model	blocks/domains/language-model/agency.md		MUST	security ux		irreversible-operation-runs-dry-by-default	true
+rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data			true
+rule	generated-code-runs-only-in-a-sandbox	language-model	blocks/domains/language-model/agency.md		MUST	security			true
+rule	model-call-sets-its-output-limit	language-model	blocks/domains/language-model/budgets.md		MUST	performance			true
+rule	model-call-sets-its-own-timeout	language-model	blocks/domains/language-model/budgets.md		MUST	errors performance		outside-call-has-a-timeout	true
+rule	model-input-bounded-before-the-call	language-model	blocks/domains/language-model/budgets.md		MUST	security performance		outside-input-bounded-before-it-is-parsed	true
+rule	agent-run-bounded-in-steps-and-tokens	language-model	blocks/domains/language-model/budgets.md		MUST	performance errors			true
+rule	spend-bounded-per-caller-and-in-total	language-model	blocks/domains/language-model/budgets.md		MUST	security performance			true
+rule	model-task-has-an-eval	language-model	blocks/domains/language-model/evals.md		MUST	testing			true
+rule	eval-includes-injected-instructions	language-model	blocks/domains/language-model/evals.md		SHOULD	security testing			true
+rule	model-grader-checked-against-people	language-model	blocks/domains/language-model/evals.md		SHOULD	testing			true
+rule	model-output-parsed-by-the-programs-schema	language-model	blocks/domains/language-model/outputs.md		MUST	security data		outside-value-untyped-until-parsed	true
+rule	output-used-only-when-finished	language-model	blocks/domains/language-model/outputs.md		MUST	errors		failure-is-expected-or-defect	true
+rule	output-address-followed-only-from-an-allowlist	language-model	blocks/domains/language-model/outputs.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
+rule	person-told-they-talk-with-a-model	language-model	blocks/domains/language-model/outputs.md		MUST	ux			true
+rule	prompt-text-versioned-with-the-code	language-model	blocks/domains/language-model/prompts.md		MUST	security			true
+rule	prompt-never-the-only-control	language-model	blocks/domains/language-model/prompts.md		MUST	security			true
+rule	untrusted-text-reaches-the-prompt-as-content	language-model	blocks/domains/language-model/prompts.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
+rule	prompt-holds-no-secret	language-model	blocks/domains/language-model/prompts.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	prompt-prefix-stable	language-model	blocks/domains/language-model/prompts.md		SHOULD	performance			true
+rule	index-records-the-model-that-embedded-it	language-model	blocks/domains/language-model/retrieval.md		MUST	data errors			true
+rule	indexed-chunk-keeps-its-source	language-model	blocks/domains/language-model/retrieval.md		SHOULD	data security			true
+rule	answer-cites-retrieved-sources	language-model	blocks/domains/language-model/retrieval.md		SHOULD	ux data			true
+rule	spec-replaces-the-model	language-model	blocks/domains/language-model/tests.md		MUST	testing security		test-runs-in-a-sandbox	true
+rule	model-call-endings-have-cases	language-model	blocks/domains/language-model/tests.md		SHOULD	testing errors		declared-failure-has-a-case	true
+rule	model-reached-through-a-port-of-its-task	language-model	blocks/domains/language-model/architecture/language-model.md		MUST		architecture	contract-knows-no-vendor	true
+rule	output-schema-derived-from-the-domain	language-model	blocks/domains/language-model/architecture/language-model.md		MUST	data	architecture	schema-derived-from-the-domain	true
+rule	change-to-a-models-task-gated-by-its-evals	language-model	blocks/domains/language-model/workflow/language-model.md		MUST	testing	workflow		true
+rule	retrieval-scoped-to-the-callers-rights	language-model	blocks/domains/language-model/with/access-control.md	access-control	MUST	security data		object-access-checked-against-the-caller	true
+rule	conversation-loaded-only-for-its-owner	language-model	blocks/domains/language-model/with/access-control.md	access-control	MUST	security data		object-access-checked-against-the-caller	true
+rule	prompt-text-kept-out-of-telemetry	language-model	blocks/domains/language-model/with/observability.md	observability	MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	model-call-span-carries-model-tokens-and-stop	language-model	blocks/domains/language-model/with/observability.md	observability	SHOULD	performance		unit-of-work-opens-a-span	true
+rule	provider-receives-personal-data-only-as-a-processor	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data security		personal-data-collected-only-for-its-purpose	true
+rule	erasure-reaches-indexes-conversations-and-caches	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data		personal-data-erased-on-request	true
+rule	streamed-answer-announced-once	language-model	blocks/domains/language-model/with/ui.md	ui	MUST	a11y ux		status-changes-announced	true
+rule	streamed-answer-can-be-stopped	language-model	blocks/domains/language-model/with/ui.md	ui	SHOULD	ux performance		outside-call-can-be-cancelled	true
 rule	tool-described-for-the-model	mcp-api	blocks/domains/mcp-api/mcp-api.md		MUST				true
 rule	tool-declares-its-effects	mcp-api	blocks/domains/mcp-api/mcp-api.md		MUST	security			true
 rule	tool-name-opens-with-its-area	mcp-api	blocks/domains/mcp-api/mcp-api.md		SHOULD				true
@@ -574,6 +616,41 @@ rule	tool-server-announces-its-authorization-server	mcp-api	blocks/domains/mcp-a
 rule	proxy-server-asks-consent-per-client	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	tool-server-refuses-a-foreign-origin	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
 rule	local-tool-server-reachable-only-from-its-machine	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	SHOULD	security			true
+rule	message-processed-once-per-consumer	messaging	blocks/domains/messaging/consuming.md		MUST	data		operation-idempotent-by-design	true
+rule	stale-message-refused-by-its-version	messaging	blocks/domains/messaging/consuming.md		MUST	data		write-on-read-data-is-conditional	true
+rule	message-parsed-against-its-types-schema	messaging	blocks/domains/messaging/consuming.md		MUST	errors security		outside-value-untyped-until-parsed	true
+rule	messages-in-flight-bounded	messaging	blocks/domains/messaging/consuming.md		MUST	performance		concurrent-fan-out-bounded	true
+rule	message-acknowledged-after-its-work	messaging	blocks/domains/messaging/consuming.md		MUST	data errors			true
+rule	message-lease-outlasts-its-handler	messaging	blocks/domains/messaging/consuming.md		MUST	data performance			true
+rule	batch-settled-message-by-message	messaging	blocks/domains/messaging/consuming.md		SHOULD	errors			true
+rule	failed-message-settled-by-its-failure	messaging	blocks/domains/messaging/failures.md		MUST	errors		last-resort-handler-one-per-entry	true
+rule	redelivery-delayed-and-limited	messaging	blocks/domains/messaging/failures.md		MUST	errors performance		failure-retried-only-when-transient	true
+rule	dead-letter-keeps-the-message-and-its-cause	messaging	blocks/domains/messaging/failures.md		MUST	errors data			true
+rule	multi-step-process-compensated	messaging	blocks/domains/messaging/failures.md		SHOULD	data errors			true
+rule	scheduled-job-runs-once-per-tick	messaging	blocks/domains/messaging/jobs.md		MUST	data			true
+rule	scheduled-run-keyed-by-its-tick	messaging	blocks/domains/messaging/jobs.md		MUST	data		operation-idempotent-by-design	true
+rule	scheduled-job-declares-missed-and-overlapping-ticks	messaging	blocks/domains/messaging/jobs.md		SHOULD	performance			true
+rule	schedule-names-its-time-zone	messaging	blocks/domains/messaging/jobs.md		MUST	data		instant-carries-its-zone	true
+rule	message-carries-a-stable-id-type-source-and-time	messaging	blocks/domains/messaging/messages.md		MUST	data		operation-idempotent-by-design	true
+rule	message-carries-its-correlation-and-causation	messaging	blocks/domains/messaging/messages.md		SHOULD				true
+rule	message-contract-published-machine-readable	messaging	blocks/domains/messaging/messages.md		MUST				true
+rule	message-type-changed-only-by-addition	messaging	blocks/domains/messaging/messages.md		MUST	data		format-changed-in-steps	true
+rule	message-carries-only-its-declared-fields	messaging	blocks/domains/messaging/messages.md		MUST	data security			true
+rule	message-carries-no-secret	messaging	blocks/domains/messaging/messages.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	publish-done-only-once-the-broker-confirms	messaging	blocks/domains/messaging/publishing.md		MUST	data errors			true
+rule	ordered-messages-share-an-ordering-key	messaging	blocks/domains/messaging/publishing.md		MUST	data			true
+rule	redelivery-and-reordering-have-cases	messaging	blocks/domains/messaging/tests.md		SHOULD	testing		edge-cases-chosen-by-risk	true
+rule	publisher-is-a-port-in-the-domains-words	messaging	blocks/domains/messaging/architecture/messaging.md		MUST		architecture	contract-knows-no-vendor	true
+rule	consumers-and-jobs-are-the-delivery-layer	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	package-laid-out-by-the-tree	true
+rule	message-handler-stays-thin	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	delivery-unit-stays-thin	true
+rule	message-carries-its-creators-trace-context	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			trace-context-propagated-onward	true
+rule	handled-message-spanned-and-linked	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			unit-of-work-opens-a-span	true
+rule	consumer-lag-measured-and-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	performance		served-request-measured-by-rate-errors-and-duration	true
+rule	dead-letter-arrival-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors			true
+rule	change-and-its-message-written-through-an-outbox	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
+rule	outbox-relayed-in-commit-order-per-key	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data			true
+rule	processed-message-recorded-with-its-effect	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
+rule	stored-queue-claims-in-one-conditional-write	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data		write-on-read-data-is-conditional	true
 rule	signal-carries-the-service-identity	observability	blocks/domains/observability/observability.md		SHOULD				true
 rule	log-record-passes-one-pipeline	observability	blocks/domains/observability/logs.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	log-value-masked-by-its-key	observability	blocks/domains/observability/logs.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
