@@ -1,6 +1,6 @@
 # Identity
 
-> Governs who a caller is: sign-in, passwords, recovery and tokens.
+> Governs who a caller is: sign-in, passwords, recovery, changes to an account, tokens and keys.
 
 ## Sign-in
 
@@ -11,7 +11,7 @@ A sign-in through an outside identity provider uses the authorization code flow 
 |---|---|
 | without PKCE a code intercepted on its way back is redeemed by whoever caught it, and the older flows hand a token or a password to places that keep it. | [security] |
 
-### sign-in-attempts-limited · SHOULD
+### sign-in-attempts-limited · MUST
 Sign-in attempts are limited per account and per source, by a growing delay or a lock the account's owner can lift.
 
 | Why | Tags |
@@ -42,7 +42,7 @@ A token a caller presents is trusted only after its signature, by the algorithm 
 | a token whose claims go unchecked is accepted from another issuer, for another service or after it expired, and one that chooses its own algorithm signs itself. | [security] |
 
 ### caller-token-never-forwarded · MUST
-A token a caller presents is never sent on to another system; a call onward carries the program's own credential for that system.
+A token a caller presents is never sent on to another system; a call onward carries the program's own credential for that system, or a token issued for that system by an exchange that keeps the caller's identity.
 
 | Why | Tags |
 |---|---|
@@ -60,7 +60,7 @@ A security event — a sign-in, a failed sign-in, a sign-out, a change of creden
 ## Passwords
 
 ### password-judged-by-length-and-breach · MUST
-A password is accepted by its length — at least the floor NIST SP 800-63B sets — and refused when it appears in a list of breached passwords; no rule of composition and no forced rotation is imposed.
+A password is accepted by its length — at least the floor NIST SP 800-63B sets, and up to at least 64 characters, never cut short — and refused when it appears in a list of breached passwords; no rule of composition and no forced rotation is imposed.
 
 | Why | Tags |
 |---|---|
@@ -81,3 +81,21 @@ Account recovery is no weaker than sign-in: its token is random, used once and e
 | Why | Tags |
 |---|---|
 | a recovery weaker than sign-in is the way in every attacker takes. | [security] |
+
+## Changes to an account
+
+### sensitive-change-asks-to-sign-in-again · MUST
+A change to an account's email, password or factors asks the person to prove their identity again, and its owner is told of the change through the means they had before it.
+
+| Why | Tags |
+|---|---|
+| a stolen session otherwise becomes a stolen account, and the owner learns of it only when they are locked out. | [security] |
+
+## Machine credentials
+
+### issued-key-stored-hashed-scoped-and-expiring · MUST
+A key or token the program issues for another program to call it is shown once, stored only as a hash, scoped to what its holder needs, expires, and can be revoked by its owner, and every call made with it is attributed to it.
+
+| Why | Tags |
+|---|---|
+| a key kept in clear, broad and for ever is a breach waiting for one leak, and only attribution says what a leaked key did. | [security] |

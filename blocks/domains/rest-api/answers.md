@@ -11,13 +11,6 @@ A REST operation answers a status HTTP registers, for its registered meaning: a 
 |---|---|
 | caches, proxies, retries and monitoring act on the status alone, and a failure sent as `200` is cached, counted as a success and never retried. | [errors] |
 
-### refused-method-names-the-allowed · SHOULD
-A REST operation that refuses a method answers `405` with `Allow` naming the methods it takes.
-
-| Why | Tags |
-|---|---|
-| the caller learns what the resource accepts without reading the contract. | [] |
-
 ### failure-answered-as-a-problem-document → failure-answered-by-its-code · MUST
 A failure of a REST operation carries the status its code or kind maps to — `500` for an internal one — and a body of RFC 9457, `application/problem+json`, whose `type` names its code and which carries the code as a member of its own; a refused input lists each field it refused by its JSON Pointer.
 
@@ -28,18 +21,11 @@ A failure of a REST operation carries the status its code or kind maps to — `5
 ## Concurrency
 
 ### update-guarded-by-if-match → write-on-read-data-is-conditional · MUST
-A REST resource several callers may change answers with an `ETag`, and a `PUT`, `PATCH` or `DELETE` of it honours `If-Match` and answers `412` when the tag no longer matches.
+A REST resource several callers may change answers with an `ETag`, and a `PUT`, `PATCH` or `DELETE` of it honours `If-Match`, answering `412` when the tag no longer matches and `428` when the request carries none.
 
 | Why | Tags |
 |---|---|
 | a write made on a stale read otherwise overwrites the change between, and the tag is how HTTP carries the version read. | [data] |
-
-### unchanged-resource-answered-304 · SHOULD
-A `GET` of a resource with an `ETag` answers `304` with no body to an `If-None-Match` that matches it.
-
-| Why | Tags |
-|---|---|
-| a caller that polls downloads only what changed. | [performance] |
 
 ## Long work
 

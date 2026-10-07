@@ -12,7 +12,7 @@ Numbers, dates, times, amounts and lists are formatted by the active locale, whi
 | `1,000.50` and `1.000,50` are one number to different readers, and the runtime's locale differs between the server, the client and a spec. | [ux] |
 
 ### instant-shown-in-the-readers-zone → instant-carries-its-zone · MUST
-An instant is shown in the reader's time zone, with the zone named where a reader could take it for another.
+An instant is shown in the reader's time zone, with the zone named where a reader could take it for another; an instant bound to a place — a departure, an opening hour — is shown in that place's zone, and names it.
 
 | Why | Tags |
 |---|---|

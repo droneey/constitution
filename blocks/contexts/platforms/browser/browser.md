@@ -63,11 +63,11 @@ The Content Security Policy requires Trusted Types for scripts, so a string reac
 | the browser then refuses an unchecked string at every sink, in a library or behind a dynamic property no lint can see. | [security] |
 
 ### documents-sent-with-security-headers · SHOULD
-Every document is served with `Strict-Transport-Security` of a year or more, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` or stricter, and `Cross-Origin-Opener-Policy: same-origin`, or `same-origin-allow-popups` where the program opens a window it talks to.
+Every document is served with `Referrer-Policy: strict-origin-when-cross-origin` or stricter, and `Cross-Origin-Opener-Policy: same-origin`, or `same-origin-allow-popups` where the program opens a window it talks to.
 
 | Why | Tags |
 |---|---|
-| each closes one door the page would leave open: a first request over plain HTTP, a file read as a script, the full address sent to other sites, another window reaching into this one. | [security] |
+| each closes one door the page would leave open: the full address sent to other sites, another window reaching into this one. | [security] |
 
 ### scripts-from-other-origins-pinned · SHOULD
 A script from another origin is served from the program's own origin, or loaded with `integrity` and `crossorigin`; a script that changes by design — a tag manager's container — loads only through a loader the Content Security Policy allows by nonce or hash with `strict-dynamic`, with the reason beside it.

@@ -29,7 +29,7 @@ Input the user entered survives a request that times out or loses its connection
 
 ## Specs
 
-### ui-specs-replace-the-transport → test-runs-in-a-sandbox · MUST
+### ui-specs-replace-the-transport → effect-faked-never-mocked · MUST
 A screen's spec, and the spec of what reads or writes its data, run the real code down to the transport and replace the transport with captured responses; a fake of a business operation serves only a screen that shows nothing the remote system gives.
 
 | Why | Tags |

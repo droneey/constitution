@@ -21,6 +21,20 @@ A request by a safe method of HTTP — `GET`, `HEAD`, `OPTIONS` — changes no s
 |---|---|
 | a link, a prefetch, a crawler or a cache sends such a request without anyone meaning its effect, and a forged page sends it with the user's cookies. | [security] |
 
+### refused-method-names-the-allowed · MUST
+A request by a method its resource does not take is answered `405` with `Allow` naming the methods it takes.
+
+| Why | Tags |
+|---|---|
+| the caller learns what the resource accepts without reading the contract. | [] |
+
+### unchanged-resource-answered-304 · SHOULD
+A `GET` of a resource with an `ETag` answers `304` with no body to an `If-None-Match` that matches it.
+
+| Why | Tags |
+|---|---|
+| a caller that polls downloads only what changed. | [performance] |
+
 ## Bodies
 
 ### answer-declares-its-exact-content-type · MUST
@@ -68,3 +82,17 @@ Every address the program serves beyond its own machine answers only over TLS �
 | Why | Tags |
 |---|---|
 | a plain request can be read and changed by anyone on its path, and the header keeps the browser from ever trying one again. | [security] |
+
+### client-address-taken-from-a-trusted-proxy · MUST
+The address and the scheme of a client are read from `Forwarded` or `X-Forwarded-For` only when the proxy that set them is one the program names; otherwise from the connection.
+
+| Why | Tags |
+|---|---|
+| a header any client can write otherwise decides its rate limit, its security record and whether it is redirected to TLS. | [security] |
+
+### request-read-within-a-time-bound · MUST
+The server bounds how long it waits for a request's headers, for its body and on an idle connection, and closes a connection past a bound.
+
+| Why | Tags |
+|---|---|
+| a client that sends a byte at a time otherwise holds a connection for ever, and a few hundred of them take the server down. | [security, performance] |

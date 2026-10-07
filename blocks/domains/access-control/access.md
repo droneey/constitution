@@ -11,7 +11,7 @@ Access is denied unless a rule grants it.
 |---|---|
 | access open by default is open wherever someone forgot a rule. | [security] |
 
-### function-access-checked-on-every-call · MUST
+### operation-access-checked-on-every-call · MUST
 Access to an operation is checked against the caller's rights by the operation itself, on every call; an operation hidden from a caller who lacks the right is not thereby refused.
 
 | Why | Tags |

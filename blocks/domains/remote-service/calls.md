@@ -52,6 +52,15 @@ Calls to a remote system that keeps failing are cut off by a breaker: past a thr
 |---|---|
 | calls to a system that is down only wait out their timeouts, hold the program's resources and slow the system's recovery. | [errors, performance] |
 
+## Security
+
+### call-verifies-the-systems-certificate · MUST
+A call to another system over TLS verifies the system's certificate and its name, and never turns the verification off.
+
+| Why | Tags |
+|---|---|
+| a call that trusts any certificate talks to whoever sits on its path. | [security] |
+
 ## Requirements for implementation
 
 ### transport-sets-a-timeout-and-cancels · MUST

@@ -12,7 +12,7 @@ A secret is never written into the repository — not in code, documents, tests 
 | a secret in the repository is readable by everyone who can read it, and by every copy made of it. | [security] |
 
 ### secret-and-personal-data-kept-out-of-output · MUST
-A secret or a piece of personal data never appears in a log, an error, a URL, a build artefact, test data or a document; an error that reaches anyone but the data’s owner carries identifiers, never the values it rejected.
+A secret or a piece of personal data never appears in a log, an error, a URL, a build artefact, test data or a document; an error that reaches anyone but the data’s owner carries identifiers, never the values it rejected. An audit record kept for security holds the identifier and the address its event needs, and nothing more.
 
 | Why | Tags |
 |---|---|

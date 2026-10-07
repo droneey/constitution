@@ -19,7 +19,7 @@ A request over the limit is answered `429` with `Retry-After`.
 | a caller that knows when to come back waits instead of hammering. | [] |
 
 ### retired-operation-answers-deprecation-headers → retired-operation-announced-before-removal · MUST
-An operation or a field being retired answers with `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, and a `Link` with `rel="deprecation"` to its notice.
+An operation being retired answers with `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, and a `Link` with `rel="deprecation"` to its notice; a field being retired is marked `deprecated` in the OpenAPI document.
 
 | Why | Tags |
 |---|---|

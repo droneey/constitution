@@ -79,7 +79,7 @@ Content a screen already shows stays in place while it reloads or the screen mov
 | content that blinks to a placeholder on every refresh reads as a failure, and the user loses their place. | [ux] |
 
 ### loading-indicator-waits-its-delay · SHOULD
-A first-load indicator appears only after the delay the design system's motion tokens set, so a fast load shows no indicator at all.
+A first-load indicator appears only after a delay the project sets, so a fast load shows no indicator at all.
 
 | Why | Tags |
 |---|---|

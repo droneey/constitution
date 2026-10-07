@@ -22,7 +22,7 @@ A tool's definition says what it does, when to call it and what it returns, and 
 | a model chooses a tool and fills its arguments from its definition alone. | [] |
 
 ### tool-declares-its-effects · MUST
-A tool declares `readOnlyHint`, `destructiveHint`, `idempotentHint` and `openWorldHint` explicitly, and none of them claims less than the tool does.
+A tool declares `readOnlyHint`, `destructiveHint`, `idempotentHint` and `openWorldHint` explicitly, and none of them makes the tool look safer than it is.
 
 | Why | Tags |
 |---|---|

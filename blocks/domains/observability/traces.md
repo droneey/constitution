@@ -1,15 +1,17 @@
 # Traces
 
-> Governs the trace context of a unit of work.
+> Governs spans, the trace context, and the identity every signal carries.
 
-## Context
+## Resources
 
-### log-record-carries-the-trace-id · SHOULD
-Every log record a unit of work — a request, a task, a message — writes carries its trace id, bound once at the unit's start through the runtime's context, never passed down by hand.
+### signal-carries-the-service-identity · SHOULD
+Every log record, span and metric carries the identity of the service that wrote it — its name, its version and its environment — named as OpenTelemetry's semantic conventions name them.
 
 | Why | Tags |
 |---|---|
-| the records of one unit are then found together, across every function and library it passes through, while an id passed by hand is lost at the first call that does not take it. | [] |
+| signals of several services and releases meet in one collector, and one without them cannot be traced to the code that wrote it. | [] |
+
+## Context
 
 ### trace-id-taken-only-from-a-trusted-caller · SHOULD
 A unit of work continues the trace id its caller sent in the W3C Trace Context only when that caller is one of the program's own systems; for any other it starts a new one.
@@ -24,3 +26,12 @@ A call to another system carries the trace context of the work that made it, in 
 | Why | Tags |
 |---|---|
 | a trace that stops at the program's edge shows the time spent but not where it went. | [] |
+
+## Spans
+
+### unit-of-work-opens-a-span · SHOULD
+Every unit of work — a request served, a task run, a message handled, a call to another system — runs in a span named after its operation, which records its outcome.
+
+| Why | Tags |
+|---|---|
+| a trace shows where the time of a request went only if each step it took is a span of it. | [] |

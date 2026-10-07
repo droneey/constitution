@@ -47,14 +47,14 @@ Every constraint between fields of the config file is checked when the config fi
 ## Secrets
 
 ### config-file-secret-written-as-a-reference · MUST
-A secret in the config file is written as a reference by name to the environment, never as its value.
+A secret in the config file is written as a reference by name — to the environment or to a secret store the program reads — never as its value.
 
 | Why | Tags |
 |---|---|
 | the config file can then be committed, shared and reviewed without leaking what it needs. | [security] |
 
 ### config-file-reference-resolved-on-read → configuration-parsed-once-at-start · MUST
-Every reference the config file makes is resolved when the config file is read — from the environment, or the local environment file beside the config file — and the read fails naming every one that is missing.
+Every reference the config file makes is resolved when the config file is read — from the environment, the local environment file beside the config file, or the secret store it names — and the read fails naming every one that is missing.
 
 | Why | Tags |
 |---|---|

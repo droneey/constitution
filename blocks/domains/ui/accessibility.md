@@ -65,14 +65,14 @@ Focus moves through a screen in the order its content is seen.
 | focus that jumps around the screen cannot be followed, and a keyboard user loses their place. | [a11y] |
 
 ### focus-always-visible · MUST
-Focus is always visible, at 3:1 contrast against its background, and never hidden by content the page lays over it, such as a sticky header; no focus indicator is removed without the design system's replacement.
+Focus is always visible, at 3:1 contrast against its background, and never hidden by content the page lays over it, such as a sticky header; no focus indicator is removed without a replacement that meets the same bar.
 
 | Why | Tags |
 |---|---|
 | a keyboard user who cannot see focus does not know where they are. | [a11y] |
 
 ### target-meets-the-minimum-size · MUST
-Every pointer target is at least 24 by 24 CSS pixels, its spacing counted — the floor WCAG 2.2 sets — or the platform's own minimum where that is larger; the design system sets the exact size.
+Every pointer target is at least 24 by 24 CSS pixels, its spacing counted — the floor WCAG 2.2 sets, with its exceptions such as a link inside a sentence — or the platform's own minimum where that is larger.
 
 | Why | Tags |
 |---|---|

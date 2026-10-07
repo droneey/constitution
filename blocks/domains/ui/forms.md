@@ -18,9 +18,16 @@ A field accepts pasting and a password manager's filling, and a one-time code fi
 |---|---|
 | blocking them fails sign-in without a memory test, and pushes people to weaker passwords. | [a11y, security] |
 
+### entered-information-never-asked-twice · MUST
+Information a person already entered in the same process is filled in or offered for selection, never asked for again, save where entering it again is essential.
+
+| Why | Tags |
+|---|---|
+| a person who must type the same thing twice makes mistakes and gives up, and WCAG 2.2 counts it a failure. | [a11y, ux] |
+
 ## Validation
 
-### field-revalidated-as-fixed · MUST
+### field-revalidated-as-fixed · SHOULD
 A field is first validated when it is left or its form is submitted, never while it is first typed in; once it shows an error, it is validated on every input, so the error clears as soon as the value is right.
 
 | Why | Tags |

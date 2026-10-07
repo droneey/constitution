@@ -75,7 +75,7 @@ Variant values come from scales the design system declares once for every compon
 ## Modes
 
 ### theme-modes-share-one-token-set · MUST
-Light, dark and increased contrast are modes of one set of semantic tokens: every mode resolves the same names, and a component is written once for all of them.
+The modes a design system offers — light, dark, increased contrast — are modes of one set of semantic tokens: every mode resolves the same names, and a component is written once for all of them.
 
 | Why | Tags |
 |---|---|

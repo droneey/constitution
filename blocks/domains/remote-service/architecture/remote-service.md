@@ -16,7 +16,7 @@ The transport's mapper maps the unauthenticated, forbidden and unexpected failur
 
 | Why | Tags |
 |---|---|
-| every adapter then fails the same way, and a feature states only what is its own. | [] |
+| a feature's codes are its own, so only the feature can name them, and a mapper that acted on an error would decide for every caller. | [] |
 
 ## Streams
 

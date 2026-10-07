@@ -27,19 +27,19 @@ A log record's message is a fixed phrase that names what happened, and its value
 |---|---|
 | a fixed message is counted and searched as one event and a field is filtered by its value, while a formatted message is a new string every time. | [] |
 
-### log-record-carries-the-service-identity · SHOULD
-Every log record carries the identity of the service that wrote it: its name, its version and its environment.
-
-| Why | Tags |
-|---|---|
-| records of several services and releases meet in one collector, and a record without them cannot be traced to the code that wrote it. | [] |
-
 ### log-record-of-a-failure-carries-its-code-and-cause · SHOULD
 A log record of a failure carries, as fields, the failure's code, its chain of causes and its stack.
 
 | Why | Tags |
 |---|---|
 | an operator counts failures by their code and finds the bug from the cause and the stack, and a failure logged by its message alone gives neither. | [errors] |
+
+### log-record-carries-the-trace-id · SHOULD
+Every log record a unit of work — a request, a task, a message — writes carries its trace id, bound once at the unit's start through the runtime's context, never passed down by hand.
+
+| Why | Tags |
+|---|---|
+| the records of one unit are then found together, across every function and library it passes through, while an id passed by hand is lost at the first call that does not take it. | [] |
 
 ## Output
 

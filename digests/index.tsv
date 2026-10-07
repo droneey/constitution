@@ -5,7 +5,7 @@ block	access-control	domain	Callers who sign in with different rights: identity,
 block	analytics	domain	Typed product events, sent to replaceable analytics services.	architecture/analytics.md	access-control privacy ui			false				**/sinks/**
 block	config-file	domain	A file its user writes and the program reads: shape, secrets, schema.	architecture/config-file.md				false				
 block	convergence	domain	A declared state converged by validate, render, plan and apply.	declared-state.md plan-and-apply.md stages.md architecture/stages.md	version-control	config-file		false				
-block	design-system	domain	The tokens, variants and modes an interface's look is drawn from.	architecture/design-system.md		ui		false				
+block	design-system	domain	The tokens, variants and modes an interface's look is drawn from.	tests.md architecture/design-system.md		ui		false				
 block	distribution	domain	Units installed from a registry: their contents, versions, releases.	contents.md manifest.md publishing.md releases.md workflow/releases.md	workspace			false				
 block	http-server	domain	A program that serves HTTP: methods, origins, bodies, caching, TLS.	origins.md				false				
 block	i18n	domain	Messages, plurals and locale for text a person reads.	formats.md locale.md messages.md architecture/i18n.md	ui			false				
@@ -15,13 +15,13 @@ block	open-source	domain	A public repository: its licence, its policies and its 
 block	owned-data	domain	Data the program decides on: aggregates, migrations and backups.	consistency.md migrations.md architecture/owned-data.md				false				
 block	privacy	domain	Personal data: consent, opt-out signals, retention and rights.	consent.md opt-out.md	ui			false				
 block	remote-data	domain	Data another system owns: its cache, keys, reads and refreshes.	architecture/remote-data.md	ui architecture/access-control	remote-service		false				
-block	remote-service	domain	Another system the program calls or hears from: calls, inbound, specs.	calls.md inbound.md streams.md tests.md architecture/remote-service.md				false				
-block	rest-api	domain	An HTTP API of resources: methods, statuses, answers and contract.	answers.md contract.md wire.md	access-control	http-server	_api	false			_api	
+block	remote-service	domain	Another system the program calls or hears from: calls, inbound, specs.	calls.md inbound.md outbound.md streams.md tests.md architecture/remote-service.md				false				
+block	rest-api	domain	An HTTP API of resources: methods, statuses, answers and contract.	answers.md contract.md wire.md		http-server	_api	false			_api	
 block	ui	domain	Screens, components, forms and accessibility of any interface.	accessibility.md components.md forms.md screens.md tests.md architecture/ui.md	remote-data remote-service architecture/access-control architecture/remote-data			false				**/ui/** **/components/** **/widgets/**
 block	untrusted-client	domain	Code that runs where its user can read and change it.					false				
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	workflow/version-control.md				false				
 block	workspace	domain	Several units in one repository: their folders, imports and links.	architecture/workspace.md				false				
-block	browser	platform	Code that runs in a browser tab.	architecture/browser.md	analytics i18n ui architecture/ui	untrusted-client		false				
+block	browser	platform	Code that runs in a browser tab.	architecture/browser.md	i18n privacy ui architecture/ui	untrusted-client		false				
 block	cli	platform	A program run from a command line, one command per invocation.	architecture/cli.md	convergence			false				**/cli/**
 block	mobile	platform	Code that runs as an application on a phone or tablet.	architecture/mobile.md	ui	untrusted-client		false				
 block	css	language	How stylesheets are layered, named and written.	architecture/css.md	design-system i18n ui architecture/ui			false				**/*.css
@@ -67,7 +67,7 @@ block	react-native	implementation	React on a device — host components, virtual
 block	renovate	implementation	Dependency updates proposed by a bot.	workflow/renovate.md		git		false				renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.		fastapi pytest	python		false		python		pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	architecture/shadcn.md		react-dom tailwind		false				components.json **/libs/ui/components/**
-block	storybook	implementation	Storybook — a story for every state of a UI kit component.	architecture/storybook.md		_react		false				**/*.stories.tsx .storybook/**
+block	storybook	implementation	Storybook — a story for every state of a UI kit component.	architecture/storybook.md	design-system	_react		false				**/*.stories.tsx .storybook/**
 block	structlog	implementation	structlog renders the records of Python's logging as events.	architecture/structlog.md		python observability		false				**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test workspace	typescript		false		typescript		stryker.config.mjs
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.			typescript		false		typescript		.syncpackrc.mjs
@@ -375,8 +375,8 @@ rule	failure-answered-by-its-code	_api	blocks/domains/_api/failures.md		MUST	err
 rule	unexpected-failure-answered-masked	_api	blocks/domains/_api/failures.md		MUST	errors security ux		failure-shown-as-what-happened-and-what-next	true
 rule	error-carries-a-code-never-a-status	_api	blocks/domains/_api/failures.md		MUST	errors		expected-failure-is-part-of-the-contract	true
 rule	framework-passes-every-failure-to-one-handler	_api	blocks/domains/_api/failures.md		MUST	errors			true
-rule	request-size-bounded	_api	blocks/domains/_api/limits.md		MUST	performance security			true
-rule	answer-bounded-in-size	_api	blocks/domains/_api/limits.md		MUST	performance		outside-read-bounded	true
+rule	request-size-bounded	_api	blocks/domains/_api/limits.md		MUST	performance security		outside-input-bounded-before-it-is-parsed	true
+rule	answer-bounded-in-size	_api	blocks/domains/_api/limits.md		MUST	performance			true
 rule	caller-rate-limited	_api	blocks/domains/_api/limits.md		SHOULD	performance security			true
 rule	call-handle-random-and-never-a-credential	_api	blocks/domains/_api/requests.md		MUST	security			true
 rule	abandoned-request-stops-its-work	_api	blocks/domains/_api/requests.md		SHOULD	performance		outside-call-can-be-cancelled	true
@@ -391,13 +391,13 @@ rule	one-error-handler-registered-by-the-root	_api	blocks/domains/_api/architect
 rule	call-handle-checked-against-its-caller	_api	blocks/domains/_api/with/access-control.md	access-control	MUST	security			true
 rule	hidden-object-answered-as-not-found	_api	blocks/domains/_api/with/access-control.md	access-control	SHOULD	security			true
 rule	access-denied-unless-granted	access-control	blocks/domains/access-control/access.md		MUST	security			true
-rule	function-access-checked-on-every-call	access-control	blocks/domains/access-control/access.md		MUST	security			true
+rule	operation-access-checked-on-every-call	access-control	blocks/domains/access-control/access.md		MUST	security			true
 rule	object-access-checked-against-the-caller	access-control	blocks/domains/access-control/access.md		MUST	security			true
 rule	tenant-data-scoped-in-every-read-and-write	access-control	blocks/domains/access-control/access.md		MUST	security data			true
 rule	answer-fields-filtered-by-the-callers-rights	access-control	blocks/domains/access-control/access.md		MUST	security			true
 rule	operation-access-proven-by-a-case	access-control	blocks/domains/access-control/access.md		MUST	security testing errors		declared-failure-has-a-case	true
 rule	sign-in-through-a-provider-uses-code-with-pkce	access-control	blocks/domains/access-control/identity.md		MUST	security			true
-rule	sign-in-attempts-limited	access-control	blocks/domains/access-control/identity.md		SHOULD	security			true
+rule	sign-in-attempts-limited	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	phishing-resistant-factor-offered	access-control	blocks/domains/access-control/identity.md		SHOULD	security			true
 rule	account-existence-never-revealed	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	token-verified-before-it-is-trusted	access-control	blocks/domains/access-control/identity.md		MUST	security			true
@@ -406,12 +406,16 @@ rule	security-event-recorded	access-control	blocks/domains/access-control/identi
 rule	password-judged-by-length-and-breach	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	password-stored-by-a-memory-hard-hash	access-control	blocks/domains/access-control/identity.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	recovery-no-weaker-than-sign-in	access-control	blocks/domains/access-control/identity.md		MUST	security			true
+rule	sensitive-change-asks-to-sign-in-again	access-control	blocks/domains/access-control/identity.md		MUST	security			true
+rule	issued-key-stored-hashed-scoped-and-expiring	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	session-renewed-at-sign-in	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	session-ended-on-the-server-at-sign-out	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	session-has-idle-and-absolute-limits	access-control	blocks/domains/access-control/sessions.md		SHOULD	security			true
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	security	architecture		true
 rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
+rule	unauthenticated-request-answered-401-with-a-challenge	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
 rule	sign-in-needs-no-cognitive-test	access-control	blocks/domains/access-control/with/ui.md	ui	MUST	a11y security			true
+rule	session-limits-warned-before-they-end	access-control	blocks/domains/access-control/with/ui.md	ui	MUST	a11y security ux		time-limit-warned-and-extendable	true
 rule	tracking-plan-is-the-one-vocabulary	analytics	blocks/domains/analytics/analytics.md		MUST	data		fact-has-one-source	true
 rule	event-names-object-action	analytics	blocks/domains/analytics/analytics.md		SHOULD	data		event-name-in-past-tense	true
 rule	event-sent-once-per-occurrence	analytics	blocks/domains/analytics/analytics.md		MUST	data			true
@@ -478,6 +482,7 @@ rule	contrast-tested-over-token-pairs	design-system	blocks/domains/design-system
 rule	primitive-shown-in-every-variant-and-state	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux testing			true
 rule	ui-styling-restricted-to-tokens	design-system	blocks/domains/design-system/design-system.md		MUST	ux			true
 rule	ui-styling-resolves-every-mode-from-one-set	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux			true
+rule	screenshots-only-where-look-is-contract	design-system	blocks/domains/design-system/tests.md		SHOULD	ux testing		snapshot-readable-by-eye	true
 rule	theme-module-lives-in-the-ui-library	design-system	blocks/domains/design-system/architecture/design-system.md		MUST	ux	architecture		true
 rule	distributed-unit-ships-only-what-its-manifest-names	distribution	blocks/domains/distribution/contents.md		MUST	security			true
 rule	distributed-unit-ships-its-types	distribution	blocks/domains/distribution/contents.md		MUST				true
@@ -505,12 +510,16 @@ rule	vulnerability-reported-privately	distribution	blocks/domains/distribution/r
 rule	versions-follow-semver	distribution	blocks/domains/distribution/workflow/releases.md		MUST		workflow		true
 rule	root-dogfoods-its-configuration	distribution	blocks/domains/distribution/with/workspace.md	workspace	SHOULD	testing			true
 rule	safe-method-changes-nothing	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
+rule	refused-method-names-the-allowed	http-server	blocks/domains/http-server/http-server.md		MUST				true
+rule	unchanged-resource-answered-304	http-server	blocks/domains/http-server/http-server.md		SHOULD	performance			true
 rule	answer-declares-its-exact-content-type	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	answer-forbids-type-sniffing	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	request-body-refused-in-an-undeclared-type	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	personal-answer-kept-out-of-shared-caches	http-server	blocks/domains/http-server/http-server.md		MUST	security data			true
 rule	get-answer-states-its-cache-policy	http-server	blocks/domains/http-server/http-server.md		SHOULD	performance			true
 rule	served-only-over-tls	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
+rule	client-address-taken-from-a-trusted-proxy	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
+rule	request-read-within-a-time-bound	http-server	blocks/domains/http-server/http-server.md		MUST	security performance			true
 rule	cross-origin-request-allowed-only-from-an-allowlist	http-server	blocks/domains/http-server/origins.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
 rule	state-changing-request-refused-from-other-origins	http-server	blocks/domains/http-server/origins.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
 rule	values-formatted-by-the-active-locale	i18n	blocks/domains/i18n/formats.md		MUST	ux			true
@@ -552,22 +561,24 @@ rule	secret-never-asked-through-a-form	mcp-api	blocks/domains/mcp-api/interactio
 rule	url-elicitation-completed-by-the-same-user	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security			true
 rule	long-tool-call-reports-progress	mcp-api	blocks/domains/mcp-api/interaction.md		SHOULD	ux			true
 rule	tool-list-pinned-by-a-spec	mcp-api	blocks/domains/mcp-api/tests.md		MUST	testing		contract-published-machine-readable	true
-rule	local-tool-server-reachable-only-from-its-machine	mcp-api	blocks/domains/mcp-api/transport.md		SHOULD	security			true
 rule	stdio-server-writes-only-messages-to-stdout	mcp-api	blocks/domains/mcp-api/transport.md		MUST	errors		shared-resource-has-one-writer	true
 rule	tool-server-accepts-only-tokens-issued-for-it	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security		token-verified-before-it-is-trusted	true
 rule	tool-server-announces-its-authorization-server	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	proxy-server-asks-consent-per-client	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	tool-server-refuses-a-foreign-origin	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
+rule	local-tool-server-reachable-only-from-its-machine	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	SHOULD	security			true
 rule	log-record-passes-one-pipeline	observability	blocks/domains/observability/logs.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	log-value-masked-by-its-key	observability	blocks/domains/observability/logs.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	log-record-is-an-event-with-fields	observability	blocks/domains/observability/logs.md		SHOULD				true
-rule	log-record-carries-the-service-identity	observability	blocks/domains/observability/logs.md		SHOULD				true
 rule	log-record-of-a-failure-carries-its-code-and-cause	observability	blocks/domains/observability/logs.md		SHOULD	errors			true
+rule	log-record-carries-the-trace-id	observability	blocks/domains/observability/logs.md		SHOULD				true
 rule	log-output-structured-in-production	observability	blocks/domains/observability/logs.md		SHOULD				true
 rule	metric-labels-bounded	observability	blocks/domains/observability/metrics.md		MUST	performance			true
-rule	log-record-carries-the-trace-id	observability	blocks/domains/observability/traces.md		SHOULD				true
+rule	served-request-measured-by-rate-errors-and-duration	observability	blocks/domains/observability/metrics.md		SHOULD	performance			true
+rule	signal-carries-the-service-identity	observability	blocks/domains/observability/traces.md		SHOULD				true
 rule	trace-id-taken-only-from-a-trusted-caller	observability	blocks/domains/observability/traces.md		SHOULD	security			true
 rule	trace-context-propagated-onward	observability	blocks/domains/observability/traces.md		SHOULD				true
+rule	unit-of-work-opens-a-span	observability	blocks/domains/observability/traces.md		SHOULD				true
 rule	library-adds-no-log-output	observability	blocks/domains/observability/architecture/observability.md		MUST	security	architecture	root-alone-configures-logging	true
 rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/open-source.md		MUST				true
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/open-source.md		SHOULD	security			true
@@ -584,9 +595,11 @@ rule	independent-entity-is-its-own-aggregate	owned-data	blocks/domains/owned-dat
 rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture	data-port-one-per-entity-and-side	true
 rule	transaction-changes-one-aggregate	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	data	architecture		true
 rule	personal-data-inventoried	privacy	blocks/domains/privacy/privacy.md		SHOULD	data			true
+rule	personal-data-collected-only-for-its-purpose	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-kept-no-longer-than-its-retention	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-exported-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-erased-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	personal-data-corrected-on-request	privacy	blocks/domains/privacy/privacy.md		SHOULD	data			true
 rule	consent-asked-only-where-the-law-requires-it	privacy	blocks/domains/privacy/consent.md		SHOULD	data ux			true
 rule	processing-waits-for-its-consent	privacy	blocks/domains/privacy/consent.md		MUST	security data			true
 rule	declined-consent-costs-nothing-else	privacy	blocks/domains/privacy/consent.md		MUST	ux data			true
@@ -619,10 +632,12 @@ rule	call-takes-the-remaining-deadline	remote-service	blocks/domains/remote-serv
 rule	retry-honours-retry-after	remote-service	blocks/domains/remote-service/calls.md		SHOULD	errors performance		failure-retried-only-when-transient	true
 rule	concurrent-calls-to-a-system-bounded	remote-service	blocks/domains/remote-service/calls.md		SHOULD	performance			true
 rule	calls-to-a-failing-system-cut-off-by-a-breaker	remote-service	blocks/domains/remote-service/calls.md		SHOULD	errors performance			true
+rule	call-verifies-the-systems-certificate	remote-service	blocks/domains/remote-service/calls.md		MUST	security			true
 rule	transport-sets-a-timeout-and-cancels	remote-service	blocks/domains/remote-service/calls.md		MUST	errors performance			true
 rule	transport-tells-failures-apart	remote-service	blocks/domains/remote-service/calls.md		MUST	errors			true
 rule	webhook-verified-before-it-is-acted-on	remote-service	blocks/domains/remote-service/inbound.md		MUST	security			true
 rule	webhook-delivery-processed-once	remote-service	blocks/domains/remote-service/inbound.md		MUST	data		operation-idempotent-by-design	true
+rule	sent-webhook-signed-and-retried	remote-service	blocks/domains/remote-service/outbound.md		MUST	security			true
 rule	stream-cut-before-its-terminal-event-fails	remote-service	blocks/domains/remote-service/streams.md		MUST	errors data		failure-is-expected-or-defect	true
 rule	remote-system-proven-by-captured-responses	remote-service	blocks/domains/remote-service/tests.md		SHOULD	testing			true
 rule	captured-response-verified-against-its-system	remote-service	blocks/domains/remote-service/tests.md		SHOULD	testing			true
@@ -637,10 +652,8 @@ rule	put-and-delete-idempotent	rest-api	blocks/domains/rest-api/rest-api.md		MUS
 rule	partial-update-by-merge-patch	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD	data			true
 rule	creation-answers-201-with-location	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD				true
 rule	rest-status-means-what-http-registers	rest-api	blocks/domains/rest-api/answers.md		MUST	errors			true
-rule	refused-method-names-the-allowed	rest-api	blocks/domains/rest-api/answers.md		SHOULD				true
 rule	failure-answered-as-a-problem-document	rest-api	blocks/domains/rest-api/answers.md		MUST	errors security ux		failure-answered-by-its-code	true
 rule	update-guarded-by-if-match	rest-api	blocks/domains/rest-api/answers.md		MUST	data		write-on-read-data-is-conditional	true
-rule	unchanged-resource-answered-304	rest-api	blocks/domains/rest-api/answers.md		SHOULD	performance			true
 rule	long-operation-answered-202-with-its-status	rest-api	blocks/domains/rest-api/answers.md		SHOULD			long-operation-answered-with-a-handle	true
 rule	answer-top-level-is-an-object	rest-api	blocks/domains/rest-api/answers.md		MUST				true
 rule	contract-published-as-openapi	rest-api	blocks/domains/rest-api/contract.md		MUST	testing		contract-published-machine-readable	true
@@ -649,7 +662,6 @@ rule	version-named-once-by-its-major	rest-api	blocks/domains/rest-api/contract.m
 rule	idempotency-key-carried-by-its-header	rest-api	blocks/domains/rest-api/wire.md		SHOULD	data		write-takes-an-idempotency-key	true
 rule	rate-limited-request-answered-429	rest-api	blocks/domains/rest-api/wire.md		SHOULD	performance security		caller-rate-limited	true
 rule	retired-operation-answers-deprecation-headers	rest-api	blocks/domains/rest-api/wire.md		MUST			retired-operation-announced-before-removal	true
-rule	unauthenticated-request-answered-401-with-a-challenge	rest-api	blocks/domains/rest-api/with/access-control.md	access-control	MUST	security			true
 rule	wcag-aa-conformance	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	accessibility-statement-published	ui	blocks/domains/ui/accessibility.md		SHOULD	a11y			true
 rule	native-semantics-first	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
@@ -697,7 +709,8 @@ rule	ui-primitives-unstyled	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	ui-primitives-render-the-callers-element	ui	blocks/domains/ui/components.md		SHOULD				true
 rule	field-declares-its-kind	ui	blocks/domains/ui/forms.md		MUST	a11y ux			true
 rule	field-accepts-paste-and-autofill	ui	blocks/domains/ui/forms.md		MUST	a11y security			true
-rule	field-revalidated-as-fixed	ui	blocks/domains/ui/forms.md		MUST	ux			true
+rule	entered-information-never-asked-twice	ui	blocks/domains/ui/forms.md		MUST	a11y ux			true
+rule	field-revalidated-as-fixed	ui	blocks/domains/ui/forms.md		SHOULD	ux			true
 rule	form-validated-by-its-own-schema	ui	blocks/domains/ui/forms.md		SHOULD	ux			true
 rule	field-error-says-how-to-fix	ui	blocks/domains/ui/forms.md		MUST	a11y ux			true
 rule	failed-submit-focuses-the-first-error	ui	blocks/domains/ui/forms.md		MUST	a11y ux			true
@@ -723,7 +736,6 @@ rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/tests.md		S
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/tests.md		SHOULD	a11y testing		spec-proves-one-boundary	true
 rule	element-found-by-role-label-or-text	ui	blocks/domains/ui/tests.md		MUST	a11y testing		case-asserts-what-a-caller-observes	true
 rule	layout-and-focus-proven-on-the-platform	ui	blocks/domains/ui/tests.md		SHOULD	a11y testing			true
-rule	screenshots-only-where-look-is-contract	ui	blocks/domains/ui/tests.md		SHOULD	ux testing		snapshot-readable-by-eye	true
 rule	ui-specs-scan-accessibility	ui	blocks/domains/ui/tests.md		MUST	a11y testing			true
 rule	interactive-checked-by-hand	ui	blocks/domains/ui/tests.md		SHOULD	a11y			true
 rule	a11y-scanner-runs-inside-a-spec	ui	blocks/domains/ui/tests.md		MUST	a11y testing			true
@@ -759,7 +771,7 @@ rule	overlapping-writes-keep-each-others-results	ui	blocks/domains/ui/with/remot
 rule	input-driven-requests-debounced	ui	blocks/domains/ui/with/remote-service.md	remote-service	SHOULD	ux performance			true
 rule	remote-field-error-shown-on-its-field	ui	blocks/domains/ui/with/remote-service.md	remote-service	SHOULD	ux			true
 rule	user-input-survives-connection-loss	ui	blocks/domains/ui/with/remote-service.md	remote-service	SHOULD	ux data			true
-rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/with/remote-service.md	remote-service	MUST	testing security		test-runs-in-a-sandbox	true
+rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/with/remote-service.md	remote-service	MUST	testing		effect-faked-never-mocked	true
 rule	screen-guarded-through-the-session-owners-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	security	architecture	entry-point-declares-its-access	true
 rule	feature-screens-adapt-to-permissions-passed-down	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	SHOULD	security	architecture		true
 rule	session-presence-kept-in-a-root-store	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	data	architecture		true
@@ -830,8 +842,8 @@ rule	hashed-assets-immutable-html-revalidated	browser	blocks/contexts/platforms/
 rule	browser-resources-have-one-writer	browser	blocks/contexts/platforms/browser/browser.md		MUST			shared-resource-has-one-writer	true
 rule	server-rendering-is-delivery-only	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST		architecture		true
 rule	served-configuration-read-at-boot	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	security	architecture	root-alone-reads-the-environment	true
-rule	global-privacy-control-honoured	browser	blocks/contexts/platforms/browser/with/analytics.md	analytics	SHOULD	security			true
 rule	document-language-follows-locale	browser	blocks/contexts/platforms/browser/with/i18n.md	i18n	MUST	a11y ux			true
+rule	global-privacy-control-read-from-the-page-and-the-request	browser	blocks/contexts/platforms/browser/with/privacy.md	privacy	MUST	data		opt-out-signal-honoured	true
 rule	targets-at-least-24-css-px	browser	blocks/contexts/platforms/browser/with/ui.md	ui	MUST	a11y ux		target-meets-the-minimum-size	true
 rule	images-sized-for-density	browser	blocks/contexts/platforms/browser/with/ui.md	ui	SHOULD	performance ux			true
 rule	content-avoids-the-fold	browser	blocks/contexts/platforms/browser/with/ui.md	ui	SHOULD	ux			true
@@ -1285,11 +1297,11 @@ rule	shadcn-text-passed-by-props	shadcn	blocks/implementations/shadcn/shadcn.md	
 rule	shadcn-source-added-into-the-kit	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	ux	architecture	vendored-component-placed-by-its-home	true
 rule	story-for-every-kit-state	storybook	blocks/implementations/storybook/storybook.md		SHOULD	ux testing			true
 rule	stories-render-from-fixtures	storybook	blocks/implementations/storybook/storybook.md		SHOULD				true
-rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storybook/storybook.md		SHOULD	ux testing		screenshots-only-where-look-is-contract	true
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/storybook.md		MUST	testing		logic-fully-covered	true
 rule	stories-unreachable-from-production	storybook	blocks/implementations/storybook/storybook.md		MUST	testing		test-code-never-reached-from-production	true
 rule	stories-fail-on-a11y-violations	storybook	blocks/implementations/storybook/storybook.md		MUST	a11y testing		ui-specs-scan-accessibility	true
 rule	stories-import-what-they-render-with	storybook	blocks/implementations/storybook/architecture/storybook.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
+rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storybook/with/design-system.md	design-system	SHOULD	ux testing		screenshots-only-where-look-is-contract	true
 rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/structlog.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	one-chain-for-every-record	structlog	blocks/implementations/structlog/structlog.md		MUST	security		log-record-passes-one-pipeline	true
 rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlog/structlog.md		MUST	security data		log-value-masked-by-its-key	true
@@ -1379,7 +1391,7 @@ rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations
 rule	no-document-selectors-in-specs	testing-library	blocks/implementations/testing-library/with/react-dom.md	react-dom	MUST	a11y testing			true
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/with/react-dom.md	react-dom	MUST	a11y testing		ui-specs-scan-accessibility	true
 rule	spec-cache-client-fresh-without-retries	testing-library	blocks/implementations/testing-library/with/remote-data.md	remote-data	MUST	testing		case-independent-of-order	true
-rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/with/remote-service.md	remote-service	MUST	testing security		ui-specs-replace-the-transport	true
+rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/with/remote-service.md	remote-service	MUST	testing		ui-specs-replace-the-transport	true
 rule	reset-loaded-in-applications	ts-reset	blocks/implementations/ts-reset/ts-reset.md		MUST			no-any	true
 rule	compiler-is-the-type-gate	tsc	blocks/implementations/tsc/tsc.md		MUST			rule-held-by-a-tool-where-one-can	true
 rule	paths-mirror-package-imports	tsc	blocks/implementations/tsc/tsc.md		MUST			alias-declared-in-package-imports	true

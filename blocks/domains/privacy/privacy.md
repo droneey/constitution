@@ -21,6 +21,13 @@ Every kind of personal data the program stores is listed with its purpose, its r
 |---|---|
 | data nobody listed is kept beyond its purpose and missed by every request to export or erase it. | [data] |
 
+### personal-data-collected-only-for-its-purpose · MUST
+Personal data is collected only as far as a stated purpose needs, and the settings that share or expose it start at their most protective.
+
+| Why | Tags |
+|---|---|
+| data never collected cannot leak, be misused or be asked for back. | [data] |
+
 ### personal-data-kept-no-longer-than-its-retention · MUST
 Personal data is deleted or made anonymous when the retention period of its purpose ends.
 
@@ -38,8 +45,15 @@ A person's request for their data is answered with all of it, in a format a mach
 | the right of access and portability is the person's, and data missed by the export is data they cannot check. | [data] |
 
 ### personal-data-erased-on-request · MUST
-A person's request to erase their data erases it everywhere the program keeps it — its stores, its caches, its processors — save what a law makes it keep, within the time the law of the region sets.
+A person's request to erase their data erases it everywhere the program keeps it — its stores, its caches, its processors — save what a law makes it keep, within the time the law of the region sets; a backup that holds it expires within its retention, and a restore re-applies every erasure made since.
 
 | Why | Tags |
 |---|---|
 | a copy left behind is data the person was told was gone. | [data] |
+
+### personal-data-corrected-on-request · SHOULD
+A person can correct their personal data, or have it corrected on request.
+
+| Why | Tags |
+|---|---|
+| data the person knows is wrong goes on deciding about them until someone fixes it. | [data] |
