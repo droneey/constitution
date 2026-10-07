@@ -55,6 +55,8 @@ describe('validateConstitution', () => {
     files[PRINCIPLES] = [
       '# Principles',
       '',
+      '> Governs how the code depends on itself.',
+      '',
       rule({
         slug: 'dependencies-point-inward',
         why: '',
@@ -77,7 +79,7 @@ describe('validateConstitution', () => {
       findings: [
         {
           message:
-            'has 509 lines; a file holds at most 500, and a longer block splits into chapters',
+            'has 511 lines; a file holds at most 500, and a longer block splits into chapters',
           path: PRINCIPLES,
         },
         {

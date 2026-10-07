@@ -15,14 +15,14 @@ governs: []
 
 > How the program writes its log records, in any language: one pipeline masks, enriches and renders every record, and a record is an event with its values as fields.
 
-### log-records-pass-one-pipeline → secret-and-personal-data-kept-out-of-output
+### log-records-pass-one-pipeline → secret-and-personal-data-kept-out-of-output · MUST
 Every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it.
 
 | Why | Tags |
 |---|---|
 | a record that bypasses the pipeline skips the mask and the trace id, and lands in a second format nobody parses. | [security] |
 
-### log-secrets-masked-by-key → secret-and-personal-data-kept-out-of-output
+### log-secrets-masked-by-key → secret-and-personal-data-kept-out-of-output · MUST
 The log pipeline replaces the value of every key the project lists as secret — such as `password`, `token`, `authorization`, `cookie` and `secret` — compared without case and at any depth, before any output.
 
 | Why | Tags |

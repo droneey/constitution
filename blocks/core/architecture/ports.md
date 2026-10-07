@@ -1,6 +1,6 @@
 # Ports
 
-> Governs a contract at a boundary and the adapter that implements it.
+> Governs a contract at a boundary and its adapter.
 
 ## Contracts
 

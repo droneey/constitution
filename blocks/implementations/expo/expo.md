@@ -20,7 +20,7 @@ Native modules are at the versions the SDK supports.
 |---|---|
 | a native module at another version builds and then crashes on a device. | [] |
 
-### expo-router-file-names-kept → file-name-in-its-owners-case
+### expo-router-file-names-kept → file-name-in-its-owners-case · MUST
 A route keeps the names Expo Router finds it by: `_layout.tsx`, `+not-found.tsx`, a group `(tabs)/` and a parameter `[orderId].tsx`.
 
 | Why | Tags |

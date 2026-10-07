@@ -24,7 +24,7 @@ A worktree holds one branch, and no folder of it is a link into another checkout
 
 ## Ignores, tags and large files
 
-### gitignore-covers-key-files → secret-never-in-the-repository
+### gitignore-covers-key-files → secret-never-in-the-repository · MUST
 `.gitignore` covers key and credential files — `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets`, `.htpasswd` — in nested ignore files too.
 
 | Why | Tags |
@@ -45,14 +45,14 @@ A worktree holds one branch, and no folder of it is a link into another checkout
 |---|---|
 | what the build or the machine produces never belongs in history, and an ignore rule alone leaves tracked what is already there. | [] |
 
-### release-tags-annotated → release-marked-by-immutable-tag
+### release-tags-annotated → release-marked-by-immutable-tag · MUST
 A release tag is annotated.
 
 | Why | Tags |
 |---|---|
 | an annotated tag records who tagged the release and when. | [] |
 
-### lfs-for-files-over-a-megabyte → large-files-outside-history
+### lfs-for-files-over-a-megabyte → large-files-outside-history · SHOULD
 A file over 1 MB goes to Git LFS, or out of the repository.
 
 | Why | Tags |

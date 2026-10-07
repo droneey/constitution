@@ -1,6 +1,6 @@
 # Code
 
-> Governs any code, when no chapter below names what a rule governs.
+> Governs any code no other chapter governs.
 
 ## Responsibility
 
@@ -40,3 +40,19 @@ Code takes the longer, plain form over the terse, clever one: no nested conditio
 | Why | Tags |
 |---|---|
 | clever code saves its author a minute and costs every reader more. | [] |
+
+## Dead code
+
+### code-never-commented-out · MUST
+Code is never commented out; it is deleted.
+
+| Why | Tags |
+|---|---|
+| commented-out code rots unseen, while deleted code stays recoverable from history. | [] |
+
+### dead-code-deleted · MUST
+No file, dependency, export, parameter, variable or label is unused, and no statement is unreachable; what only the specs reach is unused too. An export a module offers through its public entry is not dead.
+
+| Why | Tags |
+|---|---|
+| dead code is read, kept and feared by people who cannot know it does nothing. | [] |

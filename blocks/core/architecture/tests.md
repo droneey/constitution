@@ -1,6 +1,6 @@
 # Tests
 
-> Governs which units of the tree are a spec’s boundaries.
+> Governs which units of the tree are a spec's boundaries.
 
 ## Boundaries
 

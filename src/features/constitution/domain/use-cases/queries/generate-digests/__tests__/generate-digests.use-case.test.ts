@@ -120,6 +120,21 @@ describe('generateDigests', () => {
         'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/plurals.md\t\tMUST\tux\t\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
     },
+    {
+      condition: 'a rule carries out another and states no level',
+      files: {
+        [I18N]: `# i18n\n\n${rule({
+          isLevelStated: false,
+          parent: 'dependencies-point-inward',
+          slug: 'i18n-plurals-by-cldr',
+          tags: '[ux]',
+        })}`,
+      },
+      key: 'rule\ti18n-plurals-by-cldr',
+      record:
+        'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/plurals.md\t\tMUST\tux\t\tdependencies-point-inward\tfalse',
+      what: 'the level taken from the parent and no stated level',
+    },
   ])('should write $what in the record when $condition', ({ files, key, record }) => {
     // Arrange
     const input = checkInputOf({

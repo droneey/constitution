@@ -9,7 +9,7 @@ Events that build an entity are folded by a pure reducer of the domain before th
 |---|---|
 | the fold is tested without a network, and the transport can change without touching it. | [data] |
 
-### unauthorized-acted-on-once-by-the-cache → transport-failures-mapped-once
+### unauthorized-acted-on-once-by-the-cache → transport-failures-mapped-once · MUST
 The unauthorized error the shared mapper returns is acted on afterwards, once, by the cache's global error handler.
 
 | Why | Tags |

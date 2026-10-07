@@ -15,7 +15,7 @@ governs: ["pyproject.toml", "uv.lock"]
 
 ## Packages and installs
 
-### uv-is-the-only-python-package-manager → dependencies-locked-by-one-lockfile
+### uv-is-the-only-python-package-manager → dependencies-locked-by-one-lockfile · MUST
 `uv.lock` is the only lockfile of the repository's Python; no `requirements.txt` and no lockfile of pip, Poetry or Pipenv is kept.
 
 | Why | Tags |
@@ -29,21 +29,21 @@ A package builds with `uv_build`, required in `[build-system]` with a floor and 
 |---|---|
 | a new minor of the backend may build a different package from the same files; the cap makes that an update someone reviews. | [] |
 
-### exclude-newer-sets-the-cooldown → new-release-adopted-after-a-cooldown
+### exclude-newer-sets-the-cooldown → new-release-adopted-after-a-cooldown · SHOULD
 `exclude-newer = "3 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
 
 | Why | Tags |
 |---|---|
 | the resolver then holds the cooldown on every lock, not only the bot. | [] |
 
-### sdists-never-built → install-scripts-run-only-for-listed-dependencies
+### sdists-never-built → install-scripts-run-only-for-listed-dependencies · MUST
 `no-build = true` under `[tool.uv]`: uv installs wheels only and builds no source distribution.
 
 | Why | Tags |
 |---|---|
 | building a source distribution runs its build code with the developer's rights; a wheel is only unpacked. | [] |
 
-### python-never-downloaded-by-uv → tool-pinned-exactly-by-the-repository
+### python-never-downloaded-by-uv → tool-pinned-exactly-by-the-repository · MUST
 `python-downloads = "never"` and `python-preference = "only-system"` under `[tool.uv]`, so uv runs the interpreter the repository's toolchain pins.
 
 | Why | Tags |

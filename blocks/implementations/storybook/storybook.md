@@ -27,21 +27,21 @@ Stories render from fixtures and fakes; no request leaves a story.
 |---|---|
 | a story that reaches the network breaks when the server does, and shows data nobody chose. | [] |
 
-### screenshots-over-kit-stories-only → screenshots-only-where-look-is-contract
+### screenshots-over-kit-stories-only → screenshots-only-where-look-is-contract · SHOULD
 Screenshots are compared over the UI kit's stories, where the look is the contract, and nowhere else.
 
 | Why | Tags |
 |---|---|
 | the kit's look is the one place a changed pixel is a changed contract. | [] |
 
-### stories-outside-coverage → logic-fully-covered
+### stories-outside-coverage → logic-fully-covered · MUST
 Stories are outside coverage.
 
 | Why | Tags |
 |---|---|
 | a story renders a component without asserting anything, so a line it covers would count as proven when no spec proves it. | [testing] |
 
-### stories-unreachable-from-production → test-code-never-reached-from-production
+### stories-unreachable-from-production → test-code-never-reached-from-production · MUST
 Production code never imports a story.
 
 | Why | Tags |
@@ -50,7 +50,7 @@ Production code never imports a story.
 
 ## Accessibility
 
-### stories-fail-on-a11y-violations → ui-specs-scan-accessibility
+### stories-fail-on-a11y-violations → ui-specs-scan-accessibility · MUST
 The accessibility check of the stories is set to fail — `parameters.a11y.test: 'error'` — for the whole project.
 
 | Why | Tags |

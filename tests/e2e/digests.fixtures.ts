@@ -1,8 +1,13 @@
 import { CORE_PART } from './constitution.fixtures';
 import { INSTALLED } from './plugin-root.fixtures';
 
-const CORE_FILES =
-  "Core's files, under blocks/core/ and named without .md: core, code, principles; architecture: principles; workflow: delivery.";
+const CORE_FILES = [
+  "Core's chapters, blocks/core/<name>.md, and what each governs:",
+  '- code: any code no other chapter governs.',
+  '- principles',
+  '- architecture/principles',
+  '- workflow/delivery',
+].join('\n');
 const KEY = "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const PLATFORMS = '## Platforms (blocks/contexts/platforms/<id>/<id>.md)';

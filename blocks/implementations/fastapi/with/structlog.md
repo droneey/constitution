@@ -1,6 +1,6 @@
 # FastAPI with structlog
 
-### uvicorn-records-join-the-chain → one-chain-for-every-record
+### uvicorn-records-join-the-chain → one-chain-for-every-record · MUST
 Uvicorn runs with `log_config=None`, so `uvicorn`, `uvicorn.error` and `uvicorn.access` keep no handler of their own and their records pass the root logger's chain.
 
 | Why | Tags |

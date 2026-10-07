@@ -55,6 +55,8 @@ function read_index(path,   line, f, r) {
       HEIRS[f[2]] = f[10]
       ANCESTORS[f[2]] = f[12]
       GOVERNS[f[2]] = f[13]
+    } else if (f[1] == "chapter") {
+      CGOVERNS[f[2], f[3]] = f[4]
     } else if (f[1] == "rule") {
       R[++nr] = f[2]
       RULE[f[2]] = nr
@@ -219,16 +221,15 @@ function all_axes(   n, a, k) {
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
 
-function print_core(   n, a, k, out, axis) {
+function print_core(   n, a, k, name) {
   if (!("core" in KNOWN)) return
-  out = "core"
+  print "core" T "Core's chapters, blocks/core/<name>.md, and what each governs:"
   n = split(chapters(0, "core"), a, " ")
   for (k = 1; k <= n; k++) {
-    sub(/\.md$/, "", a[k])
-    out = out (axis_of(a[k]) == axis ? ", " : "; " axis_of(a[k]) ": ") name_of(a[k])
-    axis = axis_of(a[k])
+    name = a[k]
+    sub(/\.md$/, "", name)
+    print "core" T "- " name (CGOVERNS["core", a[k]] == "" ? "" : ": " CGOVERNS["core", a[k]])
   }
-  print "core" T "Core's files, under blocks/core/ and named without .md: " out "."
 }
 
 function axis_of(entry) {

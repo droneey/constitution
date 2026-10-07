@@ -58,8 +58,12 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
-const section = (input: { rules: readonly RuleFixture[]; title: string }): string =>
-  `# ${input.title}\n\n${input.rules.map(rule).join('\n')}`;
+const section = (input: {
+  governs?: string;
+  rules: readonly RuleFixture[];
+  title: string;
+}): string =>
+  `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${input.rules.map(rule).join('\n')}`;
 
 const blockFiles = (
   input: BlockFixture & {
@@ -127,6 +131,7 @@ const coreFiles = (): Files =>
         title: 'Principles',
       }),
       'code.md': section({
+        governs: 'any code no other chapter governs.',
         rules: [
           {
             slug: 'no-secret-in-code',

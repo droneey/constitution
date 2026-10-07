@@ -13,7 +13,7 @@ governs: ["components.json", "**/libs/ui/components/**"]
 
 > The UI kit's components, added as source on Base UI primitives and made the project's own.
 
-### complex-widgets-on-base-ui → complex-patterns-on-accessible-primitives
+### complex-widgets-on-base-ui → complex-patterns-on-accessible-primitives · MUST
 A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Base UI, through shadcn source made for Base UI, the dialog, the popover and the accordion included: Base UI is the active library of accessible primitives that the browser's `<dialog>`, `popover` and `<details>` give way to, and it places its popovers itself.
 
 | Why | Tags |
@@ -41,7 +41,7 @@ Before shadcn source is added, the kit is searched for an equivalent. Added sour
 |---|---|
 | code kept as it came carries another project's looks and props; adapted on arrival, it is the kit's own. | [] |
 
-### shadcn-text-passed-by-props → primitives-take-text-by-props
+### shadcn-text-passed-by-props → primitives-take-text-by-props · MUST
 The text shadcn source ships — a screen reader's "Close" among it — is removed on arrival, and the component takes it by a prop.
 
 | Why | Tags |

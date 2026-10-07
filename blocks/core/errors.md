@@ -1,11 +1,11 @@
 # Errors
 
-> Governs a failure: how it is raised, caught, carried and shown.
+> Governs a failure: raised, caught, carried, shown.
 
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A defect is never caught to carry on and never replaced by a fallback value; it travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|
@@ -35,7 +35,7 @@ A failed parse of outside input is one expected failure whose details name every
 ## Catching and carrying
 
 ### catch-handles-only-what-it-recognises · MUST
-A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other; one around a dependency maps that dependency's failures to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
+A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at the boundary of an optional part, which contains and reports them; one around a dependency maps that dependency's failures to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
 
 | Why | Tags |
 |---|---|

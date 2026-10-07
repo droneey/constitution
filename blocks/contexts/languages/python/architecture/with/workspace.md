@@ -2,7 +2,7 @@
 
 > The distribution and import names of a Python workspace's units.
 
-### python-unit-names-under-the-scope → unit-named-after-its-folder
+### python-unit-names-under-the-scope → unit-named-after-its-folder · SHOULD
 A product is the distribution `<scope>-<name>`, imported as `<scope>_<name>`; `shared/` is `<scope>-shared`, imported as `<scope>_shared`; a unit of `libs/` is `<scope>-libs-<name>`, imported as `<scope>_libs_<name>`; and an integration is the submodule of its framework, installed with the extra of the same name, `<scope>-<name>[<framework>]`.
 
 | Why | Tags |

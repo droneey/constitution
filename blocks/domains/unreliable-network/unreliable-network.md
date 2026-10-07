@@ -13,7 +13,7 @@ governs: []
 
 > A property several platforms share: a request can be slow, fail, or never arrive. The program treats each of these as a normal outcome.
 
-### every-request-has-a-timeout → outside-call-has-a-timeout
+### every-request-has-a-timeout → outside-call-has-a-timeout · MUST
 Every request over the network has a timeout and can be cancelled.
 
 | Why | Tags |
@@ -34,7 +34,7 @@ Input the user entered survives a failed request and is sent again without being
 |---|---|
 | a user who loses their input to a dropped connection does not type it twice. | [ux] |
 
-### network-failures-have-cases → declared-failure-has-a-case
+### network-failures-have-cases → declared-failure-has-a-case · SHOULD
 A request's timeout and its lost connection each have a test case.
 
 | Why | Tags |

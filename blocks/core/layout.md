@@ -1,6 +1,6 @@
 # Layout
 
-> Governs a file or a folder: what kind it is, how it is named, what it holds.
+> Governs a file or a folder: its kind, name and content.
 
 ## Kinds
 

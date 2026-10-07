@@ -5,7 +5,7 @@
 ## Purpose
 
 ### function-does-one-thing · SHOULD
-A function does one thing, at one level of abstraction: it calls steps named for what they do, or does one step itself. A body that falls into sections, each opened by a comment, is one function per section.
+A function does one thing, at one level of abstraction: it calls steps named for what they do, or does one step itself. A body that falls into sections, each opened by a comment, is one function per section — save a test case, whose Arrange, Act and Assert are its form.
 
 | Why | Tags |
 |---|---|

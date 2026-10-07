@@ -15,9 +15,9 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 ## How to use it
 
-1. Before a change, read this file and every chapter whose name says the change touches what it governs, then the active blocks, from domains to implementations.
+1. Before a change, read every chapter that governs what it touches, then the active blocks, from domains to implementations.
 2. Before handing a change back, read it against every active rule, not only those it seemed to touch.
-3. A rule is `### <slug> · <level>`, or `### <slug> → <rule>` when it tightens a rule of a block it builds on and takes its level; then its statement, Why and Tags. MUST binds; SHOULD is left only with a stated reason; MAY is a choice.
+3. A rule is `### <slug> · <level>`, or `### <slug> → <rule> · <level>` when it tightens another rule, never looser than it; then its statement, Why and Tags. MUST binds; SHOULD is left only with a stated reason; MAY is a choice.
 4. A request against a MUST gets the conflict and an alternative, never silent obedience.
 5. A case no rule covers follows the nearest rule, and between two choices the one that raises cohesion and lowers coupling wins; a real gap is amended or written as a local block, never kept as a habit.
 
@@ -26,6 +26,8 @@ The rules a repository is built by. The digest lists the active blocks and their
 1. An override in `constitution.yaml` is stronger than any rule, core's included. It is written only with the user's consent and its reason, and removed by the change that ends it.
 2. Otherwise the more specific layer wins: implementations, then contexts (platforms and languages), then domains, then core. A block tightens what is above it, never loosens it.
 3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project.
+4. Two rules of one layer that disagree are a defect: until it is amended, the one naming the narrower case wins, and the clash is reported.
+5. A resource the program shares with its host has one writer: a block bringing its own claims it in a rule, and a default writer another active block claims yields.
 
 ## Where a rule goes
 
@@ -37,7 +39,7 @@ Its axis: who would still want it? Not a team with another architecture: `archit
 
 Its chapter: the one named for what its statement governs, which the statement names first; `code` only when no other chapter does.
 
-A rule never refers to a rule of its own block. It may tighten a rule of core or of a block it requires: the root only a root rule, `architecture/` an `architecture/` or root rule, `workflow/` a `workflow/` or root rule.
+A rule never refers to a rule of its own block. It may tighten a rule of core, of a block it requires or extends, or of the block its `with/` file names: the root only a root rule, `architecture/` an `architecture/` or root rule, `workflow/` a `workflow/` or root rule.
 
 ## A dependency with no block
 

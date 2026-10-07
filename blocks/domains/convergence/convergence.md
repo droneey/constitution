@@ -29,7 +29,7 @@ Every constraint between fields of the document is checked in validation, before
 |---|---|
 | an impossible combination found mid-run fails after part of the world has changed, far from the line that caused it. | [data, errors] |
 
-### section-optional-fields-required → absence-shown-by-the-type
+### section-optional-fields-required → absence-shown-by-the-type · MUST
 A section may be absent, and is then left untouched. Inside a declared section every managed field is stated: "there is none" is written, and mapped to absence when the document is read; a switched-off option carries nothing else.
 
 | Why | Tags |
@@ -43,7 +43,7 @@ A secret in the document is a reference by name to the environment. Validation l
 |---|---|
 | the document can then be shared and reviewed, and a missing secret fails before anything is applied. | [security] |
 
-### document-variants-selected-by-a-discriminant → illegal-state-unrepresentable
+### document-variants-selected-by-a-discriminant → illegal-state-unrepresentable · MUST
 A section of the document that takes several forms is a union selected by a discriminant field.
 
 | Why | Tags |
@@ -57,7 +57,7 @@ Each kind of value — a size, a duration — has one syntax in the document, pa
 |---|---|
 | a user learns one way to write a size, and the program never guesses which one was meant. | [data] |
 
-### published-schema-generated-from-code → generated-file-never-edited
+### published-schema-generated-from-code → generated-file-never-edited · MUST
 The schema published for editors is generated from the code's schema, never written by hand, and a spec compares the copy kept in the repository with it.
 
 | Why | Tags |
@@ -80,7 +80,7 @@ Validating, rendering, planning and applying are separate stages a user runs alo
 |---|---|
 | a user can check, preview and plan without touching the world, and a later stage builds on exactly what an earlier one showed. | [] |
 
-### plan-names-destroying-changes → irreversible-operation-runs-dry-by-default
+### plan-names-destroying-changes → irreversible-operation-runs-dry-by-default · MUST
 The plan names every change that destroys something, and apply refuses one without an explicit flag.
 
 | Why | Tags |

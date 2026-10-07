@@ -1,6 +1,6 @@
 # Changes
 
-> Governs a change: what it covers, what it carries along, and how it is handed back.
+> Governs a change: its scope, what it carries, its hand-back.
 
 ## Scope
 
@@ -19,11 +19,18 @@ A change that makes a document false — a readme, the project’s context, an e
 | a document corrected later is not corrected, and a reader trusts the stale one until it costs them. | [] |
 
 ### change-moves-a-file-never-rewrites-it · MUST
-A change that moves a file moves it, never deletes it and writes it anew, and edits it in another step.
+A change that moves a file moves it, never deletes it and writes it anew.
 
 | Why | Tags |
 |---|---|
-| a file written anew can lose or alter content unseen, and a move with edits hides the edits. | [] |
+| a file written anew can lose or alter content unseen. | [] |
+
+### tidying-shipped-before-the-behaviour · SHOULD
+A tidying or a refactoring the task needs ships as its own change, before the change of behaviour.
+
+| Why | Tags |
+|---|---|
+| each diff then reads as one thing, and a reviewer sees the behaviour change alone. | [] |
 
 ## Hand-back
 

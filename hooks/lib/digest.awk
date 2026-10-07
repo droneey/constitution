@@ -48,7 +48,7 @@ function warnings(   k, bytes) {
   if (k <= nwarnings) put("and " (nwarnings - k + 1) " more")
 }
 
-function core(   path, line, r, lines) {
+function core(   path, line, r, lines, k) {
   path = ENVIRON["CONSTITUTION_CORE"]
   lines = 0
   while ((r = (getline line < path)) > 0) {
@@ -57,9 +57,9 @@ function core(   path, line, r, lines) {
   }
   if (r < 0) exit 2
   close(path)
-  if (corefiles == "") return
+  if (!ncorefiles) return
   if (!lines) open_section()
-  put(corefiles)
+  for (k = 1; k <= ncorefiles; k++) put(COREFILES[k])
 }
 
 function index_lines(   k) {
@@ -82,7 +82,7 @@ function print_json(   k) {
 }
 
 $1 == "error" { failed = $2 }
-$1 == "core" { corefiles = text(1) }
+$1 == "core" { COREFILES[++ncorefiles] = text(1) }
 $1 == "pin" { pin = text(1) }
 $1 == "count" { count = $2 }
 $1 == "warning" { WARNING[++nwarnings] = text(1) }

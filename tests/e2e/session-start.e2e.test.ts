@@ -173,7 +173,8 @@ const unknownIds = (count: number): readonly string[] =>
   );
 const unknownWarning = (id: string): string => `- unknown: ${id} is not a block — check the name`;
 
-const CORE_FILES = "Core's files, under blocks/core/ and named without .md: core";
+const CORE_HEAD = "Core's chapters, blocks/core/<name>.md, and what each governs:";
+const CORE_CODE = '- code: any code no other chapter governs.';
 const KEY = "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const AXIS_DOMAINS = '[ui, remote-data, version-control]';
@@ -192,7 +193,11 @@ const OPTIMISTIC_WRITES_ROLL_BACK = 'optimistic-writes-roll-back';
 const COMMITS_ARE_ATOMIC = 'commits-are-atomic';
 const EVERY_AXIS: AxesView = {
   core: [
-    `${CORE_FILES}, code, principles; architecture: principles; workflow: delivery.`,
+    CORE_HEAD,
+    CORE_CODE,
+    '- principles',
+    '- architecture/principles',
+    '- workflow/delivery',
   ],
   musts: [
     READS_ARE_CANCELLABLE,
@@ -213,7 +218,9 @@ const EVERY_AXIS: AxesView = {
 };
 const BASE_ONLY: AxesView = {
   core: [
-    `${CORE_FILES}, code, principles.`,
+    CORE_HEAD,
+    CORE_CODE,
+    '- principles',
   ],
   musts: [
     FOUR_DATA_STATES,
@@ -1725,13 +1732,13 @@ describe('session-start hook', () => {
     expect(mustsOf(session)).toContain('four-data-states (SHOULD in web; MAY)');
   });
 
-  // Core's part sets how much room is left: the line naming core's files takes
-  // 126 bytes, the gap and heading of the block list 42, the line under that
+  // Core's part sets how much room is left: the lines naming core's chapters
+  // take 165 bytes, the gap and heading of the block list 42, the line under that
   // heading 85 and a synthetic domain's line 88.
   it.each<EdgeCase>([
     {
       condition: 'the last line of the block list ends on the budget, reserve kept',
-      corePart: 8859,
+      corePart: 8820,
       domains: '[synthetic-001]',
       tail: [
         '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up.',
@@ -1739,7 +1746,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the last line of the block list passes the budget by one byte',
-      corePart: 8860,
+      corePart: 8821,
       domains: '[synthetic-001]',
       tail: [
         KEY,
@@ -1748,7 +1755,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list ends on the budget',
-      corePart: 9032,
+      corePart: 8993,
       domains: '[synthetic-001]',
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
@@ -1757,7 +1764,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list passes the budget by one byte',
-      corePart: 9033,
+      corePart: 8994,
       domains: '[synthetic-001]',
       tail: [
         '',
@@ -1796,7 +1803,7 @@ describe('session-start hook', () => {
   it('should fill the budget to its last byte when the last line of the block list ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8859),
+      corePart: corePartOfBytes(8820),
     });
     const project = createProject({
       config: configOf({
@@ -1999,7 +2006,10 @@ describe('session-start hook', () => {
       }),
       view: {
         core: [
-          `${CORE_FILES}, code, principles; architecture: principles.`,
+          CORE_HEAD,
+          CORE_CODE,
+          '- principles',
+          '- architecture/principles',
         ],
         musts: [
           READS_ARE_CANCELLABLE,

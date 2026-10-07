@@ -2,7 +2,7 @@
 
 > How a distributed Python package's versions follow its floor.
 
-### requires-python-raised-in-a-minor → versions-follow-semver
+### requires-python-raised-in-a-minor → versions-follow-semver · MUST
 A published package raises its `requires-python` floor only in a minor release, never in a patch.
 
 | Why | Tags |

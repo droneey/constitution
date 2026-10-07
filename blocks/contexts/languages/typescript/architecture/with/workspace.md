@@ -2,7 +2,7 @@
 
 > The package names of a TypeScript workspace's units.
 
-### typescript-unit-names-under-the-scope → unit-named-after-its-folder
+### typescript-unit-names-under-the-scope → unit-named-after-its-folder · SHOULD
 A product is `@<scope>/<name>`, `shared/` is `@<scope>/shared`, and a unit of `libs/` is `@<scope>/libs-<name>`; an integration is the subpath of its framework, `@<scope>/<name>/<framework>`.
 
 | Why | Tags |

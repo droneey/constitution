@@ -2,7 +2,7 @@
 
 > Mutation testing over specs that `bun test` runs.
 
-### stryker-runs-the-archive-runner → every-mutant-killed
+### stryker-runs-the-archive-runner → every-mutant-killed · MUST
 Stryker's `testRunner` is `bun-specs`, its `plugins` load the archive's `tools/mutation-check/dist/runner.js` by its path from the preset's own file, and `coverageAnalysis` is `"off"`.
 
 | Why | Tags |

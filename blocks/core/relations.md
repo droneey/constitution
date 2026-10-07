@@ -1,6 +1,6 @@
 # Relations
 
-> Governs how one unit of code depends on, calls or extends another.
+> Governs how a unit depends on, calls or extends another.
 
 ## Modules
 
@@ -27,12 +27,12 @@ A unit depends only on units that change less often than itself.
 
 ## Contracts
 
-### contract-offers-a-caller-only-what-it-calls · MUST
-A contract between units offers each caller only the operations it calls, never the whole of what an implementation can do.
+### contract-shaped-by-its-callers-role · MUST
+A contract between units offers the operations one role of caller needs — reading, writing, notifying — never the whole of what an implementation can do; callers of one role share it, even when each calls only part of it.
 
 | Why | Tags |
 |---|---|
-| a wide contract couples every caller to operations it never uses, and hides which caller can change what. | [] |
+| a contract wider than its role couples every caller to operations it never uses, and one cut per caller multiplies contracts that change together. | [] |
 
 ### implementation-keeps-the-whole-contract · SHOULD
 Every implementation of a contract keeps all of it: no operation of it refuses as unsupported, accepts less, or returns more than the contract says.
@@ -47,6 +47,15 @@ A unit calls its own collaborators, never theirs: no chain walks into another un
 | Why | Tags |
 |---|---|
 | a chain couples the caller to the whole path, so a change anywhere along it breaks the caller. | [] |
+
+## Deprecation
+
+### deprecated-form-never-used · MUST
+New code calls nothing a dependency or the program marks deprecated, and uses no form deprecated in favour of another.
+
+| Why | Tags |
+|---|---|
+| a deprecated form is removed in a later release, and two spellings of one thing double what a reader must know. | [] |
 
 ## Construction and state
 

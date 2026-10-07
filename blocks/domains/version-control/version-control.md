@@ -15,19 +15,26 @@ governs: []
 
 ## Commits
 
-### commit-is-one-logical-change · SHOULD
+### commit-is-one-logical-change → change-limited-to-its-task · SHOULD
 A commit holds one logical change, and its subject says what changed, not which files were touched.
 
 | Why | Tags |
 |---|---|
 | a change that does one thing can be reviewed, reverted and found in history as one thing; the diff already lists the files, so the subject is the only place that says what the change means. | [] |
 
-### refactor-apart-from-behaviour-change · SHOULD
+### refactor-apart-from-behaviour-change → tidying-shipped-before-the-behaviour · SHOULD
 A refactor and a change of behaviour are never one commit.
 
 | Why | Tags |
 |---|---|
 | a rollback of the behaviour then leaves the structure alone, and a reviewer sees which lines change what the program does. | [] |
+
+### move-committed-apart-from-its-edits → change-moves-a-file-never-rewrites-it · MUST
+A file's move is committed apart from any edit of it.
+
+| Why | Tags |
+|---|---|
+| history follows a file through a move only when the move changes nothing else, and a move with edits hides the edits. | [] |
 
 ### commit-holds-only-its-task-files · MUST
 A commit holds only the files of its task.
@@ -36,7 +43,7 @@ A commit holds only the files of its task.
 |---|---|
 | a commit of whatever lies around carries a scratch file, a key or a build output into the history. | [security] |
 
-### every-commit-passes-the-check · MUST
+### every-commit-passes-the-check → change-handed-back-with-a-passing-check · MUST
 Every commit passes the repository's check.
 
 | Why | Tags |
@@ -82,14 +89,14 @@ History others have is never rewritten.
 |---|---|
 | a rewritten shared history breaks every copy built on it and can lose others' work. | [] |
 
-### no-secret-in-history → secret-never-in-the-repository
+### no-secret-in-history → secret-never-in-the-repository · MUST
 No commit of the history holds a secret, even one a later commit removed it from.
 
 | Why | Tags |
 |---|---|
 | a secret removed from the working tree stays in every clone of the history. | [security] |
 
-### secret-in-history-rotated-not-rewritten → leaked-secret-rotated-at-once
+### secret-in-history-rotated-not-rewritten → leaked-secret-rotated-at-once · MUST
 A secret that reached a commit is rotated like any other leak; rewriting the history does not undo it.
 
 | Why | Tags |

@@ -108,8 +108,8 @@ const placementMessage = (input: {
     return `is ${rule.level} while it carries out the ${target.level} rule "${parent}"; a rule is never looser than the rule it carries out`;
   }
 
-  return rule.statedLevel === target.level
-    ? `states ${target.level}, the level it already takes from "${parent}"; a rule states a level only to be stricter than the rule it carries out`
+  return rule.statedLevel === undefined
+    ? `carries out "${parent}" without a level; a rule that carries out another states its own, never looser than it`
     : undefined;
 };
 

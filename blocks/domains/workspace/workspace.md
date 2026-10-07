@@ -45,7 +45,7 @@ A dependency has one version across every manifest of the repository.
 
 ## Imports between units
 
-### units-imported-by-their-entries → dependency-reached-through-its-public-entry
+### units-imported-by-their-entries → dependency-reached-through-its-public-entry · MUST
 A unit, and a script of the root, imports another unit by its name, through its entries, never by a path into its folder.
 
 | Why | Tags |
@@ -54,7 +54,7 @@ A unit, and a script of the root, imports another unit by its name, through its 
 
 ## The tools
 
-### unit-checked-by-its-own-parts → rule-held-by-a-tool-where-one-can
+### unit-checked-by-its-own-parts → rule-held-by-a-tool-where-one-can · MUST
 In a workspace, the files of each package are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no package's parts reach another package's files.
 
 | Why | Tags |
@@ -63,14 +63,14 @@ In a workspace, the files of each package are held by the parts of its own block
 
 ## What units share
 
-### file-lives-once-across-units → fact-has-one-source
+### file-lives-once-across-units → fact-has-one-source · MUST
 A file several packages need lives once in the repository; a package that needs it at run time takes it from there in its build, and no copy of it is committed.
 
 | Why | Tags |
 |---|---|
 | one source means a fix is made once and reaches every package, and a committed copy becomes a second original that drifts from the one reviewed. | [] |
 
-### shared-data-parsed-by-each-reader → outside-value-untyped-until-parsed
+### shared-data-parsed-by-each-reader → outside-value-untyped-until-parsed · MUST
 Data in no language that several packages read — a schema, a table of cases — is parsed by each package that reads it, at its edge, and that package's specs read the file itself by its path, never a copy of it.
 
 | Why | Tags |

@@ -48,7 +48,7 @@ A failing analytics destination, or a failure of the code that sends to it, neit
 |---|---|
 | measurement must never cost the user the thing they came to do. | [] |
 
-### no-personal-data-in-events → secret-and-personal-data-kept-out-of-output
+### no-personal-data-in-events → secret-and-personal-data-kept-out-of-output · MUST
 No personal data and no content a person wrote is sent in an event.
 
 | Why | Tags |
@@ -76,7 +76,7 @@ Context shared by every event — signed in or not, the mode — is set once, as
 |---|---|
 | every event then carries it without every call passing it. | [data] |
 
-### event-names-object-action → event-name-in-past-tense
+### event-names-object-action → event-name-in-past-tense · SHOULD
 An analytics event is named after its object and the action done to it — `order_placed` — and its parameters in the same case.
 
 | Why | Tags |

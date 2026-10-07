@@ -2,7 +2,7 @@
 
 > The ports and adapters that reach the other system follow core.
 
-### responses-parsed-in-the-adapter → outside-value-untyped-until-parsed
+### responses-parsed-in-the-adapter → outside-value-untyped-until-parsed · MUST
 Every response is parsed against its wire schema in the adapter before it is mapped, so a change of the wire fails at that one boundary.
 
 | Why | Tags |
@@ -16,14 +16,14 @@ One shared mapper, in `shared/<transport>/`, turns transport failures into domai
 |---|---|
 | every adapter then fails the same way, and a feature states only what is its own. | [] |
 
-### stream-as-async-iterable-of-domain-events → contract-knows-no-vendor
+### stream-as-async-iterable-of-domain-events → contract-knows-no-vendor · MUST
 A progressive result is an asynchronous sequence of domain events the port returns: its end completes it, a domain error fails it, and stopping the loop cancels it. The events are a union declared in the port's file. The adapter maps wire events and drops unknown ones. A stream a write causes is a command; a passive subscription is a query.
 
 | Why | Tags |
 |---|---|
 | the domain sees its own events in its own words, and the transport can change without touching it. | [data] |
 
-### one-transport-instance-per-system → composition-root-wires-everything
+### one-transport-instance-per-system → composition-root-wires-everything · MUST
 Each remote system has one configured instance of the transport — its base address, headers and credentials — which every adapter that reaches that system receives.
 
 | Why | Tags |

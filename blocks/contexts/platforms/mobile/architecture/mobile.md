@@ -1,6 +1,6 @@
 # Mobile
 
-### device-capabilities-behind-ports → effects-held-only-by-the-edge
+### device-capabilities-behind-ports → effects-held-only-by-the-edge · MUST
 Permissions, notifications, background work, secure storage and sensors are reached through adapters behind ports, never from a screen.
 
 | Why | Tags |

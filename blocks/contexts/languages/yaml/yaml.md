@@ -11,7 +11,7 @@ governs: ["**/*.yaml", "**/*.yml"]
 
 # YAML
 
-### yaml-file-ends-in-yaml → format-has-one-extension
+### yaml-file-ends-in-yaml → format-has-one-extension · SHOULD
 A YAML file ends in `.yaml`, the extension YAML's own documentation recommends, never `.yml`, unless a tool reads it only by a fixed name, as a code host reads its issue forms.
 
 | Why | Tags |

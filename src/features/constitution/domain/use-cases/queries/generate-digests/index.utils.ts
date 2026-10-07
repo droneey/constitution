@@ -1,3 +1,5 @@
+import { Layer } from '#/kernel';
+
 import type { Block, Constitution, RequirementAnswer, Rule } from '../../../entities';
 import { BlockFileRole } from '../../../entities';
 import type { BlocksById } from '../../../utils';
@@ -51,6 +53,28 @@ const blockRecord = (input: {
   ]);
 };
 
+const GOVERNS = '> Governs ';
+
+const governsOf = (body: string): string =>
+  body
+    .split('\n')
+    .find((line) => line.startsWith(GOVERNS))
+    ?.slice(GOVERNS.length) ?? '';
+
+// Each chapter of core with what its Governs line names, which the digest
+// prints beside the chapter's name.
+const chapterRecords = (block: Block): readonly string[] =>
+  block.files
+    .filter((file) => file.role === BlockFileRole.Chapter)
+    .map((file) =>
+      recordOf([
+        'chapter',
+        block.id,
+        `${axisFolderOf(file.axis)}${fileNameOf(file.path)}`,
+        governsOf(file.body),
+      ]),
+    );
+
 const ruleRecord = (rule: Rule): string =>
   recordOf([
     'rule',
@@ -83,6 +107,9 @@ const indexOf = (input: { byId: BlocksById; constitution: Constitution }): strin
         byId: input.byId,
       }),
     ),
+    ...input.constitution.blocks
+      .filter((block) => block.layer === Layer.Core)
+      .flatMap(chapterRecords),
     ...input.constitution.rules.map(ruleRecord),
     ...input.constitution.requirementAnswers.map(answerRecord),
   ].join('\n')}\n`;

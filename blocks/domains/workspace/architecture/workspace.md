@@ -44,7 +44,7 @@ The root of a workspace holds only the workspace and the configuration of its to
 |---|---|
 | a root with no code of its own has nothing a unit could import by accident, and nothing that leaks into a consumer. | [] |
 
-### shared-part-on-the-second-consumer → code-placed-by-its-reason-to-change
+### shared-part-on-the-second-consumer → code-placed-by-its-reason-to-change · MUST
 What two or more products need lives in `shared/`, laid out by meaning as a program's `shared/` is — `contracts/`, `kinds/`, the protocol two of them speak — and a part of it appears when a second product needs it.
 
 | Why | Tags |
@@ -53,14 +53,14 @@ What two or more products need lives in `shared/`, laid out by meaning as a prog
 
 ## Direction
 
-### product-units-blind-to-each-other → feature-never-imports-a-feature
+### product-units-blind-to-each-other → feature-never-imports-a-feature · MUST
 A unit of `packages/` never imports another.
 
 | Why | Tags |
 |---|---|
 | a unit that knows another cannot be released, changed or removed alone. | [] |
 
-### units-import-toward-libs → import-points-inward
+### units-import-toward-libs → import-points-inward · MUST
 Imports between units point from `packages/` to `shared/` to `libs/`: `shared/` imports no unit of `packages/`, and a unit of `libs/` none of `packages/` and nothing of `shared/`.
 
 | Why | Tags |

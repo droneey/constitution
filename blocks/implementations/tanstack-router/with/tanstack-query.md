@@ -2,7 +2,7 @@
 
 > Routes that load server data through the query cache, and screens whose reads suspend into the route's pending and error components.
 
-### loaders-read-through-the-query-cache → fact-has-one-source
+### loaders-read-through-the-query-cache → fact-has-one-source · MUST
 Loaders and guards read through the query cache — the read's `queryOptions` through the query client — and the router's own cache is off (`defaultPreloadStaleTime: 0`).
 
 | Why | Tags |

@@ -33,7 +33,7 @@ A shared shape is composed of small named shapes — an identifier, timestamps, 
 | a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. | [] |
 
 ### type-lives-with-its-consumer · SHOULD
-A type lives beside the unit whose signature introduces it, and every other unit imports it from there; it moves to a file of its own when a second consumer appears, and never gets a second home through a re-export.
+A type lives beside the unit whose signature introduces it, and every other unit imports it from there; it moves to a file of its own when a second consumer appears, and is declared nowhere else — a surface that re-exports it offers it without becoming its home.
 
 | Why | Tags |
 |---|---|
@@ -84,6 +84,13 @@ A value from outside the program — text, a response, a file, a message — has
 | Why | Tags |
 |---|---|
 | a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | [security] |
+
+### outside-input-bounded-before-it-is-parsed · MUST
+Input from outside — a body, a file, a message — is refused past a size and a depth of nesting before it is parsed.
+
+| Why | Tags |
+|---|---|
+| a parser handed an input of any size or depth spends memory and time the sender chooses. | [security, performance] |
 
 ### narrowing-proves-all-it-claims · MUST
 A narrowing that claims a type checks every property of it, as running the type’s whole schema does; one that checks one field and claims the whole type is a cast.

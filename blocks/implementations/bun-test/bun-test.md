@@ -15,56 +15,56 @@ governs: ["**/__tests__/**"]
 
 > Core's exclusions from coverage are the specs and their fixtures, `**/__tests__/**`, the entry file, `**/main.*`, and generated files, `**/*.gen.*`.
 
-### strict-matcher-only → case-proves-one-intent
+### strict-matcher-only → case-proves-one-intent · SHOULD
 A case compares with `toStrictEqual`, never `toEqual`, `toMatchObject`, `expect.objectContaining`, `expect.arrayContaining`, `toBeTruthy` or `toBeFalsy`.
 
 | Why | Tags |
 |---|---|
 | these pass on a partial or loose match — `toEqual` ignores undefined fields and class types, the others whole parts of the outcome — so a case passes on an outcome that differs. | [] |
 
-### no-module-mocks → effect-faked-never-mocked
+### no-module-mocks → effect-faked-never-mocked · SHOULD
 No `mock.module` and no `spyOn` over a real module.
 
 | Why | Tags |
 |---|---|
 | these are Bun's two ways to put another function in a module's place. | [] |
 
-### integration-specs-ignored-by-bunfig → integration-spec-runs-the-real-engine
+### integration-specs-ignored-by-bunfig → integration-spec-runs-the-real-engine · SHOULD
 `pathIgnorePatterns` in `bunfig.toml` leaves out `*.integration.test.ts` and `tests/`.
 
 | Why | Tags |
 |---|---|
 | `bun test` takes every spec file under the folder it starts in, so only an ignored pattern keeps the integration and end-to-end specs out of the unit specs, their sandbox and their coverage gate. | [] |
 
-### coverage-gate-on-loaded-files → logic-fully-covered
+### coverage-gate-on-loaded-files → logic-fully-covered · MUST
 Bun's coverage gate fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions.
 
 | Why | Tags |
 |---|---|
 | a line no behaviour reaches fails the check where it appears, not in a later review. | [testing] |
 
-### no-test-retries → flaky-test-fixed-never-retried
+### no-test-retries → flaky-test-fixed-never-retried · SHOULD
 No case passes a `retry` or `repeats` option.
 
 | Why | Tags |
 |---|---|
 | a retried case passes on its second try and hides the race that failed the first. | [] |
 
-### test-order-randomized → case-independent-of-order
+### test-order-randomized → case-independent-of-order · SHOULD
 `bunfig.toml` sets `randomize = true`.
 
 | Why | Tags |
 |---|---|
 | Bun runs the cases in the order they are written unless the setting shuffles them, and then prints the seed of each run. | [] |
 
-### no-sleep-in-specs → test-never-sleeps-a-fixed-time
+### no-sleep-in-specs → test-never-sleeps-a-fixed-time · SHOULD
 A spec calls neither `Bun.sleep`, `Bun.sleepSync` nor the `setTimeout` of `node:timers/promises`, and calls no `setTimeout` inside a promise.
 
 | Why | Tags |
 |---|---|
 | these are the fixed delays a spec reaches for; the fake clock of `bun:test` or a wait on a condition replaces them. | [] |
 
-### network-refused-by-the-test-preload → unit-spec-refuses-the-network
+### network-refused-by-the-test-preload → unit-spec-refuses-the-network · MUST
 `bunfig.toml` preloads a fixture that replaces with functions that throw every way the runtime opens a connection: `fetch`, `WebSocket`, `Bun.connect` and `Bun.SQL`; `node:net`'s `Socket.prototype.connect`, `connect` and `createConnection`; `node:tls`'s `connect`; and `request` and `get` of `node:http` and `node:https`. A configuration for the integration specs does not preload it.
 
 | Why | Tags |

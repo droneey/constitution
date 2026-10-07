@@ -2,7 +2,7 @@
 
 > A converged document kept under version control, apart from what its runs produce.
 
-### run-output-in-an-ignored-work-folder → generated-files-not-committed
+### run-output-in-an-ignored-work-folder → generated-files-not-committed · SHOULD
 Version control ignores the work folder of the runs.
 
 | Why | Tags |

@@ -2,7 +2,7 @@
 
 > The typed form and the floor of a distributed Python package.
 
-### py-typed-where-code-is-imported → ships-its-types
+### py-typed-where-code-is-imported → ships-its-types · MUST
 A published package whose code a consumer imports ships `py.typed` in its import package, beside its `__init__.py`.
 
 | Why | Tags |
@@ -23,7 +23,7 @@ A published package's `Programming Language :: Python :: 3.<minor>` classifiers 
 |---|---|
 | a classifier tells a consumer which Python the package supports, and a minor the toolchain does not pin is one the package manager downloads or finds on the machine, unverified. | [] |
 
-### integration-is-a-submodule-and-an-extra → integration-is-an-entry-with-an-optional-framework
+### integration-is-a-submodule-and-an-extra → integration-is-an-entry-with-an-optional-framework · SHOULD
 An integration is a submodule of the import package named after its framework, and the framework is an extra of the same name in `[project.optional-dependencies]`.
 
 | Why | Tags |

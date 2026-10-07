@@ -30,7 +30,7 @@ The commit hooks hold what can be checked of a commit before it is made: its bra
 |---|---|
 | a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. | [testing] |
 
-### secrets-scanned-before-each-commit → secret-never-in-the-repository
+### secrets-scanned-before-each-commit → secret-never-in-the-repository · MUST
 The commit hooks scan the staged changes for secrets before each commit.
 
 | Why | Tags |
@@ -76,7 +76,7 @@ A repository integrates by one strategy, which the protection enforces, and no w
 |---|---|
 | one strategy keeps the history readable the same way everywhere, and work in progress on the main line is a state nobody meant to ship. | [] |
 
-### small-reviewable-change-requests → change-limited-to-its-task
+### small-reviewable-change-requests → change-limited-to-its-task · SHOULD
 A pull request is small enough to review in one sitting; one that mixes concerns is split.
 
 | Why | Tags |
@@ -110,21 +110,21 @@ Specs, plans and working notes live in a `local/` folder that version control ig
 
 ## Agents
 
-### agent-commits-only-when-asked → person-decides-what-is-recorded-or-shipped
+### agent-commits-only-when-asked → person-decides-what-is-recorded-or-shipped · MUST
 The main agent commits only when a person asks it to, on the working branch.
 
 | Why | Tags |
 |---|---|
 | a commit records a decision under the person's name; the person makes it. | [] |
 
-### agent-never-merges → person-decides-what-is-recorded-or-shipped
+### agent-never-merges → person-decides-what-is-recorded-or-shipped · MUST
 An agent never merges a pull request.
 
 | Why | Tags |
 |---|---|
 | merging is the decision that ships a change, and it belongs to the person who answers for it. | [] |
 
-### agent-pushes-and-opens-pull-requests-when-asked → person-decides-what-is-recorded-or-shipped
+### agent-pushes-and-opens-pull-requests-when-asked → person-decides-what-is-recorded-or-shipped · MUST
 An agent pushes a branch, its own or one others share, and opens a pull request only when a person asks.
 
 | Why | Tags |
@@ -138,7 +138,7 @@ An agent never pushes to the main line, even where its rights would pass the pro
 |---|---|
 | a holder of admin rights may pass the protection, so an agent that holds them is the last guard against the push. | [security] |
 
-### sub-agent-never-commits-pushes-or-merges → sub-agent-only-does-the-work
+### sub-agent-never-commits-pushes-or-merges → sub-agent-only-does-the-work · MUST
 A sub-agent never commits, never pushes and never merges.
 
 | Why | Tags |
@@ -152,7 +152,7 @@ An agent never force-pushes, to any branch.
 |---|---|
 | history others have fetched is theirs as much as the agent's, and a rewrite of it is lost work that nobody asked for. | [] |
 
-### no-attribution-in-commits-or-pull-requests → submission-carries-no-tool-attribution
+### no-attribution-in-commits-or-pull-requests → submission-carries-no-tool-attribution · MUST
 No commit, its trailers included, and no pull request names the tool or model that helped write it.
 
 | Why | Tags |

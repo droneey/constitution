@@ -285,7 +285,7 @@ describe('rulesCheck', () => {
       }),
     },
     {
-      condition: 'its parent takes MUST from its own parent',
+      condition: 'its parent carries out another at MUST',
       parent: rule({
         parent: 'dependencies-point-inward',
         slug: 'four-data-states',
@@ -315,48 +315,28 @@ describe('rulesCheck', () => {
     ]);
   });
 
-  it.each([
-    {
-      condition: 'its parent states it',
-      level: 'SHOULD',
-      parent: rule({
-        level: 'SHOULD',
-        slug: 'four-data-states',
-      }),
-    },
-    {
-      condition: 'its parent takes it from its own parent',
-      level: 'MUST',
-      parent: rule({
-        parent: 'dependencies-point-inward',
-        slug: 'four-data-states',
-      }),
-    },
-  ])(
-    'should report a rule that states the level it inherits when $condition',
-    ({ level, parent }) => {
-      // Arrange
-      const files = validFiles();
-      files[UI] = `# UI\n\n${parent}`;
-      files[PORTALS] = `# Portals\n\n${rule({
-        level,
-        parent: 'four-data-states',
-        slug: 'portals-for-overlays',
-      })}`;
-      const input = checkInputOf(files);
+  it('should report a rule that carries out another without a level', () => {
+    // Arrange
+    const files = validFiles();
+    files[PORTALS] = `# Portals\n\n${rule({
+      isLevelStated: false,
+      parent: 'four-data-states',
+      slug: 'portals-for-overlays',
+    })}`;
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = rulesCheck(input);
+    // Act
+    const findings = rulesCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: `rule "portals-for-overlays" states ${level}, the level it already takes from "four-data-states"; a rule states a level only to be stricter than the rule it carries out`,
-          path: PORTALS,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "portals-for-overlays" carries out "four-data-states" without a level; a rule that carries out another states its own, never looser than it',
+        path: PORTALS,
+      },
+    ]);
+  });
 
   it.each([
     {

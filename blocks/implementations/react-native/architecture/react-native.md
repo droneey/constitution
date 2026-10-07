@@ -1,6 +1,6 @@
 # React Native
 
-### react-native-imported-by-the-ui → layer-imports-dependencies-by-its-role
+### react-native-imported-by-the-ui → layer-imports-dependencies-by-its-role · MUST
 React Native's home reaches past the edge into a UI's components and widgets and the binding units of `app/` and `composition/`.
 
 | Why | Tags |

@@ -2,7 +2,7 @@
 
 > Routes some users may not open.
 
-### guards-in-before-load → access-denied-unless-granted
+### guards-in-before-load → access-denied-unless-granted · MUST
 Access control of a route sits in its `beforeLoad`, and ends in `redirect`.
 
 | Why | Tags |

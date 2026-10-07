@@ -43,7 +43,7 @@ An address no screen answers shows the application's not-found screen, which is 
 |---|---|
 | a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. | [ux] |
 
-### address-parsed-as-untrusted-input → outside-value-untyped-until-parsed
+### address-parsed-as-untrusted-input → outside-value-untyped-until-parsed · MUST
 A screen's address — its path and its parameters, in a URL or a deep link — reaches the screen only after a schema parses it; an address that fails the parse opens the screen with its defaults or a fallback screen, never a crash or a half-filled one.
 
 | Why | Tags |
@@ -57,7 +57,7 @@ A write to a screen's address changes only the parameter it is for and keeps eve
 |---|---|
 | a screen that changes its page must keep the filter another piece set, or the link no longer reproduces the view the user built. | [ux] |
 
-### view-state-homes → fact-has-one-source
+### view-state-homes → fact-has-one-source · MUST
 View state a link or a restart must reproduce lives in the platform's navigation state, and ephemeral state in the component that shows it.
 
 | Why | Tags |
@@ -122,14 +122,14 @@ A callback prop is named `on<Event>`, and the handler inside the component may b
 |---|---|
 | `on<Event>` says when the callback runs, and leaves what it does to the caller. | [] |
 
-### one-prop-name-per-meaning → concept-has-one-word
+### one-prop-name-per-meaning → concept-has-one-word · SHOULD
 Before a prop is added, the existing name for the same meaning is reused; synonyms are converged in the change that finds them.
 
 | Why | Tags |
 |---|---|
 | one name per meaning across components makes every component's API guessable. | [] |
 
-### unused-props-deleted → dead-code-deleted
+### unused-props-deleted → dead-code-deleted · MUST
 An optional prop no call site uses is deleted, and its default inlined.
 
 | Why | Tags |
@@ -236,14 +236,14 @@ A form never submits twice: while it submits, a repeat submit is ignored, and th
 
 ## How a user interface is proven
 
-### screen-spec-proves-states-and-interactions → spec-proves-one-boundary
+### screen-spec-proves-states-and-interactions → spec-proves-one-boundary · SHOULD
 A screen's spec proves each data state, each interaction that changes something, each message the user sees and each navigation.
 
 | Why | Tags |
 |---|---|
 | that is what a person does with a screen; a spec that proves it fails when their experience changes. | [ux] |
 
-### component-spec-proves-behaviour-and-keyboard → spec-proves-one-boundary
+### component-spec-proves-behaviour-and-keyboard → spec-proves-one-boundary · SHOULD
 A reusable component's spec proves the variants that change behaviour or meaning, its keyboard use, its focus, and its accessible name, role and state.
 
 | Why | Tags |
@@ -264,7 +264,7 @@ Behaviour that depends on layout, visibility or real focus is proven where the p
 |---|---|
 | a simulated screen computes no layout and fakes focus, so a spec there passes while the element is hidden, covered or unreachable. | [a11y, testing] |
 
-### screenshots-only-where-look-is-contract → snapshot-readable-by-eye
+### screenshots-only-where-look-is-contract → snapshot-readable-by-eye · SHOULD
 Appearance is compared by screenshot only where the look is the contract: in the design system.
 
 | Why | Tags |

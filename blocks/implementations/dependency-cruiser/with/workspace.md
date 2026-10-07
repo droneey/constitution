@@ -2,7 +2,7 @@
 
 > The configuration of each package of a workspace.
 
-### cruiser-configuration-per-unit → unit-checked-by-its-own-parts
+### cruiser-configuration-per-unit → unit-checked-by-its-own-parts · MUST
 In a workspace, each package has a configuration of its own, in its folder, that extends the parts of its blocks.
 
 | Why | Tags |

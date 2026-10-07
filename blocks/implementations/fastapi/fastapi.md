@@ -29,14 +29,14 @@ Every parameter of a route's path is a parameter of its handler.
 |---|---|
 | a path parameter the handler does not take is parsed by nobody, and the route matches values the program never checks. | [] |
 
-### async-handlers-never-block → async-functions-never-block
+### async-handlers-never-block → async-functions-never-block · SHOULD
 A handler whose work blocks is a `def` handler, which FastAPI runs in its threadpool, or hands that work to Starlette's `run_in_threadpool`.
 
 | Why | Tags |
 |---|---|
 | FastAPI runs an `async def` handler on the event loop that serves every request, and a `def` handler in a thread. | [] |
 
-### lifespan-opens-and-closes → resource-released-on-every-path
+### lifespan-opens-and-closes → resource-released-on-every-path · MUST
 What the app keeps open — clients, pools, connections — is opened and closed by the app's `lifespan`, an async context manager around its `yield`, never by `on_event` and never at import.
 
 | Why | Tags |
@@ -45,21 +45,21 @@ What the app keeps open — clients, pools, connections — is opened and closed
 
 ## Failures
 
-### framework-failures-answered-by-their-kind → failure-answered-by-its-code
+### framework-failures-answered-by-their-kind → failure-answered-by-its-code · SHOULD
 A `RequestValidationError` is answered as a validation failure whose details point at each field it refused, each entry of `errors()` by its `loc`, `type` and `msg` without its `input` and `ctx`; Starlette's `HTTPException` — an unknown route, a method not allowed — is answered as the kind its status maps to.
 
 | Why | Tags |
 |---|---|
 | FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields; an entry's `input` is the value the caller sent, a password or a card number among them, and its `ctx` may quote it. | [errors, security] |
 
-### program-raises-no-http-exception → errors-carry-codes-not-statuses
+### program-raises-no-http-exception → errors-carry-codes-not-statuses · SHOULD
 The program raises the error kit's errors, never `HTTPException`.
 
 | Why | Tags |
 |---|---|
 | an `HTTPException` carries a status and no code, and ties the code that raises it to HTTP. | [errors] |
 
-### unexpected-error-logged-once → failure-reported-once
+### unexpected-error-logged-once → failure-reported-once · SHOULD
 The handler of an unexpected failure logs it, and a filter on the `uvicorn.error` logger drops the record of the same exception, which Starlette raises again after the handler has answered.
 
 | Why | Tags |
@@ -68,7 +68,7 @@ The handler of an unexpected failure logs it, and a filter on the `uvicorn.error
 
 ## Specs
 
-### specs-through-the-asgi-transport → server-specs-run-in-process
+### specs-through-the-asgi-transport → server-specs-run-in-process · MUST
 A spec sends its requests through `ASGITransport(app=app)` to an app it builds with fakes, and enters the app's `lifespan` itself when the case needs it.
 
 | Why | Tags |

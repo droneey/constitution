@@ -1,6 +1,6 @@
 # Agents
 
-> Governs the working agreement between a person and the agents in the chat.
+> Governs the working agreement with agents in the chat.
 
 ## Deciding
 
@@ -12,7 +12,7 @@ Consent is given in the chat, for one action, and never carries over to the next
 | the chat is where the person who answers for an action sees it asked. | [security] |
 
 ### agent-asks-before-a-consequential-change · MUST
-An agent asks before it adds a dependency, a new layer or module, or changes a public entry, a schema or a stored format, and goes on only with a person’s go-ahead for that change.
+An agent asks before it adds a dependency or a layer, or changes a public entry, a schema or a stored format, and goes on only with a person’s go-ahead for that change.
 
 | Why | Tags |
 |---|---|

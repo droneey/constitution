@@ -1,6 +1,6 @@
 # Dependencies
 
-> Governs code the project takes from others: packages, downloads and tools.
+> Governs packages, downloads and tools taken from others.
 
 ## Pinning
 

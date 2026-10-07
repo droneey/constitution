@@ -1,6 +1,6 @@
 # Layers
 
-> Governs a layer of the tree: what it holds and what it may import.
+> Governs a layer: what it holds and may import.
 
 The import rules of this chapter are the layer matrix. Each is held by the tool that follows imports, configured for the project's layers from a shared preset; the language block names the source root, the surface file and the suffix form.
 
@@ -28,7 +28,7 @@ A feature never imports another feature; features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes live in adapters, behind ports — and the domain and every other unit of logic reach them only through those ports.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes live in adapters, behind ports — and the domain and every other unit of logic reach them only through those ports. Two effects are the exceptions other rules name: the environment, read where the root's rules allow, and diagnostics, which a unit outside the domain writes through the logging facade.
 
 | Why | Tags |
 |---|---|

@@ -2,7 +2,7 @@
 
 > Which tool publishes the units a Bun repository distributes.
 
-### units-published-by-npm → publishing-by-workflow-identity
+### units-published-by-npm → publishing-by-workflow-identity · MUST
 npm publishes a distributed unit, never `bun publish`.
 
 | Why | Tags |

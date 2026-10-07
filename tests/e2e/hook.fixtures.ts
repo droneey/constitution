@@ -219,6 +219,22 @@ const contextOf = (run: HookRun): string => outputOf(run).context;
 
 const linesOf = (context: string): readonly string[] => context.replace(/\n$/, '').split('\n');
 
+const CORE_CHAPTERS = "Core's chapters";
+
+// The line that opens core's chapters and the chapter lines under it.
+const coreLinesOf = (context: string): readonly string[] => {
+  const lines = linesOf(context);
+  const start = lines.findIndex((line) => line.startsWith(CORE_CHAPTERS));
+
+  if (start === -1) {
+    return [];
+  }
+
+  const end = lines.findIndex((line, index) => index > start && !line.startsWith('- '));
+
+  return lines.slice(start, end === -1 ? undefined : end);
+};
+
 const headerOf = (context: string): readonly string[] =>
   linesOf(context.slice(0, context.indexOf('\n\n')));
 
@@ -226,15 +242,13 @@ const factsOf = (context: string): readonly string[] => headerOf(context).slice(
 
 const blockListOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
-  const start = lines.findIndex((line) => line.startsWith("Core's files")) + 2;
+  const chapters = coreLinesOf(context).length;
+  const start = lines.findIndex((line) => line.startsWith(CORE_CHAPTERS)) + chapters + 1;
 
   const end = lines.indexOf('', start);
 
   return lines.slice(start, end === -1 ? undefined : end);
 };
-
-const coreLinesOf = (context: string): readonly string[] =>
-  linesOf(context).filter((line) => line.startsWith("Core's files"));
 
 const warningsOf = (context: string): readonly string[] => {
   const lines = linesOf(context);

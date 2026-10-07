@@ -43,7 +43,7 @@ A distributed unit ships its licence file.
 |---|---|
 | a unit is used apart from its repository, and without the licence beside it nobody can lawfully use it. | [] |
 
-### readme-shows-install-and-first-use → readme-is-the-front-door
+### readme-shows-install-and-first-use → readme-is-the-front-door · SHOULD
 A distributed unit's README shows the install line and the shortest use: for a configuration package, the one-line extends and its options; for a command-line tool, its first command.
 
 | Why | Tags |

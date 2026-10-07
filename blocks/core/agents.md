@@ -5,7 +5,7 @@
 ## Deciding
 
 ### agent-asks-before-an-irreversible-action · MUST
-An agent takes no irreversible action — destroying, spending money, touching a live system, sending something outward, calling a real outside service — without a person’s go-ahead for that action.
+An agent takes no irreversible action — destroying, spending money, changing a live system, sending something outward in someone’s name — without a person’s go-ahead for that action; reading from an outside service is no such action.
 
 | Why | Tags |
 |---|---|

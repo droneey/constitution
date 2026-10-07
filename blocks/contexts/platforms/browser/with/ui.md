@@ -2,7 +2,7 @@
 
 > Screens in a browser: the URL, the document, the viewport and the pointer.
 
-### targets-at-least-24-css-px → targets-meet-platform-minimum
+### targets-at-least-24-css-px → targets-meet-platform-minimum · MUST
 A pointer target is at least 24 × 24 CSS pixels, padding included, and 44 for a primary touch target.
 
 | Why | Tags |
@@ -23,7 +23,7 @@ On a foldable screen, content and controls never cross the fold; the layout foll
 |---|---|
 | text and buttons that fall into the hinge cannot be read or pressed. | [ux] |
 
-### primitive-passes-attributes-and-class → primitive-passes-its-element-through
+### primitive-passes-attributes-and-class → primitive-passes-its-element-through · SHOULD
 In the browser, a primitive passes its native attributes and its class through, its class merged with the caller's.
 
 | Why | Tags |
@@ -51,7 +51,7 @@ Code that can render on a server reads no browser global while it renders.
 |---|---|
 | on the server the global does not exist, and the render fails or differs from the one in the tab. | [errors] |
 
-### busy-submit-marked-aria-disabled → submit-busy-while-submitting
+### busy-submit-marked-aria-disabled → submit-busy-while-submitting · SHOULD
 A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps its focus.
 
 | Why | Tags |
@@ -60,7 +60,7 @@ A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps it
 
 ## Accessibility
 
-### dialog-popover-and-details-native → complex-patterns-on-accessible-primitives
+### dialog-popover-and-details-native → complex-patterns-on-accessible-primitives · MUST
 Unless another active block brings accessible primitives for these patterns, the browser's own elements carry them: `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
 
 | Why | Tags |
@@ -74,63 +74,63 @@ Unless another active block brings primitives that place their own popovers, a n
 |---|---|
 | the browser places the popover without a positioning library, and one polyfill loaded before any popover opens serves them all. | [ux, performance] |
 
-### native-html-elements-first → native-semantics-first
+### native-html-elements-first → native-semantics-first · MUST
 `<button>` for an action, `<a>` with a real `href` for a move, lists as lists, tables with headers and a caption; ARIA only where HTML has no element.
 
 | Why | Tags |
 |---|---|
 | a native element brings its role, its keyboard and its announcement; ARIA on a generic element brings only a promise. | [] |
 
-### landmarks-and-skip-link → wcag-aa-conformance
+### landmarks-and-skip-link → wcag-aa-conformance · MUST
 Every page has landmarks — header, navigation, main, footer — and a link to skip to the content comes first.
 
 | Why | Tags |
 |---|---|
 | screen reader and keyboard users jump by landmarks, and the skip link spares them the navigation on every page. | [] |
 
-### fields-declare-autocomplete → wcag-aa-conformance
+### fields-declare-autocomplete → wcag-aa-conformance · MUST
 A field for the user's own data declares its purpose with `autocomplete`.
 
 | Why | Tags |
 |---|---|
 | the browser then fills it in, and assistive technology can tell the user what it is for. | [ux] |
 
-### live-regions-polite-by-default → status-changes-announced
+### live-regions-polite-by-default → status-changes-announced · MUST
 A status goes to a polite live region, and only an urgent error to an assertive one. An invalid field has `aria-invalid` and `aria-describedby` pointing at its message.
 
 | Why | Tags |
 |---|---|
 | assertive announcements interrupt what the user is listening to, so they are kept for what cannot wait. | [] |
 
-### navigation-moves-focus-to-the-view → status-changes-announced
+### navigation-moves-focus-to-the-view → status-changes-announced · MUST
 After a navigation inside the program, focus moves to the new view's main heading and the document's title names the view; a navigation that only changes a parameter of the same view keeps focus.
 
 | Why | Tags |
 |---|---|
 | the platform announces nothing when the program changes the URL, so a screen-reader user hears no new page. | [a11y] |
 
-### live-region-mounted-before-message → status-changes-announced
+### live-region-mounted-before-message → status-changes-announced · MUST
 A live region is in the document, empty, before its message is put into it.
 
 | Why | Tags |
 |---|---|
 | a region rendered together with its text is often not announced at all. | [a11y] |
 
-### entry-document-declares-the-viewport → wcag-aa-conformance
+### entry-document-declares-the-viewport → wcag-aa-conformance · MUST
 Every entry document declares the responsive viewport: `<meta name="viewport" content="width=device-width, initial-scale=1">`.
 
 | Why | Tags |
 |---|---|
 | without it a phone lays the page out at a desktop's width and shrinks it, so its text is small and its layout never reflows. | [a11y] |
 
-### viewport-never-blocks-zoom → wcag-aa-conformance
+### viewport-never-blocks-zoom → wcag-aa-conformance · MUST
 The viewport declaration never blocks zooming: no `user-scalable=no`, and no `maximum-scale` below 5.
 
 | Why | Tags |
 |---|---|
 | a page that cannot be zoomed fails the people who need it larger. | [a11y] |
 
-### url-holds-shareable-view-state → view-state-homes
+### url-holds-shareable-view-state → view-state-homes · MUST
 View state a link or a reload must reproduce — filters, sort, page, selection, the open tab — lives in the URL, and nothing else does.
 
 | Why | Tags |

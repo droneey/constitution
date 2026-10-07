@@ -57,7 +57,7 @@ const upperFiles = (): Files => ({
     body: '# Core\n\nRead [principles](principles.md).\n',
     dir: 'blocks/core',
     files: {
-      'principles.md': `# Principles\n\n${rule({
+      'principles.md': `# Principles\n\n> Governs how the code depends on itself.\n\n${rule({
         slug: 'dependencies-point-inward',
       })}`,
       'workflow/workflow.md': `# Workflow\n\n${rule({

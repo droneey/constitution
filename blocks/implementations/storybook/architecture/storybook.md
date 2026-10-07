@@ -1,6 +1,6 @@
 # Storybook
 
-### stories-import-what-they-render-with → layer-imports-dependencies-by-its-role
+### stories-import-what-they-render-with → layer-imports-dependencies-by-its-role · MUST
 A story imports any package it renders with, as a spec does.
 
 | Why | Tags |

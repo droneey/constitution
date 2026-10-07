@@ -1,6 +1,6 @@
 # Tests
 
-> Governs a spec, a case, a fake or fixture, and the gates the tests pass.
+> Governs specs, cases, fakes, fixtures and the test gates.
 
 ## Levels
 
@@ -90,7 +90,7 @@ The variants of one behaviour are one table of cases, each row naming its condit
 | a table shows at a glance which conditions are covered and which are missing. | [testing] |
 
 ### case-holds-no-logic · SHOULD
-A case holds no branch, loop or conditional expression, and its expected value is written as a literal.
+A case holds no branch, loop or conditional expression, and its expected value is written as a literal — save a property case, whose Assert states the invariant for every input it draws.
 
 | Why | Tags |
 |---|---|
@@ -190,7 +190,7 @@ A test waits for a condition or advances a fake clock, never a fixed delay.
 | a fixed delay is too short on a slow machine and wasted on a fast one. | [testing] |
 
 ### unit-case-stays-in-process · SHOULD
-A unit case runs in one process with no input, output or waiting, and so finishes in milliseconds; a case that needs more is an integration case.
+A unit case runs in one process with no output, no waiting and no real clock, and reads no input but its fixtures, and so finishes in milliseconds; a case that needs more is an integration case.
 
 | Why | Tags |
 |---|---|
@@ -199,7 +199,7 @@ A unit case runs in one process with no input, output or waiting, and so finishe
 ## The sandbox
 
 ### test-runs-in-a-sandbox · MUST
-A test touches no network, no real file system outside a temporary folder, no real clock, no process it did not start and no credential; the repository’s own files are read-only fixtures, and a real vendor is reached only apart from the tests.
+A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential; the repository’s own files are read-only fixtures, and a real vendor is reached only apart from the tests.
 
 | Why | Tags |
 |---|---|

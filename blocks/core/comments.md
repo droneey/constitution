@@ -1,6 +1,6 @@
 # Comments
 
-> Governs a comment, the documentation of code, a mark of deprecation, and dead code.
+> Governs a comment, documentation, a mark of deprecation.
 
 ## Comments
 
@@ -25,7 +25,7 @@ A to-do comment names its issue; one without an issue is done, filed or removed.
 |---|---|
 | an issue has an owner and a place in the plan, and a bare to-do is forgotten where it stands. | [] |
 
-## Deprecation and dead code
+## Deprecation
 
 ### retired-code-marked-deprecated · SHOULD
 Code kept only for its old callers is marked deprecated where it is declared, naming what replaces it.
@@ -33,24 +33,3 @@ Code kept only for its old callers is marked deprecated where it is declared, na
 | Why | Tags |
 |---|---|
 | the mark stops new callers where they use it, and the replacement it names is the way off. | [] |
-
-### deprecated-form-never-used · MUST
-New code calls nothing a dependency or the program marks deprecated, and uses no form deprecated in favour of another.
-
-| Why | Tags |
-|---|---|
-| a deprecated form is removed in a later release, and two spellings of one thing double what a reader must know. | [] |
-
-### code-never-commented-out · MUST
-Code is never commented out; it is deleted.
-
-| Why | Tags |
-|---|---|
-| commented-out code rots unseen, while deleted code stays recoverable from history. | [] |
-
-### dead-code-deleted · MUST
-No file, dependency, export, parameter, variable or label is unused, and no statement is unreachable; what only the specs reach is unused too. An export a module offers through its public entry is not dead.
-
-| Why | Tags |
-|---|---|
-| dead code is read, kept and feared by people who cannot know it does nothing. | [] |

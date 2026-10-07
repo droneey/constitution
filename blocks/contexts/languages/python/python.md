@@ -15,21 +15,21 @@ governs: ["**/*.py", "**/*.pyi", "pyproject.toml"]
 
 ## Modules and files
 
-### python-file-forms → file-name-in-its-owners-case
+### python-file-forms → file-name-in-its-owners-case · MUST
 Python sets the case of its import tree: a module is a snake_case `.py` file — `order_status.py`, `__init__.py` — and its stub a `.pyi`, and the folders of the source root `src/` are snake_case packages, imported by their folders' names, while those of `tests/` are snake_case folders and no packages. The bytecode the interpreter writes keeps the names it gives it: `__pycache__/`, `<module>.cpython-314.pyc`. Every other file and folder is kebab-case.
 
 | Why | Tags |
 |---|---|
 | a module's name is the name it is imported by, and the language allows no hyphen in it; outside the import tree, core's case holds. | [] |
 
-### test-folder-files-in-python-forms → file-named-for-its-kind
+### test-folder-files-in-python-forms → file-named-for-its-kind · MUST
 A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`, fixtures `<name>_fixtures.py`, or the file the test runner reads for the fixtures the specs of its folder share.
 
 | Why | Tags |
 |---|---|
 | the runner collects a spec by its `test_` prefix, so a spec named otherwise never runs, and a helper named like a spec would. | [testing] |
 
-### spec-kind-named-by-its-folder → file-named-for-its-kind
+### spec-kind-named-by-its-folder → file-named-for-its-kind · MUST
 A unit spec sits in `tests/`, an integration spec in `tests/integration/` and an end-to-end spec in `tests/e2e/`, each named `test_<name>.py`.
 
 | Why | Tags |
@@ -45,21 +45,21 @@ No code reads or changes `sys.path`.
 
 ## Names and values
 
-### none-is-the-only-absence → absence-shown-by-the-type
+### none-is-the-only-absence → absence-shown-by-the-type · MUST
 Code spells absence as `None`, typed `T | None`; no sentinel object of the code's own stands for it.
 
 | Why | Tags |
 |---|---|
 | a second spelling of absence needs a second check, and an annotation that names `None` makes the type checker ask for the first. | [] |
 
-### no-any-annotation → unchecked-type-never-used
+### no-any-annotation → unchecked-type-never-used · MUST
 No `Any`: not in an annotation, a `cast` or a generic's arguments — `dict[str, Any]`. An unannotated parameter or return is `Any` as well, and so is the argument a generic is written without.
 
 | Why | Tags |
 |---|---|
 | these are the places `Any` enters a Python program, the last two without the word written. | [] |
 
-### boundary-values-object-until-parsed → outside-value-untyped-until-parsed
+### boundary-values-object-until-parsed → outside-value-untyped-until-parsed · MUST
 A value from outside the program — `json.loads`'s result included — is `object`, and its plain checks are `isinstance` and `in`; `cast` is no check.
 
 | Why | Tags |
@@ -73,28 +73,28 @@ A generic class, function or alias is declared in the form of PEP 695 — `class
 |---|---|
 | the parameters are declared where they are used, and nothing outside the declaration can reach them. | [] |
 
-### aware-datetimes-only → instant-carries-its-zone
+### aware-datetimes-only → instant-carries-its-zone · MUST
 A `datetime` carries its time zone: `now`, `fromtimestamp` and the constructor are given one, `strptime` reads one, and `utcnow`, `utcfromtimestamp` and `today` are never called.
 
 | Why | Tags |
 |---|---|
 | a naive `datetime` is read in the machine's zone by one function and in UTC by the next, and the two compare as if they were the same instant. | [data] |
 
-### overrides-marked-by-decorator → override-marked-where-declared
+### overrides-marked-by-decorator → override-marked-where-declared · MUST
 A method that overrides one of a base class is marked `@override`, `__init__`, `__new__`, `__init_subclass__` and `__post_init__` aside.
 
 | Why | Tags |
 |---|---|
 | `@override` is the mark the type checker reads, and the methods aside are ones every class has, which no mark would make clearer. | [] |
 
-### business-types-frozen-dataclasses → value-immutable-by-default
+### business-types-frozen-dataclasses → value-immutable-by-default · SHOULD
 A type of the program's business data is a dataclass with `frozen=True, slots=True, kw_only=True`, its sequences tuples and its maps typed `Mapping`.
 
 | Why | Tags |
 |---|---|
 | the runtime then refuses a mutation the business never meant, and each field is set by its name. | [] |
 
-### invariant-value-is-a-frozen-dataclass → invariant-value-is-plain-immutable-data
+### invariant-value-is-a-frozen-dataclass → invariant-value-is-plain-immutable-data · MUST
 A value that keeps an invariant is a dataclass of the form `business-types-frozen-dataclasses` gives, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset` or another such value — so the generated `__eq__` and `__hash__` compare and hash it by its data. Its `__post_init__` checks the invariant and raises the kit's error. It is never a `NamedTuple` or a parsing library's model.
 
 | Why | Tags |
@@ -103,21 +103,21 @@ A value that keeps an invariant is a dataclass of the form `business-types-froze
 
 ## Functions
 
-### keyword-only-past-three → function-takes-at-most-three-positions
+### keyword-only-past-three → function-takes-at-most-three-positions · SHOULD
 A parameter past the third is keyword-only, after a bare `*`, and values that make one whole travel as one frozen dataclass.
 
 | Why | Tags |
 |---|---|
 | a keyword-only parameter is named at every call, so its position is no order the caller must remember. | [] |
 
-### awaitable-never-dropped → async-work-awaited-or-held-by-a-scope
+### awaitable-never-dropped → async-work-awaited-or-held-by-a-scope · MUST
 A call that returns an awaitable is never a statement of its own: its result is awaited, or kept to be awaited.
 
 | Why | Tags |
 |---|---|
 | a coroutine nobody awaits never runs, and its failure is never seen. | [errors] |
 
-### concurrency-by-task-groups → async-work-awaited-or-held-by-a-scope
+### concurrency-by-task-groups → async-work-awaited-or-held-by-a-scope · MUST
 Concurrent work starts in a task group — `asyncio.TaskGroup`, or the one of the async library the project uses — never by a bare `asyncio.create_task` or `ensure_future`, and a deadline is a timeout scope such as `asyncio.timeout`.
 
 | Why | Tags |
@@ -131,7 +131,7 @@ An `async def` function makes no blocking call: it awaits its input and output, 
 |---|---|
 | one blocking call in a coroutine stalls everything else the event loop runs. | [performance] |
 
-### except-never-only-passes → catch-handles-only-what-it-recognises
+### except-never-only-passes → catch-handles-only-what-it-recognises · MUST
 No `except` body is only `pass` or `continue`.
 
 | Why | Tags |
@@ -140,14 +140,14 @@ No `except` body is only `pass` or `continue`.
 
 ## Specs
 
-### case-named-test-should → case-named-should-when
+### case-named-test-should → case-named-should-when · SHOULD
 A case is `test_should_<behaviour>`, and `_when_<condition>` follows where it has one.
 
 | Why | Tags |
 |---|---|
 | the runner collects a case by its `test_` prefix, so the rule's words follow it; no linter of Python checks a case's name. | [] |
 
-### no-branch-or-loop-in-a-test → case-holds-no-logic
+### no-branch-or-loop-in-a-test → case-holds-no-logic · SHOULD
 A `test_` function holds no `if`, `for`, `while`, `match` or conditional expression; its variants are the rows of a parametrized table.
 
 | Why | Tags |
@@ -156,21 +156,21 @@ A `test_` function holds no `if`, `for`, `while`, `match` or conditional express
 
 ## Comments and suppressions
 
-### docstring-only-for-non-obvious-public-entry → public-entry-documented-only-where-not-obvious
+### docstring-only-for-non-obvious-public-entry → public-entry-documented-only-where-not-obvious · SHOULD
 A docstring documents only a public entry whose use is not obvious, in the Google form, its summary on the first line.
 
 | Why | Tags |
 |---|---|
 | a docstring that repeats a signature drifts from it, and the editor already shows the annotations. | [] |
 
-### deprecated-by-decorator → retired-code-marked-deprecated
+### deprecated-by-decorator → retired-code-marked-deprecated · SHOULD
 Code kept only for its old callers is marked `@warnings.deprecated`, imported from `typing_extensions` below Python 3.13, with a message that names its replacement.
 
 | Why | Tags |
 |---|---|
 | the type checker reports every call of it and the runtime warns at each one, both with the message, which a docstring never does. | [] |
 
-### suppression-names-its-code-and-reason → suppression-states-its-reason
+### suppression-names-its-code-and-reason → suppression-states-its-reason · MUST
 A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608 -- the table name comes from an enum`.
 
 | Why | Tags |
@@ -179,7 +179,7 @@ A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608
 
 ## Dependencies
 
-### tools-in-the-dev-group → tool-pinned-exactly-by-the-repository
+### tools-in-the-dev-group → tool-pinned-exactly-by-the-repository · MUST
 The tools are pinned with `==` in the `dev` group of `[dependency-groups]` in `pyproject.toml`.
 
 | Why | Tags |

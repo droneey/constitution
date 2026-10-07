@@ -1,6 +1,6 @@
 # Security
 
-> Governs a secret, a credential, and input from outside where it is executed, rebuilt or followed.
+> Governs secrets, credentials, outside input run or followed.
 
 ## Secrets
 

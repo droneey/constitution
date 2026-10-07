@@ -1,6 +1,6 @@
 # Root
 
-> Governs the composition root: where the program is wired and configured.
+> Governs the composition root: wiring and configuration.
 
 ## Wiring
 

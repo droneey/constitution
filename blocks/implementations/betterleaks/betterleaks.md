@@ -13,7 +13,7 @@ governs: [".betterleaks.toml", ".betterleaksignore"]
 
 > Finds secrets in changes and history. `.betterleaks.toml` extends `presets/common/betterleaks/core.toml` of the constitution's release archive — betterleaks' default rules: cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — and holds every active rule on committed secrets.
 
-### allowlisted-finding-states-its-reason → suppression-silences-one-finding
+### allowlisted-finding-states-its-reason → suppression-silences-one-finding · MUST
 A false positive is allowed on its line by `betterleaks:allow` followed by its reason, or by its fingerprint in `.betterleaksignore` under a `#` line that states the reason; never by disabling a rule.
 
 | Why | Tags |

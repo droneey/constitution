@@ -2,7 +2,7 @@
 
 > The states of remote data in a component.
 
-### data-failures-rendered-as-state → data-result-is-union-by-status
+### data-failures-rendered-as-state → data-result-is-union-by-status · MUST
 A component renders the error state a data hook returns where the data would be, and never throws it — or its read suspends, and the boundary above it renders the pending and failed states.
 
 | Why | Tags |

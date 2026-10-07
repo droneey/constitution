@@ -16,7 +16,7 @@ Going to the background, being suspended or being ended by the system loses no i
 |---|---|
 | the system ends apps without asking, and a user who comes back expects to find what they left. | [ux, data] |
 
-### touch-targets-44-pt-48-dp → targets-meet-platform-minimum
+### touch-targets-44-pt-48-dp → targets-meet-platform-minimum · MUST
 A touch target is at least 44 × 44 points, or 48 × 48 density-independent pixels, padding included.
 
 | Why | Tags |
@@ -46,28 +46,28 @@ The system's back gesture goes back, and the app's own gestures never fight the 
 
 ## Accessibility
 
-### accessibility-properties-on-controls → every-control-has-an-accessible-name
+### accessibility-properties-on-controls → every-control-has-an-accessible-name · MUST
 Every interactive element declares its accessible label, role and state through the system's accessibility properties.
 
 | Why | Tags |
 |---|---|
 | the system's screen reader reads only what these properties declare. | [] |
 
-### reading-order-follows-layout → operable-by-every-input
+### reading-order-follows-layout → operable-by-every-input · MUST
 The screen reader's order follows the visual order.
 
 | Why | Tags |
 |---|---|
 | a reading order that jumps around the screen makes it impossible to follow. | [] |
 
-### text-follows-system-size → wcag-aa-conformance
+### text-follows-system-size → wcag-aa-conformance · MUST
 Text follows the system's text size, and layouts reflow to fit it.
 
 | Why | Tags |
 |---|---|
 | people who set a larger text size need it in every app, not only in the system's own. | [] |
 
-### system-reduced-motion-honoured → reduced-motion-honoured
+### system-reduced-motion-honoured → reduced-motion-honoured · MUST
 The user's request for reduced motion is the system's setting — Reduce Motion on iOS, Remove animations on Android — read when the app starts and again when it changes.
 
 | Why | Tags |
@@ -81,14 +81,14 @@ The app follows the system's contrast setting — Increase Contrast on iOS, High
 |---|---|
 | the setting is the user's request, made once for every app, and the contrast it asks for is what lets a person with low vision read the screen. | [] |
 
-### device-checklist-before-shipping → interactive-checked-by-hand
+### device-checklist-before-shipping → interactive-checked-by-hand · SHOULD
 Before a new interactive component ships, a person operates it with VoiceOver on iOS and TalkBack on Android, and with Switch Control or Switch Access.
 
 | Why | Tags |
 |---|---|
 | each system's screen reader behaves differently, and a scan catches none of it. | [] |
 
-### navigation-params-hold-view-state → view-state-homes
+### navigation-params-hold-view-state → view-state-homes · MUST
 View state a deep link or a restart must reproduce lives in the navigation parameters.
 
 | Why | Tags |

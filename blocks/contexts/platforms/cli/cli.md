@@ -43,7 +43,7 @@ The command prints a progressive report as its events arrive, and any other repo
 |---|---|
 | a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. | [ux] |
 
-### output-masks-secret-values → secret-and-personal-data-kept-out-of-output
+### output-masks-secret-values → secret-and-personal-data-kept-out-of-output · MUST
 Every value the run knows to be secret is masked in all output, an engine's output included, before it is printed.
 
 | Why | Tags |
@@ -68,7 +68,7 @@ Without a terminal the program never prompts; a missing answer is a usage error 
 
 ## Testing
 
-### command-tested-through-its-command-line → spec-proves-one-boundary
+### command-tested-through-its-command-line → spec-proves-one-boundary · SHOULD
 A command's spec runs the program on an argument list with a fake command context, and checks standard output, standard error and the exit code.
 
 | Why | Tags |

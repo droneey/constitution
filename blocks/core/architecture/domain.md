@@ -1,6 +1,6 @@
 # Domain
 
-> Governs the domain model: entities, value objects, use cases, commands and queries, contexts.
+> Governs entities, value objects, use cases, contexts.
 
 ## The vocabulary
 

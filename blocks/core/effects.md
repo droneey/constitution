@@ -1,6 +1,6 @@
 # Effects
 
-> Governs what a program does outside itself: calls, resources, concurrent work, records and configuration.
+> Governs calls, resources, concurrency, records, configuration.
 
 ## Calls and resources
 
@@ -39,6 +39,13 @@ Every read of a collection from outside the program — a query, a remote list, 
 |---|---|
 | an unbounded read works on test data and fails in production when the data grows. | [performance] |
 
+### kept-collection-bounded · MUST
+Every collection the program keeps while it runs — a cache, a queue, a buffer, a table of sessions — has a bound and says what happens at it: it evicts, refuses or makes the producer wait.
+
+| Why | Tags |
+|---|---|
+| a collection that only grows works for days and then takes the process down, far from the code that filled it. | [performance] |
+
 ## Operations
 
 ### operation-idempotent-by-design · SHOULD
@@ -56,7 +63,7 @@ An operation run against a system — a script, a command, a migration, a deploy
 | an irreversible operation run by mistake cannot be undone by a better test. | [security, ux] |
 
 ### shared-resource-has-one-writer · MUST
-Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer. A block that brings its own writer for such a resource claims it in a rule, and a block whose default writer another active block has claimed yields.
+Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer.
 
 | Why | Tags |
 |---|---|

@@ -13,7 +13,7 @@ governs: ["**/adapters/**"]
 
 > Reads and writes YAML. It owns no word: the package is named after the format.
 
-### yaml-failures-become-one-coded-error → parse-failure-lists-every-problem
+### yaml-failures-become-one-coded-error → parse-failure-lists-every-problem · SHOULD
 Every failure of `parse` becomes the one coded error: a syntax error, and an alias without its anchor, which throws a `ReferenceError`.
 
 | Why | Tags |

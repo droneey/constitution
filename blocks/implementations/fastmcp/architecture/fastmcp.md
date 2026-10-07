@@ -1,6 +1,6 @@
 # FastMCP
 
-### tool-failures-answered-by-one-middleware → one-error-handler-registered-by-the-root
+### tool-failures-answered-by-one-middleware → one-error-handler-registered-by-the-root · MUST
 The handler is one middleware, which `root/` adds to the server, whose `on_call_tool` answers every failure of a call.
 
 | Why | Tags |

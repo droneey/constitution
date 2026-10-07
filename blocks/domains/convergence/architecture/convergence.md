@@ -2,7 +2,7 @@
 
 ## The document
 
-### document-lives-in-composition → feature-asks-another-through-its-own-contract
+### document-lives-in-composition → feature-asks-another-through-its-own-contract · MUST
 The document and its schema live in `composition/`, which knows every section. A feature never reads the document; it declares the vocabulary the document imports.
 
 | Why | Tags |
@@ -20,7 +20,7 @@ Validate, render, plan and apply are separate use-cases, and a later one calls t
 
 ## Engines
 
-### engines-reached-through-a-port → effects-held-only-by-the-edge
+### engines-reached-through-a-port → effects-held-only-by-the-edge · MUST
 The program reaches an engine only through a port of its own; no use-case runs an engine's binary or reads its output directly.
 
 | Why | Tags |

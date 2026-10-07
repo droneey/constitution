@@ -7,7 +7,7 @@ The program's logic runs in the tab. Server rendering, when it is on, only speed
 |---|---|
 | a web tier with logic of its own is a second backend nobody designed, with its own secrets and failures. | [] |
 
-### served-configuration-read-at-boot → root-alone-reads-the-environment
+### served-configuration-read-at-boot → root-alone-reads-the-environment · MUST
 In the tab, the configuration served beside the bundle is the environment the configuration provider reads.
 
 | Why | Tags |

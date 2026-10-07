@@ -2,7 +2,7 @@
 
 > Images scanned beside the lockfiles.
 
-### images-scanned-in-the-check → dependency-free-of-known-vulnerabilities
+### images-scanned-in-the-check → dependency-free-of-known-vulnerabilities · MUST
 OSV-Scanner reads each image the project builds or pulls, so a known vulnerability in an image's system packages is a finding like one in a lockfile.
 
 | Why | Tags |

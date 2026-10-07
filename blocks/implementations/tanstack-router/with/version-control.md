@@ -2,7 +2,7 @@
 
 > The generated route tree in the history.
 
-### route-tree-committed → generated-files-not-committed
+### route-tree-committed → generated-files-not-committed · SHOULD
 `routeTree.gen.ts` is committed, and only the router's generator changes it.
 
 | Why | Tags |

@@ -64,14 +64,14 @@ A list's key comes from the item's identity, never its index.
 |---|---|
 | an index key moves state to the wrong item when the list is reordered or filtered. | [errors] |
 
-### components-named-in-pascal-case → identifier-case-by-kind
+### components-named-in-pascal-case → identifier-case-by-kind · SHOULD
 A component is named in PascalCase.
 
 | Why | Tags |
 |---|---|
 | React renders a lower-case name as an element of the platform, never as the component. | [] |
 
-### nothing-rendered-as-null → absence-shown-by-the-type
+### nothing-rendered-as-null → absence-shown-by-the-type · MUST
 A component that renders nothing returns `null` and says so in its return type, `ReactElement | null`, or renders the `null` branch of a conditional, or is given inline as a value — `{ hr: () => null }`; with a ref object that holds `null` as React's types demand — `useRef<T>(null)`, `RefObject<T | null>` — these are the places internal code writes it.
 
 | Why | Tags |
@@ -94,7 +94,7 @@ A value that can be derived is computed during render, never stored in state and
 |---|---|
 | a derived copy in state renders twice and is one render behind the value it copies. | [performance] |
 
-### effect-cleans-up-and-cancels → resource-released-on-every-path
+### effect-cleans-up-and-cancels → resource-released-on-every-path · MUST
 Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
 
 | Why | Tags |
@@ -108,7 +108,7 @@ Pending, optimistic and transition state go through `useActionState`, `useTransi
 |---|---|
 | React then knows what is pending, and keeps the user interface responsive while it is. | [ux] |
 
-### fast-source-batched-in-its-hook → fast-source-updates-once-per-frame
+### fast-source-batched-in-its-hook → fast-source-updates-once-per-frame · SHOULD
 A hook that folds a fast source schedules its state once per animation frame; an expensive render driven by input reads `useDeferredValue`.
 
 | Why | Tags |
@@ -117,14 +117,14 @@ A hook that folds a fast source schedules its state once per animation frame; an
 
 ## Composition
 
-### compound-parts-share-the-root-context → compound-root-owns-choreography
+### compound-parts-share-the-root-context → compound-root-owns-choreography · SHOULD
 A compound's parts are attached to its root with a typed `Object.assign`, and the root shares its state — the choreography of animated regions included — through `<name>.context.ts`.
 
 | Why | Tags |
 |---|---|
 | the parts read what the root decides, without props threaded through the consumer's markup. | [] |
 
-### compound-parts-reached-through-the-root → compound-over-prop-regions
+### compound-parts-reached-through-the-root → compound-over-prop-regions · SHOULD
 A compound exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
 
 | Why | Tags |
@@ -138,14 +138,14 @@ A slot that keeps control of its element takes a `ReactElement`; a container tak
 |---|---|
 | the type says what the caller may pass, and the compiler refuses the rest. | [] |
 
-### error-boundary-catches-render-errors → failure-contained-to-its-screen
+### error-boundary-catches-render-errors → failure-contained-to-its-screen · MUST
 A screen's error boundary is a React error boundary, which catches what is thrown while its tree renders.
 
 | Why | Tags |
 |---|---|
 | React unmounts the whole tree below the boundary that catches, so a boundary per screen costs one screen. | [errors, ux] |
 
-### handler-and-effect-failures-handled-where-they-happen → failure-is-expected-or-defect
+### handler-and-effect-failures-handled-where-they-happen → failure-is-expected-or-defect · MUST
 An expected failure in an event handler or an effect is handled where it happens, never left for an error boundary; a defect there travels on to the root's report.
 
 | Why | Tags |
@@ -159,7 +159,7 @@ A hidden part that must keep its state — a tab panel, a step, a view the user 
 |---|---|
 | unmounting loses the state, and a part hidden by a style alone keeps its effects running. | [ux] |
 
-### controllable-props-named-value-default-change → stateful-component-controllable-or-not
+### controllable-props-named-value-default-change → stateful-component-controllable-or-not · SHOULD
 The value is `<name>`, its initial value `default<Name>` and its callback `on<Name>Change`, resolved by one hook.
 
 | Why | Tags |

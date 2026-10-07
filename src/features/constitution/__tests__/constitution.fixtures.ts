@@ -41,6 +41,8 @@ interface BlockFilesFixture extends CardFixture {
 }
 
 interface RuleFixture {
+  // false leaves the level out of a heading that carries out another rule.
+  isLevelStated?: boolean;
   level?: string;
   parent?: string;
   slug: string;
@@ -87,7 +89,7 @@ const blockFiles = (input: BlockFilesFixture): Files => {
 const headingOf = (input: RuleFixture): string =>
   input.parent === undefined
     ? `### ${input.slug} · ${input.level ?? 'MUST'}`
-    : `### ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+    : `### ${input.slug} → ${input.parent}${input.isLevelStated === false ? '' : ` · ${input.level ?? 'MUST'}`}`;
 
 const rule = (input: RuleFixture): string =>
   [

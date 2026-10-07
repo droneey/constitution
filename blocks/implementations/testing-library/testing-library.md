@@ -13,7 +13,7 @@ governs: ["**/__tests__/**/*.test.tsx"]
 
 > Specs that render the user interface and use it as a person does.
 
-### queries-by-role-label-text → elements-found-by-role-label-text
+### queries-by-role-label-text → elements-found-by-role-label-text · MUST
 Elements are queried by role first, then by label and text; `getByTestId` is forbidden.
 
 | Why | Tags |
@@ -27,14 +27,14 @@ Interactions go through `userEvent`, never `fireEvent`.
 |---|---|
 | `userEvent` produces the whole sequence a person's action does — focus, keys, pointer — so the spec meets the bugs they would. | [testing] |
 
-### async-ui-awaited-with-find → test-never-sleeps-a-fixed-time
+### async-ui-awaited-with-find → test-never-sleeps-a-fixed-time · SHOULD
 What appears asynchronously is awaited with `findBy…` or `waitFor`, never a fixed sleep.
 
 | Why | Tags |
 |---|---|
 | a sleep is too short on a slow machine and wasted on a fast one. | [testing] |
 
-### hooks-proven-through-their-screen → spec-proves-one-boundary
+### hooks-proven-through-their-screen → spec-proves-one-boundary · SHOULD
 A hook that loads or writes data is proven through the screen or component that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
 
 | Why | Tags |
