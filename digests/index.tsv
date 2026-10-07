@@ -91,7 +91,7 @@ chapter	core	errors.md	a failure: raised, caught, carried, shown.
 chapter	core	functions.md	a function.
 chapter	core	layout.md	a file or a folder: its kind, name, size and purpose; readmes.
 chapter	core	names.md	a name in the code.
-chapter	core	relations.md	how a unit is built, holds state, and depends on or calls another.
+chapter	core	relations.md	how a unit is built, holds state, and depends on, calls or extends another.
 chapter	core	security.md	secrets, credentials, cryptography, and outside input: its size, its matching, and where it is run, rebuilt or followed.
 chapter	core	tests.md	specs, cases, fakes, fixtures and the test gates.
 chapter	core	tools.md	the tools that hold the rules, and their findings.

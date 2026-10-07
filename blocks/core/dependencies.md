@@ -42,7 +42,7 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 | each dependency runs with the project’s rights, and these signs mark most malicious packages. | [security] |
 
 ### new-release-adopted-after-a-cooldown · SHOULD
-A new release of a dependency is adopted only after a cooldown of some days; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
+A new release of a dependency is adopted only after a cooldown the project sets; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
 
 | Why | Tags |
 |---|---|

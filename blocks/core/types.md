@@ -116,7 +116,7 @@ An instant carries its zone or offset and is kept apart from a calendar date or 
 | an instant without its zone names a different moment on each machine, and a wall clock that jumps corrupts a measured duration. | [data] |
 
 ### text-encoded-as-utf-8 · MUST
-Text the program reads or writes — a file, a stream, a message — is UTF-8, named explicitly wherever an interface takes an encoding, never the platform's default; an outside format that fixes another encoding is decoded in its adapter.
+Text the program reads or writes — a file, a stream, a message — is UTF-8, named explicitly wherever an interface takes an encoding, never the platform's default; an outside format that fixes another encoding is decoded where it enters.
 
 | Why | Tags |
 |---|---|

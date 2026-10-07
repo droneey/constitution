@@ -58,14 +58,14 @@ An agent that delegates keeps the responsibility: it names the rules and files t
 | a sub-agent sees only what it is given, and its findings are claims until someone checks them. | [] |
 
 ### agent-file-restates-no-rule · SHOULD
-An instruction file for agents in a project restates no rule; it only points to the constitution, which delivers the rules, and to the project’s context.
+An instruction file for agents in a project restates no rule; it only points to the constitution, which delivers the rules, and to `PROJECT.md`.
 
 | Why | Tags |
 |---|---|
 | a restated rule drifts from its source, and the agent then follows two versions of it. | [] |
 
 ### agent-keeps-knowledge-in-the-project · SHOULD
-What an agent learns about the product goes into the project’s context; an agent’s private memory is never the project’s fact.
+What an agent learns about the product goes into `PROJECT.md`; an agent’s private memory is never the project’s fact.
 
 | Why | Tags |
 |---|---|

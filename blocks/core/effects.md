@@ -70,14 +70,14 @@ An operation that may be repeated is idempotent: a key is minted once per intent
 | networks retry and users click twice; an idempotent operation turns a repeat into no change. | [data] |
 
 ### write-lands-whole · MUST
-A write that changes several things — records, files, a record and the message about it — lands whole or not at all — in one transaction, by renaming a finished temporary file, or through an outbox — or is idempotent, so that a rerun completes what a stop left half done.
+A write that changes several things — records, files, a record and the message about it — lands whole or not at all, through one transaction, a finished temporary file renamed into place, or an outbox; one that cannot, such as a change to systems outside, is idempotent, so a rerun completes what a stop left half done.
 
 | Why | Tags |
 |---|---|
 | a write that stops halfway leaves data no rule of the program expects, and nothing later can tell which half landed. | [data, errors] |
 
 ### write-on-read-data-is-conditional · MUST
-A write decided on data read before it is made only if that data is unchanged — by a version, a compare-and-set or a lock — and is refused otherwise.
+A write decided on data read earlier is made only if that data is still unchanged — checked by a version, a compare-and-set or a lock — and is refused otherwise.
 
 | Why | Tags |
 |---|---|

@@ -1,6 +1,6 @@
 # Relations
 
-> Governs how a unit is built, holds state, and depends on or calls another.
+> Governs how a unit is built, holds state, and depends on, calls or extends another.
 
 ## Modules
 

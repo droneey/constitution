@@ -6,7 +6,7 @@
 
 - **Unit** — one boundary, with fakes of the contracts through which it reaches the outside.
 - **Integration** — the code that talks to an outside system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container.
-- **End-to-end** — a critical scenario of the project's context, through the built program, the way its users reach it.
+- **End-to-end** — a critical scenario of `PROJECT.md`, through the built program, the way its users reach it.
 
 ## What a spec proves
 
@@ -206,7 +206,7 @@ A unit case runs in one process with no output, no waiting and no real clock, an
 ## The sandbox
 
 ### test-runs-in-a-sandbox · MUST
-A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential; the repository’s own files are read-only fixtures, and a real vendor is reached only apart from the tests.
+A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential; the repository’s own files are read, never written, and a real vendor is reached only apart from the tests.
 
 | Why | Tags |
 |---|---|
@@ -241,7 +241,7 @@ Each implementation of a contract over an outside system whose engine can run in
 | a fake proves the code that relies on the contract; only the real engine proves the implementation keeps it. | [testing] |
 
 ### critical-scenario-has-an-end-to-end-spec · SHOULD
-Each critical scenario of the project’s context has one end-to-end spec through the built program, the way its users reach it.
+Each critical scenario of `PROJECT.md` has one end-to-end spec through the built program, the way its users reach it.
 
 | Why | Tags |
 |---|---|
