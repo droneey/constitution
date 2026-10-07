@@ -22,20 +22,6 @@ A commit holds one logical change, and its subject says what changed, not which 
 |---|---|
 | a change that does one thing can be reviewed, reverted and found in history as one thing; the diff already lists the files, so the subject is the only place that says what the change means. | [] |
 
-### refactor-apart-from-behaviour-change → tidying-shipped-before-the-behaviour · SHOULD
-A refactor and a change of behaviour are never one commit.
-
-| Why | Tags |
-|---|---|
-| a rollback of the behaviour then leaves the structure alone, and a reviewer sees which lines change what the program does. | [] |
-
-### move-committed-apart-from-its-edits → change-moves-a-file-never-rewrites-it · MUST
-A file's move is committed apart from any edit of it.
-
-| Why | Tags |
-|---|---|
-| history follows a file through a move only when the move changes nothing else, and a move with edits hides the edits. | [] |
-
 ### commit-holds-only-its-task-files · MUST
 A commit holds only the files of its task.
 

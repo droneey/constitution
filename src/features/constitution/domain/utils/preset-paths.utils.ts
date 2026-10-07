@@ -1,4 +1,4 @@
-import { Axis, OPTIONAL_AXES } from '#/kernel';
+import { Axis, OPTIONAL_AXES } from '#/kernel/constants';
 
 enum PresetFileKind {
   Bindings = 'bindings',

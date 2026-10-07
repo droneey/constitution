@@ -1,4 +1,4 @@
-import { Layer } from '#/kernel';
+import { Layer } from '#/kernel/constants';
 
 import type { Block, Constitution, RequirementAnswer, Rule } from '../../../entities';
 import { BlockFileRole } from '../../../entities';

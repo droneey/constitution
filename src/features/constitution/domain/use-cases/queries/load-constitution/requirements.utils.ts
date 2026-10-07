@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 import type { RequirementAnswer } from '../../../entities';
 import type { MarkdownSection } from '../../../utils';

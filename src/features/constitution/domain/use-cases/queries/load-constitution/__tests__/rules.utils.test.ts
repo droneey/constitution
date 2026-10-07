@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel';
-import { Axis, Level } from '#/kernel';
+import { Axis, Level } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { StatedRule } from '../../../../entities';
 import { parseRules } from '../rules.utils';

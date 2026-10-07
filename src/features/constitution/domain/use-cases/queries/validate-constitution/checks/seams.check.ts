@@ -1,5 +1,5 @@
-import type { Finding } from '#/kernel';
-import { Layer } from '#/kernel';
+import { Layer } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Block } from '../../../../entities';
 import { BlockFileRole } from '../../../../entities';

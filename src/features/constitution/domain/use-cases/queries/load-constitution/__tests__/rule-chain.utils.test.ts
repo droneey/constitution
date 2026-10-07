@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Level } from '#/kernel';
+import { Axis, Level } from '#/kernel/constants';
 
 import type { StatedRule } from '../../../../entities';
 import { resolveRules } from '../rule-chain.utils';

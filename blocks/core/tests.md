@@ -76,7 +76,7 @@ Each contract with a fake has one contract suite, run against the fake and again
 ## How a case is written
 
 ### case-proves-one-intent · SHOULD
-A case proves one intent and asserts it with strict equality on the whole outcome.
+A case proves one intent and asserts it with strict equality on the whole outcome — a property case, on the invariant it states.
 
 | Why | Tags |
 |---|---|
@@ -138,6 +138,13 @@ A folder of specs holds only specs, fakes, fixtures and golden files, each named
 |---|---|
 | a spec named otherwise would not run, and a helper named like a spec would. | [testing] |
 
+### spec-found-from-its-units-path · SHOULD
+A unit's specs sit in a folder of specs beside the unit, or, where the language's runner expects one, in a tree of specs that mirrors the source.
+
+| Why | Tags |
+|---|---|
+| a spec found from its unit's path is kept, moved and deleted with it. | [testing] |
+
 ### test-code-never-reached-from-production · MUST
 Test code — a spec, a fake, a fixture — is never imported by production code.
 
@@ -190,7 +197,7 @@ A test waits for a condition or advances a fake clock, never a fixed delay.
 | a fixed delay is too short on a slow machine and wasted on a fast one. | [testing] |
 
 ### unit-case-stays-in-process · SHOULD
-A unit case runs in one process with no output, no waiting and no real clock, and reads no input but its fixtures, and so finishes in milliseconds; a case that needs more is an integration case.
+A unit case runs in one process with no output, no waiting and no real clock, and reads no file but its golden files, and so finishes in milliseconds; a case that needs more is an integration case.
 
 | Why | Tags |
 |---|---|

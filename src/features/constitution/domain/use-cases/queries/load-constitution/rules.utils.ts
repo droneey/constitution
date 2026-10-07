@@ -1,5 +1,6 @@
-import type { Axis, Finding, Level } from '#/kernel';
-import { LEVELS } from '#/kernel';
+import type { Axis, Level } from '#/kernel/constants';
+import { LEVELS } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { StatedRule } from '../../../entities';
 import type { MarkdownSection } from '../../../utils';

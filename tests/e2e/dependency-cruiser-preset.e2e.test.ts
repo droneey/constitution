@@ -15,7 +15,7 @@ const WELL_FORMED = {
   }),
   'src/contracts/mail/index.ts': "export type { Mail } from './mail.port';\n",
   'src/contracts/mail/mail.port.ts':
-    "import type { Money } from '../../kernel';\nexport interface Mail { cost: Money }\n",
+    "import type { Money } from '../../kernel/values';\nexport interface Mail { cost: Money }\n",
   'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
     "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
   'src/features/orders/adapters/api/order.adapter.ts': importing({
@@ -36,12 +36,12 @@ const WELL_FORMED = {
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
   'src/features/orders/domain/entities/order.entity.ts':
-    "import { money } from '../../../../kernel';\nexport const order = money;\n",
+    "import { money } from '../../../../kernel/values';\nexport const order = money;\n",
   'src/features/orders/index.ts':
     "export { listOrders } from './app/use-cases/queries/list-orders/list-orders.use-case';\n",
-  'src/kernel/index.ts':
+  'src/kernel/values/index.ts':
     "export { money } from './money';\nexport type { Money } from './money';\n",
-  'src/kernel/money.ts': 'export const money = 1;\nexport type Money = number;\n',
+  'src/kernel/values/money.ts': 'export const money = 1;\nexport type Money = number;\n',
   'src/libs/smtp/index.ts': "export { smtp } from './smtp';\n",
   'src/libs/smtp/smtp.ts': exported('smtp'),
   'src/main.ts': importing({
@@ -52,7 +52,7 @@ const WELL_FORMED = {
     "import { sendMail } from '../adapters/mail';\nimport { listOrders } from '../features/orders';\nexport const wiring = [sendMail, listOrders];\n",
   'src/shared/format/index.ts': "export { format } from './format';\n",
   'src/shared/format/format.ts': importing({
-    from: '../../kernel',
+    from: '../../kernel/values',
     name: 'money',
   }),
 };
@@ -157,8 +157,8 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'the kernel imports shared code',
       files: {
-        'src/kernel/money.ts': importing({
-          from: '../shared/format',
+        'src/kernel/values/money.ts': importing({
+          from: '../../shared/format',
           name: 'format',
         }),
         'src/shared/format/index.ts': exported('format'),
@@ -168,9 +168,9 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a library imports the kernel',
       files: {
-        'src/kernel/index.ts': exported('money'),
+        'src/kernel/values/index.ts': exported('money'),
         'src/libs/smtp/smtp.ts': importing({
-          from: '../../kernel',
+          from: '../../kernel/values',
           name: 'money',
         }),
       },
@@ -276,15 +276,26 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'module-reached-through-its-surface-from-outside-modules',
     },
     {
-      condition: 'a feature reaches past the kernel’s surface',
+      condition: 'a feature reaches past the surface of a role folder of the kernel',
       files: {
         'src/features/orders/app/order.use-case.ts': importing({
-          from: '../../../kernel/money',
+          from: '../../../kernel/values/money',
           name: 'money',
         }),
-        'src/kernel/money.ts': exported('money'),
+        'src/kernel/values/money.ts': exported('money'),
       },
-      rule: 'kernel-reached-through-its-surface',
+      rule: 'kernel-role-reached-through-its-surface',
+    },
+    {
+      condition: 'code imports the kernel as a whole',
+      files: {
+        'src/kernel/index.ts': exported('money'),
+        'src/shared/format/format.ts': importing({
+          from: '../../kernel',
+          name: 'money',
+        }),
+      },
+      rule: 'layer-folder-never-a-target',
     },
     {
       condition: 'a module imports its own surface',

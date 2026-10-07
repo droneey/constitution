@@ -1,5 +1,5 @@
-import type { Finding } from '#/kernel';
-import { Axis, LEVELS, Tag } from '#/kernel';
+import { Axis, LEVELS, Tag } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';

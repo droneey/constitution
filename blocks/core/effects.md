@@ -1,6 +1,6 @@
 # Effects
 
-> Governs calls, resources, concurrency, records, configuration.
+> Governs calls, resources, concurrency, stopping, records, configuration.
 
 ## Calls and resources
 
@@ -32,7 +32,7 @@ A resource the code acquires — a handle, a connection, a lock, a subscription 
 |---|---|
 | a release written only on the path that succeeds leaks on the first failure, and the leak shows far from its cause. | [] |
 
-### outside-read-bounded · SHOULD
+### outside-read-bounded · MUST
 Every read of a collection from outside the program — a query, a remote list, a queue, a file — has an explicit limit, and pages or refuses beyond it.
 
 | Why | Tags |
@@ -40,11 +40,25 @@ Every read of a collection from outside the program — a query, a remote list, 
 | an unbounded read works on test data and fails in production when the data grows. | [performance] |
 
 ### kept-collection-bounded · MUST
-Every collection the program keeps while it runs — a cache, a queue, a buffer, a table of sessions — has a bound and says what happens at it: it evicts, refuses or makes the producer wait.
+Every collection the program keeps beyond one operation — a cache, a queue, a buffer, a table of sessions — has a bound and says what happens at it: it evicts, refuses or makes the producer wait.
 
 | Why | Tags |
 |---|---|
 | a collection that only grows works for days and then takes the process down, far from the code that filled it. | [performance] |
+
+### concurrent-fan-out-bounded · MUST
+Work started concurrently over a collection — calls, tasks, jobs — runs at most a set number at a time.
+
+| Why | Tags |
+|---|---|
+| an unbounded fan-out over a large collection exhausts connections, memory and the quota of the system it calls. | [performance] |
+
+### program-stops-cleanly · MUST
+A program told to stop — by a termination signal or by its host — takes no new work, finishes or cancels the work in flight within a bound, releases its resources and exits.
+
+| Why | Tags |
+|---|---|
+| a program killed mid-work leaves half-written data and calls without an answer, and a stop with no bound hangs every deployment. | [errors, data] |
 
 ## Operations
 
@@ -56,7 +70,7 @@ An operation that may be repeated is idempotent: a key is minted once per intent
 | networks retry and users click twice; an idempotent operation turns a repeat into no change. | [data] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
-An operation run against a system — a script, a command, a migration, a deployment — that destroys data, spends money, touches a live system or sends something outward runs only behind an explicit flag; without the flag it shows what it would do.
+An operation run against a system — a script, a command, a migration, a deployment — that destroys data, spends money, changes a live system or sends something outward runs only behind an explicit flag; without the flag it shows what it would do.
 
 | Why | Tags |
 |---|---|

@@ -85,13 +85,6 @@ A value from outside the program — text, a response, a file, a message — has
 |---|---|
 | a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. | [security] |
 
-### outside-input-bounded-before-it-is-parsed · MUST
-Input from outside — a body, a file, a message — is refused past a size and a depth of nesting before it is parsed.
-
-| Why | Tags |
-|---|---|
-| a parser handed an input of any size or depth spends memory and time the sender chooses. | [security, performance] |
-
 ### narrowing-proves-all-it-claims · MUST
 A narrowing that claims a type checks every property of it, as running the type’s whole schema does; one that checks one field and claims the whole type is a cast.
 

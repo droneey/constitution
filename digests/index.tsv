@@ -82,17 +82,17 @@ block	yaml-js	implementation	The yaml package reads and writes YAML.	architectur
 block	yamllint	implementation	yamllint holds the style of YAML files.			yaml		false		yaml		.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types.		convergence architecture/convergence architecture/ui	typescript		false				**/models/** **/adapters/**
 chapter	core	agents.md	a person or an agent at work on the repository.
-chapter	core	changes.md	a change: its scope, what it carries, its hand-back.
+chapter	core	changes.md	a change, the work of one task: its scope, what it carries, its hand-back.
 chapter	core	code.md	any code no other chapter governs.
-chapter	core	comments.md	a comment, documentation, a mark of deprecation.
+chapter	core	comments.md	a comment, the documentation of an entry, a mark of deprecation.
 chapter	core	dependencies.md	packages, downloads and tools taken from others.
-chapter	core	effects.md	calls, resources, concurrency, records, configuration.
+chapter	core	effects.md	calls, resources, concurrency, stopping, records, configuration.
 chapter	core	errors.md	a failure: raised, caught, carried, shown.
 chapter	core	functions.md	a function.
-chapter	core	layout.md	a file or a folder: its kind, name and content.
+chapter	core	layout.md	a file or a folder: its kind, name, size and purpose; readmes.
 chapter	core	names.md	a name in the code.
-chapter	core	relations.md	how a unit depends on, calls or extends another.
-chapter	core	security.md	secrets, credentials, outside input run or followed.
+chapter	core	relations.md	how a unit is built, holds state, and depends on or calls another.
+chapter	core	security.md	secrets, credentials, and outside input: its size, and where it is run, rebuilt or followed.
 chapter	core	tests.md	specs, cases, fakes, fixtures and the test gates.
 chapter	core	tools.md	the tools that hold the rules, and their findings.
 chapter	core	types.md	a value and its type.
@@ -116,6 +116,7 @@ rule	change-limited-to-its-task	core	blocks/core/changes.md		SHOULD				true
 rule	change-corrects-the-documents-it-falsifies	core	blocks/core/changes.md		SHOULD				true
 rule	change-moves-a-file-never-rewrites-it	core	blocks/core/changes.md		MUST				true
 rule	tidying-shipped-before-the-behaviour	core	blocks/core/changes.md		SHOULD				true
+rule	format-changed-in-steps	core	blocks/core/changes.md		MUST	data			true
 rule	change-handed-back-with-a-passing-check	core	blocks/core/changes.md		MUST	testing			true
 rule	change-seen-working-before-hand-back	core	blocks/core/changes.md		SHOULD	testing			true
 rule	unit-answers-to-one-actor	core	blocks/core/code.md		MUST				true
@@ -144,8 +145,10 @@ rule	async-work-awaited-or-held-by-a-scope	core	blocks/core/effects.md		MUST	err
 rule	outside-call-has-a-timeout	core	blocks/core/effects.md		MUST	errors performance			true
 rule	outside-call-can-be-cancelled	core	blocks/core/effects.md		SHOULD	performance			true
 rule	resource-released-on-every-path	core	blocks/core/effects.md		MUST				true
-rule	outside-read-bounded	core	blocks/core/effects.md		SHOULD	performance			true
+rule	outside-read-bounded	core	blocks/core/effects.md		MUST	performance			true
 rule	kept-collection-bounded	core	blocks/core/effects.md		MUST	performance			true
+rule	concurrent-fan-out-bounded	core	blocks/core/effects.md		MUST	performance			true
+rule	program-stops-cleanly	core	blocks/core/effects.md		MUST	errors data			true
 rule	operation-idempotent-by-design	core	blocks/core/effects.md		SHOULD	data			true
 rule	irreversible-operation-runs-dry-by-default	core	blocks/core/effects.md		MUST	security ux			true
 rule	shared-resource-has-one-writer	core	blocks/core/effects.md		MUST				true
@@ -211,6 +214,7 @@ rule	secret-never-in-the-repository	core	blocks/core/security.md		MUST	security	
 rule	secret-and-personal-data-kept-out-of-output	core	blocks/core/security.md		MUST	security data			true
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
 rule	credential-has-least-privilege	core	blocks/core/security.md		SHOULD	security			true
+rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
@@ -233,6 +237,7 @@ rule	case-named-should-when	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-split-by-arrange-act-assert-comments	core	blocks/core/tests.md		MUST	testing			true
 rule	test-never-skipped-or-empty	core	blocks/core/tests.md		MUST	testing			true
 rule	spec-folder-holds-only-test-files	core	blocks/core/tests.md		MUST	testing			true
+rule	spec-found-from-its-units-path	core	blocks/core/tests.md		SHOULD	testing			true
 rule	test-code-never-reached-from-production	core	blocks/core/tests.md		MUST	testing			true
 rule	test-ships-with-its-behaviour	core	blocks/core/tests.md		MUST	testing			true
 rule	test-seen-failing	core	blocks/core/tests.md		SHOULD	testing			true
@@ -267,7 +272,6 @@ rule	invariant-checked-at-construction	core	blocks/core/types.md		MUST				true
 rule	invariant-value-is-plain-immutable-data	core	blocks/core/types.md		MUST	data			true
 rule	value-immutable-by-default	core	blocks/core/types.md		SHOULD				true
 rule	outside-value-untyped-until-parsed	core	blocks/core/types.md		MUST	security			true
-rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/types.md		MUST	security performance			true
 rule	narrowing-proves-all-it-claims	core	blocks/core/types.md		MUST				true
 rule	own-shape-strict-other-shape-tolerant	core	blocks/core/types.md		MUST	data			true
 rule	absence-shown-by-the-type	core	blocks/core/types.md		MUST	data			true
@@ -279,7 +283,7 @@ rule	entity-rule-lives-beside-the-entity	core	blocks/core/architecture/domain.md
 rule	value-object-built-only-by-its-check	core	blocks/core/architecture/domain.md		MUST	data	architecture		true
 rule	contexts-duplicate-rather-than-share	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	use-case-only-with-business-logic	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
-rule	command-loads-through-its-write-port	core	blocks/core/architecture/domain.md		MUST		architecture		true
+rule	command-loads-through-its-write-port	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	command-returns-nothing	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	query-and-command-apart	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	pipeline-stage-never-calls-a-stage	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
@@ -312,7 +316,7 @@ rule	module-reached-only-through-its-surface	core	blocks/core/architecture/layou
 rule	module-files-import-each-other-directly	core	blocks/core/architecture/layout.md		MUST		architecture		true
 rule	surface-only-re-exports	core	blocks/core/architecture/layout.md		MUST		architecture		true
 rule	surface-offers-operations-not-mechanisms	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
-rule	layer-folder-has-no-surface	core	blocks/core/architecture/layout.md		MUST		architecture		true
+rule	surface-only-on-a-module-or-one-kind	core	blocks/core/architecture/layout.md		MUST		architecture		true
 rule	folder-takes-its-layer-or-role-name	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	file-carries-its-role-suffix	core	blocks/core/architecture/layout.md		MUST		architecture		true
 rule	data-port-named-by-entity-and-side	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
@@ -320,9 +324,9 @@ rule	contract-declared-by-the-layer-that-needs-it	core	blocks/core/architecture/
 rule	port-justified-by-its-boundary	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	contract-knows-no-vendor	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	feature-asks-another-through-its-own-contract	core	blocks/core/architecture/ports.md		MUST		architecture		true
-rule	data-port-one-per-entity-and-side	core	blocks/core/architecture/ports.md		MUST		architecture		true
+rule	data-port-one-per-entity-and-side	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	outside-shape-mapped-in-the-adapter	core	blocks/core/architecture/ports.md		MUST	data	architecture		true
-rule	adapter-imports-only-its-contracts-and-shared-layers	core	blocks/core/architecture/ports.md		MUST		architecture		true
+rule	adapter-imports-only-its-owners-domain-and-shared-layers	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	adapter-one-per-system-and-owner	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	adapter-built-by-factory-object-or-class	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	schema-derived-from-the-domain	core	blocks/core/architecture/ports.md		MUST		architecture		true
@@ -340,7 +344,7 @@ rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/agents
 rule	agent-permissions-kept-with-the-project	core	blocks/core/workflow/agents.md		SHOULD	security	workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
-rule	sub-agent-never-touches-a-live-system	core	blocks/core/workflow/agents.md		MUST		workflow		true
+rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	access-denied-unless-granted	access-control	blocks/domains/access-control/access-control.md		MUST	security			true
 rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/access-control.md		MUST	security			true
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	security	architecture		true
@@ -568,8 +572,6 @@ rule	client-holds-nothing-hidden	untrusted-client	blocks/domains/untrusted-clien
 rule	client-checks-repeated-on-server	untrusted-client	blocks/domains/untrusted-client/untrusted-client.md		MUST	security			true
 rule	credentials-only-in-the-protected-store	untrusted-client	blocks/domains/untrusted-client/untrusted-client.md		MUST	security			true
 rule	commit-is-one-logical-change	version-control	blocks/domains/version-control/version-control.md		SHOULD			change-limited-to-its-task	true
-rule	refactor-apart-from-behaviour-change	version-control	blocks/domains/version-control/version-control.md		SHOULD			tidying-shipped-before-the-behaviour	true
-rule	move-committed-apart-from-its-edits	version-control	blocks/domains/version-control/version-control.md		MUST			change-moves-a-file-never-rewrites-it	true
 rule	commit-holds-only-its-task-files	version-control	blocks/domains/version-control/version-control.md		MUST	security			true
 rule	every-commit-passes-the-check	version-control	blocks/domains/version-control/version-control.md		MUST	testing		change-handed-back-with-a-passing-check	true
 rule	reason-for-change-recorded	version-control	blocks/domains/version-control/version-control.md		SHOULD				true
@@ -744,7 +746,7 @@ rule	import-package-holds-the-tree	python	blocks/contexts/languages/python/archi
 rule	feature-package-holds-its-layers	python	blocks/contexts/languages/python/architecture/python.md		SHOULD		architecture	feature-laid-out-by-its-tree	true
 rule	init-never-imported-from-inside	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	module-files-import-each-other-directly	true
 rule	init-is-the-way-in-within-a-layer	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	module-reached-only-through-its-surface	true
-rule	layer-init-empty	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	layer-folder-has-no-surface	true
+rule	layer-init-empty	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	surface-only-on-a-module-or-one-kind	true
 rule	environment-read-only-under-root	python	blocks/contexts/languages/python/architecture/python.md		MUST	security	architecture	root-alone-reads-the-environment	true
 rule	domain-imports-no-logging	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	domain-logs-nothing	true
 rule	py-typed-where-code-is-imported	python	blocks/contexts/languages/python/with/distribution.md	distribution	MUST			ships-its-types	true

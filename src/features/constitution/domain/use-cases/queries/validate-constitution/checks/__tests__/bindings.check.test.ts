@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
 import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';

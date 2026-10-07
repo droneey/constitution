@@ -53,7 +53,7 @@ A module is reached from another module of its own layer, and a domain role fold
 |---|---|
 | an import contract holds the kernel and a module reached from outside its layer, but tells neither one module of a layer from another nor a package's `__init__.py` from a module, so a reviewer holds the rest. | [] |
 
-### layer-init-empty → layer-folder-has-no-surface · MUST
+### layer-init-empty → surface-only-on-a-module-or-one-kind · MUST
 A layer folder's `__init__.py` is empty: it makes the folder a package and offers nothing.
 
 | Why | Tags |

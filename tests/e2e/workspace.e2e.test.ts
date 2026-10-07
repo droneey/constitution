@@ -239,9 +239,9 @@ describe('a workspace on the presets', () => {
     // Arrange
     const folder = workspace({
       '.dependency-cruiser.mjs': DEPENDENCY_CRUISER,
-      'libs/money/src/kernel/index.ts': 'export const ZERO = 0;\n',
-      'shared/src/kernel/price.ts':
-        "import { ZERO } from '../../../libs/money/src/kernel/index.ts';\n\nexport const price = ZERO;\n",
+      'libs/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
+      'shared/src/kernel/constants/price.constants.ts':
+        "import { ZERO } from '../../../../libs/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
     });
 
     // Act

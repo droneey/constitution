@@ -1,5 +1,6 @@
-import type { Finding } from '#/kernel';
-import { compareText, LAYERS } from '#/kernel';
+import { LAYERS } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
+import { compareText } from '#/kernel/utils';
 
 import { DocumentPath } from '../../../constants';
 import type {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Layer } from '#/kernel';
+import { Axis, Layer } from '#/kernel/constants';
 
 import type { BlockPath } from '../block-path.utils';
 import { BlockPathFile, classifyBlockPath } from '../block-path.utils';

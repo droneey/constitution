@@ -1,4 +1,4 @@
-import type { Axis, Layer } from '#/kernel';
+import type { Axis, Layer } from '#/kernel/constants';
 
 interface FrontMatter {
   readonly abstract: boolean;

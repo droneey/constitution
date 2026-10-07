@@ -1,4 +1,5 @@
-import type { Axis, Finding } from '#/kernel';
+import type { Axis } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { BindingsParser } from '../../../contracts';
 import type { Binding, PresetFile } from '../../../entities';

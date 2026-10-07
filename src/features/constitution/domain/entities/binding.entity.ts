@@ -1,4 +1,4 @@
-import type { Axis } from '#/kernel';
+import type { Axis } from '#/kernel/constants';
 
 import type { FieldIssue } from './manifest.entity';
 

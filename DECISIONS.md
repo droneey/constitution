@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0164 |
+| One home per rule | ADR-0160 – ADR-0165 |
 
 ---
 
@@ -530,7 +530,6 @@
 - **Rejected.**
   - Letting a command import a read port's types: the shared shape belongs to the entities.
   - Opening `root/ui` to route files: an application shell that knows no feature belongs in `shared/ui`.
-  - Kernel surfaces per role folder: the kernel stays one small module with one surface, and a project that lacks `kernel/index.ts` adds it.
 - **Why.** The audit of rozumchik-web against constitution 0.62 found these homes and rules missing or contradicting each other.
 
 ## ADR-0119 — The UI, i18n and analytics rules a real application found
@@ -854,7 +853,7 @@
 **Date:** 2026-10-06 · **Status:** Accepted
 
 - **Decision.**
-  - A module is a surface, the role folders it needs and modules of the same form, at any depth (`module-has-one-form`); the source root of every package is such a module, whose folders are the layers of the top-level tree. A role folder may sit at any depth, the top of `src/` included. Behaviour, what a package does, lives in a feature with its layers; vocabulary — types, constants, kinds — in `kernel/` and the role folders; `utils/` holds only pure helpers with no meaning of the product; a set of interface primitives is a set of components, each a module of its own, and grows `features/` only when it gains behaviour of the product.
+  - A module is a surface, the role folders it needs and modules of the same form, at any depth (`module-has-one-form`); the source of a package others import is such a module, and its folders are the layers of the top-level tree. A role folder may sit at any depth, the top of `src/` included. Behaviour, what a package does, lives in a feature with its layers; vocabulary — types, constants, kinds — in `kernel/` and the role folders; `utils/` holds only pure helpers with no meaning of the product; a set of interface primitives is a set of components, each a module of its own, and grows `features/` only when it gains behaviour of the product.
   - "Library" is no kind of package. A package that nothing runs, whose consumers import it, has a program's tree without `root/` and `entrypoints/`, and its `src/` has a surface, its main entry; `libs/` stays a folder role, code that knows nothing of the product. `library-has-the-form-of-libs` is removed, and `library-entries-curated` becomes `package-entries-curated`.
   - `integrations/<framework>/` is a layer of core's tree: a package's integration into a host framework, which the framework calls. Its surface is an entry of its own; nothing else in the package imports it, and integrations never import each other (`nothing-imports-an-integration`, held by dependency-cruiser's `integration-never-imported` and `integrations-blind-to-each-other` and by import-linter's `protected` and `independence` contracts). A distributed package offers it as an entry with the framework optional (`integration-is-an-entry-with-an-optional-framework`): in TypeScript an `exports` subpath, the framework an optional peer and a development dependency at its exact version, since Bun 1.4.2 installs no optional peer; knip 6.38's production run counts only `dependencies` and the required peers, so the package's configuration ignores the framework with `!` (`optional-peer-ignored-in-production`), and syncpack 15.3.3 passes the peer's `>=` floor beside the exact development copy under the distribution part; in Python a submodule and an extra of the framework's name, which deptry 0.25.1 counts as declared with no configuration and uv_build 0.12 writes as `Provides-Extra`.
   - A folder appears with its first file, stated once in core's foundation (`folder-appears-with-its-first-file`). `kernel/` may import the data files its values are read from, which import nothing.
@@ -928,9 +927,21 @@
   - Clashes: two rules of one layer that disagree are a defect, and until it is amended the one naming the narrower case wins (`core.md`). The exception is written into the broader rule: a defect is caught to carry on only at the boundary of an optional part; the environment is read where the root's rules allow and a unit outside the domain writes diagnostics through the logging facade, both outside the ports; a test case's Arrange, Act and Assert are no sections to split; a property case states its invariant instead of a literal; a test reaches the engines it started on the loopback, and a unit case reads its fixtures; a surface's re-export gives a type no second home. How a block claims a resource the program shares with its host moves from `shared-resource-has-one-writer` to `core.md`.
   - Contracts: `contract-offers-a-caller-only-what-it-calls` becomes `contract-shaped-by-its-callers-role`, the operations one role of caller needs.
   - Agents: reading from an outside service needs no go-ahead, and a new module needs none either.
-  - Chapters: `comments` keeps comments, documentation and the mark of deprecation; dead code goes to `code` and the use of a deprecated form to `relations`. `tidying-shipped-before-the-behaviour` moves to the base `changes`, and core's `workflow/changes` goes; the half of `change-moves-a-file-never-rewrites-it` that commits a move apart from its edits goes to version control as `move-committed-apart-from-its-edits`, and version control's rules on one change, refactors and the passing check carry out core's.
+  - Chapters: `comments` keeps comments, documentation and the mark of deprecation; dead code goes to `code` and the use of a deprecated form to `relations`. `tidying-shipped-before-the-behaviour` moves to the base `changes`, and core's `workflow/changes` goes; `change-moves-a-file-never-rewrites-it` keeps only its meaning without commits, and version control's rules on one change and the passing check carry out core's.
   - New: `kept-collection-bounded` and `outside-input-bounded-before-it-is-parsed`.
   - The digest prints each chapter of core with its Governs line, written short.
 - **Rejected.** A level taken from the parent, which the reader of a rule had to look up and an override carried down unseen; a contract cut per caller, which multiplies contracts that change together; renaming `comments` to `documentation` with the readme rules, which moved more than the misplaced rules; core's Governs lines printed whole, which pushed the block list of a large project past the 9,400 bytes a hook's context holds.
 - **Why.** A rule read alone says how strongly it binds, and two rules of core that seem to clash state the exception in the rule that would otherwise forbid it, where a reader looks.
+
+## ADR-0165 — A surface is the door of a module or a set of one kind, and core's second review
+**Date:** 2026-10-07 · **Status:** Accepted
+
+- **Decision.** A second round of three reviews of core, read against rozumchik-web, settled these.
+  - Surfaces: a module has a surface, its door, and a role folder, whose members are of one kind, has one; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none, and neither has the source of an application (`surface-only-on-a-module-or-one-kind`). The kernel is such a layer: its role folders have surfaces and it has none, `#/kernel/errors` rather than `#/kernel`, and dependency-cruiser's `kernel-role-reached-through-its-surface` and import-linter's contract on `*.kernel.*.*` hold it; the source of an application has none either.
+  - Adapters: an adapter imports the domain of the owner whose ports it implements — contracts, entities, value objects, errors — as hexagonal and clean architecture both have it.
+  - Changes: a squashed change request is one commit, so a refactoring the task needs ships apart only when it reaches beyond the files the behaviour change touches, and the commit-level move and refactor rules of version control go. A format others read or that is stored changes in steps (`format-changed-in-steps`).
+  - Bounds and stopping: outside input is bounded in size before it is read and in depth while it is parsed, in `security`; an outside read is bounded at MUST; a concurrent fan-out runs a set number at a time; a program told to stop finishes or cancels its work within a bound.
+  - Wording: a comment may label a section, and `function-does-one-thing` drops its sign of sections opened by comments, which a test case's steps contradicted; a case asserts strict equality, a property case its invariant; a unit case reads only its golden files; the logging facade is the one global and needs no handing in; a sub-agent may read an outside service (`sub-agent-never-acts-on-a-live-system`); the line limit binds code the project writes; the data port and the command's load through it are SHOULD, as the split of reads and writes is; a contract lifts to the shared contracts and a shared type follows the kernel's own rules; a spec is found from its unit's path; `core.md` says an override lowers the one rule it names and drops "names first" from the chapter test.
+- **Rejected.** A surface on every folder, which joins layers and isolated modules in one import; a surface at every layer but the kernel's role folders, the form ADR-0118 kept; a separate change request for every refactor and move, which a squash makes the only way to keep them apart and which small cleanups do not earn; exceptions that name another rule's case, which link two rules of one block.
+- **Why.** A surface is where a caller may couple, so it sits only where coupling to the whole is safe; every other rule was made to read alone and agree with its neighbours.
 

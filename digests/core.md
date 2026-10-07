@@ -12,11 +12,11 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 ## Precedence
 
-1. An override in `constitution.yaml` is stronger than any rule, core's included. It is written only with the user's consent and its reason, and removed by the change that ends it.
+1. An override in `constitution.yaml` lowers the one rule it names, core's included. It is written only with the user's consent and its reason, and removed by the change that ends it.
 2. Otherwise the more specific layer wins: implementations, then contexts (platforms and languages), then domains, then core. A block tightens what is above it, never loosens it.
 3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project.
 4. Two rules of one layer that disagree are a defect: until it is amended, the one naming the narrower case wins, and the clash is reported.
-5. A resource the program shares with its host has one writer: a block bringing its own claims it in a rule, and a default writer another active block claims yields.
+5. A block that brings its own writer for a resource the program shares with its host claims it in a rule, and a default writer another active block claims yields.
 
 ## Where a rule goes
 
@@ -26,9 +26,9 @@ Its layer: what must disappear for it to lose its meaning? Nothing: core. An asp
 
 Its axis: who would still want it? Not a team with another architecture: `architecture/` — layers and the direction of dependencies, ports and adapters, the homes of input, output and state, the wiring, the isolation of parts, the tree. Not a team with another workflow: `workflow/` — how a change travels from the idea to the release, and the working agreement with people and agents. Any team: the block's root.
 
-Its chapter: the one named for what its statement governs, which the statement names first; `code` only when no other chapter does.
+Its chapter: the one named for what its statement governs; `code` only when no other chapter does.
 
-A rule never refers to a rule of its own block. It may tighten a rule of core, of a block it requires or extends, or of the block its `with/` file names: the root only a root rule, `architecture/` an `architecture/` or root rule, `workflow/` a `workflow/` or root rule.
+A rule never refers to a rule of its own block. It may tighten a rule of core, of a block it requires or extends, or of the other block of its seam, a `with/<block>.md` file: the root only a root rule, `architecture/` an `architecture/` or root rule, `workflow/` a `workflow/` or root rule.
 
 ## A dependency with no block
 

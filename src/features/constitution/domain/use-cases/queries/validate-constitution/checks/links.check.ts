@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 import { DocumentPath } from '../../../../constants';
 import { resolveLink } from '../../../../utils';

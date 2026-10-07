@@ -1,4 +1,4 @@
-import { Axis, Layer, OPTIONAL_AXES } from '#/kernel';
+import { Axis, Layer, OPTIONAL_AXES } from '#/kernel/constants';
 
 enum BlockPathFile {
   Main = 'main',

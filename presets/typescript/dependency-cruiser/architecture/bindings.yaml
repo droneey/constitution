@@ -2,12 +2,12 @@ analytics:
   features-never-track:
     - features-never-track
 api:
-  adapter-imports-only-its-contracts-and-shared-layers:
+  adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-handlers
   import-points-inward:
     - handlers-reached-only-from-entries
 cli:
-  adapter-imports-only-its-contracts-and-shared-layers:
+  adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-commands
   import-points-inward:
     - commands-reached-only-from-entries
@@ -23,10 +23,10 @@ core:
     - integrations-blind-to-each-other
   module-reached-only-through-its-surface:
     - domain-role-reached-through-its-surface
-    - kernel-reached-through-its-surface
+    - kernel-role-reached-through-its-surface
     - module-reached-through-its-surface
     - module-reached-through-its-surface-from-outside-modules
-  adapter-imports-only-its-contracts-and-shared-layers:
+  adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-blind-to-each-other
     - adapters-know-no-caller
     - feature-adapters-blind-to-each-other
@@ -48,7 +48,7 @@ core:
     - module-never-imports-its-own-surface
   kernel-imports-only-itself:
     - kernel-reaches-only-itself
-  layer-folder-has-no-surface:
+  surface-only-on-a-module-or-one-kind:
     - layer-folder-never-a-target
   libs-import-no-application-code:
     - libs-know-no-application
@@ -64,7 +64,7 @@ core:
   shared-imports-no-feature-adapter-contract-or-root:
     - shared-knows-no-feature-or-root
 expo:
-  adapter-imports-only-its-contracts-and-shared-layers:
+  adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-routes
   import-points-inward:
     - routes-reached-only-from-expo-router
@@ -89,7 +89,7 @@ tanstack-query:
     - query-library-home-is-the-binding-units
     - query-library-only-in-its-home
 tanstack-router:
-  adapter-imports-only-its-contracts-and-shared-layers:
+  adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-routes
   route-pieces-reach-the-route-by-its-api:
     - route-pieces-never-import-route-files

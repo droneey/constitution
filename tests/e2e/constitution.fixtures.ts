@@ -1,4 +1,4 @@
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
 
 type Files = Record<string, string>;
 

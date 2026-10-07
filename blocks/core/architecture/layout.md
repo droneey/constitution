@@ -42,7 +42,7 @@ features/<f>/
 └── index.*                the surface
 ```
 
-A unit's specs sit in the `__tests__/` beside it. A surface is the file the language resolves when a folder is imported.
+A surface is the file the language resolves when a folder is imported. A binding unit binds one operation to the delivery's framework.
 
 ## The vocabulary
 
@@ -55,7 +55,7 @@ The language fixes the spelling. Each block names its own folders and suffixes, 
 ## Form
 
 ### module-has-the-one-form · SHOULD
-Every module, at any depth — a package’s source, a feature, the kernel, a module of a shared layer — is a folder with a surface, the role folders it needs and modules of this same form.
+Every module, at any depth — the source of a package others import, a feature, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the role folders it needs and modules of this same form.
 
 | Why | Tags |
 |---|---|
@@ -99,7 +99,7 @@ A pipeline’s stages live in its steps folder, in the order the use case calls 
 ## Surfaces
 
 ### module-reached-only-through-its-surface · MUST
-A module — and the kernel and every role folder of a domain — is reached from outside only through its surface, which offers what a caller may couple to and nothing else.
+A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else.
 
 | Why | Tags |
 |---|---|
@@ -126,12 +126,12 @@ A feature’s surface offers its operations and their presentation — use cases
 |---|---|
 | a caller that reaches a mechanism depends on how the feature works rather than on what it does. | [] |
 
-### layer-folder-has-no-surface · MUST
-A layer folder has no surface and is never an import target, nor is the source of a package nothing imports; a caller imports the role folder inside it. The source of a package others import has one surface, its main entry, which only its consumers import.
+### surface-only-on-a-module-or-one-kind · MUST
+A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target, and neither has the source of an application, which only holds layers. The source of a package others import is a module, and only its consumers import its surface.
 
 | Why | Tags |
 |---|---|
-| an import then names the role it couples to, and no surface gathering several roles hides an edge the layer rules forbid. | [] |
+| every import then names the side of each boundary it reaches, and no surface couples a caller to members it never uses. | [] |
 
 ## Names
 

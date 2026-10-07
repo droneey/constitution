@@ -1,5 +1,3 @@
-export type { Finding } from './finding.types';
-export { compareFindings, compareText } from './order.utils';
 export {
   AXES,
   Axis,

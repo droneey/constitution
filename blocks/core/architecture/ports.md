@@ -32,8 +32,8 @@ A feature that needs an answer from another declares a contract in its own words
 |---|---|
 | the feature stays blind to the other, and the other can change its model without breaking it. | [] |
 
-### data-port-one-per-entity-and-side · MUST
-A data port is a repository per entity and per side, one for reads and one for writes, each declaring its operations’ parameters and results; a shape both sides use is an entity.
+### data-port-one-per-entity-and-side · SHOULD
+A data port is a repository per side — one for reads, one for writes — for each entity a caller loads or changes on its own, each declaring its operations’ parameters and results; a shape both sides use is an entity.
 
 | Why | Tags |
 |---|---|
@@ -48,8 +48,8 @@ An outside shape — a response, a row, a message, a file format — is mapped t
 |---|---|
 | a vendor’s shape inside the domain turns every change of the vendor into a change of the business rules. | [data] |
 
-### adapter-imports-only-its-contracts-and-shared-layers · MUST
-An adapter imports its contracts, the kernel, shared and libs, never an application layer, the delivery layer or another adapter; what two adapters share lives in libs, or in shared when it knows the program.
+### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
+An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, the delivery layer or another adapter; what two adapters share lives in libs, or in shared when it knows the program.
 
 | Why | Tags |
 |---|---|

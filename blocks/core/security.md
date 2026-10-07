@@ -1,6 +1,6 @@
 # Security
 
-> Governs secrets, credentials, outside input run or followed.
+> Governs secrets, credentials, and outside input: its size, and where it is run, rebuilt or followed.
 
 ## Secrets
 
@@ -33,6 +33,13 @@ A credential belongs to one identity and one purpose per environment, with only 
 | a narrow, short-lived credential limits what a leak can do, and one identity per credential says who did what. | [security] |
 
 ## Input from outside
+
+### outside-input-bounded-before-it-is-parsed · MUST
+Input a sender outside the program controls — a body, a file, a message — is refused past a size before it is read whole, and past a depth of nesting while it is parsed.
+
+| Why | Tags |
+|---|---|
+| a parser handed an input of any size or depth spends memory and time the sender chooses. | [security, performance] |
 
 ### outside-input-reaches-interpreters-as-parameters · MUST
 Input from outside — a model’s output included — reaches a query, a shell command, a file path, markup or a template only through that interpreter’s parameters or its encoder, and a path is resolved and confined to its root before it is used.

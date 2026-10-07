@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
 
 import type { PresetPath } from '../preset-paths.utils';
 import { PresetFileKind, presetPathOf } from '../preset-paths.utils';

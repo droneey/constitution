@@ -1,4 +1,4 @@
-import type { Axis, Level } from '#/kernel';
+import type { Axis, Level } from '#/kernel/constants';
 
 interface StatedRule {
   readonly axis: Axis;

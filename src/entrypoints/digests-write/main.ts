@@ -1,5 +1,5 @@
 import { prepareDigests, writeDigests } from '#/features/constitution';
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 import { createWiring } from '#/root';
 
 const wiring = createWiring({

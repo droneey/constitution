@@ -1,6 +1,6 @@
 # Relations
 
-> Governs how a unit depends on, calls or extends another.
+> Governs how a unit is built, holds state, and depends on or calls another.
 
 ## Modules
 
@@ -67,7 +67,7 @@ A unit is ready to use when its constructor or factory returns; a required order
 | a hidden order of calls is a bug waiting for the first caller who does not know it. | [] |
 
 ### state-never-global-and-mutable · MUST
-State that changes never lives at module, static or global level; it lives in values the program creates and passes in.
+State that changes never lives at module, static or global level; it lives in values the program creates and passes in. The language’s logging facade, or the program’s own logging port where the language has none, configured once at start, is the one exception.
 
 | Why | Tags |
 |---|---|

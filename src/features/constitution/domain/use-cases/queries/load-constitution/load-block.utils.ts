@@ -1,5 +1,7 @@
-import type { Finding, Layer } from '#/kernel';
-import { AXES, compareText } from '#/kernel';
+import type { Layer } from '#/kernel/constants';
+import { AXES } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
+import { compareText } from '#/kernel/utils';
 
 import type { FileTree, FrontMatterParser } from '../../../contracts';
 import type { Block, BlockFile } from '../../../entities';

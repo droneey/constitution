@@ -1,4 +1,4 @@
-import { LAYER_RANK, Layer } from '#/kernel';
+import { LAYER_RANK, Layer } from '#/kernel/constants';
 
 import type { Block } from '../entities';
 

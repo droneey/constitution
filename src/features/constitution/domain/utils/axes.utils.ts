@@ -1,4 +1,4 @@
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
 
 const BASE = 'the base';
 

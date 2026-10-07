@@ -131,12 +131,12 @@ type = "independence"
 modules = ["*.features.*"]
 
 [[tool.importlinter.contracts]]
-name = "adapter-imports-only-its-contracts-and-shared-layers"
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
 type = "independence"
 modules = ["*.adapters.*", "*.features.*.adapters.*"]
 
 [[tool.importlinter.contracts]]
-name = "adapter-imports-only-its-contracts-and-shared-layers"
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
 type = "forbidden"
 source_modules = ["*.adapters", "*.features.*.adapters"]
 forbidden_modules = ["*.composition", "*.entrypoints", "*.features.*.app", "*.root"]
@@ -189,19 +189,19 @@ forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
 
 # a layer folder's __init__.py, the import package's own among them, is never imported
 [[tool.importlinter.contracts]]
-name = "layer-folder-has-no-surface"
+name = "surface-only-on-a-module-or-one-kind"
 type = "forbidden"
 source_modules = ["**"]
 forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.libs"]
 as_packages = false
 allow_indirect_imports = true
 
-# the kernel and a module of each layer are reached from outside only through their __init__.py
+# a role folder of the kernel and a module of each layer are reached from outside only through their __init__.py
 [[tool.importlinter.contracts]]
 name = "module-reached-only-through-its-surface"
 type = "protected"
-protected_modules = ["*.kernel.*"]
-allowed_importers = ["*.kernel"]
+protected_modules = ["*.kernel.*.*"]
+allowed_importers = ["*.kernel.*"]
 
 [[tool.importlinter.contracts]]
 name = "module-reached-only-through-its-surface"

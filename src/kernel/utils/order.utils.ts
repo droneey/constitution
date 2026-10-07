@@ -1,4 +1,4 @@
-import type { Finding } from './finding.types';
+import type { Finding } from '../types';
 
 const compareText = (left: string, right: string): number => {
   if (left === right) {

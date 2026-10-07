@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel';
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
 import { loadedOf, mainFile, rule, textOf } from '../../../../../__tests__/constitution.fixtures';

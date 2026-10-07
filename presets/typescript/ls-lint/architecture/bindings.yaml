@@ -38,7 +38,7 @@ core:
     - '.*'
     - '.*.*'
     - '.dir'
-  layer-folder-has-no-surface:
+  surface-only-on-a-module-or-one-kind:
     - 'src/features/*/domain'
   typescript-role-and-surface-files:
     - 'src/**/constants'

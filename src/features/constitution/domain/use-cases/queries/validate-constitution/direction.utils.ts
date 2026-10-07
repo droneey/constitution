@@ -1,4 +1,4 @@
-import { LAYER_RANK, LAYERS, Layer } from '#/kernel';
+import { LAYER_RANK, LAYERS, Layer } from '#/kernel/constants';
 
 const requirableBy = (layer: Layer): readonly Layer[] =>
   LAYERS.filter(

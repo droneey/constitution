@@ -241,14 +241,14 @@ export default {
       },
     },
     {
-      name: 'kernel-reached-through-its-surface',
+      name: 'kernel-role-reached-through-its-surface',
       severity: 'error',
       from: {
         pathNot: '^src/kernel/',
       },
       to: {
         path: '^src/kernel/',
-        pathNot: '^src/kernel/index\\.[^/]+$',
+        pathNot: '^src/kernel/[^/]+/index\\.[^/]+$',
       },
     },
     {
@@ -279,7 +279,7 @@ export default {
       to: {
         path: [
           '^src/index\\.[^/]+$',
-          '^src/(features|libs|adapters|integrations)/index\\.[^/]+$',
+          '^src/(features|libs|adapters|integrations|kernel|shared|contracts)/index\\.[^/]+$',
           '^src/features/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
         ],
       },

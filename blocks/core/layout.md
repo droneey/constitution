@@ -1,6 +1,6 @@
 # Layout
 
-> Governs a file or a folder: its kind, name and content.
+> Governs a file or a folder: its kind, name, size and purpose; readmes.
 
 ## Kinds
 
@@ -26,7 +26,7 @@ A file holds one semantic unit and is named after it; an unrelated export goes t
 | a file’s name then tells what is inside, and a change to one unit touches one file. | [] |
 
 ### file-within-500-lines · MUST
-A file holds at most 500 lines; a spec has no line limit.
+A file of code the project writes holds at most 500 lines; a spec, a generated file, a document and data have no line limit.
 
 | Why | Tags |
 |---|---|

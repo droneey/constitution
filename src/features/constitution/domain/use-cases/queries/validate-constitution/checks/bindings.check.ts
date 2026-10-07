@@ -1,5 +1,5 @@
-import type { Finding } from '#/kernel';
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Binding, PresetFile, Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';

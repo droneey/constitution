@@ -1,6 +1,6 @@
 # Changes
 
-> Governs a change: its scope, what it carries, its hand-back.
+> Governs a change, the work of one task: its scope, what it carries, its hand-back.
 
 ## Scope
 
@@ -12,7 +12,7 @@ A change does what its task asks and nothing else — no unrelated refactor, ref
 | a change that does one thing is reviewed, reverted and understood as one thing. | [] |
 
 ### change-corrects-the-documents-it-falsifies · SHOULD
-A change that makes a document false — a readme, the project’s context, an example of the environment, a comment, a guide — corrects it in the same change.
+A change that makes a document false — a readme, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
 
 | Why | Tags |
 |---|---|
@@ -26,11 +26,18 @@ A change that moves a file moves it, never deletes it and writes it anew.
 | a file written anew can lose or alter content unseen. | [] |
 
 ### tidying-shipped-before-the-behaviour · SHOULD
-A tidying or a refactoring the task needs ships as its own change, before the change of behaviour.
+A tidying or a refactoring the task needs ships as its own change, before the change of behaviour, unless it stays within the files the change of behaviour touches.
 
 | Why | Tags |
 |---|---|
 | each diff then reads as one thing, and a reviewer sees the behaviour change alone. | [] |
+
+### format-changed-in-steps · MUST
+A change to a format that is stored or that others read — a schema, a file, a message, a contract — keeps the old data and the running readers working: the new form is added beside the old one, the data and the readers move to it, and the old form is removed last.
+
+| Why | Tags |
+|---|---|
+| data written before the change and readers deployed before it outlive the change, and a format switched in one step breaks them. | [data] |
 
 ## Hand-back
 

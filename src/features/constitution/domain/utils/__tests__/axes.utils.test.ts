@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
 
 import { axisFolderOf, axisNameOf } from '../axes.utils';
 

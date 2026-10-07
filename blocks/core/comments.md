@@ -1,11 +1,11 @@
 # Comments
 
-> Governs a comment, documentation, a mark of deprecation.
+> Governs a comment, the documentation of an entry, a mark of deprecation.
 
 ## Comments
 
 ### comment-explains-why · SHOULD
-A comment states a constraint, a workaround or a decision the code cannot show; a comment that narrates the next line is removed.
+A comment states what the code cannot show — a constraint, a workaround, a decision — or labels a section of a body; a comment that narrates the next line is removed.
 
 | Why | Tags |
 |---|---|

@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter are the layer matrix. Each is held by the tool that follows imports, configured for the project's layers from a shared preset; the language block names the source root, the surface file and the suffix form.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form.
 
 ## Direction
 
@@ -28,7 +28,7 @@ A feature never imports another feature; features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes live in adapters, behind ports — and the domain and every other unit of logic reach them only through those ports. Two effects are the exceptions other rules name: the environment, read where the root's rules allow, and diagnostics, which a unit outside the domain writes through the logging facade.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes live in adapters, behind ports — and the domain and every other unit of logic reach them only through those ports. Reading the environment and writing diagnostics through the logging facade stand outside the ports.
 
 | Why | Tags |
 |---|---|
@@ -93,7 +93,7 @@ Code lives in the layer that owns its reason to change, beside its consumer when
 | code placed by its reason to change is found where it is needed and moves only when that reason moves. | [] |
 
 ### contract-lifts-on-its-second-feature · MUST
-A contract belongs to the feature that needs it; when a second feature needs it, it lifts to the shared contracts, and a business type two features share lifts to the kernel, never sideways into one of them.
+A contract belongs to the feature that needs it; when a second feature needs it, it lifts to the shared contracts, never sideways into one of them.
 
 | Why | Tags |
 |---|---|
