@@ -1,66 +1,51 @@
 ---
 id: remote-data
-summary: Data another system owns — cache keys, invalidation, streams.
-requires: []
+summary: "Data another system owns: its cache, keys, reads and refreshes."
+requires: [remote-service]
 extends: null
 abstract: false
 languages: []
 dictionary: []
 governs: []
 ---
-
 # Remote data
 
-> Data another system owns and decides on, which the program reads, caches and changes through that system. This block says how the data is cached, keyed and invalidated, and how a stream of it is folded before it reaches the cache.
+> Data another system owns and decides on, which the program reads, caches and changes through that system: how the data is cached, keyed and invalidated, and folded from a stream. What an interface adds, its optimistic writes, is in `with/ui`.
 
-### reads-cancellable-latest-wins → outside-call-can-be-cancelled · SHOULD
-Every read can be cancelled; a read superseded for the same key is cancelled, and only the latest answer reaches the cache.
+## Reads
+
+### read-superseded-for-its-key-is-cancelled → outside-call-can-be-cancelled · MUST
+A read superseded by a newer read of the same key is cancelled, so only the latest answer reaches the cache.
 
 | Why | Tags |
 |---|---|
-| answers that arrive out of order otherwise show data for a question the user no longer asks. | [data] |
+| an answer that arrives late otherwise overwrites a newer one, and the program shows data it no longer asked for. | [data] |
 
 ## Requirements for implementation
 
-What any cache of remote data must provide.
-
-### remote-data-cache-dedupes-by-key · MUST
-Reads with one key share one request and one entry.
+### cache-shares-one-read-per-key · MUST
+The cache shares one request and one entry among all the reads of one key.
 
 | Why | Tags |
 |---|---|
 | without it, two readers of the same data make two requests and may get two answers. | [data, performance] |
 
-### remote-data-cache-invalidates-by-prefix · MUST
-The cache invalidates by a prefix of the key, with or without a refetch.
+### cache-invalidates-by-key-prefix · MUST
+The cache invalidates every entry under a prefix of its key, with or without reading it again.
 
 | Why | Tags |
 |---|---|
-| a key factory builds keys by prefix, and a write must be able to refresh all of them. | [data] |
+| keys are built by prefix, and a write must be able to refresh every entry it touched. | [data] |
 
-### remote-data-cache-cancels-reads · MUST
-Reads in flight for a key can be cancelled.
-
-| Why | Tags |
-|---|---|
-| without it, neither latest-wins reads nor safe optimistic writes are possible. | [data] |
-
-### remote-data-cache-mutation-lifecycle · MUST
-A write has lifecycle callbacks of the cache — before it runs, on failure and after it settles — with a context for rollback, and the input of each pending write can be read.
+### cache-passes-every-failure-to-one-handler · MUST
+The cache passes every failed read and write to one handler the program registers.
 
 | Why | Tags |
 |---|---|
-| the optimistic lifecycle is built on these callbacks. | [data] |
+| a failure any read or write can meet — an ended session — is then handled once, there. | [errors] |
 
-### remote-data-cache-global-error-handler · SHOULD
-One handler sees every failed read and write.
-
-| Why | Tags |
-|---|---|
-| a failure every read and write can meet is handled once, there. | [errors] |
-
-### remote-data-cache-staleness-policy · SHOULD
-Staleness and refetching are set per key.
+### cache-sets-staleness-per-key · SHOULD
+The cache sets per key how long an entry stays fresh and when it is read again.
 
 | Why | Tags |
 |---|---|

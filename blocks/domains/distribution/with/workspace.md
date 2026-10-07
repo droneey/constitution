@@ -1,10 +1,12 @@
-# Distribution with workspace
+# Distribution in a workspace
 
-> A workspace whose units others install.
+> Governs the root that uses its own configuration.
+
+## Configuration
 
 ### root-dogfoods-its-configuration · SHOULD
-A repository that distributes configuration installs it from its working tree and extends it as a consumer would.
+The root of a workspace that distributes configuration installs it from the working tree and extends it as a consumer would.
 
 | Why | Tags |
 |---|---|
-| configuration the repository does not use itself is broken first in a consumer's repository. | [testing] |
+| configuration the repository does not use itself breaks first in a consumer's repository. | [testing] |

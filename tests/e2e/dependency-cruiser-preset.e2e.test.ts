@@ -521,7 +521,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/architecture/api',
+        'typescript/architecture/_api',
         'typescript/architecture/core',
       ],
       rule: 'handlers-reached-only-from-entries',
@@ -536,7 +536,7 @@ describe('the dependency-cruiser layer set', () => {
         'src/api/orders.controller.ts': exported('OrdersController'),
       },
       parts: [
-        'typescript/architecture/api',
+        'typescript/architecture/_api',
         'typescript/architecture/core',
       ],
       rule: 'adapters-know-no-handlers',

@@ -1,4 +1,4 @@
-import { Layer } from '#/kernel/constants';
+import type { Layer } from '#/kernel/constants';
 import type { Finding } from '#/kernel/types';
 
 import type { Block } from '../../../../entities';
@@ -54,8 +54,8 @@ const extendsMessage = (subject: Subject): string | undefined => {
     return 'extends itself';
   }
 
-  if (target.layer !== Layer.Implementation) {
-    return `extends ${base}, ${aBlock(target.layer)}; a block extends only an implementation`;
+  if (target.layer !== subject.block.layer) {
+    return `extends ${base}, ${aBlock(target.layer)}; a block extends only a base of its own layer`;
   }
 
   return target.frontMatter.abstract
@@ -77,7 +77,7 @@ const blockFindings = (subject: Subject): readonly Finding[] => {
             id,
           }),
         )),
-    subject.block.layer === Layer.Implementation ? extendsMessage(subject) : undefined,
+    extendsMessage(subject),
   ];
 
   return messages.flatMap((message) =>

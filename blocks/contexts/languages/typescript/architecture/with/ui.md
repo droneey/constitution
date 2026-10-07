@@ -2,7 +2,7 @@
 
 > The input and output a UI's components never reach.
 
-### components-call-no-global-fetch → components-dumb-widgets-smart · MUST
+### components-call-no-global-fetch → presentational-component-performs-no-io · MUST
 No file in a `components/` folder calls the global `fetch`.
 
 | Why | Tags |

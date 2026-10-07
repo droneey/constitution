@@ -13,7 +13,7 @@ governs: ["tests/e2e/**", "playwright.config.*"]
 
 > Runs the end-to-end specs, `tests/e2e/<name>.e2e.test`, against the built program in real browsers, the way its users reach it. `playwright.config` sets `testDir: 'tests/e2e'`, matches only the end-to-end specs, and starts the built program through `webServer`. Its part of the constitution's release archive turns on the lint rules for the specs.
 
-### locators-by-role-label-text → elements-found-by-role-label-text · MUST
+### locators-by-role-label-text → element-found-by-role-label-or-text · MUST
 A spec finds elements with `getByRole`, then `getByLabel` and `getByText`; never with `getByTestId`, a CSS or XPath selector, or an element handle.
 
 | Why | Tags |

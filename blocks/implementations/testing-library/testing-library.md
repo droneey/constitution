@@ -13,7 +13,7 @@ governs: ["**/__tests__/**/*.test.tsx"]
 
 > Specs that render the user interface and use it as a person does.
 
-### queries-by-role-label-text → elements-found-by-role-label-text · MUST
+### queries-by-role-label-text → element-found-by-role-label-or-text · MUST
 Elements are queried by role first, then by label and text; `getByTestId` is forbidden.
 
 | Why | Tags |
@@ -52,4 +52,4 @@ One render helper in `__tests__/<name>.fixtures` mounts the providers a spec nee
 
 | Requirement | How | Met |
 |---|---|---|
-| `a11y-scan-inside-component-specs` | over a document, axe runs on the rendered container through a matcher registered in the test setup and reports each violation with its element (`ui-specs-run-the-axe-scan`); a native renderer leaves no document for it to scan | partly |
+| `a11y-scanner-runs-inside-a-spec` | over a document, axe runs on the rendered container through a matcher registered in the test setup and reports each violation with its element (`ui-specs-run-the-axe-scan`); a native renderer leaves no document for it to scan | partly |

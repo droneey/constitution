@@ -1,7 +1,7 @@
 analytics:
-  features-never-track:
+  event-sent-only-by-the-delivery-layer:
     - features-never-track
-api:
+_api:
   adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-handlers
   import-points-inward:
@@ -103,12 +103,13 @@ tanstack-router:
 ui:
   binding-unit-composes-its-operation:
     - binding-units-reach-no-adapter-or-ui
-  components-dumb-widgets-smart:
+  presentational-component-performs-no-io:
     - components-take-data-and-callbacks
+  component-never-imports-a-widget:
     - components-never-import-widgets
   feature-laid-out-by-its-tree:
     - feature-root-reached-only-through-its-layers
-  ui-layer-imports:
+  ui-layer-imports-only-what-its-feature-offers:
     - ui-reaches-no-mechanism
 yaml-js:
   yaml-only-at-the-edge:
@@ -119,7 +120,7 @@ zod:
   zod-imported-by-the-document:
     - zod-imported-by-the-document
 workspace:
-  no-unit-reached-by-path:
+  unit-reached-only-through-its-entries:
     - root-imports-units-by-name
     - units-imported-by-name
   product-units-blind-to-each-other:

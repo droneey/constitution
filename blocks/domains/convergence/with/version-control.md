@@ -1,10 +1,12 @@
 # Convergence with version control
 
-> A converged document kept under version control, apart from what its runs produce.
+> Governs a run's work folder.
 
-### run-output-in-an-ignored-work-folder → generated-files-not-committed · SHOULD
+## Work folder
+
+### run-output-in-an-ignored-work-folder → generated-files-not-committed · MUST
 Version control ignores the work folder of the runs.
 
 | Why | Tags |
 |---|---|
-| what a run renders and records never reaches history by accident. | [] |
+| what a run renders and records never reaches the history by accident. | [] |

@@ -13,7 +13,7 @@ governs: ["components.json", "**/libs/ui/components/**"]
 
 > The UI kit's components, added as source on Base UI primitives and made the project's own.
 
-### complex-widgets-on-base-ui → complex-patterns-on-accessible-primitives · MUST
+### complex-widgets-on-base-ui → complex-pattern-built-on-accessible-primitives · MUST
 A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Base UI, through shadcn source made for Base UI, the dialog, the popover and the accordion included: Base UI is the active library of accessible primitives that the browser's `<dialog>`, `popover` and `<details>` give way to, and it places its popovers itself.
 
 | Why | Tags |
@@ -34,7 +34,7 @@ A primitive marks itself and each of its parts with `data-slot`, named after the
 |---|---|
 | a caller and a spec then reach a part by its slot, as shadcn source does, with no class written for it. | [ux] |
 
-### shadcn-source-adapted-on-arrival → vendored-components-adapted-on-arrival · MUST
+### shadcn-source-adapted-on-arrival → vendored-component-adapted-in-the-change-that-installs-it · MUST
 Before shadcn source is added, the kit is searched for an equivalent. Added source is, before review, restyled to tokens, stripped of unused props, and made to follow the kit's prop rules.
 
 | Why | Tags |
@@ -52,6 +52,6 @@ The text shadcn source ships — a screen reader's "Close" among it — is remov
 
 | Requirement | How | Met |
 |---|---|---|
-| `ui-primitives-keyboard-and-focus` | Base UI implements the WAI-ARIA patterns: keyboard, focus, roles | yes |
+| `ui-primitives-keep-keyboard-and-focus` | Base UI implements the WAI-ARIA patterns: keyboard, focus, roles | yes |
 | `ui-primitives-unstyled` | Base UI primitives carry no look; shadcn's classes are rewritten to tokens on arrival | yes |
-| `ui-primitives-slot` | Base UI's `render` prop | yes |
+| `ui-primitives-render-the-callers-element` | Base UI's `render` prop | yes |

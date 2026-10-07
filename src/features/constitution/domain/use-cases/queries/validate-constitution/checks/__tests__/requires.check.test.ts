@@ -35,7 +35,7 @@ describe('requiresCheck', () => {
       },
       {
         message:
-          'requires typescript, a language block; a platform block requires only domain blocks',
+          'requires typescript, a language block; a platform block requires only domain blocks or platform blocks',
         path: BROWSER,
       },
       {
@@ -69,33 +69,62 @@ describe('requiresCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it.each<{
-    block: BlockFixture;
-    field: string;
-  }>([
-    {
-      block: {
+  it('should report a domain that requires a platform, a layer below it', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/domains/i18n/i18n.md': mainFile({
+        body: '# i18n\n',
+        id: 'i18n',
+        requires: [
+          'browser',
+        ],
+      }),
+    });
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'requires browser, a platform block; a domain block requires only domain blocks',
+        path: 'blocks/domains/i18n/i18n.md',
+      },
+    ]);
+  });
+
+  it('should leave the requires of core to the front-matter check', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/core/core.md': mainFile({
+        body: '# Core\n',
+        id: 'core',
+        requires: [
+          'i18n',
+        ],
+      }),
+    });
+
+    // Act
+    const findings = requiresCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should accept a domain when it requires the domain it builds on', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      'blocks/domains/i18n/i18n.md': mainFile({
         body: '# i18n\n',
         id: 'i18n',
         requires: [
           'remote-data',
         ],
-      },
-      field: 'requires',
-    },
-    {
-      block: {
-        body: '# i18n\n',
-        extends: 'remote-data',
-        id: 'i18n',
-      },
-      field: 'extends',
-    },
-  ])('should leave the field to the front-matter check when a domain fills $field', ({ block }) => {
-    // Arrange
-    const input = checkInputOf({
-      ...validFiles(),
-      'blocks/domains/i18n/i18n.md': mainFile(block),
+      } satisfies BlockFixture),
     });
 
     // Act
@@ -116,7 +145,7 @@ describe('requiresCheck', () => {
     },
     {
       base: 'ui',
-      expected: 'extends ui, a domain block; a block extends only an implementation',
+      expected: 'extends ui, a domain block; a block extends only a base of its own layer',
     },
     {
       base: 'lingui',

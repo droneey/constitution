@@ -9,7 +9,7 @@ Screens are file routes under `routes/`, the delivery layer, from which the rout
 |---|---|
 | the file tree is the route tree, so a screen is found by its URL. | [] |
 
-### route-owns-its-url → screen-composes-the-page · SHOULD
+### route-owns-its-url → screen-loads-its-data-and-composes-the-page · SHOULD
 A route owns its URL: it reads and validates its search, runs its loader, and composes the page.
 
 | Why | Tags |

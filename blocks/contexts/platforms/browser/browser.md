@@ -1,7 +1,7 @@
 ---
 id: browser
 summary: Code that runs in a browser tab.
-requires: [untrusted-client, unreliable-network]
+requires: [untrusted-client]
 extends: null
 abstract: false
 languages: []
@@ -20,7 +20,7 @@ One bundle serves every environment: its configuration is served beside it, and 
 |---|---|
 | one tested bundle is promoted from staging to production unchanged, and nothing environment-specific is published inside it. | [security] |
 
-### no-credential-readable-by-script → credentials-only-in-the-protected-store · MUST
+### no-credential-readable-by-script → client-credential-kept-in-the-protected-store · MUST
 A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory: the tab holds no bearer token.
 
 | Why | Tags |

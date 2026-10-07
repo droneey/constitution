@@ -1,16 +1,11 @@
 # User interface with remote data
 
-> Screens that show and change data another system owns: the cache the providers build, and what a write reloads.
+> Governs where a write invalidates what it changed.
 
-### cache-client-built-by-the-providers · MUST
-The providers also build the cache client and hand it to the binding units.
+## Writes
 
-| Why | Tags |
-|---|---|
-| every binding unit then reads and writes the one cache the composition root chose, and a spec hands them another. | [data] |
-
-### command-invalidates-in-its-binding-unit · SHOULD
-After a write, invalidation happens in the command's binding unit, through the feature's key factory.
+### write-invalidates-in-its-binding-unit · SHOULD
+After a write, the write's binding unit says what to reload, through the feature's key factory.
 
 | Why | Tags |
 |---|---|

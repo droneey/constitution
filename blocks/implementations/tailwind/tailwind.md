@@ -34,20 +34,6 @@ A utility with no token behind it — `flex`, `items-center`, `truncate` — is 
 |---|---|
 | every visual value stays a token, and layout plumbing stays plain. | [ux] |
 
-### cascading-variants-in-utilities → cascading-variant-by-data-attribute · SHOULD
-A cascading variant is a `data-*` attribute on the root, resolved by a `@custom-variant` or the `in-data-*` variant, and never passed down as a prop.
-
-| Why | Tags |
-|---|---|
-| the stylesheet reaches every descendant at once, with no prop threaded through them. | [] |
-
-### variants-in-one-cva-map → variant-axis-declared-once-in-map · MUST
-A component's own variants are one `cva` map, which types the props through `VariantProps`. The axis is declared once, never again as an enum or a union; `cn()` merges classes and never decides one.
-
-| Why | Tags |
-|---|---|
-| a second declaration of an axis drifts from the map, and a class decided outside the map is a variant nobody can find. | [] |
-
 ### mobile-first-breakpoints → mobile-first-additive-breakpoints · MUST
 No class opens with a `max-*:` variant: base classes serve small screens and are widened by `md:`, `lg:` and `xl:`, and a range is bounded after its minimum, as in `md:max-lg:`.
 
@@ -61,13 +47,6 @@ No class sizes with `h-screen` or `w-screen`.
 | Why | Tags |
 |---|---|
 | `h-screen` is `100vh`, which ignores the browser's own toolbars on phones, and `w-screen` is `100vw`, which overflows beside a scrollbar. | [] |
-
-### dark-theme-redefines-tokens → light-and-dark-one-token-set · SHOULD
-Dark mode redefines the semantic tokens under one selector; a component writes `dark:` only where no token can say it.
-
-| Why | Tags |
-|---|---|
-| components written against tokens switch theme without a line of their own. | [] |
 
 ### primitive-class-merged-by-cn → primitive-passes-attributes-and-class · SHOULD
 A primitive merges its class with the caller's through `cn()`, the caller's last.
@@ -118,7 +97,4 @@ Font-size and line-height tokens are in `rem`.
 | Requirement | How | Met |
 |---|---|---|
 | `ui-styling-restricted-to-tokens` | `@theme` holds the tokens and resets the default scales | yes |
-| `ui-styling-one-set-for-themes` | the tokens' variables are redefined under one selector | yes |
-| `ui-styling-container-queries` | `@container` and its variants | yes |
-| `ui-styling-cascading-variants` | `@custom-variant` or `in-data-*` | yes |
-| `ui-variant-map-types-props` | `cva` with `VariantProps` | yes |
+| `ui-styling-resolves-every-mode-from-one-set` | the tokens' variables are redefined under one selector | yes |

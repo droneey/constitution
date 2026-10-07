@@ -27,7 +27,7 @@ What wraps a query or a mutation returns Query's own result narrowed by its `sta
 |---|---|
 | consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". | [data] |
 
-### optimism-in-the-mutation-lifecycle → optimistic-lifecycle-safe-under-concurrency · MUST
+### optimism-in-the-mutation-lifecycle → overlapping-writes-keep-each-others-results · MUST
 Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes values built by the program's own factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
 
 | Why | Tags |
@@ -48,7 +48,7 @@ The client's `retry` is a predicate on the error's transience, with a limit — 
 |---|---|
 | retrying a failure that will not change delays the error the user needs to see. | [] |
 
-### query-signal-reaches-the-request → reads-cancellable-latest-wins · SHOULD
+### query-signal-reaches-the-request → outside-call-can-be-cancelled · SHOULD
 `queryFn` passes Query's abort signal to the operation it calls, down to the request, so a screen that is left cancels its read.
 
 | Why | Tags |
@@ -80,9 +80,9 @@ A mutation's `onSettled` returns the invalidation's promise, so the write stays 
 
 | Requirement | How | Met |
 |---|---|---|
-| `remote-data-cache-dedupes-by-key` | reads with one key share one query and one request | yes |
-| `remote-data-cache-invalidates-by-prefix` | `invalidateQueries` by a key prefix, with or without a refetch | yes |
-| `remote-data-cache-cancels-reads` | an abort signal per query, cancelled on unmount and by `cancelQueries` | yes |
-| `remote-data-cache-mutation-lifecycle` | `onMutate`, `onError`, `onSettled` with a context; `useMutationState` reads pending variables | yes |
-| `remote-data-cache-global-error-handler` | `onError` of `QueryCache` and `MutationCache` | yes |
-| `remote-data-cache-staleness-policy` | `staleTime` and refetch options per query | yes |
+| `cache-shares-one-read-per-key` | reads with one key share one query and one request | yes |
+| `cache-invalidates-by-key-prefix` | `invalidateQueries` by a key prefix, with or without a refetch | yes |
+| `cache-restores-a-snapshot-when-a-write-fails` | `onMutate` returns a context that `onError` restores, and `onSettled` invalidates | yes |
+| `cache-exposes-the-input-of-pending-writes` | `useMutationState` reads the variables of pending writes | yes |
+| `cache-passes-every-failure-to-one-handler` | `onError` of `QueryCache` and `MutationCache` | yes |
+| `cache-sets-staleness-per-key` | `staleTime` and refetch options per query | yes |

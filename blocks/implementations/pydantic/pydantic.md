@@ -59,6 +59,6 @@ A model uses pydantic 2's forms — `model_config = ConfigDict(...)`, `field_val
 
 | Requirement | How | Met |
 |---|---|---|
-| `schema-rejects-unknown-keys` | `ConfigDict(extra='forbid')` | yes |
-| `schema-discriminated-unions` | a union of models with `Field(discriminator=...)` on a `Literal` field, whose error names the field | yes |
-| `schema-exports-json-schema` | `model_json_schema()`, and `TypeAdapter(...).json_schema()` for a union | yes |
+| `schema-library-rejects-unknown-keys` | `ConfigDict(extra='forbid')` | yes |
+| `schema-library-selects-unions-by-a-discriminant` | a union of models with `Field(discriminator=...)` on a `Literal` field, whose error names the field | yes |
+| `schema-library-generates-json-schema` | `model_json_schema()`, and `TypeAdapter(...).json_schema()` for a union | yes |

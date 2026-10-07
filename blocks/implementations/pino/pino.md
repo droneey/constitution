@@ -13,14 +13,14 @@ governs: ["**/root/**"]
 
 > Writes every record — the program's and pino-http's — through one pino instance created at the program's start: secret keys masked in the finished line, the trace id added from an `AsyncLocalStorage`, JSON lines to stdout in production and pino-pretty in development. Code passes a record's fields first and its fixed message second.
 
-### one-instance-writes-every-record → log-records-pass-one-pipeline · MUST
+### one-instance-writes-every-record → log-record-passes-one-pipeline · MUST
 The pipeline is one pino instance, created at the program's start. Code logs through that instance or its children; no second instance writes a record.
 
 | Why | Tags |
 |---|---|
 | the mask and the trace id are options of the instance, so a record a second instance writes carries neither. | [security] |
 
-### secret-keys-masked-in-the-finished-line → log-secrets-masked-by-key · MUST
+### secret-keys-masked-in-the-finished-line → log-value-masked-by-its-key · MUST
 The mask is the instance's `hooks.streamWrite`, which parses each finished line, masks it and writes it again. `redact` is no such mask: it matches exact paths, with case, and its wildcard spans one level.
 
 | Why | Tags |
@@ -34,7 +34,7 @@ In production the instance has no `transport` and writes JSON lines to stdout, i
 |---|---|
 | a transport moves the writing to a worker thread that a collector reading stdout does not need, and pino-pretty's lines are for a person, not a parser. | [] |
 
-### trace-id-added-by-mixin → log-records-carry-the-trace-id · SHOULD
+### trace-id-added-by-mixin → log-record-carries-the-trace-id · SHOULD
 The instance's `mixin` returns the trace id from an `AsyncLocalStorage` — `mixin: () => ({ traceId: traceScope.getStore()?.traceId })` — and the middleware of each request or task enters it with `traceScope.run({ traceId }, next)`, the caller's id from its header or a new one.
 
 | Why | Tags |

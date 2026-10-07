@@ -53,7 +53,7 @@ const WELL_FORMED = [
 const BLOCK_PARTS = [
   ...PARTS,
   'typescript/architecture/analytics',
-  'typescript/architecture/api',
+  'typescript/architecture/_api',
   'typescript/architecture/cli',
   'typescript/architecture/nestjs',
   'typescript/architecture/tanstack-router',

@@ -2,7 +2,7 @@
 
 > The secret scan in the commit hook: the part `presets/common/lefthook/workflow/betterleaks.yaml` runs `betterleaks git --pre-commit --staged --redact`.
 
-### staged-changes-scanned-before-commit → secrets-scanned-before-each-commit · MUST
+### staged-changes-scanned-before-commit → secret-never-in-the-repository · MUST
 `pre-commit` scans the staged changes for secrets.
 
 | Why | Tags |

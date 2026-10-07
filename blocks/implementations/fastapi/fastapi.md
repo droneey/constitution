@@ -1,7 +1,7 @@
 ---
 id: fastapi
 summary: FastAPI serves the program over HTTP, run by Uvicorn.
-requires: [python, pydantic, api]
+requires: [python, pydantic, rest-api]
 extends: null
 abstract: false
 languages: []
@@ -45,14 +45,14 @@ What the app keeps open — clients, pools, connections — is opened and closed
 
 ## Failures
 
-### framework-failures-answered-by-their-kind → failure-answered-by-its-code · SHOULD
+### framework-failures-answered-by-their-kind → failure-answered-by-its-code · MUST
 A `RequestValidationError` is answered as a validation failure whose details point at each field it refused, each entry of `errors()` by its `loc`, `type` and `msg` without its `input` and `ctx`; Starlette's `HTTPException` — an unknown route, a method not allowed — is answered as the kind its status maps to.
 
 | Why | Tags |
 |---|---|
 | FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields; an entry's `input` is the value the caller sent, a password or a card number among them, and its `ctx` may quote it. | [errors, security] |
 
-### program-raises-no-http-exception → errors-carry-codes-not-statuses · SHOULD
+### program-raises-no-http-exception → error-carries-a-code-never-a-status · MUST
 The program raises the error kit's errors, never `HTTPException`.
 
 | Why | Tags |
@@ -68,7 +68,7 @@ The handler of an unexpected failure logs it, and a filter on the `uvicorn.error
 
 ## Specs
 
-### specs-through-the-asgi-transport → server-specs-run-in-process · MUST
+### specs-through-the-asgi-transport → server-spec-runs-in-process · MUST
 A spec sends its requests through `ASGITransport(app=app)` to an app it builds with fakes, and enters the app's `lifespan` itself when the case needs it.
 
 | Why | Tags |
@@ -79,5 +79,5 @@ A spec sends its requests through `ASGITransport(app=app)` to an app it builds w
 
 | Requirement | How | Met |
 |---|---|---|
-| `every-failure-reaches-one-handler` | an exception handler per class on the one app — the error kit's errors, `RequestValidationError`, Starlette's `HTTPException`, which FastAPI raises for an unknown route or method, and `Exception` — receives every failure | yes |
-| `request-parsed-before-its-handler` | the body, query, path and headers are parsed by the handler's annotations before it runs, and a failure is a `RequestValidationError` whose errors give the location of each field | yes |
+| `framework-passes-every-failure-to-one-handler` | an exception handler per class on the one app — the error kit's errors, `RequestValidationError`, Starlette's `HTTPException`, which FastAPI raises for an unknown route or method, and `Exception` — receives every failure | yes |
+| `framework-parses-a-request-before-its-handler` | the body, query, path and headers are parsed by the handler's annotations before it runs, and a failure is a `RequestValidationError` whose errors give the location of each field | yes |

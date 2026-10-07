@@ -85,7 +85,7 @@ When the repository holds several units — the applications and packages of a w
 ```yaml
 packages:
   packages/web:
-    domains: [ui, untrusted-client, unreliable-network]
+    domains: [ui, untrusted-client, remote-service]
     platforms: [browser]
     implementations: [react-dom]
 ```

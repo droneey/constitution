@@ -2,7 +2,7 @@
 
 > Routes guarded before they load.
 
-### guard-reaches-features-outside-react → screen-guards-through-auth-surface · MUST
+### guard-reaches-features-outside-react → screen-guarded-through-the-session-owners-surface · MUST
 A route's guard reaches the feature that decides access through the feature's composition outside React, never through the UI layer.
 
 | Why | Tags |

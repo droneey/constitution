@@ -70,5 +70,5 @@ A program whose build no other active block owns is built by `bun build`.
 
 | Requirement | How | Met |
 |---|---|---|
-| `units-linked-from-the-working-tree` | `workspace:*` resolves a unit from the working tree | yes |
-| `publishing-with-provenance-supported` | `bun publish` has no provenance and no trusted publishing, so npm publishes (`units-published-by-npm`) | no |
+| `workspace-tool-links-units-from-the-working-tree` | `workspace:*` resolves a unit from the working tree | yes |
+| `publishing-tool-supports-run-identity-and-provenance` | `bun publish` has no provenance and no trusted publishing, so npm publishes (`units-published-by-npm`) | no |

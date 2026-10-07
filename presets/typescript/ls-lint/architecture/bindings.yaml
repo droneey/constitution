@@ -1,9 +1,9 @@
 analytics:
   file-name-in-its-owners-case:
     - 'src/**/sinks'
-  sinks-folder-holds-sink-files:
+  set-folder-holds-only-members:
     - 'src/**/sinks'
-api:
+_api:
   file-name-in-its-owners-case:
     - 'src/api'
   package-laid-out-by-the-tree:

@@ -38,6 +38,6 @@ A response body is read by `.json()` with no type argument and parsed by a schem
 
 | Requirement | How | Met |
 |---|---|---|
-| `transport-timeout-and-cancel` | `timeout` per request, `signal` for cancellation | yes |
-| `transport-typed-failures` | `HTTPError`, `TimeoutError`, and a `TypeError` for a network failure | yes |
-| `transport-retries-only-transient` | `retry` by method, status and limit, with backoff | yes |
+| `transport-sets-a-timeout-and-cancels` | `timeout` per request, `signal` for cancellation | yes |
+| `transport-tells-failures-apart` | `HTTPError`, `TimeoutError`, and a `TypeError` for a network failure | yes |
+| `failure-retried-only-when-transient` | `retry` by method, status and limit, with backoff | yes |

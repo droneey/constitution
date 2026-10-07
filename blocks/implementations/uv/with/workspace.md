@@ -2,21 +2,21 @@
 
 > A workspace of Python units as a uv workspace.
 
-### workspace-root-has-no-project → workspace-root-private · SHOULD
+### workspace-root-has-no-project → workspace-root-private · MUST
 The root `pyproject.toml` of a uv workspace has no `[project]` table.
 
 | Why | Tags |
 |---|---|
 | uv then takes the root as the workspace alone, with no package of its own to lock, build or publish. | [] |
 
-### packages-linked-by-workspace-source → units-linked-from-the-working-tree · SHOULD
+### packages-linked-by-workspace-source → workspace-tool-links-units-from-the-working-tree · SHOULD
 The root's `[tool.uv.workspace]` lists every Python package of the repository in `members`, and a package that depends on another names it in `[tool.uv.sources]` with `{ workspace = true }`; no package's `pyproject.toml` holds a `[tool.uv.workspace]`.
 
 | Why | Tags |
 |---|---|
 | uv 0.12 installs each listed package from the working tree and resolves one version of every dependency for all of them, and refuses a workspace nested in a package. | [] |
 
-### one-lock-for-the-workspace → one-version-per-dependency · MUST
+### one-lock-for-the-workspace → dependency-has-one-version-across-units · MUST
 `uv.lock` resolves one version of each dependency for the root and every package of its workspace.
 
 | Why | Tags |

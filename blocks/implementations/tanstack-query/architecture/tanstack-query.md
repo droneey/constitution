@@ -14,14 +14,14 @@
 |---|---|
 | the adapter stays the composition root's choice, and a spec hands in another. | [] |
 
-### key-factory-in-cache-utils → cache-keys-from-feature-factory · MUST
+### key-factory-in-cache-utils → cache-key-built-by-its-features-factory · MUST
 Each feature's key factory lives in its `app/utils/cache.utils.ts`.
 
 | Why | Tags |
 |---|---|
 | every binding unit of the feature takes its keys from one known module, so a read and the invalidation that refreshes it build the same key. | [] |
 
-### keys-only-from-the-key-factory → cache-keys-from-feature-factory · MUST
+### keys-only-from-the-key-factory → cache-key-built-by-its-features-factory · MUST
 Outside the key factory's `cache.utils.ts`, no key array is written inline — as a `queryKey`, or to the query client's `getQueryData`, `getQueryState` or `setQueryData`; every key comes from the factory.
 
 | Why | Tags |
@@ -35,7 +35,7 @@ The query library's home is the binding units of `app/` and `composition/`, and 
 |---|---|
 | caching belongs to the binding units: a component that queries can no longer be shown with plain data, an adapter that caches holds a second cache, and a library that caches takes the application's data into code every program shares. | [] |
 
-### read-declared-once-as-query-options → cache-keys-from-feature-factory · MUST
+### read-declared-once-as-query-options → cache-key-built-by-its-features-factory · MUST
 Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its adapter as input; the hook, the loader and the guard all use it. A `queryFn` is written only there, inside the read's `queryOptions`.
 
 | Why | Tags |
@@ -48,10 +48,3 @@ Each read is declared once as `queryOptions`, beside the key factory in `cache.u
 | Why | Tags |
 |---|---|
 | the library's own examples build the client at a module's top level, where it is shared by every request on the server and every spec. | [] |
-
-### unauthorized-handled-once-in-the-cache → unauthorized-acted-on-once-by-the-cache · MUST
-`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, is the one place that acts on an unauthorized error.
-
-| Why | Tags |
-|---|---|
-| every read and write then ends in the same handler, and no query or mutation acts on the error on its own. | [] |

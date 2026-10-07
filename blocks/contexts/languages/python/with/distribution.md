@@ -2,7 +2,7 @@
 
 > The typed form and the floor of a distributed Python package.
 
-### py-typed-where-code-is-imported → ships-its-types · MUST
+### py-typed-where-code-is-imported → distributed-unit-ships-its-types · MUST
 A published package whose code a consumer imports ships `py.typed` in its import package, beside its `__init__.py`.
 
 | Why | Tags |

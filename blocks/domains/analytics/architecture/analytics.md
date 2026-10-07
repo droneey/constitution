@@ -1,6 +1,8 @@
 # Analytics
 
-> **Vocabulary:** folder `sinks`, suffix `.sink`.
+> Governs sinks and who sends events.
+
+## Sinks
 
 ### sinks-behind-one-contract → new-kind-added-as-a-member · MUST
 Each analytics service is one sink, one `.sink` file in `sinks/`, under one contract beside the folder; a registry chooses the active sinks.
@@ -9,16 +11,9 @@ Each analytics service is one sink, one `.sink` file in `sinks/`, under one cont
 |---|---|
 | a service is added or removed as one file, and nothing else knows which services exist. | [] |
 
-### sinks-folder-holds-sink-files → set-folder-holds-only-members · SHOULD
-`sinks/` holds only `.sink` files, a surface and `__tests__/`.
+### event-sent-only-by-the-delivery-layer → code-placed-by-its-reason-to-change · MUST
+No domain, use case or adapter of a feature sends an event; a screen, a widget or another delivery unit translates what the user did and what the operation returned into events.
 
 | Why | Tags |
 |---|---|
-| a service is then one file of one form. | [] |
-
-### features-never-track → code-placed-by-its-reason-to-change · MUST
-A feature never sends an event; the composing layer translates the feature's intents and outcomes into events.
-
-| Why | Tags |
-|---|---|
-| tracking is a concern of the product, not of any feature, and a feature that tracks knows the vocabulary of all of them. | [] |
+| tracking is a concern of the product, not of any feature, and a feature that tracks must know the product's whole vocabulary of events. | [] |

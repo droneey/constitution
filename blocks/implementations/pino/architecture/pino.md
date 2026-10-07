@@ -1,6 +1,6 @@
 # pino
 
-### pino-configured-by-the-root → logging-configured-by-the-root · MUST
+### pino-configured-by-the-root → root-alone-configures-logging · MUST
 `root/` creates the one pino instance, with its mask, its `mixin` and its destination; no other code creates an instance.
 
 | Why | Tags |

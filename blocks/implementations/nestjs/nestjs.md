@@ -1,7 +1,7 @@
 ---
 id: nestjs
 summary: NestJS — modules, providers and the injector that wires them.
-requires: [typescript, tsc, api]
+requires: [typescript, tsc, _api]
 extends: null
 abstract: false
 languages: []
@@ -41,14 +41,14 @@ A field of a class the framework fills — a body, a query or the parameters of 
 |---|---|
 | the framework assigns these fields after it builds the object, and `!` says so to `strictPropertyInitialization`, which still refuses any other field left unset. | [] |
 
-### nest-exceptions-answered-by-their-kind → failure-answered-by-its-code · SHOULD
+### nest-exceptions-answered-by-their-kind → failure-answered-by-its-code · MUST
 An `HttpException` Nest throws before a controller runs — the `NotFoundException` of an unknown route or method, the `BadRequestException` of a malformed body — is answered as the kind its status maps to.
 
 | Why | Tags |
 |---|---|
 | Nest throws these with no code of the error kit, so their answer takes its kind from their status, and the caller learns what to correct. | [errors] |
 
-### program-throws-no-http-exception → errors-carry-codes-not-statuses · SHOULD
+### program-throws-no-http-exception → error-carries-a-code-never-a-status · MUST
 The program throws the error kit's errors, never `HttpException` or one of its subclasses.
 
 | Why | Tags |
@@ -60,5 +60,5 @@ The program throws the error kit's errors, never `HttpException` or one of its s
 | Requirement | How | Met |
 |---|---|---|
 | `composition-root-wires-everything` | the modules' `providers` are where the program is wired: the root module names each feature's module in its `imports`, each provider binds a token to its implementation with `useClass` or `useFactory` (`contracts-injected-by-token`), and the injector follows only those declarations; a provider takes its dependencies through its constructor (`providers-injected-through-the-constructor`), never asks the injector for one (`injector-never-asked-for-a-dependency`), and no module of the program is global (`no-global-module`) | yes |
-| `every-failure-reaches-one-handler` | a global exception filter whose `@Catch()` names no class receives every exception, the `NotFoundException` of an unknown route or method and the `BadRequestException` of a malformed body included | yes |
-| `request-parsed-before-its-handler` | a pipe, global or bound to a parameter, parses it before the controller's method runs, and the error it throws reaches the filter | yes |
+| `framework-passes-every-failure-to-one-handler` | a global exception filter whose `@Catch()` names no class receives every exception, the `NotFoundException` of an unknown route or method and the `BadRequestException` of a malformed body included | yes |
+| `framework-parses-a-request-before-its-handler` | a pipe, global or bound to a parameter, parses it before the controller's method runs, and the error it throws reaches the filter | yes |

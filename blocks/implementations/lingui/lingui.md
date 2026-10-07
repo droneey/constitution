@@ -40,5 +40,5 @@ Text defined outside a render — an option list, an enum's labels — is a `msg
 |---|---|---|
 | `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | yes |
 | `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | yes |
-| `i18n-typed-keys` | a message's id is its source text, checked by extraction; no compile-time key type; the strict compile fails on a missing message (`missing-translation-fails-the-check`) | partly |
-| `i18n-lazy-locales` | a dynamic import per locale through the build plugin | yes |
+| `i18n-missing-key-fails-the-check` | a message's id is its source text, checked by extraction; no compile-time key type; the strict compile fails on a missing message (`missing-translation-fails-the-check`) | partly |
+| `i18n-locale-loaded-on-demand` | a dynamic import per locale through the build plugin | yes |

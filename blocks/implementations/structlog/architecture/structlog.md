@@ -1,6 +1,6 @@
 # structlog
 
-### structlog-configured-by-the-root → logging-configured-by-the-root · MUST
+### structlog-configured-by-the-root → root-alone-configures-logging · MUST
 `root/` calls `structlog.configure`, sets the root logger's handler and builds the middleware that binds the trace id; no other code adds a handler or calls `logging.basicConfig`.
 
 | Why | Tags |

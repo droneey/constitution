@@ -16,7 +16,7 @@ Going to the background, being suspended or being ended by the system loses no i
 |---|---|
 | the system ends apps without asking, and a user who comes back expects to find what they left. | [ux, data] |
 
-### touch-targets-44-pt-48-dp → targets-meet-platform-minimum · MUST
+### touch-targets-44-pt-48-dp → target-meets-the-minimum-size · MUST
 A touch target is at least 44 × 44 points, or 48 × 48 density-independent pixels, padding included.
 
 | Why | Tags |
@@ -53,7 +53,7 @@ Every interactive element declares its accessible label, role and state through 
 |---|---|
 | the system's screen reader reads only what these properties declare. | [] |
 
-### reading-order-follows-layout → operable-by-every-input · MUST
+### reading-order-follows-layout → focus-order-follows-the-visual-order · MUST
 The screen reader's order follows the visual order.
 
 | Why | Tags |
@@ -88,7 +88,7 @@ Before a new interactive component ships, a person operates it with VoiceOver on
 |---|---|
 | each system's screen reader behaves differently, and a scan catches none of it. | [] |
 
-### navigation-params-hold-view-state → view-state-homes · MUST
+### navigation-params-hold-view-state → view-state-kept-in-the-navigation-state · MUST
 View state a deep link or a restart must reproduce lives in the navigation parameters.
 
 | Why | Tags |

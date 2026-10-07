@@ -2,7 +2,7 @@
 
 > Screens in a browser: the URL, the document, the viewport and the pointer.
 
-### targets-at-least-24-css-px → targets-meet-platform-minimum · MUST
+### targets-at-least-24-css-px → target-meets-the-minimum-size · MUST
 A pointer target is at least 24 × 24 CSS pixels, padding included, and 44 for a primary touch target.
 
 | Why | Tags |
@@ -51,7 +51,7 @@ Code that can render on a server reads no browser global while it renders.
 |---|---|
 | on the server the global does not exist, and the render fails or differs from the one in the tab. | [errors] |
 
-### busy-submit-marked-aria-disabled → submit-busy-while-submitting · SHOULD
+### busy-submit-marked-aria-disabled → submit-busy-keeps-its-focus · SHOULD
 A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps its focus.
 
 | Why | Tags |
@@ -60,7 +60,7 @@ A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps it
 
 ## Accessibility
 
-### dialog-popover-and-details-native → complex-patterns-on-accessible-primitives · MUST
+### dialog-popover-and-details-native → complex-pattern-built-on-accessible-primitives · MUST
 Unless another active block brings accessible primitives for these patterns, the browser's own elements carry them: `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
 
 | Why | Tags |
@@ -130,7 +130,7 @@ The viewport declaration never blocks zooming: no `user-scalable=no`, and no `ma
 |---|---|
 | a page that cannot be zoomed fails the people who need it larger. | [a11y] |
 
-### url-holds-shareable-view-state → view-state-homes · MUST
+### url-holds-shareable-view-state → view-state-kept-in-the-navigation-state · MUST
 View state a link or a reload must reproduce — filters, sort, page, selection, the open tab — lives in the URL, and nothing else does.
 
 | Why | Tags |

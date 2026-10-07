@@ -2,21 +2,21 @@
 
 > The manifest form of a distributed TypeScript package.
 
-### peer-floor-in-the-manifest → configured-tool-is-a-peer-with-floor · MUST
+### peer-floor-in-the-manifest → manifest-declares-consumer-owned-dependencies-as-peers · MUST
 The tool a package configures is a `peerDependencies` entry with a `>=` floor.
 
 | Why | Tags |
 |---|---|
 | the floor states the oldest version the package supports, and leaves the choice of version to the consumer. | [] |
 
-### manifest-exports-with-types-condition → ships-its-types · MUST
+### manifest-exports-with-types-condition → distributed-unit-ships-its-types · MUST
 Wherever a consumer imports code, an entry of `exports` carries a `types` condition beside `default`.
 
 | Why | Tags |
 |---|---|
 | the consumer's compiler finds an entry's types through that condition. | [] |
 
-### files-list-what-ships → ships-only-the-files-it-names · MUST
+### files-list-what-ships → distributed-unit-ships-only-what-its-manifest-names · MUST
 `files` in `package.json` lists exactly what the package ships.
 
 | Why | Tags |

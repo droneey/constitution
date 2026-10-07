@@ -1,17 +1,12 @@
-# Analytics with UI
+# Analytics with a user interface
 
-> Consent asked and changed in a user interface.
+> Governs page views.
 
-### consent-reachable-from-every-screen · MUST
-The way to change consent is a link that stays on every screen.
+## Page views
 
-| Why | Tags |
-|---|---|
-| withdrawing is then as easy as giving, wherever the user is. | [security, ux] |
-
-### refusal-shown-beside-consent · MUST
-The control that refuses sits beside the one that accepts, with the same size and the same weight.
+### page-view-named-by-route-template · MUST
+A page view names its screen by the template of its address — `/chats/:id` — never by the address with its identifiers or query values.
 
 | Why | Tags |
 |---|---|
-| a refusal drawn smaller or fainter than the consent beside it steers the user to accept. | [security, ux] |
+| views of one screen then add up to one row, and no identifier in an address reaches the analytics service. | [data, security] |

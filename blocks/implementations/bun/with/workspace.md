@@ -2,14 +2,14 @@
 
 > A workspace as a Bun workspace.
 
-### workspaces-declared-in-the-root → units-linked-from-the-working-tree · SHOULD
+### workspaces-declared-in-the-root → workspace-tool-links-units-from-the-working-tree · SHOULD
 The root `package.json` declares every TypeScript package of the repository in `workspaces`, and no package's manifest declares `workspaces`.
 
 | Why | Tags |
 |---|---|
 | Bun 1.4.2 links a package from the working tree only when the root's `workspaces` lists it, and ignores a `workspaces` field in a package, so the packages it names are never linked. | [] |
 
-### own-units-at-workspace-version → units-linked-from-the-working-tree · SHOULD
+### own-units-at-workspace-version → workspace-tool-links-units-from-the-working-tree · SHOULD
 A unit of the repository is required at `workspace:*`, by another unit or by the root, in `dependencies` and `devDependencies` alike; the root installs so each unit whose configuration it extends.
 
 | Why | Tags |
