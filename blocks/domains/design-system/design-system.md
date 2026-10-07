@@ -15,7 +15,7 @@ governs: []
 ## Primitives
 
 ### primitive-passes-its-element-through · SHOULD
-A primitive accepts its element's own props and reference, except a boolean it names with its own prefix, and merges its own props and handlers with the caller's.
+A primitive accepts its element's own props and reference, except a boolean of the element it replaces with a prefixed one of its own, such as `isDisabled` for `disabled`, and merges its own props and handlers with the caller's.
 
 | Why | Tags |
 |---|---|
@@ -146,6 +146,13 @@ Each primitive of the design system is shown in each of its variants and states,
 | a variant nobody renders breaks unseen, and one showcase is what a review and a screenshot compare. | [ux, testing] |
 
 ## Requirements for implementation
+
+### ui-primitives-unstyled · SHOULD
+The library's primitives carry no look of their own.
+
+| Why | Tags |
+|---|---|
+| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
 
 ### ui-styling-restricted-to-tokens · MUST
 The library lets its default scales be reset, so a check rejects a value outside the tokens.

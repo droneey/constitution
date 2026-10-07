@@ -5,11 +5,11 @@
 ## Sign-in
 
 ### sign-in-through-a-provider-uses-code-with-pkce · MUST
-A sign-in through an outside identity provider uses the authorization code flow with PKCE and a `redirect_uri` the provider matches exactly, and with OpenID Connect checks the `nonce` in the ID token; never the implicit flow or a password the user hands to the program for the provider.
+A sign-in through an outside identity provider uses the authorization code flow with PKCE and a `redirect_uri` the provider matches exactly, checks the `iss` of the answer against the provider it asked where it trusts more than one (RFC 9207), and with OpenID Connect checks the `nonce` in the ID token; never the implicit flow or a password the user hands to the program for the provider.
 
 | Why | Tags |
 |---|---|
-| without PKCE a code intercepted on its way back is redeemed by whoever caught it, a redirect matched by prefix sends the code elsewhere, a token without its nonce is replayed, and the older flows hand a token or a password to places that keep it. | [security] |
+| without PKCE a code intercepted on its way back is redeemed by whoever caught it, a redirect matched by prefix sends the code elsewhere, an answer from another provider mixes up whose code it is, a token without its nonce is replayed, and the older flows hand a token or a password to places that keep it. | [security] |
 
 ### outside-identity-linked-by-issuer-and-subject · MUST
 An account is found from an outside provider's identity by its issuer and subject; an email from the provider links that identity to an existing account only when the provider marks it verified and the account's owner has signed in to confirm the link.
@@ -26,11 +26,18 @@ Attempts at signing in, at a one-time code and at a recovery token are limited p
 | an unlimited attempt lets an attacker try passwords, or all of a short code's values, until one works. | [security] |
 
 ### phishing-resistant-factor-offered · SHOULD
-A person can sign in with a phishing-resistant factor — a passkey — and an account with privileges uses one.
+A person can sign in with a phishing-resistant factor, such as a passkey.
 
 | Why | Tags |
 |---|---|
 | a passkey cannot be typed into a fake page, which defeats the attack that steals most accounts. | [security] |
+
+### privileged-account-signs-in-with-a-phishing-resistant-factor · MUST
+An account with privileges over other accounts, the program's settings or its data signs in only with a phishing-resistant factor.
+
+| Why | Tags |
+|---|---|
+| an administrator's account is the one an attacker phishes first, and one taken gives everything at once. | [security] |
 
 ### account-existence-never-revealed · MUST
 Sign-in, sign-up and recovery answer the same way whether an account exists or not.
@@ -64,7 +71,7 @@ A refresh token the program issues is either rotated on every use, a reused one 
 
 ## Records
 
-### security-event-recorded · SHOULD
+### security-event-recorded · MUST
 A security event — a sign-in, a failed sign-in, a sign-out, a change of credentials, a grant or revocation of rights, a refused access — is recorded with who, what, when and from where.
 
 | Why | Tags |

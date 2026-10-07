@@ -5,7 +5,7 @@
 ## Tools
 
 ### model-given-only-the-tools-its-task-needs · MUST
-A model is given only the tools its task needs, each as narrow as the task — a search over one index, not a query in any language — and never a tool its caller supplied.
+A model is given only the tools its task needs, each as narrow as the task — a search over one index, not a query in any language — and never a tool whose definition arrived with the request.
 
 | Why | Tags |
 |---|---|
@@ -39,7 +39,7 @@ A tool call that destroys data, spends money, changes another system or sends so
 ## Ways out
 
 ### agent-reading-untrusted-text-sends-nothing-out-unapproved · MUST
-An agent that reads text others wrote and can reach private data sends nothing outward — a request to an address the model chooses, a message, a shared file — without a person's approval of that send.
+An agent that reads text others wrote and can reach private data sends nothing outward — a request to an address the model chooses, a message, a shared file — without a person's approval of that send; in a run with no person present a standing grant never stands in for it, and the run sends only to the addresses its grant names.
 
 | Why | Tags |
 |---|---|

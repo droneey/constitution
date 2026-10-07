@@ -35,11 +35,18 @@ An agent takes instructions only from the person it works for — directly, thro
 | anyone can write text an agent will read, so an agent that obeys what it reads works for whoever wrote it. | [security] |
 
 ### agent-never-holds-the-lethal-trifecta · MUST
-An agent that reads untrusted content holds no secret and no private data outside an isolated machine, and runs without its permission checks only inside one.
+An agent never holds at once untrusted content, a secret or private data, and an unchecked way out — a network beyond an allowlist, a message it sends unseen; where it holds the first two, its way out is confined to an allowlist.
 
 | Why | Tags |
 |---|---|
 | untrusted text, private data and a way out together make a complete path for theft. | [security] |
+
+### agent-runs-unchecked-only-in-isolation · MUST
+An agent runs without its permission checks only on an isolated machine, which holds no secret and reaches only an allowlist.
+
+| Why | Tags |
+|---|---|
+| an agent with no checks does whatever the text it reads asks, so only a machine with nothing to take and nowhere to send it bounds the harm. | [security] |
 
 ### agent-extension-vetted-as-a-dependency · SHOULD
 A server, plugin or skill that extends an agent is a dependency, vetted as one and pinned to a version.

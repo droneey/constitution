@@ -4,15 +4,15 @@
 
 ## Responsibility
 
-### unit-answers-to-one-actor · MUST
-A unit of code — a class, a module, a file — answers to one actor: the one person or group whose needs change it.
+### unit-answers-to-one-actor · SHOULD
+A class or a module answers to one actor: the one person or group whose needs change it.
 
 | Why | Tags |
 |---|---|
 | a unit that serves two actors changes for both, and a change for one breaks the other. | [] |
 
 ### fact-has-one-source · MUST
-Each fact — a value, a rule of the business, a piece of state — has one home that is its source; everything else reads it or derives from it. A copy kept for speed is marked as derived and rebuilt from its source, and a number shown in a document or a message is read from the data it describes.
+Each fact — a value, a rule of the business, a piece of state — has one home that is its source; everything else reads it or derives from it. A copy kept for speed is marked as derived and rebuilt from its source, and a figure a document or a message reports about the program's data is computed from that data.
 
 | Why | Tags |
 |---|---|
@@ -26,7 +26,7 @@ A structure — an abstraction, a pattern, a shared module, a layer — appears 
 | a structure made in advance guesses its axis, usually wrongly, and must be torn out before it can be fixed. | [] |
 
 ### new-kind-added-as-a-member · MUST
-A new kind of an open set — a vendor, a command, a format — is added as a new member and its registration, without editing the code that handles the other members.
+A new kind of an open set — a vendor, a command, a format — is added as a new member and its registration, without editing the code that handles the other members. A set is open when each member brings its own code and no logic outside the members decides on each; a set the program's logic decides on member by member is closed.
 
 | Why | Tags |
 |---|---|
@@ -51,7 +51,7 @@ Code is never commented out; it is deleted.
 | commented-out code rots unseen, while deleted code stays recoverable from history. | [] |
 
 ### dead-code-deleted · MUST
-No file, dependency, export, parameter, variable or label is unused, and no statement is unreachable; what only the specs reach is unused too. An export a module offers through its public entry is not dead.
+No file, dependency, export, parameter, variable or label is unused, and no statement is unreachable; what only the specs reach is unused too. An export a package offers to other packages through the entry it publishes is not dead.
 
 | Why | Tags |
 |---|---|

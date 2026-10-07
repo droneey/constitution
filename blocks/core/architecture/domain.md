@@ -33,8 +33,8 @@ What concerns one entity alone — a predicate, a derived value, a transition of
 |---|---|
 | a rule about one entity written once is changed once. | [] |
 
-### value-object-built-only-by-its-check · MUST
-A business value with an invariant — an email address, an amount in its currency, a percentage — is a value object of the domain, and a boundary gets one only through its check, never through a mechanism of its own.
+### business-value-lives-in-the-domain · MUST
+A business value with an invariant — an email address, an amount in its currency, a percentage — is a value object of the domain, never a mechanism of a boundary.
 
 | Why | Tags |
 |---|---|

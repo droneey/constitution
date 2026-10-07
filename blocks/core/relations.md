@@ -5,14 +5,14 @@
 ## Modules
 
 ### module-is-deep · SHOULD
-A module hides much behind a small public entry: few operations, each doing much its callers need not know. A unit that only forwards a call to the next one adds nothing and is removed.
+A module hides much behind a small interface: few operations, each doing much its callers need not know. A unit that only forwards a call to the next one adds nothing and is removed, save an entry that re-exports and a seam at a boundary with something outside.
 
 | Why | Tags |
 |---|---|
 | a deep module spares its callers the details it hides; a shallow one makes them learn an entry nearly as large as the work behind it. | [] |
 
 ### module-imports-form-no-cycle · MUST
-Modules form no import cycle, direct or through a chain of modules.
+Files and modules form no import cycle, direct or through a chain.
 
 | Why | Tags |
 |---|---|
@@ -34,8 +34,8 @@ A contract between units offers the operations one role of caller needs — read
 |---|---|
 | a contract wider than its role couples every caller to operations it never uses, and one cut per caller multiplies contracts that change together. | [] |
 
-### implementation-keeps-the-whole-contract · SHOULD
-Every implementation of a contract keeps all of it: no operation of it refuses as unsupported, accepts less, or returns more than the contract says.
+### implementation-keeps-the-whole-contract · MUST
+Every implementation of a contract keeps all of it: no operation of it refuses as unsupported, requires more, or promises less than the contract says.
 
 | Why | Tags |
 |---|---|
@@ -67,7 +67,7 @@ A unit is ready to use when its constructor or factory returns; a required order
 | a hidden order of calls is a bug waiting for the first caller who does not know it. | [] |
 
 ### state-never-global-and-mutable · MUST
-State that changes never lives at module, static or global level; it lives in values the program creates and passes in. The language’s logging facade, or the program’s own logging port where the language has none, configured once at start, is the one exception.
+State that changes never lives at module, static or global level; it lives in values the program creates and passes in. The diagnostics facades — the language’s logging facade, or the program’s own where the language has none, and the facades of tracing and metrics a block below names — configured once at start, are the one exception.
 
 | Why | Tags |
 |---|---|
@@ -83,7 +83,7 @@ A unit shares behaviour by composing other units, never by inheriting an impleme
 | inheritance couples a child to its parent’s internals and resists every change the hierarchy did not foresee. | [] |
 
 ### override-marked-where-declared · MUST
-A method that overrides one of its base carries the language's mark of an override where it is declared, so a mark that overrides nothing and an override without one both fail the check.
+A method that overrides one of its base carries the language's mark of an override where it is declared, where the language has one, so a mark that overrides nothing and an override without one both fail the check.
 
 | Why | Tags |
 |---|---|

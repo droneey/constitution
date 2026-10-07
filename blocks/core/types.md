@@ -33,18 +33,25 @@ A shared shape is composed of small named shapes — an identifier, timestamps, 
 | a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. | [] |
 
 ### type-lives-with-its-consumer · SHOULD
-A type lives beside the unit whose signature introduces it, and every other unit imports it from there; it moves to a file of its own when a second consumer appears, and is declared nowhere else — a surface that re-exports it offers it without becoming its home.
+A type lives beside the unit whose signature introduces it, and every other unit imports it from there; it moves to a file of its own when a second consumer appears, and is declared nowhere else — an entry that re-exports it offers it without becoming its home.
 
 | Why | Tags |
 |---|---|
 | one home per type means one place to change it and no copy to drift. | [] |
 
 ### declared-values-never-typed-again · MUST
-A set of values the program declares is never typed out again: a subset is a named constant beside the set, and a schema over one of the program’s types is checked against the value it produces. A vocabulary another party owns is reached through a total table the type checker checks.
+A set of values the program declares is never typed out again: a subset is a named constant beside the set, and a schema over one of the program’s types derives its values from that type, or is checked against the type it produces.
 
 | Why | Tags |
 |---|---|
 | a restated set drifts from its source, and a schema stricter or looser than its type locks out, or lets in, what the program does not mean. | [] |
+
+### outside-vocabulary-reached-through-a-total-table · MUST
+A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete.
+
+| Why | Tags |
+|---|---|
+| a value the other party adds then fails the check instead of falling through to a default nobody chose. | [data] |
 
 ### unchecked-type-never-used · MUST
 No value, parameter, return or type argument has the type that switches the type checker off, in specs too; one the language infers as that type for lack of an annotation counts as well.
@@ -63,7 +70,7 @@ A value that must keep an invariant is built only through the function that chec
 | no caller has to check the invariant again, or can forget to. | [] |
 
 ### invariant-value-is-plain-immutable-data · MUST
-A value that keeps an invariant is immutable, compared by value and made of data alone, in its language's plain immutable record form, with no identity and no state that changes.
+A value whose equality is its data and that keeps an invariant is immutable, compared by value and made of data alone, in its language's plain immutable record form, with no identity and no state that changes.
 
 | Why | Tags |
 |---|---|
@@ -109,11 +116,18 @@ Absence is spelled by one value, which the language block names, and shown in th
 | two spellings of absence make every check ask twice, and a stand-in value passes for a real one. | [data] |
 
 ### instant-carries-its-zone · MUST
-An instant carries its zone or offset and is kept apart from a calendar date or a wall time, which carry none; no time is read in the machine’s zone by default, and a duration is measured on a monotonic clock.
+An instant is an exact time — in UTC, or with its offset — kept apart from a calendar date and a wall time, which are types of their own; no time is read in the machine’s zone by default.
 
 | Why | Tags |
 |---|---|
-| an instant without its zone names a different moment on each machine, and a wall clock that jumps corrupts a measured duration. | [data] |
+| a time without its offset names a different moment on each machine. | [data] |
+
+### duration-measured-on-a-monotonic-clock · MUST
+A duration the program measures is read from a monotonic clock, never from the wall clock.
+
+| Why | Tags |
+|---|---|
+| a wall clock that jumps — a correction, a change of season — corrupts every duration measured across the jump. | [data] |
 
 ### text-encoded-as-utf-8 · MUST
 Text the program reads or writes — a file, a stream, a message — is UTF-8, named explicitly wherever an interface takes an encoding, never the platform's default; an outside format that fixes another encoding is decoded where it enters.

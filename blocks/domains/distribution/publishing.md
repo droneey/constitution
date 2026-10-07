@@ -5,7 +5,7 @@
 ## Identity
 
 ### version-published-without-a-long-lived-token → credential-has-least-privilege · MUST
-A version is published without a long-lived token: by an identity the registry issues to the one run that publishes it, or by a person who proves a second factor.
+A version is published without a long-lived token, by an identity the registry issues to the one run that publishes it.
 
 | Why | Tags |
 |---|---|
@@ -17,15 +17,6 @@ A version is published only by a run, and carries provenance the registry record
 | Why | Tags |
 |---|---|
 | a consumer can then check that the version was built from the source it claims, and one published from a laptop stands out. | [security] |
-
-## Vulnerabilities
-
-### exploited-vulnerability-reported-in-time · MUST
-An actively exploited vulnerability in a released version is reported to the authority within the times the law that binds the product sets, such as the EU Cyber Resilience Act's 24 hours for an early warning from 11 September 2026.
-
-| Why | Tags |
-|---|---|
-| the deadline runs from when the maker learns of it, and a report late is a breach of its own. | [security] |
 
 ## Requirements for implementation
 

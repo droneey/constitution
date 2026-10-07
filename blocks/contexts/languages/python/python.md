@@ -156,7 +156,7 @@ A `test_` function holds no `if`, `for`, `while`, `match` or conditional express
 
 ## Comments and suppressions
 
-### docstring-only-for-non-obvious-public-entry → public-entry-documented-only-where-not-obvious · SHOULD
+### docstring-only-for-non-obvious-public-entry → export-documented-only-where-not-obvious · SHOULD
 A docstring documents only a public entry whose use is not obvious, in the Google form, its summary on the first line.
 
 | Why | Tags |

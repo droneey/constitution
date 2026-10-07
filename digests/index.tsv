@@ -110,12 +110,13 @@ chapter	core	architecture/layout.md	a package's tree: folders, names, surfaces.
 chapter	core	architecture/ports.md	a contract at a boundary and its adapter.
 chapter	core	architecture/root.md	the composition root: wiring and configuration.
 chapter	core	architecture/tests.md	which units of the tree are a spec's boundaries.
-chapter	core	workflow/agents.md	the working agreement with agents in the chat.
+chapter	core	workflow/agents.md	the working agreement with agents.
 rule	agent-asks-before-an-irreversible-action	core	blocks/core/agents.md		MUST	security			true
 rule	agent-asks-when-readings-diverge	core	blocks/core/agents.md		SHOULD				true
 rule	agent-reports-outcomes-as-they-are	core	blocks/core/agents.md		MUST				true
 rule	agent-takes-instructions-only-from-its-person	core	blocks/core/agents.md		MUST	security			true
 rule	agent-never-holds-the-lethal-trifecta	core	blocks/core/agents.md		MUST	security			true
+rule	agent-runs-unchecked-only-in-isolation	core	blocks/core/agents.md		MUST	security			true
 rule	agent-extension-vetted-as-a-dependency	core	blocks/core/agents.md		SHOULD	security			true
 rule	delegating-agent-keeps-the-responsibility	core	blocks/core/agents.md		SHOULD				true
 rule	agent-file-restates-no-rule	core	blocks/core/agents.md		SHOULD				true
@@ -125,9 +126,10 @@ rule	change-corrects-the-documents-it-falsifies	core	blocks/core/changes.md		SHO
 rule	change-moves-a-file-never-rewrites-it	core	blocks/core/changes.md		MUST				true
 rule	tidying-shipped-before-the-behaviour	core	blocks/core/changes.md		SHOULD				true
 rule	format-changed-in-steps	core	blocks/core/changes.md		MUST	data			true
+rule	choice-between-alternatives-recorded	core	blocks/core/changes.md		SHOULD				true
 rule	change-handed-back-with-a-passing-check	core	blocks/core/changes.md		MUST	testing			true
 rule	change-seen-working-before-hand-back	core	blocks/core/changes.md		SHOULD	testing			true
-rule	unit-answers-to-one-actor	core	blocks/core/code.md		MUST				true
+rule	unit-answers-to-one-actor	core	blocks/core/code.md		SHOULD				true
 rule	fact-has-one-source	core	blocks/core/code.md		MUST	data			true
 rule	structure-appears-by-symptom	core	blocks/core/code.md		SHOULD				true
 rule	new-kind-added-as-a-member	core	blocks/core/code.md		MUST				true
@@ -135,7 +137,7 @@ rule	code-reads-plainly	core	blocks/core/code.md		SHOULD				true
 rule	code-never-commented-out	core	blocks/core/code.md		MUST				true
 rule	dead-code-deleted	core	blocks/core/code.md		MUST				true
 rule	comment-explains-why	core	blocks/core/comments.md		SHOULD				true
-rule	public-entry-documented-only-where-not-obvious	core	blocks/core/comments.md		SHOULD				true
+rule	export-documented-only-where-not-obvious	core	blocks/core/comments.md		SHOULD				true
 rule	todo-names-its-issue	core	blocks/core/comments.md		SHOULD				true
 rule	retired-code-marked-deprecated	core	blocks/core/comments.md		SHOULD				true
 rule	dependencies-locked-by-one-lockfile	core	blocks/core/dependencies.md		MUST	security			true
@@ -154,8 +156,10 @@ rule	outside-call-has-a-timeout	core	blocks/core/effects.md		MUST	errors perform
 rule	outside-call-can-be-cancelled	core	blocks/core/effects.md		SHOULD	performance			true
 rule	resource-released-on-every-path	core	blocks/core/effects.md		MUST				true
 rule	outside-read-bounded	core	blocks/core/effects.md		MUST	performance			true
+rule	outside-call-never-made-per-item	core	blocks/core/effects.md		SHOULD	performance			true
 rule	kept-collection-bounded	core	blocks/core/effects.md		MUST	performance			true
 rule	concurrent-fan-out-bounded	core	blocks/core/effects.md		MUST	performance			true
+rule	state-shared-by-concurrent-work-owned-or-guarded	core	blocks/core/effects.md		MUST	data errors			true
 rule	program-stops-cleanly	core	blocks/core/effects.md		MUST	errors data			true
 rule	operation-idempotent-by-design	core	blocks/core/effects.md		SHOULD	data			true
 rule	write-lands-whole	core	blocks/core/effects.md		MUST	data errors			true
@@ -213,7 +217,7 @@ rule	module-is-deep	core	blocks/core/relations.md		SHOULD				true
 rule	module-imports-form-no-cycle	core	blocks/core/relations.md		MUST				true
 rule	dependency-points-toward-stability	core	blocks/core/relations.md		SHOULD				true
 rule	contract-shaped-by-its-callers-role	core	blocks/core/relations.md		MUST				true
-rule	implementation-keeps-the-whole-contract	core	blocks/core/relations.md		SHOULD				true
+rule	implementation-keeps-the-whole-contract	core	blocks/core/relations.md		MUST				true
 rule	unit-talks-only-to-its-neighbours	core	blocks/core/relations.md		SHOULD				true
 rule	deprecated-form-never-used	core	blocks/core/relations.md		MUST				true
 rule	unit-usable-once-built	core	blocks/core/relations.md		SHOULD				true
@@ -230,6 +234,7 @@ rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	sec
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
+rule	security-check-fails-closed	core	blocks/core/security.md		MUST	security			true
 rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
 rule	security-primitive-from-a-vetted-library	core	blocks/core/security.md		MUST	security			true
 rule	spec-proves-one-boundary	core	blocks/core/tests.md		SHOULD	testing			true
@@ -280,6 +285,7 @@ rule	identifier-branded-by-entity	core	blocks/core/types.md		SHOULD				true
 rule	shape-composed-of-small-shapes	core	blocks/core/types.md		SHOULD				true
 rule	type-lives-with-its-consumer	core	blocks/core/types.md		SHOULD				true
 rule	declared-values-never-typed-again	core	blocks/core/types.md		MUST				true
+rule	outside-vocabulary-reached-through-a-total-table	core	blocks/core/types.md		MUST	data			true
 rule	unchecked-type-never-used	core	blocks/core/types.md		MUST				true
 rule	invariant-checked-at-construction	core	blocks/core/types.md		MUST				true
 rule	invariant-value-is-plain-immutable-data	core	blocks/core/types.md		MUST	data			true
@@ -289,12 +295,13 @@ rule	narrowing-proves-all-it-claims	core	blocks/core/types.md		MUST				true
 rule	own-shape-strict-other-shape-tolerant	core	blocks/core/types.md		MUST	data			true
 rule	absence-shown-by-the-type	core	blocks/core/types.md		MUST	data			true
 rule	instant-carries-its-zone	core	blocks/core/types.md		MUST	data			true
+rule	duration-measured-on-a-monotonic-clock	core	blocks/core/types.md		MUST	data			true
 rule	text-encoded-as-utf-8	core	blocks/core/types.md		MUST	data			true
 rule	exact-quantity-never-binary-float	core	blocks/core/types.md		MUST	data			true
 rule	business-rule-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	domain-logs-nothing	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	entity-rule-lives-beside-the-entity	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
-rule	value-object-built-only-by-its-check	core	blocks/core/architecture/domain.md		MUST	data	architecture		true
+rule	business-value-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST	data	architecture		true
 rule	contexts-duplicate-rather-than-share	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	use-case-only-with-business-logic	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	command-loads-through-its-write-port	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
@@ -343,18 +350,19 @@ rule	outside-shape-mapped-in-the-adapter	core	blocks/core/architecture/ports.md	
 rule	adapter-imports-only-its-owners-domain-and-shared-layers	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	adapter-one-per-system-and-owner	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	adapter-built-by-factory-object-or-class	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
-rule	schema-derived-from-the-domain	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	composition-root-wires-everything	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-builds-and-hands-in-every-stateful-part	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-reads-the-environment	core	blocks/core/architecture/root.md		MUST	security	architecture		true
 rule	root-applies-the-decorators	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
-rule	consent-given-in-the-chat-for-one-action	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
+rule	consent-given-for-the-actions-it-names	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
+rule	unattended-agent-acts-within-a-standing-grant	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
 rule	agent-asks-before-a-consequential-change	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	design-settled-in-the-chat-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
 rule	agent-writes-tests-first-from-a-description	core	blocks/core/workflow/agents.md		SHOULD	testing	workflow		true
 rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/agents.md		MUST		workflow		true
+rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	agent-permissions-kept-with-the-project	core	blocks/core/workflow/agents.md		SHOULD	security	workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
@@ -404,11 +412,12 @@ rule	sign-in-through-a-provider-uses-code-with-pkce	access-control	blocks/domain
 rule	outside-identity-linked-by-issuer-and-subject	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	sign-in-attempts-limited	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	phishing-resistant-factor-offered	access-control	blocks/domains/access-control/identity.md		SHOULD	security			true
+rule	privileged-account-signs-in-with-a-phishing-resistant-factor	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	account-existence-never-revealed	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	token-verified-before-it-is-trusted	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	caller-token-never-forwarded	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	refresh-token-rotated-or-sender-bound	access-control	blocks/domains/access-control/identity.md		MUST	security			true
-rule	security-event-recorded	access-control	blocks/domains/access-control/identity.md		SHOULD	security			true
+rule	security-event-recorded	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	password-judged-by-length-and-breach	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	password-stored-by-a-password-hash	access-control	blocks/domains/access-control/identity.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	recovery-no-weaker-than-sign-in	access-control	blocks/domains/access-control/identity.md		MUST	security			true
@@ -416,6 +425,7 @@ rule	sensitive-change-asks-to-sign-in-again	access-control	blocks/domains/access
 rule	issued-key-stored-hashed-scoped-and-expiring	access-control	blocks/domains/access-control/identity.md		MUST	security			true
 rule	session-renewed-at-sign-in	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	session-ended-on-the-server-at-sign-out	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
+rule	sessions-ended-when-credentials-change	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	session-has-idle-and-absolute-limits	access-control	blocks/domains/access-control/sessions.md		SHOULD	security			true
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	security	architecture		true
 rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
@@ -464,7 +474,7 @@ rule	apply-carries-out-the-plan-shown	convergence	blocks/domains/convergence/pla
 rule	apply-changes-only-what-the-program-owns	convergence	blocks/domains/convergence/plan-and-apply.md		MUST	data			true
 rule	second-run-changes-nothing	convergence	blocks/domains/convergence/plan-and-apply.md		MUST	testing data		operation-idempotent-by-design	true
 rule	interrupted-apply-converges-on-rerun	convergence	blocks/domains/convergence/plan-and-apply.md		SHOULD	errors			true
-rule	one-apply-at-a-time	convergence	blocks/domains/convergence/plan-and-apply.md		MUST	data		shared-resource-has-one-writer	true
+rule	one-apply-at-a-time	convergence	blocks/domains/convergence/plan-and-apply.md		MUST	data		write-on-read-data-is-conditional	true
 rule	stages-run-alone	convergence	blocks/domains/convergence/stages.md		SHOULD				true
 rule	rendering-runs-no-engine	convergence	blocks/domains/convergence/stages.md		SHOULD				true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/stages.md		SHOULD	ux errors			true
@@ -488,6 +498,7 @@ rule	tokens-sourced-from-the-dtcg-file	design-system	blocks/domains/design-syste
 rule	retired-token-marked-deprecated	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux		retired-code-marked-deprecated	true
 rule	contrast-tested-over-token-pairs	design-system	blocks/domains/design-system/design-system.md		MUST	a11y testing		text-and-controls-meet-the-contrast-minimum	true
 rule	primitive-shown-in-every-variant-and-state	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux testing			true
+rule	ui-primitives-unstyled	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux			true
 rule	ui-styling-restricted-to-tokens	design-system	blocks/domains/design-system/design-system.md		MUST	ux			true
 rule	ui-styling-resolves-every-mode-from-one-set	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux			true
 rule	primitives-are-a-set-of-components	design-system	blocks/domains/design-system/architecture/design-system.md		SHOULD		architecture	behaviour-lives-in-a-feature	true
@@ -507,7 +518,6 @@ rule	manifest-declares-dependencies-by-range	distribution	blocks/domains/distrib
 rule	manifest-declares-consumer-owned-dependencies-as-peers	distribution	blocks/domains/distribution/manifest.md		MUST				true
 rule	version-published-without-a-long-lived-token	distribution	blocks/domains/distribution/publishing.md		MUST	security		credential-has-least-privilege	true
 rule	version-published-with-provenance	distribution	blocks/domains/distribution/publishing.md		MUST	security			true
-rule	exploited-vulnerability-reported-in-time	distribution	blocks/domains/distribution/publishing.md		MUST	security			true
 rule	publishing-tool-supports-run-identity-and-provenance	distribution	blocks/domains/distribution/publishing.md		MUST	security			true
 rule	published-version-never-replaced	distribution	blocks/domains/distribution/releases.md		MUST	security			true
 rule	release-entries-compared-with-the-last-release	distribution	blocks/domains/distribution/releases.md		SHOULD				true
@@ -516,6 +526,7 @@ rule	deprecation-names-replacement-and-removal	distribution	blocks/domains/distr
 rule	release-carries-its-notes	distribution	blocks/domains/distribution/releases.md		MUST	security			true
 rule	release-ships-an-sbom	distribution	blocks/domains/distribution/releases.md		SHOULD	security			true
 rule	vulnerability-reported-privately	distribution	blocks/domains/distribution/releases.md		SHOULD	security			true
+rule	exploited-vulnerability-reported-in-time	distribution	blocks/domains/distribution/releases.md		MUST	security			true
 rule	versions-follow-semver	distribution	blocks/domains/distribution/workflow/releases.md		MUST		workflow		true
 rule	root-dogfoods-its-configuration	distribution	blocks/domains/distribution/with/workspace.md	workspace	SHOULD	testing			true
 rule	safe-method-changes-nothing	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
@@ -578,7 +589,7 @@ rule	model-output-parsed-by-the-programs-schema	language-model	blocks/domains/la
 rule	output-used-only-when-finished	language-model	blocks/domains/language-model/outputs.md		MUST	errors		failure-is-expected-or-defect	true
 rule	output-address-followed-only-from-an-allowlist	language-model	blocks/domains/language-model/outputs.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
 rule	person-told-they-talk-with-a-model	language-model	blocks/domains/language-model/outputs.md		MUST	ux			true
-rule	generated-media-marked-as-generated	language-model	blocks/domains/language-model/outputs.md		MUST	ux			true
+rule	generated-content-marked-as-generated	language-model	blocks/domains/language-model/outputs.md		MUST	ux			true
 rule	prompt-text-versioned-with-the-code	language-model	blocks/domains/language-model/prompts.md		MUST	security			true
 rule	prompt-never-the-only-control	language-model	blocks/domains/language-model/prompts.md		MUST	security			true
 rule	untrusted-text-reaches-the-prompt-as-content	language-model	blocks/domains/language-model/prompts.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
@@ -596,7 +607,7 @@ rule	conversation-loaded-only-for-its-owner	language-model	blocks/domains/langua
 rule	answer-cache-keyed-by-the-callers-rights	language-model	blocks/domains/language-model/with/access-control.md	access-control	MUST	security data		object-access-checked-against-the-caller	true
 rule	prompt-text-kept-out-of-telemetry	language-model	blocks/domains/language-model/with/observability.md	observability	MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	model-call-span-carries-model-tokens-and-stop	language-model	blocks/domains/language-model/with/observability.md	observability	SHOULD	performance		unit-of-work-opens-a-span	true
-rule	provider-receives-personal-data-only-as-a-processor	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data security		personal-data-collected-only-for-its-purpose	true
+rule	provider-receives-personal-data-only-as-a-processor	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data security		personal-data-reaches-a-third-party-only-as-a-listed-processor	true
 rule	erasure-reaches-indexes-conversations-and-caches	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data		personal-data-erased-on-request	true
 rule	streamed-answer-announced-once	language-model	blocks/domains/language-model/with/ui.md	ui	MUST	a11y ux		status-changes-announced	true
 rule	streamed-answer-can-be-stopped	language-model	blocks/domains/language-model/with/ui.md	ui	SHOULD	ux performance		outside-call-can-be-cancelled	true
@@ -618,7 +629,8 @@ rule	outside-text-in-an-answer-kept-as-data	mcp-api	blocks/domains/mcp-api/answe
 rule	tool-answer-enumeration-open-in-its-schema	mcp-api	blocks/domains/mcp-api/answers.md		MUST			answer-enumeration-declared-open	true
 rule	secret-never-asked-through-a-form	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security			true
 rule	url-elicitation-completed-by-the-same-user	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security			true
-rule	long-tool-call-reports-progress	mcp-api	blocks/domains/mcp-api/interaction.md		SHOULD	ux			true
+rule	long-tool-call-answered-with-a-task	mcp-api	blocks/domains/mcp-api/interaction.md		SHOULD	ux		long-operation-answered-with-a-handle	true
+rule	request-state-verified-when-it-returns	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security		outside-value-untyped-until-parsed	true
 rule	tool-list-pinned-by-a-spec	mcp-api	blocks/domains/mcp-api/tests.md		MUST	testing		contract-published-machine-readable	true
 rule	stdio-server-writes-only-messages-to-stdout	mcp-api	blocks/domains/mcp-api/transport.md		MUST	errors		shared-resource-has-one-writer	true
 rule	tool-server-accepts-only-tokens-issued-for-it	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security		token-verified-before-it-is-trusted	true
@@ -646,6 +658,7 @@ rule	message-carries-a-stable-id-type-source-and-time	messaging	blocks/domains/m
 rule	message-carries-its-correlation-and-causation	messaging	blocks/domains/messaging/messages.md		SHOULD				true
 rule	message-contract-published-machine-readable	messaging	blocks/domains/messaging/messages.md		MUST				true
 rule	message-type-changed-only-by-addition	messaging	blocks/domains/messaging/messages.md		MUST	data		format-changed-in-steps	true
+rule	message-enumeration-declared-open	messaging	blocks/domains/messaging/messages.md		MUST	data			true
 rule	message-contract-change-refused-by-a-diff	messaging	blocks/domains/messaging/messages.md		MUST	data			true
 rule	message-carries-only-its-declared-fields	messaging	blocks/domains/messaging/messages.md		MUST	data security			true
 rule	message-carries-no-secret	messaging	blocks/domains/messaging/messages.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
@@ -701,10 +714,12 @@ rule	migrations-applied-in-ci-from-the-last-release	owned-data	blocks/domains/ow
 rule	personal-data-inventoried	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-collected-only-for-its-purpose	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-kept-no-longer-than-its-retention	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	personal-data-reaches-a-third-party-only-as-a-listed-processor	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-exported-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	rights-request-verified-before-it-is-answered	privacy	blocks/domains/privacy/privacy.md		MUST	data security			true
 rule	personal-data-erased-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
-rule	personal-data-corrected-on-request	privacy	blocks/domains/privacy/privacy.md		SHOULD	data			true
+rule	personal-data-corrected-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	personal-data-breach-notified-in-time	privacy	blocks/domains/privacy/privacy.md		MUST	data security			true
 rule	consent-asked-only-where-the-law-requires-it	privacy	blocks/domains/privacy/consent.md		SHOULD	data ux			true
 rule	processing-waits-for-its-consent	privacy	blocks/domains/privacy/consent.md		MUST	security data			true
 rule	declined-consent-costs-nothing-else	privacy	blocks/domains/privacy/consent.md		MUST	ux data			true
@@ -796,7 +811,6 @@ rule	component-built-from-existing-ones-first	ui	blocks/domains/ui/components.md
 rule	primitive-markup-never-recreated	ui	blocks/domains/ui/components.md		MUST	a11y ux			true
 rule	complex-pattern-built-on-accessible-primitives	ui	blocks/domains/ui/components.md		MUST	a11y ux			true
 rule	vendored-component-adapted-in-the-change-that-installs-it	ui	blocks/domains/ui/components.md		MUST	ux			true
-rule	existing-primitive-searched-before-installing	ui	blocks/domains/ui/components.md		SHOULD				true
 rule	component-with-regions-is-a-compound	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	recurring-arrangement-wrapped-once	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	compound-root-owns-choreography	ui	blocks/domains/ui/components.md		SHOULD	ux			true
@@ -815,7 +829,6 @@ rule	long-lists-virtualised	ui	blocks/domains/ui/components.md		SHOULD	performan
 rule	tokens-single-source-of-appearance	ui	blocks/domains/ui/components.md		MUST	ux			true
 rule	state-is-not-a-variant	ui	blocks/domains/ui/components.md		MUST	a11y ux			true
 rule	ui-primitives-keep-keyboard-and-focus	ui	blocks/domains/ui/components.md		MUST	a11y			true
-rule	ui-primitives-unstyled	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	ui-primitives-render-the-callers-element	ui	blocks/domains/ui/components.md		SHOULD				true
 rule	field-declares-its-kind	ui	blocks/domains/ui/forms.md		MUST	a11y ux			true
 rule	field-accepts-paste-and-autofill	ui	blocks/domains/ui/forms.md		MUST	a11y security			true
@@ -858,7 +871,7 @@ rule	screen-private-pieces-beside-screen	ui	blocks/domains/ui/architecture/ui.md
 rule	layout-state-in-its-own-binding-units	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
 rule	root-boundary-catches-the-rest	ui	blocks/domains/ui/architecture/ui.md		MUST	errors	architecture	last-resort-handler-one-per-entry	true
 rule	client-concerns-in-root-built-stores	ui	blocks/domains/ui/architecture/ui.md		MUST	data	architecture	fact-has-one-source	true
-rule	form-reuses-domain-predicates	ui	blocks/domains/ui/architecture/ui.md		MUST	data	architecture	value-object-built-only-by-its-check	true
+rule	form-reuses-domain-predicates	ui	blocks/domains/ui/architecture/ui.md		MUST	data	architecture	business-value-lives-in-the-domain	true
 rule	component-lives-where-its-knowledge-lives	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	code-placed-by-its-reason-to-change	true
 rule	component-named-by-location	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	folder-takes-its-layer-or-role-name	true
 rule	presentational-component-performs-no-io	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	effects-held-only-by-the-edge	true
@@ -1051,7 +1064,7 @@ rule	async-functions-never-block	python	blocks/contexts/languages/python/python.
 rule	except-never-only-passes	python	blocks/contexts/languages/python/python.md		MUST	errors		catch-handles-only-what-it-recognises	true
 rule	case-named-test-should	python	blocks/contexts/languages/python/python.md		SHOULD	testing		case-named-should-when	true
 rule	no-branch-or-loop-in-a-test	python	blocks/contexts/languages/python/python.md		SHOULD	testing		case-holds-no-logic	true
-rule	docstring-only-for-non-obvious-public-entry	python	blocks/contexts/languages/python/python.md		SHOULD			public-entry-documented-only-where-not-obvious	true
+rule	docstring-only-for-non-obvious-public-entry	python	blocks/contexts/languages/python/python.md		SHOULD			export-documented-only-where-not-obvious	true
 rule	deprecated-by-decorator	python	blocks/contexts/languages/python/python.md		SHOULD			retired-code-marked-deprecated	true
 rule	suppression-names-its-code-and-reason	python	blocks/contexts/languages/python/python.md		MUST			suppression-states-its-reason	true
 rule	tools-in-the-dev-group	python	blocks/contexts/languages/python/python.md		MUST	security		tool-pinned-exactly-by-the-repository	true
@@ -1109,7 +1122,7 @@ rule	named-exports-only	typescript	blocks/contexts/languages/typescript/typescri
 rule	cancellation-by-abort-signal	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	performance		outside-call-can-be-cancelled	true
 rule	resources-released-by-using	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			resource-released-on-every-path	true
 rule	options-object-has-a-named-type	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD			function-takes-at-most-three-positions	true
-rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD			public-entry-documented-only-where-not-obvious	true
+rule	jsdoc-only-for-non-obvious-public-entry	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD			export-documented-only-where-not-obvious	true
 rule	deprecated-by-jsdoc-tag	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD			retired-code-marked-deprecated	true
 rule	no-deprecated-import	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			deprecated-form-never-used	true
 rule	tools-are-dev-dependencies	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		tool-pinned-exactly-by-the-repository	true

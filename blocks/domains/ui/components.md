@@ -5,7 +5,7 @@
 ## Sourcing
 
 ### component-built-from-existing-ones-first · SHOULD
-A component is built from existing components first, then by extending a primitive, and only then on a new primitive, composed in like the others.
+A component is built from existing components first — the program's own primitives searched before any is installed — then by extending a primitive, and only then on a new primitive, composed in like the others.
 
 | Why | Tags |
 |---|---|
@@ -31,13 +31,6 @@ A component installed as source is adapted in the change that installs it — re
 | Why | Tags |
 |---|---|
 | code copied in as it came brings another project's names and looks, and stays foreign until someone changes it. | [ux] |
-
-### existing-primitive-searched-before-installing · SHOULD
-Before a component is installed as source, the primitives the program already has are searched for one that serves.
-
-| Why | Tags |
-|---|---|
-| a second primitive for one need doubles what a reader must learn and what a change must touch. | [] |
 
 ## Composition
 
@@ -79,7 +72,7 @@ A component that holds a value can be driven from outside or left to itself thro
 ## Props
 
 ### boolean-props-prefixed → boolean-name-is-a-positive-predicate · MUST
-A boolean prop of the program's own components starts with `is` for a state, `has` for a presence, `can` for a permission, `with` for an opt-in part that carries no content of the caller — `withDivider` — or `should` for a policy, never a bare, mixed or negated name; the unprefixed name a platform's element or a library's primitive uses appears only where a component renders that element or primitive: `disabled={isDisabled}`.
+A boolean prop a component of the program's own introduces starts with `is` for a state, `has` for a presence, `can` for a permission, `with` for an opt-in part that carries no content of the caller — `withDivider` — or `should` for a policy, never a bare, mixed or negated name; a boolean of the element or primitive it passes through, and a library's prop of composition such as `asChild`, keep their own names, and one a component replaces with its own prefixed prop is rendered under the element's name: `disabled={isDisabled}`.
 
 | Why | Tags |
 |---|---|
@@ -176,13 +169,6 @@ The library's complex patterns follow the platform's keyboard conventions; focus
 | Why | Tags |
 |---|---|
 | without it, the rule on accessible primitives cannot be kept through the library. | [a11y] |
-
-### ui-primitives-unstyled · SHOULD
-The library's primitives carry no look of their own.
-
-| Why | Tags |
-|---|---|
-| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
 
 ### ui-primitives-render-the-callers-element · SHOULD
 The library lets a primitive render the caller's element — a link, a custom element — with the primitive's behaviour, without wrapping it in another element.

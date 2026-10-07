@@ -5,7 +5,7 @@
 ## Handles
 
 ### call-handle-random-and-never-a-credential · MUST
-A handle that relates one request to the next — one an operation minted, or a protocol's own session id, such as MCP's — is unguessable and never authenticates the caller by itself.
+A handle that relates one request to the next — one an operation minted, a task's — is unguessable, and never authenticates the caller by itself.
 
 | Why | Tags |
 |---|---|

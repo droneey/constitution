@@ -1,18 +1,25 @@
 # Agents
 
-> Governs the working agreement with agents in the chat.
+> Governs the working agreement with agents.
 
 ## Deciding
 
-### consent-given-in-the-chat-for-one-action · MUST
-Consent is given in the chat, for one action, and never carries over to the next.
+### consent-given-for-the-actions-it-names · MUST
+Consent a rule asks for is given by the person where the agent asks for it — a chat, an issue, a review of a change — for the actions it names, and never carries over to others; the project's permission settings govern only actions no rule asks consent for.
 
 | Why | Tags |
 |---|---|
-| the chat is where the person who answers for an action sees it asked. | [security] |
+| consent is given where the person who answers for an action sees it asked, and only for what they saw. | [security] |
+
+### unattended-agent-acts-within-a-standing-grant · MUST
+An agent run with no person present — in a pipeline, on a schedule, from an issue — acts only within a standing grant the project's files declare, under an identity scoped to its task, and what lies outside the grant waits for a person.
+
+| Why | Tags |
+|---|---|
+| no one is there to consent to each action, so the grant written in advance is the consent, and its bounds are all that stand between the agent and what the text it reads asks. | [security] |
 
 ### agent-asks-before-a-consequential-change · MUST
-An agent asks before it adds a dependency or a layer, or changes a public entry, a schema or a stored format, and goes on only with a person’s go-ahead for that change.
+An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s go-ahead for that change, unless the task names that change.
 
 | Why | Tags |
 |---|---|
@@ -41,6 +48,13 @@ Only a person decides what of an agent’s work is recorded, shared or shipped; 
 |---|---|
 | recording, sharing and shipping a change are decisions made under the person’s name. | [] |
 
+### submitted-change-read-by-its-person · MUST
+A person submits an agent's change only once they have read it and can explain it.
+
+| Why | Tags |
+|---|---|
+| the person who submits a change answers for it, and a change nobody read is answered for by nobody. | [] |
+
 ### agent-permissions-kept-with-the-project · SHOULD
 The project’s permission settings for agents, deny rules included, live in the project’s files, the same for every person; only each person’s own overrides stay on their machine.
 
@@ -49,7 +63,7 @@ The project’s permission settings for agents, deny rules included, live in the
 | settings kept with the project give every person’s agent the same limits. | [security] |
 
 ### submission-carries-no-tool-attribution · MUST
-A submission made under a person’s name — a change, its description, a document — carries no attribution to the tool or the model that helped write it.
+A submission made under a person’s name — a change, its description, a document — carries no attribution to the tool or the model that helped write it, unless the policy of the project that receives it asks for a disclosure.
 
 | Why | Tags |
 |---|---|

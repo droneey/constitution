@@ -63,11 +63,18 @@ Input from outside is never read by a format that can build arbitrary objects or
 | such a format runs whatever its sender put in it. | [security] |
 
 ### outside-address-followed-only-from-an-allowlist · MUST
-An address or an origin from outside the program — a redirect target, the origin of a message, a host a caller names — is followed, trusted or reached only when it is on an allowlist of the program’s own.
+An address or an origin from outside the program — a redirect target, the origin of a message, a host a caller names — is followed, trusted or reached only when it is on an allowlist of the program’s own, or, to reach a host whose names cannot be known in advance, only when the address it resolves to as the connection opens is public.
 
 | Why | Tags |
 |---|---|
 | whoever chooses the address chooses where the program sends its user, whom it believes, or what it reaches on their behalf. | [security] |
+
+### security-check-fails-closed · MUST
+A check that guards access or trust — a signature, an allowlist, a token, a lookup of rights — refuses when it cannot decide: a failure, a timeout or a missing setting denies.
+
+| Why | Tags |
+|---|---|
+| an attacker who can make the check fail otherwise passes it, and a missing setting that allows opens the door on the first misconfigured deployment. | [security] |
 
 ## Primitives
 

@@ -11,7 +11,7 @@
 ## What a spec proves
 
 ### spec-proves-one-boundary · SHOULD
-A spec proves one boundary — a unit a caller relies on, reached through its public entry — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none unless a rule asks for one.
+A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none unless a rule asks for one.
 
 | Why | Tags |
 |---|---|
@@ -67,7 +67,7 @@ A lifecycle test takes a value made by its factory through every transition to i
 | each transition may pass alone while their sequence breaks. | [testing] |
 
 ### contract-has-one-suite · SHOULD
-Each contract with a fake has one contract suite, run against the fake and against its real implementation.
+Each contract with a fake has one contract suite, run against the fake and against its real implementation where that implementation's engine runs in the sandbox.
 
 | Why | Tags |
 |---|---|
@@ -90,7 +90,7 @@ The variants of one behaviour are one table of cases, each row naming its condit
 | a table shows at a glance which conditions are covered and which are missing. | [testing] |
 
 ### case-holds-no-logic · SHOULD
-A case holds no branch, loop or conditional expression, and its expected value is written as a literal — save a property case, whose Assert states the invariant for every input it draws.
+A case holds no branch, loop or conditional expression, and its expected value is a literal, or a fixture's default with literal overrides, never computed by the logic under test — save a property case, whose Assert states the invariant for every input it draws.
 
 | Why | Tags |
 |---|---|
@@ -234,7 +234,7 @@ No spec mocks, patches or spies on a module of the program; an effect is replace
 | a mocked module replaces the code the spec claims to test and breaks when the module moves. | [testing] |
 
 ### integration-spec-runs-the-real-engine · SHOULD
-Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there, with a case for each operation and each failure it maps; such a spec counts toward the coverage gate only for an engine the project owns.
+Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there, with a case for each operation and each failure it maps; such a spec counts toward the coverage gate only for an engine whose data the project owns, such as its own database.
 
 | Why | Tags |
 |---|---|

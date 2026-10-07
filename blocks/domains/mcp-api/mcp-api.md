@@ -50,7 +50,7 @@ A tool's name, description, schemas and annotations, and the server's instructio
 | a model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. | [security] |
 
 ### tool-input-schema-closed → request-binds-only-declared-fields · MUST
-A tool's `inputSchema` refuses an argument it does not declare: `additionalProperties: false`.
+A tool's `inputSchema` refuses an argument it does not declare: `additionalProperties: false`, or `unevaluatedProperties: false` where the schema composes others.
 
 | Why | Tags |
 |---|---|

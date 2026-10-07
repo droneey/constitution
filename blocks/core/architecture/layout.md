@@ -4,7 +4,7 @@
 
 ## The trees
 
-A package keeps each folder below only when it has a file to hold. The block that owns the package's entry surface names its delivery layer: the commands of a command line, the handlers of a server, the screens of a router.
+A package keeps each folder below only when it has a file to hold. The block that owns the program's interface names its delivery layer: the commands of a command line, the handlers of a server, the screens of a router.
 
 ```
 <package>/
@@ -20,7 +20,7 @@ src/
 ├── root/                  the composition root: the wiring file, providers, configuration parsed at start,
 │                          the handler of last resort
 ├── <delivery>/            the delivery layer: commands, handlers or screens; its block names the folder
-├── composition/           the only code that knows several features
+├── composition/           what several features make together, once two consumers need it
 ├── features/<f>/          bounded contexts, blind to each other
 ├── contracts/             ports two or more features need
 ├── adapters/<system>/     adapters implementing those shared ports
@@ -83,7 +83,7 @@ A feature holds its layers, its specs and its surface and nothing else, and its 
 | a use case, a port or an adapter is found in the same place in every feature, and a loose file belongs to no layer the rules see. | [] |
 
 ### failures-live-with-their-contract · SHOULD
-Failures every feature shares live in the kernel’s errors, a feature’s in its domain’s errors.
+Failures every feature shares, and the base error every error of the program extends, live in the kernel’s errors, a feature’s in its domain’s errors.
 
 | Why | Tags |
 |---|---|

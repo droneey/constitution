@@ -62,7 +62,7 @@ The few global concerns the client owns — the theme, the notices — live in s
 |---|---|
 | a concern every screen shares has one home, which the root hands to the screens and a spec replaces; a store built anywhere else is a second copy of it. | [] |
 
-### form-reuses-domain-predicates → value-object-built-only-by-its-check · MUST
+### form-reuses-domain-predicates → business-value-lives-in-the-domain · MUST
 A form's schema composes the checks of the domain's value objects and sits with the form; it never restates an invariant.
 
 | Why | Tags |

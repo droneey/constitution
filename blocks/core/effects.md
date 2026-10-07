@@ -39,6 +39,13 @@ Every read of a collection from outside the program — a query, a remote list, 
 |---|---|
 | an unbounded read works on test data and fails in production when the data grows. | [performance] |
 
+### outside-call-never-made-per-item · SHOULD
+A loop makes no call across a process boundary per item where the other side answers the whole set in one call.
+
+| Why | Tags |
+|---|---|
+| one call per item multiplies the latency and the load by the size of the set, and works only while the set is small. | [performance] |
+
 ### kept-collection-bounded · MUST
 Every collection the program keeps beyond one operation — a cache, a queue, a buffer, a table of sessions — has a bound and says what happens at it: it evicts, refuses or makes the producer wait.
 
@@ -52,6 +59,13 @@ Work started concurrently over a collection — calls, tasks, jobs — runs at m
 | Why | Tags |
 |---|---|
 | an unbounded fan-out over a large collection exhausts connections, memory and the quota of the system it calls. | [performance] |
+
+### state-shared-by-concurrent-work-owned-or-guarded · MUST
+State that concurrent work reaches is owned by one task and changed only through messages to it, or guarded by one lock, taken in one order and never held across a call across a process boundary.
+
+| Why | Tags |
+|---|---|
+| two tasks that change one value unguarded lose an update at random, and locks taken in two orders, or held while waiting on another system, deadlock under load. | [data, errors] |
 
 ### program-stops-cleanly · MUST
 A program told to stop — by a termination signal or by its host — takes no new work, finishes or cancels the work in flight within a bound, releases its resources and exits.
@@ -91,7 +105,7 @@ A business process that spans several programs or transactions keeps its state i
 | no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
-An operation run against a system — a script, a command, a migration, a deployment — that destroys data, spends money, changes a live system or sends something outward runs only behind an explicit flag; without the flag it shows what it would do.
+An operation run by hand or by a pipeline against a live system — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, is that confirmation.
 
 | Why | Tags |
 |---|---|

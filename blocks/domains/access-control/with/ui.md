@@ -14,7 +14,7 @@ A step of signing in asks no cognitive test — remembering a password, transcri
 ## Sessions
 
 ### session-limits-warned-before-they-end → time-limit-warned-and-extendable · MUST
-A session's idle limit warns the person before it ends and lets them extend it, and an absolute limit shorter than twenty hours either is one a standard the product must follow sets — such as the re-authentication NIST SP 800-63B-4 asks — or ends in a sign-in that keeps every input the person made.
+A session's idle limit and its absolute limit warn the person before they end, and the idle one lets them extend it; an absolute limit shorter than twenty hours is one a standard the product must follow sets — such as the re-authentication NIST SP 800-63B-4 asks, which WCAG 2.2.1 counts as essential — and ends in a sign-in that keeps every input the person made.
 
 | Why | Tags |
 |---|---|

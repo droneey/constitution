@@ -35,6 +35,13 @@ Personal data is deleted or made anonymous when the retention period of its purp
 |---|---|
 | data kept past its purpose is a liability that grows with every breach and every request. | [data] |
 
+### personal-data-reaches-a-third-party-only-as-a-listed-processor · MUST
+Personal data reaches another company only when the inventory lists it as a processor, under terms that bind it to the program's purpose.
+
+| Why | Tags |
+|---|---|
+| data handed to a company nobody listed is data no request to export or erase reaches, under terms nobody read. | [data] |
+
 ## Rights
 
 ### personal-data-exported-on-request · MUST
@@ -58,9 +65,18 @@ A person's request to erase their data erases it everywhere the program keeps it
 |---|---|
 | a copy left behind is data the person was told was gone. | [data] |
 
-### personal-data-corrected-on-request · SHOULD
-A person can correct their personal data, or have it corrected on request.
+### personal-data-corrected-on-request · MUST
+A person's request to correct their personal data corrects it, within the time the law of the region sets.
 
 | Why | Tags |
 |---|---|
 | data the person knows is wrong goes on deciding about them until someone fixes it. | [data] |
+
+## Breaches
+
+### personal-data-breach-notified-in-time · MUST
+A breach of personal data is recorded with its effects and its remedy, notified to the supervisory authority within the time the law of the region sets — 72 hours under GDPR Article 33 — and to the persons it puts at high risk without undue delay.
+
+| Why | Tags |
+|---|---|
+| the deadline runs from when the breach is known, and persons told late cannot protect themselves in time. | [data, security] |

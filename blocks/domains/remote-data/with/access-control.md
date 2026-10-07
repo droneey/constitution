@@ -5,7 +5,7 @@
 ## Sessions
 
 ### cache-cleared-when-the-session-ends · MUST
-The cache of remote data, in memory and persisted, is cleared when the session ends or another person signs in.
+A cache that holds one signed-in person's remote data, as a client's does, is cleared, in memory and persisted, when the session ends or another person signs in.
 
 | Why | Tags |
 |---|---|

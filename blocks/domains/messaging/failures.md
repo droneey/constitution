@@ -1,6 +1,6 @@
 # Failures
 
-> Governs a message whose handling fails: its settlement, its retries, its dead letters and the compensation of a process.
+> Governs a message whose handling fails: its settlement, its retries and its dead letters.
 
 ## Settlement
 

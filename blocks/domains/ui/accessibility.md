@@ -65,7 +65,7 @@ Focus moves through a screen in the order its content is seen.
 | focus that jumps around the screen cannot be followed, and a keyboard user loses their place. | [a11y] |
 
 ### focus-always-visible · MUST
-Focus is always visible, at 3:1 contrast against its background, and never hidden by content the page lays over it, such as a sticky header; no focus indicator is removed without a replacement that meets the same bar.
+Focus is always visible, and never hidden by content the page lays over it, such as a sticky header; no focus indicator is removed without a replacement that meets the contrast its indicator needs.
 
 | Why | Tags |
 |---|---|
@@ -116,7 +116,7 @@ Meaning is never carried by colour alone: a status colour comes with an icon or 
 | colour-blind users and monochrome screens lose whatever colour alone says. | [a11y, ux] |
 
 ### text-and-controls-meet-the-contrast-minimum · MUST
-Text contrasts with its background by at least 4.5:1, large text by 3:1, and the boundaries and states that identify a control, and focus, by 3:1, in every mode.
+Text contrasts with its background by at least 4.5:1, large text by 3:1, and the boundaries and states that identify a control, and the focus indicator, by 3:1, in every mode.
 
 | Why | Tags |
 |---|---|

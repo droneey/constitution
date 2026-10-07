@@ -35,7 +35,7 @@ Every path the manifest names — an entry, its types, a command — resolves in
 ## Dependencies
 
 ### manifest-declares-dependencies-by-range · SHOULD
-The manifest declares each dependency by the range of versions the unit works with.
+The manifest declares each dependency a consumer installs with the unit by the range of versions the unit works with.
 
 | Why | Tags |
 |---|---|

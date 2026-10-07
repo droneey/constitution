@@ -5,14 +5,14 @@
 ## Other origins
 
 ### cross-origin-request-allowed-only-from-an-allowlist → outside-address-followed-only-from-an-allowlist · MUST
-A request from another origin that carries credentials is allowed only for an origin the program's allowlist names exactly: the program never echoes a request's `Origin` unchecked, and never answers `Access-Control-Allow-Origin: *` beside `Access-Control-Allow-Credentials: true`; a public answer that carries no credentials may allow any origin.
+A request from another origin that carries what the browser attaches itself — a cookie, HTTP authentication, a client certificate — is allowed only for an origin the program's allowlist names exactly: the program never echoes a request's `Origin` unchecked, and never answers `Access-Control-Allow-Origin: *` beside `Access-Control-Allow-Credentials: true`; an answer to a request that carries none of them may allow any origin.
 
 | Why | Tags |
 |---|---|
 | a browser sends a user's cookies with a cross-origin request, so an origin allowed unchecked reads the program's answers in that user's name. | [security] |
 
 ### state-changing-request-refused-from-other-origins → outside-address-followed-only-from-an-allowlist · MUST
-A request that changes state is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, or, where it carries no `Origin`, when it carries a `Sec-Fetch-Site` that is neither `same-origin` nor `none`; a request with neither header, which no browser sends, is not refused by this check.
+A request that changes state and that the server authenticates by what the browser attaches itself — a cookie, HTTP authentication, a client certificate — is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, or, where it carries no `Origin`, when it carries a `Sec-Fetch-Site` that is neither `same-origin` nor `none`; a request with neither header, which no browser sends, is not refused by this check.
 
 | Why | Tags |
 |---|---|
@@ -30,7 +30,7 @@ An absolute address the program builds of itself — a link to reset a password,
 ## Connections
 
 ### socket-upgrade-accepted-only-from-an-allowed-origin → outside-address-followed-only-from-an-allowlist · MUST
-A WebSocket upgrade is accepted only from the program's own origin or one its allowlist names, and only with valid credentials.
+A WebSocket upgrade is accepted only from the program's own origin or one its allowlist names, and, where the socket acts for a signed-in person, only with valid credentials.
 
 | Why | Tags |
 |---|---|

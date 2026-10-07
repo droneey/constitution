@@ -51,7 +51,7 @@ A format has one extension across the repository, the one its own specification 
 ## Folders
 
 ### folder-has-one-purpose-and-is-named-for-it · SHOULD
-A folder holds one purpose, said in one phrase without “and”, and is named for it — what its contents are for — never by a catch-all word such as `helpers`, `misc` or `stuff`.
+A folder holds one purpose, said in one phrase without “and”, and is named for it — what its contents are for — never by a catch-all word such as `helpers`, `misc` or `stuff`; a role a block's vocabulary names with its purpose is no catch-all.
 
 | Why | Tags |
 |---|---|
@@ -81,7 +81,7 @@ A repository’s readme says what the repository is, how to install and run it, 
 | the readme is the first page anyone opens. | [] |
 
 ### module-readme-holds-its-knowledge · SHOULD
-A module's readme, beside it, holds the knowledge about that module; writing for readers outside the code — users, integrators, operators — is kept apart from the code.
+Knowledge about a module that its code cannot show lives in a readme beside it; writing for readers outside the code — users, integrators, operators — is kept apart from the code.
 
 | Why | Tags |
 |---|---|

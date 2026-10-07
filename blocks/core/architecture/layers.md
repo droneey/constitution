@@ -14,7 +14,7 @@ An import points inward, toward stability: an outer layer imports an inner one, 
 | an outward import lets a volatile detail break a stable rule. | [] |
 
 ### domain-imports-only-itself-the-kernel-and-shared-contracts · MUST
-The domain imports only itself, the kernel and the shared contracts: no framework, no input or output, no vendor library however pure; a tool’s types stop at its boundary.
+The domain imports only itself, the kernel and the top-level `contracts/`: no framework and no input or output; a tool’s types stop at its boundary.
 
 | Why | Tags |
 |---|---|
@@ -93,7 +93,7 @@ Code lives in the layer that owns its reason to change, beside its consumer when
 | code placed by its reason to change is found where it is needed and moves only when that reason moves. | [] |
 
 ### contract-lifts-on-its-second-feature · MUST
-A contract belongs to the feature that needs it; when a second feature needs it, it lifts to the shared contracts, never sideways into one of them.
+A contract belongs to the feature that needs it; when a second feature needs it in the same words — a clock, a mailer — it lifts to the top-level `contracts/`, never sideways into one of them, and a port each context words its own way stays with each context.
 
 | Why | Tags |
 |---|---|
@@ -107,7 +107,7 @@ Composition across features lives in the delivery unit that needs it and moves t
 | a composition layer made before a second consumer is one nobody needs yet. | [] |
 
 ### shared-piece-placed-by-meaning · SHOULD
-A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; the kernel stays small.
+A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; a piece without meaning that the domain or the kernel needs — the base error, a result type, a guard of exhaustiveness — lives in a role folder of the kernel, which both may import. The kernel stays small.
 
 | Why | Tags |
 |---|---|
@@ -130,7 +130,7 @@ A protocol two artefacts of one program speak lives in the program’s shared pl
 ## The delivery layer
 
 ### delivery-unit-beside-what-it-serves · SHOULD
-A delivery unit that serves one feature lives in that feature’s application layer where the entry surface allows it; one that composes several lives in the delivery layer or in composition.
+A delivery unit that serves one feature lives in that feature’s application layer where the block of the program's interface allows it; one that composes several lives in the delivery layer or in composition.
 
 | Why | Tags |
 |---|---|

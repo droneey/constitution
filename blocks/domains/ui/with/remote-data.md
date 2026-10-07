@@ -5,7 +5,7 @@
 ## Results
 
 ### data-result-is-union-by-status → illegal-state-unrepresentable · MUST
-What a screen or a component calls to read or write data returns a union keyed by `status`, with only the states its operation has; the data exists only in the success state, or beside the error when a reload of data already shown fails.
+What a screen or a widget calls to read or write data returns a union keyed by `status`, with only the states its operation has; the data exists only in the success state, or beside the error when a reload of data already shown fails.
 
 | Why | Tags |
 |---|---|

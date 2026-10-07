@@ -63,15 +63,9 @@ An adapter implements, over one outside system, every contract of its owner that
 | one system’s knowledge — its client, its errors, its wire shapes — is then in one place. | [] |
 
 ### adapter-built-by-factory-object-or-class · SHOULD
-An adapter is a factory, a module object for one with no dependency, or a class whose constructor takes its dependencies.
+An adapter is a factory, a module object for one with no dependency, or a class whose constructor takes its dependencies; never an instance built when its module loads.
 
 | Why | Tags |
 |---|---|
 | each form builds the adapter in one signature that names what it takes. | [] |
 
-### schema-derived-from-the-domain · MUST
-A schema over a domain type or enumeration derives its values from it, so the edge depends on the domain and never restates it.
-
-| Why | Tags |
-|---|---|
-| a schema that restates the domain drifts from it. | [] |

@@ -55,7 +55,7 @@ An apply cut off at any point leaves the world in a state the next run plans fro
 |---|---|
 | an apply is cut off sooner or later, and a world that needs hand repair afterwards turns one failure into an outage. | [errors] |
 
-### one-apply-at-a-time → shared-resource-has-one-writer · MUST
+### one-apply-at-a-time → write-on-read-data-is-conditional · MUST
 An apply holds a lock on its target for its whole run, which a second apply waits for or is refused by.
 
 | Why | Tags |

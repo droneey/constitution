@@ -84,11 +84,11 @@ A `GET` of a resource with an `ETag` answers `304` with no body to an `If-None-M
 ## Transport
 
 ### served-only-over-tls · MUST
-Every address the program serves beyond its own machine answers only over TLS — its own, or that of a proxy in front of it — and sends `Strict-Transport-Security`; a request over plain HTTP is redirected or refused, never served.
+Every address the program serves beyond its own machine answers only over TLS — its own, or that of a proxy in front of it — and sends `Strict-Transport-Security`; a page a browser navigates to over plain HTTP is redirected, and any other request over it is refused, never served.
 
 | Why | Tags |
 |---|---|
-| a plain request can be read and changed by anyone on its path, and the header keeps the browser from ever trying one again. | [security] |
+| a plain request can be read and changed by anyone on its path, a credential sent in it has crossed in clear before any redirect, and the header keeps the browser from ever trying one again. | [security] |
 
 ### client-address-taken-from-a-trusted-proxy → outside-address-followed-only-from-an-allowlist · MUST
 The address and the scheme of a client are read from `Forwarded` or `X-Forwarded-For` only when the proxy that set them is one the program names; otherwise from the connection.

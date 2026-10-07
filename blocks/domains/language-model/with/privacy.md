@@ -4,7 +4,7 @@
 
 ## Providers
 
-### provider-receives-personal-data-only-as-a-processor → personal-data-collected-only-for-its-purpose · MUST
+### provider-receives-personal-data-only-as-a-processor → personal-data-reaches-a-third-party-only-as-a-listed-processor · MUST
 Personal data reaches a model's provider only when the inventory lists that provider as a processor, under terms that keep the data out of training and hold it no longer than the call needs, with the request's own storage turned off.
 
 | Why | Tags |

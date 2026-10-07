@@ -5,7 +5,7 @@
 ## Processing once
 
 ### message-processed-once-per-consumer → operation-idempotent-by-design · MUST
-A consumer processes each message once in effect: a message whose identifier it has processed is acknowledged and not acted on again, the identifiers kept per consumer and for longer than the broker can redeliver or a dead letter be sent back.
+A consumer processes each message once in effect: a message whose identifier it has processed is acknowledged and not acted on again, the identifiers kept per consumer for as long as the broker can redeliver a message, and then dropped.
 
 | Why | Tags |
 |---|---|

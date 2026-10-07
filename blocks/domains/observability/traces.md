@@ -30,7 +30,7 @@ Every unit of work — a request served, a task run, a message handled, a call t
 ## Content
 
 ### span-attribute-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
-Span attributes, span events and metric exemplars pass the mask the logs pass, by the same list of keys, before export; an address is recorded without its query and a database statement only with placeholders for its values.
+Span attributes, span events and metric exemplars pass the mask the logs pass, by the same words, before export; an address is recorded without its query and a database statement only with placeholders for its values.
 
 | Why | Tags |
 |---|---|

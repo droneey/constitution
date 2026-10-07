@@ -11,8 +11,8 @@ A comment states what the code cannot show — a constraint, a workaround, a dec
 |---|---|
 | the code already says what it does, and a narrating comment repeats it and drifts from it. | [] |
 
-### public-entry-documented-only-where-not-obvious · SHOULD
-The documentation of a public entry states only what its names and types cannot — a precondition, a unit, a failure, an effect, a bound — and never restates them.
+### export-documented-only-where-not-obvious · SHOULD
+The documentation of an exported declaration states only what its names and types cannot — a precondition, a unit, a failure, an effect, a bound — and never restates them.
 
 | Why | Tags |
 |---|---|

@@ -5,7 +5,7 @@
 ## Requirements for implementation
 
 ### analytics-stores-nothing-until-consent · MUST
-The analytics library stores nothing on the device and sends no identifier until consent is given, and measures anonymously where the law exempts it from consent.
+The analytics library stores nothing on the device and sends no identifier until consent is given, where the law subjects its measurement to consent, and measures anonymously where the law exempts it.
 
 | Why | Tags |
 |---|---|

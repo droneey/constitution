@@ -33,11 +33,18 @@ A tidying or a refactoring the task needs ships as its own change, before the ch
 | each diff then reads as one thing, and a reviewer sees the behaviour change alone. | [] |
 
 ### format-changed-in-steps · MUST
-A change to a format that is stored or that others read — a schema, a file, a message, a contract — keeps the old data and the running readers working: the readers learn the new form beside the old one first, the writers and the stored data move to it next, and the old form is removed last.
+A change to a format that is stored or that others read — a schema, a file, a message, a contract another deployable or a released consumer reads — keeps the old data and the running readers working: the readers learn the new form beside the old one first, the writers and the stored data move to it next, and the old form is removed last.
 
 | Why | Tags |
 |---|---|
 | data written before the change and readers deployed before it outlive the change, and a format switched in one step breaks them. | [data] |
+
+### choice-between-alternatives-recorded · SHOULD
+A choice between real alternatives that a later reader could propose again is recorded, with what was rejected and why, in the change that makes it.
+
+| Why | Tags |
+|---|---|
+| a choice recorded without its rejected alternatives is argued again by everyone who meets them. | [] |
 
 ## Hand-back
 

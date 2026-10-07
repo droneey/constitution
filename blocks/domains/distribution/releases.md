@@ -58,3 +58,10 @@ A distributed unit names where a vulnerability in it is reported privately.
 | Why | Tags |
 |---|---|
 | a finder with no private channel reports in public, and the users learn last. | [security] |
+
+### exploited-vulnerability-reported-in-time · MUST
+An actively exploited vulnerability in a released version is reported to the authority within the times the law that binds the product sets, such as the EU Cyber Resilience Act's 24 hours for an early warning from 11 September 2026.
+
+| Why | Tags |
+|---|---|
+| the deadline runs from when the maker learns of it, and a report late is a breach of its own. | [security] |

@@ -12,7 +12,7 @@ The dependencies of a language are managed by one package manager and pinned by 
 | two package managers resolve differently, and a lockfile that drifts from its manifests installs versions nobody reviewed. | [security] |
 
 ### download-pinned-by-version-and-checksum · MUST
-A file the program or its build downloads outside a package manager — a binary, an archive, an image — is pinned to a version and checked against its checksum or digest before it is used.
+A file or a reusable step the program, its build or its pipeline fetches outside a package manager — a binary, an archive, an image, a step of another repository — is pinned to a version and checked against its checksum or digest before it is used; a commit's full hash counts as a digest.
 
 | Why | Tags |
 |---|---|
@@ -65,11 +65,11 @@ A dependency’s install scripts run only when it is listed by name as allowed t
 ## Health
 
 ### dependency-free-of-known-vulnerabilities · MUST
-No dependency, development ones included, has a known vulnerability of any severity.
+No dependency, development ones included, has a known vulnerability of any severity, save one a person accepted by name, with its advisory, why it does not reach the program or why no fix exists yet, and a date to review it.
 
 | Why | Tags |
 |---|---|
-| a vulnerability found before release is fixed before release. | [security] |
+| a vulnerability found before release is fixed before release, and one that cannot be is a decision someone signed and will revisit. | [security] |
 
 ### dependency-licence-on-the-allowlist · MUST
 Every dependency the program ships or loads at run time has a licence on the project’s allowlist; a tool that only builds, tests or checks it may stay off the list, named with its reason.

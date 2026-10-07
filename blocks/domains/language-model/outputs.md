@@ -38,8 +38,8 @@ A person who exchanges messages or speech with a model is told so before the exc
 |---|---|
 | a person weighs an answer by who gave it, and the law fines a product that lets them take a model for a person. | [ux] |
 
-### generated-media-marked-as-generated · MUST
-Audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act from 2 August 2026.
+### generated-content-marked-as-generated · MUST
+Text, audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act from 2 August 2026.
 
 | Why | Tags |
 |---|---|

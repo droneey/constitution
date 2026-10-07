@@ -273,7 +273,7 @@ An object of values that travel together is typed by a named type, never by an o
 |---|---|
 | the type names the whole the values make, and the call site reads each of them by name. | [] |
 
-### jsdoc-only-for-non-obvious-public-entry → public-entry-documented-only-where-not-obvious · SHOULD
+### jsdoc-only-for-non-obvious-public-entry → export-documented-only-where-not-obvious · SHOULD
 JSDoc documents only a public entry whose use is not obvious, never a self-describing property or parameter; a `@deprecated` tag aside.
 
 | Why | Tags |
