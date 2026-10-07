@@ -1,6 +1,6 @@
 # Migrations
 
-> Governs how the schema of owned data changes.
+> Governs how the schema of owned data changes, and how a migration runs.
 
 ## Changes to the schema
 
@@ -26,3 +26,19 @@ A migration keeps the schema usable by the release that runs while it is applied
 | Why | Tags |
 |---|---|
 | during a deployment the old release and the new one run against one schema, and a migration that breaks the old one fails every request it serves. | [data] |
+
+## Running
+
+### migration-applied-once-before-its-release · MUST
+A migration is applied once, by one run before the release that needs it starts, never by each instance as it boots.
+
+| Why | Tags |
+|---|---|
+| instances booting together race to apply one migration, and a release that starts before its schema fails its first requests. | [data] |
+
+### migration-holds-no-long-lock · SHOULD
+A migration on a store in use sets a lock timeout, builds an index without blocking writes where the engine can, and leaves a backfill to a run of its own in bounded batches.
+
+| Why | Tags |
+|---|---|
+| a migration that waits for or holds a lock on a busy table stops every write behind it, and a backfill in the migration's transaction holds that lock for its whole length. | [data, performance] |

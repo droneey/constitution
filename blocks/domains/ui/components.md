@@ -106,6 +106,13 @@ An optional prop no call site passes is deleted, and its default is written wher
 |---|---|
 | an unused option is a branch nobody tests and an interface nobody needs. | [] |
 
+### primitives-take-text-by-props · MUST
+A primitive holds no user-facing text; text arrives through props, and only language-neutral glyphs — an ellipsis, a slash — and icons are its own.
+
+| Why | Tags |
+|---|---|
+| a primitive with its own text cannot be translated or reworded by the application that uses it. | [ux] |
+
 ## Size
 
 ### component-sizes-to-its-container · SHOULD
@@ -169,3 +176,17 @@ The library's complex patterns follow the platform's keyboard conventions; focus
 | Why | Tags |
 |---|---|
 | without it, the rule on accessible primitives cannot be kept through the library. | [a11y] |
+
+### ui-primitives-unstyled · SHOULD
+The library's primitives carry no look of their own.
+
+| Why | Tags |
+|---|---|
+| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
+
+### ui-primitives-render-the-callers-element · SHOULD
+The library lets a primitive render the caller's element — a link, a custom element — with the primitive's behaviour, without wrapping it in another element.
+
+| Why | Tags |
+|---|---|
+| a link can then take a primitive's behaviour and stay a real link, with no extra element around it. | [] |

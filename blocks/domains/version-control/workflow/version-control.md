@@ -74,7 +74,7 @@ A change request's description holds the reason for the change, the migration of
 ## Files
 
 ### working-notes-stay-out-of-history · SHOULD
-Design documents, plans and working notes live in a `local/` folder that version control ignores.
+Plans and working notes live in a `local/` folder that version control ignores; a decision record is committed.
 
 | Why | Tags |
 |---|---|

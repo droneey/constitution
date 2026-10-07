@@ -4,8 +4,8 @@
 
 ## Placement
 
-### config-file-schema-lives-in-composition → composition-lifts-on-its-second-consumer · MUST
-The config file's schema, which joins the sections of several features, lives in `composition/` from the start.
+### config-file-schema-lives-in-composition → code-placed-by-its-reason-to-change · MUST
+The config file's schema, which joins the sections of several features, lives in `composition/`.
 
 | Why | Tags |
 |---|---|

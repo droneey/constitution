@@ -14,7 +14,7 @@ An output the program acts on — a choice, a record, a tool's arguments — is 
 ## Endings
 
 ### output-used-only-when-finished → failure-is-expected-or-defect · MUST
-An output is used only when the model stopped because it had finished; a stop at the token limit, a refusal, a content filter or an output that fails its schema is an expected failure of its own type, asked again at most the number of times the project sets.
+An output is acted on, stored as an answer or handed to another step only when the model stopped because it had finished; a stream may be shown as it arrives, marked unfinished until it ends; a stop at the token limit, a refusal, a content filter or an output that fails its schema is an expected failure of its own type, asked again at most the number of times the project sets.
 
 | Why | Tags |
 |---|---|
@@ -37,3 +37,10 @@ A person who exchanges messages or speech with a model is told so before the exc
 | Why | Tags |
 |---|---|
 | a person weighs an answer by who gave it, and the law fines a product that lets them take a model for a person. | [ux] |
+
+### generated-media-marked-as-generated · MUST
+Audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act from 2 August 2026.
+
+| Why | Tags |
+|---|---|
+| a mark travels with the file where a notice on the screen does not. | [ux] |

@@ -18,6 +18,13 @@ A message that carries the state of an entity carries that entity's version, and
 |---|---|
 | redeliveries and competing consumers bring messages out of order, and an older state applied after a newer one undoes it. | [data] |
 
+### key-held-while-its-message-is-dead-lettered · SHOULD
+A consumer for which the order of a key's messages matters holds the later messages of a key while one of its messages is dead-lettered, or states why a gap in that key is safe.
+
+| Why | Tags |
+|---|---|
+| a later change applied on top of one that never landed leaves the entity in a state no sequence of its changes produces. | [data, errors] |
+
 ## Receiving
 
 ### message-parsed-against-its-types-schema → outside-value-untyped-until-parsed · MUST

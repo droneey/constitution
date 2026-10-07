@@ -19,3 +19,12 @@ A conversation, a memory or notes given to a model are loaded for the person and
 | Why | Tags |
 |---|---|
 | a conversation is its person's data, and one loaded by an identifier anyone can send gives its history to whoever guesses that identifier. | [security, data] |
+
+## Caches
+
+### answer-cache-keyed-by-the-callers-rights → object-access-checked-against-the-caller · MUST
+A cache of model answers is keyed by what shaped the answer — the prompt, the model and the caller's rights or tenant — and never serves one caller's answer to another with other rights.
+
+| Why | Tags |
+|---|---|
+| an answer drawn from one caller's data and served from a cache to another hands over what the second could never read. | [security, data] |

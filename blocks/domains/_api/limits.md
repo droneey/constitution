@@ -12,7 +12,7 @@ A request is bounded in its size and in what it asks — each file it uploads, t
 | a request with no bound lets one caller exhaust the memory, the disk or the time every caller shares. | [performance, security] |
 
 ### answer-bounded-in-size · MUST
-Every answer has a maximum size the server holds; an answer cut to it says so, and how to narrow the request or carries the cursor of the rest.
+Every answer has a maximum size the server holds; an answer cut to it says so, and either says how to narrow the request or carries the cursor of the rest.
 
 | Why | Tags |
 |---|---|

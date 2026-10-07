@@ -14,7 +14,7 @@ A screen reads and validates its address, loads the data its pieces render, and 
 | the screen is the one place that knows its address and its data, and one loading point shows one loading state and one error instead of a page that fills in piece by piece. | [ux, performance] |
 
 ### screen-piece-receives-data-and-callbacks · SHOULD
-A screen's piece receives data and `on<Event>` callbacks and never knows which screen it sits on; it takes a binding unit of its own only where one loading point hurts its screen.
+A screen's piece receives data and `on<Event>` callbacks and never knows which screen it sits on; where one loading point hurts its screen it becomes a widget with a binding unit of its own.
 
 | Why | Tags |
 |---|---|
@@ -114,7 +114,7 @@ A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its ent
 | the interface then depends on what the feature offers, not on how it works, and a change of adapter never reaches a screen. | [] |
 
 ### component-in-its-own-folder → module-reached-only-through-its-surface · MUST
-A component has its own folder holding the files named after it, its sub-components prefixed with its name in `components/`, its `__tests__/` and a surface offering only its public interface; `components/` and `widgets/` hold only component folders and a surface.
+A component has its own folder holding the files named after it, its sub-components prefixed with its name in `components/`, its folder of specs and a surface offering only its public interface; `components/` and `widgets/` hold only component folders and a surface.
 
 | Why | Tags |
 |---|---|

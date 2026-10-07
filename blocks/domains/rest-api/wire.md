@@ -5,7 +5,7 @@
 ## Headers
 
 ### idempotency-key-carried-by-its-header → write-takes-an-idempotency-key · SHOULD
-An idempotency key travels in the `Idempotency-Key` header; the key reused with another body is answered `422`, and a repeat while the first is still running `409`.
+An idempotency key travels in the `Idempotency-Key` header, and a repeat with a key already seen is answered from its record before any precondition is evaluated; the key reused with another body is answered `422`, and a repeat while the first is still running `409`.
 
 | Why | Tags |
 |---|---|

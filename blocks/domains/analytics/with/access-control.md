@@ -5,7 +5,7 @@
 ## Identity
 
 ### identity-reset-on-sign-out · MUST
-Where analytics holds an identifier of the person, signing out resets it, so the next person on the device starts as a new visitor.
+Signing out resets the analytics library's identifier, so the next person on the device starts as a new visitor.
 
 | Why | Tags |
 |---|---|

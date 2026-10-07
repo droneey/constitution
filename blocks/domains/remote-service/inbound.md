@@ -17,3 +17,10 @@ A webhook delivery is processed once per its identifier: a delivery seen before 
 | Why | Tags |
 |---|---|
 | a sender redelivers whatever it did not see acknowledged, and an effect run for each copy repeats a payment or a message. | [data] |
+
+### webhook-acknowledged-once-recorded · SHOULD
+A webhook is acknowledged once it is verified and durably recorded, and processed after that, never while its sender waits.
+
+| Why | Tags |
+|---|---|
+| a sender gives up within seconds and sends again, so processing before the answer turns every slow delivery into a storm of repeats. | [performance] |

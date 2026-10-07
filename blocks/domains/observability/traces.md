@@ -1,6 +1,6 @@
 # Traces
 
-> Governs spans, the trace context, and the identity every signal carries.
+> Governs spans, the trace context, and what a span may carry.
 
 ## Context
 
@@ -26,3 +26,12 @@ Every unit of work — a request served, a task run, a message handled, a call t
 | Why | Tags |
 |---|---|
 | a trace shows where the time of a request went only if each step it took is a span of it. | [] |
+
+## Content
+
+### span-attribute-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
+Span attributes, span events and metric exemplars pass the mask the logs pass, by the same list of keys, before export; an address is recorded without its query and a database statement only with placeholders for its values.
+
+| Why | Tags |
+|---|---|
+| instrumentation records the full URL, the statement's text and an exception's message by default, so a mask on logs alone leaves the same secret in every trace. | [security, data] |

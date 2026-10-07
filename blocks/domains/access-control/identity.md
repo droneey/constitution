@@ -5,18 +5,25 @@
 ## Sign-in
 
 ### sign-in-through-a-provider-uses-code-with-pkce · MUST
-A sign-in through an outside identity provider uses the authorization code flow with PKCE, never the implicit flow or a password the user hands to the program for the provider.
+A sign-in through an outside identity provider uses the authorization code flow with PKCE and a `redirect_uri` the provider matches exactly, and with OpenID Connect checks the `nonce` in the ID token; never the implicit flow or a password the user hands to the program for the provider.
 
 | Why | Tags |
 |---|---|
-| without PKCE a code intercepted on its way back is redeemed by whoever caught it, and the older flows hand a token or a password to places that keep it. | [security] |
+| without PKCE a code intercepted on its way back is redeemed by whoever caught it, a redirect matched by prefix sends the code elsewhere, a token without its nonce is replayed, and the older flows hand a token or a password to places that keep it. | [security] |
+
+### outside-identity-linked-by-issuer-and-subject · MUST
+An account is found from an outside provider's identity by its issuer and subject; an email from the provider links that identity to an existing account only when the provider marks it verified and the account's owner has signed in to confirm the link.
+
+| Why | Tags |
+|---|---|
+| an email the provider never verified is whatever its holder typed, so linking by it hands an existing account to anyone who claims its address. | [security] |
 
 ### sign-in-attempts-limited · MUST
-Sign-in attempts are limited per account and per source, by a growing delay or a lock the account's owner can lift.
+Attempts at signing in, at a one-time code and at a recovery token are limited per account and per source, by a growing delay or a lock the account's owner can lift.
 
 | Why | Tags |
 |---|---|
-| an unlimited sign-in lets an attacker try passwords until one works. | [security] |
+| an unlimited attempt lets an attacker try passwords, or all of a short code's values, until one works. | [security] |
 
 ### phishing-resistant-factor-offered · SHOULD
 A person can sign in with a phishing-resistant factor — a passkey — and an account with privileges uses one.
@@ -48,6 +55,13 @@ A token a caller presents is never sent on to another system; a call onward carr
 |---|---|
 | a forwarded token turns the program into a confused deputy and erases its audit trail. | [security] |
 
+### refresh-token-rotated-or-sender-bound · MUST
+A refresh token the program issues is either rotated on every use, a reused one revoking every token of its family, or bound to its client by DPoP or mutual TLS, as RFC 9700 says.
+
+| Why | Tags |
+|---|---|
+| a refresh token lives long, so one stolen and neither rotated nor bound works for its thief as long as for its owner. | [security] |
+
 ## Records
 
 ### security-event-recorded · SHOULD
@@ -66,12 +80,12 @@ A password is accepted by its length — at least the floor NIST SP 800-63B sets
 |---|---|
 | length and breach lists stop the passwords attackers try, while composition rules and rotation push people to predictable ones. | [security] |
 
-### password-stored-by-a-memory-hard-hash → security-primitive-from-a-vetted-library · MUST
-A password is stored only as the output of a memory-hard hashing function with its own salt — Argon2id, or scrypt where it is missing.
+### password-stored-by-a-password-hash → security-primitive-from-a-vetted-library · MUST
+A password is stored only as the output of a password-hashing function with its own salt — Argon2id, or scrypt where it is missing, or PBKDF2 at the iterations current guidance sets where only functions FIPS 140 validates may be used.
 
 | Why | Tags |
 |---|---|
-| a stolen table of memory-hard hashes costs an attacker years where a fast hash costs hours. | [security] |
+| a stolen table of password hashes costs an attacker years where a fast hash costs hours, and PBKDF2 is the one such function FIPS 140 validates. | [security] |
 
 ## Recovery
 

@@ -12,11 +12,11 @@ Every log record — the program's, its libraries' and its server's — passes o
 | a record that bypasses the pipeline skips the mask and the trace id, and lands in a second format nobody parses. | [security] |
 
 ### log-value-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
-The log pipeline replaces, before any output, the value of every key the project lists as secret or personal — such as `password`, `token`, `authorization`, `cookie`, `secret`, `email` and `phone` — compared without case and at any depth.
+The log pipeline replaces, before any output, the value of every key that contains a name the project lists as secret or personal — such as `password`, `token`, `authorization`, `cookie`, `secret`, `email` and `phone` — compared without case and at any depth, so `user_email` is masked by `email`.
 
 | Why | Tags |
 |---|---|
-| a secret or a person's data passed as a field by mistake is masked whichever code wrote it, while a mask of exact paths misses the key that arrives in another case or one level deeper. | [security, data] |
+| a secret or a person's data passed as a field by mistake is masked whichever code wrote it, while a mask of exact keys misses `refreshToken` and `user_email`. | [security, data] |
 
 ## Records
 

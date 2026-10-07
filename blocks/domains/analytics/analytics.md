@@ -91,7 +91,7 @@ A failing analytics destination, or a failure of the code that sends to it, neit
 ## Requirements for implementation
 
 ### analytics-anonymous-by-default · MUST
-The library truncates or drops the IP address, and sends no user identifier unless it is configured to.
+The library truncates or drops the IP address, and sends no identifier but its own pseudonymous one.
 
 | Why | Tags |
 |---|---|

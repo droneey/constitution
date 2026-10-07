@@ -5,7 +5,7 @@
 ## Ticks
 
 ### scheduled-job-runs-once-per-tick · MUST
-A scheduled job runs once per tick however many instances of the program run: the tick is claimed in a store the instances share or by a scheduler that runs one copy, never by a timer or a lock local to each instance.
+A scheduled job's tick is claimed once however many instances of the program run: in a store the instances share or by a scheduler that runs one copy, never by a timer or a lock local to each instance.
 
 | Why | Tags |
 |---|---|

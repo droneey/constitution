@@ -14,7 +14,7 @@ governs: []
 
 ## Personal data
 
-### personal-data-inventoried · SHOULD
+### personal-data-inventoried · MUST
 Every kind of personal data the program stores is listed with its purpose, its retention period and the processors it reaches.
 
 | Why | Tags |
@@ -43,6 +43,13 @@ A person's request for their data is answered with all of it, in a format a mach
 | Why | Tags |
 |---|---|
 | the right of access and portability is the person's, and data missed by the export is data they cannot check. | [data] |
+
+### rights-request-verified-before-it-is-answered · MUST
+A request to export, erase or correct personal data is answered only once the requester is shown to be its person — through their sign-in where they have an account, otherwise by a check proportionate to the data — and the check asks for no more data than it needs.
+
+| Why | Tags |
+|---|---|
+| an export sent to an impostor is a breach, and an erasure on a stranger's word destroys a person's data. | [data, security] |
 
 ### personal-data-erased-on-request · MUST
 A person's request to erase their data erases it everywhere the program keeps it — its stores, its caches, its processors — save what a law makes it keep, within the time the law of the region sets; a backup that holds it expires within its retention, and a restore re-applies every erasure made since.

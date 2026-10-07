@@ -72,7 +72,7 @@ Focus is always visible, at 3:1 contrast against its background, and never hidde
 | a keyboard user who cannot see focus does not know where they are. | [a11y] |
 
 ### target-meets-the-minimum-size · MUST
-Every pointer target is at least 24 by 24 CSS pixels, its spacing counted — the floor WCAG 2.2 sets, with its exceptions such as a link inside a sentence — or the platform's own minimum where that is larger.
+Every pointer target meets the minimum size WCAG 2.2 sets, in the platform's unit and its spacing counted, with its exceptions such as a link inside a sentence, or the platform's own minimum where that is larger.
 
 | Why | Tags |
 |---|---|
@@ -114,6 +114,13 @@ Meaning is never carried by colour alone: a status colour comes with an icon or 
 | Why | Tags |
 |---|---|
 | colour-blind users and monochrome screens lose whatever colour alone says. | [a11y, ux] |
+
+### text-and-controls-meet-the-contrast-minimum · MUST
+Text contrasts with its background by at least 4.5:1, large text by 3:1, and the boundaries and states that identify a control, and focus, by 3:1, in every mode.
+
+| Why | Tags |
+|---|---|
+| low contrast is the failure of WCAG met most often, and a reader who cannot see the text cannot use the screen. | [a11y] |
 
 ### reduced-motion-honoured · MUST
 When the user asks for reduced motion, motion that is not essential stops, and a change it carried is shown by a cut or a fade instead, so no feedback is lost.

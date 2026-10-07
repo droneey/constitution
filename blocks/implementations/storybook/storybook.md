@@ -41,6 +41,13 @@ Production code never imports a story.
 |---|---|
 | a story in production ships fixtures and fakes to users. | [] |
 
+### screenshots-over-kit-stories-only → screenshots-only-where-look-is-contract · SHOULD
+Screenshots are compared over the UI kit's stories, where the look is the contract, and nowhere else.
+
+| Why | Tags |
+|---|---|
+| the kit's look is the one place a changed pixel is a changed contract. | [] |
+
 ## Accessibility
 
 ### stories-fail-on-a11y-violations → ui-specs-scan-accessibility · MUST

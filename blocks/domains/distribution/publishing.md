@@ -12,11 +12,20 @@ A version is published without a long-lived token: by an identity the registry i
 | a long-lived publishing token is the credential attackers want most, while an identity that lives for one run leaves nothing to steal. | [security] |
 
 ### version-published-with-provenance · MUST
-A version published by a run carries provenance the registry records: the repository, the commit and the run it was built from.
+A version is published only by a run, and carries provenance the registry records: the repository, the commit and the run it was built from.
 
 | Why | Tags |
 |---|---|
-| a consumer can then check that the version was built from the source it claims, and one published from anywhere else stands out. | [security] |
+| a consumer can then check that the version was built from the source it claims, and one published from a laptop stands out. | [security] |
+
+## Vulnerabilities
+
+### exploited-vulnerability-reported-in-time · MUST
+An actively exploited vulnerability in a released version is reported to the authority within the times the law that binds the product sets, such as the EU Cyber Resilience Act's 24 hours for an early warning from 11 September 2026.
+
+| Why | Tags |
+|---|---|
+| the deadline runs from when the maker learns of it, and a report late is a breach of its own. | [security] |
 
 ## Requirements for implementation
 

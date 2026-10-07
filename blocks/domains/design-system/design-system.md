@@ -1,6 +1,6 @@
 ---
 id: design-system
-summary: The tokens, variants and modes an interface's look is drawn from.
+summary: The tokens, variants, modes and primitives of an interface's look.
 requires: [ui]
 extends: null
 abstract: false
@@ -10,7 +10,7 @@ governs: []
 ---
 # Design system
 
-> A product that owns the look of its interface: tokens in tiers and from one source, the variants and modes drawn from them, and the proof that every pair of them reads. A product that uses another's design system lists `ui` alone.
+> A product that owns the look of its interface: tokens in tiers and from one source, the variants and modes drawn from them, the kit of primitives built on them, and the proof that every pair of them reads. A product that uses another's design system lists `ui` alone.
 
 ## Primitives
 
@@ -20,13 +20,6 @@ A primitive accepts its element's own props and reference, except a boolean it n
 | Why | Tags |
 |---|---|
 | without it every consumer wraps or forks the primitive for one attribute. | [ux] |
-
-### primitives-take-text-by-props · MUST
-The primitive library holds no user-facing text; text arrives through props, and only language-neutral glyphs — an ellipsis, a slash — and icons are its own.
-
-| Why | Tags |
-|---|---|
-| a primitive with its own text cannot be translated or reworded by the application that uses it. | [ux] |
 
 ## Tokens
 
@@ -75,7 +68,7 @@ A component's own variants — the look only its root needs, such as its `size` 
 | the map is the one place a variant is defined, so adding one cannot miss a copy and the props cannot disagree with it. | [ux] |
 
 ### cascading-variant-set-once-on-ancestor · MUST
-A variant that restyles descendants — a themed subtree, a look set by a parent — is set once on their ancestor and resolved by the platform's inheritance of styles, never passed down as a prop.
+A variant that restyles descendants — a themed subtree, a look set by a parent — is set once on their ancestor and resolved by the platform's inheritance of styles, or where it has none by the theme's own scope, never passed down as a prop.
 
 | Why | Tags |
 |---|---|
@@ -138,8 +131,8 @@ A token to be removed is first marked deprecated in the source, naming its repla
 
 ## Proof
 
-### contrast-tested-over-token-pairs · MUST
-Contrast is proven by a test over each pair of foreground and background tokens the design system declares, in every mode: at least 4.5:1 for text, 3:1 for large text, and 3:1 for the boundaries and states that identify a control, and for focus.
+### contrast-tested-over-token-pairs → text-and-controls-meet-the-contrast-minimum · MUST
+Contrast is proven by a test over each pair of foreground and background tokens the design system declares, in every mode.
 
 | Why | Tags |
 |---|---|
@@ -153,20 +146,6 @@ Each primitive of the design system is shown in each of its variants and states,
 | a variant nobody renders breaks unseen, and one showcase is what a review and a screenshot compare. | [ux, testing] |
 
 ## Requirements for implementation
-
-### ui-primitives-unstyled · SHOULD
-The library's primitives carry no look of their own.
-
-| Why | Tags |
-|---|---|
-| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
-
-### ui-primitives-render-the-callers-element · SHOULD
-The library lets a primitive render the caller's element — a link, a custom element — with the primitive's behaviour, without wrapping it in another element.
-
-| Why | Tags |
-|---|---|
-| a link can then take a primitive's behaviour and stay a real link, with no extra element around it. | [] |
 
 ### ui-styling-restricted-to-tokens · MUST
 The library lets its default scales be reset, so a check rejects a value outside the tokens.

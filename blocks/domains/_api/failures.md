@@ -4,7 +4,7 @@
 
 ## Answers
 
-### failure-answered-by-its-code → failure-shown-as-what-happened-and-what-next · MUST
+### failure-answered-by-its-code → expected-failure-is-part-of-the-contract · MUST
 A failure of a request is answered from what failed: an expected error with the answer its code maps to, carrying its code and details; a refusal the framework raises before the operation runs — a refused input, an unknown route, method or tool — as the caller's failure of that kind, a refused input naming the path of each field it refused; and any other failure as an internal error.
 
 | Why | Tags |
@@ -17,6 +17,13 @@ A failure that is neither an expected error nor a refusal of the caller's input 
 | Why | Tags |
 |---|---|
 | an unexpected failure's message and trace tell an attacker how the program works and which of its parts broke. | [errors, security] |
+
+### failure-answer-names-its-occurrence · SHOULD
+Every failure answer, a masked one included, carries an identifier of its occurrence — the trace id, or the problem document's `instance` — that finds its record in the program's logs.
+
+| Why | Tags |
+|---|---|
+| a masked answer otherwise leaves a caller nothing to quote to support, and support nothing to search for. | [errors] |
 
 ## Raising
 

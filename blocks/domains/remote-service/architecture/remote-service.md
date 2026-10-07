@@ -4,7 +4,7 @@
 
 ## Failures
 
-### transport-failures-mapped-once → expected-failure-is-part-of-the-contract · MUST
+### transport-failures-mapped-once → catch-handles-only-what-it-recognises · MUST
 One shared mapper per transport, in `shared/<transport>/`, turns the transport's failures into the program's errors, so nothing of the transport's library crosses an adapter.
 
 | Why | Tags |

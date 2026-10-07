@@ -22,7 +22,7 @@ Handling a message runs in a consumer span named after its operation and destina
 
 ## Measures
 
-### consumer-lag-measured-and-alerted → served-request-measured-by-rate-errors-and-duration · SHOULD
+### consumer-lag-measured-and-alerted · SHOULD
 Every consumer is measured by its lag — the age of its oldest waiting message and their count — and alerts when the lag passes a bound the project sets.
 
 | Why | Tags |

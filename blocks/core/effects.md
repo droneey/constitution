@@ -83,6 +83,13 @@ A write decided on data read earlier is made only if that data is still unchange
 |---|---|
 | two writers who read the same state otherwise overwrite each other, and the first update is lost without a trace. | [data] |
 
+### multi-step-process-compensated · SHOULD
+A business process that spans several programs or transactions keeps its state in a store, runs each step in a transaction of its own, and runs a compensating step for each step already done when a later one fails for good or a wait for a reply passes its deadline.
+
+| Why | Tags |
+|---|---|
+| no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
+
 ### irreversible-operation-runs-dry-by-default · MUST
 An operation run against a system — a script, a command, a migration, a deployment — that destroys data, spends money, changes a live system or sends something outward runs only behind an explicit flag; without the flag it shows what it would do.
 

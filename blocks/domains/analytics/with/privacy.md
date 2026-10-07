@@ -9,4 +9,4 @@ The analytics library stores nothing on the device and sends no identifier until
 
 | Why | Tags |
 |---|---|
-| without it, the measurement the law exempts cannot run without consent, and the rest cannot wait for it. | [security, data] |
+| a library that stores or identifies before consent makes the measurement the law exempts need consent, and starts the rest too early. | [security, data] |

@@ -17,3 +17,28 @@ A request that changes state is refused when its `Origin` names an origin that i
 | Why | Tags |
 |---|---|
 | a browser attaches its cookies to a request any page sends, and `SameSite` still lets a sibling host of the same site through; this check refuses what the cookie's attribute misses. | [security] |
+
+## Own origin
+
+### own-origin-taken-from-configuration · MUST
+An absolute address the program builds of itself — a link to reset a password, a callback, a redirect — takes its origin from configuration, never from the request's `Host` or `X-Forwarded-Host`.
+
+| Why | Tags |
+|---|---|
+| a request's host is the sender's to choose, so a reset link built from it sends the person's token to the attacker's server. | [security] |
+
+## Connections
+
+### socket-upgrade-accepted-only-from-an-allowed-origin → outside-address-followed-only-from-an-allowlist · MUST
+A WebSocket upgrade is accepted only from the program's own origin or one its allowlist names, and only with valid credentials.
+
+| Why | Tags |
+|---|---|
+| an upgrade is a `GET` no cross-origin policy guards, so without the check any page the person visits opens a socket with their cookies. | [security] |
+
+### long-lived-connection-bounded → kept-collection-bounded · MUST
+A long-lived connection — a WebSocket, an event stream — is closed after an idle time the project sets, and the messages it buffers for a slow reader are bounded.
+
+| Why | Tags |
+|---|---|
+| connections a client left open and buffers a slow reader never drains hold the server's memory until it falls. | [performance] |

@@ -5,11 +5,11 @@
 ## Settlement
 
 ### failed-message-settled-by-its-failure → last-resort-handler-one-per-entry · MUST
-A consumer's handler of last resort settles every failed message by its failure: one that cannot succeed — it fails its parse, names what does not exist, breaks a rule of the domain — goes to its dead letters at once, a transient one is released for a later delivery, and none is acknowledged as done.
+A consumer's handler of last resort settles every failed message by its failure: an expected failure of the domain — a refusal its rules make — is acknowledged as handled, its outcome recorded or published; one that can never succeed — it fails its parse, its type or version is unknown, or a defect broke its handling — goes to its dead letters at once; and a transient one, a message naming what has not arrived yet among them, is released for a later delivery.
 
 | Why | Tags |
 |---|---|
-| a poison message retried returns for ever and blocks those behind it, a transient failure dead-lettered loses work a retry would have done, and a failure acknowledged is lost. | [errors] |
+| a refusal is an outcome of the business and no fault to page anyone for, a poison message retried returns for ever and blocks those behind it, and across ordering keys a message often arrives before the one that creates what it names. | [errors] |
 
 ## Retries
 
@@ -28,12 +28,3 @@ A dead-lettered message keeps its body, its headers, its count of attempts and t
 | Why | Tags |
 |---|---|
 | a dead letter without its cause cannot be diagnosed, one without its body cannot be replayed, and one sent back automatically fails again for the same reason. | [errors, data] |
-
-## Processes
-
-### multi-step-process-compensated · SHOULD
-A business process that spans several programs or transactions keeps its state in a store, runs each step in a transaction of its own, and runs a compensating step for each step already done when a later one fails for good or a wait for a reply passes its deadline.
-
-| Why | Tags |
-|---|---|
-| no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
