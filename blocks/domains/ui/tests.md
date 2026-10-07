@@ -32,6 +32,13 @@ Behaviour that depends on layout, visibility or real focus is proven where the p
 |---|---|
 | a simulated screen computes no layout and fakes focus, so a spec there passes while the element is hidden, covered or unreachable. | [a11y, testing] |
 
+### screenshots-only-where-look-is-contract → snapshot-readable-by-eye · SHOULD
+Appearance is compared by screenshot only where the look is the contract, such as a showcase of primitives.
+
+| Why | Tags |
+|---|---|
+| screenshots elsewhere fail on every harmless change of style and are approved without reading. | [ux, testing] |
+
 ## Accessibility
 
 ### ui-specs-scan-accessibility · MUST

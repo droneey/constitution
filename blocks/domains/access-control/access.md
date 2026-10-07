@@ -12,7 +12,7 @@ Access is denied unless a rule grants it.
 | access open by default is open wherever someone forgot a rule. | [security] |
 
 ### operation-access-checked-on-every-call · MUST
-Access to an operation is checked against the caller's rights by the operation itself, on every call; an operation hidden from a caller who lacks the right is not thereby refused.
+Access to an operation is checked against the caller's rights on every call, at the operation's entry point; hiding an operation from a caller who lacks the right never stands in for the check.
 
 | Why | Tags |
 |---|---|

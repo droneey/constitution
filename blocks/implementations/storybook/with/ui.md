@@ -1,6 +1,6 @@
-# Storybook with a design system
+# Storybook with a user interface
 
-> Governs the screenshots of a design system's stories.
+> Governs the screenshots of a kit's stories.
 
 ### screenshots-over-kit-stories-only → screenshots-only-where-look-is-contract · SHOULD
 Screenshots are compared over the UI kit's stories, where the look is the contract, and nowhere else.

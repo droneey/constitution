@@ -28,13 +28,6 @@ A request by a method its resource does not take is answered `405` with `Allow` 
 |---|---|
 | the caller learns what the resource accepts without reading the contract. | [] |
 
-### unchanged-resource-answered-304 · SHOULD
-A `GET` of a resource with an `ETag` answers `304` with no body to an `If-None-Match` that matches it.
-
-| Why | Tags |
-|---|---|
-| a caller that polls downloads only what changed. | [performance] |
-
 ## Bodies
 
 ### answer-declares-its-exact-content-type · MUST
@@ -74,6 +67,13 @@ Every answer to a `GET` states its `Cache-Control`.
 |---|---|
 | with no directive each cache decides on its own how long to keep the answer. | [performance] |
 
+### unchanged-resource-answered-304 · SHOULD
+A `GET` of a resource with an `ETag` answers `304` with no body to an `If-None-Match` that matches it.
+
+| Why | Tags |
+|---|---|
+| a caller that polls downloads only what changed. | [performance] |
+
 ## Transport
 
 ### served-only-over-tls · MUST
@@ -83,7 +83,7 @@ Every address the program serves beyond its own machine answers only over TLS �
 |---|---|
 | a plain request can be read and changed by anyone on its path, and the header keeps the browser from ever trying one again. | [security] |
 
-### client-address-taken-from-a-trusted-proxy · MUST
+### client-address-taken-from-a-trusted-proxy → outside-address-followed-only-from-an-allowlist · MUST
 The address and the scheme of a client are read from `Forwarded` or `X-Forwarded-For` only when the proxy that set them is one the program names; otherwise from the connection.
 
 | Why | Tags |

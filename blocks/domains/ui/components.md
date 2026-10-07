@@ -76,13 +76,6 @@ A component that holds a value can be driven from outside or left to itself thro
 |---|---|
 | one interface serves the screen that owns the value and the one that does not, and a component that switches loses or fights the value. | [ux] |
 
-### primitive-passes-its-element-through · SHOULD
-A primitive accepts its element's own props and reference, except a boolean it names with its own prefix, and merges its own props and handlers with the caller's.
-
-| Why | Tags |
-|---|---|
-| without it every consumer wraps or forks the primitive for one attribute. | [ux] |
-
 ## Props
 
 ### boolean-props-prefixed → boolean-name-is-a-positive-predicate · MUST
@@ -112,13 +105,6 @@ An optional prop no call site passes is deleted, and its default is written wher
 | Why | Tags |
 |---|---|
 | an unused option is a branch nobody tests and an interface nobody needs. | [] |
-
-### primitives-take-text-by-props · MUST
-The primitive library holds no user-facing text; text arrives through props, and only language-neutral glyphs — an ellipsis, a slash — and icons are its own.
-
-| Why | Tags |
-|---|---|
-| a primitive with its own text cannot be translated or reworded by the application that uses it. | [ux] |
 
 ## Size
 
@@ -183,17 +169,3 @@ The library's complex patterns follow the platform's keyboard conventions; focus
 | Why | Tags |
 |---|---|
 | without it, the rule on accessible primitives cannot be kept through the library. | [a11y] |
-
-### ui-primitives-unstyled · SHOULD
-The library's primitives carry no look of their own.
-
-| Why | Tags |
-|---|---|
-| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
-
-### ui-primitives-render-the-callers-element · SHOULD
-The library lets a primitive render the caller's element — a link, a custom element — with the primitive's behaviour, without wrapping it in another element.
-
-| Why | Tags |
-|---|---|
-| a link can then take a primitive's behaviour and stay a real link, with no extra element around it. | [] |

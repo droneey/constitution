@@ -23,13 +23,6 @@ On a foldable screen, content and controls never cross the fold; the layout foll
 |---|---|
 | text and buttons that fall into the hinge cannot be read or pressed. | [ux] |
 
-### primitive-passes-attributes-and-class → primitive-passes-its-element-through · SHOULD
-In the browser, a primitive passes its native attributes and its class through, its class merged with the caller's.
-
-| Why | Tags |
-|---|---|
-| a caller then styles and sets attributes on a primitive as it would on the element underneath. | [ux] |
-
 ### images-declare-their-size · SHOULD
 An image declares its width and height.
 

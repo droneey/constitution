@@ -71,13 +71,6 @@ A form's schema composes the checks of the domain's value objects and sits with 
 
 ## Components
 
-### primitives-are-a-set-of-components → behaviour-lives-in-a-feature · SHOULD
-A set of interface primitives is a set of components, each a module of its own in `components/<name>/`, and grows `features/` only when it gains behaviour of the product.
-
-| Why | Tags |
-|---|---|
-| a primitive offers mechanism, not behaviour, so it needs no feature's layers, and a component found in its own folder is found the same way in every kit. | [] |
-
 ### component-lives-where-its-knowledge-lives → code-placed-by-its-reason-to-change · MUST
 A component lives where its knowledge lives: used by one screen, beside it; knows a feature, in that feature's `ui/`; a generic primitive, in `libs/ui`; specific to the application and used by two or more features, in `shared/ui`; the application's shell, in `root/ui`.
 
@@ -99,12 +92,12 @@ A component in `components/` takes data and callbacks and performs no input or o
 |---|---|
 | a presentational component can then be shown, reused and tested with any data. | [] |
 
-### widget-alone-consumes-binding-units · MUST
-Only a widget consumes binding units, and it works wherever it is placed.
+### binding-units-consumed-by-screens-and-widgets · MUST
+Within the interface, binding units are consumed by screens and widgets only, never by a component, and a widget works wherever it is placed.
 
 | Why | Tags |
 |---|---|
-| the logic of the interface then lives where its name says, and a widget moved to another screen keeps working. | [] |
+| a component that reaches no binding unit renders anything its caller hands it, and a widget that needs no screen's data goes anywhere. | [] |
 
 ### component-never-imports-a-widget · MUST
 A component never imports a widget.

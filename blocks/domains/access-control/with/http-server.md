@@ -14,7 +14,7 @@ A session the server keeps for a caller signed in from a browser travels in a co
 ## Authentication
 
 ### unauthenticated-request-answered-401-with-a-challenge · MUST
-A request without valid credentials is answered `401` with a `WWW-Authenticate` challenge, and one whose credentials lack a right for an object the caller may see `403`.
+A request without valid credentials is answered `401` with a `WWW-Authenticate` challenge, save a page a browser navigates to, which is sent to sign in, and one whose credentials lack a right for an object the caller may see `403`.
 
 | Why | Tags |
 |---|---|

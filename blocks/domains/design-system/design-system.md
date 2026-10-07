@@ -12,6 +12,22 @@ governs: []
 
 > A product that owns the look of its interface: tokens in tiers and from one source, the variants and modes drawn from them, and the proof that every pair of them reads. A product that uses another's design system lists `ui` alone.
 
+## Primitives
+
+### primitive-passes-its-element-through · SHOULD
+A primitive accepts its element's own props and reference, except a boolean it names with its own prefix, and merges its own props and handlers with the caller's.
+
+| Why | Tags |
+|---|---|
+| without it every consumer wraps or forks the primitive for one attribute. | [ux] |
+
+### primitives-take-text-by-props · MUST
+The primitive library holds no user-facing text; text arrives through props, and only language-neutral glyphs — an ellipsis, a slash — and icons are its own.
+
+| Why | Tags |
+|---|---|
+| a primitive with its own text cannot be translated or reworded by the application that uses it. | [ux] |
+
 ## Tokens
 
 ### token-sits-in-one-tier · MUST
@@ -137,6 +153,20 @@ Each primitive of the design system is shown in each of its variants and states,
 | a variant nobody renders breaks unseen, and one showcase is what a review and a screenshot compare. | [ux, testing] |
 
 ## Requirements for implementation
+
+### ui-primitives-unstyled · SHOULD
+The library's primitives carry no look of their own.
+
+| Why | Tags |
+|---|---|
+| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
+
+### ui-primitives-render-the-callers-element · SHOULD
+The library lets a primitive render the caller's element — a link, a custom element — with the primitive's behaviour, without wrapping it in another element.
+
+| Why | Tags |
+|---|---|
+| a link can then take a primitive's behaviour and stay a real link, with no extra element around it. | [] |
 
 ### ui-styling-restricted-to-tokens · MUST
 The library lets its default scales be reset, so a check rejects a value outside the tokens.

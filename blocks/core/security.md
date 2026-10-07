@@ -16,7 +16,7 @@ A secret or a piece of personal data never appears in a log, an error, a URL, a 
 
 | Why | Tags |
 |---|---|
-| output is copied to places with weaker access than the data it came from, and a URL is logged by every proxy and browser it passes. | [security, data] |
+| output is copied to places with weaker access than the data it came from, and a URL is logged by every proxy and browser it passes; a security audit needs to know who acted and from where, and no more. | [security, data] |
 
 ### leaked-secret-rotated-at-once · MUST
 A secret that leaked — into the repository, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.

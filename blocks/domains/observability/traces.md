@@ -2,15 +2,6 @@
 
 > Governs spans, the trace context, and the identity every signal carries.
 
-## Resources
-
-### signal-carries-the-service-identity · SHOULD
-Every log record, span and metric carries the identity of the service that wrote it — its name, its version and its environment — named as OpenTelemetry's semantic conventions name them.
-
-| Why | Tags |
-|---|---|
-| signals of several services and releases meet in one collector, and one without them cannot be traced to the code that wrote it. | [] |
-
 ## Context
 
 ### trace-id-taken-only-from-a-trusted-caller · SHOULD

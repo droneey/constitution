@@ -16,7 +16,7 @@ governs: ["**/cli/**"]
 ## Output and exit
 
 ### exit-codes-from-one-map · MUST
-Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag — and 70 an internal error, the program's own bug.
+Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag — and 70 an internal error, the program's own bug; an outcome a caller branches on that is neither success nor failure, such as a plan that found changes, takes a code of its own in the map.
 
 | Why | Tags |
 |---|---|

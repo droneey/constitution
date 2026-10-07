@@ -48,13 +48,6 @@ No class sizes with `h-screen` or `w-screen`.
 |---|---|
 | `h-screen` is `100vh`, which ignores the browser's own toolbars on phones, and `w-screen` is `100vw`, which overflows beside a scrollbar. | [] |
 
-### primitive-class-merged-by-cn → primitive-passes-attributes-and-class · SHOULD
-A primitive merges its class with the caller's through `cn()`, the caller's last.
-
-| Why | Tags |
-|---|---|
-| the merge keeps the last of two classes of one group, so the caller's utility replaces the primitive's instead of fighting it by its order in the stylesheet. | [ux] |
-
 ### class-merger-knows-the-theme · MUST
 The class merger is configured with every scale the theme defines — `extendTailwindMerge` given the theme's namespaces — and a spec proves that two classes of different groups both survive a merge.
 

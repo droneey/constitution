@@ -76,3 +76,10 @@ The list of tools is the same, in the same order, while the server's code and th
 | Why | Tags |
 |---|---|
 | clients cache the list, and a reordered list misses the model's prompt cache on every call. | [performance] |
+
+### changed-tool-ships-under-a-new-name → published-contract-changed-only-by-addition · MUST
+A tool whose contract changes incompatibly ships under a new name beside the old one, which is then retired as the contract's rules say, since a tool server serves no two versions of one name.
+
+| Why | Tags |
+|---|---|
+| a client cannot ask for a tool's older version, so a change made in place breaks every model prompted for the old one. | [] |

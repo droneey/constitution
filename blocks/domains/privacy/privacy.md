@@ -1,6 +1,6 @@
 ---
 id: privacy
-summary: "Personal data: consent, opt-out signals, retention and rights."
+summary: "Personal data: minimised, consented, kept, exported and erased."
 requires: []
 extends: null
 abstract: false

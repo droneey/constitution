@@ -24,3 +24,10 @@ A breaking version is a new major, named in the one place the API chose once —
 | Why | Tags |
 |---|---|
 | minor versions in addresses and two schemes in one API leave callers unsure what they get. | [] |
+
+### retired-field-marked-deprecated-in-the-openapi-document → retired-operation-announced-before-removal · MUST
+A field being retired is marked `deprecated` in the OpenAPI document, naming its replacement and its removal date.
+
+| Why | Tags |
+|---|---|
+| a field has no header of its own, so the contract is where a caller and a generated client learn it is going. | [] |

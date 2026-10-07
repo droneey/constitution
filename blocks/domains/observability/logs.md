@@ -41,6 +41,13 @@ Every log record a unit of work — a request, a task, a message — writes carr
 |---|---|
 | the records of one unit are then found together, across every function and library it passes through, while an id passed by hand is lost at the first call that does not take it. | [] |
 
+### log-level-has-one-meaning · SHOULD
+A record's level says what its reader must do: an error, that someone acts; a warning, that the work degraded and may need action; info, a step of normal work; debug, detail for a developer, off in production.
+
+| Why | Tags |
+|---|---|
+| an alert on errors works only while an error always means someone must act. | [] |
+
 ## Output
 
 ### log-output-structured-in-production · SHOULD

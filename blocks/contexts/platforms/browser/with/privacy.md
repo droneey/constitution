@@ -2,9 +2,9 @@
 
 > Governs how a page reads a person's opt-out signal.
 
-### global-privacy-control-read-from-the-page-and-the-request → opt-out-signal-honoured · MUST
-The opt-out signal is read from `navigator.globalPrivacyControl` in the page and from the `Sec-GPC` header of a request.
+### global-privacy-control-read-in-the-page → opt-out-signal-honoured · MUST
+A page reads the opt-out signal from `navigator.globalPrivacyControl`.
 
 | Why | Tags |
 |---|---|
-| the signal reaches the program by these two ways, and a page that reads only one misses it where the other carries it. | [data] |
+| a page that sets a tracker of its own learns of the signal only there. | [data] |

@@ -100,7 +100,7 @@ A screen works in portrait and in landscape and never locks its orientation, unl
 | a person whose device is mounted in one orientation cannot turn it. | [a11y] |
 
 ### time-limit-warned-and-extendable · MUST
-A time limit the user did not set — a session that expires, a form that times out — can be turned off or adjusted, or warns at least 20 seconds before it ends and is extended by a simple action, at least ten times; a limit an event in real time imposes, or one longer than twenty hours, is exempt.
+A time limit the user did not set — a session that expires, a form that times out — can be turned off or adjusted, or warns at least 20 seconds before it ends and is extended by a simple action, at least ten times; a limit an event in real time imposes, one longer than twenty hours, or one essential to the activity is exempt, as WCAG 2.2.1 says.
 
 | Why | Tags |
 |---|---|

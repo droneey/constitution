@@ -74,6 +74,13 @@ A release is marked by a tag of its version on the commit it was built from, and
 |---|---|
 | a version must always name the same code, and a tag that can be moved or made again lets whoever controls it swap the code under everyone who uses that version. | [security] |
 
+### release-tag-signed · SHOULD
+A release tag is signed by its release's identity.
+
+| Why | Tags |
+|---|---|
+| a signed tag proves which identity released the code, and an attacker who can push a tag cannot forge the signature. | [security] |
+
 ## Files
 
 ### large-files-outside-history · SHOULD
