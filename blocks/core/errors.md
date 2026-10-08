@@ -63,7 +63,7 @@ Where the language throws, only an error is thrown or rejected — never a strin
 | a thrown value that is not an error has no stack and no code, so no catch can recognise it and no log can trace it. | [errors] |
 
 ### failure-logged-once · SHOULD
-A failure is logged once, by the unit that handles it, or, where that unit is in the domain, by the unit that receives the domain's answer; never at every level it passes.
+A failure is logged once, by the unit that handles it, never at every level it passes.
 
 | Why | Tags |
 |---|---|

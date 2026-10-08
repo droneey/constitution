@@ -53,6 +53,13 @@ A choice between real alternatives that a later reader could propose again is re
 |---|---|
 | a choice recorded without its rejected alternatives is argued again by everyone who meets them. | [] |
 
+### change-to-a-trust-boundary-names-its-threats · SHOULD
+A change that adds an entry into the program or a crossing of a trust boundary names the threats it meets and how each is met, in the change.
+
+| Why | Tags |
+|---|---|
+| a threat named while the design is still open costs a sentence, and one found in production costs a breach. | [security] |
+
 ## Hand-back
 
 ### change-handed-back-with-a-passing-check · MUST

@@ -76,13 +76,6 @@ A check that guards access or trust — a signature, an allowlist, a token, a lo
 |---|---|
 | an attacker who can make the check fail otherwise passes it, and a missing setting that allows opens the door on the first misconfigured deployment. | [security] |
 
-### change-to-a-trust-boundary-names-its-threats · SHOULD
-A change that adds an entry into the program or a crossing of a trust boundary names the threats it meets and how each is met, in the change.
-
-| Why | Tags |
-|---|---|
-| a threat named while the design is still open costs a sentence, and one found in production costs a breach. | [security] |
-
 ## Primitives
 
 ### cryptographic-algorithm-approved-by-current-guidance · MUST

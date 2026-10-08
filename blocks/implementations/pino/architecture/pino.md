@@ -7,9 +7,9 @@
 |---|---|
 | every option that makes the pipeline is an option of the instance, so the code that creates it is the code that configures logging. | [] |
 
-### code-logs-through-the-port → root-alone-configures-logging · MUST
-Code logs through the logging port, which `root/` implements over the pino instance or a child of it; only `root/` imports pino.
+### code-logs-through-the-facade → root-alone-configures-logging · MUST
+Code logs through the program's logging facade, which `root/` implements over the pino instance or a child of it; only `root/` imports pino.
 
 | Why | Tags |
 |---|---|
-| no code below the root then depends on a logging library, and a spec gives the port a fake. | [] |
+| no code below the root then depends on a logging library, and a spec configures the facade's sink instead of pino's. | [] |

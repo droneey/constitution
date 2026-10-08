@@ -159,8 +159,8 @@ A binding unit binds one operation: it takes its adapter from the providers and 
 |---|---|
 | each operation is bound once, and the screen never learns which adapter serves it. | [] |
 
-### binding-unit-imports-no-adapter-or-ui · MUST
-A binding unit imports no adapter, which the providers hand it, and nothing of `ui/`, which imports it.
+### binding-unit-imports-nothing-of-the-ui · MUST
+A binding unit imports nothing of `ui/`, which imports it.
 
 | Why | Tags |
 |---|---|

@@ -130,6 +130,7 @@ rule	tidying-shipped-before-the-behaviour	core	blocks/core/changes.md		SHOULD			
 rule	tidying-keeps-the-specs-of-its-boundaries	core	blocks/core/changes.md		SHOULD	testing			true
 rule	format-changed-in-steps	core	blocks/core/changes.md		MUST	data			true
 rule	choice-between-alternatives-recorded	core	blocks/core/changes.md		SHOULD				true
+rule	change-to-a-trust-boundary-names-its-threats	core	blocks/core/changes.md		SHOULD	security			true
 rule	change-handed-back-with-a-passing-check	core	blocks/core/changes.md		MUST	testing			true
 rule	change-seen-working-before-hand-back	core	blocks/core/changes.md		SHOULD	testing			true
 rule	unit-answers-to-one-actor	core	blocks/core/code.md		SHOULD				true
@@ -238,7 +239,6 @@ rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
 rule	security-check-fails-closed	core	blocks/core/security.md		MUST	security			true
-rule	change-to-a-trust-boundary-names-its-threats	core	blocks/core/security.md		SHOULD	security			true
 rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
 rule	security-primitive-from-a-vetted-library	core	blocks/core/security.md		MUST	security			true
 rule	spec-proves-one-boundary	core	blocks/core/tests.md		SHOULD	testing			true
@@ -580,7 +580,7 @@ rule	model-given-only-the-tools-its-task-needs	language-model	blocks/domains/lan
 rule	outside-tool-definition-pinned	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	tool-acts-with-the-persons-rights	language-model	blocks/domains/language-model/agency.md		MUST	security		credential-has-least-privilege	true
 rule	consequential-tool-call-approved-by-its-person	language-model	blocks/domains/language-model/agency.md		MUST	security ux		irreversible-operation-runs-dry-by-default	true
-rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data			true
+rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data		agent-never-holds-the-lethal-trifecta	true
 rule	generated-code-runs-only-in-a-sandbox	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	memory-keeps-its-source-and-person	language-model	blocks/domains/language-model/agency.md		SHOULD	security			true
 rule	model-call-sets-its-output-limit	language-model	blocks/domains/language-model/budgets.md		MUST	performance			true
@@ -891,7 +891,7 @@ rule	store-never-replaces-a-drilled-prop	ui	blocks/domains/ui/architecture/ui.md
 rule	configuration-provider-reads-environment	ui	blocks/domains/ui/architecture/ui.md		MUST	security	architecture	root-alone-reads-the-environment	true
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	composition-root-wires-everything	true
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
-rule	binding-unit-imports-no-adapter-or-ui	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
+rule	binding-unit-imports-nothing-of-the-ui	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
 rule	binding-unit-gets-a-plain-form-on-demand	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture	structure-appears-by-symptom	true
 rule	data-result-is-union-by-status	ui	blocks/domains/ui/with/remote-data.md	remote-data	MUST	ux		illegal-state-unrepresentable	true
 rule	unloaded-data-has-no-stand-in	ui	blocks/domains/ui/with/remote-data.md	remote-data	MUST	data		absence-shown-by-the-type	true
@@ -1353,7 +1353,7 @@ rule	json-lines-to-stdout-in-production	pino	blocks/implementations/pino/pino.md
 rule	trace-id-added-by-mixin	pino	blocks/implementations/pino/pino.md		SHOULD			log-record-carries-the-trace-id	true
 rule	fields-first-message-second	pino	blocks/implementations/pino/pino.md		SHOULD			log-record-is-an-event-with-fields	true
 rule	pino-configured-by-the-root	pino	blocks/implementations/pino/architecture/pino.md		MUST		architecture	root-alone-configures-logging	true
-rule	code-logs-through-the-port	pino	blocks/implementations/pino/architecture/pino.md		MUST		architecture	root-alone-configures-logging	true
+rule	code-logs-through-the-facade	pino	blocks/implementations/pino/architecture/pino.md		MUST		architecture	root-alone-configures-logging	true
 rule	request-logger-takes-the-instance	pino	blocks/implementations/pino/with/http-server.md	http-server	MUST	data security			true
 rule	trace-middleware-registered-by-the-root	pino	blocks/implementations/pino/architecture/with/_api.md	_api	MUST		architecture		true
 rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/playwright.md		MUST	a11y testing		element-found-by-role-label-or-text	true
