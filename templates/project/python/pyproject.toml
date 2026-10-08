@@ -147,6 +147,14 @@ type = "protected"
 protected_modules = ["*.root"]
 allowed_importers = ["*.main", "*.entrypoints.*.main"]
 
+# a feature's adapters reach the root through the feature's surface
+[[tool.importlinter.contracts]]
+name = "adapter-imported-only-by-the-root"
+type = "protected"
+protected_modules = ["*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+allowed_importers = ["*.root", "*.root.**", "*.features.*", "*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+as_packages = false
+
 [[tool.importlinter.contracts]]
 name = "entrypoint-never-imported"
 type = "protected"

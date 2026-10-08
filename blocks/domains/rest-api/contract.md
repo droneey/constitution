@@ -32,7 +32,7 @@ A field being retired is marked `deprecated` in the OpenAPI document, naming its
 |---|---|
 | a field has no header of its own, so the contract is where a caller and a generated client learn it is going. | [] |
 
-### answer-enumeration-open-in-the-openapi-document → answer-enumeration-declared-open · MUST
+### answer-enumeration-extensible-in-the-openapi-document → enumeration-others-read-declared-extensible · MUST
 An enumeration in an answer is declared in the OpenAPI document as a string whose known values `x-extensible-enum` lists, never as a closed `enum`.
 
 | Why | Tags |

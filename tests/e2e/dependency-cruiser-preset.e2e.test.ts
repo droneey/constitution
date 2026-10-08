@@ -364,6 +364,17 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'adapters-know-no-caller',
     },
     {
+      condition: 'a use case imports an adapter past its port',
+      files: {
+        'src/features/orders/adapters/api/order.adapter.ts': exported('orderAdapter'),
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+          from: '../../../../adapters/api/order.adapter',
+          name: 'orderAdapter',
+        }),
+      },
+      rule: 'adapters-reached-only-from-the-root',
+    },
+    {
       condition: 'a read imports a write',
       files: {
         'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': exported('cancel'),

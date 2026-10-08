@@ -47,11 +47,18 @@ A set of values the program declares is never typed out again: a subset is a nam
 | a restated set drifts from its source, and a schema stricter or looser than its type locks out, or lets in, what the program does not mean. | [] |
 
 ### outside-vocabulary-reached-through-a-total-table · MUST
-A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete.
+A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows.
 
 | Why | Tags |
 |---|---|
-| a value the other party adds then fails the check instead of falling through to a default nobody chose. | [data] |
+| a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. | [data] |
+
+### enumeration-others-read-declared-extensible · MUST
+An enumeration in a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know, and a reader settles a value it does not know as the contract says, never failing for it.
+
+| Why | Tags |
+|---|---|
+| a reader that fails on a new value breaks on the first one its writer adds, though nothing it relies on changed. | [data] |
 
 ### unchecked-type-never-used · MUST
 No value, parameter, return or type argument has the type that switches the type checker off, in specs too; one the language infers as that type for lack of an annotation counts as well.

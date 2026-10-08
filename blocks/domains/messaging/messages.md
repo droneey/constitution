@@ -34,13 +34,6 @@ A message type another program reads changes only by addition — a new optional
 |---|---|
 | a queue and a log keep messages written before the change, and consumers deployed before it read them and the new ones alike. | [data] |
 
-### message-enumeration-declared-open · MUST
-An enumeration in a message type is declared open, and a consumer settles a value it does not know as its contract says, never failing the message for it.
-
-| Why | Tags |
-|---|---|
-| a consumer that fails on a new value dead-letters every message its publisher sends after adding it. | [data] |
-
 ### message-contract-change-refused-by-a-diff · MUST
 A check compares the schema of every message type another program reads with the one last released, and fails on a change that is not an addition.
 

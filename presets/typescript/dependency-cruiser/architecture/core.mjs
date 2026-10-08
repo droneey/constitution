@@ -336,6 +336,22 @@ export default {
       },
     },
     {
+      name: 'adapters-reached-only-from-the-root',
+      severity: 'error',
+      from: {
+        pathNot: [
+          ...ADAPTERS,
+          ...ROOT,
+          ...SPECS,
+          // A feature's surface offers its adapters to the root.
+          '^src/features/[^/]+/index\\.[^/]+$',
+        ],
+      },
+      to: {
+        path: ADAPTERS,
+      },
+    },
+    {
       name: 'reads-never-reach-writes',
       severity: 'error',
       from: {

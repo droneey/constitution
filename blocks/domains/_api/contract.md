@@ -59,13 +59,6 @@ An operation or a field a published contract retires is announced before it is r
 |---|---|
 | a caller learns of a removal from the answers it already reads, in time to move, instead of from the failure on the day it happens. | [] |
 
-### answer-enumeration-declared-open · MUST
-An enumeration in an answer is declared open: a caller is told to handle a value it does not know.
-
-| Why | Tags |
-|---|---|
-| a client generated from a closed enumeration fails on its first new value, so adding one would break it. | [] |
-
 ## Uploads
 
 ### upload-accepted-by-its-content · MUST

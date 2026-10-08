@@ -5,7 +5,7 @@
 ## Identity
 
 ### version-published-without-a-long-lived-token → credential-has-least-privilege · MUST
-A version is published without a long-lived token, by an identity the registry issues to the one run that publishes it.
+A run publishes a version without a long-lived token, by an identity the registry issues to that run.
 
 | Why | Tags |
 |---|---|

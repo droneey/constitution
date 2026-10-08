@@ -271,6 +271,17 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: 'a binding unit imports an adapter past its port',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+        'src/shop/features/orders/app/__init__.py': 'from ..adapters.http import ADAPTER\n',
+      },
+      finding: 'adapter-imported-only-by-the-root BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a read use-case imports a write one',
       changes: {
         ...FEATURE,

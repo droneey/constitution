@@ -41,6 +41,13 @@ The composition root is imported only by entry files and by the delivery layer�
 |---|---|
 | the root knows every concrete choice, and code that imports it can no longer be tested with fakes. | [] |
 
+### adapter-imported-only-by-the-root · MUST
+An adapter is imported only by the composition root, through its feature's surface where it belongs to a feature, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
+
+| Why | Tags |
+|---|---|
+| an adapter imported past its port binds its caller to the vendor the port hides, and a spec can replace it only by patching the import. | [] |
+
 ### entrypoint-never-imported · MUST
 No code imports an entrypoint; an entrypoint composes features through their surfaces and holds what ships only in its artefact.
 

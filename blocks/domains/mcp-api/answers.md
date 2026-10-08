@@ -43,7 +43,7 @@ Text a tool returns that others wrote — a page, a document, a message — trav
 |---|---|
 | text others wrote can carry instructions, and a named field lets the client and the model tell it from the server's own words. | [security] |
 
-### tool-answer-enumeration-open-in-its-schema → answer-enumeration-declared-open · MUST
+### tool-answer-enumeration-extensible-in-its-schema → enumeration-others-read-declared-extensible · MUST
 An enumeration in a tool's output schema is a string whose known values its description names, never a closed `enum`.
 
 | Why | Tags |

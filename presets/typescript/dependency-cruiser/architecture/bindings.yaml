@@ -31,6 +31,8 @@ core:
     - kernel-role-reached-through-its-surface
     - module-reached-through-its-surface
     - module-reached-through-its-surface-from-outside-modules
+  adapter-imported-only-by-the-root:
+    - adapters-reached-only-from-the-root
   adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-blind-to-each-other
     - adapters-know-no-caller

@@ -286,6 +286,7 @@ rule	shape-composed-of-small-shapes	core	blocks/core/types.md		SHOULD				true
 rule	type-lives-with-its-consumer	core	blocks/core/types.md		SHOULD				true
 rule	declared-values-never-typed-again	core	blocks/core/types.md		MUST				true
 rule	outside-vocabulary-reached-through-a-total-table	core	blocks/core/types.md		MUST	data			true
+rule	enumeration-others-read-declared-extensible	core	blocks/core/types.md		MUST	data			true
 rule	unchecked-type-never-used	core	blocks/core/types.md		MUST				true
 rule	invariant-checked-at-construction	core	blocks/core/types.md		MUST				true
 rule	invariant-value-is-plain-immutable-data	core	blocks/core/types.md		MUST	data			true
@@ -313,6 +314,7 @@ rule	domain-imports-only-itself-the-kernel-and-shared-contracts	core	blocks/core
 rule	feature-never-imports-a-feature	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	effects-held-only-by-the-edge	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	root-imported-only-by-entries-and-delivery-wiring	core	blocks/core/architecture/layers.md		MUST		architecture		true
+rule	adapter-imported-only-by-the-root	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	entrypoint-never-imported	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	integration-never-imported	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	kernel-imports-only-itself	core	blocks/core/architecture/layers.md		MUST		architecture		true
@@ -379,7 +381,6 @@ rule	request-binds-only-declared-fields	_api	blocks/domains/_api/contract.md		MU
 rule	write-takes-an-idempotency-key	_api	blocks/domains/_api/contract.md		SHOULD	data		operation-idempotent-by-design	true
 rule	published-contract-changed-only-by-addition	_api	blocks/domains/_api/contract.md		MUST				true
 rule	retired-operation-announced-before-removal	_api	blocks/domains/_api/contract.md		MUST				true
-rule	answer-enumeration-declared-open	_api	blocks/domains/_api/contract.md		MUST				true
 rule	upload-accepted-by-its-content	_api	blocks/domains/_api/contract.md		MUST	security			true
 rule	framework-parses-a-request-before-its-handler	_api	blocks/domains/_api/contract.md		MUST	security			true
 rule	failure-answered-by-its-code	_api	blocks/domains/_api/failures.md		MUST	errors		expected-failure-is-part-of-the-contract	true
@@ -626,7 +627,7 @@ rule	tool-answer-bounded-for-the-context	mcp-api	blocks/domains/mcp-api/answers.
 rule	tool-answer-carries-the-identifiers-the-next-tool-takes	mcp-api	blocks/domains/mcp-api/answers.md		SHOULD				true
 rule	tool-data-answer-structured-by-its-output-schema	mcp-api	blocks/domains/mcp-api/answers.md		SHOULD				true
 rule	outside-text-in-an-answer-kept-as-data	mcp-api	blocks/domains/mcp-api/answers.md		SHOULD	security			true
-rule	tool-answer-enumeration-open-in-its-schema	mcp-api	blocks/domains/mcp-api/answers.md		MUST			answer-enumeration-declared-open	true
+rule	tool-answer-enumeration-extensible-in-its-schema	mcp-api	blocks/domains/mcp-api/answers.md		MUST	data		enumeration-others-read-declared-extensible	true
 rule	secret-never-asked-through-a-form	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security			true
 rule	url-elicitation-completed-by-the-same-user	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security			true
 rule	long-tool-call-answered-with-a-task	mcp-api	blocks/domains/mcp-api/interaction.md		SHOULD	ux		long-operation-answered-with-a-handle	true
@@ -658,7 +659,6 @@ rule	message-carries-a-stable-id-type-source-and-time	messaging	blocks/domains/m
 rule	message-carries-its-correlation-and-causation	messaging	blocks/domains/messaging/messages.md		SHOULD				true
 rule	message-contract-published-machine-readable	messaging	blocks/domains/messaging/messages.md		MUST				true
 rule	message-type-changed-only-by-addition	messaging	blocks/domains/messaging/messages.md		MUST	data		format-changed-in-steps	true
-rule	message-enumeration-declared-open	messaging	blocks/domains/messaging/messages.md		MUST	data			true
 rule	message-contract-change-refused-by-a-diff	messaging	blocks/domains/messaging/messages.md		MUST	data			true
 rule	message-carries-only-its-declared-fields	messaging	blocks/domains/messaging/messages.md		MUST	data security			true
 rule	message-carries-no-secret	messaging	blocks/domains/messaging/messages.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
@@ -783,7 +783,7 @@ rule	contract-published-as-openapi	rest-api	blocks/domains/rest-api/contract.md	
 rule	openapi-document-has-one-source	rest-api	blocks/domains/rest-api/contract.md		MUST	data		fact-has-one-source	true
 rule	version-named-once-by-its-major	rest-api	blocks/domains/rest-api/contract.md		SHOULD				true
 rule	retired-field-marked-deprecated-in-the-openapi-document	rest-api	blocks/domains/rest-api/contract.md		MUST			retired-operation-announced-before-removal	true
-rule	answer-enumeration-open-in-the-openapi-document	rest-api	blocks/domains/rest-api/contract.md		MUST			answer-enumeration-declared-open	true
+rule	answer-enumeration-extensible-in-the-openapi-document	rest-api	blocks/domains/rest-api/contract.md		MUST	data		enumeration-others-read-declared-extensible	true
 rule	idempotency-key-carried-by-its-header	rest-api	blocks/domains/rest-api/wire.md		SHOULD	data		write-takes-an-idempotency-key	true
 rule	rate-limited-request-answered-429	rest-api	blocks/domains/rest-api/wire.md		SHOULD	performance security		caller-rate-limited	true
 rule	retired-operation-answers-deprecation-headers	rest-api	blocks/domains/rest-api/wire.md		MUST			retired-operation-announced-before-removal	true

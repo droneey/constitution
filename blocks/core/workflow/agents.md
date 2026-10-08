@@ -12,7 +12,7 @@ Consent a rule asks for is given by the person where the agent asks for it — a
 | consent is given where the person who answers for an action sees it asked, and only for what they saw. | [security] |
 
 ### unattended-agent-acts-within-a-standing-grant · MUST
-An agent run with no person present — in a pipeline, on a schedule, from an issue — acts only within a standing grant the project's files declare, under an identity scoped to its task, and what lies outside the grant waits for a person.
+An agent run with no person present — in a pipeline, on a schedule, from an issue — acts only within a standing grant the project's files declare, which is the person's go-ahead for each action within it, under an identity scoped to its task, and what lies outside the grant waits for a person.
 
 | Why | Tags |
 |---|---|

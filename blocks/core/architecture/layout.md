@@ -120,7 +120,7 @@ A surface re-exports by name what callers may use: no declaration, no logic, no 
 | a surface that declares or computes becomes a room of its own, and a wildcard offers internals nobody chose to offer. | [] |
 
 ### surface-offers-operations-not-mechanisms · SHOULD
-A feature’s surface offers its operations and their presentation — use cases, binding units, entities — never its mechanisms: repositories, mappers, wire models.
+A feature’s surface offers its operations and their presentation — use cases, binding units, entities — and its adapters to the composition root, never its mechanisms: mappers, wire models, the internals of an adapter.
 
 | Why | Tags |
 |---|---|
