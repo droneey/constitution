@@ -18,6 +18,7 @@ const WELL_FORMED = {
     "import type { Money } from '../../kernel/values';\nexport interface Mail { cost: Money }\n",
   'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
     "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
+  'src/features/orders/adapters/api/index.ts': "export { order } from './order.adapter';\n",
   'src/features/orders/adapters/api/order.adapter.ts': importing({
     from: '../../domain/entities',
     name: 'order',
@@ -49,7 +50,7 @@ const WELL_FORMED = {
     name: 'wiring',
   }),
   'src/root/wiring.ts':
-    "import { sendMail } from '../adapters/mail';\nimport { listOrders } from '../features/orders';\nexport const wiring = [sendMail, listOrders];\n",
+    "import { sendMail } from '../adapters/mail';\nimport { listOrders } from '../features/orders';\nimport { order } from '../features/orders/adapters/api';\nexport const wiring = [sendMail, listOrders, order];\n",
   'src/shared/format/index.ts': "export { format } from './format';\n",
   'src/shared/format/format.ts': importing({
     from: '../../kernel/values',
@@ -371,6 +372,14 @@ describe('the dependency-cruiser layer set', () => {
           from: '../../../../adapters/api/order.adapter',
           name: 'orderAdapter',
         }),
+      },
+      rule: 'adapters-reached-only-from-the-root',
+    },
+    {
+      condition: "a feature's surface offers its adapter",
+      files: {
+        'src/features/orders/adapters/api/index.ts': exported('orderAdapter'),
+        'src/features/orders/index.ts': "export { orderAdapter } from './adapters/api';\n",
       },
       rule: 'adapters-reached-only-from-the-root',
     },

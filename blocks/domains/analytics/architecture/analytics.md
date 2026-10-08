@@ -5,7 +5,7 @@
 ## Sinks
 
 ### sinks-behind-one-contract → new-kind-added-as-a-member · MUST
-Each analytics service is one sink, one `.sink` file in `sinks/`, under one contract beside the folder; a registry chooses the active sinks.
+Each analytics service is one sink, one `.sink` file in `sinks/`, under one contract beside the folder; the composition root chooses the active sinks and hands them to the one that sends.
 
 | Why | Tags |
 |---|---|

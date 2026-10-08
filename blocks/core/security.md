@@ -12,7 +12,7 @@ A secret is never written into the repository — not in code, documents, tests 
 | a secret in the repository is readable by everyone who can read it, and by every copy made of it. | [security] |
 
 ### secret-and-personal-data-kept-out-of-output · MUST
-A secret or a piece of personal data never appears in a log, an error, a URL, a build artefact, test data or a document; an error that reaches anyone but the data’s owner carries identifiers, never the values it rejected. An audit record kept for security holds the identifier and the address its event needs, and nothing more.
+A secret or a piece of personal data never appears in a log, an error, a URL, a build artefact, test data or a document, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's — and the identifier of a record; an error that reaches anyone but the data’s owner carries identifiers, never the values it rejected. An audit record kept for security holds the identifier and the address its event needs, and nothing more.
 
 | Why | Tags |
 |---|---|
@@ -75,6 +75,13 @@ A check that guards access or trust — a signature, an allowlist, a token, a lo
 | Why | Tags |
 |---|---|
 | an attacker who can make the check fail otherwise passes it, and a missing setting that allows opens the door on the first misconfigured deployment. | [security] |
+
+### change-to-a-trust-boundary-names-its-threats · SHOULD
+A change that adds an entry into the program or a crossing of a trust boundary names the threats it meets and how each is met, in the change.
+
+| Why | Tags |
+|---|---|
+| a threat named while the design is still open costs a sentence, and one found in production costs a breach. | [security] |
 
 ## Primitives
 

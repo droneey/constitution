@@ -237,7 +237,11 @@ export default {
       },
       to: {
         path: `^src/(${MODULE_LAYERS})/[^/]+/`,
-        pathNot: `^src/(${MODULE_LAYERS})/[^/]+/index\\.[^/]+$`,
+        pathNot: [
+          `^src/(${MODULE_LAYERS})/[^/]+/index\\.[^/]+$`,
+          // The root reaches a feature's adapter through the adapter's own surface.
+          '^src/features/[^/]+/adapters/[^/]+/index\\.[^/]+$',
+        ],
       },
     },
     {
@@ -343,8 +347,8 @@ export default {
           ...ADAPTERS,
           ...ROOT,
           ...SPECS,
-          // A feature's surface offers its adapters to the root.
-          '^src/features/[^/]+/index\\.[^/]+$',
+          // The surface of a package offers its adapters to its consumers.
+          '^src/index\\.[^/]+$',
         ],
       },
       to: {

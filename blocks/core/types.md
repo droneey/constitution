@@ -54,7 +54,7 @@ A vocabulary another party owns — its codes, its statuses — is reached throu
 | a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. | [data] |
 
 ### enumeration-others-read-declared-extensible · MUST
-An enumeration in a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know, and a reader settles a value it does not know as the contract says, never failing for it.
+An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know; reading another's contract that declares one, the program maps a value it does not know to a member of its own for the unknown, which every branch names, and never fails for it. An enumeration in a request the program accepts stays closed.
 
 | Why | Tags |
 |---|---|
@@ -122,7 +122,7 @@ Absence is spelled by one value, which the language block names, and shown in th
 |---|---|
 | two spellings of absence make every check ask twice, and a stand-in value passes for a real one. | [data] |
 
-### instant-carries-its-zone · MUST
+### instant-is-an-exact-time · MUST
 An instant is an exact time — in UTC, or with its offset — kept apart from a calendar date and a wall time, which are types of their own; no time is read in the machine’s zone by default.
 
 | Why | Tags |

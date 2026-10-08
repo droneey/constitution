@@ -22,8 +22,15 @@ An invariant the store can express — a uniqueness, a reference, a required val
 
 ## Backups
 
+### owned-data-backed-up · MUST
+Owned data is backed up, often enough to lose no more than the recovery point the project sets, into a place a fault or an attacker of the store cannot reach.
+
+| Why | Tags |
+|---|---|
+| owned data has no other copy, and a backup in reach of what destroyed the store goes with it. | [data] |
+
 ### backup-restored-on-a-schedule · SHOULD
-Owned data is backed up, and a backup is restored on a schedule into a place apart and checked.
+A backup is restored on a schedule into a place apart and checked.
 
 | Why | Tags |
 |---|---|

@@ -107,7 +107,7 @@ A component never imports a widget.
 | a component that holds a widget holds its logic too, and stops being presentational. | [] |
 
 ### ui-layer-imports-only-what-its-feature-offers → import-points-inward · MUST
-A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities — their types, enumerations and functions — and the kernel, never an adapter, a contract or a use case of the domain.
+A feature's `ui/` imports `libs/ui`, `shared/ui`, its own binding units, its entities and value objects — their types, enumerations, checks and functions — its errors' codes and the kernel, never an adapter, a contract or a use case of the domain.
 
 | Why | Tags |
 |---|---|

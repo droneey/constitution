@@ -35,7 +35,7 @@ No provider, controller or guard takes `ModuleRef` and calls its `get` or `resol
 | a dependency asked for at run time appears in no constructor and no module, so neither a reader nor a spec sees it until it fails. | [testing] |
 
 ### no-global-module → composition-root-wires-everything · MUST
-No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — the adapter of a contract of `contracts/` — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
+No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — an adapter, its own feature's included — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
 
 | Why | Tags |
 |---|---|

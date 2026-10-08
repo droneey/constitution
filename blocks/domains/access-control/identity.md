@@ -33,7 +33,7 @@ A person can sign in with a phishing-resistant factor, such as a passkey.
 | a passkey cannot be typed into a fake page, which defeats the attack that steals most accounts. | [security] |
 
 ### privileged-account-signs-in-with-a-phishing-resistant-factor · MUST
-An account with privileges over other accounts, the program's settings or its data signs in only with a phishing-resistant factor.
+An account with privileges over other accounts, the program's settings or other people's data signs in only with a phishing-resistant factor; where sign-in goes through an outside provider, the program checks that factor in the ID token's `acr` or `amr`.
 
 | Why | Tags |
 |---|---|

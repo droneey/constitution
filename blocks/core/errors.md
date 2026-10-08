@@ -12,7 +12,7 @@ A failure is expected — a case the contract foresees and a caller can act on: 
 | a caller can handle only what it foresees, and a defect handled like an expected failure hides the bug and corrupts the data that follows. | [errors] |
 
 ### expected-failure-is-part-of-the-contract · SHOULD
-An expected failure is an error of the program’s own — never one of the framework that serves it — with a stable code a caller can branch on and details that say what to do, and the contract that can produce it lists it where its callers read it, in the form its language block names.
+An expected failure is an error of the program’s own — never one of the framework that serves it — with a stable code a caller can branch on and details that say what to do, and the contract that can produce it names it where its callers read it — in its signature's type, or in one named type of its failures beside it.
 
 | Why | Tags |
 |---|---|
@@ -62,8 +62,8 @@ Where the language throws, only an error is thrown or rejected — never a strin
 |---|---|
 | a thrown value that is not an error has no stack and no code, so no catch can recognise it and no log can trace it. | [errors] |
 
-### failure-reported-once · SHOULD
-A failure is logged once, by the unit that handles it, never at every level it passes.
+### failure-logged-once · SHOULD
+A failure is logged once, by the unit that handles it, or, where that unit is in the domain, by the unit that receives the domain's answer; never at every level it passes.
 
 | Why | Tags |
 |---|---|

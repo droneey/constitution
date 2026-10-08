@@ -26,7 +26,7 @@ A structure — an abstraction, a pattern, a shared module, a layer — appears 
 | a structure made in advance guesses its axis, usually wrongly, and must be torn out before it can be fixed. | [] |
 
 ### new-kind-added-as-a-member · MUST
-A new kind of an open set — a vendor, a command, a format — is added as a new member and its registration, without editing the code that handles the other members. A set is open when each member brings its own code and no logic outside the members decides on each; a set the program's logic decides on member by member is closed.
+A new kind of an open set — a vendor, a command, a format — is added as a new member and its registration, without editing the code that handles the other members. A set is open when its members are interchangeable ways to do one job — vendors, commands, formats — and closed when the program's logic decides on each member apart — stages, outcomes.
 
 | Why | Tags |
 |---|---|

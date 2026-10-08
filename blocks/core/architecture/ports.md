@@ -63,7 +63,7 @@ An adapter implements, over one outside system, every contract of its owner that
 | one system’s knowledge — its client, its errors, its wire shapes — is then in one place. | [] |
 
 ### adapter-built-by-factory-object-or-class · SHOULD
-An adapter is a factory, a module object for one with no dependency, or a class whose constructor takes its dependencies; never an instance built when its module loads.
+An adapter is a factory, a module object for one with no dependency and no state, or a class whose constructor takes its dependencies; never an instance with a client or a connection built when its module loads.
 
 | Why | Tags |
 |---|---|

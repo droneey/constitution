@@ -32,5 +32,5 @@ The data layer is seeded before Matomo's container script, and the script loads 
 | Requirement | How | Met |
 |---|---|---|
 | `analytics-stores-nothing-until-consent` | `requireConsent`, `requireCookieConsent`, cookieless mode | yes |
-| `analytics-anonymous-by-default` | address anonymisation on the instance; `setUserId` is never called | yes |
+| `analytics-drops-the-ip-address` | address anonymisation on the instance; `setUserId` is never called | yes |
 | `analytics-loads-without-blocking` | the container script loads asynchronously; a push onto the data layer never waits | yes |

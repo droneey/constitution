@@ -35,8 +35,8 @@ Personal data is deleted or made anonymous when the retention period of its purp
 |---|---|
 | data kept past its purpose is a liability that grows with every breach and every request. | [data] |
 
-### personal-data-reaches-a-third-party-only-as-a-listed-processor · MUST
-Personal data reaches another company only when the inventory lists it as a processor, under terms that bind it to the program's purpose.
+### personal-data-reaches-only-a-listed-recipient · MUST
+Personal data reaches another company only when the inventory lists it as a recipient — a processor bound by terms to the program's purpose, or a controller with a legal basis of its own, the person's consent among them — and leaves the region whose law protects it only under a transfer that law allows.
 
 | Why | Tags |
 |---|---|

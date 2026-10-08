@@ -5,18 +5,18 @@
 ## Identity
 
 ### version-published-without-a-long-lived-token → credential-has-least-privilege · MUST
-A run publishes a version without a long-lived token, by an identity the registry issues to that run.
+A version is published without a long-lived token: by an identity the registry issues to the one run that publishes it, or, for a unit's first version, before the registry can trust a run, by a person who proves a second factor.
 
 | Why | Tags |
 |---|---|
 | a long-lived publishing token is the credential attackers want most, while an identity that lives for one run leaves nothing to steal. | [security] |
 
 ### version-published-with-provenance · MUST
-A version is published only by a run, and carries provenance the registry records: the repository, the commit and the run it was built from.
+A version a run publishes carries provenance the registry records: the repository, the commit and the run it was built from.
 
 | Why | Tags |
 |---|---|
-| a consumer can then check that the version was built from the source it claims, and one published from a laptop stands out. | [security] |
+| a consumer can then check that the version was built from the source it claims, and one published from elsewhere stands out. | [security] |
 
 ## Requirements for implementation
 

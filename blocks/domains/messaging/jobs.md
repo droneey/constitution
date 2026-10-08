@@ -27,7 +27,7 @@ A scheduled job declares what happens to a tick missed while nothing ran — run
 
 ## Time
 
-### schedule-names-its-time-zone → instant-carries-its-zone · MUST
+### schedule-names-its-time-zone → instant-is-an-exact-time · MUST
 A schedule names its time zone, and one set in local time states what it does in the hour a change of clock skips or repeats.
 
 | Why | Tags |

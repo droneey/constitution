@@ -90,7 +90,7 @@ A failing analytics destination, or a failure of the code that sends to it, neit
 
 ## Requirements for implementation
 
-### analytics-anonymous-by-default · MUST
+### analytics-drops-the-ip-address · MUST
 The library truncates or drops the IP address.
 
 | Why | Tags |

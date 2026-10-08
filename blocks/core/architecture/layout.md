@@ -99,7 +99,7 @@ A pipeline’s stages live in its steps folder, in the order the use case calls 
 ## Surfaces
 
 ### module-reached-only-through-its-surface · MUST
-A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else.
+A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else; the composition root reaches a feature's adapter through that adapter's own surface.
 
 | Why | Tags |
 |---|---|
@@ -120,7 +120,7 @@ A surface re-exports by name what callers may use: no declaration, no logic, no 
 | a surface that declares or computes becomes a room of its own, and a wildcard offers internals nobody chose to offer. | [] |
 
 ### surface-offers-operations-not-mechanisms · SHOULD
-A feature’s surface offers its operations and their presentation — use cases, binding units, entities — and its adapters to the composition root, never its mechanisms: mappers, wire models, the internals of an adapter.
+A feature’s surface offers its operations and their presentation — use cases, binding units, entities — never its mechanisms: its adapters, mappers, wire models.
 
 | Why | Tags |
 |---|---|

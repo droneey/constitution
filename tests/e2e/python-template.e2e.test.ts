@@ -282,6 +282,17 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: "a feature's surface offers its adapter",
+      changes: {
+        'src/shop/features/__init__.py': '',
+        'src/shop/features/orders/__init__.py': 'from .adapters.http import ADAPTER\n',
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+      },
+      finding: 'adapter-imported-only-by-the-root BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a read use-case imports a write one',
       changes: {
         ...FEATURE,
@@ -475,6 +486,18 @@ describe('the python template', () => {
         'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
       },
       task: 'code:check',
+    },
+    {
+      condition: "the root reaches a feature's adapter through the adapter's own surface",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py':
+          'from shop.features.orders.adapters.http import ADAPTER\n\nWIRED = ADAPTER\n',
+      },
+      task: 'architecture:check',
     },
     {
       condition: 'the only mutants of a new line are marked equivalent',

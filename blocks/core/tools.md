@@ -42,7 +42,7 @@ A suppression silences one finding: it sits on the finding’s line or the line 
 | a narrow suppression can be judged where it stands; a broad one silences rules and lines nobody meant to. | [] |
 
 ### check-never-weakened-to-pass · MUST
-A failing check is made to pass by fixing its cause, never by changing a test’s expectation, skipping a test, adding a suppression, special-casing a test input or loosening a tool’s configuration, unless that change is the task or a person agreed to it by name.
+A failing check is made to pass by fixing its cause, never by changing a test’s expectation, skipping a test, adding a suppression, special-casing a test input or loosening a tool’s configuration, unless that change is the task, another rule asks for it, or a person agreed to it by name.
 
 | Why | Tags |
 |---|---|

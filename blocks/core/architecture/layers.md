@@ -13,7 +13,7 @@ An import points inward, toward stability: an outer layer imports an inner one, 
 |---|---|
 | an outward import lets a volatile detail break a stable rule. | [] |
 
-### domain-imports-only-itself-the-kernel-and-shared-contracts · MUST
+### domain-imports-only-itself-the-kernel-and-top-level-contracts · MUST
 The domain imports only itself, the kernel and the top-level `contracts/`: no framework and no input or output; a tool’s types stop at its boundary.
 
 | Why | Tags |
@@ -42,7 +42,7 @@ The composition root is imported only by entry files and by the delivery layer�
 | the root knows every concrete choice, and code that imports it can no longer be tested with fakes. | [] |
 
 ### adapter-imported-only-by-the-root · MUST
-An adapter is imported only by the composition root, through its feature's surface where it belongs to a feature, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
+An adapter is imported only by the composition root and the entry files, through the adapter's own surface, by the surface of a package that offers it, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
 
 | Why | Tags |
 |---|---|

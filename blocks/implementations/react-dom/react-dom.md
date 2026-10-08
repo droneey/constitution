@@ -55,7 +55,7 @@ An element's inline `style` is an object literal of custom properties only; geom
 |---|---|
 | an inline visual value is a value written outside the tokens, while a custom property passes data to the stylesheet that styles it. | [ux] |
 
-### render-errors-reported-at-the-root → failure-reported-once · SHOULD
+### render-errors-reported-at-the-root → failure-logged-once · SHOULD
 Render errors are reported once, through the root's `onUncaughtError`, `onCaughtError` and `onRecoverableError`; a boundary renders the failure and reports nothing.
 
 | Why | Tags |

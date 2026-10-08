@@ -5,18 +5,11 @@
 ## Deciding
 
 ### consent-given-for-the-actions-it-names · MUST
-Consent a rule asks for is given by the person where the agent asks for it — a chat, an issue, a review of a change — for the actions it names, and never carries over to others; the project's permission settings govern only actions no rule asks consent for.
+Consent a rule asks for is given by the person — where the agent asks for it, a chat, an issue or a review of a change, or in advance by a standing grant the project's files declare — for the actions it names, and never carries over to others; the project's permission settings govern only actions no rule asks consent for.
 
 | Why | Tags |
 |---|---|
 | consent is given where the person who answers for an action sees it asked, and only for what they saw. | [security] |
-
-### unattended-agent-acts-within-a-standing-grant · MUST
-An agent run with no person present — in a pipeline, on a schedule, from an issue — acts only within a standing grant the project's files declare, which is the person's go-ahead for each action within it, under an identity scoped to its task, and what lies outside the grant waits for a person.
-
-| Why | Tags |
-|---|---|
-| no one is there to consent to each action, so the grant written in advance is the consent, and its bounds are all that stand between the agent and what the text it reads asks. | [security] |
 
 ### agent-asks-before-a-consequential-change · MUST
 An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s go-ahead for that change, unless the task names that change.

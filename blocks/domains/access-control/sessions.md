@@ -19,11 +19,18 @@ A session ends on the server at sign-out: its identifier or token is refused fro
 | a sign-out that only forgets the token on the client leaves a stolen copy working. | [security] |
 
 ### sessions-ended-when-credentials-change · MUST
-A password reset, an account recovery and a change or removal of a factor end the account's other sessions and revoke its refresh tokens.
+A change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions and revoke its refresh tokens.
 
 | Why | Tags |
 |---|---|
 | the person who changes a credential is often shutting out someone who took the old one, and a session left open keeps them in. | [security] |
+
+### access-change-takes-effect-at-once · MUST
+A disabled or deleted account and a revoked right take effect on the next request: the account's sessions end, its refresh tokens are revoked, and an access token the program cannot revoke lives only minutes.
+
+| Why | Tags |
+|---|---|
+| a person removed from a team otherwise keeps their access until a token expires, which is the window an insider uses. | [security] |
 
 ### session-has-idle-and-absolute-limits · SHOULD
 A session ends after a time without activity and after a time since sign-in, both set by the project.

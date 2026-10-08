@@ -35,3 +35,10 @@ A message arriving in dead letters alerts the people who operate the program, wi
 | Why | Tags |
 |---|---|
 | a dead letter is work the program gave up on, and one nobody is told of is lost as surely as a message never sent. | [errors] |
+
+### scheduled-run-failure-alerted · SHOULD
+A scheduled job whose run fails, or whose tick passes with no run, alerts.
+
+| Why | Tags |
+|---|---|
+| a job that stops running fails in silence, and its absence is noticed only when its work is missed. | [errors] |

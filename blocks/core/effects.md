@@ -61,7 +61,7 @@ Work started concurrently over a collection — calls, tasks, jobs — runs at m
 | an unbounded fan-out over a large collection exhausts connections, memory and the quota of the system it calls. | [performance] |
 
 ### state-shared-by-concurrent-work-owned-or-guarded · MUST
-State that concurrent work reaches is owned by one task and changed only through messages to it, or guarded by one lock, taken in one order and never held across a call across a process boundary.
+State in the program's memory that concurrent work reaches is owned by one task and changed only through messages to it, changed only by atomic operations, or guarded by locks taken in one fixed order and never held while waiting on another process.
 
 | Why | Tags |
 |---|---|
@@ -105,7 +105,7 @@ A business process that spans several programs or transactions keeps its state i
 | no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
-An operation run by hand or by a pipeline against a live system — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, is that confirmation.
+An operation run by hand or by a pipeline against a live system — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and a merge to the branch a pipeline deploys from are that confirmation.
 
 | Why | Tags |
 |---|---|
@@ -121,7 +121,7 @@ Every resource the program shares with its host — a signal’s handler, the ex
 ## Records and configuration
 
 ### diagnostics-written-through-a-logger · MUST
-Diagnostics are written only through a logger — the language’s standard one where it has one; a console or a standard stream carries only a command-line program’s output to its user, and no debug output or breakpoint ships.
+Diagnostics are written only through a logger — the language’s standard one where it has one; a console or a standard stream carries only a command-line program’s output to its user or a protocol the program speaks over it, and no debug output or breakpoint ships.
 
 | Why | Tags |
 |---|---|

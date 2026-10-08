@@ -239,7 +239,7 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
   'packages/eros/typescript/src/features/problem/domain/entities/problem.entity.ts':
     'export interface Problem {\n  readonly code: string;\n  readonly status: number;\n}\n',
   'packages/eros/typescript/src/features/problem/index.ts':
-    "export { problemOf } from './adapters/problem';\nexport type { Problem } from './domain/entities';\n",
+    "export type { Problem } from './domain/entities';\n",
   'packages/eros/typescript/src/features/records/domain/entities/error-record.entity.ts':
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
   'packages/eros/typescript/src/features/records/domain/entities/index.ts':
@@ -254,7 +254,8 @@ export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code
     "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './domain/use-cases/queries/to-record';\n",
   'packages/eros/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
-export { type Problem, problemOf } from './features/problem';
+export type { Problem } from './features/problem';
+export { problemOf } from './features/problem/adapters/problem';
 export { type ErrorRecord, toRecord } from './features/records';
 export { KINDS } from './kernel/constants';
 `,

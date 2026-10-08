@@ -112,11 +112,13 @@ chapter	core	architecture/root.md	the composition root: wiring and configuration
 chapter	core	architecture/tests.md	which units of the tree are a spec's boundaries.
 chapter	core	workflow/agents.md	the working agreement with agents.
 rule	agent-asks-before-an-irreversible-action	core	blocks/core/agents.md		MUST	security			true
+rule	unattended-agent-acts-within-a-standing-grant	core	blocks/core/agents.md		MUST	security			true
 rule	agent-asks-when-readings-diverge	core	blocks/core/agents.md		SHOULD				true
 rule	agent-reports-outcomes-as-they-are	core	blocks/core/agents.md		MUST				true
 rule	agent-takes-instructions-only-from-its-person	core	blocks/core/agents.md		MUST	security			true
 rule	agent-never-holds-the-lethal-trifecta	core	blocks/core/agents.md		MUST	security			true
 rule	agent-runs-unchecked-only-in-isolation	core	blocks/core/agents.md		MUST	security			true
+rule	secret-kept-out-of-the-agents-context	core	blocks/core/agents.md		MUST	security			true
 rule	agent-extension-vetted-as-a-dependency	core	blocks/core/agents.md		SHOULD	security			true
 rule	delegating-agent-keeps-the-responsibility	core	blocks/core/agents.md		SHOULD				true
 rule	agent-file-restates-no-rule	core	blocks/core/agents.md		SHOULD				true
@@ -125,6 +127,7 @@ rule	change-limited-to-its-task	core	blocks/core/changes.md		SHOULD				true
 rule	change-corrects-the-documents-it-falsifies	core	blocks/core/changes.md		SHOULD				true
 rule	change-moves-a-file-never-rewrites-it	core	blocks/core/changes.md		MUST				true
 rule	tidying-shipped-before-the-behaviour	core	blocks/core/changes.md		SHOULD				true
+rule	tidying-keeps-the-specs-of-its-boundaries	core	blocks/core/changes.md		SHOULD	testing			true
 rule	format-changed-in-steps	core	blocks/core/changes.md		MUST	data			true
 rule	choice-between-alternatives-recorded	core	blocks/core/changes.md		SHOULD				true
 rule	change-handed-back-with-a-passing-check	core	blocks/core/changes.md		MUST	testing			true
@@ -177,7 +180,7 @@ rule	catch-handles-only-what-it-recognises	core	blocks/core/errors.md		MUST	erro
 rule	optional-part-isolated-from-its-faults	core	blocks/core/errors.md		SHOULD	errors			true
 rule	error-keeps-its-cause	core	blocks/core/errors.md		MUST	errors			true
 rule	thrown-value-is-an-error	core	blocks/core/errors.md		MUST	errors			true
-rule	failure-reported-once	core	blocks/core/errors.md		SHOULD	errors			true
+rule	failure-logged-once	core	blocks/core/errors.md		SHOULD	errors			true
 rule	failure-retried-only-when-transient	core	blocks/core/errors.md		SHOULD	errors			true
 rule	last-resort-handler-one-per-entry	core	blocks/core/errors.md		MUST	errors			true
 rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/errors.md		SHOULD	errors security ux			true
@@ -235,6 +238,7 @@ rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
 rule	security-check-fails-closed	core	blocks/core/security.md		MUST	security			true
+rule	change-to-a-trust-boundary-names-its-threats	core	blocks/core/security.md		SHOULD	security			true
 rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
 rule	security-primitive-from-a-vetted-library	core	blocks/core/security.md		MUST	security			true
 rule	spec-proves-one-boundary	core	blocks/core/tests.md		SHOULD	testing			true
@@ -295,7 +299,7 @@ rule	outside-value-untyped-until-parsed	core	blocks/core/types.md		MUST	security
 rule	narrowing-proves-all-it-claims	core	blocks/core/types.md		MUST				true
 rule	own-shape-strict-other-shape-tolerant	core	blocks/core/types.md		MUST	data			true
 rule	absence-shown-by-the-type	core	blocks/core/types.md		MUST	data			true
-rule	instant-carries-its-zone	core	blocks/core/types.md		MUST	data			true
+rule	instant-is-an-exact-time	core	blocks/core/types.md		MUST	data			true
 rule	duration-measured-on-a-monotonic-clock	core	blocks/core/types.md		MUST	data			true
 rule	text-encoded-as-utf-8	core	blocks/core/types.md		MUST	data			true
 rule	exact-quantity-never-binary-float	core	blocks/core/types.md		MUST	data			true
@@ -310,7 +314,7 @@ rule	command-returns-nothing	core	blocks/core/architecture/domain.md		SHOULD		ar
 rule	query-and-command-apart	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	pipeline-stage-never-calls-a-stage	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	import-points-inward	core	blocks/core/architecture/layers.md		MUST		architecture		true
-rule	domain-imports-only-itself-the-kernel-and-shared-contracts	core	blocks/core/architecture/layers.md		MUST		architecture		true
+rule	domain-imports-only-itself-the-kernel-and-top-level-contracts	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	feature-never-imports-a-feature	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	effects-held-only-by-the-edge	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	root-imported-only-by-entries-and-delivery-wiring	core	blocks/core/architecture/layers.md		MUST		architecture		true
@@ -359,7 +363,6 @@ rule	root-applies-the-decorators	core	blocks/core/architecture/root.md		MUST		ar
 rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
 rule	consent-given-for-the-actions-it-names	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
-rule	unattended-agent-acts-within-a-standing-grant	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
 rule	agent-asks-before-a-consequential-change	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	design-settled-in-the-chat-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
 rule	agent-writes-tests-first-from-a-description	core	blocks/core/workflow/agents.md		SHOULD	testing	workflow		true
@@ -395,7 +398,7 @@ rule	call-handle-random-and-never-a-credential	_api	blocks/domains/_api/requests
 rule	abandoned-request-stops-its-work	_api	blocks/domains/_api/requests.md		SHOULD	performance		outside-call-can-be-cancelled	true
 rule	long-operation-answered-with-a-handle	_api	blocks/domains/_api/requests.md		SHOULD				true
 rule	server-spec-runs-in-process	_api	blocks/domains/_api/tests.md		MUST	testing security		test-runs-in-a-sandbox	true
-rule	instant-sent-as-rfc-3339	_api	blocks/domains/_api/values.md		MUST	data		instant-carries-its-zone	true
+rule	instant-sent-as-rfc-3339	_api	blocks/domains/_api/values.md		MUST	data		instant-is-an-exact-time	true
 rule	money-sent-as-a-decimal-and-its-currency	_api	blocks/domains/_api/values.md		MUST	data		exact-quantity-never-binary-float	true
 rule	large-integer-sent-as-a-string	_api	blocks/domains/_api/values.md		SHOULD	data			true
 rule	field-names-in-one-case	_api	blocks/domains/_api/values.md		SHOULD				true
@@ -427,6 +430,7 @@ rule	issued-key-stored-hashed-scoped-and-expiring	access-control	blocks/domains/
 rule	session-renewed-at-sign-in	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	session-ended-on-the-server-at-sign-out	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	sessions-ended-when-credentials-change	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
+rule	access-change-takes-effect-at-once	access-control	blocks/domains/access-control/sessions.md		MUST	security			true
 rule	session-has-idle-and-absolute-limits	access-control	blocks/domains/access-control/sessions.md		SHOULD	security			true
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	security	architecture		true
 rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
@@ -443,7 +447,7 @@ rule	event-carries-no-personal-data	analytics	blocks/domains/analytics/analytics
 rule	never-tracked-list-kept	analytics	blocks/domains/analytics/analytics.md		SHOULD	data			true
 rule	environment-sends-to-its-own-destination	analytics	blocks/domains/analytics/analytics.md		MUST	data			true
 rule	analytics-fault-isolated	analytics	blocks/domains/analytics/analytics.md		MUST	errors		optional-part-isolated-from-its-faults	true
-rule	analytics-anonymous-by-default	analytics	blocks/domains/analytics/analytics.md		MUST	security data			true
+rule	analytics-drops-the-ip-address	analytics	blocks/domains/analytics/analytics.md		MUST	security data			true
 rule	analytics-loads-without-blocking	analytics	blocks/domains/analytics/analytics.md		SHOULD	performance			true
 rule	sinks-behind-one-contract	analytics	blocks/domains/analytics/architecture/analytics.md		MUST		architecture	new-kind-added-as-a-member	true
 rule	event-sent-only-by-the-delivery-layer	analytics	blocks/domains/analytics/architecture/analytics.md		MUST		architecture	code-placed-by-its-reason-to-change	true
@@ -535,6 +539,7 @@ rule	refused-method-names-the-allowed	http-server	blocks/domains/http-server/htt
 rule	answer-declares-its-exact-content-type	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	answer-forbids-type-sniffing	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	request-body-refused-in-an-undeclared-type	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
+rule	uploaded-file-never-rendered-from-the-programs-origin	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	personal-answer-kept-out-of-shared-caches	http-server	blocks/domains/http-server/http-server.md		MUST	security data			true
 rule	answer-varies-by-the-headers-it-reads	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	get-answer-states-its-cache-policy	http-server	blocks/domains/http-server/http-server.md		SHOULD	performance			true
@@ -549,7 +554,7 @@ rule	socket-upgrade-accepted-only-from-an-allowed-origin	http-server	blocks/doma
 rule	long-lived-connection-bounded	http-server	blocks/domains/http-server/origins.md		MUST	performance		kept-collection-bounded	true
 rule	opt-out-signal-read-from-the-request	http-server	blocks/domains/http-server/with/privacy.md	privacy	MUST	data		opt-out-signal-honoured	true
 rule	values-formatted-by-the-active-locale	i18n	blocks/domains/i18n/formats.md		MUST	ux			true
-rule	instant-shown-in-the-readers-zone	i18n	blocks/domains/i18n/formats.md		MUST	data		instant-carries-its-zone	true
+rule	instant-shown-in-the-readers-zone	i18n	blocks/domains/i18n/formats.md		MUST	data		instant-is-an-exact-time	true
 rule	currency-from-the-amount	i18n	blocks/domains/i18n/formats.md		MUST	data ux			true
 rule	text-sorted-by-the-locale	i18n	blocks/domains/i18n/formats.md		SHOULD	ux			true
 rule	locale-negotiated-from-the-user	i18n	blocks/domains/i18n/locale.md		MUST	ux			true
@@ -565,7 +570,7 @@ rule	pseudo-locale-runs-in-development	i18n	blocks/domains/i18n/messages.md		SHO
 rule	i18n-messages-in-messageformat	i18n	blocks/domains/i18n/messages.md		MUST	ux			true
 rule	i18n-missing-key-fails-the-check	i18n	blocks/domains/i18n/messages.md		SHOULD	ux			true
 rule	i18n-locale-loaded-on-demand	i18n	blocks/domains/i18n/messages.md		SHOULD	performance			true
-rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md		MUST		architecture	domain-imports-only-itself-the-kernel-and-shared-contracts	true
+rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md		MUST		architecture	domain-imports-only-itself-the-kernel-and-top-level-contracts	true
 rule	locale-reachable-without-props	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD			props-drilled-at-most-two-levels	true
 rule	layout-mirrors-right-to-left	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	ux a11y			true
 rule	language-offered-in-its-own-name	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD	ux			true
@@ -608,7 +613,7 @@ rule	conversation-loaded-only-for-its-owner	language-model	blocks/domains/langua
 rule	answer-cache-keyed-by-the-callers-rights	language-model	blocks/domains/language-model/with/access-control.md	access-control	MUST	security data		object-access-checked-against-the-caller	true
 rule	prompt-text-kept-out-of-telemetry	language-model	blocks/domains/language-model/with/observability.md	observability	MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	model-call-span-carries-model-tokens-and-stop	language-model	blocks/domains/language-model/with/observability.md	observability	SHOULD	performance		unit-of-work-opens-a-span	true
-rule	provider-receives-personal-data-only-as-a-processor	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data security		personal-data-reaches-a-third-party-only-as-a-listed-processor	true
+rule	provider-receives-personal-data-only-as-a-processor	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data security		personal-data-reaches-only-a-listed-recipient	true
 rule	erasure-reaches-indexes-conversations-and-caches	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data		personal-data-erased-on-request	true
 rule	streamed-answer-announced-once	language-model	blocks/domains/language-model/with/ui.md	ui	MUST	a11y ux		status-changes-announced	true
 rule	streamed-answer-can-be-stopped	language-model	blocks/domains/language-model/with/ui.md	ui	SHOULD	ux performance		outside-call-can-be-cancelled	true
@@ -654,7 +659,7 @@ rule	dead-letter-keeps-the-message-and-its-cause	messaging	blocks/domains/messag
 rule	scheduled-job-runs-once-per-tick	messaging	blocks/domains/messaging/jobs.md		MUST	data			true
 rule	scheduled-run-keyed-by-its-tick	messaging	blocks/domains/messaging/jobs.md		MUST	data		operation-idempotent-by-design	true
 rule	scheduled-job-declares-missed-and-overlapping-ticks	messaging	blocks/domains/messaging/jobs.md		SHOULD	performance			true
-rule	schedule-names-its-time-zone	messaging	blocks/domains/messaging/jobs.md		MUST	data		instant-carries-its-zone	true
+rule	schedule-names-its-time-zone	messaging	blocks/domains/messaging/jobs.md		MUST	data		instant-is-an-exact-time	true
 rule	message-carries-a-stable-id-type-source-and-time	messaging	blocks/domains/messaging/messages.md		MUST	data		operation-idempotent-by-design	true
 rule	message-carries-its-correlation-and-causation	messaging	blocks/domains/messaging/messages.md		SHOULD				true
 rule	message-contract-published-machine-readable	messaging	blocks/domains/messaging/messages.md		MUST				true
@@ -673,6 +678,7 @@ rule	message-carries-its-creators-trace-context	messaging	blocks/domains/messagi
 rule	handled-message-spanned-and-linked	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			unit-of-work-opens-a-span	true
 rule	consumer-lag-measured-and-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	performance			true
 rule	dead-letter-arrival-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors			true
+rule	scheduled-run-failure-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors			true
 rule	change-and-its-message-written-through-an-outbox	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
 rule	outbox-relayed-in-commit-order-per-key	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data			true
 rule	processed-message-recorded-with-its-effect	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
@@ -700,6 +706,7 @@ rule	public-repository-carries-a-code-of-conduct	open-source	blocks/domains/open
 rule	outside-change-runs-without-secrets	open-source	blocks/domains/open-source/workflow/open-source.md		MUST	security	workflow	credential-has-least-privilege	true
 rule	stored-record-carries-its-version	owned-data	blocks/domains/owned-data/consistency.md		MUST	data		write-on-read-data-is-conditional	true
 rule	invariant-also-held-by-the-store	owned-data	blocks/domains/owned-data/consistency.md		SHOULD	data			true
+rule	owned-data-backed-up	owned-data	blocks/domains/owned-data/consistency.md		MUST	data			true
 rule	backup-restored-on-a-schedule	owned-data	blocks/domains/owned-data/consistency.md		SHOULD	data			true
 rule	schema-changed-only-by-a-migration	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	applied-migration-never-edited	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
@@ -714,7 +721,7 @@ rule	migrations-applied-in-ci-from-the-last-release	owned-data	blocks/domains/ow
 rule	personal-data-inventoried	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-collected-only-for-its-purpose	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-kept-no-longer-than-its-retention	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
-rule	personal-data-reaches-a-third-party-only-as-a-listed-processor	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	personal-data-reaches-only-a-listed-recipient	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-exported-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	rights-request-verified-before-it-is-answered	privacy	blocks/domains/privacy/privacy.md		MUST	data security			true
 rule	personal-data-erased-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
@@ -1053,7 +1060,7 @@ rule	none-is-the-only-absence	python	blocks/contexts/languages/python/python.md	
 rule	no-any-annotation	python	blocks/contexts/languages/python/python.md		MUST			unchecked-type-never-used	true
 rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/python.md		MUST	security		outside-value-untyped-until-parsed	true
 rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/python.md		SHOULD				true
-rule	aware-datetimes-only	python	blocks/contexts/languages/python/python.md		MUST	data		instant-carries-its-zone	true
+rule	aware-datetimes-only	python	blocks/contexts/languages/python/python.md		MUST	data		instant-is-an-exact-time	true
 rule	overrides-marked-by-decorator	python	blocks/contexts/languages/python/python.md		MUST			override-marked-where-declared	true
 rule	business-types-frozen-dataclasses	python	blocks/contexts/languages/python/python.md		SHOULD			value-immutable-by-default	true
 rule	invariant-value-is-a-frozen-dataclass	python	blocks/contexts/languages/python/python.md		MUST	data		invariant-value-is-plain-immutable-data	true
@@ -1114,7 +1121,7 @@ rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/typ
 rule	no-mutable-export	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			state-never-global-and-mutable	true
 rule	type-parameter-appears-twice	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	text-made-deliberately	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
-rule	dates-through-temporal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	data		instant-carries-its-zone	true
+rule	dates-through-temporal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	data		instant-is-an-exact-time	true
 rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	no-literal-thrown	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors		thrown-value-is-an-error	true
 rule	return-awaited-inside-try	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors		catch-handles-only-what-it-recognises	true
@@ -1249,7 +1256,7 @@ rule	async-handlers-never-block	fastapi	blocks/implementations/fastapi/fastapi.m
 rule	lifespan-opens-and-closes	fastapi	blocks/implementations/fastapi/fastapi.md		MUST			resource-released-on-every-path	true
 rule	framework-failures-answered-by-their-kind	fastapi	blocks/implementations/fastapi/fastapi.md		MUST	errors security		failure-answered-by-its-code	true
 rule	program-raises-no-http-exception	fastapi	blocks/implementations/fastapi/fastapi.md		MUST	errors		error-carries-a-code-never-a-status	true
-rule	unexpected-error-logged-once	fastapi	blocks/implementations/fastapi/fastapi.md		SHOULD	errors		failure-reported-once	true
+rule	unexpected-error-logged-once	fastapi	blocks/implementations/fastapi/fastapi.md		SHOULD	errors		failure-logged-once	true
 rule	specs-through-the-asgi-transport	fastapi	blocks/implementations/fastapi/fastapi.md		MUST	testing security		server-spec-runs-in-process	true
 rule	app-assembled-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST	testing	architecture	composition-root-wires-everything	true
 rule	error-kit-handlers-registered-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST	errors security	architecture	one-error-handler-registered-by-the-root	true
@@ -1384,7 +1391,7 @@ rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/rea
 rule	overlays-rendered-through-portal	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	a11y ux			true
 rule	browser-apis-read-outside-render	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	errors		no-browser-globals-during-render	true
 rule	inline-style-only-custom-properties-and-geometry	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	ux		tokens-single-source-of-appearance	true
-rule	render-errors-reported-at-the-root	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	errors		failure-reported-once	true
+rule	render-errors-reported-at-the-root	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	errors		failure-logged-once	true
 rule	jsx-images-declare-their-size	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	performance ux		images-declare-their-size	true
 rule	labels-bound-with-use-id	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	a11y		every-control-has-an-accessible-name	true
 rule	ids-from-use-id	react-dom	blocks/implementations/react-dom/react-dom.md		MUST				true
@@ -1577,7 +1584,7 @@ answer	lingui	messages-take-named-parameters	yes
 answer	lingui	i18n-missing-key-fails-the-check	partly
 answer	lingui	i18n-locale-loaded-on-demand	yes
 answer	matomo	analytics-stores-nothing-until-consent	yes
-answer	matomo	analytics-anonymous-by-default	yes
+answer	matomo	analytics-drops-the-ip-address	yes
 answer	matomo	analytics-loads-without-blocking	yes
 answer	nestjs	composition-root-wires-everything	yes
 answer	nestjs	framework-passes-every-failure-to-one-handler	yes

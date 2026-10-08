@@ -12,7 +12,7 @@ A request from another origin that carries what the browser attaches itself — 
 | a browser sends a user's cookies with a cross-origin request, so an origin allowed unchecked reads the program's answers in that user's name. | [security] |
 
 ### state-changing-request-refused-from-other-origins → outside-address-followed-only-from-an-allowlist · MUST
-A request that changes state and that the server authenticates by what the browser attaches itself — a cookie, HTTP authentication, a client certificate — is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, or, where it carries no `Origin`, when it carries a `Sec-Fetch-Site` that is neither `same-origin` nor `none`; a request with neither header, which no browser sends, is not refused by this check.
+A request that changes state and that the server authenticates by what the browser attaches itself — a cookie, HTTP authentication, a client certificate — or that signs a person in, is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, or, where it carries no `Origin`, when it carries a `Sec-Fetch-Site` that is neither `same-origin` nor `none`; a request with neither header, which no browser sends, is not refused by this check.
 
 | Why | Tags |
 |---|---|
@@ -30,7 +30,7 @@ An absolute address the program builds of itself — a link to reset a password,
 ## Connections
 
 ### socket-upgrade-accepted-only-from-an-allowed-origin → outside-address-followed-only-from-an-allowlist · MUST
-A WebSocket upgrade is accepted only from the program's own origin or one its allowlist names, and, where the socket acts for a signed-in person, only with valid credentials.
+A WebSocket upgrade that carries what the browser attaches itself — a cookie, HTTP authentication — is accepted only from the program's own origin or one its allowlist names, and a socket that acts for a signed-in person only with valid credentials.
 
 | Why | Tags |
 |---|---|

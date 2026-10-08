@@ -33,7 +33,7 @@ The composition root applies every decorator — behaviour wrapped around an imp
 | the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps. | [] |
 
 ### root-alone-configures-logging · MUST
-The composition root alone configures where log records go; a unit outside the domain reaches the language’s standard logging facade, or the program’s own logging port where the language has none, without having it handed in.
+The composition root alone configures where log records go; a unit outside the domain reaches the language’s standard logging facade, or the program’s own logging facade where the language has none, without having it handed in.
 
 | Why | Tags |
 |---|---|

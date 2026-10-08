@@ -59,7 +59,7 @@ The program raises the error kit's errors, never `HTTPException`.
 |---|---|
 | an `HTTPException` carries a status and no code, and ties the code that raises it to HTTP. | [errors] |
 
-### unexpected-error-logged-once → failure-reported-once · SHOULD
+### unexpected-error-logged-once → failure-logged-once · SHOULD
 The handler of an unexpected failure logs it, and a filter on the `uvicorn.error` logger drops the record of the same exception, which Starlette raises again after the handler has answered.
 
 | Why | Tags |

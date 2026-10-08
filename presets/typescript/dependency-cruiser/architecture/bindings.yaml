@@ -45,7 +45,7 @@ core:
     - kernel-reaches-only-itself
     - libs-know-no-application
     - shared-knows-no-feature-or-root
-  domain-imports-only-itself-the-kernel-and-shared-contracts:
+  domain-imports-only-itself-the-kernel-and-top-level-contracts:
     - domain-reaches-only-itself-and-kernel
   feature-laid-out-by-its-tree:
     - feature-root-reached-only-through-its-layers

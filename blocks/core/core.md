@@ -23,7 +23,7 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 ## Precedence
 
-1. An override in `constitution.yaml` lowers the one rule it names, core's included. It is written only with the user's consent and its reason, and removed by the change that ends it.
+1. An override in `constitution.yaml` lowers the one rule it names, core's included; the rules that carry it out keep their own levels. It is written only with the user's consent and its reason, and removed by the change that ends it.
 2. Otherwise the more specific layer wins: implementations, then contexts (platforms and languages), then domains, then core. A block tightens what is above it, never loosens it.
 3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project.
 4. Two rules of one layer that disagree are a defect: until it is amended, the one naming the narrower case wins, and the clash is reported.

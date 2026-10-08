@@ -6,13 +6,13 @@ import type {
   ManifestParser,
   VocabularyParser,
 } from '#/features/constitution';
+import { createNodeFileSystem } from '#/features/constitution/adapters/file-system';
+import { createJsonManifestParser } from '#/features/constitution/adapters/json';
 import {
-  createJsonManifestParser,
-  createNodeFileSystem,
   createYamlBindingsParser,
   createYamlFrontMatterParser,
   createYamlVocabularyParser,
-} from '#/features/constitution';
+} from '#/features/constitution/adapters/yaml';
 
 interface Wiring {
   bindingsParser: BindingsParser;

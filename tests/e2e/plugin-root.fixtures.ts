@@ -3,15 +3,14 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import type { FileTree } from '#/features/constitution';
+import { prepareDigests, writeDigests } from '#/features/constitution';
+import { createNodeFileSystem } from '#/features/constitution/adapters/file-system';
+import { createJsonManifestParser } from '#/features/constitution/adapters/json';
 import {
-  createJsonManifestParser,
-  createNodeFileSystem,
   createYamlBindingsParser,
   createYamlFrontMatterParser,
   createYamlVocabularyParser,
-  prepareDigests,
-  writeDigests,
-} from '#/features/constitution';
+} from '#/features/constitution/adapters/yaml';
 
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';

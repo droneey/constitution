@@ -32,6 +32,13 @@ A tidying or a refactoring the task needs ships as its own change, before the ch
 |---|---|
 | each diff then reads as one thing, and a reviewer sees the behaviour change alone. | [] |
 
+### tidying-keeps-the-specs-of-its-boundaries · SHOULD
+A tidying or a refactoring changes no spec of a boundary; a spec that must change marks a change of behaviour, which ships as one.
+
+| Why | Tags |
+|---|---|
+| specs that pass unchanged are what prove a tidying kept the behaviour. | [testing] |
+
 ### format-changed-in-steps · MUST
 A change to a format that is stored or that others read — a schema, a file, a message, a contract another deployable or a released consumer reads — keeps the old data and the running readers working: the readers learn the new form beside the old one first, the writers and the stored data move to it next, and the old form is removed last.
 
@@ -40,7 +47,7 @@ A change to a format that is stored or that others read — a schema, a file, a 
 | data written before the change and readers deployed before it outlive the change, and a format switched in one step breaks them. | [data] |
 
 ### choice-between-alternatives-recorded · SHOULD
-A choice between real alternatives that a later reader could propose again is recorded, with what was rejected and why, in the change that makes it.
+A choice between real alternatives that a later reader could propose again is recorded in the repository, with what was rejected and why, in the change that makes it.
 
 | Why | Tags |
 |---|---|

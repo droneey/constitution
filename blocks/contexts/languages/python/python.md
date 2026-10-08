@@ -73,7 +73,7 @@ A generic class, function or alias is declared in the form of PEP 695 — `class
 |---|---|
 | the parameters are declared where they are used, and nothing outside the declaration can reach them. | [] |
 
-### aware-datetimes-only → instant-carries-its-zone · MUST
+### aware-datetimes-only → instant-is-an-exact-time · MUST
 A `datetime` carries its time zone: `now`, `fromtimestamp` and the constructor are given one, `strptime` reads one, and `utcnow`, `utcfromtimestamp` and `today` are never called.
 
 | Why | Tags |
