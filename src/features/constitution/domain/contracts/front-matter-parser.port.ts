@@ -2,14 +2,12 @@ import type { FieldIssue, SkillFrontMatterRead } from '../entities';
 
 interface FrontMatterFields {
   abstract: boolean;
-  checks: readonly string[];
   dictionary: readonly string[];
   extends: string | undefined;
   governs: readonly string[];
   id: string;
   languages: readonly string[];
   requires: readonly string[];
-  roles: readonly string[];
   summary: string;
 }
 

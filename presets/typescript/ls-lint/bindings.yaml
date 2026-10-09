@@ -1,128 +1,24 @@
-foundation:
-  expo:
-    expo-router-file-names-kept:
-      - _layout
-    kebab-case-file-names:
-      - app
-      - 'src/app'
-  tanstack-router:
-    tanstack-router-file-names-kept:
-      - 'src/routes'
-  typescript:
-    kebab-case-file-names:
-      - '.dir'
-    test-folder-files-in-test-forms:
-      - 'src/**/__tests__'
-      - tests
-      - 'tests/*'
-    typescript-file-forms:
-      - '.ts'
-      - '.tsx'
-      - 'src/**/__tests__'
-      - tests
-      - 'tests/*'
-    yaml-files-end-in-yaml:
-      - '.yml'
-architecture:
-  analytics:
-    kebab-case-file-names:
-      - 'src/**/sinks'
-    sinks-folder-holds-sink-files:
-      - 'src/**/sinks'
-  api:
-    kebab-case-file-names:
-      - 'src/api'
-    top-level-folders-from-the-tree:
-      - 'src/api'
-  cli:
-    command-files-in-cli:
-      - 'src/cli'
-      - 'exists:0'
-    kebab-case-file-names:
-      - 'src/cli'
-  core:
-    top-level-folders-from-the-tree:
-      - src
-    data-ports-split-by-reads-and-writes:
-      - 'src/**/repositories'
-      - 'src/**/repositories/{queries,commands}'
-    feature-domain-holds-its-role-folders:
-      - 'src/features/*/domain'
-    role-folder-files-carry-its-suffix:
-      - 'src/**/constants'
-      - 'src/**/contracts'
-      - 'src/**/entities'
-      - 'src/**/errors'
-      - 'src/**/models'
-      - 'src/**/repositories/{queries,commands}'
-      - 'src/**/types'
-      - 'src/**/use-cases/{queries,commands}'
-      - 'src/features/*/app/use-cases/{queries,commands}/*'
-      - 'src/**/utils'
-      - 'src/**/value-objects'
-    kebab-case-file-names:
-      - '.*'
-      - '.*.*'
-      - '.dir'
-    layer-folder-never-imported:
-      - 'src/features/*/domain'
-    typescript-role-and-surface-files:
-      - 'src/**/constants'
-      - 'src/**/contracts'
-      - 'src/**/entities'
-      - 'src/**/errors'
-      - 'src/**/models'
-      - 'src/**/repositories/{queries,commands}'
-      - 'src/**/types'
-      - 'src/**/use-cases/{queries,commands}'
-      - 'src/features/*/app/use-cases/{queries,commands}/*'
-      - 'src/**/utils'
-      - 'src/**/value-objects'
-    yaml-files-end-in-yaml:
-      - '.yml'
-  expo:
-    expo-router-file-names-kept:
-      - _layout
-    expo-router-root-is-routes:
-      - 'app'
-      - 'src/app'
-      - 'src/routes'
-    kebab-case-file-names:
-      - 'src/routes'
-  nestjs:
-    kebab-case-file-names:
-      - 'src/**/providers'
-    providers-folder-holds-provider-files:
-      - 'src/**/providers'
-      - '.provider.ts'
-      - '.filter.ts'
-      - '.pipe.ts'
-      - '.guard.ts'
-      - '.interceptor.ts'
-  tanstack-router:
-    kebab-case-file-names:
-      - 'src/routes'
-    screen-pieces-in-dash-folders:
-      - 'src/routes'
-      - 'src/routes/**/-components'
-      - 'src/routes/**/-components/[!_]*'
-      - 'src/routes/**/-hooks'
-    routes-folder-holds-file-routes:
-      - 'src/routes'
-  ui:
-    component-folders-hold-their-files:
-      - 'src/**/components'
-      - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
-      - 'src/components/[!_]*'
-      - 'src/root/**/components/[!_]*'
-      - 'src/**/widgets'
-      - 'src/**/widgets/[!_]*'
-    widget-folder-ends-in-widget:
-      - 'src/**/widgets/[!_]*'
-    root-components-prefixed:
-      - 'src/root/**/components/[!_]*'
-    kebab-case-file-names:
-      - 'src/**/assets'
-      - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
-      - 'src/components/[!_]*'
-      - 'src/root/**/components/[!_]*'
+expo:
+  expo-router-file-names-kept:
+    - _layout
+  file-name-in-its-owners-case:
+    - app
+    - 'src/app'
+tanstack-router:
+  tanstack-router-file-names-kept:
+    - 'src/routes'
+typescript:
+  file-name-in-its-owners-case:
+    - '.dir'
+  test-folder-files-in-test-forms:
+    - 'src/**/__tests__'
+    - tests
+    - 'tests/*'
+  typescript-file-forms:
+    - '.ts'
+    - '.tsx'
+    - 'src/**/__tests__'
+    - tests
+    - 'tests/*'
+  format-has-one-extension:
+    - '.yml'

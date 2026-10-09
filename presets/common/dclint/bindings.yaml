@@ -1,12 +1,11 @@
-foundation:
-  docker:
-    compose-keys-in-shared-order:
-      - service-keys-order
-      - top-level-properties-order
-    compose-without-version-field:
-      - no-version-field
-    image-never-untagged-or-latest:
-      - service-image-require-explicit-tag
-    published-addresses-quoted-and-bound:
-      - no-unbound-port-interfaces
-      - require-quotes-in-ports
+docker:
+  compose-keys-in-shared-order:
+    - service-keys-order
+    - top-level-properties-order
+  compose-without-version-field:
+    - no-version-field
+  images-pinned-by-version-and-digest:
+    - service-image-require-explicit-tag
+  published-addresses-quoted-and-bound:
+    - no-unbound-port-interfaces
+    - require-quotes-in-ports

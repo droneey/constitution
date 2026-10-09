@@ -162,7 +162,7 @@ describe('the python template', () => {
         'src/shop/features/billing/__init__.py': 'from shop.features.orders import ORDER\n',
         'src/shop/features/orders/__init__.py': 'ORDER = 1\n',
       },
-      finding: 'features-blind-to-each-other BROKEN',
+      finding: 'feature-never-imports-a-feature BROKEN',
       task: 'architecture:check',
     },
     {
@@ -182,7 +182,7 @@ describe('the python template', () => {
         'src/shop/kernel/currency.py': 'from shop.kernel import money\n',
         'src/shop/kernel/money.py': 'from shop.kernel import currency\n',
       },
-      finding: 'no-import-cycles BROKEN',
+      finding: 'module-imports-form-no-cycle BROKEN',
       task: 'architecture:check',
     },
     {
@@ -256,7 +256,7 @@ describe('the python template', () => {
         'src/shop/integrations/__init__.py': '',
         'src/shop/integrations/fastapi/__init__.py': 'router = 1\n',
       },
-      finding: 'nothing-imports-an-integration BROKEN',
+      finding: 'integration-never-imported BROKEN',
       task: 'architecture:check',
     },
     {
@@ -267,7 +267,29 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'WIRED = 1\n',
       },
-      finding: 'root-imported-only-by-entry-and-delivery-wiring BROKEN',
+      finding: 'root-imported-only-by-entries-and-delivery-wiring BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'a binding unit imports an adapter past its port',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+        'src/shop/features/orders/app/__init__.py': 'from ..adapters.http import ADAPTER\n',
+      },
+      finding: 'adapter-imported-only-by-the-root BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: "a feature's surface offers its adapter",
+      changes: {
+        'src/shop/features/__init__.py': '',
+        'src/shop/features/orders/__init__.py': 'from .adapters.http import ADAPTER\n',
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+      },
+      finding: 'adapter-imported-only-by-the-root BROKEN',
       task: 'architecture:check',
     },
     {
@@ -282,7 +304,7 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/use_cases/queries/list_orders_use_case.py':
           'from ..commands import place_order_use_case\n',
       },
-      finding: 'reads-and-writes-apart BROKEN',
+      finding: 'query-and-command-apart BROKEN',
       task: 'architecture:check',
     },
     {
@@ -292,18 +314,30 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop import features\n',
       },
-      finding: 'layer-folder-never-imported BROKEN',
+      finding: 'surface-only-on-a-module-or-one-kind BROKEN',
       task: 'architecture:check',
     },
     {
-      condition: 'the root reaches past the surface of the kernel',
+      condition: 'the root reaches past the surface of a role folder of the kernel',
       changes: {
         'src/shop/kernel/__init__.py': '',
-        'src/shop/kernel/money.py': 'MONEY = 1\n',
+        'src/shop/kernel/types/__init__.py': '',
+        'src/shop/kernel/types/money.py': 'MONEY = 1\n',
         'src/shop/root/__init__.py': '',
-        'src/shop/root/wiring.py': 'from shop.kernel.money import MONEY\n',
+        'src/shop/root/wiring.py': 'from shop.kernel.types.money import MONEY\n',
       },
-      finding: 'surface-is-the-only-way-in BROKEN',
+      finding: 'module-reached-only-through-its-surface BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'a shared port imports a vendor client of libs',
+      changes: {
+        'src/shop/contracts/__init__.py': '',
+        'src/shop/contracts/mail/__init__.py': 'from shop.libs.smtp import CLIENT\n',
+        'src/shop/libs/__init__.py': '',
+        'src/shop/libs/smtp/__init__.py': 'CLIENT = 1\n',
+      },
+      finding: 'contract-knows-no-vendor BROKEN',
       task: 'architecture:check',
     },
     {
@@ -314,7 +348,7 @@ describe('the python template', () => {
         'src/shop/features/__init__.py': '',
         'src/shop/features/orders/__init__.py': 'from shop.composition import checkout\n',
       },
-      finding: 'dependencies-point-inward BROKEN',
+      finding: 'import-points-inward BROKEN',
       task: 'architecture:check',
     },
     {
@@ -463,6 +497,33 @@ describe('the python template', () => {
         'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
       },
       task: 'code:check',
+    },
+    {
+      condition: "the root reaches a feature's adapter through the adapter's own surface",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py':
+          'from shop.features.orders.adapters.http import ADAPTER\n\nWIRED = ADAPTER\n',
+      },
+      task: 'architecture:check',
+    },
+    {
+      condition: "the package's surface offers a feature's adapter to its consumers",
+      changes: {
+        ...FEATURE,
+        'src/shop/__init__.py': python(
+          'from .features.orders.adapters.http import ADAPTER',
+          'from .orders import total, totals',
+          '',
+          "__all__ = ['ADAPTER', 'total', 'totals']",
+        ),
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+      },
+      task: 'architecture:check',
     },
     {
       condition: 'the only mutants of a new line are marked equivalent',

@@ -1,0 +1,39 @@
+{
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noImportantStyles": "error",
+      },
+      "correctness": {
+        "noMissingVarFunction": "error",
+      },
+      "style": {
+        "noDescendingSpecificity": "error",
+        "noHexColors": "error",
+      },
+      "nursery": {
+        "useLayeredStyles": "error",
+        "useNamedLayer": "error",
+        "noExcessiveSelectorClasses": {
+          "level": "error",
+          "options": {
+            "maxClasses": 3,
+          },
+        },
+        "noUndeclaredCustomProperties": "error",
+        "noInvalidPropertyInitValue": "error",
+        "noUnusedClasses": "error",
+        "noDuplicateSelectors": "error",
+        "useBaseline": "error",
+      },
+    },
+  },
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/css/biome/plugins/styles-never-target-ids.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+  ],
+}

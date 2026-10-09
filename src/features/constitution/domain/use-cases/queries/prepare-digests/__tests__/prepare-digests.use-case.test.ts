@@ -29,7 +29,7 @@ describe('prepareDigests', () => {
         core: GOLDEN_CORE.replace(HEADING, `${HEADING}\n${paragraph}\n`),
         findings: [
           {
-            message: 'makes a core part of 3567 bytes; the digest holds at most 3500 of core',
+            message: 'makes a core part of 3556 bytes; the digest holds at most 3500 of core',
             path: CORE,
           },
         ],
@@ -61,7 +61,7 @@ describe('prepareDigests', () => {
         },
         {
           message:
-            'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md',
+            "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md",
           path: 'blocks/domains/ui/notes.txt',
         },
       ],

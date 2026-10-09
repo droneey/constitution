@@ -25,7 +25,7 @@ const FAILED = 2;
 
 const filesOf = (project: Project): Files => ({
   [MODULE]: project.source,
-  'pyproject.toml': `[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n\n[tool.ruff]\nextend = ".droneey/constitution/presets/python/ruff/foundation/${project.part}.toml"\n`,
+  'pyproject.toml': `[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n\n[tool.ruff]\nextend = ".droneey/constitution/presets/python/ruff/${project.part}.toml"\n`,
 });
 
 const ruffRun = (input: { args: readonly string[]; project: Project }): SpawnSyncReturns<string> =>

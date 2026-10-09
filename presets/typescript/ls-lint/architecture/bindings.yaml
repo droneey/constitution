@@ -1,0 +1,108 @@
+analytics:
+  file-name-in-its-owners-case:
+    - 'src/**/sinks'
+  set-folder-holds-only-members:
+    - 'src/**/sinks'
+_api:
+  file-name-in-its-owners-case:
+    - 'src/api'
+  package-laid-out-by-the-tree:
+    - 'src/api'
+messaging:
+  file-name-in-its-owners-case:
+    - 'src/consumers'
+    - 'src/jobs'
+  consumers-and-jobs-are-the-delivery-layer:
+    - 'src/consumers'
+    - 'src/jobs'
+cli:
+  commands-in-the-cli-folder:
+    - 'src/cli'
+    - 'exists:0'
+  file-name-in-its-owners-case:
+    - 'src/cli'
+core:
+  package-laid-out-by-the-tree:
+    - src
+  data-port-one-per-entity-and-side:
+    - 'src/**/repositories'
+    - 'src/**/repositories/{queries,commands}'
+  feature-laid-out-by-its-tree:
+    - 'src/features/*/domain'
+  file-carries-its-role-suffix:
+    - 'src/**/constants'
+    - 'src/**/contracts'
+    - 'src/**/entities'
+    - 'src/**/errors'
+    - 'src/**/models'
+    - 'src/**/repositories/{queries,commands}'
+    - 'src/**/types'
+    - 'src/**/use-cases/{queries,commands}'
+    - 'src/features/*/app/use-cases/{queries,commands}/*'
+    - 'src/**/utils'
+    - 'src/**/value-objects'
+  file-name-in-its-owners-case:
+    - '.*'
+    - '.*.*'
+    - '.dir'
+  surface-only-on-a-module-or-one-kind:
+    - 'src/features/*/domain'
+  typescript-role-and-surface-files:
+    - 'src/**/constants'
+    - 'src/**/contracts'
+    - 'src/**/entities'
+    - 'src/**/errors'
+    - 'src/**/models'
+    - 'src/**/repositories/{queries,commands}'
+    - 'src/**/types'
+    - 'src/**/use-cases/{queries,commands}'
+    - 'src/features/*/app/use-cases/{queries,commands}/*'
+    - 'src/**/utils'
+    - 'src/**/value-objects'
+  format-has-one-extension:
+    - '.yml'
+expo:
+  expo-router-file-names-kept:
+    - _layout
+  expo-router-root-is-routes:
+    - 'app'
+    - 'src/app'
+    - 'src/routes'
+  file-name-in-its-owners-case:
+    - 'src/routes'
+nestjs:
+  file-name-in-its-owners-case:
+    - 'src/**/providers'
+  nestjs-files-in-the-tree:
+    - 'src/**/providers'
+    - '.provider.ts'
+    - '.filter.ts'
+    - '.pipe.ts'
+    - '.guard.ts'
+    - '.interceptor.ts'
+tanstack-router:
+  file-name-in-its-owners-case:
+    - 'src/routes'
+  screen-private-pieces-in-dash-folders:
+    - 'src/routes'
+    - 'src/routes/**/-components'
+    - 'src/routes/**/-components/[!_]*'
+    - 'src/routes/**/-hooks'
+  screens-are-file-routes:
+    - 'src/routes'
+ui:
+  component-in-its-own-folder:
+    - 'src/**/components'
+    - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
+    - 'src/components/[!_]*'
+    - 'src/root/**/components/[!_]*'
+    - 'src/**/widgets'
+    - 'src/**/widgets/[!_]*'
+  component-named-by-location:
+    - 'src/**/widgets/[!_]*'
+    - 'src/root/**/components/[!_]*'
+  file-name-in-its-owners-case:
+    - 'src/**/assets'
+    - 'src/{features,shared,libs,composition,integrations,entrypoints}/**/components/[!_]*'
+    - 'src/components/[!_]*'
+    - 'src/root/**/components/[!_]*'

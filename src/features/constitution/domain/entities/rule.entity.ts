@@ -1,9 +1,8 @@
-import type { Axis, Level } from '#/kernel';
+import type { Axis, Level } from '#/kernel/constants';
 
 interface StatedRule {
   readonly axis: Axis;
   readonly block: string;
-  readonly check: string;
   readonly file: string;
   readonly ownTags: readonly string[];
   readonly parent: string | undefined;

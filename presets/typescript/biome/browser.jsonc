@@ -1,0 +1,12 @@
+{
+  "linter": {
+    "rules": {
+      "nursery": {
+        "useDomNodeTextContent": "error",
+      },
+    },
+  },
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/no-raw-html-injection.grit",
+  ],
+}

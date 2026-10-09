@@ -1,0 +1,17 @@
+ls:
+  src/consumers:
+    .dir: kebab-case | regex:^__tests__$
+    .*: kebab-case
+    .*.*: kebab-case
+    .ts: kebab-case
+    .*.ts: kebab-case
+    .*.*.ts: kebab-case
+    .yml: regex:^$
+  src/jobs:
+    .dir: kebab-case | regex:^__tests__$
+    .*: kebab-case
+    .*.*: kebab-case
+    .ts: kebab-case
+    .*.ts: kebab-case
+    .*.*.ts: kebab-case
+    .yml: regex:^$

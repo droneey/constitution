@@ -32,7 +32,7 @@ python-check = { workspace = true }
 members = ["tools/mutmut-check", "tools/python-check"]
 
 [tool.ruff]
-extend = ".droneey/constitution/presets/python/ruff/foundation/pytest.toml"
+extend = ".droneey/constitution/presets/python/ruff/pytest.toml"
 
 [tool.ruff.lint.extend-per-file-ignores]
 "tools/*/tests/**" = [

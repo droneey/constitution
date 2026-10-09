@@ -1,5 +1,5 @@
-import type { Finding } from '#/kernel';
-import { LAYERS, Layer } from '#/kernel';
+import { LAYERS, Layer } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Block, FrontMatter } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -11,9 +11,7 @@ enum LayerField {
   Requires = 'requires',
   Extends = 'extends',
   Abstract = 'abstract',
-  Checks = 'checks',
   Languages = 'languages',
-  Roles = 'roles',
   Dictionary = 'dictionary',
 }
 
@@ -21,35 +19,24 @@ const LAYER_FIELDS: readonly LayerField[] = [
   LayerField.Requires,
   LayerField.Extends,
   LayerField.Abstract,
-  LayerField.Checks,
   LayerField.Languages,
-  LayerField.Roles,
   LayerField.Dictionary,
 ];
 
+// Every layer but core may build on an abstract base of its own.
+const BUILT_ON: readonly Layer[] = LAYERS.filter((layer) => layer !== Layer.Core);
+
 const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {
-  [LayerField.Abstract]: [
-    Layer.Implementation,
-  ],
-  [LayerField.Checks]: [
-    Layer.Language,
-    Layer.Implementation,
-  ],
+  [LayerField.Abstract]: BUILT_ON,
   [LayerField.Dictionary]: [
     Layer.Language,
     Layer.Implementation,
   ],
-  [LayerField.Extends]: [
-    Layer.Implementation,
-  ],
+  [LayerField.Extends]: BUILT_ON,
   [LayerField.Languages]: [
-    Layer.Language,
     Layer.Implementation,
   ],
   [LayerField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
-  [LayerField.Roles]: [
-    Layer.Language,
-  ],
 };
 
 const isEmpty = (field: FrontMatter[LayerField]): boolean =>
@@ -73,32 +60,17 @@ const layerFindings = (block: Block): readonly Finding[] =>
     path: block.path,
   }));
 
-// A tool's languages are those whose files its checks cover, so a block that
-// checks nothing covers none. A layer that leaves the field empty is reported
-// by layerFindings alone.
-const languageFindings = (input: { block: Block; byId: BlocksById }): readonly Finding[] => {
-  const { frontMatter, layer } = input.block;
-
-  if (!FILLED_ON[LayerField.Languages].includes(layer)) {
-    return [];
-  }
-
-  const messages = [
-    ...(frontMatter.checks.length === 0 && frontMatter.languages.length > 0
-      ? [
-          'sets "languages" but checks no role; only a block that checks roles covers languages',
-        ]
-      : []),
-    ...frontMatter.languages
-      .filter((id) => input.byId.get(id)?.layer !== Layer.Language)
-      .map((id) => `languages lists ${id}, which is not a language block`),
-  ];
-
-  return messages.map((message) => ({
-    message,
-    path: input.block.path,
-  }));
-};
+// A tool's languages are those whose files its presets cover. A layer that
+// leaves the field empty is reported by layerFindings alone.
+const languageFindings = (input: { block: Block; byId: BlocksById }): readonly Finding[] =>
+  FILLED_ON[LayerField.Languages].includes(input.block.layer)
+    ? input.block.frontMatter.languages
+        .filter((id) => input.byId.get(id)?.layer !== Layer.Language)
+        .map((id) => ({
+          message: `languages lists ${id}, which is not a language block`,
+          path: input.block.path,
+        }))
+    : [];
 
 const flagFindings = (block: Block): readonly Finding[] => {
   const isAbstract = block.frontMatter.abstract;

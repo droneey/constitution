@@ -1,5 +1,5 @@
-import type { Finding } from '#/kernel';
-import { AXES } from '#/kernel';
+import type { Axis } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { BindingsParser } from '../../../contracts';
 import type { Binding, PresetFile } from '../../../entities';
@@ -11,6 +11,7 @@ interface BindingsLoaded {
 }
 
 const loadFile = (input: {
+  axis: Axis;
   parser: BindingsParser;
   preset: PresetFile;
   scope: string;
@@ -42,19 +43,17 @@ const loadFile = (input: {
   }
 
   return {
-    bindings: AXES.flatMap((axis) =>
-      Object.entries(read.document[axis] ?? {}).flatMap(([part, rules]) =>
-        Object.entries(rules).flatMap(([rule, settings]) =>
-          settings.map((setting) => ({
-            axis,
-            file: path,
-            part,
-            rule,
-            scope: input.scope,
-            setting,
-            tool: input.tool,
-          })),
-        ),
+    bindings: Object.entries(read.document).flatMap(([part, rules]) =>
+      Object.entries(rules).flatMap(([rule, settings]) =>
+        settings.map((setting) => ({
+          axis: input.axis,
+          file: path,
+          part,
+          rule,
+          scope: input.scope,
+          setting,
+          tool: input.tool,
+        })),
       ),
     ),
     findings: [],
@@ -71,6 +70,7 @@ const bindingsOf = (input: {
     return path?.kind === PresetFileKind.Bindings
       ? [
           loadFile({
+            axis: path.axis,
             parser: input.parser,
             preset,
             scope: path.scope,

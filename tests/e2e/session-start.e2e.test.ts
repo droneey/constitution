@@ -173,7 +173,8 @@ const unknownIds = (count: number): readonly string[] =>
   );
 const unknownWarning = (id: string): string => `- unknown: ${id} is not a block — check the name`;
 
-const CORE_FILES = "Core's files, under blocks/core/ and named without .md: core";
+const CORE_HEAD = "Core's chapters, blocks/core/<name>.md, and what each governs:";
+const CORE_CODE = '- code: any code no other chapter governs.';
 const KEY = "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const AXIS_DOMAINS = '[ui, remote-data, version-control]';
@@ -192,7 +193,11 @@ const OPTIMISTIC_WRITES_ROLL_BACK = 'optimistic-writes-roll-back';
 const COMMITS_ARE_ATOMIC = 'commits-are-atomic';
 const EVERY_AXIS: AxesView = {
   core: [
-    `${CORE_FILES}; foundation: code, principles; architecture: principles; workflow: delivery.`,
+    CORE_HEAD,
+    CORE_CODE,
+    '- principles',
+    '- architecture/principles',
+    '- workflow/delivery',
   ],
   musts: [
     READS_ARE_CANCELLABLE,
@@ -206,14 +211,16 @@ const EVERY_AXIS: AxesView = {
     DOMAINS,
     KEY,
     `${REMOTE_DATA} (architecture)`,
-    `${UI} (foundation, architecture/forms, architecture/with/remote-data)`,
+    `${UI} (architecture/forms, architecture/with/remote-data)`,
     `${VERSION_CONTROL} (workflow)`,
   ],
   warnings: [],
 };
-const FOUNDATION_ONLY: AxesView = {
+const BASE_ONLY: AxesView = {
   core: [
-    `${CORE_FILES}; foundation: code, principles.`,
+    CORE_HEAD,
+    CORE_CODE,
+    '- principles',
   ],
   musts: [
     FOUR_DATA_STATES,
@@ -223,7 +230,7 @@ const FOUNDATION_ONLY: AxesView = {
     DOMAINS,
     KEY,
     REMOTE_DATA,
-    `${UI} (foundation)`,
+    `${UI}`,
     VERSION_CONTROL,
   ],
   warnings: [],
@@ -426,7 +433,7 @@ describe('session-start hook', () => {
     {
       condition: 'axes leaves architecture and workflow out and a later list item is an alias',
       config: configOf({
-        axes: '[foundation]',
+        axes: '[]',
         platforms: '[*browser]',
       }),
       line: 4,
@@ -994,7 +1001,6 @@ describe('session-start hook', () => {
         }),
         files: localBlockFiles({
           fields: {
-            checks: '[lint]',
             languages: '[typescript]',
           },
           id: 'lint-tool',
@@ -1013,43 +1019,17 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             fields: {
-              checks: '[secrets]',
               languages: '[elixir]',
             },
             id: 'mix-audit',
           }),
           ...localBlockFiles({
-            fields: {
-              roles: '[secrets]',
-            },
             folder: 'contexts/languages',
             id: 'elixir',
           }),
         },
       },
       warnings: [],
-    },
-    {
-      condition: 'a local tool requires its language but names none',
-      layout: {
-        config: configOf({
-          domains: '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: `[react-dom, git, ${localPath('lint-tool')}]`,
-          languages: '[typescript]',
-          platforms: '[browser]',
-        }),
-        files: localBlockFiles({
-          fields: {
-            checks: '[lint, secrets]',
-            requires: '[typescript]',
-          },
-          id: 'lint-tool',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-      ],
     },
     {
       condition: "a local block's languages name blocks that are no language",
@@ -1062,7 +1042,6 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             fields: {
-              checks: '[lint]',
               languages: '[typescript, ui, kit, kotlin]',
             },
             id: 'lint-tool',
@@ -1077,27 +1056,6 @@ describe('session-start hook', () => {
         `- local-block: ${localPath('lint-tool')} covers ui, which is not a language block — fix its front matter`,
         `- local-block: ${localPath('lint-tool')} covers kit, which is not a language block — fix its front matter`,
         `- local-block: ${localPath('lint-tool')} covers kotlin, which is not a language block — fix its front matter`,
-      ],
-    },
-    {
-      condition: "a local language's roles name no role",
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git, betterleaks]',
-          languages: `[${localPath('elixir', 'contexts/languages')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[secrets, style]',
-          },
-          folder: 'contexts/languages',
-          id: 'elixir',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('elixir', 'contexts/languages')} is held to style, which is not a role — fix its front matter`,
       ],
     },
     {
@@ -1181,8 +1139,6 @@ describe('session-start hook', () => {
         '- wrong-key: ui is a domain — move it from implementations to domains',
         '- config: constitution.yaml has no packages key — add packages: {}',
         `- local-block: ${PARAGLIDE} does not exist — create it or remove it from implementations`,
-        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
         '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
         '- override: four-data-states expired on 2020-01-01 — renew or remove it',
       ],
@@ -1358,7 +1314,7 @@ describe('session-start hook', () => {
         }),
         files: localBlockFiles({
           headings: [
-            '## kit-rule → no-such-rule · MUST',
+            '### kit-rule → no-such-rule · MUST',
           ],
           id: 'kit',
         }),
@@ -1377,14 +1333,14 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             headings: [
-              '## kit-rule → no-secret-in-code',
-              '## kit-child → base-rule · MUST',
+              '### kit-rule → no-secret-in-code',
+              '### kit-child → base-rule · MUST',
             ],
             id: 'kit',
           }),
           ...localBlockFiles({
             headings: [
-              '## base-rule · MUST',
+              '### base-rule · MUST',
             ],
             id: 'base-kit',
           }),
@@ -1450,110 +1406,6 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: "a local language's roles leave out the role of an active rule",
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: `[${localPath('elixir', 'contexts/languages')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[format, lint]',
-          },
-          folder: 'contexts/languages',
-          id: 'elixir',
-        }),
-      },
-      warnings: [],
-    },
-    {
-      condition:
-        'a local language outside every layer folder has no tool for a role of an active rule',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: `[${localPath('elixir', '')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            roles: '[secrets]',
-          },
-          folder: '',
-          id: 'elixir',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for elixir — add one, such as betterleaks, or override them',
-      ],
-    },
-    {
-      condition: 'a tool of no language lists a role tied to a language',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git, betterleaks, markdownlint]',
-          languages: '[python]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for python — add one, such as ruff, or override them',
-      ],
-    },
-    {
-      condition: 'two languages are active and a rule of the role holds for one',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: '[git, betterleaks]',
-          languages: '[typescript, python]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for python — add one, such as ruff, or override them',
-      ],
-    },
-    {
-      condition: 'the first tool of the role in the index is abstract',
-      layout: {
-        config: configOf({
-          domains: '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: '[react-dom, git, betterleaks]',
-          languages: '[typescript]',
-          platforms: '[browser]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by lint have no tool for typescript — add one, such as biome, or override them',
-      ],
-    },
-    {
-      condition: 'an application needs a role that a top-level local tool checks',
-      layout: {
-        config: configOf({
-          packages:
-            '\n  web:\n    domains: [ui, untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
-          domains: '[version-control]',
-          implementations: `[git, betterleaks, ${localPath('lint-kit')}]`,
-          languages: '[typescript]',
-        }),
-        files: localBlockFiles({
-          fields: {
-            checks: '[lint]',
-            languages: '[typescript]',
-            requires: '[typescript]',
-          },
-          id: 'lint-kit',
-        }),
-      },
-      warnings: [],
-    },
-    {
       condition: 'an override ends today',
       layout: {
         config: configOf({
@@ -1561,18 +1413,6 @@ describe('session-start hook', () => {
           implementations: '[git]',
           languages: '[typescript]',
           overrides: `\n  - rule: no-secret-in-code\n    level: MAY\n    reason: "none yet"\n    until: ${HOOK_TODAY}`,
-        }),
-      },
-      warnings: [],
-    },
-    {
-      condition: "an application's override lowers the rule no tool checks there",
-      layout: {
-        config: configOf({
-          packages:
-            '\n  web:\n    languages: [typescript]\n    overrides:\n      - rule: no-secret-in-code\n        level: MAY\n        reason: "none yet"',
-          domains: '[version-control]',
-          implementations: '[git]',
         }),
       },
       warnings: [],
@@ -1586,35 +1426,6 @@ describe('session-start hook', () => {
         }),
       },
       warnings: [],
-    },
-    {
-      condition: 'an application needs a tool that the rest of the repository does not',
-      layout: {
-        config: configOf({
-          packages: '\n  web:\n    languages: [typescript]',
-          domains: '[version-control]',
-          implementations: '[git]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript in web — add one, such as betterleaks, or override them',
-      ],
-    },
-    {
-      condition: 'an application lacks the tool the repository lacks',
-      layout: {
-        config: configOf({
-          packages: '\n  web:\n    domains: [ui]',
-          domains: '[version-control]',
-          implementations: '[git]',
-          languages: '[typescript]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- no-tool: rules checked by secrets have no tool for typescript — add one, such as betterleaks, or override them',
-      ],
     },
     {
       condition: 'an application shares the library that misses a requirement',
@@ -1921,21 +1732,21 @@ describe('session-start hook', () => {
     expect(mustsOf(session)).toContain('four-data-states (SHOULD in web; MAY)');
   });
 
-  // Core's part sets how much room is left: the line naming core's files takes
-  // 138 bytes, the gap and heading of the block list 42, the line under that
-  // heading 85 and a synthetic domain's line 101.
+  // Core's part sets how much room is left: the lines naming core's chapters
+  // take 165 bytes, the gap and heading of the block list 42, the line under that
+  // heading 85 and a synthetic domain's line 88.
   it.each<EdgeCase>([
     {
       condition: 'the last line of the block list ends on the budget, reserve kept',
-      corePart: 8834,
+      corePart: 8820,
       domains: '[synthetic-001]',
       tail: [
-        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up. (foundation)',
+        '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up.',
       ],
     },
     {
       condition: 'the last line of the block list passes the budget by one byte',
-      corePart: 8835,
+      corePart: 8821,
       domains: '[synthetic-001]',
       tail: [
         KEY,
@@ -1944,7 +1755,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list ends on the budget',
-      corePart: 9020,
+      corePart: 8993,
       domains: '[synthetic-001]',
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
@@ -1953,7 +1764,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list passes the budget by one byte',
-      corePart: 9021,
+      corePart: 8994,
       domains: '[synthetic-001]',
       tail: [
         '',
@@ -1992,7 +1803,7 @@ describe('session-start hook', () => {
   it('should fill the budget to its last byte when the last line of the block list ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8834),
+      corePart: corePartOfBytes(8820),
     });
     const project = createProject({
       config: configOf({
@@ -2118,7 +1929,7 @@ describe('session-start hook', () => {
       lines: [
         '## Domains (blocks/domains/<id>/<id>.md)',
         KEY,
-        '- ui: Screens and what a user sees on them. (foundation, architecture/forms)',
+        '- ui: Screens and what a user sees on them. (architecture/forms)',
         '## packages/web',
         '- remote-data (domains): Data another system owns. (architecture)',
         '- ui (domains): Also: architecture/with/remote-data',
@@ -2152,12 +1963,12 @@ describe('session-start hook', () => {
       view: EVERY_AXIS,
     },
     {
-      condition: 'the repository follows only foundation',
+      condition: 'the repository follows only the base',
       config: configOf({
-        axes: '[foundation]',
+        axes: '[]',
         domains: AXIS_DOMAINS,
       }),
-      view: FOUNDATION_ONLY,
+      view: BASE_ONLY,
     },
     {
       condition: 'constitution.yaml has no axes key',
@@ -2169,33 +1980,36 @@ describe('session-start hook', () => {
         ...EVERY_AXIS,
         warnings: [
           WARNINGS,
-          '- config: constitution.yaml has no axes key — add axes: [foundation, architecture, workflow]',
+          '- config: constitution.yaml has no axes key — add axes: [architecture, workflow]',
         ],
       },
     },
     {
       condition: 'axes names an axis that does not exist',
       config: configOf({
-        axes: '[foundation, design]',
+        axes: '[design]',
         domains: AXIS_DOMAINS,
       }),
       view: {
-        ...FOUNDATION_ONLY,
+        ...BASE_ONLY,
         warnings: [
           WARNINGS,
-          '- config: axes names design — write foundation, architecture or workflow',
+          '- config: axes names design — write architecture or workflow',
         ],
       },
     },
     {
-      condition: 'axes leaves foundation out',
+      condition: 'axes lists foundation',
       config: configOf({
-        axes: '[architecture]',
+        axes: '[foundation, architecture]',
         domains: AXIS_DOMAINS,
       }),
       view: {
         core: [
-          `${CORE_FILES}; foundation: code, principles; architecture: principles.`,
+          CORE_HEAD,
+          CORE_CODE,
+          '- principles',
+          '- architecture/principles',
         ],
         musts: [
           READS_ARE_CANCELLABLE,
@@ -2208,12 +2022,12 @@ describe('session-start hook', () => {
           DOMAINS,
           KEY,
           `${REMOTE_DATA} (architecture)`,
-          `${UI} (foundation, architecture/forms, architecture/with/remote-data)`,
+          `${UI} (architecture/forms, architecture/with/remote-data)`,
           VERSION_CONTROL,
         ],
         warnings: [
           WARNINGS,
-          '- config: constitution.yaml leaves foundation out of axes — foundation is always followed, add it',
+          "- config: constitution.yaml lists foundation in axes — a block's root is always followed, remove it",
         ],
       },
     },
@@ -2221,12 +2035,11 @@ describe('session-start hook', () => {
       condition:
         'an application follows an axis the repository leaves out, for its own block and a top-level one',
       config: axesConfigOf({
-        packages:
-          '\n  packages/web:\n    axes: [foundation, architecture]\n    domains: [remote-data]',
-        axes: '[foundation]',
+        packages: '\n  packages/web:\n    axes: [architecture]\n    domains: [remote-data]',
+        axes: '[]',
       }),
       view: {
-        core: FOUNDATION_ONLY.core,
+        core: BASE_ONLY.core,
         musts: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
@@ -2237,7 +2050,7 @@ describe('session-start hook', () => {
         list: [
           DOMAINS,
           KEY,
-          `${UI} (foundation)`,
+          `${UI}`,
           VERSION_CONTROL,
           '## packages/web',
           '- remote-data (domains): Data another system owns. (architecture)',
@@ -2247,13 +2060,38 @@ describe('session-start hook', () => {
       },
     },
     {
-      condition: 'an application leaves foundation out of its axes',
+      condition: 'an application follows only the base while the repository follows every axis',
       config: axesConfigOf({
-        packages: '\n  packages/web:\n    axes: [workflow]\n    domains: [remote-data]',
-        axes: '[foundation]',
+        packages: '\n  packages/web:\n    axes: []\n    domains: [remote-data]',
+        axes: '[architecture, workflow]',
       }),
       view: {
-        core: FOUNDATION_ONLY.core,
+        core: EVERY_AXIS.core,
+        musts: [
+          FOUR_DATA_STATES,
+          ...BELOW_FOUR_DATA_STATES,
+          LABELS_ON_FIELDS,
+          COMMITS_ARE_ATOMIC,
+        ],
+        list: [
+          DOMAINS,
+          KEY,
+          `${UI} (architecture/forms)`,
+          `${VERSION_CONTROL} (workflow)`,
+          '## packages/web',
+          '- remote-data (domains): Data another system owns.',
+        ],
+        warnings: [],
+      },
+    },
+    {
+      condition: 'an application lists foundation in its axes',
+      config: axesConfigOf({
+        packages: '\n  packages/web:\n    axes: [foundation, workflow]\n    domains: [remote-data]',
+        axes: '[]',
+      }),
+      view: {
+        core: BASE_ONLY.core,
         musts: [
           FOUR_DATA_STATES,
           ...BELOW_FOUR_DATA_STATES,
@@ -2262,7 +2100,7 @@ describe('session-start hook', () => {
         list: [
           DOMAINS,
           KEY,
-          `${UI} (foundation)`,
+          `${UI}`,
           VERSION_CONTROL,
           '## packages/web',
           '- remote-data (domains): Data another system owns.',
@@ -2270,7 +2108,7 @@ describe('session-start hook', () => {
         ],
         warnings: [
           WARNINGS,
-          '- config: packages/web leaves foundation out of axes — foundation is always followed, add it',
+          "- config: packages/web lists foundation in axes — a block's root is always followed, remove it",
         ],
       },
     },

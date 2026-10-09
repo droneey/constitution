@@ -104,7 +104,7 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   else if (FM["extends"] != "" && ABSTRACT[FM["extends"]] != "true") warn("local-block", path " extends " FM["extends"] ", a concrete block; a block extends only an abstract base — require it instead")
   n = split(FM["requires"], a, " ")
   for (k = 1; k <= n; k++) if (!(a[k] in KNOWN) && !(a[k] in LOCAL)) warn("local-block", path " requires " a[k] ", which is not a block — fix its front matter")
-  check_coverage(path)
+  check_languages(path)
   local_rules(ENVIRON["CONSTITUTION_PROJECT"] "/" substr(path, 3))
   LPATH[++nlocal] = path
   LID[nlocal] = name
@@ -112,9 +112,6 @@ function local_block(s, i,   path, key, name, r, n, a, k, missing, layer) {
   LSUMMARY[nlocal] = FM["summary"]
   LREQUIRES[nlocal] = FM["requires"]
   LEXTENDS[nlocal] = FM["extends"]
-  LCHECKS[nlocal] = FM["checks"]
-  LLANGS[nlocal] = FM["languages"]
-  LROLES[nlocal] = FM["roles"]
   LGOVERNS[nlocal] = FM["governs"]
   LSCOPE[nlocal] = s
   IN[s, name] = 1
@@ -127,15 +124,13 @@ function is_language(id) {
   return (id in LOCAL) && local_layer(LOCAL_PATH[id], LOCAL_KEY[id]) == "language"
 }
 
-function check_coverage(path,   n, a, k) {
+function check_languages(path,   n, a, k) {
   n = split(FM["languages"], a, " ")
   for (k = 1; k <= n; k++) if (!is_language(a[k])) warn("local-block", path " covers " a[k] ", which is not a language block — fix its front matter")
-  n = split(FM["roles"], a, " ")
-  for (k = 1; k <= n; k++) if (!(a[k] in FREE)) warn("local-block", path " is held to " a[k] ", which is not a role — fix its front matter")
 }
 
-# A rule heading of a local block is "## <slug> · <LEVEL>" or
-# "## <slug> → <parent>", with a level after the parent or none. A heading in a
+# A rule heading of a local block is "### <slug> · <LEVEL>" or
+# "### <slug> → <parent>", with a level after the parent or none. A heading in a
 # code fence is an example.
 function local_rules(file,   line, r, in_fence, in_front, rest, arrow, at, slug, parent) {
   arrow = " → "
@@ -158,11 +153,11 @@ function local_rules(file,   line, r, in_fence, in_front, rest, arrow, at, slug,
       continue
     }
     if (in_fence) continue
-    if (line ~ /^## [^ ]+ · (MUST|SHOULD|MAY)$/) {
-      rest = substr(line, 4)
+    if (line ~ /^### [^ ]+ · (MUST|SHOULD|MAY)$/) {
+      rest = substr(line, 5)
       LOCAL_RULE[substr(rest, 1, index(rest, " ") - 1)] = 1
-    } else if (line ~ /^## [^ ]+ → [^ ]+( · [^ ]+)?$/) {
-      rest = substr(line, 4)
+    } else if (line ~ /^### [^ ]+ → [^ ]+( · [^ ]+)?$/) {
+      rest = substr(line, 5)
       at = index(rest, arrow)
       slug = substr(rest, 1, at - 1)
       parent = substr(rest, at + length(arrow))

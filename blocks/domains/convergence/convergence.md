@@ -1,16 +1,13 @@
 ---
 id: convergence
-summary: A declared document converged by validate, render, plan and apply.
-requires: []
+summary: A declared state converged by validate, render, plan and apply.
+requires: [config-file]
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---
-
 # Convergence
 
-> A program that reads one document its user writes and moves the world toward it: it validates the document, renders what it implies, plans the changes and applies them — and a second run changes nothing.
+> A program that reads one config file its user writes and moves the world toward it: it validates the file, renders what it implies, plans the changes and applies them, and a second run changes nothing.

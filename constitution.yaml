@@ -1,13 +1,13 @@
 version: 0.65.10
 
-axes: [foundation, architecture, workflow]
+axes: [architecture, workflow]
 domains: [version-control, open-source]
 platforms: []
-languages: [typescript, python]
-implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryker, zod, yaml, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner, uv, ruff, ty, pytest, mutmut, deptry, vulture, complexipy, python-check]
+languages: [typescript, python, yaml]
+implementations: [bun, bun-test, tsc, biome, dependency-cruiser, syncpack, stryker, zod, yaml-js, git, lefthook, betterleaks, mise, ls-lint, knip, osv-scanner, uv, ruff, ty, pytest, mutmut, deptry, vulture, complexipy, python-check]
 packages: {}
 check: bun run check
 overrides:
-  - rule: no-agent-file-in-project
+  - rule: agent-file-restates-no-rule
     level: MAY
     reason: "The constitution's authors read the working-tree blocks they edit, not the installed ones"

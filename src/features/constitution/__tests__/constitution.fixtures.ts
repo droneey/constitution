@@ -21,14 +21,12 @@ type Files = Record<string, string>;
 
 interface CardFixture {
   abstract?: boolean;
-  checks?: readonly string[];
   dictionary?: readonly string[];
   extends?: string | undefined;
   governs?: readonly string[];
   id: string;
   languages?: readonly string[];
   requires?: readonly string[];
-  roles?: readonly string[];
   summary?: string;
 }
 
@@ -43,7 +41,8 @@ interface BlockFilesFixture extends CardFixture {
 }
 
 interface RuleFixture {
-  check?: string;
+  // false leaves the level out of a heading that carries out another rule.
+  isLevelStated?: boolean;
   level?: string;
   parent?: string;
   slug: string;
@@ -62,9 +61,7 @@ const mainFile = (block: BlockFixture): string =>
     `requires: ${list(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
-    `checks: ${list(block.checks)}`,
     `languages: ${list(block.languages)}`,
-    `roles: ${list(block.roles)}`,
     `dictionary: ${list(block.dictionary)}`,
     `governs: ${list(block.governs)}`,
     '---',
@@ -91,17 +88,17 @@ const blockFiles = (input: BlockFilesFixture): Files => {
 
 const headingOf = (input: RuleFixture): string =>
   input.parent === undefined
-    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
-    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+    ? `### ${input.slug} · ${input.level ?? 'MUST'}`
+    : `### ${input.slug} → ${input.parent}${input.isLevelStated === false ? '' : ` · ${input.level ?? 'MUST'}`}`;
 
 const rule = (input: RuleFixture): string =>
   [
     headingOf(input),
     input.statement ?? `The ${input.slug} rule holds.`,
     '',
-    '| Why | Check | Tags |',
-    '|---|---|---|',
-    `| ${input.why ?? 'it keeps the code honest.'} | ${input.check ?? 'review'} | ${input.tags ?? '[]'} |`,
+    '| Why | Tags |',
+    '|---|---|',
+    `| ${input.why ?? 'it keeps the code honest.'} | ${input.tags ?? '[]'} |`,
     '',
   ].join('\n');
 

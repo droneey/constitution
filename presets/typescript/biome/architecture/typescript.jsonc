@@ -1,7 +1,7 @@
 {
   "plugins": [
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
         "!**/adapters/**",
@@ -10,7 +10,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/enums-for-named-value-groups.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/enums-for-named-value-groups.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

@@ -130,6 +130,7 @@ function flow(s, app, key,   end, inner, n, i, c, quote, last, piece, pieces, co
 }
 
 function list(l, rest, app, key) {
+  print "list" T app T key
   KEY[l] = key
   N[l] = 0
   if (rest == "") {

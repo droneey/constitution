@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 import type { Constitution } from '../../../entities';
 import type { BlocksById } from '../../../utils';

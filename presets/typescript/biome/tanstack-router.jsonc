@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/links-name-typed-targets.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

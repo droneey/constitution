@@ -40,7 +40,7 @@ Tell the owner the installed version and the blocks above, grouped by layer, in 
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
-Every block's rules sit on three axes: `foundation` — what holds for any team; `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which the repository follows. `foundation` is always followed; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`.
+Every block holds at its root its base — what holds for any team, always followed — and may add two optional axes, a folder each: `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
 
 
 Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
@@ -68,7 +68,7 @@ For a local block, fill the template's placeholders from the repository and the 
 - `id` is the file name without `.md`, and must not be an id from the list above;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names an abstract constitution base it inherits, an id that starts with `_`, or stays `null` — a constitution block it builds on goes under `requires`;
-- `checks` lists the roles the tool checks, if it is a checking tool — the `role` lines of `${CLAUDE_PLUGIN_ROOT}/digests/index.tsv` hold them; `languages` the language blocks whose files those checks cover — constitution ids or local language blocks — and `[]` when it checks nothing or only the roles the index marks `true`, which hold for every language; `roles` stays `[]`, since only a language block is held to roles; `dictionary` its brand and file names; `governs` the file globs its rules govern;
+- `languages` lists, for a tool, the language blocks whose files it reads — constitution ids or local language blocks — and stays `[]` for a tool of any language and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern;
 - the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `${CLAUDE_PLUGIN_ROOT}/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the local block covers the part it misses; `no` — it cannot meet the rule, and a rule of the local block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the template's format, with a slug no `rule` line of the index holds. Drop the placeholder rule when there is none.
 
@@ -85,7 +85,7 @@ When the repository holds several units — the applications and packages of a w
 ```yaml
 packages:
   packages/web:
-    domains: [ui, untrusted-client, unreliable-network]
+    domains: [ui, untrusted-client, remote-service]
     platforms: [browser]
     implementations: [react-dom]
 ```

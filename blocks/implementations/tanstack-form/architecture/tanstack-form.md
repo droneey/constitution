@@ -1,15 +1,15 @@
 # TanStack Form
 
-## form-submits-through-a-binding-unit → components-dumb-widgets-smart
+### form-submits-through-a-binding-unit → presentational-component-performs-no-io · MUST
 Submission calls the command's binding unit or an `on<Event>` callback; the form does no input or output.
 
-| Why | Check | Tags |
-|---|---|---|
-| the form stays presentational, and serves whichever operation it is handed. | review | [] |
+| Why | Tags |
+|---|---|
+| the form stays presentational, and serves whichever operation it is handed. | [] |
 
-## form-library-imported-by-the-ui → packages-imported-by-folder-role
+### form-library-imported-by-the-ui → layer-imports-dependencies-by-its-role · MUST
 The form library's home reaches past the edge into a UI's components and widgets, where a form is built.
 
-| Why | Check | Tags |
-|---|---|---|
-| a form is presentation that holds its own state, and the binding unit it submits through needs nothing of the library. | tool/imports | [] |
+| Why | Tags |
+|---|---|
+| a form is presentation that holds its own state, and the binding unit it submits through needs nothing of the library. | [] |

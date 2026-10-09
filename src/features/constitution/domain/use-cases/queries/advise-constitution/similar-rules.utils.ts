@@ -1,4 +1,4 @@
-import { KIND_OF_LAYER } from '#/kernel';
+import { KIND_OF_LAYER } from '#/kernel/constants';
 
 import type { Block, Rule } from '../../../entities';
 import type { BlocksById } from '../../../utils';

@@ -68,9 +68,7 @@ const tsconfigOf = (input: {
   root?: string;
 }): string =>
   jsonFileOf({
-    extends: input.parts.map(
-      (part) => `${input.root ?? '../..'}/${PRESETS}/tsc/foundation/${part}.json`,
-    ),
+    extends: input.parts.map((part) => `${input.root ?? '../..'}/${PRESETS}/tsc/${part}.json`),
     compilerOptions: {
       ...input.extra,
       paths: {
@@ -212,7 +210,7 @@ export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z
     "export { ErosError } from './domain/errors';\nexport { type ErrorCode, isErrorCode } from './domain/value-objects';\n",
   'packages/eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
     "export { kindOf } from './kind-of.use-case';\n",
-  'packages/eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel';
+  'packages/eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
 
 export const kindOf = (code: string): string | undefined =>
   KINDS.find((kind) => code.startsWith(\`\${kind}.\`));
@@ -241,7 +239,7 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
   'packages/eros/typescript/src/features/problem/domain/entities/problem.entity.ts':
     'export interface Problem {\n  readonly code: string;\n  readonly status: number;\n}\n',
   'packages/eros/typescript/src/features/problem/index.ts':
-    "export { problemOf } from './adapters/problem';\nexport type { Problem } from './domain/entities';\n",
+    "export type { Problem } from './domain/entities';\n",
   'packages/eros/typescript/src/features/records/domain/entities/error-record.entity.ts':
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
   'packages/eros/typescript/src/features/records/domain/entities/index.ts':
@@ -256,13 +254,14 @@ export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code
     "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './domain/use-cases/queries/to-record';\n",
   'packages/eros/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
-export { type Problem, problemOf } from './features/problem';
+export type { Problem } from './features/problem';
+export { problemOf } from './features/problem/adapters/problem';
 export { type ErrorRecord, toRecord } from './features/records';
-export { KINDS } from './kernel';
+export { KINDS } from './kernel/constants';
 `,
   'packages/eros/typescript/src/integrations/nestjs/index.ts': `import { Module } from '@nestjs/common';
 
-import { KINDS } from '#/kernel';
+import { KINDS } from '#/kernel/constants';
 
 export const erosModule = Module({ providers: [{ provide: 'EROS_KINDS', useValue: KINDS }] });
 `,
@@ -276,7 +275,6 @@ const isKinds = (value: unknown): value is readonly string[] =>
 // The build writes the parsed file into the bundle; a source of another shape is no kind.
 export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
 `,
-  'packages/eros/typescript/src/kernel/index.ts': "export { KINDS } from './constants';\n",
   'packages/eros/typescript/tsconfig.json': tsconfigOf({
     parts: [
       'self',
@@ -298,7 +296,7 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
     name: 'shop-eros',
   }),
   'packages/eros/python/src/shop_eros/__init__.py':
-    "from shop_eros.kernel import KINDS\n\n__all__ = ['KINDS']\n",
+    "from shop_eros.kernel.constants import KINDS\n\n__all__ = ['KINDS']\n",
   'packages/eros/python/src/shop_eros/features/__init__.py': '',
   'packages/eros/python/src/shop_eros/features/errors/__init__.py': '',
   'packages/eros/python/src/shop_eros/features/errors/domain/__init__.py': '',
@@ -315,8 +313,7 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
     'from fastapi import APIRouter\n\nrouter = APIRouter()\n',
   'packages/eros/python/src/shop_eros/integrations/fastmcp/__init__.py':
     "from fastmcp import FastMCP\n\nserver = FastMCP('eros')\n",
-  'packages/eros/python/src/shop_eros/kernel/__init__.py':
-    "from .constants import KINDS\n\n__all__ = ['KINDS']\n",
+  'packages/eros/python/src/shop_eros/kernel/__init__.py': '',
   'packages/eros/python/src/shop_eros/kernel/constants/__init__.py':
     "from .kinds_constants import KINDS\n\n__all__ = ['KINDS']\n",
   'packages/eros/python/src/shop_eros/kernel/constants/kinds_constants.py': `from importlib.resources import files
@@ -500,7 +497,7 @@ it('should name the order and its currency when an order is totalled', () => {
   'packages/api/src/features/totals/app/total-line.ts': `import type { Cents } from '@shop/libs-money';
 import { describeOrder, type OrderId } from '@shop/shared';
 
-import { CURRENCY } from '#/kernel';
+import { CURRENCY } from '#/kernel/constants';
 
 interface Totalled {
   id: OrderId;
@@ -510,7 +507,9 @@ interface Totalled {
 export const totalLine = (order: Totalled): string => \`\${describeOrder(order)} \${CURRENCY}\`;
 `,
   'packages/api/src/features/totals/index.ts': "export { totalLine } from './app/total-line';\n",
-  'packages/api/src/kernel/index.ts': "export const CURRENCY = 'EUR';\n",
+  'packages/api/src/kernel/constants/currency.constants.ts': "export const CURRENCY = 'EUR';\n",
+  'packages/api/src/kernel/constants/index.ts':
+    "export { CURRENCY } from './currency.constants';\n",
   'packages/api/src/main.ts':
     "import { totalLine } from './features/totals';\n\nexport const main = totalLine;\n",
   'packages/api/tsconfig.json': tsconfigOf({
@@ -556,7 +555,7 @@ it('should name the refund when an order is refunded', () => {
 `,
   'shared/src/features/orders/domain/entities/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './order.entity.ts';\n",
-  'shared/src/features/orders/domain/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/index.ts';
+  'shared/src/features/orders/domain/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
 
 export type OrderId = string & { readonly __brand: 'OrderId' };
 
@@ -575,7 +574,6 @@ export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:
     "export { describeOrder, type Order, type OrderId, refundLine } from './features/orders/index.ts';\n",
   'shared/src/kernel/constants/index.ts': "export { ORDER_PREFIX } from './order.constants.ts';\n",
   'shared/src/kernel/constants/order.constants.ts': "export const ORDER_PREFIX = 'order';\n",
-  'shared/src/kernel/index.ts': "export { ORDER_PREFIX } from './constants/index.ts';\n",
   'shared/tsconfig.json': tsconfigOf({
     parts: [
       'self',
@@ -602,8 +600,8 @@ const WORKSPACE: Files = {
   ].join('\n'),
   'biome.json': jsonFileOf({
     extends: [
-      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
+      './.droneey/constitution/presets/common/biome/self.jsonc',
+      './.droneey/constitution/presets/common/biome/git.jsonc',
     ],
     files: {
       includes: [
@@ -614,12 +612,12 @@ const WORKSPACE: Files = {
   }),
   'biome.packages-api.jsonc': jsonFileOf({
     extends: [
-      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
-      './.droneey/constitution/presets/typescript/biome/foundation/self.jsonc',
+      './.droneey/constitution/presets/common/biome/self.jsonc',
+      './.droneey/constitution/presets/common/biome/git.jsonc',
+      './.droneey/constitution/presets/typescript/biome/self.jsonc',
     ],
   }),
-  'knip.config.mjs': `import core from './${PRESETS}/knip/foundation/core.mjs';
+  'knip.config.mjs': `import core from './${PRESETS}/knip/core.mjs';
 import architecture from './${PRESETS}/knip/architecture/core.mjs';
 
 const unit = (entry) => ({ entry: [...core.entry, ...architecture.entry, ...entry], project: core.project });

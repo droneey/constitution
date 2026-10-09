@@ -1,60 +1,59 @@
-foundation:
-  core:
-    error-cause-preserved:
-      - B904
-    no-dead-code:
-      - ARG
-      - F401
-      - F841
-    no-debug-output-in-shipped-code:
-      - T10
-      - T20
-    positional-parameters-at-most-three:
-      - PLR0917
-      - max-positional-args
-  fastapi:
-    dependencies-declared-in-annotated:
-      - FAST
-    http-exception-banned:
-      - fastapi.HTTPException
-      - starlette.exceptions.HTTPException
-    path-parameters-read-by-the-handler:
-      - FAST
-  python:
-    aware-datetimes-only:
-      - DTZ
-    except-never-only-passes:
-      - check-typed-exception
-      - S110
-      - S112
-    generics-in-pep-695-form:
-      - UP040
-      - UP046
-      - UP047
-    signatures-annotated-without-any:
-      - ANN
-    sys-path-never-touched:
-      - TID251
-      - sys.path
-  pytest:
-    flaky-mark-banned:
-      - pytest.mark.flaky
-    pytest-asyncio-banned:
-      - pytest_asyncio
-    skips-and-expected-failures-banned:
-      - pytest.importorskip
-      - pytest.mark.skip
-      - pytest.mark.skipif
-      - pytest.mark.xfail
-      - pytest.skip
-      - pytest.xfail
-    unittest-mock-banned:
-      - unittest.mock
-  self:
-    noqa-names-its-codes:
-      - PGH
-      - RUF
-    ruff-format-is-the-formatter:
-      - indent-width
-      - line-length
-      - quote-style
+core:
+  error-keeps-its-cause:
+    - B904
+  dead-code-deleted:
+    - ARG
+    - F401
+    - F841
+  diagnostics-written-through-a-logger:
+    - T10
+    - T20
+  function-takes-at-most-three-positions:
+    - PLR0917
+    - max-positional-args
+fastapi:
+  dependencies-declared-in-annotated:
+    - FAST
+  http-exception-banned:
+    - fastapi.HTTPException
+    - starlette.exceptions.HTTPException
+  path-parameters-read-by-the-handler:
+    - FAST
+python:
+  aware-datetimes-only:
+    - DTZ
+  except-never-only-passes:
+    - check-typed-exception
+    - S110
+    - S112
+  generics-in-pep-695-form:
+    - UP040
+    - UP046
+    - UP047
+  no-any-annotation:
+    - ANN
+  sys-path-never-touched:
+    - TID251
+    - sys.path
+pytest:
+  flaky-mark-banned:
+    - pytest.mark.flaky
+  pytest-asyncio-banned:
+    - pytest_asyncio
+  skips-and-expected-failures-banned:
+    - pytest.importorskip
+    - pytest.mark.skip
+    - pytest.mark.skipif
+    - pytest.mark.xfail
+    - pytest.skip
+    - pytest.xfail
+  unittest-mock-banned:
+    - unittest.mock
+self:
+  noqa-names-its-codes:
+    - PGH
+    - RUF
+  ruff-format-is-the-formatter:
+    - indent-width
+    - line-length
+    - quote-style

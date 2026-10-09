@@ -25,7 +25,7 @@ Handle one override at a time. When the owner asks for several, go through these
 
 ### 1. The rule
 
-Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, check, role, languages, tags, axis, parent, whether its level is stated:
+Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, tags, axis — empty for the base — parent, whether its level is stated:
 
 ```bash
 grep "^rule$(printf '\t')<slug>$(printf '\t')" "${CLAUDE_PLUGIN_ROOT}/digests/index.tsv"
@@ -65,7 +65,7 @@ An override at the top level:
 
 ```yaml
 overrides:
-  - rule: data-states-shown
+  - rule: data-view-shows-every-state
     level: SHOULD
     reason: "The admin screens show their state in the shared toolbar"
     until: 2026-12-31
@@ -78,7 +78,7 @@ packages:
   packages/web:
     implementations: [react-dom]
     overrides:
-      - rule: data-states-shown
+      - rule: data-view-shows-every-state
         level: MAY
         reason: "The kit renders the states its caller passes"
 ```

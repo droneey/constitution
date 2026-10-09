@@ -5,14 +5,13 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
-const UI = 'blocks/domains/ui/foundation/ui.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const UI = 'blocks/domains/ui/screens.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 
-// A MUST rule whose role, architecture, no tool of typescript checks: the
-// advice names it whenever the checks run.
-const UNTOOLED_RULE = rule({
-  check: 'tool/imports',
-  slug: 'screens-import-inward',
+// A rule of ui that says nearly what a rule of i18n says: the advice names the
+// pair whenever the checks run.
+const SIMILAR_RULE = rule({
+  slug: 'screens-plurals-by-cldr',
 });
 
 describe('validateConstitution', () => {
@@ -26,7 +25,7 @@ describe('validateConstitution', () => {
     files[UI] = `${textOf({
       files,
       path: UI,
-    })}\n${UNTOOLED_RULE}`;
+    })}\n${SIMILAR_RULE}`;
     files['blocks/domains/ui/notes.txt'] = 'notes\n';
     const source = sourceOf(files);
 
@@ -43,7 +42,7 @@ describe('validateConstitution', () => {
         },
         {
           message:
-            'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md',
+            "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md",
           path: 'blocks/domains/ui/notes.txt',
         },
       ],
@@ -55,6 +54,8 @@ describe('validateConstitution', () => {
     const files = validFiles();
     files[PRINCIPLES] = [
       '# Principles',
+      '',
+      '> Governs how the code depends on itself.',
       '',
       rule({
         slug: 'dependencies-point-inward',
@@ -78,7 +79,7 @@ describe('validateConstitution', () => {
       findings: [
         {
           message:
-            'has 509 lines; a file holds at most 500, and a longer block splits into chapters',
+            'has 511 lines; a file holds at most 500, and a longer block splits into chapters',
           path: PRINCIPLES,
         },
         {
@@ -89,13 +90,13 @@ describe('validateConstitution', () => {
     });
   });
 
-  it('should give the advice beside the stale index when an added MUST rule has no tool', () => {
+  it("should give the advice beside the stale index when an added rule says nearly what a sibling block's does", () => {
     // Arrange
     const files = validFiles();
     files[UI] = `${textOf({
       files,
       path: UI,
-    })}\n${UNTOOLED_RULE}`;
+    })}\n${SIMILAR_RULE}`;
     const source = sourceOf(files);
 
     // Act
@@ -104,7 +105,7 @@ describe('validateConstitution', () => {
     // Assert
     expect(validation).toStrictEqual({
       advice: [
-        'role coverage: typescript has no tool for imports',
+        'similar rules: i18n-plurals-by-cldr (i18n) and screens-plurals-by-cldr (ui)',
       ],
       findings: [
         {

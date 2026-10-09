@@ -3,7 +3,6 @@ import { join } from 'node:path';
 
 const TEMPLATES = join(import.meta.dir, '..', '..', '..', '..', 'templates');
 const PLACEHOLDER = /<[^>\n]+>/;
-const RULE_HEADING = /^## \S+ · /m;
 const PARAGLIDE_DIR = 'blocks/implementations/paraglide';
 
 // What /ratify writes for Paraglide, a library the constitution has no block for.
@@ -62,10 +61,6 @@ const PARAGLIDE: ReadonlyArray<
     'the compiler checks a function call, and a key is only a string.',
   ],
   [
-    '<tool/role, test or review>',
-    'tool/types',
-  ],
-  [
     '[<lens>, <lens>]',
     '[errors]',
   ],
@@ -85,18 +80,8 @@ const paraglideFromTemplate = (): string => {
   return filled;
 };
 
-const paraglideOnAxes = (): Readonly<Record<string, string>> => {
-  const filled = paraglideFromTemplate();
-  const at = filled.search(RULE_HEADING);
+const paraglideCard = (): Readonly<Record<string, string>> => ({
+  [`${PARAGLIDE_DIR}/paraglide.md`]: paraglideFromTemplate(),
+});
 
-  if (at === -1) {
-    throw new Error('templates/block.md has no rule');
-  }
-
-  return {
-    [`${PARAGLIDE_DIR}/foundation/paraglide.md`]: `# Paraglide\n\n${filled.slice(at)}`,
-    [`${PARAGLIDE_DIR}/paraglide.md`]: filled.slice(0, at),
-  };
-};
-
-export { paraglideOnAxes };
+export { paraglideCard };

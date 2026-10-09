@@ -23,7 +23,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/query-function-only-in-cache-utils.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/read-declared-once-as-query-options.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

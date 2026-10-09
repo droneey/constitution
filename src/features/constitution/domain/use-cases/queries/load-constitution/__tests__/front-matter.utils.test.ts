@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Role } from '#/kernel';
-
 import { createFakeFrontMatterParser } from '../../../../../__tests__/front-matter-parser.fake';
 import type { FrontMatterFields, FrontMatterRead } from '../../../../contracts';
 import { readFrontMatter } from '../front-matter.utils';
@@ -11,14 +9,12 @@ const TEXT = '---\nid: ui\n---\n# UI\n';
 const BODY = '# UI\n';
 const FIELDS: FrontMatterFields = {
   abstract: false,
-  checks: [],
   dictionary: [],
   extends: undefined,
   governs: [],
   id: 'ui',
   languages: [],
   requires: [],
-  roles: [],
   summary: 'The ui block.',
 };
 const KEYS = [
@@ -27,9 +23,7 @@ const KEYS = [
   'requires',
   'extends',
   'abstract',
-  'checks',
   'languages',
-  'roles',
   'dictionary',
   'governs',
 ];
@@ -59,9 +53,6 @@ describe('readFrontMatter', () => {
     // Arrange
     const read = mappingOf({
       fields: {
-        checks: [
-          'lint',
-        ],
         dictionary: [
           'UI kit',
         ],
@@ -73,10 +64,6 @@ describe('readFrontMatter', () => {
         ],
         requires: [
           'remote-data',
-        ],
-        roles: [
-          'format',
-          'names',
         ],
       },
     });
@@ -90,9 +77,6 @@ describe('readFrontMatter', () => {
       findings: [],
       frontMatter: {
         abstract: false,
-        checks: [
-          Role.Lint,
-        ],
         dictionary: [
           'UI kit',
         ],
@@ -106,10 +90,6 @@ describe('readFrontMatter', () => {
         ],
         requires: [
           'remote-data',
-        ],
-        roles: [
-          Role.Format,
-          Role.Names,
         ],
         summary: 'The ui block.',
       },
@@ -339,7 +319,7 @@ describe('readFrontMatter', () => {
         ...KEYS.slice(2),
       ],
       message:
-        'front matter lists its fields out of order; the order is id, summary, requires, extends, abstract, checks, languages, roles, dictionary, governs',
+        'front matter lists its fields out of order; the order is id, summary, requires, extends, abstract, languages, dictionary, governs',
       name: 'its fields out of order',
     },
     {
@@ -388,30 +368,12 @@ describe('readFrontMatter', () => {
     },
     {
       fields: {
-        checks: [
-          'linting',
-        ],
-      },
-      message: 'front matter: checks "linting", which is not a role',
-      name: 'a checks entry that is no role',
-    },
-    {
-      fields: {
         languages: [
           'Type Script',
         ],
       },
       message: 'front matter: languages "Type Script", which is not a block id',
       name: 'a languages entry that is no block id',
-    },
-    {
-      fields: {
-        roles: [
-          'style',
-        ],
-      },
-      message: 'front matter: roles "style", which is not a role',
-      name: 'a roles entry that is no role',
     },
     {
       fields: {

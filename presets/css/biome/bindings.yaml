@@ -1,25 +1,24 @@
-foundation:
-  tailwind:
-    theme-resets-every-default-scale:
-      - theme-resets-every-default-scale.grit
-  css:
-    baseline-features-only:
-      - useBaseline
-    stylesheet-classes-declared-and-used:
-      - noUnusedClasses
-    custom-properties-declared-and-read-by-var:
-      - noUndeclaredCustomProperties
-      - noInvalidPropertyInitValue
-      - noMissingVarFunction
-    no-important-declarations:
-      - noImportantStyles
-    no-hexadecimal-colour:
-      - noHexColors
-    selectors-stay-shallow:
-      - noExcessiveSelectorClasses
-      - noDescendingSpecificity
-    styles-in-named-layers:
-      - useLayeredStyles
-      - useNamedLayer
-    styles-never-target-ids:
-      - styles-never-target-ids.grit
+tailwind:
+  utilities-only-from-tokens:
+    - utilities-only-from-tokens.grit
+css:
+  baseline-features-only:
+    - useBaseline
+  classes-declared-and-used:
+    - noUnusedClasses
+  custom-properties-declared-before-use:
+    - noUndeclaredCustomProperties
+    - noInvalidPropertyInitValue
+    - noMissingVarFunction
+  no-important-declarations:
+    - noImportantStyles
+  stylesheet-values-from-theme-properties:
+    - noHexColors
+  selectors-stay-shallow:
+    - noExcessiveSelectorClasses
+    - noDescendingSpecificity
+  styles-in-named-layers:
+    - useLayeredStyles
+    - useNamedLayer
+  styles-never-target-ids:
+    - styles-never-target-ids.grit

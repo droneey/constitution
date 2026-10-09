@@ -1,5 +1,6 @@
-import type { Finding } from '#/kernel';
-import { compareText, LAYERS } from '#/kernel';
+import { LAYERS } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
+import { compareText } from '#/kernel/utils';
 
 import { DocumentPath } from '../../../constants';
 import type {
@@ -42,11 +43,10 @@ interface Parsed {
 
 const BLOCKS = 'blocks/';
 const PRESETS = 'presets/';
-const TEMPLATES = 'templates/project/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
-  'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md';
+  "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md";
 // <directory>/<skill>/SKILL.md, where no folder is hidden
 const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
@@ -265,7 +265,6 @@ const loadConstitution = (input: {
       presets,
       requirementAnswers: parsed.answers,
       rules: parsed.rules,
-      templates: filesUnder(TEMPLATES),
     },
     findings: [
       ...underBlocks

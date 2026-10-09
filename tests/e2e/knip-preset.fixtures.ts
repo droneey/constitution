@@ -41,7 +41,7 @@ const configOf = (parts: readonly string[]): string => {
   const names = parts.map((_, index) => `part${index}`);
 
   return `import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
-import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
+import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
 ${parts
   .map(
     (part, index) =>

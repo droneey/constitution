@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel';
-import { Axis } from '#/kernel';
+import { Axis } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
 import { loadedOf, mainFile, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
-import { paraglideOnAxes } from '../../../../../__tests__/templates.fixtures';
+import { paraglideCard } from '../../../../../__tests__/templates.fixtures';
 import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { BlockFileRole } from '../../../../entities';
@@ -13,7 +13,7 @@ import { BlockFileRole } from '../../../../entities';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
-  'is not a block file; a block holds its card <id>.md and, in foundation/, architecture/ or workflow/, its chapters and with/<block>.md';
+  "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md";
 
 const UI_CARD = mainFile({
   body: '# UI\n',
@@ -55,7 +55,6 @@ describe('loadConstitution', () => {
         presets: [],
         requirementAnswers: [],
         rules: [],
-        templates: [],
       },
       findings: [],
     });
@@ -213,9 +212,9 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should load a block written from templates/block.md without a finding when its placeholders are filled and its rules sit in an axis chapter', () => {
+  it('should load a block written from templates/block.md without a finding when its placeholders are filled and its rules sit in its card', () => {
     // Arrange
-    const files = paraglideOnAxes();
+    const files = paraglideCard();
 
     // Act
     const loaded = loadedOf(files);
@@ -303,17 +302,20 @@ describe('loadConstitution', () => {
   );
 
   it.each([
-    'blocks/domains/ui/parts.md',
-    'blocks/domains/ui/with/remote-data.md',
+    'blocks/domains/ui/foundation/parts.md',
     'blocks/domains/ui/design/with/remote-data.md',
-    'blocks/domains/ui/foundation/.draft.md',
-    'blocks/domains/ui/foundation/parts.mdx',
-    'blocks/domains/ui/foundation/parts/a.md',
-    'blocks/domains/ui/foundation/old.md/a.md',
-    'blocks/domains/ui/foundation/with/notes.txt',
-    'blocks/domains/ui/foundation/with/old.md/a.md',
+    'blocks/domains/ui/architecture',
+    'blocks/domains/ui/.draft.md',
+    'blocks/domains/ui/parts.mdx',
+    'blocks/domains/ui/parts/a.md',
+    'blocks/domains/ui/old.md/a.md',
+    'blocks/domains/ui/with/notes.txt',
+    'blocks/domains/ui/with/old.md/a.md',
+    'blocks/domains/ui/architecture/.draft.md',
+    'blocks/domains/ui/architecture/parts/a.md',
+    'blocks/domains/ui/workflow/with/notes.txt',
   ])(
-    'should report %p as a stray file when it is hidden, nested, not markdown or outside an axis folder',
+    'should report %p as a stray file when it is hidden, nested, not markdown or in a folder that is neither an optional axis nor with/',
     (path) => {
       // Arrange
       const files = {
@@ -337,10 +339,11 @@ describe('loadConstitution', () => {
     // Arrange
     const files = {
       'blocks/domains/ui/architecture/remote-data.md': '# Remote data\n\nText.',
+      'blocks/domains/ui/architecture/ui.md': '# UI\n',
       'blocks/domains/ui/architecture/with/remote-data.md': '# UI with remote data\n',
-      'blocks/domains/ui/foundation/a.md': '# A\n',
-      'blocks/domains/ui/foundation/ui.md': '# UI\n',
-      'blocks/domains/ui/foundation/with/i18n.md': '# UI with i18n\n',
+      'blocks/domains/ui/b.md': '# B\n',
+      'blocks/domains/ui/a.md': '# A\n',
+      'blocks/domains/ui/with/i18n.md': '# UI with i18n\n',
       'blocks/domains/ui/ui.md': UI_CARD,
       'blocks/domains/ui/workflow/reviews.md': '# Reviews\n',
     };
@@ -356,26 +359,34 @@ describe('loadConstitution', () => {
       files: [
         [
           {
-            axis: undefined,
+            axis: Axis.Foundation,
             body: '\n# UI\n',
-            lines: 14,
+            lines: 12,
             path: 'blocks/domains/ui/ui.md',
             role: BlockFileRole.Main,
             with: undefined,
           },
           {
             axis: Axis.Foundation,
-            body: '# UI\n',
+            body: '# A\n',
             lines: 1,
-            path: 'blocks/domains/ui/foundation/ui.md',
+            path: 'blocks/domains/ui/a.md',
             role: BlockFileRole.Chapter,
             with: undefined,
           },
           {
             axis: Axis.Foundation,
-            body: '# A\n',
+            body: '# B\n',
             lines: 1,
-            path: 'blocks/domains/ui/foundation/a.md',
+            path: 'blocks/domains/ui/b.md',
+            role: BlockFileRole.Chapter,
+            with: undefined,
+          },
+          {
+            axis: Axis.Architecture,
+            body: '# UI\n',
+            lines: 1,
+            path: 'blocks/domains/ui/architecture/ui.md',
             role: BlockFileRole.Chapter,
             with: undefined,
           },
@@ -399,7 +410,7 @@ describe('loadConstitution', () => {
             axis: Axis.Foundation,
             body: '# UI with i18n\n',
             lines: 1,
-            path: 'blocks/domains/ui/foundation/with/i18n.md',
+            path: 'blocks/domains/ui/with/i18n.md',
             role: BlockFileRole.With,
             with: 'i18n',
           },
@@ -423,12 +434,12 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/foundation/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
+        'blocks/domains/ui/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
         'blocks/domains/ui/ui.md': UI_CARD,
       },
       finding: {
         message: 'has front matter; only the main file of a block carries it',
-        path: 'blocks/domains/ui/foundation/with/i18n.md',
+        path: 'blocks/domains/ui/with/i18n.md',
       },
     },
   ])(
@@ -454,7 +465,7 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/foundation/parts.md': '# Parts\n',
+        'blocks/domains/ui/parts.md': '# Parts\n',
       },
       finding: {
         message: 'has no main file ui.md',
@@ -531,11 +542,10 @@ describe('loadConstitution', () => {
   it('should gather the rules, the answers and their findings of every block when they spread over cards, chapters and seams', () => {
     // Arrange
     const files = {
-      'blocks/domains/i18n/foundation/i18n.md': rule({
-        slug: 'i18n-plurals-by-cldr',
-      }),
       'blocks/domains/i18n/i18n.md': mainFile({
-        body: '# i18n\n',
+        body: `# i18n\n\n${rule({
+          slug: 'i18n-plurals-by-cldr',
+        })}`,
         id: 'i18n',
       }),
       'blocks/implementations/lingui/architecture/with/react-dom.md': [
@@ -548,7 +558,7 @@ describe('loadConstitution', () => {
       'blocks/implementations/lingui/workflow/catalogs.md': [
         '# Catalogs',
         '',
-        '### loose · MUST',
+        '## loose · MUST',
         '',
         rule({
           slug: 'catalogs-are-compiled',
@@ -596,7 +606,7 @@ describe('loadConstitution', () => {
       findings: [
         {
           message:
-            'heading "### loose · MUST" looks like a rule but is not "## <slug> · <LEVEL>", "## <slug> → <parent>" or "## <slug> → <parent> · <LEVEL>"',
+            'heading "## loose · MUST" looks like a rule but is not "### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"',
           path: 'blocks/implementations/lingui/workflow/catalogs.md',
         },
         {
@@ -609,7 +619,7 @@ describe('loadConstitution', () => {
         [
           'i18n',
           'foundation',
-          'blocks/domains/i18n/foundation/i18n.md',
+          'blocks/domains/i18n/i18n.md',
           undefined,
           'i18n-plurals-by-cldr',
         ],
@@ -631,21 +641,22 @@ describe('loadConstitution', () => {
     });
   });
 
-  it('should flatten the bindings of a tool by axis, part and rule and keep every preset file with its text when bindings.yaml sits beside the parts', () => {
+  it('should flatten the bindings of a tool by part and rule, on the axis of the folder that holds them, and keep every preset file with its text when bindings.yaml sits beside the parts', () => {
     // Arrange
     const files: Files = {
       ...validFiles(),
       'presets/typescript/biome/bindings.yaml': [
-        'architecture:',
-        '  core:',
-        '    reads-are-cancellable: [surface.grit]',
-        'foundation:',
-        '  _react:',
-        '    hooks-at-top-level: [useHookAtTopLevel, useExhaustiveDependencies]',
+        '_react:',
+        '  hooks-at-top-level: [useHookAtTopLevel, useExhaustiveDependencies]',
         '',
       ].join('\n'),
-      'presets/typescript/biome/foundation/_react.jsonc': '{}\n',
-      'presets/typescript/biome/notes/bindings.yaml': 'foundation: {}\n',
+      'presets/typescript/biome/_react.jsonc': '{}\n',
+      'presets/typescript/biome/architecture/bindings.yaml': [
+        'core:',
+        '  reads-are-cancellable: [surface.grit]',
+        '',
+      ].join('\n'),
+      'presets/typescript/biome/notes/bindings.yaml': 'core: {}\n',
     };
 
     // Act
@@ -658,6 +669,15 @@ describe('loadConstitution', () => {
       presets: loaded.constitution.presets.map((preset) => preset.path),
     }).toStrictEqual({
       bindings: [
+        {
+          axis: Axis.Architecture,
+          file: 'presets/typescript/biome/architecture/bindings.yaml',
+          part: 'core',
+          rule: 'reads-are-cancellable',
+          scope: 'typescript',
+          setting: 'surface.grit',
+          tool: 'biome',
+        },
         {
           axis: Axis.Foundation,
           file: 'presets/typescript/biome/bindings.yaml',
@@ -676,20 +696,12 @@ describe('loadConstitution', () => {
           setting: 'useExhaustiveDependencies',
           tool: 'biome',
         },
-        {
-          axis: Axis.Architecture,
-          file: 'presets/typescript/biome/bindings.yaml',
-          part: 'core',
-          rule: 'reads-are-cancellable',
-          scope: 'typescript',
-          setting: 'surface.grit',
-          tool: 'biome',
-        },
       ],
       findings: [],
       presets: [
+        'presets/typescript/biome/_react.jsonc',
+        'presets/typescript/biome/architecture/bindings.yaml',
         'presets/typescript/biome/bindings.yaml',
-        'presets/typescript/biome/foundation/_react.jsonc',
         'presets/typescript/biome/notes/bindings.yaml',
       ],
     });
@@ -699,18 +711,18 @@ describe('loadConstitution', () => {
     {
       message: 'is not valid YAML: Unexpected flow-seq-end token in YAML stream: "]"',
       name: 'the file is not YAML',
-      text: 'foundation: ]\n',
+      text: 'core: ]\n',
     },
     {
       message: 'does not match its schema: <root>: Invalid input: expected record, received array',
       name: 'the file is a list',
-      text: '- foundation\n',
+      text: '- core\n',
     },
     {
       message:
-        'does not match its schema: foundation.core.no-any: Too small: expected array to have >=1 items',
+        'does not match its schema: core.no-any: Too small: expected array to have >=1 items',
       name: 'a rule lists no setting',
-      text: 'foundation:\n  core:\n    no-any: []\n',
+      text: 'core:\n  no-any: []\n',
     },
   ])('should report the bindings and load none when $name', ({ message, text }) => {
     // Arrange

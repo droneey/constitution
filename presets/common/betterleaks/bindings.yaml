@@ -1,4 +1,3 @@
-foundation:
-  core:
-    no-secret-in-repository:
-      - useDefault
+core:
+  secret-never-in-the-repository:
+    - useDefault

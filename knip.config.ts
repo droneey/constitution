@@ -1,11 +1,11 @@
 import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
-import betterleaks from './.droneey/constitution/presets/typescript/knip/foundation/betterleaks.mjs';
-import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
-import lsLint from './.droneey/constitution/presets/typescript/knip/foundation/ls-lint.mjs';
-import mise from './.droneey/constitution/presets/typescript/knip/foundation/mise.mjs';
-import osvScanner from './.droneey/constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
-import stryker from './.droneey/constitution/presets/typescript/knip/foundation/stryker.mjs';
-import uv from './.droneey/constitution/presets/typescript/knip/foundation/uv.mjs';
+import betterleaks from './.droneey/constitution/presets/typescript/knip/betterleaks.mjs';
+import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
+import lsLint from './.droneey/constitution/presets/typescript/knip/ls-lint.mjs';
+import mise from './.droneey/constitution/presets/typescript/knip/mise.mjs';
+import osvScanner from './.droneey/constitution/presets/typescript/knip/osv-scanner.mjs';
+import stryker from './.droneey/constitution/presets/typescript/knip/stryker.mjs';
+import uv from './.droneey/constitution/presets/typescript/knip/uv.mjs';
 
 export default {
   entry: [

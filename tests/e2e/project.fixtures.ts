@@ -52,7 +52,7 @@ interface ProjectLayout {
 const CONFIG = 'constitution.yaml';
 
 const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
-  axes: '[foundation, architecture, workflow]',
+  axes: '[architecture, workflow]',
   check: 'bun run check',
   domains: '[]',
   implementations: '[]',
@@ -217,9 +217,7 @@ const localBlockFiles = (input: {
         requires: '[]',
         extends: 'null',
         abstract: 'false',
-        checks: '[]',
         languages: '[]',
-        roles: '[]',
         dictionary: '[]',
         governs: '[]',
         ...input.fields,
@@ -253,7 +251,7 @@ const paraglideFiles = (input: { omit?: string; requires?: string }): Files =>
 const BROWSER_APP: ProjectLayout = {
   config: [
     'version: 1.0.0                    # the constitution release the project follows',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
@@ -276,7 +274,7 @@ const BROWSER_APP: ProjectLayout = {
 const CLI: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains:',
     '  - version-control',
     '  - untrusted-client',
@@ -295,7 +293,7 @@ const CLI: ProjectLayout = {
 const LIBRARY: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains: [version-control]',
     'platforms: []',
     'languages: [typescript]',
@@ -330,7 +328,7 @@ const HTML_SITE: ProjectLayout = {
 const LOCAL_PROJECT: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
@@ -354,9 +352,7 @@ const LOCAL_PROJECT: ProjectLayout = {
       '  - git',
       'extends: null',
       'abstract: false',
-      'checks: []',
       'languages: []',
-      'roles: []',
       'dictionary: []',
       'governs: []',
       '---',
@@ -370,10 +366,8 @@ const LOCAL_PROJECT: ProjectLayout = {
       '  - typescript',
       'extends: _lint-base',
       'abstract: false',
-      'checks: [lint]',
       'languages:',
       '  - typescript',
-      'roles: []',
       'dictionary: []',
       'governs: []',
       '---',
@@ -452,10 +446,10 @@ const RATIFIED: ProjectLayout = {
 const REAL_WEB_APP: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     '',
-    'domains: [ui, remote-data, remote-service, i18n, analytics, version-control,',
-    '          untrusted-client, unreliable-network]',
+    'domains: [ui, design-system, remote-data, remote-service, i18n, analytics, privacy,',
+    '          version-control, untrusted-client]',
     'platforms: [browser]',
     'languages: [typescript, css]',
     'implementations: [react-dom, tanstack-router, tanstack-start, tanstack-query, tanstack-form,',
@@ -472,12 +466,12 @@ const REAL_WEB_APP: ProjectLayout = {
 const REAL_CLI: ProjectLayout = {
   config: [
     'version: 1.0.0',
-    'axes: [foundation, architecture, workflow]',
+    'axes: [architecture, workflow]',
     '',
-    'domains: [convergence, remote-data, version-control]',
+    'domains: [convergence, config-file, remote-data, remote-service, version-control]',
     'platforms: [cli]',
-    'languages: [typescript]',
-    'implementations: [bun, bun-test, bunli, zod, yaml, yamllint, tsc, biome, dependency-cruiser,',
+    'languages: [typescript, yaml]',
+    'implementations: [bun, bun-test, bunli, zod, yaml-js, yamllint, tsc, biome, dependency-cruiser,',
     '                  ls-lint, knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
     'packages: {}',

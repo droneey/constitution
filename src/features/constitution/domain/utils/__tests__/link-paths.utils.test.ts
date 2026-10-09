@@ -30,9 +30,9 @@ describe('resolveLink', () => {
 describe('targetFromRoot', () => {
   it.each([
     {
-      expected: 'blocks/core/foundation/principles.md#laws',
+      expected: 'blocks/core/architecture/principles.md#laws',
       name: 'a chapter link with its anchor as written',
-      target: 'foundation/principles.md#laws',
+      target: 'architecture/principles.md#laws',
     },
     {
       expected: 'README.md',

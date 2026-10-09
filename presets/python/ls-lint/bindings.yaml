@@ -1,50 +1,12 @@
-foundation:
-  python:
-    kebab-case-file-names:
-      - '.*'
-      - '.*.*'
-    python-file-forms:
-      - '.*.pyc'
-      - '.py'
-      - '.pyi'
-      - src
-      - tests
-    test-folder-files-in-python-forms:
-      - tests
-architecture:
-  api:
-    kebab-case-file-names:
-      - 'src/*/api'
-    python-file-forms:
-      - 'src/*/api'
-  cli:
-    command-files-in-cli:
-      - 'src/*/cli'
-    kebab-case-file-names:
-      - 'src/*/cli'
-  core:
-    data-ports-split-by-reads-and-writes:
-      - 'src/*/**/repositories'
-      - 'src/*/**/repositories/{queries,commands}'
-    feature-domain-holds-its-role-folders:
-      - 'src/*/features/*/domain'
-    python-role-and-surface-files:
-      - 'src/*/**/constants'
-      - 'src/*/**/contracts'
-      - 'src/*/**/entities'
-      - 'src/*/**/errors'
-      - 'src/*/**/models'
-      - 'src/*/**/repositories/{queries,commands}'
-      - 'src/*/**/types'
-      - 'src/*/**/utils'
-      - 'src/*/**/value_objects'
-    role-folder-files-carry-its-suffix:
-      - 'src/*/**/constants'
-      - 'src/*/**/contracts'
-      - 'src/*/**/entities'
-      - 'src/*/**/errors'
-      - 'src/*/**/models'
-      - 'src/*/**/repositories/{queries,commands}'
-      - 'src/*/**/types'
-      - 'src/*/**/utils'
-      - 'src/*/**/value_objects'
+python:
+  file-name-in-its-owners-case:
+    - '.*'
+    - '.*.*'
+  python-file-forms:
+    - '.*.pyc'
+    - '.py'
+    - '.pyi'
+    - src
+    - tests
+  test-folder-files-in-python-forms:
+    - tests

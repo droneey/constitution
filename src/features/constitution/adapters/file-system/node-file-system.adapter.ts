@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-import { compareText } from '#/kernel';
+import { compareText } from '#/kernel/utils';
 
 import type { DigestWriter, FileTree } from '../../domain/contracts';
 

@@ -1,0 +1,43 @@
+_api:
+  file-name-in-its-owners-case:
+    - 'src/*/api'
+  python-file-forms:
+    - 'src/*/api'
+messaging:
+  file-name-in-its-owners-case:
+    - 'src/*/consumers'
+    - 'src/*/jobs'
+  python-file-forms:
+    - 'src/*/consumers'
+    - 'src/*/jobs'
+cli:
+  commands-in-the-cli-folder:
+    - 'src/*/cli'
+  file-name-in-its-owners-case:
+    - 'src/*/cli'
+core:
+  data-port-one-per-entity-and-side:
+    - 'src/*/**/repositories'
+    - 'src/*/**/repositories/{queries,commands}'
+  feature-laid-out-by-its-tree:
+    - 'src/*/features/*/domain'
+  python-role-and-surface-files:
+    - 'src/*/**/constants'
+    - 'src/*/**/contracts'
+    - 'src/*/**/entities'
+    - 'src/*/**/errors'
+    - 'src/*/**/models'
+    - 'src/*/**/repositories/{queries,commands}'
+    - 'src/*/**/types'
+    - 'src/*/**/utils'
+    - 'src/*/**/value_objects'
+  file-carries-its-role-suffix:
+    - 'src/*/**/constants'
+    - 'src/*/**/contracts'
+    - 'src/*/**/entities'
+    - 'src/*/**/errors'
+    - 'src/*/**/models'
+    - 'src/*/**/repositories/{queries,commands}'
+    - 'src/*/**/types'
+    - 'src/*/**/utils'
+    - 'src/*/**/value_objects'

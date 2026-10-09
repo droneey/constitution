@@ -4,7 +4,7 @@ pre-commit:
     - name: validate-branch
       run: |
         BRANCH=$(git branch --show-current)
-        if ! echo "$BRANCH" | grep -qE '^(feature|fix|hotfix)/[0-9]+-[a-z]+(-[a-z]+)*$'; then
+        if ! echo "$BRANCH" | grep -qE '^(feature|fix|hotfix)/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*$'; then
           echo "Branch '$BRANCH' must match: (feature|fix|hotfix)/{id}-{name}"
           exit 1
         fi
@@ -46,8 +46,8 @@ commit-msg:
             ;;
         esac
 
-        BODY=$(sed '1d;/^#/d;/^$/d' {1})
+        BODY=$(sed '1d;/^#/d;/^$/d' {1} | grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)
         if [ -n "$BODY" ]; then
-          echo "Body and footer must be empty"
+          echo "Body must be empty; a footer holds only trailers"
           exit 1
         fi

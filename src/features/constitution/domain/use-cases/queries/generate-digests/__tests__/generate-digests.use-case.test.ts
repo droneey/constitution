@@ -12,7 +12,8 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { generateDigests } from '../generate-digests.use-case';
 
 const CORE = 'blocks/core/core.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const I18N = 'blocks/domains/i18n/plurals.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
 
 const coreFile = (body: string): string =>
@@ -70,24 +71,10 @@ describe('generateDigests', () => {
 
   it.each<RecordCase>([
     {
-      condition: 'a rule has a check that is no test, review or tool',
-      files: {
-        [PRINCIPLES]: `# Principles\n\n${rule({
-          check: 'by eye',
-          slug: 'dependencies-point-inward',
-        })}`,
-      },
-      key: 'rule\tdependencies-point-inward',
-      record:
-        'rule\tdependencies-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\t\t\t\t\tfoundation\t\ttrue',
-      what: 'an empty check kind and role',
-    },
-    {
       condition: 'the chain of bases comes back to the block',
       files: CYCLE,
       key: 'block\talpha',
-      record:
-        'block\talpha\timplementation\tThe alpha block.\t\t\t\tbeta\tfalse\tbeta\t\t\t\tbeta\t',
+      record: 'block\talpha\timplementation\tThe alpha block.\t\t\t\tbeta\tfalse\tbeta\t\tbeta\t',
       what: 'the ancestors up to the block',
     },
     {
@@ -101,7 +88,7 @@ describe('generateDigests', () => {
       },
       key: 'block\tgamma',
       record:
-        'block\tgamma\timplementation\tThe gamma block.\t\t\t\talpha\tfalse\t\t\t\t\talpha beta\t',
+        'block\tgamma\timplementation\tThe gamma block.\t\t\t\talpha\tfalse\t\t\talpha beta\t',
       what: 'each ancestor once',
     },
     {
@@ -111,26 +98,42 @@ describe('generateDigests', () => {
         id: 'orphan',
       }),
       key: 'block\torphan',
-      record:
-        'block\torphan\timplementation\tThe orphan block.\t\t\t\tghost\tfalse\t\t\t\t\tghost\t',
+      record: 'block\torphan\timplementation\tThe orphan block.\t\t\t\tghost\tfalse\t\t\tghost\t',
       what: 'the unknown base as the only ancestor',
     },
     {
       condition: 'a rule carries out a SHOULD rule and states MUST',
       files: {
+        [I18N]: `# i18n\n\n${rule({
+          level: 'MUST',
+          parent: 'dependencies-point-inward',
+          slug: 'i18n-plurals-by-cldr',
+          tags: '[ux]',
+        })}`,
         [PRINCIPLES]: `# Principles\n\n${rule({
           level: 'SHOULD',
           slug: 'dependencies-point-inward',
-        })}\n${rule({
-          level: 'MUST',
-          parent: 'dependencies-point-inward',
-          slug: 'layers-point-inward',
         })}`,
       },
-      key: 'rule\tlayers-point-inward',
+      key: 'rule\ti18n-plurals-by-cldr',
       record:
-        'rule\tlayers-point-inward\tcore\tblocks/core/foundation/principles.md\t\tMUST\treview\t\t\t\tfoundation\tdependencies-point-inward\ttrue',
+        'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/plurals.md\t\tMUST\tux\t\tdependencies-point-inward\ttrue',
       what: 'the stricter level it states and the parent',
+    },
+    {
+      condition: 'a rule carries out another and states no level',
+      files: {
+        [I18N]: `# i18n\n\n${rule({
+          isLevelStated: false,
+          parent: 'dependencies-point-inward',
+          slug: 'i18n-plurals-by-cldr',
+          tags: '[ux]',
+        })}`,
+      },
+      key: 'rule\ti18n-plurals-by-cldr',
+      record:
+        'rule\ti18n-plurals-by-cldr\ti18n\tblocks/domains/i18n/plurals.md\t\tMUST\tux\t\tdependencies-point-inward\tfalse',
+      what: 'the level taken from the parent and no stated level',
     },
   ])('should write $what in the record when $condition', ({ files, key, record }) => {
     // Arrange

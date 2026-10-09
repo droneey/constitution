@@ -1,0 +1,5 @@
+ls:
+  # exists:0 counts only the key's own folder; a pattern no name matches refuses .yml in every folder.
+  .yml: regex:^$
+ignore:
+  - .github/ISSUE_TEMPLATE

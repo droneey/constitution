@@ -12,11 +12,11 @@ const WELL_FORMED = [
   'src/main.ts',
   'src/root/index.ts',
   'src/root/wiring.ts',
-  'src/kernel/index.ts',
-  'src/kernel/money.types.ts',
+  'src/kernel/types/index.ts',
+  'src/kernel/types/money.types.ts',
   'src/types/order.types.ts',
   'src/integrations/nestjs/index.ts',
-  'src/kernel/__tests__/money.types.test.ts',
+  'src/kernel/types/__tests__/money.types.test.ts',
   'src/contracts/mail/index.ts',
   'src/contracts/mail/mail.port.ts',
   'src/adapters/smtp/smtp.adapter.ts',
@@ -53,8 +53,9 @@ const WELL_FORMED = [
 const BLOCK_PARTS = [
   ...PARTS,
   'typescript/architecture/analytics',
-  'typescript/architecture/api',
+  'typescript/architecture/_api',
   'typescript/architecture/cli',
+  'typescript/architecture/messaging',
   'typescript/architecture/nestjs',
   'typescript/architecture/tanstack-router',
   'typescript/architecture/ui',
@@ -165,13 +166,13 @@ describe('the ls-lint preset', () => {
     },
     {
       condition: 'a test folder holds a helper',
-      path: 'src/kernel/__tests__/helpers.ts',
-      reported: 'src/kernel/__tests__',
+      path: 'src/kernel/types/__tests__/helpers.ts',
+      reported: 'src/kernel/types/__tests__',
     },
     {
       condition: 'a test folder holds a mock',
-      path: 'src/kernel/__tests__/money.mock.ts',
-      reported: 'src/kernel/__tests__',
+      path: 'src/kernel/types/__tests__/money.mock.ts',
+      reported: 'src/kernel/types/__tests__',
     },
     {
       condition: 'a file in a layer is not in kebab-case',
@@ -319,25 +320,25 @@ describe('the ls-lint preset', () => {
   });
 });
 
-describe('the ls-lint tanstack-router foundation part', () => {
+describe('the ls-lint tanstack-router part of the base', () => {
   it.each([
     {
       isReported: false,
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
-        'typescript/foundation/tanstack-router',
+        'common/core',
+        'typescript/typescript',
+        'typescript/tanstack-router',
       ],
     },
     {
       isReported: true,
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
+        'common/core',
+        'typescript/typescript',
       ],
     },
   ])(
-    "should report the router's names $isReported when a project follows only foundation and extends $parts",
+    "should report the router's names $isReported when a project follows only the base and extends $parts",
     ({ isReported, parts }) => {
       // Arrange
       const project = {
@@ -358,16 +359,16 @@ describe('the ls-lint tanstack-router foundation part', () => {
     },
   );
 
-  it('should report a route in PascalCase when a project follows only foundation', () => {
+  it('should report a route in PascalCase when a project follows only the base', () => {
     // Arrange
     const project = {
       paths: [
         'src/routes/Orders.tsx',
       ],
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
-        'typescript/foundation/tanstack-router',
+        'common/core',
+        'typescript/typescript',
+        'typescript/tanstack-router',
       ],
     };
 
@@ -381,10 +382,10 @@ describe('the ls-lint tanstack-router foundation part', () => {
   });
 });
 
-const EXPO_FOUNDATION_PARTS = [
-  'common/foundation/core',
-  'typescript/foundation/typescript',
-  'typescript/foundation/expo',
+const EXPO_BASE_PARTS = [
+  'common/core',
+  'typescript/typescript',
+  'typescript/expo',
 ];
 
 describe('the ls-lint expo parts', () => {
@@ -392,7 +393,7 @@ describe('the ls-lint expo parts', () => {
     'app',
     'src/app',
   ])(
-    'should report nothing when the files of Expo Router sit under %s and the project follows only foundation',
+    'should report nothing when the files of Expo Router sit under %s and the project follows only the base',
     (root) => {
       // Arrange
       const project = {
@@ -403,7 +404,7 @@ describe('the ls-lint expo parts', () => {
           `${root}/(tabs)/index.tsx`,
           `${root}/orders/[orderId].tsx`,
         ],
-        parts: EXPO_FOUNDATION_PARTS,
+        parts: EXPO_BASE_PARTS,
       };
 
       // Act
@@ -414,13 +415,13 @@ describe('the ls-lint expo parts', () => {
     },
   );
 
-  it('should report a screen in PascalCase when the project follows only foundation', () => {
+  it('should report a screen in PascalCase when the project follows only the base', () => {
     // Arrange
     const project = {
       paths: [
         'app/Orders.tsx',
       ],
-      parts: EXPO_FOUNDATION_PARTS,
+      parts: EXPO_BASE_PARTS,
     };
 
     // Act
@@ -445,7 +446,7 @@ describe('the ls-lint expo parts', () => {
       ],
       parts: [
         ...PARTS,
-        'typescript/foundation/expo',
+        'typescript/expo',
         'typescript/architecture/expo',
       ],
     };
@@ -462,7 +463,7 @@ describe('the ls-lint expo parts', () => {
       condition: 'the router sits in src/app',
       parts: [
         ...PARTS,
-        'typescript/foundation/expo',
+        'typescript/expo',
         'typescript/architecture/expo',
       ],
       path: 'src/app/_layout.tsx',
@@ -475,7 +476,7 @@ describe('the ls-lint expo parts', () => {
       condition: 'the router sits in a root app folder',
       parts: [
         ...PARTS,
-        'typescript/foundation/expo',
+        'typescript/expo',
         'typescript/architecture/expo',
       ],
       path: 'app/_layout.tsx',
@@ -497,7 +498,7 @@ describe('the ls-lint expo parts', () => {
       condition: 'a screen is in PascalCase',
       parts: [
         ...PARTS,
-        'typescript/foundation/expo',
+        'typescript/expo',
         'typescript/architecture/expo',
       ],
       path: 'src/routes/Orders.tsx',
@@ -522,12 +523,12 @@ describe('the ls-lint expo parts', () => {
   });
 });
 
-describe('the ls-lint foundation parts', () => {
+describe("the parts of ls-lint's base", () => {
   it.each([
     {
       condition: 'a folder is in snake_case',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       path: 'assets/order_icons/order-icon.svg',
       reported: 'assets/order_icons',
@@ -535,7 +536,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a file is in camelCase',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       path: 'assets/orderIcon.svg',
       reported: 'assets/orderIcon.svg',
@@ -543,7 +544,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a style module is in PascalCase',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       path: 'assets/Theme.module.css',
       reported: 'assets/Theme.module.css',
@@ -551,7 +552,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'an end-to-end spec is in PascalCase',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       path: 'e2e/Checkout.e2e.test.js',
       reported: 'e2e/Checkout.e2e.test.js',
@@ -559,7 +560,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a document is in PascalCase',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       path: 'docs/Guide.md',
       reported: 'docs/Guide.md',
@@ -567,7 +568,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a YAML file ends in .yml',
       parts: [
-        'common/foundation/core',
+        'common/yaml',
       ],
       path: 'config/app.yml',
       reported: 'config/app.yml',
@@ -575,7 +576,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a test folder has no typescript part',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       path: 'src/__tests__/order-view.test.ts',
       reported: 'src/__tests__',
@@ -583,8 +584,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a component file is in PascalCase',
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
+        'common/core',
+        'typescript/typescript',
       ],
       path: 'src/components/OrderCard.tsx',
       reported: 'src/components/OrderCard.tsx',
@@ -592,8 +593,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a spec file is in PascalCase',
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
+        'common/core',
+        'typescript/typescript',
       ],
       path: 'src/__tests__/OrderView.test.ts',
       reported: 'src/__tests__/OrderView.test.ts',
@@ -601,8 +602,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'an end-to-end folder holds a helper',
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
+        'common/core',
+        'typescript/typescript',
       ],
       path: 'tests/e2e/helpers.ts',
       reported: 'tests/e2e',
@@ -610,8 +611,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'a typescript folder is in snake_case',
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
+        'common/core',
+        'typescript/typescript',
       ],
       path: 'src/order_views/order-view.ts',
       reported: 'src/order_views',
@@ -639,7 +640,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'every name is kebab-case, hidden or ignored',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       paths: [
         '.dependency-cruiser.mjs',
@@ -655,7 +656,7 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'documents are kebab-case or in upper case',
       parts: [
-        'common/foundation/core',
+        'common/core',
       ],
       paths: [
         'LICENSE.md',
@@ -667,8 +668,8 @@ describe('the ls-lint foundation parts', () => {
     {
       condition: 'typescript names are kebab-case beside a test folder',
       parts: [
-        'common/foundation/core',
-        'typescript/foundation/typescript',
+        'common/core',
+        'typescript/typescript',
       ],
       paths: [
         'src/__tests__/order-view.test.ts',
@@ -695,57 +696,57 @@ describe('the ls-lint foundation parts', () => {
 describe('the ls-lint parts of the tools that write folders', () => {
   it.each([
     {
-      part: 'common/foundation/git',
+      part: 'common/git',
       path: '.git/refs/remotes/Upstream/main',
       reported: '.git/refs/remotes/Upstream',
     },
     {
-      part: 'common/foundation/stryker',
+      part: 'common/stryker',
       path: '.stryker-tmp/sandbox-AhbDNq/package.json',
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'common/foundation/bun',
+      part: 'common/bun',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },
     {
-      part: 'common/foundation/uv',
+      part: 'common/uv',
       path: '.venv/lib/python3.14/site-packages/orders.py',
       reported: '.venv/lib/python3.14',
     },
     {
-      part: 'common/foundation/ruff',
+      part: 'common/ruff',
       path: '.ruff_cache/cache/orders.json',
       reported: '.ruff_cache',
     },
     {
-      part: 'python/foundation/python',
+      part: 'python/python',
       path: 'scripts/__pycache__/seed.cpython-314.pyc',
       reported: 'scripts/__pycache__',
     },
     {
-      part: 'common/foundation/pytest',
+      part: 'common/pytest',
       path: '.pytest_cache/v/cache/lastfailed',
       reported: '.pytest_cache',
     },
     {
-      part: 'common/foundation/hypothesis',
+      part: 'common/hypothesis',
       path: '.hypothesis/unicode_data/charmap.json.gz',
       reported: '.hypothesis/unicode_data',
     },
     {
-      part: 'common/foundation/mutmut',
+      part: 'common/mutmut',
       path: 'mutants/src/shop/__init__.py',
       reported: 'mutants/src/shop/__init__.py',
     },
     {
-      part: 'common/foundation/complexipy',
+      part: 'common/complexipy',
       path: '.complexipy_cache/cache.json',
       reported: '.complexipy_cache',
     },
     {
-      part: 'common/foundation/import-linter',
+      part: 'common/import-linter',
       path: '.import_linter_cache/a1b2c3.meta.json',
       reported: '.import_linter_cache',
     },
@@ -764,14 +765,14 @@ describe('the ls-lint parts of the tools that write folders', () => {
         with: failedPaths({
           ...project,
           parts: [
-            'common/foundation/core',
+            'common/core',
             part,
           ],
         }),
         without: failedPaths({
           ...project,
           parts: [
-            'common/foundation/core',
+            'common/core',
           ],
         }),
       };
@@ -790,47 +791,47 @@ describe('the ls-lint parts of the tools that write folders', () => {
 describe('the ls-lint parts of the tools that write folders in each unit', () => {
   it.each([
     {
-      part: 'common/foundation/stryker',
+      part: 'common/stryker',
       path: '.stryker-tmp/sandbox-AhbDNq/package.json',
       reported: '.stryker-tmp/sandbox-AhbDNq',
     },
     {
-      part: 'common/foundation/bun',
+      part: 'common/bun',
       path: 'node_modules/some-package/index.js',
       reported: 'node_modules',
     },
     {
-      part: 'common/foundation/uv',
+      part: 'common/uv',
       path: '.venv/lib/python3.14/site-packages/orders.py',
       reported: '.venv/lib/python3.14',
     },
     {
-      part: 'common/foundation/ruff',
+      part: 'common/ruff',
       path: '.ruff_cache/cache/orders.json',
       reported: '.ruff_cache',
     },
     {
-      part: 'common/foundation/pytest',
+      part: 'common/pytest',
       path: '.pytest_cache/v/cache/lastfailed',
       reported: '.pytest_cache',
     },
     {
-      part: 'common/foundation/hypothesis',
+      part: 'common/hypothesis',
       path: '.hypothesis/unicode_data/charmap.json.gz',
       reported: '.hypothesis/unicode_data',
     },
     {
-      part: 'common/foundation/mutmut',
+      part: 'common/mutmut',
       path: 'mutants/src/shop/__init__.py',
       reported: 'mutants/src/shop/__init__.py',
     },
     {
-      part: 'common/foundation/complexipy',
+      part: 'common/complexipy',
       path: '.complexipy_cache/cache.json',
       reported: '.complexipy_cache',
     },
     {
-      part: 'common/foundation/import-linter',
+      part: 'common/import-linter',
       path: '.import_linter_cache/a1b2c3.meta.json',
       reported: '.import_linter_cache',
     },
@@ -847,14 +848,14 @@ describe('the ls-lint parts of the tools that write folders in each unit', () =>
         with: failedPaths({
           ...project,
           parts: [
-            'common/foundation/core',
+            'common/core',
             part,
           ],
         }),
         without: failedPaths({
           ...project,
           parts: [
-            'common/foundation/core',
+            'common/core',
           ],
         }),
       };
@@ -868,13 +869,13 @@ describe('the ls-lint parts of the tools that write folders in each unit', () =>
   );
 });
 
-const PYTHON_FOUNDATION_PARTS = [
-  'common/foundation/core',
-  'python/foundation/python',
+const PYTHON_BASE_PARTS = [
+  'common/core',
+  'python/python',
 ];
 
 const PYTHON_PARTS = [
-  ...PYTHON_FOUNDATION_PARTS,
+  ...PYTHON_BASE_PARTS,
   'python/architecture/core',
 ];
 
@@ -987,11 +988,11 @@ describe('the ls-lint python parts', () => {
       reported: 'tests/__init__.py',
     },
   ])(
-    'should report $reported when $condition and a project follows only foundation',
+    'should report $reported when $condition and a project follows only the base',
     ({ path, reported }) => {
       // Arrange
       const project = {
-        parts: PYTHON_FOUNDATION_PARTS,
+        parts: PYTHON_BASE_PARTS,
         paths: [
           path,
         ],
@@ -1057,10 +1058,10 @@ describe('the ls-lint python parts', () => {
     expect(failed).toContain(reported);
   });
 
-  it('should leave the role suffix to the architecture part when a project follows only foundation', () => {
+  it('should leave the role suffix to the architecture part when a project follows only the base', () => {
     // Arrange
     const project = {
-      parts: PYTHON_FOUNDATION_PARTS,
+      parts: PYTHON_BASE_PARTS,
       paths: [
         'src/shop/features/orders/domain/entities/order.py',
       ],

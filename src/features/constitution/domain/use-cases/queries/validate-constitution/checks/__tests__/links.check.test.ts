@@ -4,7 +4,7 @@ import { checkInputOf, without } from '../../../../../../__tests__/constitution.
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { linksCheck } from '../links.check';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 const README = 'README.md';
 
 describe('linksCheck', () => {
@@ -39,7 +39,7 @@ describe('linksCheck', () => {
   it('should report a link to a missing file when it drops the extension of a file that exists', () => {
     // Arrange
     const files = validFiles();
-    files[PRINCIPLES] = '# Principles\n\nSee [the card](../core).\n';
+    files[PRINCIPLES] = '# Principles\n\nSee [the card](core).\n';
     const input = checkInputOf(files);
 
     // Act
@@ -48,7 +48,7 @@ describe('linksCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message: 'links to a missing file "../core"',
+        message: 'links to a missing file "core"',
         path: PRINCIPLES,
       },
     ]);
@@ -60,7 +60,7 @@ describe('linksCheck', () => {
     files[README] = [
       '# constitution',
       '',
-      'Start with [core](blocks/core/), [its rules](blocks/core/foundation/), [the blocks](blocks/) or [the root](./).',
+      'Start with [core](blocks/core/), [its workflow](blocks/core/workflow/), [the blocks](blocks/) or [the root](./).',
       'Call `handlers[event.type](event)`.',
     ].join('\n');
     files[PRINCIPLES] = [

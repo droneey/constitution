@@ -1,16 +1,15 @@
-import type { Finding } from '#/kernel';
-import { AXES, Layer } from '#/kernel';
+import { Layer } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById, PresetPath } from '../../../../utils';
-import { PresetFileKind, presetPathOf } from '../../../../utils';
+import { axisFolderOf, axisNameOf, PresetFileKind, presetPathOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 const SELF = 'self';
 const COMMON = 'common';
 const LAYOUT =
-  'is not a part of a preset: presets/<scope>/<tool>/<axis>/<block>.<extension>, presets/<scope>/<tool>/<axis>/plugins/<rule>.grit, or presets/<scope>/<tool>/bindings.yaml';
-const axes: readonly string[] = AXES;
+  'is not a part of a preset: presets/<scope>/<tool>/<block>.<extension>, presets/<scope>/<tool>/plugins/<rule>.grit or presets/<scope>/<tool>/bindings.yaml, each also under architecture/ or workflow/ for that axis';
 
 type PartPath = Exclude<
   PresetPath,
@@ -40,7 +39,7 @@ const nameMessage = (input: {
 
   return rule.axis === axis
     ? undefined
-    : `holds ${name}, a rule of ${rule.axis}, in ${axis}/plugins`;
+    : `holds ${name}, a rule of ${axisNameOf(rule.axis)}, in ${axisFolderOf(axis)}plugins/`;
 };
 
 // A scope is common to every language the tool reads, or one of them.
@@ -54,20 +53,6 @@ const scopeMessage = (input: { byId: BlocksById; preset: PresetPath }): string |
   return scope === COMMON || isCovered
     ? undefined
     : `is in presets/${scope}/, which is neither ${COMMON} nor a language ${tool} covers`;
-};
-
-const partMessages = (input: {
-  byId: BlocksById;
-  isBlock: (id: string) => boolean;
-  preset: PartPath;
-  rules: ReadonlyMap<string, Rule>;
-}): readonly (string | undefined)[] => {
-  const { axis } = input.preset;
-
-  return [
-    axes.includes(axis) ? undefined : `is in ${axis}/, which is not an axis: ${AXES.join(', ')}`,
-    nameMessage(input),
-  ];
 };
 
 const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
@@ -99,14 +84,13 @@ const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Findi
         byId,
         preset,
       }),
-      ...(preset.kind === PresetFileKind.Bindings
-        ? []
-        : partMessages({
-            byId,
+      preset.kind === PresetFileKind.Bindings
+        ? undefined
+        : nameMessage({
             isBlock,
             preset,
             rules,
-          })),
+          }),
     ].flatMap((message) =>
       message === undefined
         ? []

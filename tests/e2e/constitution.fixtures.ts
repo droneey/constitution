@@ -1,22 +1,19 @@
-import { Axis, ROLES } from '#/kernel';
+import { Axis } from '#/kernel/constants';
 
 type Files = Record<string, string>;
 
 interface BlockFixture {
   abstract?: boolean;
   body: string;
-  checks?: readonly string[];
   extends?: string;
   governs?: readonly string[];
   id: string;
   languages?: readonly string[];
   requires?: readonly string[];
-  roles?: readonly string[];
   summary: string;
 }
 
 interface RuleFixture {
-  check?: string;
   level?: string;
   parent?: string;
   slug: string;
@@ -37,9 +34,7 @@ const mainFile = (block: BlockFixture): string =>
     `requires: ${list(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
-    `checks: ${list(block.checks)}`,
     `languages: ${list(block.languages)}`,
-    `roles: ${list(block.roles)}`,
     'dictionary: []',
     `governs: [${(block.governs ?? []).map((glob) => JSON.stringify(glob)).join(', ')}]`,
     '---',
@@ -49,22 +44,26 @@ const mainFile = (block: BlockFixture): string =>
 
 const headingOf = (input: RuleFixture): string =>
   input.parent === undefined
-    ? `## ${input.slug} · ${input.level ?? 'MUST'}`
-    : `## ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
+    ? `### ${input.slug} · ${input.level ?? 'MUST'}`
+    : `### ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
 
 const rule = (input: RuleFixture): string =>
   [
     headingOf(input),
     input.statement,
     '',
-    '| Why | Check | Tags |',
-    '|---|---|---|',
-    `| it keeps the fixture honest. | ${input.check ?? 'review'} | [] |`,
+    '| Why | Tags |',
+    '|---|---|',
+    '| it keeps the fixture honest. | [] |',
     '',
   ].join('\n');
 
-const section = (input: { rules: readonly RuleFixture[]; title: string }): string =>
-  `# ${input.title}\n\n${input.rules.map(rule).join('\n')}`;
+const section = (input: {
+  governs?: string;
+  rules: readonly RuleFixture[];
+  title: string;
+}): string =>
+  `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${input.rules.map(rule).join('\n')}`;
 
 const blockFiles = (
   input: BlockFixture & {
@@ -73,11 +72,16 @@ const blockFiles = (
   },
 ): Files => {
   const { dir, files = {}, ...card } = input;
+  const { [`${input.id}.md`]: base, ...others } = files;
 
+  // The rules of the base's main chapter sit in the card, under its title.
   return {
-    [`${dir}/${input.id}.md`]: mainFile(card),
+    [`${dir}/${input.id}.md`]: mainFile({
+      ...card,
+      body: base === undefined ? card.body : `${card.body}\n${base.slice(base.indexOf('\n') + 1)}`,
+    }),
     ...Object.fromEntries(
-      Object.entries(files).map(([path, text]) => [
+      Object.entries(others).map(([path, text]) => [
         `${dir}/${path}`,
         text,
       ]),
@@ -112,7 +116,7 @@ const coreFiles = (): Files =>
     body: CORE_BODY,
     dir: 'blocks/core',
     files: {
-      'foundation/principles.md': section({
+      'principles.md': section({
         rules: [
           {
             slug: 'names-reveal-intent',
@@ -126,10 +130,10 @@ const coreFiles = (): Files =>
         ],
         title: 'Principles',
       }),
-      'foundation/code.md': section({
+      'code.md': section({
+        governs: 'any code no other chapter governs.',
         rules: [
           {
-            check: 'tool/secrets',
             slug: 'no-secret-in-code',
             statement: 'No secret is written into the code.',
           },
@@ -139,7 +143,7 @@ const coreFiles = (): Files =>
       'architecture/principles.md': section({
         rules: [
           {
-            slug: 'dependencies-point-inward',
+            slug: 'import-points-inward',
             statement: 'Dependencies point inward.',
           },
         ],
@@ -160,7 +164,7 @@ const coreFiles = (): Files =>
   });
 
 const rulesFile = (input: { axis?: Axis; id: string; rules: readonly RuleFixture[] }): Files => ({
-  [`${input.axis ?? Axis.Foundation}/${input.id}.md`]: section({
+  [`${input.axis === undefined ? '' : `${input.axis}/`}${input.id}.md`]: section({
     rules: input.rules,
     title: input.id,
   }),
@@ -220,7 +224,6 @@ const domainFiles = (): Files => ({
     id: 'ui',
     rules: [
       {
-        check: 'test',
         slug: 'four-data-states',
         statement: 'Every data view shows loading, empty, error and content.',
       },
@@ -319,33 +322,15 @@ enum ContextFolder {
 
 const context = (input: {
   axis?: Axis;
-  checks?: readonly string[];
   folder: ContextFolder;
   id: string;
-  languages?: readonly string[];
   requires?: readonly string[];
-  roles?: readonly string[];
   rules: readonly RuleFixture[];
   summary: string;
   title: string;
 }): Files =>
   blockFiles({
     body: `# ${input.title}\n`,
-    ...(input.checks === undefined
-      ? {}
-      : {
-          checks: input.checks,
-        }),
-    ...(input.languages === undefined
-      ? {}
-      : {
-          languages: input.languages,
-        }),
-    ...(input.roles === undefined
-      ? {}
-      : {
-          roles: input.roles,
-        }),
     dir: `blocks/contexts/${input.folder}/${input.id}`,
     files: rulesFile(input),
     id: input.id,
@@ -359,18 +344,10 @@ const context = (input: {
 
 const contextFiles = (): Files => ({
   ...context({
-    checks: [
-      'types',
-    ],
     folder: ContextFolder.Languages,
     id: 'typescript',
-    languages: [
-      'typescript',
-    ],
-    roles: ROLES,
     rules: [
       {
-        check: 'tool/types',
         slug: 'no-any',
         statement: 'A value is never typed `any`.',
       },
@@ -381,10 +358,8 @@ const contextFiles = (): Files => ({
   ...context({
     folder: ContextFolder.Languages,
     id: 'python',
-    roles: ROLES,
     rules: [
       {
-        check: 'tool/lint',
         slug: 'no-bare-except',
         statement: 'An except clause names what it catches.',
       },
@@ -430,7 +405,6 @@ const implementation = (input: {
   abstract?: boolean;
   axis?: Axis;
   body?: string;
-  checks?: readonly string[];
   extends?: string;
   governs?: readonly string[];
   id: string;
@@ -463,9 +437,6 @@ const implementation = (input: {
 const implementationFiles = (): Files => ({
   ...implementation({
     abstract: true,
-    checks: [
-      'lint',
-    ],
     id: '_lint-base',
     languages: [
       'typescript',
@@ -476,17 +447,11 @@ const implementationFiles = (): Files => ({
     summary: 'What every TypeScript linter shares.',
   }),
   ...implementation({
-    checks: [
-      'lint',
-    ],
     id: 'markdownlint',
     requires: [],
     summary: 'Lints Markdown, which is no language block.',
   }),
   ...implementation({
-    checks: [
-      'lint',
-    ],
     id: 'ruff',
     languages: [
       'python',
@@ -504,7 +469,6 @@ const implementationFiles = (): Files => ({
     ],
     rules: [
       {
-        check: 'tool/lint',
         slug: 'hooks-at-top-level',
         statement: 'A hook is called only at the top level.',
       },
@@ -545,10 +509,6 @@ const implementationFiles = (): Files => ({
     summary: 'Server state in React.',
   }),
   ...implementation({
-    checks: [
-      'format',
-      'lint',
-    ],
     id: 'biome',
     languages: [
       'typescript',
@@ -601,9 +561,6 @@ const implementationFiles = (): Files => ({
     summary: 'Git hooks.',
   }),
   ...implementation({
-    checks: [
-      'secrets',
-    ],
     id: 'betterleaks',
     requires: [
       'version-control',

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Level } from '#/kernel';
+import { Axis, Level } from '#/kernel/constants';
 
 import type { StatedRule } from '../../../../entities';
 import { resolveRules } from '../rule-chain.utils';
@@ -8,8 +8,7 @@ import { resolveRules } from '../rule-chain.utils';
 const stated = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: 'core',
-  check: 'review',
-  file: 'blocks/core/foundation/principles.md',
+  file: 'blocks/core/principles.md',
   ownTags: [],
   parent: undefined,
   slug: 'a',

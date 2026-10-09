@@ -57,7 +57,7 @@ const scanStaged = (project: Project): Scan => {
   symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
   writeFileSync(
     join(folder, '.betterleaks.toml'),
-    '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/foundation/core.toml"\n',
+    '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/core.toml"\n',
   );
 
   for (const [path, text] of Object.entries(project.files)) {

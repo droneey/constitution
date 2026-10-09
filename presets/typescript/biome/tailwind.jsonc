@@ -1,0 +1,27 @@
+{
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/no-screen-sized-classes.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/mobile-first-breakpoints.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/focus-shown-by-focusable-utility.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/logical-utilities-for-direction.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/no-important-modifier-in-class-lists.grit",
+  ],
+  "linter": {
+    "rules": {
+      "nursery": {
+        "noTailwindArbitraryValue": {
+          "level": "error",
+          "options": {
+            "functions": [
+              "cva",
+              "cn",
+              "clsx",
+              "twMerge",
+            ],
+          },
+        },
+        "noUndeclaredClasses": "off",
+      },
+    },
+  },
+}

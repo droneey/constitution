@@ -9,19 +9,23 @@ describe('the commit message hook', () => {
     'refactor: Move the fixtures beside their specs',
     'chore: Update dependencies',
     'feat!: Split the NestJS settings out of the node preset',
-  ])('should accept "%s" when it follows the four types', (message) => {
-    // Arrange
-    const text = `${message}\n`;
+    'fix: Keep the trailers of a signed commit\n\nSigned-off-by: Dmytro Kurovskyi <dmytro.kurovskyi@gmail.com>',
+  ])(
+    'should accept "%s" when it follows the four types and its footer holds only trailers',
+    (message) => {
+      // Arrange
+      const text = `${message}\n`;
 
-    // Act
-    const check = checkCommitMessage(text);
+      // Act
+      const check = checkCommitMessage(text);
 
-    // Assert
-    expect(check).toStrictEqual({
-      exitCode: 0,
-      output: '',
-    });
-  });
+      // Assert
+      expect(check).toStrictEqual({
+        exitCode: 0,
+        output: '',
+      });
+    },
+  );
 
   it.each([
     {
@@ -62,7 +66,12 @@ describe('the commit message hook', () => {
     {
       condition: 'it carries a body',
       message: 'feat: Add a preset\n\nBecause the kit needs one',
-      output: 'Body and footer must be empty',
+      output: 'Body must be empty; a footer holds only trailers',
+    },
+    {
+      condition: 'its footer holds prose beside a trailer',
+      message: 'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note',
+      output: 'Body must be empty; a footer holds only trailers',
     },
   ])('should reject a message when $condition', ({ message, output }) => {
     // Arrange

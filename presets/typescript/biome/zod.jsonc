@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/zod-four-forms-only.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/schema-never-brands.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+}

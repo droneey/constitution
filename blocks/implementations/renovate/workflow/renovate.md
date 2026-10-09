@@ -1,22 +1,29 @@
 # Renovate
 
-## updates-from-the-shared-preset → hooks-and-release-automation-from-the-shared-source
+### dependencies-updated-by-the-bot · SHOULD
+Dependency updates arrive as change requests from the bot, each passing the check before it is merged.
+
+| Why | Tags |
+|---|---|
+| updates that arrive on their own, small and checked, keep the project current without a risky update all at once. | [security] |
+
+### updates-from-the-shared-preset · SHOULD
 `renovate.json` extends the fleet's preset, pinned to a release.
 
-| Why | Check | Tags |
-|---|---|---|
-| one policy for every repository, changed in one place. | review | [] |
+| Why | Tags |
+|---|---|
+| one policy for every repository, changed in one place. | [security] |
 
-## update-commits-in-the-commit-format → commit-header-type-and-subject
+### update-commits-in-the-commit-format → commit-header-type-and-subject · MUST
 Update commits and titles follow the commit format: `chore: Update …`, no scope, sentence case.
 
-| Why | Check | Tags |
-|---|---|---|
-| the bot's pull requests pass the same checks and read the same in history as everyone else's. | review | [] |
+| Why | Tags |
+|---|---|
+| the bot's pull requests pass the same checks and read the same in history as everyone else's. | [] |
 
-## peer-ranges-widened-others-bumped → dependencies-updated-by-bot
+### peer-ranges-widened-others-bumped · SHOULD
 Dependency ranges are bumped; a peer range is widened, so its floor stays.
 
-| Why | Check | Tags |
-|---|---|---|
-| a bumped peer floor would drop support for versions the package still serves. | review | [] |
+| Why | Tags |
+|---|---|
+| a bumped peer floor would drop support for versions the package still serves. | [] |

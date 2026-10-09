@@ -1,16 +1,13 @@
 ---
 id: remote-service
-summary: "Another system the program calls: transport, failures, streams, specs."
+summary: Another system the program calls, hears from or pushes to.
 requires: []
 extends: null
 abstract: false
-checks: []
 languages: []
-roles: []
 dictionary: []
 governs: []
 ---
-
 # Remote service
 
-> Another system the program reaches over a network and does not run itself. This block says how the transport is built and bounded, how its answers are parsed and its failures mapped, how a stream of its events reaches the domain, and how the specs stand in for a system they cannot run, with its captured answers, and keep those answers true. An engine the project owns and runs, such as its database, is not a remote service; core's integration rules hold it.
+> Another system the program reaches over a network, or that reaches the program, and that it does not run itself: how calls to it are bounded and their failures mapped, how what it pushes is verified and processed once, how what the program pushes to it is signed and retried, how a stream of its events reaches the domain, and how the specs stand in for it with its captured answers. An engine the project owns and runs, such as its database, is not a remote service.

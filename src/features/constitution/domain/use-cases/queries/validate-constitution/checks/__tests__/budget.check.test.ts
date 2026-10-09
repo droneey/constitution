@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { budgetCheck } from '../budget.check';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/principles.md';
 
 const linesOf = (count: number): string =>
   Array.from(

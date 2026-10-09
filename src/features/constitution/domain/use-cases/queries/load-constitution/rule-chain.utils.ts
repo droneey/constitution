@@ -1,4 +1,4 @@
-import { Level } from '#/kernel';
+import { Level } from '#/kernel/constants';
 
 import type { Rule, StatedRule } from '../../../entities';
 

@@ -1,17 +1,28 @@
 # User interface with access control
 
-> Screens some users may not open: where a screen is guarded, how a feature learns the permissions it adapts to, and where the client keeps whether a session exists.
+> Governs guards of screens and the session they read.
 
-## screen-guards-through-auth-surface → entry-point-declares-its-access
-Guards and redirects of a screen live in the screens layer and use the surface of the feature that owns sessions; a feature's screens adapt to permissions passed down by composition.
+## Guards
 
-| Why | Check | Tags |
-|---|---|---|
-| access is decided before the screen renders, in one layer, and no feature reaches into the session's internals. | review | [] |
+### screen-guarded-through-the-session-owners-surface → entry-point-declares-its-access · MUST
+A screen's guards and redirects live in the screens layer and use the surface of the feature that owns sessions.
 
-## session-presence-in-a-root-store → client-concerns-in-root-built-stores
+| Why | Tags |
+|---|---|
+| access is decided before the screen renders, in one layer, and no feature reaches into the session's internals. | [security] |
+
+### feature-screens-adapt-to-permissions-passed-down · SHOULD
+A feature's screens adapt to the permissions composition passes them, never reaching into the session's internals.
+
+| Why | Tags |
+|---|---|
+| no feature then knows how sessions work, and a change of the session's model never reaches a screen. | [security] |
+
+## Session state
+
+### session-presence-kept-in-a-root-store · MUST
 Whether a session exists is one of the global concerns the client owns, in a small store the root builds; what the session carries — the user, their rights — keeps the home of the data it is.
 
-| Why | Check | Tags |
-|---|---|---|
-| every screen asks one place whether someone is signed in, and the user's details are not copied into a store beside their real home. | review | [] |
+| Why | Tags |
+|---|---|
+| every screen asks one place whether someone is signed in, and the user's details are not copied into a store beside their real home. | [data] |

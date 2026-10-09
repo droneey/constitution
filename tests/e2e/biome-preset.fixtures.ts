@@ -50,17 +50,17 @@ const BIOME = join(REPOSITORY, 'node_modules', '.bin', 'biome');
 const PRESETS_FOLDER = join(REPOSITORY, 'presets');
 const BLOCKS = join(REPOSITORY, 'blocks');
 
-const FOUNDATION_PARTS = [
-  'common/foundation/self',
-  'typescript/foundation/self',
-  'typescript/foundation/core',
-  'typescript/foundation/typescript',
+const BASE_PARTS = [
+  'common/self',
+  'typescript/self',
+  'typescript/core',
+  'typescript/typescript',
 ];
 
 const PARTS: readonly string[] = [
-  ...FOUNDATION_PARTS,
-  'typescript/foundation/bun-test',
-  'typescript/foundation/_react',
+  ...BASE_PARTS,
+  'typescript/bun-test',
+  'typescript/_react',
   'typescript/architecture/core',
   'typescript/architecture/typescript',
   'typescript/architecture/_react',
@@ -140,7 +140,7 @@ const formattedText = (source: string): string =>
       files: {
         'src/order.ts': source,
       },
-      parts: FOUNDATION_PARTS,
+      parts: BASE_PARTS,
     },
     (folder) => {
       spawnSync(
@@ -196,12 +196,4 @@ const blockCode = (): readonly string[] =>
     ])
     .map(([, code, quoted]) => code ?? quoted ?? '');
 
-export {
-  blockCode,
-  FOUNDATION_PARTS,
-  formattedText,
-  lintFindings,
-  presetFiles,
-  presetText,
-  presetWords,
-};
+export { BASE_PARTS, blockCode, formattedText, lintFindings, presetFiles, presetText, presetWords };

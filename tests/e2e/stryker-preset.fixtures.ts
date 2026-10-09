@@ -12,10 +12,10 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const STRYKER = join(REPOSITORY, 'node_modules', '.bin', 'stryker');
 
 // The runner's source stands in for the archive's build, which the check makes later.
-const CONFIG = `import bunTest from './.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
-import core from './.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
-import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
-import self from './.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
+const CONFIG = `import bunTest from './.droneey/constitution/presets/typescript/stryker/bun-test.mjs';
+import core from './.droneey/constitution/presets/typescript/stryker/core.mjs';
+import mise from './.droneey/constitution/presets/typescript/stryker/mise.mjs';
+import self from './.droneey/constitution/presets/typescript/stryker/self.mjs';
 
 export default {
   ...self,

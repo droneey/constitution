@@ -1,34 +1,33 @@
-foundation:
-  browser:
-    bundle-reads-no-build-environment:
-      - types
-  core:
-    no-dead-code:
-      - allowUnreachableCode
-      - allowUnusedLabels
-  nestjs:
-    compiler-keeps-decorator-metadata:
-      - emitDecoratorMetadata
-      - experimentalDecorators
-    framework-filled-fields-marked-definite:
-      - strictPropertyInitialization
-  self:
-    compiler-is-the-type-gate:
-      - exactOptionalPropertyTypes
-      - noFallthroughCasesInSwitch
-      - noImplicitOverride
-      - noImplicitReturns
-      - noUncheckedIndexedAccess
-      - noUnusedLocals
-      - noUnusedParameters
-      - strict
-      - verbatimModuleSyntax
-    no-any:
-      - strict
-    no-dead-code:
-      - noUnusedLocals
-      - noUnusedParameters
-    overrides-marked-by-keyword:
-      - noImplicitOverride
-    undefined-is-the-only-absence:
-      - exactOptionalPropertyTypes
+browser:
+  runtime-configuration-served-beside-bundle:
+    - types
+core:
+  dead-code-deleted:
+    - allowUnreachableCode
+    - allowUnusedLabels
+nestjs:
+  nestjs-keeps-decorator-metadata:
+    - emitDecoratorMetadata
+    - experimentalDecorators
+  framework-filled-fields-marked-definite:
+    - strictPropertyInitialization
+self:
+  compiler-is-the-type-gate:
+    - exactOptionalPropertyTypes
+    - noFallthroughCasesInSwitch
+    - noImplicitOverride
+    - noImplicitReturns
+    - noUncheckedIndexedAccess
+    - noUnusedLocals
+    - noUnusedParameters
+    - strict
+    - verbatimModuleSyntax
+  no-any:
+    - strict
+  dead-code-deleted:
+    - noUnusedLocals
+    - noUnusedParameters
+  overrides-marked-by-keyword:
+    - noImplicitOverride
+  undefined-is-the-only-absence:
+    - exactOptionalPropertyTypes

@@ -48,13 +48,13 @@ const REPORT = z.object({
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
 
-const FOUNDATION_PARTS = [
-  'typescript/foundation/self',
-  'typescript/foundation/core',
-  'typescript/foundation/typescript',
+const BASE_PARTS = [
+  'typescript/self',
+  'typescript/core',
+  'typescript/typescript',
 ];
 
-// The packages the blocks' rules name, and those the foundation parts tell
+// The packages the blocks' rules name, and those the parts of the base tell
 // apart: `kit` declared, `devtool` a development dependency, `ghost` installed
 // but never declared, `legacy` deprecated.
 const INSTALLED: Readonly<Record<string, Installed>> = {
@@ -133,7 +133,7 @@ const configOf = (parts: readonly string[]): string =>
   `export default {\n  extends: ${JSON.stringify(
     [
       ...parts,
-      ...FOUNDATION_PARTS,
+      ...BASE_PARTS,
     ].map(
       (part) => `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
     ),

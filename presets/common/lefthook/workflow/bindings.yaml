@@ -1,0 +1,14 @@
+betterleaks:
+  commit-scan-redacted:
+    - --redact
+  staged-changes-scanned-before-commit:
+    - secrets
+version-control:
+  branch-named-type-issue-name:
+    - validate-branch
+  commit-body-empty-and-footer-only-trailers:
+    - commit-message
+  commit-header-type-and-subject:
+    - commit-message
+  commit-subject-never-a-placeholder:
+    - commit-message

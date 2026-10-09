@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import self from '../../presets/typescript/syncpack/foundation/self.mjs';
+import self from '../../presets/typescript/syncpack/self.mjs';
 import { versionIssues } from './syncpack-preset.fixtures';
 
 describe('the syncpack typescript part', () => {

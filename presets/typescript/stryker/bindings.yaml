@@ -1,23 +1,15 @@
-foundation:
-  bun-test:
-    stryker-runs-the-archive-runner:
-      - coverageAnalysis
-      - plugins
-      - testRunner
-  core:
-    mutants-all-killed:
-      - break
-      - mutate
-  storybook:
-    mutants-all-killed:
-      - mutate
-  tanstack-start:
-    mutants-all-killed:
-      - mutate
-architecture:
-  nestjs:
-    mutants-all-killed:
-      - mutate
-  tanstack-start:
-    mutants-all-killed:
-      - mutate
+bun-test:
+  stryker-runs-the-archive-runner:
+    - coverageAnalysis
+    - plugins
+    - testRunner
+core:
+  every-mutant-killed:
+    - break
+    - mutate
+storybook:
+  every-mutant-killed:
+    - mutate
+tanstack-start:
+  every-mutant-killed:
+    - mutate

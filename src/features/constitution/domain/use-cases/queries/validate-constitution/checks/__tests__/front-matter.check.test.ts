@@ -6,10 +6,39 @@ import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { frontMatterCheck } from '../front-matter.check';
 
 const UI = 'blocks/domains/ui/ui.md';
+const CORE = 'blocks/core/core.md';
 const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
 const BIOME = 'blocks/implementations/biome/biome.md';
+const TYPESCRIPT = 'blocks/contexts/languages/typescript/typescript.md';
 
 describe('frontMatterCheck', () => {
+  it('should report an abstract core, which no block may build on', () => {
+    // Arrange
+    const input = checkInputOf({
+      ...validFiles(),
+      [CORE]: mainFile({
+        abstract: true,
+        body: '# Core\n',
+        id: 'core',
+      }),
+    });
+
+    // Act
+    const findings = frontMatterCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'sets "abstract", which a core block leaves empty',
+        path: CORE,
+      },
+      {
+        message: 'is abstract, so its id starts with "_"',
+        path: CORE,
+      },
+    ]);
+  });
+
   it.each<{
     block: BlockFixture;
     expected: string;
@@ -25,43 +54,34 @@ describe('frontMatterCheck', () => {
     },
     {
       block: {
-        body: '# UI\n',
-        id: 'ui',
+        body: '# Core\n',
+        id: 'core',
         requires: [
           'i18n',
         ],
       },
-      expected: 'sets "requires", which a domain block leaves empty',
-      path: UI,
+      expected: 'sets "requires", which a core block leaves empty',
+      path: CORE,
     },
     {
       block: {
-        body: '# UI\n',
+        body: '# Core\n',
         extends: 'i18n',
-        id: 'ui',
+        id: 'core',
       },
-      expected: 'sets "extends", which a domain block leaves empty',
-      path: UI,
+      expected: 'sets "extends", which a core block leaves empty',
+      path: CORE,
     },
     {
       block: {
-        abstract: true,
-        body: '# UI base\n',
-        id: '_ui',
-      },
-      expected: 'sets "abstract", which a domain block leaves empty',
-      path: 'blocks/domains/_ui/_ui.md',
-    },
-    {
-      block: {
-        body: '# Browser\n',
-        checks: [
-          'lint',
+        body: '# TypeScript\n',
+        id: 'typescript',
+        languages: [
+          'typescript',
         ],
-        id: 'browser',
       },
-      expected: 'sets "checks", which a platform block leaves empty',
-      path: BROWSER,
+      expected: 'sets "languages", which a language block leaves empty',
+      path: TYPESCRIPT,
     },
     {
       block: {
@@ -77,38 +97,6 @@ describe('frontMatterCheck', () => {
     {
       block: {
         body: '# Biome\n',
-        checks: [
-          'lint',
-        ],
-        id: 'biome',
-        languages: [
-          'typescript',
-        ],
-        roles: [
-          'lint',
-        ],
-      },
-      expected: 'sets "roles", which an implementation block leaves empty',
-      path: BIOME,
-    },
-    {
-      block: {
-        body: '# Biome\n',
-        id: 'biome',
-        languages: [
-          'typescript',
-        ],
-      },
-      expected:
-        'sets "languages" but checks no role; only a block that checks roles covers languages',
-      path: BIOME,
-    },
-    {
-      block: {
-        body: '# Biome\n',
-        checks: [
-          'lint',
-        ],
         id: 'biome',
         languages: [
           'ui',
@@ -120,9 +108,6 @@ describe('frontMatterCheck', () => {
     {
       block: {
         body: '# Biome\n',
-        checks: [
-          'lint',
-        ],
         id: 'biome',
         languages: [
           'kotlin',

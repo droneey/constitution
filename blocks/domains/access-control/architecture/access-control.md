@@ -1,8 +1,12 @@
 # Access control
 
-## entry-point-declares-its-access → access-denied-unless-granted
-Every entry point declares its access where it is defined, at the boundary.
+> Governs where an entry point declares its access.
 
-| Why | Check | Tags |
-|---|---|---|
-| access declared beside the entry point is read and reviewed with it, and an entry point without a declaration stands out. | review | [] |
+## Entry points
+
+### entry-point-declares-its-access · MUST
+Every entry point — a route, an endpoint, a command, a tool — declares its access where it is defined, at the boundary.
+
+| Why | Tags |
+|---|---|
+| access declared beside the entry point is read and reviewed with it, and an entry point without a declaration stands out. | [security] |

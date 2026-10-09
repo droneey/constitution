@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/queries-by-role-label-text.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+  ],
+}

@@ -6,11 +6,11 @@
 BEGIN {
   FS = "\t"
   T = "\t"
-  CODES = "missing abstract unknown wrong-key config local-block no-tool not-met override"
+  CODES = "missing abstract unknown wrong-key config local-block not-met override"
   KEYS = "version axes domains platforms languages implementations packages check overrides"
-  FIELDS = "id summary requires extends abstract checks languages roles dictionary governs"
+  FIELDS = "id summary requires extends abstract languages dictionary governs"
   LAYERS = "domain platform language implementation"
-  AXES = "foundation architecture workflow"
+  AXES = "architecture workflow"
   TODAY = ENVIRON["CONSTITUTION_TODAY"]
   split("domains platforms languages implementations", keys, " ")
   split(LAYERS, layers, " ")
@@ -27,12 +27,12 @@ BEGIN {
     FILL[keys[k]] = "write " keys[k] ": []"
   }
   ADD["version"] = "version: " ENVIRON["CONSTITUTION_INSTALLED"]
-  ADD["axes"] = "axes: [foundation, architecture, workflow]"
+  ADD["axes"] = "axes: [architecture, workflow]"
   ADD["packages"] = "packages: {}"
   ADD["check"] = "check: <the command that runs every check, or null>"
   ADD["overrides"] = "overrides: []"
   FILL["version"] = "write version: " ENVIRON["CONSTITUTION_INSTALLED"]
-  FILL["axes"] = "write axes: [foundation, architecture, workflow]"
+  FILL["axes"] = "write axes: [architecture, workflow], or axes: [] for neither"
   FILL["packages"] = "write packages: {}"
   FILL["check"] = "name the command that runs every check, or write check: null"
   FILL["overrides"] = "write overrides: []"
@@ -43,10 +43,7 @@ function read_index(path,   line, f, r) {
   while ((r = (getline line < path)) > 0) {
     if (substr(line, 1, 1) == "#") continue
     split(line, f, "\t")
-    if (f[1] == "role") {
-      ROLE[++nroles] = f[2]
-      FREE[f[2]] = (f[3] == "true")
-    } else if (f[1] == "block") {
+    if (f[1] == "block") {
       B[++nb] = f[2]
       KNOWN[f[2]] = 1
       LAYER[f[2]] = f[3]
@@ -56,22 +53,18 @@ function read_index(path,   line, f, r) {
       REQUIRES[f[2]] = f[7]
       ABSTRACT[f[2]] = f[9]
       HEIRS[f[2]] = f[10]
-      CHECKS[f[2]] = f[11]
-      LANGS[f[2]] = f[12]
-      HELD_TO[f[2]] = f[13]
-      ANCESTORS[f[2]] = f[14]
-      GOVERNS[f[2]] = f[15]
+      ANCESTORS[f[2]] = f[12]
+      GOVERNS[f[2]] = f[13]
+    } else if (f[1] == "chapter") {
+      CGOVERNS[f[2], f[3]] = f[4]
     } else if (f[1] == "rule") {
       R[++nr] = f[2]
       RULE[f[2]] = nr
       RBLOCK[nr] = f[3]
       RWITH[nr] = f[5]
       RLEVEL[nr] = f[6]
-      RCHECK[nr] = f[7]
-      RROLE[nr] = f[8]
-      RLANGS[nr] = f[9]
-      RAXIS[nr] = f[11]
-      if (f[12] != "" && f[13] == "false") KIDS[f[12]] = KIDS[f[12]] " " f[2]
+      RAXIS[nr] = f[8]
+      if (f[9] != "" && f[10] == "false") KIDS[f[9]] = KIDS[f[9]] " " f[2]
     } else if (f[1] == "answer") {
       ALIB[++nanswers] = f[2]
       AREQ[nanswers] = f[3]
@@ -202,43 +195,41 @@ function active_rule(s, i) {
   return ON[s, RAXIS[i]] && IN[s, RBLOCK[i]] && (RWITH[i] == "" || IN[s, RWITH[i]])
 }
 
-function axes_of(s,   i, n, a, k, named) {
-  named = 0
+# The base, the files at a block's root, is always followed: its axis is "".
+# axes lists the optional ones; a scope without the key takes the default.
+function axes_of(s,   i, n, a, k, app, listed) {
+  app = s ? APP[s] : ""
+  listed = ((app, "axes") in LISTED)
+  delete PICKED
   for (i = 1; i <= nitems; i++) {
-    if (IKEY[i] != "axes" || IAPP[i] != (s ? APP[s] : "")) continue
-    if (!has(AXES, ITEXT[i])) {
-      warn("config", "axes names " ITEXT[i] " — write foundation, architecture or workflow")
-      continue
-    }
-    if (!named++) delete PICKED
-    PICKED[ITEXT[i]] = 1
+    if (IKEY[i] != "axes" || IAPP[i] != app) continue
+    if (ITEXT[i] == "foundation") warn("config", (s ? app : "constitution.yaml") " lists foundation in axes — a block's root is always followed, remove it")
+    else if (!has(AXES, ITEXT[i])) warn("config", "axes names " ITEXT[i] " — write architecture or workflow")
+    else PICKED[ITEXT[i]] = 1
   }
+  ON[s, ""] = 1
   n = split(AXES, a, " ")
   for (k = 1; k <= n; k++) {
-    if (named) ON[s, a[k]] = (a[k] in PICKED)
+    if (listed) ON[s, a[k]] = (a[k] in PICKED)
     else ON[s, a[k]] = s ? ON[0, a[k]] : 1
-  }
-  if (named && !ON[s, "foundation"]) {
-    warn("config", (s ? APP[s] : "constitution.yaml") " leaves foundation out of axes — foundation is always followed, add it")
-    ON[s, "foundation"] = 1
   }
 }
 
 function all_axes(   n, a, k) {
+  ON[0, ""] = 1
   n = split(AXES, a, " ")
   for (k = 1; k <= n; k++) ON[0, a[k]] = 1
 }
 
-function print_core(   n, a, k, out, axis) {
+function print_core(   n, a, k, name) {
   if (!("core" in KNOWN)) return
-  out = "core"
+  print "core" T "Core's chapters, blocks/core/<name>.md, and what each governs:"
   n = split(chapters(0, "core"), a, " ")
   for (k = 1; k <= n; k++) {
-    sub(/\.md$/, "", a[k])
-    out = out (axis_of(a[k]) == axis ? ", " : "; " axis_of(a[k]) ": ") name_of(a[k])
-    axis = axis_of(a[k])
+    name = a[k]
+    sub(/\.md$/, "", name)
+    print "core" T "- " name (CGOVERNS["core", a[k]] == "" ? "" : ": " CGOVERNS["core", a[k]])
   }
-  print "core" T "Core's files, under blocks/core/ and named without .md: " out "."
 }
 
 function axis_of(entry) {
@@ -261,45 +252,6 @@ function needs(s, id, list,   n, a, k) {
 function requires_of(s,   j, k) {
   for (j = 1; j <= nb; j++) if (IN[s, B[j]] && !(s > 0 && IN[0, B[j]])) needs(s, B[j], REQUIRES[B[j]])
   for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == s) needs(s, LID[k], LREQUIRES[k])
-}
-
-# A tool checks its roles for the languages it names; a tool that names none
-# checks only the language-free roles, as the CI's role coverage has it.
-function hold(checks, langs, language,   n, a, k) {
-  n = split(checks, a, " ")
-  for (k = 1; k <= n; k++) if ((langs == "") ? FREE[a[k]] : has(langs, language)) HELD[a[k]] = 1
-}
-
-function such_as(language, role,   j, id) {
-  for (j = 1; j <= nb; j++) {
-    id = B[j]
-    if (ABSTRACT[id] != "true" && has(CHECKS[id], role) && ((LANGS[id] == "") ? FREE[role] : has(LANGS[id], language))) return ", such as " id ","
-  }
-  return ""
-}
-
-# A language needs only the roles its files are held to.
-function no_tool(s, language, roles,   j, k, i, role) {
-  delete HELD
-  delete NEEDED
-  for (j = 1; j <= nb; j++) if (IN[s, B[j]]) hold(CHECKS[B[j]], LANGS[B[j]], language)
-  for (k = 1; k <= nlocal; k++) if (IN[s, LID[k]]) hold(LCHECKS[k], LLANGS[k], language)
-  for (i = 1; i <= nr; i++) {
-    if (RLEVEL[i] != "MUST" || RCHECK[i] != "tool" || !has(roles, RROLE[i])) continue
-    if (active_rule(s, i) && (RLANGS[i] == "" || has(RLANGS[i], language)) && !lowered(s, R[i])) NEEDED[RROLE[i]] = 1
-  }
-  for (k = 1; k <= nroles; k++) {
-    role = ROLE[k]
-    if (!(role in NEEDED) || (role in HELD)) continue
-    UNCHECKED[s, language, role] = 1
-    if (s > 0 && ((0, language, role) in UNCHECKED)) continue
-    warn("no-tool", "rules checked by " role " have no tool for " language where(s) " — add one" such_as(language, role) " or override them")
-  }
-}
-
-function tools_of(s,   j, k) {
-  for (j = 1; j <= nb; j++) if (LAYER[B[j]] == "language" && IN[s, B[j]]) no_tool(s, B[j], HELD_TO[B[j]])
-  for (k = 1; k <= nlocal; k++) if (LLAYER[k] == "language" && IN[s, LID[k]]) no_tool(s, LID[k], LROLES[k])
 }
 
 function answers_of(s,   i, k) {
@@ -338,7 +290,7 @@ function chapters(s, id,   out, n, a, k) {
 }
 
 function seam(entry) {
-  return axis_of(entry) "/with/" name_of(entry)
+  return (axis_of(entry) == "" ? "" : axis_of(entry) "/") "with/" name_of(entry)
 }
 
 function chapter(entry, id) {
@@ -483,9 +435,11 @@ record == "key" {
   SEENKEY[++nkeys] = $2
 }
 record == "value" { VALUE[$2] = text(2) }
+record == "list" { LISTED[$2, $3] = 1 }
 record == "empty" {
   EAPP[++nempty] = $2
   EKEY[nempty] = $3
+  delete LISTED[$2, $3]
 }
 record == "app" {
   APP[++napps] = $2
@@ -538,7 +492,6 @@ END {
   apply_overrides()
   for (s = 0; s <= napps; s++) {
     requires_of(s)
-    tools_of(s)
     answers_of(s)
   }
   print "pin" T VALUE["version"]

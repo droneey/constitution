@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 interface Digests {
   readonly core: string;

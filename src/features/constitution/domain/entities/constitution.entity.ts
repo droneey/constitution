@@ -34,8 +34,6 @@ interface Constitution {
   readonly presets: readonly PresetFile[];
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];
-  // the files a project copies from templates/project/<block>/
-  readonly templates: readonly PresetFile[];
 }
 
 export type { Constitution, Documents };

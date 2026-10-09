@@ -37,7 +37,7 @@ python-preference = "only-system"
 
 # ruff: the constitution's chain of parts
 [tool.ruff]
-extend = ".droneey/constitution/presets/python/ruff/foundation/pytest.toml"
+extend = ".droneey/constitution/presets/python/ruff/pytest.toml"
 
 # ruff: what the specs lift
 [tool.ruff.lint.extend-per-file-ignores]
@@ -84,7 +84,7 @@ root_packages = ["<package>"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
-name = "no-import-cycles"
+name = "module-imports-form-no-cycle"
 type = "acyclic_siblings"
 ancestors = ["<package>"]
 
@@ -107,13 +107,13 @@ source_modules = ["*.shared"]
 forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.integrations", "*.root"]
 
 [[tool.importlinter.contracts]]
-name = "contracts-know-no-vendor-or-other-contract"
+name = "contract-knows-no-vendor"
 type = "forbidden"
 source_modules = ["*.contracts"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
-name = "domain-imports-only-itself-kernel-and-contracts"
+name = "domain-imports-only-itself-the-kernel-and-top-level-contracts"
 type = "forbidden"
 source_modules = ["*.features.*.domain"]
 forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.integrations", "*.libs", "*.root", "*.shared"]
@@ -126,129 +126,140 @@ forbidden_modules = ["logging"]
 allow_indirect_imports = true
 
 [[tool.importlinter.contracts]]
-name = "features-blind-to-each-other"
+name = "feature-never-imports-a-feature"
 type = "independence"
 modules = ["*.features.*"]
 
 [[tool.importlinter.contracts]]
-name = "adapters-never-import-each-other-or-callers"
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
 type = "independence"
 modules = ["*.adapters.*", "*.features.*.adapters.*"]
 
 [[tool.importlinter.contracts]]
-name = "adapters-never-import-each-other-or-callers"
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
 type = "forbidden"
 source_modules = ["*.adapters", "*.features.*.adapters"]
 forbidden_modules = ["*.composition", "*.entrypoints", "*.features.*.app", "*.root"]
 
 [[tool.importlinter.contracts]]
-name = "root-imported-only-by-entry-and-delivery-wiring"
+name = "root-imported-only-by-entries-and-delivery-wiring"
 type = "protected"
 protected_modules = ["*.root"]
 allowed_importers = ["*.main", "*.entrypoints.*.main"]
 
+# the root reaches an adapter through its own surface; the package's surface may offer one to its consumers
 [[tool.importlinter.contracts]]
-name = "nothing-imports-an-entrypoint"
+name = "adapter-imported-only-by-the-root"
+type = "protected"
+protected_modules = ["*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+allowed_importers = ["*", "*.root", "*.root.**", "*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+as_packages = false
+
+[[tool.importlinter.contracts]]
+name = "entrypoint-never-imported"
 type = "protected"
 protected_modules = ["*.entrypoints"]
 allowed_importers = []
 
 [[tool.importlinter.contracts]]
-name = "nothing-imports-an-entrypoint"
+name = "entrypoint-never-imported"
 type = "independence"
 modules = ["*.entrypoints.*"]
 
 [[tool.importlinter.contracts]]
-name = "nothing-imports-an-integration"
+name = "integration-never-imported"
 type = "protected"
 protected_modules = ["*.integrations"]
 allowed_importers = []
 
 [[tool.importlinter.contracts]]
-name = "nothing-imports-an-integration"
+name = "integration-never-imported"
 type = "independence"
 modules = ["*.integrations.*"]
 
 [[tool.importlinter.contracts]]
-name = "dependencies-point-inward"
+name = "import-points-inward"
 type = "forbidden"
 source_modules = ["*.adapters", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
 forbidden_modules = ["*.composition"]
 
 [[tool.importlinter.contracts]]
-name = "reads-and-writes-apart"
+name = "query-and-command-apart"
 type = "forbidden"
 source_modules = ["**.repositories.queries", "**.use_cases.queries"]
 forbidden_modules = ["**.repositories.commands", "**.use_cases.commands"]
 
 [[tool.importlinter.contracts]]
-name = "reads-and-writes-apart"
+name = "query-and-command-apart"
 type = "forbidden"
 source_modules = ["**.repositories.commands", "**.use_cases.commands"]
 forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
 
 # a layer folder's __init__.py, the import package's own among them, is never imported
 [[tool.importlinter.contracts]]
-name = "layer-folder-never-imported"
+name = "surface-only-on-a-module-or-one-kind"
 type = "forbidden"
 source_modules = ["**"]
 forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.libs"]
 as_packages = false
 allow_indirect_imports = true
 
-# the kernel and a module of each layer are reached from outside only through their __init__.py
+# a role folder of the kernel and a module of each layer are reached from outside only through their __init__.py
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
-protected_modules = ["*.kernel.*"]
-allowed_importers = ["*.kernel"]
+protected_modules = ["*.kernel.*.*"]
+allowed_importers = ["*.kernel.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.adapters.*.*"]
 allowed_importers = ["*.adapters.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.composition.*.*"]
 allowed_importers = ["*.composition.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.contracts.*.*"]
 allowed_importers = ["*.contracts.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.features.*.*"]
 allowed_importers = ["*.features.*"]
+# the root and the package's surface reach a feature's adapter through the adapter's own surface
+ignore_imports = ["*.root -> *.features.*.adapters.*", "*.root.** -> *.features.*.adapters.*", "* -> *.features.*.adapters.*"]
+unmatched_ignore_imports_alerting = "none"
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.libs.*.*"]
 allowed_importers = ["*.libs.*"]
 
 [[tool.importlinter.contracts]]
-name = "surface-is-the-only-way-in"
+name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.shared.*.*"]
 allowed_importers = ["*.shared.*"]
 
 # cli: the commands reached only from the entries
 [[tool.importlinter.contracts]]
-name = "dependencies-point-inward"
+name = "import-points-inward"
 type = "forbidden"
 source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
 forbidden_modules = ["*.cli"]
 
 # api: the handlers reached only from the entries
 [[tool.importlinter.contracts]]
-name = "dependencies-point-inward"
+name = "import-points-inward"
 type = "forbidden"
 source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
 forbidden_modules = ["*.api"]

@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel';
+import type { Finding } from '#/kernel/types';
 
 import type { Block, BlockFile } from '../../../../entities';
 import { BlockFileRole } from '../../../../entities';

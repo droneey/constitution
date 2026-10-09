@@ -58,14 +58,14 @@ export default {
   allowed: [
     {
       comment:
-        'packages-imported-by-folder-role: what is no package of a registry, the forbidden rules hold',
+        'layer-imports-dependencies-by-its-role: what is no package of a registry, the forbidden rules hold',
       from: {},
       to: {
         dependencyTypesNot: PACKAGES,
       },
     },
     {
-      comment: 'packages-imported-by-folder-role: the edge and the specs import any package',
+      comment: 'layer-imports-dependencies-by-its-role: the edge and the specs import any package',
       from: {
         path: [
           ...EDGE,
@@ -205,7 +205,7 @@ export default {
       },
     },
     {
-      name: 'features-blind-to-each-other',
+      name: 'feature-never-imports-a-feature',
       severity: 'error',
       from: {
         path: '^src/features/([^/]+)/',
@@ -213,6 +213,16 @@ export default {
       to: {
         path: '^src/features/',
         pathNot: '^src/features/$1/',
+      },
+    },
+    {
+      name: 'features-know-no-composition',
+      severity: 'error',
+      from: {
+        path: '^src/features/',
+      },
+      to: {
+        path: '^src/composition/',
       },
     },
     {
@@ -237,18 +247,22 @@ export default {
       },
       to: {
         path: `^src/(${MODULE_LAYERS})/[^/]+/`,
-        pathNot: `^src/(${MODULE_LAYERS})/[^/]+/index\\.[^/]+$`,
+        pathNot: [
+          `^src/(${MODULE_LAYERS})/[^/]+/index\\.[^/]+$`,
+          // The root reaches a feature's adapter through the adapter's own surface.
+          '^src/features/[^/]+/adapters/[^/]+/index\\.[^/]+$',
+        ],
       },
     },
     {
-      name: 'kernel-reached-through-its-surface',
+      name: 'kernel-role-reached-through-its-surface',
       severity: 'error',
       from: {
         pathNot: '^src/kernel/',
       },
       to: {
         path: '^src/kernel/',
-        pathNot: '^src/kernel/index\\.[^/]+$',
+        pathNot: '^src/kernel/[^/]+/index\\.[^/]+$',
       },
     },
     {
@@ -279,7 +293,7 @@ export default {
       to: {
         path: [
           '^src/index\\.[^/]+$',
-          '^src/(features|libs|adapters|integrations)/index\\.[^/]+$',
+          '^src/(features|libs|adapters|integrations|kernel|shared)/index\\.[^/]+$',
           '^src/features/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
         ],
       },
@@ -330,9 +344,27 @@ export default {
       to: {
         path: [
           '^src/features/[^/]+/app/',
+          // A feature's surface offers its binding units, which an adapter never calls.
+          '^src/features/[^/]+/index\\.[^/]+$',
           '^src/(root|composition|entrypoints)/',
           ENTRY,
         ],
+      },
+    },
+    {
+      name: 'adapters-reached-only-from-the-root',
+      severity: 'error',
+      from: {
+        pathNot: [
+          ...ADAPTERS,
+          '^src/root/',
+          ...SPECS,
+          // The surface of a package offers its adapters to its consumers.
+          '^src/index\\.[^/]+$',
+        ],
+      },
+      to: {
+        path: ADAPTERS,
       },
     },
     {

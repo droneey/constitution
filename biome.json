@@ -1,13 +1,13 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": [
-    "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
-    "./.droneey/constitution/presets/common/biome/foundation/git.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/bun-test.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/dependency-cruiser.jsonc",
+    "./.droneey/constitution/presets/common/biome/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/core.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/typescript.jsonc",
+    "./.droneey/constitution/presets/common/biome/git.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/bun-test.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/dependency-cruiser.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/bun.jsonc"

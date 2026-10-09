@@ -1,5 +1,5 @@
-import type { Finding } from '#/kernel';
-import { compareFindings } from '#/kernel';
+import type { Finding } from '#/kernel/types';
+import { compareFindings } from '#/kernel/utils';
 
 import type {
   BindingsParser,

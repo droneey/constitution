@@ -1,4 +1,4 @@
-import type { Layer } from '#/kernel';
+import type { Layer } from '#/kernel/constants';
 
 const VOWEL = /^[aeiou]/;
 

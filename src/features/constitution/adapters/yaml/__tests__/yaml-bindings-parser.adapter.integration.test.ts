@@ -3,22 +3,20 @@ import { describe, expect, it } from 'bun:test';
 import { createYamlBindingsParser } from '../yaml-bindings-parser.adapter';
 
 describe('createYamlBindingsParser', () => {
-  it('should return the bindings by axis, part and rule when the file binds settings', () => {
+  it('should return the bindings by part and rule when the file binds settings', () => {
     // Arrange
     const parser = createYamlBindingsParser();
 
     // Act
-    const read = parser.parse('foundation:\n  core:\n    no-empty-verbs: [no-empty-verbs.grit]\n');
+    const read = parser.parse('core:\n  no-empty-verbs: [no-empty-verbs.grit]\n');
 
     // Assert
     expect(read).toStrictEqual({
       document: {
-        foundation: {
-          core: {
-            'no-empty-verbs': [
-              'no-empty-verbs.grit',
-            ],
-          },
+        core: {
+          'no-empty-verbs': [
+            'no-empty-verbs.grit',
+          ],
         },
       },
       status: 'parsed',
@@ -30,29 +28,29 @@ describe('createYamlBindingsParser', () => {
     const parser = createYamlBindingsParser();
 
     // Act
-    const read = parser.parse('foundation: [\n');
+    const read = parser.parse('core: [\n');
 
     // Assert
     expect(read.status).toBe('not-yaml');
   });
 
-  it('should return every issue at its field when an axis is unknown and a setting is not text', () => {
+  it('should return every issue at its field when a part lists its settings without a rule and a setting is not text', () => {
     // Arrange
     const parser = createYamlBindingsParser();
 
     // Act
-    const read = parser.parse('base:\n  core: {}\nfoundation:\n  core:\n    no-any: [1]\n');
+    const read = parser.parse('self: [noConsole]\ncore:\n  no-any: [1]\n');
 
     // Assert
     expect(read).toStrictEqual({
       issues: [
         {
-          field: 'foundation.core.no-any.0',
-          message: 'Invalid input: expected string, received number',
+          field: 'self',
+          message: 'Invalid input: expected record, received array',
         },
         {
-          field: '',
-          message: 'Unrecognized key: "base"',
+          field: 'core.no-any.0',
+          message: 'Invalid input: expected string, received number',
         },
       ],
       status: 'mismatched',

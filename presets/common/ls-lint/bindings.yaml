@@ -1,10 +1,10 @@
-foundation:
-  core:
-    kebab-case-file-names:
-      - '.*'
-      - '.*.*'
-      - '.*.*.*'
-      - '.dir'
-      - '.md'
-    yaml-files-end-in-yaml:
-      - '.yml'
+core:
+  file-name-in-its-owners-case:
+    - '.*'
+    - '.*.*'
+    - '.*.*.*'
+    - '.dir'
+    - '.md'
+yaml:
+  yaml-file-ends-in-yaml:
+    - '.yml'

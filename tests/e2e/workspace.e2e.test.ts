@@ -37,9 +37,9 @@ afterEach(() => {
 const DEPENDENCY_CRUISER = `export default {
   extends: ${JSON.stringify(
     [
-      'foundation/self',
-      'foundation/core',
-      'foundation/typescript',
+      'self',
+      'core',
+      'typescript',
       'architecture/workspace',
     ].map((part) => `./${PRESETS}/dependency-cruiser/${part}.mjs`),
   )},
@@ -48,27 +48,27 @@ const DEPENDENCY_CRUISER = `export default {
 
 // Each TypeScript package's own parts, from its folder, its blocks' parts before the language's and core's.
 const CRUISER_PARTS = [
-  'foundation/self',
-  'foundation/bun',
-  'foundation/core',
-  'foundation/typescript',
+  'self',
+  'bun',
+  'core',
+  'typescript',
   'architecture/core',
 ];
 
 const LS_LINT = miseBinary('ls-lint');
 const LS_LINT_PARTS: Readonly<Record<string, readonly string[]>> = {
   python: [
-    'common/ls-lint/foundation/self',
-    'common/ls-lint/foundation/core',
-    'common/ls-lint/foundation/uv',
-    'python/ls-lint/foundation/python',
+    'common/ls-lint/self',
+    'common/ls-lint/core',
+    'common/ls-lint/uv',
+    'python/ls-lint/python',
     'python/ls-lint/architecture/core',
   ],
   typescript: [
-    'common/ls-lint/foundation/self',
-    'common/ls-lint/foundation/core',
-    'common/ls-lint/foundation/bun',
-    'typescript/ls-lint/foundation/typescript',
+    'common/ls-lint/self',
+    'common/ls-lint/core',
+    'common/ls-lint/bun',
+    'typescript/ls-lint/typescript',
     'typescript/ls-lint/architecture/core',
   ],
 };
@@ -91,9 +91,9 @@ const lsLintArgs = (input: { folder: string; language: string }): string[] =>
     `${'../'.repeat(depthOf(input.folder))}.droneey/constitution/presets/${part}.yaml`,
   ]);
 
-const STRYKER = `import bunTest from '../../${PRESETS}/stryker/foundation/bun-test.mjs';
-import core from '../../${PRESETS}/stryker/foundation/core.mjs';
-import self from '../../${PRESETS}/stryker/foundation/self.mjs';
+const STRYKER = `import bunTest from '../../${PRESETS}/stryker/bun-test.mjs';
+import core from '../../${PRESETS}/stryker/core.mjs';
+import self from '../../${PRESETS}/stryker/self.mjs';
 
 export default {
   ...self,
@@ -239,9 +239,9 @@ describe('a workspace on the presets', () => {
     // Arrange
     const folder = workspace({
       '.dependency-cruiser.mjs': DEPENDENCY_CRUISER,
-      'libs/money/src/kernel/index.ts': 'export const ZERO = 0;\n',
-      'shared/src/kernel/price.ts':
-        "import { ZERO } from '../../../libs/money/src/kernel/index.ts';\n\nexport const price = ZERO;\n",
+      'libs/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
+      'shared/src/kernel/constants/price.constants.ts':
+        "import { ZERO } from '../../../../libs/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
     });
 
     // Act

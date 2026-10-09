@@ -15,9 +15,10 @@ const WELL_FORMED = {
   }),
   'src/contracts/mail/index.ts': "export type { Mail } from './mail.port';\n",
   'src/contracts/mail/mail.port.ts':
-    "import type { Money } from '../../kernel';\nexport interface Mail { cost: Money }\n",
+    "import type { Money } from '../../kernel/values';\nexport interface Mail { cost: Money }\n",
   'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
     "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
+  'src/features/orders/adapters/api/index.ts': "export { order } from './order.adapter';\n",
   'src/features/orders/adapters/api/order.adapter.ts': importing({
     from: '../../domain/entities',
     name: 'order',
@@ -36,12 +37,12 @@ const WELL_FORMED = {
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
   'src/features/orders/domain/entities/order.entity.ts':
-    "import { money } from '../../../../kernel';\nexport const order = money;\n",
+    "import { money } from '../../../../kernel/values';\nexport const order = money;\n",
   'src/features/orders/index.ts':
     "export { listOrders } from './app/use-cases/queries/list-orders/list-orders.use-case';\n",
-  'src/kernel/index.ts':
+  'src/kernel/values/index.ts':
     "export { money } from './money';\nexport type { Money } from './money';\n",
-  'src/kernel/money.ts': 'export const money = 1;\nexport type Money = number;\n',
+  'src/kernel/values/money.ts': 'export const money = 1;\nexport type Money = number;\n',
   'src/libs/smtp/index.ts': "export { smtp } from './smtp';\n",
   'src/libs/smtp/smtp.ts': exported('smtp'),
   'src/main.ts': importing({
@@ -49,10 +50,10 @@ const WELL_FORMED = {
     name: 'wiring',
   }),
   'src/root/wiring.ts':
-    "import { sendMail } from '../adapters/mail';\nimport { listOrders } from '../features/orders';\nexport const wiring = [sendMail, listOrders];\n",
+    "import { sendMail } from '../adapters/mail';\nimport { listOrders } from '../features/orders';\nimport { order } from '../features/orders/adapters/api';\nexport const wiring = [sendMail, listOrders, order];\n",
   'src/shared/format/index.ts': "export { format } from './format';\n",
   'src/shared/format/format.ts': importing({
-    from: '../../kernel',
+    from: '../../kernel/values',
     name: 'money',
   }),
 };
@@ -157,8 +158,8 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'the kernel imports shared code',
       files: {
-        'src/kernel/money.ts': importing({
-          from: '../shared/format',
+        'src/kernel/values/money.ts': importing({
+          from: '../../shared/format',
           name: 'format',
         }),
         'src/shared/format/index.ts': exported('format'),
@@ -168,9 +169,9 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'a library imports the kernel',
       files: {
-        'src/kernel/index.ts': exported('money'),
+        'src/kernel/values/index.ts': exported('money'),
         'src/libs/smtp/smtp.ts': importing({
-          from: '../../kernel',
+          from: '../../kernel/values',
           name: 'money',
         }),
       },
@@ -251,7 +252,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'invoice',
         }),
       },
-      rule: 'features-blind-to-each-other',
+      rule: 'feature-never-imports-a-feature',
     },
     {
       condition: 'a module reaches past another module’s surface',
@@ -276,15 +277,26 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'module-reached-through-its-surface-from-outside-modules',
     },
     {
-      condition: 'a feature reaches past the kernel’s surface',
+      condition: 'a feature reaches past the surface of a role folder of the kernel',
       files: {
         'src/features/orders/app/order.use-case.ts': importing({
-          from: '../../../kernel/money',
+          from: '../../../kernel/values/money',
           name: 'money',
         }),
-        'src/kernel/money.ts': exported('money'),
+        'src/kernel/values/money.ts': exported('money'),
       },
-      rule: 'kernel-reached-through-its-surface',
+      rule: 'kernel-role-reached-through-its-surface',
+    },
+    {
+      condition: 'code imports the kernel as a whole',
+      files: {
+        'src/kernel/index.ts': exported('money'),
+        'src/shared/format/format.ts': importing({
+          from: '../../kernel',
+          name: 'money',
+        }),
+      },
+      rule: 'layer-folder-never-a-target',
     },
     {
       condition: 'a module imports its own surface',
@@ -331,6 +343,17 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'contract-knows-only-itself-and-kernel',
     },
     {
+      condition: 'a feature imports the composition above it',
+      files: {
+        'src/composition/checkout/index.ts': exported('checkout'),
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '../../../composition/checkout',
+          name: 'checkout',
+        }),
+      },
+      rule: 'features-know-no-composition',
+    },
+    {
       condition: 'an adapter imports another adapter',
       files: {
         'src/adapters/mail/mail.adapter.ts': importing({
@@ -351,6 +374,47 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/app/order.use-case.ts': exported('order'),
       },
       rule: 'adapters-know-no-caller',
+    },
+    {
+      condition: 'a use case imports an adapter past its port',
+      files: {
+        'src/features/orders/adapters/api/order.adapter.ts': exported('orderAdapter'),
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+          from: '../../../../adapters/api/order.adapter',
+          name: 'orderAdapter',
+        }),
+      },
+      rule: 'adapters-reached-only-from-the-root',
+    },
+    {
+      condition: 'the entry file imports an adapter past the root',
+      files: {
+        'src/adapters/mail/index.ts': exported('sendMail'),
+        'src/main.ts': importing({
+          from: './adapters/mail',
+          name: 'sendMail',
+        }),
+      },
+      rule: 'adapters-reached-only-from-the-root',
+    },
+    {
+      condition: 'a shared adapter imports the surface of a feature',
+      files: {
+        'src/adapters/mail/mail.adapter.ts': importing({
+          from: '../../features/orders',
+          name: 'listOrders',
+        }),
+        'src/features/orders/index.ts': exported('listOrders'),
+      },
+      rule: 'adapters-know-no-caller',
+    },
+    {
+      condition: "a feature's surface offers its adapter",
+      files: {
+        'src/features/orders/adapters/api/index.ts': exported('orderAdapter'),
+        'src/features/orders/index.ts': "export { orderAdapter } from './adapters/api';\n",
+      },
+      rule: 'adapters-reached-only-from-the-root',
     },
     {
       condition: 'a read imports a write',
@@ -510,10 +574,40 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/architecture/api',
+        'typescript/architecture/_api',
         'typescript/architecture/core',
       ],
       rule: 'handlers-reached-only-from-entries',
+    },
+    {
+      condition: 'a feature imports a consumer',
+      files: {
+        'src/consumers/order-placed.consumer.ts': exported('onOrderPlaced'),
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '../../../consumers/order-placed.consumer',
+          name: 'onOrderPlaced',
+        }),
+      },
+      parts: [
+        'typescript/architecture/messaging',
+        'typescript/architecture/core',
+      ],
+      rule: 'consumers-and-jobs-reached-only-from-entries',
+    },
+    {
+      condition: 'an adapter imports a job',
+      files: {
+        'src/adapters/smtp/index.ts': importing({
+          from: '../../jobs/digest.job',
+          name: 'sendDigest',
+        }),
+        'src/jobs/digest.job.ts': exported('sendDigest'),
+      },
+      parts: [
+        'typescript/architecture/messaging',
+        'typescript/architecture/core',
+      ],
+      rule: 'adapters-know-no-consumers-or-jobs',
     },
     {
       condition: 'an adapter imports a handler',
@@ -525,7 +619,7 @@ describe('the dependency-cruiser layer set', () => {
         'src/api/orders.controller.ts': exported('OrdersController'),
       },
       parts: [
-        'typescript/architecture/api',
+        'typescript/architecture/_api',
         'typescript/architecture/core',
       ],
       rule: 'adapters-know-no-handlers',
@@ -752,7 +846,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/foundation/storybook',
+        'typescript/storybook',
         'typescript/architecture/core',
       ],
       rule: 'stories-unreachable-from-production',
@@ -766,7 +860,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       parts: [
-        'typescript/architecture/yaml',
+        'typescript/architecture/yaml-js',
         'typescript/architecture/core',
       ],
       rule: 'yaml-only-at-the-edge',
@@ -993,9 +1087,9 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/analytics',
         'typescript/architecture/lingui',
         'typescript/architecture/tanstack-query',
-        'typescript/foundation/storybook',
+        'typescript/storybook',
         'typescript/architecture/storybook',
-        'typescript/architecture/yaml',
+        'typescript/architecture/yaml-js',
         'typescript/architecture/core',
       ],
     };
@@ -1116,7 +1210,7 @@ describe('the dependency-cruiser layer set', () => {
   });
 });
 
-describe('the dependency-cruiser foundation parts', () => {
+describe("the parts of dependency-cruiser's base", () => {
   it.each([
     {
       condition: 'two modules import each other',

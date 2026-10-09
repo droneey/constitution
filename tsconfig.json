@@ -1,8 +1,8 @@
 {
   "extends": [
-    "./.droneey/constitution/presets/typescript/tsc/foundation/self.json",
-    "./.droneey/constitution/presets/typescript/tsc/foundation/core.json",
-    "./.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
+    "./.droneey/constitution/presets/typescript/tsc/self.json",
+    "./.droneey/constitution/presets/typescript/tsc/core.json",
+    "./.droneey/constitution/presets/typescript/tsc/bun.json"
   ],
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
