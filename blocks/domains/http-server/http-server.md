@@ -52,11 +52,11 @@ A request whose body is in a media type its operation does not declare is refuse
 | a page on another origin sends `text/plain` and form bodies without a preflight, so an API that reads them as JSON accepts forged writes. | [security] |
 
 ### uploaded-file-never-rendered-from-the-programs-origin · MUST
-A file a person uploaded is served from an origin apart from the program's own, or with `Content-Disposition: attachment` and `X-Content-Type-Options: nosniff`; it is never rendered inline from the program's origin.
+A file a person uploaded is served from another registrable domain than the program's, or with `Content-Disposition: attachment` or `Content-Security-Policy: sandbox`; it is never opened as a page of the program's own origin.
 
 | Why | Tags |
 |---|---|
-| an uploaded SVG or HTML page rendered from the program's origin runs its script with every visitor's session. | [security] |
+| an uploaded SVG or HTML page opened from the program's origin, or from a sibling host of its site, runs its script with every visitor's session. | [security] |
 
 ## Caching
 

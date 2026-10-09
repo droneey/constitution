@@ -15,11 +15,18 @@ governs: []
 ## Personal data
 
 ### personal-data-inventoried · MUST
-Every kind of personal data the program stores is listed with its purpose, its retention period and the processors it reaches.
+Every kind of personal data the program stores is listed with its purpose, the legal basis of that purpose, its retention period, the recipients it reaches — processors and controllers — and the regions it is sent to.
 
 | Why | Tags |
 |---|---|
 | data nobody listed is kept beyond its purpose and missed by every request to export or erase it. | [data] |
+
+### privacy-notice-follows-the-inventory · MUST
+A person is told, where their data is collected, what is collected, for which purpose and on which basis, who receives it, how long it is kept and how to use their rights, and the notice changes with the inventory.
+
+| Why | Tags |
+|---|---|
+| a person can use a right only over data they know is kept, and a notice written apart from the inventory drifts from what the program does. | [data] |
 
 ### personal-data-collected-only-for-its-purpose · MUST
 Personal data is collected only as far as a stated purpose needs, and the settings that share or expose it start at their most protective.
@@ -59,7 +66,7 @@ A request to export, erase or correct personal data is answered only once the re
 | an export sent to an impostor is a breach, and an erasure on a stranger's word destroys a person's data. | [data, security] |
 
 ### personal-data-erased-on-request · MUST
-A person's request to erase their data erases it everywhere the program keeps it — its stores, its caches, its processors — save what a law makes it keep, within the time the law of the region sets; a backup that holds it expires within its retention, and a restore re-applies every erasure made since.
+A person's request to erase their data erases it everywhere the program keeps it — its stores, its caches, its processors — and is passed on to the other recipients it reached, save what a law makes it keep, within the time the law of the region sets; a backup that holds it expires within its retention, and a restore re-applies every erasure made since.
 
 | Why | Tags |
 |---|---|

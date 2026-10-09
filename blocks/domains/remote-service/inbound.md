@@ -5,7 +5,7 @@
 ## Webhooks
 
 ### webhook-verified-before-it-is-acted-on · MUST
-A webhook the program receives is acted on only after its signature is verified, with the sender's secret or public key, over its raw body and its timestamp, and the timestamp falls within a window the project sets; from a sender that signs nothing, the program acts only on what it reads back from the sender itself.
+A webhook the program receives is acted on only after its signature is verified, with the sender's secret or public key, over its raw body and the timestamp the sender signs, which falls within a window the project sets; where the sender signs no timestamp, a repeat of its delivery identifier is refused, and from a sender that signs nothing the program acts only on what it reads back from the sender itself.
 
 | Why | Tags |
 |---|---|

@@ -164,7 +164,7 @@ A binding unit imports nothing of `ui/`, which imports it.
 
 | Why | Tags |
 |---|---|
-| a binding unit that imports its adapter cannot be handed another, and one that imports the interface forms a cycle with it. | [] |
+| a binding unit that imports the interface forms a cycle with it. | [] |
 
 ### binding-unit-gets-a-plain-form-on-demand → structure-appears-by-symptom · SHOULD
 A binding unit gains a plain function form only when a caller outside the screens — a guard, a loader — needs one.

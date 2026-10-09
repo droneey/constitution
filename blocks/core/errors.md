@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — a timeout, a dropped connection — is expected by the code that retries it, and a defect once its retries are spent. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|
@@ -63,7 +63,7 @@ Where the language throws, only an error is thrown or rejected — never a strin
 | a thrown value that is not an error has no stack and no code, so no catch can recognise it and no log can trace it. | [errors] |
 
 ### failure-logged-once · SHOULD
-A failure is logged once, by the unit that handles it, never at every level it passes.
+A failure is logged once, by the unit that handles it or, where that unit logs nothing, by the one it reports the failure to; never at every level it passes.
 
 | Why | Tags |
 |---|---|

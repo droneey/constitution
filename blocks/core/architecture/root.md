@@ -5,7 +5,7 @@
 ## Wiring
 
 ### composition-root-wires-everything · MUST
-The composition root chooses every concrete implementation and wires the program in one known place. A unit receives its dependencies typed by their contracts and never builds or asks for an adapter; reading a typed scope the root fills is receiving. A container wires only from bindings written in the declarations the root composes; one that finds them by scanning, name or convention is forbidden.
+The composition root chooses every concrete implementation and wires the program in one known place. A unit receives its dependencies typed by their contracts and never builds or asks for an adapter; reading a typed scope the root fills — one contract per entry, filled once, read by delivery and binding units — is receiving, while asking a registry for an implementation by its key is not. A container wires only from bindings written in the declarations the root composes; one that finds them by scanning, name or convention is forbidden.
 
 | Why | Tags |
 |---|---|

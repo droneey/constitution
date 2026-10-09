@@ -38,7 +38,7 @@ A tool call that destroys data, spends money, changes another system or sends so
 
 ## Ways out
 
-### agent-reading-untrusted-text-sends-nothing-out-unapproved → agent-never-holds-the-lethal-trifecta · MUST
+### agent-reading-untrusted-text-sends-nothing-out-unapproved · MUST
 An agent that reads text others wrote and can reach private data sends nothing outward — a request to an address the model chooses, a message, a shared file — without a person's approval of that send; in a run with no person present, it sends only to the addresses its standing grant names.
 
 | Why | Tags |

@@ -500,6 +500,21 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: "the package's surface offers a feature's adapter to its consumers",
+      changes: {
+        ...FEATURE,
+        'src/shop/__init__.py': python(
+          'from .features.orders.adapters.http import ADAPTER',
+          'from .orders import total, totals',
+          '',
+          "__all__ = ['ADAPTER', 'total', 'totals']",
+        ),
+        'src/shop/features/orders/adapters/__init__.py': '',
+        'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+      },
+      task: 'architecture:check',
+    },
+    {
       condition: 'the only mutants of a new line are marked equivalent',
       changes: {
         'src/shop/orders.py': ORDERS_WITH_LABEL('  # pragma: no mutate -- a name no spec reads'),

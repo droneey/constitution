@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is the outer ring of the tree: adapters, libs, the root, the entry files, the delivery layer and integrations.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is the outer ring of the tree: adapters, libs, the root, the entry files, the delivery layer, integrations, and the shared plumbing only these import.
 
 ## Direction
 
@@ -42,7 +42,7 @@ The composition root is imported only by entry files and by the delivery layerâ€
 | the root knows every concrete choice, and code that imports it can no longer be tested with fakes. | [] |
 
 ### adapter-imported-only-by-the-root Â· MUST
-An adapter is imported only by the composition root and the entry files, through the adapter's own surface, by the surface of a package that offers it, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
+An adapter is imported only by the composition root, through the adapter's own surface, by the surface of a package that offers it to its consumers, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
 
 | Why | Tags |
 |---|---|

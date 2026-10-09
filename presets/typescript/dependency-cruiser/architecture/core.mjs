@@ -334,6 +334,8 @@ export default {
       to: {
         path: [
           '^src/features/[^/]+/app/',
+          // A feature's surface offers its binding units, which an adapter never calls.
+          '^src/features/[^/]+/index\\.[^/]+$',
           '^src/(root|composition|entrypoints)/',
           ENTRY,
         ],
@@ -345,7 +347,7 @@ export default {
       from: {
         pathNot: [
           ...ADAPTERS,
-          ...ROOT,
+          '^src/root/',
           ...SPECS,
           // The surface of a package offers its adapters to its consumers.
           '^src/index\\.[^/]+$',

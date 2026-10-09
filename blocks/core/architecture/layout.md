@@ -99,7 +99,7 @@ A pipeline’s stages live in its steps folder, in the order the use case calls 
 ## Surfaces
 
 ### module-reached-only-through-its-surface · MUST
-A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else; the composition root reaches a feature's adapter through that adapter's own surface.
+A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else; the composition root, and the surface of a package that offers it, reach a feature's adapter through that adapter's own surface.
 
 | Why | Tags |
 |---|---|

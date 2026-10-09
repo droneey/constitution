@@ -12,7 +12,7 @@ A value with distinct stages is a union keyed by its stage, never a bag of optio
 | a state the type cannot express is a state no code has to handle and no test has to find. | [] |
 
 ### closed-set-branched-exhaustively · MUST
-A branch over a closed set — a union, an enumeration — names every member, and the type checker proves it exhaustive; no default branch absorbs the rest.
+A branch over a closed set — a union or an enumeration the logic decides on member by member — names every member, and the type checker proves it exhaustive; no default branch absorbs the rest.
 
 | Why | Tags |
 |---|---|
@@ -54,7 +54,7 @@ A vocabulary another party owns — its codes, its statuses — is reached throu
 | a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. | [data] |
 
 ### enumeration-others-read-declared-extensible · MUST
-An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know; reading another's contract that declares one, the program maps a value it does not know to a member of its own for the unknown, which every branch names, and never fails for it. An enumeration in a request the program accepts stays closed.
+An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know; reading a contract another party owns and may extend, the program maps a value it does not know to a member of its own for the unknown, which every branch names, and never fails for it. An enumeration in a request the program accepts stays closed.
 
 | Why | Tags |
 |---|---|

@@ -20,7 +20,7 @@ A rule that would hold with no user interface and no transport lives in the doma
 | the business is the reason such a rule changes, not its caller. | [] |
 
 ### domain-logs-nothing · MUST
-The domain, its use cases included, logs nothing: it returns a result or a failure, or emits an event, and a binding or delivery unit logs what happened.
+The domain, its use cases included, logs nothing: it returns a result or a failure, or emits an event, and a binding or delivery unit logs what happened, a failure the domain handled included.
 
 | Why | Tags |
 |---|---|

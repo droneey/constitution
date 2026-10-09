@@ -1,6 +1,6 @@
 # Consistency
 
-> Governs concurrent changes, invariants and backups.
+> Governs concurrent changes, invariants, backups and the connection to the store.
 
 ## Concurrent changes
 
@@ -29,9 +29,25 @@ Owned data is backed up, often enough to lose no more than the recovery point th
 |---|---|
 | owned data has no other copy, and a backup in reach of what destroyed the store goes with it. | [data] |
 
+### owned-data-encrypted-at-rest · MUST
+Owned data and its backups are encrypted at rest, with keys kept apart from them.
+
+| Why | Tags |
+|---|---|
+| a disk, a snapshot or a backup that leaves the store's control is unreadable without its key. | [data, security] |
+
 ### backup-restored-on-a-schedule · SHOULD
 A backup is restored on a schedule into a place apart and checked.
 
 | Why | Tags |
 |---|---|
 | a backup never restored is a hope, and the day it is needed is the day it fails. | [data] |
+
+## Connections
+
+### store-reached-over-verified-tls · MUST
+A connection to a store or a broker the program owns that crosses a network runs over TLS, with the server's certificate verified.
+
+| Why | Tags |
+|---|---|
+| a connection inside a private network is still read by whoever reaches that network, and one that skips the certificate trusts whoever answers. | [security] |

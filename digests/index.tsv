@@ -119,6 +119,7 @@ rule	agent-takes-instructions-only-from-its-person	core	blocks/core/agents.md		M
 rule	agent-never-holds-the-lethal-trifecta	core	blocks/core/agents.md		MUST	security			true
 rule	agent-runs-unchecked-only-in-isolation	core	blocks/core/agents.md		MUST	security			true
 rule	secret-kept-out-of-the-agents-context	core	blocks/core/agents.md		MUST	security			true
+rule	agent-never-widens-its-own-limits	core	blocks/core/agents.md		MUST	security			true
 rule	agent-extension-vetted-as-a-dependency	core	blocks/core/agents.md		SHOULD	security			true
 rule	delegating-agent-keeps-the-responsibility	core	blocks/core/agents.md		SHOULD				true
 rule	agent-file-restates-no-rule	core	blocks/core/agents.md		SHOULD				true
@@ -150,6 +151,7 @@ rule	tool-pinned-exactly-by-the-repository	core	blocks/core/dependencies.md		MUS
 rule	dependency-resolved-from-its-declared-registry	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	new-dependency-vetted	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	new-release-adopted-after-a-cooldown	core	blocks/core/dependencies.md		SHOULD	security			true
+rule	dependency-provenance-verified	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	dependency-reached-through-its-public-entry	core	blocks/core/dependencies.md		MUST				true
 rule	install-scripts-run-only-for-listed-dependencies	core	blocks/core/dependencies.md		MUST	security			true
 rule	dependency-free-of-known-vulnerabilities	core	blocks/core/dependencies.md		MUST	security			true
@@ -574,13 +576,14 @@ rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md
 rule	locale-reachable-without-props	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD			props-drilled-at-most-two-levels	true
 rule	layout-mirrors-right-to-left	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	ux a11y			true
 rule	language-offered-in-its-own-name	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD	ux			true
+rule	screen-declares-its-language	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	a11y			true
 rule	model-pinned-to-a-snapshot	language-model	blocks/domains/language-model/language-model.md		MUST				true
 rule	model-client-sets-bounds-and-reports-the-stop	language-model	blocks/domains/language-model/language-model.md		MUST	errors performance			true
 rule	model-given-only-the-tools-its-task-needs	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	outside-tool-definition-pinned	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	tool-acts-with-the-persons-rights	language-model	blocks/domains/language-model/agency.md		MUST	security		credential-has-least-privilege	true
 rule	consequential-tool-call-approved-by-its-person	language-model	blocks/domains/language-model/agency.md		MUST	security ux		irreversible-operation-runs-dry-by-default	true
-rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data		agent-never-holds-the-lethal-trifecta	true
+rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data			true
 rule	generated-code-runs-only-in-a-sandbox	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	memory-keeps-its-source-and-person	language-model	blocks/domains/language-model/agency.md		SHOULD	security			true
 rule	model-call-sets-its-output-limit	language-model	blocks/domains/language-model/budgets.md		MUST	performance			true
@@ -707,7 +710,9 @@ rule	outside-change-runs-without-secrets	open-source	blocks/domains/open-source/
 rule	stored-record-carries-its-version	owned-data	blocks/domains/owned-data/consistency.md		MUST	data		write-on-read-data-is-conditional	true
 rule	invariant-also-held-by-the-store	owned-data	blocks/domains/owned-data/consistency.md		SHOULD	data			true
 rule	owned-data-backed-up	owned-data	blocks/domains/owned-data/consistency.md		MUST	data			true
+rule	owned-data-encrypted-at-rest	owned-data	blocks/domains/owned-data/consistency.md		MUST	data security			true
 rule	backup-restored-on-a-schedule	owned-data	blocks/domains/owned-data/consistency.md		SHOULD	data			true
+rule	store-reached-over-verified-tls	owned-data	blocks/domains/owned-data/consistency.md		MUST	security			true
 rule	schema-changed-only-by-a-migration	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	applied-migration-never-edited	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	migration-compatible-with-the-running-release	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
@@ -719,6 +724,7 @@ rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/
 rule	transaction-changes-one-aggregate	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	data	architecture		true
 rule	migrations-applied-in-ci-from-the-last-release	owned-data	blocks/domains/owned-data/workflow/owned-data.md		SHOULD	data	workflow		true
 rule	personal-data-inventoried	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	privacy-notice-follows-the-inventory	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-collected-only-for-its-purpose	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-kept-no-longer-than-its-retention	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-reaches-only-a-listed-recipient	privacy	blocks/domains/privacy/privacy.md		MUST	data			true

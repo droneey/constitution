@@ -12,7 +12,7 @@ The API's contract — every operation, its parameters, its answers and its fail
 | callers, generated clients and checks read one contract, and a server that drifts from it fails a spec, not a caller. | [] |
 
 ### breaking-change-refused-by-a-contract-diff · MUST
-A check compares the contract with the one last released and fails on a breaking change to what was released.
+A check compares the contract with the one last released and fails on a breaking change to what was released, save the removal of what was announced as retired and is past its date.
 
 | Why | Tags |
 |---|---|

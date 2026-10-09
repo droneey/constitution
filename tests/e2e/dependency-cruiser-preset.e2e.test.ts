@@ -376,6 +376,28 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'adapters-reached-only-from-the-root',
     },
     {
+      condition: 'the entry file imports an adapter past the root',
+      files: {
+        'src/adapters/mail/index.ts': exported('sendMail'),
+        'src/main.ts': importing({
+          from: './adapters/mail',
+          name: 'sendMail',
+        }),
+      },
+      rule: 'adapters-reached-only-from-the-root',
+    },
+    {
+      condition: 'a shared adapter imports the surface of a feature',
+      files: {
+        'src/adapters/mail/mail.adapter.ts': importing({
+          from: '../../features/orders',
+          name: 'listOrders',
+        }),
+        'src/features/orders/index.ts': exported('listOrders'),
+      },
+      rule: 'adapters-know-no-caller',
+    },
+    {
       condition: "a feature's surface offers its adapter",
       files: {
         'src/features/orders/adapters/api/index.ts': exported('orderAdapter'),

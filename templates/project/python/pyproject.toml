@@ -147,12 +147,12 @@ type = "protected"
 protected_modules = ["*.root"]
 allowed_importers = ["*.main", "*.entrypoints.*.main"]
 
-# the root and the entries reach an adapter through its own surface; the package's surface may offer one
+# the root reaches an adapter through its own surface; the package's surface may offer one to its consumers
 [[tool.importlinter.contracts]]
 name = "adapter-imported-only-by-the-root"
 type = "protected"
 protected_modules = ["*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
-allowed_importers = ["*", "*.main", "*.entrypoints.*.main", "*.root", "*.root.**", "*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+allowed_importers = ["*", "*.root", "*.root.**", "*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
 as_packages = false
 
 [[tool.importlinter.contracts]]
@@ -234,8 +234,8 @@ name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.features.*.*"]
 allowed_importers = ["*.features.*"]
-# the root reaches a feature's adapter through the adapter's own surface
-ignore_imports = ["*.root -> *.features.*.adapters.*", "*.root.** -> *.features.*.adapters.*"]
+# the root and the package's surface reach a feature's adapter through the adapter's own surface
+ignore_imports = ["*.root -> *.features.*.adapters.*", "*.root.** -> *.features.*.adapters.*", "* -> *.features.*.adapters.*"]
 unmatched_ignore_imports_alerting = "none"
 
 [[tool.importlinter.contracts]]

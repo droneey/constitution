@@ -48,6 +48,13 @@ A new release of a dependency is adopted only after a cooldown the project sets;
 |---|---|
 | most hijacked releases are found and pulled within days. | [security] |
 
+### dependency-provenance-verified · SHOULD
+A dependency whose registry publishes provenance or signatures is installed only once they verify, and a version that lost what its earlier versions carried is refused.
+
+| Why | Tags |
+|---|---|
+| a hijacked release is published from somewhere else than the project's own pipeline, and the missing provenance is the sign. | [security] |
+
 ### dependency-reached-through-its-public-entry · MUST
 A dependency is reached only through the entries it publishes, never through its internal paths.
 

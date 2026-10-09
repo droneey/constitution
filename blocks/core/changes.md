@@ -33,7 +33,7 @@ A tidying or a refactoring the task needs ships as its own change, before the ch
 | each diff then reads as one thing, and a reviewer sees the behaviour change alone. | [] |
 
 ### tidying-keeps-the-specs-of-its-boundaries · SHOULD
-A tidying or a refactoring changes no spec of a boundary; a spec that must change marks a change of behaviour, which ships as one.
+A tidying or a refactoring changes no case's setup or expectation in a spec of a boundary, and a spec follows a boundary it renames or moves; an expectation that must change marks a change of behaviour, which ships as one.
 
 | Why | Tags |
 |---|---|
@@ -54,7 +54,7 @@ A choice between real alternatives that a later reader could propose again is re
 | a choice recorded without its rejected alternatives is argued again by everyone who meets them. | [] |
 
 ### change-to-a-trust-boundary-names-its-threats · SHOULD
-A change that adds an entry into the program or a crossing of a trust boundary names the threats it meets and how each is met, in the change.
+A change that adds a way into the program — an endpoint, a command, an upload, a consumer of messages — or a crossing of a trust boundary names the threats it meets and how each is met, in the change.
 
 | Why | Tags |
 |---|---|

@@ -5,7 +5,7 @@
 ## Deciding
 
 ### consent-given-for-the-actions-it-names · MUST
-Consent a rule asks for is given by the person — where the agent asks for it, a chat, an issue or a review of a change, or in advance by a standing grant the project's files declare — for the actions it names, and never carries over to others; the project's permission settings govern only actions no rule asks consent for.
+Consent a rule asks for is given by the person where the agent asks for it — a chat, an issue, a review of a change — for the actions it names, and never carries over to others; a standing grant is the only go-ahead given before an agent asks.
 
 | Why | Tags |
 |---|---|
@@ -35,7 +35,7 @@ When a behaviour is described before it is built, an agent writes its tests from
 ## Acting
 
 ### person-decides-what-is-recorded-or-shipped · MUST
-Only a person decides what of an agent’s work is recorded, shared or shipped; the agent does so only when the person asks.
+Only a person decides what of an agent’s work is recorded, shared or shipped; the agent does so only when the person asks or a standing grant names that act.
 
 | Why | Tags |
 |---|---|
