@@ -616,7 +616,6 @@ rule	conversation-loaded-only-for-its-owner	language-model	blocks/domains/langua
 rule	answer-cache-keyed-by-the-callers-rights	language-model	blocks/domains/language-model/with/access-control.md	access-control	MUST	security data		object-access-checked-against-the-caller	true
 rule	prompt-text-kept-out-of-telemetry	language-model	blocks/domains/language-model/with/observability.md	observability	MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	model-call-span-carries-model-tokens-and-stop	language-model	blocks/domains/language-model/with/observability.md	observability	SHOULD	performance		unit-of-work-opens-a-span	true
-rule	provider-receives-personal-data-only-as-a-processor	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data security		personal-data-reaches-only-a-listed-recipient	true
 rule	erasure-reaches-indexes-conversations-and-caches	language-model	blocks/domains/language-model/with/privacy.md	privacy	MUST	data		personal-data-erased-on-request	true
 rule	streamed-answer-announced-once	language-model	blocks/domains/language-model/with/ui.md	ui	MUST	a11y ux		status-changes-announced	true
 rule	streamed-answer-can-be-stopped	language-model	blocks/domains/language-model/with/ui.md	ui	SHOULD	ux performance		outside-call-can-be-cancelled	true

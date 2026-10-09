@@ -1,15 +1,6 @@
 # Language model with privacy
 
-> Governs the personal data a model's provider receives, and its erasure.
-
-## Providers
-
-### provider-receives-personal-data-only-as-a-processor → personal-data-reaches-only-a-listed-recipient · MUST
-Personal data reaches a model's provider only when the inventory lists that provider as a processor, under terms that keep the data out of training and hold it no longer than the terms the inventory records, with the request's own storage turned off where the provider offers it.
-
-| Why | Tags |
-|---|---|
-| a prompt hands its data to another company, and terms that let it train on the data, or keep it longer than anyone recorded, make it the provider's. | [data, security] |
+> Governs how an erasure reaches what a model's program keeps.
 
 ## Erasure
 
