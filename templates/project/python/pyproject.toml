@@ -110,7 +110,7 @@ forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.integrations"
 name = "contract-knows-no-vendor"
 type = "forbidden"
 source_modules = ["*.contracts"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "domain-imports-only-itself-the-kernel-and-top-level-contracts"

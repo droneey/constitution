@@ -330,6 +330,17 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: 'a shared port imports a vendor client of libs',
+      changes: {
+        'src/shop/contracts/__init__.py': '',
+        'src/shop/contracts/mail/__init__.py': 'from shop.libs.smtp import CLIENT\n',
+        'src/shop/libs/__init__.py': '',
+        'src/shop/libs/smtp/__init__.py': 'CLIENT = 1\n',
+      },
+      finding: 'contract-knows-no-vendor BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a feature imports the composition above it',
       changes: {
         'src/shop/composition/__init__.py': '',

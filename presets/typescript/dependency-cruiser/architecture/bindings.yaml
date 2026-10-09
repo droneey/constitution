@@ -42,6 +42,7 @@ core:
   import-points-inward:
     - adapters-know-no-caller
     - domain-reaches-only-itself-and-kernel
+    - features-know-no-composition
     - kernel-reaches-only-itself
     - libs-know-no-application
     - shared-knows-no-feature-or-root

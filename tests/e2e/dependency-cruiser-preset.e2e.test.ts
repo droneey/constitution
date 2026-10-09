@@ -343,6 +343,17 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'contract-knows-only-itself-and-kernel',
     },
     {
+      condition: 'a feature imports the composition above it',
+      files: {
+        'src/composition/checkout/index.ts': exported('checkout'),
+        'src/features/orders/app/order.use-case.ts': importing({
+          from: '../../../composition/checkout',
+          name: 'checkout',
+        }),
+      },
+      rule: 'features-know-no-composition',
+    },
+    {
       condition: 'an adapter imports another adapter',
       files: {
         'src/adapters/mail/mail.adapter.ts': importing({

@@ -216,6 +216,16 @@ export default {
       },
     },
     {
+      name: 'features-know-no-composition',
+      severity: 'error',
+      from: {
+        path: '^src/features/',
+      },
+      to: {
+        path: '^src/composition/',
+      },
+    },
+    {
       name: 'module-reached-through-its-surface',
       severity: 'error',
       from: {
