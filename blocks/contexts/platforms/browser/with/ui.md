@@ -129,3 +129,10 @@ View state a link or a reload must reproduce — filters, sort, page, selection,
 | Why | Tags |
 |---|---|
 | a view in the URL can be shared, bookmarked and restored with the back button; a view kept elsewhere is lost on reload. | [ux] |
+
+### language-declared-by-lang → screen-declares-its-language · MUST
+A document declares its language in the `lang` of its root, and a passage in another language carries its own `lang`.
+
+| Why | Tags |
+|---|---|
+| `lang` is the attribute assistive technology reads to choose how a text is pronounced. | [a11y] |

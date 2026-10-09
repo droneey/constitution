@@ -12,7 +12,7 @@ A request from another origin that carries what the browser attaches itself — 
 | a browser sends a user's cookies with a cross-origin request, so an origin allowed unchecked reads the program's answers in that user's name. | [security] |
 
 ### state-changing-request-refused-from-other-origins → outside-address-followed-only-from-an-allowlist · MUST
-A request that changes state and that the server authenticates by what the browser attaches itself — a cookie, HTTP authentication, a client certificate — or that signs a person in with what they typed, is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, or, where it carries no `Origin`, when it carries a `Sec-Fetch-Site` that is neither `same-origin` nor `none`; a request with neither header, which no browser sends, and the answer of an outside identity provider, which its `state`, PKCE and `nonce` guard, are not refused by this check.
+A request that changes state and that the server authenticates by what the browser attaches itself — a cookie, HTTP authentication, a client certificate — is refused when its `Origin` names an origin that is neither the program's own nor on its allowlist, or, where it carries no `Origin`, when it carries a `Sec-Fetch-Site` that is neither `same-origin` nor `none`; a request with neither header, which no browser sends, is not refused by this check.
 
 | Why | Tags |
 |---|---|

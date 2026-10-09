@@ -46,7 +46,7 @@ A backup is restored on a schedule into a place apart and checked.
 ## Connections
 
 ### store-reached-over-verified-tls · MUST
-A connection to a store or a broker the program owns that crosses a network runs over TLS, with the server's certificate verified.
+A connection to a store the program owns that crosses a network runs over TLS, with the server's certificate verified.
 
 | Why | Tags |
 |---|---|

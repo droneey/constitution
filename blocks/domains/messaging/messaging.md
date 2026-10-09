@@ -20,3 +20,10 @@ A program's credential for the broker writes only the channels it publishes to a
 | Why | Tags |
 |---|---|
 | a credential that reaches every channel lets one compromised program read every message and forge any other's. | [security] |
+
+### broker-reached-over-verified-tls · MUST
+A connection to the broker that crosses a network runs over TLS, with the broker's certificate verified.
+
+| Why | Tags |
+|---|---|
+| a connection inside a private network is still read by whoever reaches that network, and one that skips the certificate trusts whoever answers. | [security] |

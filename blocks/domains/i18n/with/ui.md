@@ -1,6 +1,6 @@
 # Internationalisation with a user interface
 
-> Governs the locale on a screen, its language and its direction.
+> Governs the locale on a screen and its direction.
 
 ## Screens
 
@@ -24,12 +24,3 @@ A language is offered in its own name and script — "Українська", "De
 | Why | Tags |
 |---|---|
 | a reader finds their language by its name, and a flag names a country, which many languages share and many countries split. | [ux] |
-
-## Language
-
-### screen-declares-its-language · MUST
-A screen declares the language of its content, and a passage in another language declares its own.
-
-| Why | Tags |
-|---|---|
-| a screen reader reads text in the language it is told, and a page in Ukrainian read with English rules is noise. | [a11y] |

@@ -30,7 +30,7 @@ A tool a model calls acts with the rights of the person the model acts for, or i
 ## Approval
 
 ### consequential-tool-call-approved-by-its-person → irreversible-operation-runs-dry-by-default · MUST
-A tool call that destroys data, spends money, changes another system or sends something in a person's name runs only after that person approves that call, shown with the arguments it will run with, or, in a run with no person present, only within a standing grant its owner declared — the action, its bounds and its expiry — checked by code outside the model and recorded per call; a call that only reads needs no approval.
+A tool call that destroys data, spends money, changes another system or sends something in a person's name runs only after that person approves that call, shown with the arguments it will run with, or, in a run with no person present, only within a standing authorisation its owner declared — the action, its bounds and its expiry — checked by code outside the model and recorded per call; a call that only reads needs no approval.
 
 | Why | Tags |
 |---|---|
@@ -39,7 +39,7 @@ A tool call that destroys data, spends money, changes another system or sends so
 ## Ways out
 
 ### agent-reading-untrusted-text-sends-nothing-out-unapproved · MUST
-An agent that reads text others wrote and can reach private data sends nothing outward — a request to an address the model chooses, a message, a shared file — without a person's approval of that send; in a run with no person present, it sends only to the addresses its standing grant names.
+An agent that reads text others wrote and can reach private data sends nothing outward — a request to an address the model chooses, a message, a shared file — without a person's approval of that send; in a run with no person present, it sends only to the addresses its standing authorisation names.
 
 | Why | Tags |
 |---|---|

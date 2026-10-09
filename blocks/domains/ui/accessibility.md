@@ -151,3 +151,10 @@ Help offered on several screens — contact details, a contact form, a self-help
 | Why | Tags |
 |---|---|
 | a person who needs help looks where they found it last, and help that moves is help they do not find. | [a11y, ux] |
+
+### screen-declares-its-language · MUST
+A screen declares the language of its content, and a passage in another language declares its own.
+
+| Why | Tags |
+|---|---|
+| a screen reader reads text in the language it is told, and a page in Ukrainian read with English rules is noise. | [a11y] |

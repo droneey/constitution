@@ -19,3 +19,10 @@ A request without valid credentials is answered `401` with a `WWW-Authenticate` 
 | Why | Tags |
 |---|---|
 | a client tells a missing sign-in from a missing right by the status alone, and the challenge says how to sign in. | [security] |
+
+### sign-in-refused-from-other-origins → state-changing-request-refused-from-other-origins · MUST
+A request that signs a person in with what they typed is refused from another origin by the same check; the answer of an outside identity provider, which its `state`, PKCE and `nonce` guard, is not.
+
+| Why | Tags |
+|---|---|
+| a sign-in posted from another site signs the person into the attacker's account, while the provider's answer comes from another site by design. | [security] |

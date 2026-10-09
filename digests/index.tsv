@@ -437,6 +437,7 @@ rule	session-has-idle-and-absolute-limits	access-control	blocks/domains/access-c
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	security	architecture		true
 rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
 rule	unauthenticated-request-answered-401-with-a-challenge	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
+rule	sign-in-refused-from-other-origins	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
 rule	sign-in-needs-no-cognitive-test	access-control	blocks/domains/access-control/with/ui.md	ui	MUST	a11y security			true
 rule	session-limits-warned-before-they-end	access-control	blocks/domains/access-control/with/ui.md	ui	MUST	a11y security ux		time-limit-warned-and-extendable	true
 rule	tracking-plan-is-the-one-vocabulary	analytics	blocks/domains/analytics/analytics.md		MUST	data		fact-has-one-source	true
@@ -576,7 +577,6 @@ rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md
 rule	locale-reachable-without-props	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD			props-drilled-at-most-two-levels	true
 rule	layout-mirrors-right-to-left	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	ux a11y			true
 rule	language-offered-in-its-own-name	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD	ux			true
-rule	screen-declares-its-language	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	a11y			true
 rule	model-pinned-to-a-snapshot	language-model	blocks/domains/language-model/language-model.md		MUST				true
 rule	model-client-sets-bounds-and-reports-the-stop	language-model	blocks/domains/language-model/language-model.md		MUST	errors performance			true
 rule	model-given-only-the-tools-its-task-needs	language-model	blocks/domains/language-model/agency.md		MUST	security			true
@@ -648,6 +648,7 @@ rule	proxy-server-asks-consent-per-client	mcp-api	blocks/domains/mcp-api/with/ac
 rule	tool-server-refuses-a-foreign-origin	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
 rule	local-tool-server-reachable-only-from-its-machine	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	SHOULD	security			true
 rule	broker-rights-scoped-to-own-channels	messaging	blocks/domains/messaging/messaging.md		MUST	security		credential-has-least-privilege	true
+rule	broker-reached-over-verified-tls	messaging	blocks/domains/messaging/messaging.md		MUST	security			true
 rule	message-processed-once-per-consumer	messaging	blocks/domains/messaging/consuming.md		MUST	data		operation-idempotent-by-design	true
 rule	stale-message-refused-by-its-version	messaging	blocks/domains/messaging/consuming.md		MUST	data		write-on-read-data-is-conditional	true
 rule	key-held-while-its-message-is-dead-lettered	messaging	blocks/domains/messaging/consuming.md		SHOULD	data errors			true
@@ -820,6 +821,7 @@ rule	reduced-motion-honoured	ui	blocks/domains/ui/accessibility.md		MUST	a11y			
 rule	status-changes-announced	ui	blocks/domains/ui/accessibility.md		MUST	a11y ux			true
 rule	toast-never-the-only-copy	ui	blocks/domains/ui/accessibility.md		MUST	a11y ux			true
 rule	help-kept-in-the-same-place	ui	blocks/domains/ui/accessibility.md		MUST	a11y ux			true
+rule	screen-declares-its-language	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	component-built-from-existing-ones-first	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	primitive-markup-never-recreated	ui	blocks/domains/ui/components.md		MUST	a11y ux			true
 rule	complex-pattern-built-on-accessible-primitives	ui	blocks/domains/ui/components.md		MUST	a11y ux			true
@@ -1000,6 +1002,7 @@ rule	live-region-mounted-before-message	browser	blocks/contexts/platforms/browse
 rule	entry-document-declares-the-viewport	browser	blocks/contexts/platforms/browser/with/ui.md	ui	MUST	a11y		wcag-aa-conformance	true
 rule	viewport-never-blocks-zoom	browser	blocks/contexts/platforms/browser/with/ui.md	ui	MUST	a11y		wcag-aa-conformance	true
 rule	url-holds-shareable-view-state	browser	blocks/contexts/platforms/browser/with/ui.md	ui	MUST	ux data		view-state-kept-in-the-navigation-state	true
+rule	language-declared-by-lang	browser	blocks/contexts/platforms/browser/with/ui.md	ui	MUST	a11y		screen-declares-its-language	true
 rule	document-metadata-owned-by-screen	browser	blocks/contexts/platforms/browser/architecture/with/ui.md	ui	SHOULD		architecture		true
 rule	exit-codes-from-one-map	cli	blocks/contexts/platforms/cli/cli.md		MUST	errors ux			true
 rule	stdout-data-stderr-diagnostics	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
