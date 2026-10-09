@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is the outer ring of the tree: adapters, libs, the root, the entry files, the delivery layer, integrations, and the shared plumbing only these import.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is the outer ring of the tree: adapters, libs, the root, the entry files, the delivery layer and integrations.
 
 ## Direction
 

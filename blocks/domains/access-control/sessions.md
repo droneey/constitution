@@ -26,11 +26,11 @@ A change of password, a reset, an account recovery and a change or removal of a 
 | the person who changes a credential is often shutting out someone who took the old one, and a session left open keeps them in. | [security] |
 
 ### access-change-takes-effect-at-once · MUST
-A disabled or deleted account takes effect on its next request: its sessions end and its refresh tokens and keys are revoked. A revoked right takes effect on the next request that needs it, read from the store, never only from a token; a token that carries rights and cannot be revoked lives only minutes.
+A disabled or deleted account loses its sessions, its refresh tokens and its keys at once, and a revoked right is left out of every token issued after it; an access token, which carries rights and cannot be revoked, lives only minutes.
 
 | Why | Tags |
 |---|---|
-| a person removed from a team otherwise keeps their access until a token expires, which is the window an insider uses, while ending every session for one revoked right signs out people who did nothing. | [security] |
+| a person removed from a team otherwise keeps their access until a long-lived token expires, which is the window an insider uses. | [security] |
 
 ### session-has-idle-and-absolute-limits · SHOULD
 A session ends after a time without activity and after a time since sign-in, both set by the project.

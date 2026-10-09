@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — a timeout, a dropped connection — is expected by the code that retries it, and a defect once its retries are spent. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — a timeout, a dropped connection — is expected: the code that meets it retries it, and once the retries are spent it reaches the caller as the failure its contract declares. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|

@@ -42,7 +42,7 @@ An agent takes instructions only from the person it works for — directly, thro
 | anyone can write text an agent will read, so an agent that obeys what it reads works for whoever wrote it. | [security] |
 
 ### agent-never-holds-the-lethal-trifecta · MUST
-An agent never holds at once untrusted content, a secret or private data — data the project does not publish, its private code included — and an unchecked way out — a network beyond an allowlist, a message it sends unseen; where it holds the first two, its way out is confined to an allowlist, and it writes only to places the project owns or a send a person approves one by one.
+An agent never holds at once untrusted content, a secret or private data — data the project does not publish, its private code included — and an unchecked way out — a network beyond an allowlist, a message it sends unseen; where it holds the first two, its way out is confined to an allowlist, and it writes only to places no more public than the data it holds, or a send a person approves one by one.
 
 | Why | Tags |
 |---|---|

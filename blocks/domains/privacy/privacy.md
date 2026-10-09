@@ -15,7 +15,7 @@ governs: []
 ## Personal data
 
 ### personal-data-inventoried · MUST
-Every kind of personal data the program stores is listed with its purpose, the legal basis of that purpose, its retention period, the recipients it reaches — processors and controllers — and the regions it is sent to.
+Every kind of personal data the program collects, stores or passes on is listed with its purpose, the legal basis of that purpose, its retention period, the recipients it reaches — processors and controllers — and the regions it is sent to.
 
 | Why | Tags |
 |---|---|
