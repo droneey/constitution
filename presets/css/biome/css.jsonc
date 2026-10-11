@@ -24,7 +24,6 @@
         "noInvalidPropertyInitValue": "error",
         "noUnusedClasses": "error",
         "noDuplicateSelectors": "error",
-        "useBaseline": "error",
       },
     },
   },

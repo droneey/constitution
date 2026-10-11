@@ -11,7 +11,7 @@ governs: [".syncpackrc.mjs"]
 
 # Syncpack
 
-> Holds the manifests. `.syncpackrc.mjs` joins the parts of the constitution's release archive in `presets/typescript/syncpack/`, the scope of the language whose manifests it reads: at the tool's root `typescript.mjs`, exact versions for the tools, caret ranges for the program's dependencies and the order of fields, and `self.mjs`, its own formatting options; its default holds one version of each dependency across manifests. A repository of several units joins the version groups of its package manager's part, the repository's own units as `workspace:*`, and one that distributes a package those of `distribution.mjs`, peer ranges left alone. What is in the lockfile is out of its reach.
+> Holds the manifests. `.syncpackrc.mjs` joins the parts of the constitution's release archive in `presets/typescript/syncpack/`, the scope of the language whose manifests it reads: at the tool's root `typescript.mjs`, exact versions for the tools and caret ranges for the program's dependencies, and `self.mjs`, its own formatting options and the order of fields; its default holds one version of each dependency across manifests. A repository of several units joins the version groups of its package manager's part, the repository's own units as `workspace:*`, and one that distributes a package those of `distribution.mjs`, peer ranges left alone. What is in the lockfile is out of its reach.
 
 ### syncpack-holds-versions-and-field-order · MUST
 Syncpack's configuration holds one version of each dependency across the manifests, and the shared order of a manifest's fields.

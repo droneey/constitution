@@ -2,7 +2,7 @@ python:
   file-name-in-its-owners-case:
     - '.*'
     - '.*.*'
-  python-file-forms:
+  module-named-in-snake-case:
     - '.*.pyc'
     - '.py'
     - '.pyi'

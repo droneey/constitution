@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — a timeout, a dropped connection — is expected: the code that meets it retries it, and once the retries are spent it reaches the caller as the failure its contract declares. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — a timeout, a dropped connection — is expected. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part; everywhere else it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|
@@ -70,7 +70,7 @@ A failure is logged once, by the unit that handles it or, where that unit logs n
 | a failure reported at every level looks like several. | [errors] |
 
 ### failure-retried-only-when-transient · SHOULD
-A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, with an exponential backoff, a random spread and a limit.
+A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, only by the code nearest the call, with an exponential backoff, a random spread and a limit; once its retries are spent, or none is safe, it reaches the caller as an expected failure, and the code above does not retry it again.
 
 | Why | Tags |
 |---|---|

@@ -22,7 +22,7 @@ Each bundle the tab loads stays within a size budget the project sets for it, an
 |---|---|
 | size grows one dependency at a time, and only a budget notices the change that crosses the line before people on slow networks and devices do. | [performance] |
 
-### hashed-assets-immutable-html-revalidated · SHOULD
+### hashed-file-immutable-and-its-pointers-revalidated · SHOULD
 A file whose name carries the hash of its content is served as `immutable`, and a file that points at others by name — the document, the runtime configuration, the service worker's script — is revalidated on every use.
 
 | Why | Tags |
@@ -76,7 +76,7 @@ Work a page does as it is left — saving its state, sending a last report — r
 ## Security
 
 ### document-served-with-a-strict-content-security-policy · MUST
-Every document is served with a Content Security Policy that allows a script only by its nonce, its hash or the program's own origin — no `unsafe-inline`, no `unsafe-eval` — and sets `object-src 'none'` and `base-uri 'none'`.
+Every document is served with a Content Security Policy that allows a script only by its nonce or its hash, with `strict-dynamic` for what those scripts load — never by a list of origins, `unsafe-inline` or `unsafe-eval` — and sets `object-src 'none'` and `base-uri 'none'`.
 
 | Why | Tags |
 |---|---|

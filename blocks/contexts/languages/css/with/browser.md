@@ -2,10 +2,10 @@
 
 > Governs which features a stylesheet may use in a browser, and the sizes it takes from the viewport.
 
-## Browser
+## Dependencies
 
-### feature-supported-by-every-target-browser · SHOULD
-A stylesheet uses only features every browser the program supports has — Baseline widely available, unless the project names another target — or a newer one behind `@supports` with a fallback, or with a polyfill the program loads.
+### stylesheet-feature-beyond-the-target-behind-supports → feature-beyond-the-target-detected-first · SHOULD
+A feature of CSS the declared target does not cover is used only behind `@supports`, with a fallback, or with a polyfill the program loads.
 
 | Why | Tags |
 |---|---|

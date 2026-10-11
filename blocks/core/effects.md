@@ -105,7 +105,7 @@ A business process that spans several programs or transactions keeps its state i
 | no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
-An operation run by hand or by a pipeline against a live system — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and a merge to the branch a pipeline deploys from are that confirmation.
+An operation run by hand or by a pipeline against a live system — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
 
 | Why | Tags |
 |---|---|
@@ -121,7 +121,7 @@ Every resource the program shares with its host — a signal’s handler, the ex
 ## Records and configuration
 
 ### diagnostics-written-through-a-logger · MUST
-Diagnostics are written only through a logger — the language’s standard one where it has one; a console or a standard stream carries only a command-line program’s output to its user or a protocol the program speaks over it, and no debug output or breakpoint ships.
+Diagnostics are written only through a logger — the language’s standard one where it has one — whose sink may be a standard stream; code writes to a console or a standard stream directly only a command-line program’s output to its user or a protocol the program speaks over it, and no debug output or breakpoint ships.
 
 | Why | Tags |
 |---|---|

@@ -19,11 +19,18 @@ A secret never appears in a log, an error, a URL, a build artefact, test data or
 | output is copied to places with weaker access than the data it came from, and a URL is logged by every proxy and browser it passes; a security audit needs to know who acted and from where, and no more. | [security, data] |
 
 ### secret-never-passed-as-a-process-argument · MUST
-A secret is never passed to a process as a command-line argument; it reaches the process through standard input, a file or an environment built for it.
+A secret is never passed to a process as a command-line argument; it reaches the process by a way no other user of the machine reads — standard input, a file only its user can read, an environment built for it, or a store the process reads itself.
 
 | Why | Tags |
 |---|---|
 | a process's arguments are read by every user of the machine through its process listing, and are kept in shell histories and the logs of the tools that start it. | [security] |
+
+### child-process-environment-built-for-it · MUST
+A process the program starts receives an environment built for it, holding only what that child needs, never the program's whole environment.
+
+| Why | Tags |
+|---|---|
+| a child inherits every variable by default, a secret among them, and passes it on to its own children and into what it prints. | [security] |
 
 ### leaked-secret-rotated-at-once · MUST
 A secret that leaked — into the repository, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.
@@ -61,6 +68,13 @@ Input from outside — a model’s output included — reaches a query, a shell 
 | Why | Tags |
 |---|---|
 | text joined into code lets whoever wrote the text write the code. | [security] |
+
+### outside-path-confined-to-its-root · MUST
+A path built from outside input is used only once, resolved, it is confirmed to lie inside the root it is meant for.
+
+| Why | Tags |
+|---|---|
+| a `..` or an absolute path in a name reaches any file the program may read or write. | [security] |
 
 ### outside-input-never-rebuilt-as-objects · MUST
 Input from outside is never read by a format that can build arbitrary objects or run code.

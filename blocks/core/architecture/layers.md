@@ -42,7 +42,7 @@ The composition root is imported only by entry files and by the delivery layer�
 | the root knows every concrete choice, and code that imports it can no longer be tested with fakes. | [] |
 
 ### adapter-imported-only-by-the-root · MUST
-An adapter is imported only by the composition root, through the adapter's own surface, by the surface of a package that offers it to its consumers, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
+An adapter is imported only by the composition root and by the surface of a package that offers it to its consumers, each through the adapter's own surface, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
 
 | Why | Tags |
 |---|---|
@@ -107,7 +107,7 @@ A contract belongs to the feature that needs it; when a second feature needs it 
 | a contract owned by one feature and used by another couples the second to the first. | [] |
 
 ### composition-lifts-on-its-second-consumer · MUST
-Composition across features lives in the delivery unit that needs it and moves to its own composition module when a second consumer needs it; facts derived from several features are derived there.
+Composition across features lives in the delivery unit that needs it and moves to its own composition module when a second consumer needs it; facts derived from several features are derived there, and a contract one feature meets through another’s surface is implemented there from its first use.
 
 | Why | Tags |
 |---|---|

@@ -54,8 +54,8 @@ Calls to a remote system that keeps failing are cut off by a breaker: past a thr
 
 ## Security
 
-### call-verifies-the-systems-certificate · MUST
-A call to another system that crosses a network runs over TLS, verifies the system's certificate and its name, and never turns the verification off.
+### call-runs-over-verified-tls · MUST
+A call to another system that crosses a network runs over TLS — the program's own, or that of a proxy on its host that verifies for it — which verifies the system's certificate and its name, and never turns the verification off.
 
 | Why | Tags |
 |---|---|

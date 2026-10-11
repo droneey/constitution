@@ -8,6 +8,7 @@
         "noSkippedTests": "error",
         "noFocusedTests": "error",
         "noDebugger": "error",
+        "noDeprecatedImports": "error",
       },
       "style": {
         "useFilenamingConvention": {
@@ -26,6 +27,7 @@
           },
         },
         "useErrorCause": "error",
+        "useThrowOnlyError": "error",
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": {

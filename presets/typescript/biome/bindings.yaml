@@ -42,6 +42,10 @@ core:
     - case-holds-no-logic.grit
   error-keeps-its-cause:
     - useErrorCause
+  deprecated-form-never-used:
+    - noDeprecatedImports
+  thrown-value-is-an-error:
+    - useThrowOnlyError
   catch-handles-only-what-it-recognises:
     - noEmptyBlockStatements
   file-within-500-lines:
@@ -162,8 +166,6 @@ typescript:
     - useDisposables
   date-and-time-are-temporal-values:
     - noRestrictedImports
-  deprecated-form-never-used:
-    - noDeprecatedImports
   export-never-reassignable:
     - export-never-reassignable.grit
   module-exports-by-name:
@@ -173,8 +175,8 @@ typescript:
   value-made-text-by-a-named-form:
     - noBaseToString
     - noUnsafePlusOperands
-  thrown-value-is-an-error:
-    - useThrowOnlyError
+  enum-never-declared-const:
+    - noConstEnum
   closed-name-set-is-a-string-enum:
     - closed-name-set-is-a-string-enum.grit
     - useEnumInitializers

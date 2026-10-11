@@ -20,15 +20,6 @@ A server function, an action or a loader the tab can call is a public endpoint: 
 |---|---|
 | the tab's call is only a request anyone can forge, so its arguments are whatever the sender wrote, whatever types the shared code declares. | [security] |
 
-## Security
-
-### personalised-document-kept-out-of-shared-caches · MUST
-A document rendered with a person's session or data is never stored by a shared cache in front of the server — a CDN's or a proxy's — whatever the rules that cache is given.
-
-| Why | Tags |
-|---|---|
-| a shared cache serves what it keeps to the next visitor, who then reads the first person's page. | [security, data] |
-
 ## Untrusted client
 
 ### server-only-module-marked-for-the-build → client-holds-nothing-hidden · MUST

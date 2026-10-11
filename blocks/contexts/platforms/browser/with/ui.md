@@ -63,7 +63,7 @@ Unless another active block brings accessible primitives for these patterns, the
 | each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong. | [a11y] |
 
 ### native-popover-anchored-to-its-trigger · SHOULD
-Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning — `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover — never by a script that measures.
+Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning — `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover — where every target browser has it, and otherwise behind `@supports` with a fallback.
 
 | Why | Tags |
 |---|---|

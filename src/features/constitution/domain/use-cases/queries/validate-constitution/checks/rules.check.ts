@@ -119,6 +119,9 @@ const LAID_OUT_BY_CHAPTER: readonly Layer[] = [
   Layer.Platform,
 ];
 
+const isLaidOutByChapter = (layer: Layer | undefined): boolean =>
+  LAID_OUT_BY_CHAPTER.some((laidOut) => laidOut === layer);
+
 const chapterMessage = (input: {
   byId: BlocksById;
   rule: Rule;
@@ -127,9 +130,14 @@ const chapterMessage = (input: {
   const { rule, target } = input;
   // Stryker disable next-line OptionalChaining: every rule's block is in the index
   const layer = input.byId.get(rule.block)?.layer;
+  // Stryker disable next-line OptionalChaining: every rule's block is in the index
+  const chapter = isLaidOutByChapter(input.byId.get(target.block)?.layer)
+    ? (target.chapter ?? target.title)
+    : target.title;
+  const own = rule.chapter ?? rule.title;
 
-  return LAID_OUT_BY_CHAPTER.some((laidOut) => laidOut === layer) && rule.chapter !== target.title
-    ? `sits under "${rule.chapter ?? 'no section'}" while it carries out "${target.slug}" of the chapter "${target.title ?? 'untitled'}"; a rule of a language or a platform sits in the section named for its parent's chapter`
+  return isLaidOutByChapter(layer) && own !== chapter
+    ? `sits under "${own ?? 'no section'}" while it carries out "${target.slug}" of the chapter "${chapter ?? 'untitled'}"; a rule of a language or a platform sits in the section named for its parent's chapter`
     : undefined;
 };
 

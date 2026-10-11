@@ -56,12 +56,3 @@ The program is wired in `root/wiring.ts`, unless the block of the program's fram
 | Why | Tags |
 |---|---|
 | the one known place core asks for then has one name in every TypeScript program, and a reader opens it without searching. | [] |
-
-## Domain
-
-### domain-type-fields-readonly · SHOULD
-A field of an interface or an object type declared in a `*.entity.ts` or `*.value-object.ts` file is `readonly`.
-
-| Why | Tags |
-|---|---|
-| an entity or a value object is shared by every unit that reads it, and one changed in place changes under all of them unseen. | [] |

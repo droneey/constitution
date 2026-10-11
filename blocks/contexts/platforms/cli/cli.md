@@ -69,7 +69,7 @@ Every value the run knows to be secret is masked in all output, an engine's outp
 | terminal output lands in CI logs and on shared screens, where a printed secret is leaked to everyone who reads them. | [security] |
 
 ### secret-never-passed-as-a-flag → secret-never-passed-as-a-process-argument · MUST
-A secret reaches a command through a file, standard input or the system's credential store, never as the value of a flag.
+A secret reaches a command through a file, standard input, the system's credential store, or the environment where its caller offers no other way, never as the value of a flag.
 
 | Why | Tags |
 |---|---|
@@ -83,6 +83,13 @@ A command's JSON output changes only by gaining fields; a field removed, renamed
 | Why | Tags |
 |---|---|
 | scripts read the JSON as a contract, and a field that disappears breaks every one of them silently at the next upgrade. | [data] |
+
+### exit-code-keeps-its-meaning → format-changed-in-steps · MUST
+An exit code keeps the meaning it was released with; a new outcome gets a code of its own, and no code is reused for another.
+
+| Why | Tags |
+|---|---|
+| a script that calls the command branches on its codes, and a code that changes its meaning sends it down the wrong branch without a word. | [errors] |
 
 ## Tests
 
@@ -173,6 +180,13 @@ Before a step that may take long — a network call, a large read — a command 
 | Why | Tags |
 |---|---|
 | silence reads as a hang, and a person who sees nothing interrupts a command that was working. | [ux] |
+
+### closed-output-ends-the-run-quietly · SHOULD
+When the reader of standard output closes it, as `head` does, the command stops without a stack trace and exits as a program ended by `SIGPIPE`.
+
+| Why | Tags |
+|---|---|
+| a pipeline that reads only the first lines is a normal use, and a trace printed for it reads as a failure of the command. | [ux] |
 
 ## Requirements for implementation
 

@@ -1,17 +1,17 @@
 _api:
   file-name-in-its-owners-case:
     - 'src/*/api'
-  python-file-forms:
+  module-named-in-snake-case:
     - 'src/*/api'
 messaging:
   file-name-in-its-owners-case:
     - 'src/*/consumers'
     - 'src/*/jobs'
-  python-file-forms:
+  module-named-in-snake-case:
     - 'src/*/consumers'
     - 'src/*/jobs'
 cli:
-  command-module-named-with-cli-suffix:
+  command-module-named-with-the-cli-suffix:
     - 'src/*/cli'
   file-name-in-its-owners-case:
     - 'src/*/cli'

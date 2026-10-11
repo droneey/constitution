@@ -1,10 +1,11 @@
 bun:
   own-units-at-workspace-version:
     - versionGroups
+self:
+  syncpack-holds-versions-and-field-order:
+    - sortFirst
 typescript:
   dependency-declared-with-a-caret:
     - semverGroups
-  syncpack-holds-versions-and-field-order:
-    - sortFirst
   tools-pinned-in-dev-dependencies:
     - semverGroups

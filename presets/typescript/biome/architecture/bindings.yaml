@@ -18,7 +18,5 @@ tanstack-query:
   read-declared-once-as-query-options:
     - read-declared-once-as-query-options.grit
 typescript:
-  domain-type-fields-readonly:
-    - domain-type-fields-readonly.grit
   surface-only-re-exports:
     - surface-only-re-exports.grit

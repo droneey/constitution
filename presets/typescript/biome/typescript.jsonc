@@ -12,7 +12,6 @@
   "linter": {
     "rules": {
       "suspicious": {
-        "noDeprecatedImports": "error",
         "noDoubleEquals": {
           "level": "error",
           "options": {
@@ -23,6 +22,7 @@
         "noTsIgnore": "error",
         "noEvolvingTypes": "error",
         "noDuplicateEnumValues": "error",
+        "noConstEnum": "error",
       },
       "style": {
         "useNamingConvention": {
@@ -87,7 +87,6 @@
         "useConsistentTypeDefinitions": "error",
         "useConsistentEnumValueType": "error",
         "useConsistentMethodSignatures": "error",
-        "useThrowOnlyError": "error",
         "noDefaultExport": "error",
       },
       "complexity": {

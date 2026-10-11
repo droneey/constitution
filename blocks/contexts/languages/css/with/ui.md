@@ -18,7 +18,7 @@ Content that stays on screen while the page scrolls — a header, a footer, a ba
 |---|---|
 | the browser then scrolls a focused element clear of it, and focus moved under a sticky header is focus the user cannot see. | [a11y] |
 
-### type-sized-in-rem → wcag-aa-conformance · MUST
+### type-sized-in-rem · MUST
 A font size is set in `rem`, or in `em` relative to one, never in `px`.
 
 | Why | Tags |
@@ -63,7 +63,7 @@ A transition or an animation that moves, scales or rotates content runs only ins
 ## Components
 
 ### stylesheet-value-read-from-the-theme → tokens-single-source-of-appearance · MUST
-In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property.
+In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property, and in a value no theme names — `0`, a percentage, a viewport unit, `auto`.
 
 | Why | Tags |
 |---|---|

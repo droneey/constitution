@@ -49,7 +49,7 @@ An outside shape — a response, a row, a message, a file format — is mapped t
 | a vendor’s shape inside the domain turns every change of the vendor into a change of the business rules. | [data] |
 
 ### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
-An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, the delivery layer or another adapter; what two adapters share lives in libs, or in shared when it knows the program.
+An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, the delivery layer or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
 
 | Why | Tags |
 |---|---|

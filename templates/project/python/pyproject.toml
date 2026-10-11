@@ -264,6 +264,13 @@ type = "forbidden"
 source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
 forbidden_modules = ["*.api"]
 
+# consumers and jobs: messaging's delivery, reached only from the entries
+[[tool.importlinter.contracts]]
+name = "import-points-inward"
+type = "forbidden"
+source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.consumers", "*.jobs"]
+
 # python-check: the home of each block's package
 [tool.python-check]
 extend = [

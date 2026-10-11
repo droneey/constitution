@@ -25,8 +25,8 @@ A change of password, a reset, an account recovery and a change or removal of a 
 |---|---|
 | the person who changes a credential is often shutting out someone who took the old one, and a session left open keeps them in. | [security] |
 
-### access-change-takes-effect-at-once · MUST
-A disabled or deleted account loses its sessions, its refresh tokens and its keys at once, and a revoked right is left out of every token issued after it; an access token, which carries rights and cannot be revoked, lives only minutes.
+### access-change-reaches-every-session-and-token · MUST
+A disabled or deleted account loses its sessions, its refresh tokens and its keys at once; a revoked right is read from the store by every session and key the server keeps on the next request that needs it, and left out of every token issued after it; an access token checked without the store lives only minutes.
 
 | Why | Tags |
 |---|---|

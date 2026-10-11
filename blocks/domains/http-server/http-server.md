@@ -61,7 +61,7 @@ A file a person uploaded is served from another registrable domain than the prog
 ## Caching
 
 ### personal-answer-kept-out-of-shared-caches · MUST
-An answer that carries a caller's own data sets `Cache-Control: private` or `no-store`.
+An answer that carries a caller's own data sets `Cache-Control: private` or `no-store`, and no shared cache in front of the server — a CDN's or a proxy's — is given a rule that stores it anyway.
 
 | Why | Tags |
 |---|---|

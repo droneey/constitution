@@ -5,7 +5,7 @@
 ## Deciding
 
 ### consent-given-for-the-actions-it-names · MUST
-Consent a rule asks for is given by the person where the agent asks for it — a chat, an issue, a review of a change — for the actions it names, and never carries over to others; a standing grant is the only go-ahead given before an agent asks.
+Consent a rule asks for is given by the person where the agent asks for it — a chat, an issue, a review of a change — for the actions it names, and never carries over to others; the request that names an action and a standing grant are the only go-ahead given before an agent asks.
 
 | Why | Tags |
 |---|---|

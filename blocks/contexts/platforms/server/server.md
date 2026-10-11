@@ -83,11 +83,18 @@ Every setting that differs between deployments reaches a server from its host �
 | one built artefact is then promoted from staging to production unchanged, and it holds nothing one environment must keep from another. | [security] |
 
 ### server-listens-where-its-configuration-says · SHOULD
-A server listens on the address and the port its configuration names, and serves its protocol itself, with no web server its host must put around it.
+A server listens on the address and the port its configuration names.
 
 | Why | Tags |
 |---|---|
 | its host then routes to the port it assigned, and the same process runs alike under any host, in a spec and on a laptop. | [] |
+
+### server-serves-its-protocol-itself · SHOULD
+A server serves its protocol itself, with no web server its host must put around it.
+
+| Why | Tags |
+|---|---|
+| a server that needs a web server in front of it runs only where that server is configured for it, and each host configures it differently. | [] |
 
 ### server-log-leaves-as-a-stream → diagnostics-written-through-a-logger · MUST
 A server's logger writes its records as a stream — to standard output or standard error, or to a collector over the network — never to a file inside its copy.
@@ -96,21 +103,21 @@ A server's logger writes its records as a stream — to standard output or stand
 |---|---|
 | its host gathers every copy's stream in one place, while a file inside a copy is lost when the copy is replaced and fills its disk until then. | [] |
 
+### server-work-in-flight-bounded · SHOULD
+A server bounds the work it holds in flight, and refuses what comes beyond the bound at once, with its protocol's answer for a busy server, rather than queueing it.
+
+| Why | Tags |
+|---|---|
+| a burst queued without a bound waits past every caller's timeout, and the server spends its time on work nobody waits for any more. | [performance, errors] |
+
 ## Security
 
-### server-secret-read-from-a-mounted-file · SHOULD
-A server reads each secret once at start from a file its host mounts in memory — a Swarm secret, a Kubernetes secret volume, a systemd credential — or fetches it with its host's workload identity; it takes a secret from its environment only where its host offers no other way.
+### server-secret-read-from-the-host-not-the-environment · SHOULD
+A server reads each secret from a file its host mounts in memory, such as a Swarm secret, or fetches it with its host's workload identity, at start and again when its host rotates it; it takes a secret from its environment only where its host offers no other way.
 
 | Why | Tags |
 |---|---|
 | the environment is copied into every child process, written into crash reports and diagnostic dumps and shown by the host's inspect commands, while a file mounted in memory reaches only the code that opens it. | [security] |
-
-### child-process-environment-built-for-it → credential-has-least-privilege · MUST
-A process a server starts receives an environment the server builds for it, holding only what that child needs, never the server's whole environment.
-
-| Why | Tags |
-|---|---|
-| a child inherits every variable by default, a secret among them, and passes it on to its own children and into what it prints. | [security] |
 
 ### server-cloud-access-through-workload-identity → credential-has-least-privilege · SHOULD
 Where its host gives it a workload identity, a server reaches the systems of that cloud with the identity's short-lived credentials, never with a long-lived key.
@@ -118,6 +125,13 @@ Where its host gives it a workload identity, a server reaches the systems of tha
 | Why | Tags |
 |---|---|
 | a credential the host issues and rotates leaves no key to copy, leak or forget. | [security] |
+
+### server-process-runs-unprivileged → credential-has-least-privilege · MUST
+A server's process runs as a user without administrative rights, cannot write its own code, and writes only to the paths it declares.
+
+| Why | Tags |
+|---|---|
+| one flaw that runs code in a privileged process owns its host, and a process that can rewrite its own code keeps what the attacker leaves in it. | [security] |
 
 ## Tests
 

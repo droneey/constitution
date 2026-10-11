@@ -57,8 +57,8 @@ A handler runs under a timeout shorter than its message's lease — the visibili
 |---|---|
 | a lease that expires mid-work hands the message to a second consumer, and two copies then run at once, past every check made before either committed. | [data, performance] |
 
-### consumer-takes-no-message-once-told-to-stop → program-stops-cleanly · MUST
-A consumer told to stop takes no new message, and settles or releases each message it holds before it exits.
+### stopping-consumer-releases-what-it-holds → program-stops-cleanly · MUST
+A consumer told to stop takes no new message, and settles each message it holds, or releases it to the broker — those it prefetched included — before it exits.
 
 | Why | Tags |
 |---|---|

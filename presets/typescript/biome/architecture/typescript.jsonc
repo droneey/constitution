@@ -19,13 +19,6 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/domain-type-fields-readonly.grit",
-      "includes": [
-        "**/*.entity.ts",
-        "**/*.value-object.ts",
-      ],
-    },
-    {
       "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
       "includes": [
         "**/index.ts",

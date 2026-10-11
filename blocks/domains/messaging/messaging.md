@@ -22,7 +22,7 @@ A program's credential for the broker writes only the channels it publishes to a
 | a credential that reaches every channel lets one compromised program read every message and forge any other's. | [security] |
 
 ### broker-reached-over-verified-tls · MUST
-A connection to the broker that crosses a network runs over TLS, with the broker's certificate verified.
+A connection to the broker that crosses a network runs over TLS — the program's own, or that of a proxy on its host that verifies for it — with the broker's certificate verified.
 
 | Why | Tags |
 |---|---|

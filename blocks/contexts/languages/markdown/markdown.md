@@ -23,7 +23,7 @@ A document uses CommonMark and the extensions of GitHub Flavored Markdown — ta
 | a document is read in the forge, in editors and by agents, and syntax only one renderer knows shows as stray marks everywhere else. | [] |
 
 ### raw-html-only-where-markdown-has-no-form · SHOULD
-A document writes raw HTML only for what Markdown has no syntax for, such as `<details>` or `<kbd>`.
+A document writes raw HTML only for what Markdown has no syntax for, such as `<details>` or `<kbd>`; an agent's instruction file may also hold the tags its agent reads, such as `<example>`.
 
 | Why | Tags |
 |---|---|
@@ -50,7 +50,7 @@ A Markdown file ends in `.md`, never `.markdown` or `.mdown`.
 ## Headings
 
 ### document-has-one-title-heading · MUST
-A document has one first-level heading, its title, and it comes before any other heading.
+A document read as a page has one first-level heading, its title, before any other heading; a file only a tool or an agent reads, or whose form a tool generates, needs none.
 
 | Why | Tags |
 |---|---|
@@ -63,8 +63,8 @@ A heading is at most one level deeper than the heading before it: a `###` follow
 |---|---|
 | the levels are the document's outline, which a reader, a screen reader and a table of contents follow, and a skipped level reads as a missing section. | [] |
 
-### heading-unique-in-its-document · SHOULD
-No two headings of a document share their text.
+### heading-unique-among-its-siblings · SHOULD
+No two headings under one parent heading share their text.
 
 | Why | Tags |
 |---|---|

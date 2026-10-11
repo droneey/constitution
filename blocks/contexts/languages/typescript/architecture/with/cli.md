@@ -2,7 +2,7 @@
 
 > Governs the files of a TypeScript command line's commands.
 
-## Command line
+## Layout
 
 ### command-file-named-with-the-cli-suffix → cli-folder-holds-one-file-per-command · MUST
 Each command of the command line is one file, `cli/<name>.cli.ts`.

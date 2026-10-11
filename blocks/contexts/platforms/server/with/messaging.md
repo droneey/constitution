@@ -12,8 +12,8 @@ The liveness check of a server that consumes reports whether its consuming loop 
 | a consumer whose loop hangs still answers a probe of the process, and holds its messages unsettled while its host sees nothing wrong. | [errors] |
 
 ### consumer-takes-messages-only-while-ready · SHOULD
-A server's consumer subscribes to its queues only once the server is ready, and stops taking messages when its readiness fails or its stop begins.
+A server's consumer subscribes to its queues only once the server is ready, and pauses while its readiness fails.
 
 | Why | Tags |
 |---|---|
-| a message taken before the store is reached, or while the server leaves, fails for no fault of its own and returns as a redelivery that counts against its attempts. | [errors] |
+| a message taken before the store is reached, or while it cannot be reached, fails for no fault of its own and returns as a redelivery that counts against its attempts. | [errors] |

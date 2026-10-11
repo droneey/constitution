@@ -2,9 +2,9 @@
 
 > Governs how a Python program's commands are named and registered.
 
-## Command line
+## Layout
 
-### command-module-named-with-cli-suffix → cli-folder-holds-one-file-per-command · SHOULD
+### command-module-named-with-the-cli-suffix → cli-folder-holds-one-file-per-command · MUST
 A command of the command line is one module `<name>_cli.py`.
 
 | Why | Tags |

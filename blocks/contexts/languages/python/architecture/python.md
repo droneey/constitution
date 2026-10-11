@@ -34,8 +34,8 @@ A layer or role folder whose name has more than one word is spelled in snake_cas
 |---|---|
 | a folder of the import package is a package, and a package's name allows no hyphen. | [] |
 
-### relative-imports-stay-in-the-feature → module-files-import-each-other-directly · MUST
-An import that leaves its feature — or, outside `features/`, the top-level folder it sits in — is absolute, from the import package's name; files inside one feature import each other by relative path, at any depth, and a relative import never climbs out of it. A feature never imports itself by its absolute path.
+### relative-imports-stay-in-the-module → module-files-import-each-other-directly · MUST
+An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name; files inside one module import each other by relative path, at any depth, and a relative import never climbs out of it. A module never imports itself by its absolute path.
 
 | Why | Tags |
 |---|---|
@@ -54,6 +54,15 @@ The `__init__.py` of a layer folder, and that of an application's import package
 | Why | Tags |
 |---|---|
 | an import then names the module or the role folder it couples to, never a folder whose members lie on both sides of a boundary. | [] |
+
+## Ports
+
+### port-is-a-protocol → contract-declared-by-the-layer-that-needs-it · MUST
+A port is a `typing.Protocol` holding no implementation, so an adapter conforms to it by its shape.
+
+| Why | Tags |
+|---|---|
+| a port that holds code ties every adapter to it, and one that is a class to inherit lets an adapter reach into what it was meant only to meet. | [] |
 
 ## Root
 

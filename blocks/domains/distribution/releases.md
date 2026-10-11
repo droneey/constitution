@@ -19,7 +19,7 @@ A release compares its public entries with those of the last release, and a diff
 | a break nobody noticed ships as a minor version and breaks every consumer who trusted the number. | [] |
 
 ### unit-checked-on-every-runtime-it-supports · MUST
-A unit published for others is checked on every version of its runtime from its floor to the newest it declares.
+A unit published for others is checked on each release line of its runtime that the runtime's maintainers still support, from its floor to the newest stable one.
 
 | Why | Tags |
 |---|---|

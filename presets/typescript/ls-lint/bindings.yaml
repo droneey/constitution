@@ -14,7 +14,7 @@ typescript:
     - 'src/**/__tests__'
     - tests
     - 'tests/*'
-  typescript-file-forms:
+  source-file-named-in-kebab-case:
     - '.ts'
     - '.tsx'
     - 'src/**/__tests__'

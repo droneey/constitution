@@ -82,6 +82,20 @@ A push notification's payload holds no secret and no personal data in clear: it 
 |---|---|
 | a push passes through the platform's push service and may show on a locked screen, so what it carries in clear reaches people and systems the user never chose. | [security, data] |
 
+### release-build-carries-no-debugging · MUST
+A release build is not debuggable and carries no development menu, no connection to a development server and no trust of user-added certificates.
+
+| Why | Tags |
+|---|---|
+| each of these lets whoever holds the phone read the app's memory, change its code or read its traffic. | [security] |
+
+### personal-data-at-rest-kept-in-the-protected-class · MUST
+Personal data the app stores beyond its credentials sits in the system's protected file class — Data Protection on iOS, the app's private storage on Android — is left out of backups to other devices where it identifies its person, and never reaches the system's shared logs.
+
+| Why | Tags |
+|---|---|
+| a device that is lost, backed up to another account or read by another app gives up whatever the app left outside the protected class. | [security, data] |
+
 ### genuine-app-proven-by-the-systems-attestation · MAY
 A server that must know a request comes from the genuine app on a genuine device checks the system's attestation — App Attest on iOS, Play Integrity on Android.
 
@@ -105,17 +119,10 @@ A purchase or a subscription is granted only after the server verifies the store
 |---|---|
 | a modified app reports every purchase as paid, and only the store's signed record proves one was. | [security] |
 
-## Releases
+## Versions
 
-### release-build-carries-no-debugging · MUST
-A release build is not debuggable and carries no development menu, no connection to a development server and no trust of user-added certificates.
-
-| Why | Tags |
-|---|---|
-| each of these lets whoever holds the phone read the app's memory, change its code or read its traffic. | [security] |
-
-### minimum-os-version-still-patched · SHOULD
-The oldest system version the app supports is one its vendor still ships security updates for.
+### minimum-os-version-declared-and-reviewed · SHOULD
+The oldest system version the app supports is declared with its reason, and reviewed each year against the versions its users run and those its vendor still ships security updates for.
 
 | Why | Tags |
 |---|---|

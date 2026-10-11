@@ -1315,18 +1315,6 @@ describe('the Biome parts of the libraries', () => {
         'typescript/zod',
       ],
     },
-    {
-      condition: "an entity's field is writable",
-      files: {
-        'src/features/chat/domain/entities/chat.entity.ts':
-          'export interface Chat {\n  title: string;\n}\n',
-      },
-      message: 'Declare a field of a domain type readonly',
-      parts: [
-        ...BASE_PARTS,
-        'typescript/architecture/typescript',
-      ],
-    },
   ])(
     'should report a plugin finding when $condition and a project extends the part that holds it',
     ({ files, message, parts }) => {
@@ -1647,11 +1635,6 @@ describe('the Biome css part', () => {
       rule: 'noDescendingSpecificity',
     },
     {
-      condition: 'a feature is not yet in the baseline',
-      css: '@layer components {\n  .card {\n    color: var(--color-text);\n    interpolate-size: allow-keywords;\n  }\n}\n',
-      rule: 'useBaseline',
-    },
-    {
       condition: 'a declared class is used nowhere',
       css: '@layer components {\n  .unused {\n    color: var(--color-text);\n  }\n}\n',
       rule: 'noUnusedClasses',
@@ -1679,29 +1662,33 @@ describe('the Biome css part', () => {
 
   it.each([
     {
+      condition: 'a feature beyond the baseline stands unguarded',
+      css: '@layer components {\n  .card {\n    interpolate-size: allow-keywords;\n  }\n}\n',
       isReported: true,
-      parts: [
-        ...BASE_PARTS,
-        'css/css',
-      ],
     },
     {
+      condition: 'a popover is placed by anchor positioning unguarded',
+      css: '@layer components {\n  .title {\n    position-anchor: --trigger;\n    position-area: bottom;\n  }\n}\n',
+      isReported: true,
+    },
+    {
+      condition: 'a popover is placed by anchor positioning behind @supports',
+      css: '@layer components {\n  @supports (position-area: bottom) {\n    .card {\n      anchor-name: --trigger;\n    }\n\n    .title {\n      position-anchor: --trigger;\n      position-area: bottom;\n    }\n  }\n}\n',
       isReported: false,
-      parts: [
-        ...BASE_PARTS,
-        'css/css',
-        'css/browser',
-      ],
     },
   ])(
-    'should report useBaseline $isReported when a popover is placed by anchor positioning and a project extends $parts',
-    ({ isReported, parts }) => {
+    'should report useBaseline $isReported when $condition in a project that extends the browser part',
+    ({ css, isReported }) => {
       // Arrange
       const project = {
         files: {
-          'src/theme.css': `${LAYERED}@layer components {\n  .card {\n    anchor-name: --trigger;\n  }\n\n  .title {\n    position-anchor: --trigger;\n    position-area: bottom;\n    top: anchor(bottom);\n  }\n}\n`,
+          'src/theme.css': `${LAYERED}${css}`,
         },
-        parts,
+        parts: [
+          ...BASE_PARTS,
+          'css/css',
+          'css/browser',
+        ],
       };
 
       // Act

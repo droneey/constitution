@@ -77,8 +77,8 @@ A parameter's default is an immutable value — `None`, a number, a string, a tu
 |---|---|
 | a default is evaluated once, when the function is defined, so a mutable one is a single object every call shares and changes. | [] |
 
-### contract-is-a-protocol → behaviour-composed-not-inherited · SHOULD
-A contract between units is a `typing.Protocol`, which its implementations meet by their shape and never inherit; an abstract base class is no contract.
+### implementation-never-inherits-its-contract → behaviour-composed-not-inherited · SHOULD
+An implementation meets its contract by its shape and never inherits it; an abstract base class is no contract.
 
 | Why | Tags |
 |---|---|
@@ -330,12 +330,19 @@ Outside input never reaches a query or markup through an f-string, `%` or `str.f
 |---|---|
 | text formatted into a query or markup becomes code, while a parameter or a template keeps the input apart from what the library escapes or binds. | [security] |
 
-### outside-path-confined-after-resolve → outside-input-reaches-interpreters-as-parameters · MUST
+### outside-path-confined-after-resolve → outside-path-confined-to-its-root · MUST
 A path built from outside input is joined to its root, resolved with `Path.resolve()`, and refused unless `is_relative_to(root)` holds for it.
 
 | Why | Tags |
 |---|---|
 | a `..` or a symbolic link otherwise walks out of the root, and a check on the unresolved string misses both. | [security] |
+
+### child-process-given-its-own-env → child-process-environment-built-for-it · MUST
+A process the program starts — through `subprocess` or `asyncio.create_subprocess_exec` — is passed `env=` a mapping built for it, never left to `env=None` and never given a copy of `os.environ`.
+
+| Why | Tags |
+|---|---|
+| every one of these calls copies the program's whole environment into the child when `env` is left out or `None`, a secret among it. | [security] |
 
 ### outside-data-never-unpickled → outside-input-never-rebuilt-as-objects · MUST
 Data from outside is never read by `pickle`, `marshal` or `shelve`.
@@ -361,7 +368,7 @@ A secret — a token, a signature, a key — is compared with `hmac.compare_dige
 ## Dependencies
 
 ### tools-in-the-dev-group → tool-pinned-exactly-by-the-repository · MUST
-A tool is pinned with `==` in the `dev` group of `[dependency-groups]` in `pyproject.toml`.
+A tool PyPI publishes is pinned with `==` in the `dev` group of `[dependency-groups]` in `pyproject.toml`.
 
 | Why | Tags |
 |---|---|
@@ -406,7 +413,7 @@ Every folder of the import package holds an `__init__.py`; the import tree has n
 |---|---|
 | a folder without one is a namespace package, which another installed distribution can merge into, and whose files nothing imports go unmeasured by coverage. | [] |
 
-### python-file-forms → file-name-in-its-owners-case · MUST
+### module-named-in-snake-case → file-name-in-its-owners-case · MUST
 A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the import package is a snake_case package, and a folder of `tests/` a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them. Every other file and folder is kebab-case.
 
 | Why | Tags |

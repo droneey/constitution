@@ -21,6 +21,7 @@ src/
 │                          the handler of last resort
 ├── <delivery>/            the delivery layer: commands, handlers or screens; its block names the folder
 ├── composition/           what several features make together, once two consumers need it
+│                          or one feature’s contract is met through another’s surface
 ├── features/<f>/          bounded contexts, blind to each other
 ├── contracts/             ports two or more features need
 ├── adapters/<system>/     adapters implementing those shared ports

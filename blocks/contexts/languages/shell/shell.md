@@ -11,7 +11,7 @@ governs: ["**/*.sh"]
 
 # Shell
 
-> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools. The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
+> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools. Its rules bind shell wherever it is written — a `.sh` file, a step of a CI workflow, a hook's command, a package script, a container's build step. The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
 
 ## Code
 
@@ -23,7 +23,7 @@ A script runs commands and passes their results along; logic of its own — pars
 | the shell has no types and no data structures beyond arrays, so logic written in it grows bugs that nothing catches. | [] |
 
 ### expansion-double-quoted · MUST
-Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(date +%s)"`, `"${paths[@]}"` — save inside `[[ ]]` and `(( ))`.
+Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(date +%s)"`, `"${paths[@]}"` — save the left side inside `[[ ]]`, and inside `(( ))`; the right side of `==`, `!=` or `=~` in `[[ ]]` is quoted unless it is meant as a pattern.
 
 | Why | Tags |
 |---|---|
@@ -64,7 +64,7 @@ A script that defines functions runs its logic in a function `main`, called on i
 ## Relations
 
 ### function-variable-declared-local → state-never-global-and-mutable · MUST
-A function declares every variable it sets as `local`.
+In Bash, a function declares every variable it sets as `local`.
 
 | Why | Tags |
 |---|---|
@@ -72,7 +72,7 @@ A function declares every variable it sets as `local`.
 
 ## Errors
 
-### script-stops-on-a-failed-command → catch-handles-only-what-it-recognises · MUST
+### script-stops-on-a-failed-command → failure-is-expected-or-defect · MUST
 A Bash script runs under `set -euo pipefail`, and a POSIX sh script under `set -eu`, set before its first command.
 
 | Why | Tags |
@@ -95,13 +95,6 @@ A script writes its diagnostics and errors to standard error, and only its outpu
 |---|---|
 | a caller pipes standard output into the next command, where a diagnostic mixed into it becomes data. | [] |
 
-### xtrace-never-ships → diagnostics-written-through-a-logger · MUST
-A committed script never turns on `set -x`.
-
-| Why | Tags |
-|---|---|
-| the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
-
 ## Security
 
 ### outside-input-passed-as-an-argument → outside-input-reaches-interpreters-as-parameters · MUST
@@ -110,6 +103,13 @@ Input from outside reaches a command only as a quoted argument, after `--` where
 | Why | Tags |
 |---|---|
 | text joined into a command line is parsed as shell, so whoever wrote it runs commands, and a value that starts with `-` is read as an option. | [security] |
+
+### xtrace-never-ships → secret-and-personal-data-kept-out-of-output · MUST
+A committed script never turns on `set -x`.
+
+| Why | Tags |
+|---|---|
+| the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ## Layout
 

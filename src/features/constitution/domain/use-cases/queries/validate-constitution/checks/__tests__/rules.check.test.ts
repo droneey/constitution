@@ -14,6 +14,8 @@ const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
 const TYPES = 'blocks/contexts/languages/typescript/types.md';
 const UNTITLED = 'blocks/core/untitled.md';
 const DELIVERY = 'blocks/contexts/platforms/browser/delivery.md';
+const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
+const TYPESCRIPT_WITH_BROWSER = 'blocks/contexts/languages/typescript/architecture/with/browser.md';
 
 describe('rulesCheck', () => {
   it('should report every empty or malformed field when rules break the rule format', () => {
@@ -378,7 +380,11 @@ describe('rulesCheck', () => {
     },
   );
 
-  it.each([
+  it.each<{
+    body: string;
+    condition: string;
+    section: string;
+  }>([
     {
       body: `# Types\n\n## Names\n\n${rule({
         parent: 'dependencies-point-inward',
@@ -392,7 +398,15 @@ describe('rulesCheck', () => {
         parent: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,
-      condition: 'under no section',
+      condition: 'in a chapter file named for another chapter',
+      section: 'Types',
+    },
+    {
+      body: rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      }),
+      condition: 'under no section and no title',
       section: 'no section',
     },
   ])(
@@ -465,9 +479,59 @@ describe('rulesCheck', () => {
 
   it.each([
     {
+      browser: `# Browser\n\n## Render\n\n${rule({
+        slug: 'no-window-during-render',
+      })}`,
+      chapter: 'Render',
+      condition: 'the section its parent sits in',
+      section: 'Browser',
+    },
+    {
+      browser: `# Browser\n\n${rule({
+        slug: 'no-window-during-render',
+      })}`,
+      chapter: 'Browser',
+      condition: "the title of its parent's chapter file",
+      section: 'Render',
+    },
+  ])(
+    'should report a rule of a seam with a platform that sits elsewhere than $condition',
+    ({ browser, chapter, section }) => {
+      // Arrange
+      const files = validFiles();
+      files[BROWSER] = browser;
+      files[TYPESCRIPT_WITH_BROWSER] = `# TypeScript with browser\n\n## ${section}\n\n${rule({
+        parent: 'no-window-during-render',
+        slug: 'window-read-after-render',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "window-read-after-render" sits under "${section}" while it carries out "no-window-during-render" of the chapter "${chapter}"; a rule of a language or a platform sits in the section named for its parent's chapter`,
+          path: TYPESCRIPT_WITH_BROWSER,
+        },
+      ]);
+    },
+  );
+
+  it.each([
+    {
       condition: "a rule of a language sits under its parent's chapter",
       file: TYPES,
       body: `# Types\n\n## Principles\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+    },
+    {
+      condition: "a rule of a language sits in a chapter file named for its parent's chapter",
+      file: TYPES,
+      body: `# Principles\n\n${rule({
         parent: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,

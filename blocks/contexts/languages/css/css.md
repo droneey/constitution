@@ -48,7 +48,7 @@ A class the project declares names what its element is — `.order-summary` — 
 ## Types
 
 ### custom-property-read-where-defined · MUST
-A custom property is read only through `var()`, and only where the theme, or a rule that matches the element or one of its ancestors, defines it.
+A custom property is read only through `var()`, and only where the theme, or a rule that matches the element or one of its ancestors, defines it, or with a fallback written in its `var()`.
 
 | Why | Tags |
 |---|---|
@@ -87,7 +87,7 @@ No declaration is `!important`; a rule that must win sits in a later layer. The 
 ## Selectors
 
 ### selector-specificity-never-descends · MUST
-A selector never follows, in source order, a selector of higher specificity that styles the same element.
+Within one cascade layer, a selector never follows, in source order, a selector of higher specificity that styles the same element.
 
 | Why | Tags |
 |---|---|
