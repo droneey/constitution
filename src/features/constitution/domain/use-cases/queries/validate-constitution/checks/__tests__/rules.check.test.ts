@@ -11,6 +11,8 @@ const REMOTE_DATA = 'blocks/domains/remote-data/architecture/remote-data.md';
 const UI = 'blocks/domains/ui/screens.md';
 const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
+const TYPES = 'blocks/contexts/languages/typescript/types.md';
+const UNTITLED = 'blocks/core/untitled.md';
 
 describe('rulesCheck', () => {
   it('should report every empty or malformed field when rules break the rule format', () => {
@@ -374,4 +376,97 @@ describe('rulesCheck', () => {
       ]);
     },
   );
+
+  it.each([
+    {
+      body: `# Types\n\n## Names\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+      condition: 'under a section named for another chapter',
+      section: 'Names',
+    },
+    {
+      body: `# Types\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+      condition: 'under no section',
+      section: 'no section',
+    },
+  ])(
+    'should report a rule of a language that carries out a rule of core $condition',
+    ({ body, section }) => {
+      // Arrange
+      const files = validFiles();
+      files[TYPES] = body;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "types-point-inward" sits under "${section}" while it carries out "dependencies-point-inward" of the chapter "Principles"; a rule of a language or a platform sits in the section named for its parent's chapter`,
+          path: TYPES,
+        },
+      ]);
+    },
+  );
+
+  it('should report a rule of a language whose parent sits in a file with no title', () => {
+    // Arrange
+    const files = validFiles();
+    files[UNTITLED] = rule({
+      slug: 'untitled-rule',
+    });
+    files[TYPES] = `# Types\n\n## Types\n\n${rule({
+      parent: 'untitled-rule',
+      slug: 'types-point-inward',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "types-point-inward" sits under "Types" while it carries out "untitled-rule" of the chapter "untitled"; a rule of a language or a platform sits in the section named for its parent\'s chapter',
+        path: TYPES,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: "a rule of a language sits under its parent's chapter",
+      file: TYPES,
+      body: `# Types\n\n## Principles\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+    },
+    {
+      condition: 'a rule of a domain sits under a section of its own',
+      file: I18N,
+      body: `# Plurals\n\n## Forms\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'plurals-point-inward',
+      })}`,
+    },
+  ])('should report nothing when $condition', ({ body, file }) => {
+    // Arrange
+    const files = validFiles();
+    files[file] = body;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 });

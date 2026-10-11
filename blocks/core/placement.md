@@ -8,6 +8,6 @@ Its layer: what must disappear for it to lose its meaning? Nothing: core. An asp
 
 Its axis: who would still want it? Not a team with another architecture: `architecture/` — layers and the direction of dependencies, ports and adapters, the homes of input, output and state, the wiring, the isolation of parts, the tree. Not a team with another workflow: `workflow/` — how a change travels from the idea to the release, and the working agreement with people and agents. Any team: the base, at the block's root.
 
-Its chapter: the one named for what its statement governs; `code` only when no other chapter does.
+Its chapter: the one named for what its statement governs; `code` only when no other chapter does. A language or a platform names its sections after core's chapters on its axis, in core's order, and a seam after the other block's: a rule that tightens another sits in the section named like its parent's chapter, and a subject no chapter names, such as CSS's cascade, follows them. A language has a block of its own once three rules lose their meaning without it and need no tool; until then they wait in a domain.
 
 A rule never refers to a rule of its own block. It may tighten a rule of core, of a block it requires or extends, or of the other block of its seam, a `with/<block>.md` file: the base only a base rule, `architecture/` an `architecture/` or base rule, `workflow/` a `workflow/` or base rule.

@@ -36,12 +36,14 @@ const sourceOf = (
 const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: 'core',
+  chapter: undefined,
   file: FILE,
   ownTags: [],
   parent: undefined,
   slug: 'a',
   statedLevel: Level.Must,
   statement: 'A.',
+  title: undefined,
   why: 'it keeps the code honest.',
   with: undefined,
   ...fields,
@@ -58,6 +60,7 @@ describe('parseRules', () => {
     const source = {
       ...sourceOf([
         '# Principles',
+        '## Screens',
         '### four-data-states · MUST',
         'Every data view shows',
         '  four states.  ',
@@ -83,6 +86,7 @@ describe('parseRules', () => {
       rules: [
         ruleOf({
           axis: Axis.Architecture,
+          chapter: 'Screens',
           file: 'blocks/core/architecture/with/ui.md',
           ownTags: [
             'ux',
@@ -90,6 +94,7 @@ describe('parseRules', () => {
           ],
           slug: 'four-data-states',
           statement: 'Every data view shows four states.',
+          title: 'Principles',
           why: 'an empty screen cannot be told from a slow one.',
           with: 'ui',
         }),
@@ -430,6 +435,7 @@ describe('parseRules', () => {
           file: CARD,
           slug: 'rules-bind',
           statement: 'The rules bind.',
+          title: 'Core',
         }),
       ],
     });

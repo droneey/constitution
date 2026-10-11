@@ -4,7 +4,7 @@ bun:
 typescript:
   dependency-declared-with-a-caret:
     - semverGroups
-  manifest-fields-in-shared-order:
+  syncpack-holds-versions-and-field-order:
     - sortFirst
-  tools-pinned-without-a-range:
+  tools-pinned-in-dev-dependencies:
     - semverGroups

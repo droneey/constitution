@@ -51,6 +51,6 @@
   "plugins": [
     "./.droneey/constitution/presets/typescript/biome/plugins/inline-style-only-custom-properties-and-geometry.grit",
     "./.droneey/constitution/presets/typescript/biome/plugins/labels-bound-with-use-id.grit",
-    "./.droneey/constitution/presets/typescript/biome/plugins/fields-declare-autocomplete.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/field-declares-its-autocomplete.grit",
   ],
 }

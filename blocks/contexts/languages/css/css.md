@@ -1,6 +1,6 @@
 ---
 id: css
-summary: How stylesheets are layered, named and written.
+summary: "Stylesheets: cascade layers, selectors, custom properties and classes."
 requires: []
 extends: null
 abstract: false
@@ -11,73 +11,112 @@ governs: ["**/*.css"]
 
 # CSS
 
-> The language of a program's stylesheets, whatever writes the classes: plain stylesheets, scoped stylesheets or a utility library. Cascade layers decide which rule wins, the theme's custom properties carry every visual value, and a component's styles stay its own. A linter holds what it can see in a stylesheet, and the rest is reviewed.
+> The language of a program's stylesheets, whatever writes their classes: plain stylesheets, scoped ones or a utility library. Cascade layers and selectors decide which rule wins, custom properties carry the values, and classes tie the styles to the markup. What a browser, a user interface, a design system and a reader's direction add lives in the seams.
 
-## Cascade
+## Code
 
-### styles-in-named-layers · MUST
-Every style rule sits in a named cascade layer: none is left outside a layer, and no layer is anonymous.
-
-| Why | Tags |
-|---|---|
-| layers decide which rule wins by the order they are declared in, not by specificity or by the file that loaded last, so a reset or a library never overrides a component by accident. | [] |
-
-### layer-order-declared-once · SHOULD
-The order of the layers is declared once, at the top of the entry stylesheet, before any layer is filled — for example `@layer reset, base, components, utilities;`.
+### class-declared-is-used → dead-code-deleted · MUST
+Every class a stylesheet declares is used by markup.
 
 | Why | Tags |
 |---|---|
-| one line then says which styles win over which, and a layer filled before it is declared would take its place in the order by accident. | [] |
+| an unused class is dead code nobody dares delete, since nothing in the stylesheet shows that it styles nothing. | [] |
 
-### no-important-declarations · MUST
-No declaration is `!important`; a rule that must win sits in a later layer. The one exception is the lowest layer, the one that resets the defaults, for a user preference such as reduced motion and for `[hidden]`, and its suppression says so.
-
-| Why | Tags |
-|---|---|
-| `!important` reverses the order of the layers and can only be beaten by another `!important`. | [] |
-
-### selectors-stay-shallow · MUST
-A selector holds at most three classes, and a selector of lower specificity never comes after one of higher specificity for the same element.
+### class-used-is-declared · MUST
+Every class markup uses is declared, by a stylesheet of the program or by its styling library.
 
 | Why | Tags |
 |---|---|
-| a deep selector ties a style to one place in the markup, and a later selector that loses to an earlier one does nothing while it reads as the rule that applies. | [] |
+| a class nothing declares is a typo or a leftover that styles nothing, while it reads as if it did. | [] |
 
-### styles-never-target-ids · MUST
-An element is styled by a class or an attribute, never by its `id`.
+## Names
 
-| Why | Tags |
-|---|---|
-| an id selector outweighs every class, so the style can only be overridden by another id, and it styles one element that can never be reused. | [] |
-
-## Values
-
-### custom-properties-declared-before-use · MUST
-A custom property is declared before it is read, and read through `var()`; one that is animated or must hold one type is registered with `@property`, with a valid initial value.
+### class-name-in-kebab-case → name-case-by-kind · SHOULD
+A class the project declares is written in kebab-case: `.order-summary`, `.order-summary-title`.
 
 | Why | Tags |
 |---|---|
-| an undeclared property resolves to nothing and the declaration silently falls back, and an unregistered one can neither be animated nor checked. | [] |
+| one case leaves no class spelled two ways, and a search for a name finds every use of it. | [] |
 
-### baseline-features-only · SHOULD
-A stylesheet uses only features that are Baseline widely available, or newly available ones behind a feature query with a fallback or with a polyfill the program loads.
-
-| Why | Tags |
-|---|---|
-| a feature every current browser has behaves the same for every user; one that is not yet everywhere breaks silently where it is missing. | [ux] |
-
-## Classes and layout
-
-### classes-declared-and-used · MUST
-Every class a stylesheet declares is used in markup, and every class markup uses is declared, by a stylesheet or by the styling library.
-
-| Why | Tags |
-|---|---|
-| an unused class is dead code nobody dares delete, and an undeclared one is a typo that styles nothing. | [] |
-
-### classes-named-for-what-they-are · SHOULD
-A class the project declares is kebab-case and names what the element is — `.order-summary`, `.order-summary-title` — never how it looks: `.red`, `.mt-4`.
+### class-named-for-what-the-element-is → name-reveals-intent · SHOULD
+A class the project declares names what its element is — `.order-summary` — never how it looks: `.red`, `.mt-4`.
 
 | Why | Tags |
 |---|---|
 | a name that says what an element is stays true when its look changes; one that says how it looks lies after the first redesign. | [] |
+
+## Types
+
+### custom-property-read-where-defined · MUST
+A custom property is read only through `var()`, and only where the theme, or a rule that matches the element or one of its ancestors, defines it.
+
+| Why | Tags |
+|---|---|
+| a custom property nothing defines resolves to an invalid value, and the declaration that reads it silently falls back to the inherited or initial value. | [] |
+
+### custom-property-registered-where-typed · MUST
+A custom property that is animated, or that must hold values of one type, is registered by `@property` with its syntax, its inheritance and a valid initial value.
+
+| Why | Tags |
+|---|---|
+| an unregistered property is plain text to the browser: it jumps instead of animating, and a value of the wrong type passes until it breaks the declaration that reads it. | [] |
+
+## Cascade
+
+### style-rule-in-a-named-layer · MUST
+Every style rule sits in a named cascade layer: none stays outside a layer, and no layer is anonymous.
+
+| Why | Tags |
+|---|---|
+| layers decide which rule wins by the order they are declared in, not by specificity or by the file that loaded last, and a rule outside every layer beats them all. | [] |
+
+### layer-order-declared-once · SHOULD
+The order of the layers is declared once, at the top of the entry stylesheet, before any layer is filled: `@layer reset, base, components, utilities;`.
+
+| Why | Tags |
+|---|---|
+| one line then says which styles win over which, and a layer filled before it is declared takes its place in the order by accident. | [] |
+
+### declaration-never-important · MUST
+No declaration is `!important`; a rule that must win sits in a later layer. The one exception is the first layer, which resets the defaults, for a user's preference such as reduced motion and for `[hidden]`, its suppression saying so.
+
+| Why | Tags |
+|---|---|
+| `!important` reverses the order of the layers and can be beaten only by another `!important`, so every use invites the next. | [] |
+
+## Selectors
+
+### selector-specificity-never-descends · MUST
+A selector never follows, in source order, a selector of higher specificity that styles the same element.
+
+| Why | Tags |
+|---|---|
+| a later selector that loses to an earlier one does nothing, while it reads as the rule that applies. | [] |
+
+### selector-classes-within-the-limit · MUST
+A selector holds no more classes than the limit the project sets.
+
+| Why | Tags |
+|---|---|
+| each class added to a selector ties the style to one more fact of the markup and raises the specificity the next rule has to beat. | [] |
+
+### nested-rule-within-the-depth-limit · SHOULD
+A nested style rule sits no deeper than the depth the project sets, counted from the rule outside any nesting.
+
+| Why | Tags |
+|---|---|
+| each level of nesting is a selector the reader must join in their head and specificity the next rule must beat, and the joined selector appears nowhere a search can find it. | [] |
+
+### selector-never-targets-an-id · MUST
+A selector names a class or an attribute, never an `id`.
+
+| Why | Tags |
+|---|---|
+| an id selector outweighs every class, so its style can be overridden only by another id, and it styles one element that can never be reused. | [] |
+
+### default-style-has-zero-specificity · SHOULD
+A default meant to be overridden — the reset's, the base layer's, a library's — wraps its selectors in `:where()`.
+
+| Why | Tags |
+|---|---|
+| a default of zero specificity yields to any rule that styles the element, so an override never has to outweigh it, inside its layer or, for a library, in a stylesheet without layers. | [] |

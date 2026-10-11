@@ -57,6 +57,13 @@ A handler runs under a timeout shorter than its message's lease — the visibili
 |---|---|
 | a lease that expires mid-work hands the message to a second consumer, and two copies then run at once, past every check made before either committed. | [data, performance] |
 
+### consumer-takes-no-message-once-told-to-stop → program-stops-cleanly · MUST
+A consumer told to stop takes no new message, and settles or releases each message it holds before it exits.
+
+| Why | Tags |
+|---|---|
+| a message taken and then dropped by a stopping consumer waits out its lease before any other copy may handle it. | [errors] |
+
 ### batch-settled-message-by-message · SHOULD
 A consumer that takes messages in a batch settles each message on its own, so one failure neither repeats the messages already done nor acknowledges the one that failed.
 

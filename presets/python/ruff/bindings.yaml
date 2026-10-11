@@ -20,7 +20,7 @@ fastapi:
   path-parameters-read-by-the-handler:
     - FAST
 python:
-  aware-datetimes-only:
+  instant-is-an-aware-datetime:
     - DTZ
   except-never-only-passes:
     - check-typed-exception
@@ -30,7 +30,7 @@ python:
     - UP040
     - UP046
     - UP047
-  no-any-annotation:
+  typing-any-never-written:
     - ANN
   sys-path-never-touched:
     - TID251

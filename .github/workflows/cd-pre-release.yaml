@@ -2,7 +2,8 @@ name: 🔖 Pre-release
 
 on:
   push:
-    tags: ['v*']
+    tags:
+      - 'v*'
 
 jobs:
   pre-release:

@@ -3,12 +3,15 @@ import type { Axis, Level } from '#/kernel/constants';
 interface StatedRule {
   readonly axis: Axis;
   readonly block: string;
+  // The section a rule sits under, and the title of its file.
+  readonly chapter: string | undefined;
   readonly file: string;
   readonly ownTags: readonly string[];
   readonly parent: string | undefined;
   readonly slug: string;
   readonly statedLevel: Level | undefined;
   readonly statement: string;
+  readonly title: string | undefined;
   readonly why: string;
   readonly with: string | undefined;
 }

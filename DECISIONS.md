@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0168 |
+| One home per rule | ADR-0160 – ADR-0169 |
 
 ---
 
@@ -996,3 +996,14 @@
   - A sixth round graded core 8.9, 8.9 and 8.9 and closed the seams the fifth opened: an adapter is imported by the root, the surface of a package that offers it and specs, the entry files included in neither preset; a standing grant is defined once, as an entry of the project's agent settings, and an agent never widens its own limits; a tidying lets a spec follow a boundary it renames or moves; a secret and personal data are two sentences, an identifier that names a record carrying no personal data; a set is open when its members share one contract; a transient failure is expected by its retrier; the domain's handled failure is logged by its caller; the typed scope the root fills is no service locator; a dependency's provenance is verified where its registry publishes it.
 - **Rejected.** Letting the domain import a lib without effects, which reopens the layer matrix for what the kernel already holds; lowering 100 percent coverage and mutation, which the owner keeps; `version-control` in core, since a project may exist as code with no version control — a snippet, an archive, an export — so history is an aspect it may lack.
 - **Why.** A word with two meanings lets two readers keep one rule two ways, and the gaps closed are those an agent at work in 2026 meets first.
+
+## ADR-0169 — The contexts layer re-cut: a server platform, one layout for every language, and markdown and shell
+**Date:** 2026-10-12 · **Status:** Accepted
+
+- **Decision.** Three researches of the contexts layer (graded 7.2) and three independent answers to each of the owner's three open questions re-cut the layer.
+  - `server` joins the platforms, equal to `cli`, `browser` and `mobile`: a long-running process a host starts, routes to, restarts and stops — its probes, its stop, nothing kept that another copy needs, its configuration and secrets from the host, its log as a stream — with its own architecture axis and seams with `http-server`, `messaging`, `owned-data` and `observability`. A program that serves and renders its own pages lists `browser` and `server`, and what only the pair means lives in `browser/with/server.md` and its architecture twin.
+  - A language or a platform names its sections after core's chapters on its axis, in core's order, and a seam after the other block's; a rule that tightens another sits in the section named like its parent's chapter, which `blocks:check` now holds. A language has a block of its own once three rules need it and no tool.
+  - `markdown` and `shell` join the languages; `yaml` gains its hazards, and writes every collection in block style. TypeScript is written as ES modules only, a package others import declares its exports' types for isolated declarations, and a brand is the `unique symbol` form; its `enum` stays, split into rules of one meaning. No slug opens with `no-`.
+  - A server reads a secret from a file its host mounts or with its host's identity, and from the environment only where the host offers no other way; a child process gets an environment built for it. Core gains that a secret is never a process's argument; `distribution` gains the runtime floor's support window, a check on every supported runtime and a floor raised only in a minor; `messaging` gains a consumer that takes no message once told to stop.
+- **Rejected.** A `web`, `fullstack` or `ssr` platform, which names a pair of runtimes and multiplies with every pair; `worker` and `container` as platforms — the first is `server` with `messaging`, the second packaging, whose rules are `docker`'s; a layout of the languages' own, a second vocabulary for core's chapters that let one section grow into a catch-all; secrets from the environment as the norm, which every inspect, child process and crash dump reads; TypeScript's `as const` objects in place of `enum` and an erasable-syntax rule, which the owner rejected because his programs rely on `enum`.
+- **Why.** A platform is a runtime a rule loses its meaning without, a language a syntax, and a layout shared with core lets a reader, an agent and a check find every language's form of a rule where core keeps it.

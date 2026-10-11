@@ -10,7 +10,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/enums-for-named-value-groups.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/closed-name-set-is-a-string-enum.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

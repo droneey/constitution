@@ -20,7 +20,7 @@ The theme's tokens are one `@theme` block that holds `--*: initial`, which reset
 |---|---|
 | with the default scales gone, a value outside the tokens cannot be written by accident. | [] |
 
-### no-important-modifier-in-class-lists → no-important-declarations · MUST
+### no-important-modifier-in-class-lists → declaration-never-important · MUST
 No class list uses the important modifier, `px-0!` or `!px-0`.
 
 | Why | Tags |
@@ -34,14 +34,14 @@ A utility with no token behind it — `flex`, `items-center`, `truncate` — is 
 |---|---|
 | every visual value stays a token, and layout plumbing stays plain. | [ux] |
 
-### mobile-first-breakpoints → mobile-first-additive-breakpoints · MUST
+### mobile-first-breakpoints → breakpoints-add-to-the-smallest-screen · MUST
 No class opens with a `max-*:` variant: base classes serve small screens and are widened by `md:`, `lg:` and `xl:`, and a range is bounded after its minimum, as in `md:max-lg:`.
 
 | Why | Tags |
 |---|---|
 | styles that only widen never undo each other, and the smallest screen is always the base. | [] |
 
-### no-screen-sized-classes → viewport-sizes-in-small-viewport-units · MUST
+### no-screen-sized-classes → viewport-size-in-small-viewport-units · MUST
 No class sizes with `h-screen` or `w-screen`.
 
 | Why | Tags |
@@ -78,7 +78,7 @@ The motion tokens collapse under reduced motion, in the theme.
 |---|---|
 | every animation reads the tokens, so one rule in the theme stops them all. | [] |
 
-### type-tokens-in-rem → text-scales-and-content-reflows · MUST
+### type-tokens-in-rem → type-sized-in-rem · MUST
 Font-size and line-height tokens are in `rem`.
 
 | Why | Tags |

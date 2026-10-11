@@ -36,6 +36,8 @@ interface RulesParsed {
 }
 
 const HEADING = /^### (\S+)(?: → (\S+))?(?: · (\S+))?$/;
+const TITLE = /^# (.+)$/;
+const CHAPTER = /^## (.+)$/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
 const HEADING_FORMS =
   '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';
@@ -166,7 +168,12 @@ const tagsOf = (cell: string): readonly string[] | undefined =>
         .filter((tag) => tag !== '')
     : undefined;
 
-const readSection = (input: { section: MarkdownSection; source: Source }): SectionRead => {
+const readSection = (input: {
+  chapter: string | undefined;
+  section: MarkdownSection;
+  source: Source;
+  title: string | undefined;
+}): SectionRead => {
   const heading = headingOf(input.section.heading);
 
   if (heading === undefined) {
@@ -202,12 +209,14 @@ const readSection = (input: { section: MarkdownSection; source: Source }): Secti
     })),
     draft: {
       block: input.source.block,
+      chapter: input.chapter,
       file: input.source.file,
       ownTags: tags ?? [],
       parent: heading.parent,
       slug: heading.slug,
       statedLevel: heading.level,
       statement: statementOf(lines),
+      title: input.title,
       why,
       with: input.source.with,
     },
@@ -215,12 +224,19 @@ const readSection = (input: { section: MarkdownSection; source: Source }): Secti
 };
 
 const parseRules = (source: Source): RulesParsed => {
-  const read = sectionsOf(source.text).map((section) =>
-    readSection({
+  let title: string | undefined;
+  let chapter: string | undefined;
+  const read = sectionsOf(source.text).map((section) => {
+    title = TITLE.exec(section.heading)?.[1] ?? title;
+    chapter = CHAPTER.exec(section.heading)?.[1] ?? chapter;
+
+    return readSection({
+      chapter,
       section,
       source,
-    }),
-  );
+      title,
+    });
+  });
   const drafts = read.flatMap((section) =>
     section.draft === undefined
       ? []

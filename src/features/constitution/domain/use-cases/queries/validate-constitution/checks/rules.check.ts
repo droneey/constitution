@@ -1,4 +1,4 @@
-import { Axis, LEVELS, Tag } from '#/kernel/constants';
+import { Axis, Layer, LEVELS, Tag } from '#/kernel/constants';
 import type { Finding } from '#/kernel/types';
 
 import type { Rule } from '../../../../entities';
@@ -113,6 +113,25 @@ const placementMessage = (input: {
     : undefined;
 };
 
+// A language or a platform names its sections after the chapters of the rules it tightens.
+const LAID_OUT_BY_CHAPTER: readonly Layer[] = [
+  Layer.Language,
+  Layer.Platform,
+];
+
+const chapterMessage = (input: {
+  byId: BlocksById;
+  rule: Rule;
+  target: Rule;
+}): string | undefined => {
+  const { rule, target } = input;
+  const layer = input.byId.get(rule.block)?.layer;
+
+  return layer !== undefined && LAID_OUT_BY_CHAPTER.includes(layer) && rule.chapter !== target.title
+    ? `sits under "${rule.chapter ?? 'no section'}" while it carries out "${target.slug}" of the chapter "${target.title ?? 'untitled'}"; a rule of a language or a platform sits in the section named for its parent's chapter`
+    : undefined;
+};
+
 const parentMessage = (input: {
   byId: BlocksById;
   rule: Rule;
@@ -136,12 +155,17 @@ const parentMessage = (input: {
 
   return target.block === input.rule.block
     ? `carries out "${parent}", a rule of its own block; a rule carries out only a rule of another block`
-    : placementMessage({
+    : (placementMessage({
         byId: input.byId,
         parent,
         rule: input.rule,
         target,
-      });
+      }) ??
+        chapterMessage({
+          byId: input.byId,
+          rule: input.rule,
+          target,
+        }));
 };
 
 const rulesCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {

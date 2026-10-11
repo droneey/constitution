@@ -18,6 +18,13 @@ A secret never appears in a log, an error, a URL, a build artefact, test data or
 |---|---|
 | output is copied to places with weaker access than the data it came from, and a URL is logged by every proxy and browser it passes; a security audit needs to know who acted and from where, and no more. | [security, data] |
 
+### secret-never-passed-as-a-process-argument · MUST
+A secret is never passed to a process as a command-line argument; it reaches the process through standard input, a file or an environment built for it.
+
+| Why | Tags |
+|---|---|
+| a process's arguments are read by every user of the machine through its process listing, and are kept in shell histories and the logs of the tools that start it. | [security] |
+
 ### leaked-secret-rotated-at-once · MUST
 A secret that leaked — into the repository, a log, a message — is rotated at once, and the access made with it while it was exposed is checked.
 

@@ -78,7 +78,7 @@ Beside the parts of each axis, a preset holds a `bindings.yaml` — `presets/<sc
 
 ```yaml
 typescript:
-  no-any: [noExplicitAny]
+  any-never-written: [noExplicitAny]
 core:
   biome-refuses-empty-verbs: [biome-refuses-empty-verbs.grit]
 ```

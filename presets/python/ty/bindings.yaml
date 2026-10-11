@@ -1,9 +1,9 @@
 self:
-  awaitable-never-dropped:
+  async-work-awaited-or-held-by-a-scope:
     - all
   deprecated-calls-fail-the-types:
     - all
-  no-any-annotation:
+  typing-any-never-written:
     - all
   overrides-marked-by-decorator:
     - all

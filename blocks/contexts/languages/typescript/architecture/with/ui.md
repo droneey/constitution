@@ -1,10 +1,12 @@
-# TypeScript with UI
+# TypeScript with user interface
 
-> The input and output a UI's components never reach.
+> Governs the input and output a TypeScript component never reaches.
 
-### components-call-no-global-fetch → presentational-component-performs-no-io · MUST
-No file in a `components/` folder calls the global `fetch`.
+## User interface
+
+### component-never-calls-fetch → presentational-component-performs-no-io · MUST
+No file in a `components/` folder calls `fetch`, or any other input or output the runtime offers every module without an import.
 
 | Why | Tags |
 |---|---|
-| the runtime gives every module `fetch` without an import, so no import rule sees it, and a component that fetches can no longer be shown or tested with plain data. | [] |
+| such a global reaches a component without an import, so nothing at the top of its file shows the effect, and a component that fetches can no longer be shown or tested with plain data. | [] |

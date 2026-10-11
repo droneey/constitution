@@ -1,8 +1,10 @@
 # Python with distribution
 
-> How a distributed Python package's versions follow its floor.
+> Governs when a distributed Python package raises its floor.
 
-### requires-python-raised-in-a-minor → versions-follow-semver · MUST
+## Releases
+
+### requires-python-raised-in-a-minor → runtime-floor-raised-only-in-a-minor · MUST
 A published package raises its `requires-python` floor only in a minor release, never in a patch.
 
 | Why | Tags |

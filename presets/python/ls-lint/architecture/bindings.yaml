@@ -11,7 +11,7 @@ messaging:
     - 'src/*/consumers'
     - 'src/*/jobs'
 cli:
-  commands-in-the-cli-folder:
+  command-module-named-with-cli-suffix:
     - 'src/*/cli'
   file-name-in-its-owners-case:
     - 'src/*/cli'
@@ -21,7 +21,7 @@ core:
     - 'src/*/**/repositories/{queries,commands}'
   feature-laid-out-by-its-tree:
     - 'src/*/features/*/domain'
-  python-role-and-surface-files:
+  role-suffix-spelled-in-snake-case:
     - 'src/*/**/constants'
     - 'src/*/**/contracts'
     - 'src/*/**/entities'

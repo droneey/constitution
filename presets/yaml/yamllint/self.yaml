@@ -9,11 +9,9 @@ rules:
     max: 120
     allow-non-breakable-inline-mappings: true
   braces:
-    min-spaces-inside: 1
-    max-spaces-inside: 1
+    forbid: non-empty
   brackets:
-    min-spaces-inside: 0
-    max-spaces-inside: 0
+    forbid: non-empty
   comments:
     level: error
     min-spaces-from-content: 1
@@ -26,5 +24,7 @@ rules:
   key-duplicates: enable
   truthy:
     level: error
-    allowed-values: ['true', 'false']
+    allowed-values:
+      - 'true'
+      - 'false'
     check-keys: false

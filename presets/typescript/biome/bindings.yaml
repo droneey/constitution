@@ -63,17 +63,17 @@ core:
     - noSkippedTests
     - useExpect
 browser:
-  no-raw-html-injection:
-    - no-raw-html-injection.grit
+  raw-html-never-reaches-the-dom:
+    - raw-html-never-reaches-the-dom.grit
 css:
-  classes-declared-and-used:
+  class-used-is-declared:
     - noUndeclaredClasses
 ky:
   ky-body-parsed-by-schema:
     - ky-body-parsed-by-schema.grit
 i18n:
-  intl-calls-take-a-locale:
-    - intl-calls-take-a-locale.grit
+  locale-passed-to-every-intl-call:
+    - locale-passed-to-every-intl-call.grit
 lingui:
   module-level-messages-are-descriptors:
     - module-level-messages-are-descriptors.grit
@@ -100,7 +100,7 @@ react-dom:
     - useControlLabel
     - useIframeTitle
   known-fields-declare-autocomplete:
-    - fields-declare-autocomplete.grit
+    - field-declares-its-autocomplete.grit
     - useValidAutocomplete
   ids-from-use-id:
     - labels-bound-with-use-id.grit
@@ -158,36 +158,37 @@ testing-library:
   queries-by-role-label-text:
     - queries-by-role-label-text.grit
 typescript:
-  resources-released-by-using:
+  scoped-resource-held-by-using:
     - useDisposables
-  dates-through-temporal:
+  date-and-time-are-temporal-values:
     - noRestrictedImports
-  no-deprecated-import:
+  deprecated-form-never-used:
     - noDeprecatedImports
-  no-mutable-export:
-    - no-mutable-export.grit
-  named-exports-only:
+  export-never-reassignable:
+    - export-never-reassignable.grit
+  module-exports-by-name:
     - noDefaultExport
   return-type-no-wider-than-returned:
     - noMisleadingReturnType
-  text-made-deliberately:
+  value-made-text-by-a-named-form:
     - noBaseToString
     - noUnsafePlusOperands
-  no-literal-thrown:
+  thrown-value-is-an-error:
     - useThrowOnlyError
-  enums-for-named-value-groups:
-    - enums-for-named-value-groups.grit
+  closed-name-set-is-a-string-enum:
+    - closed-name-set-is-a-string-enum.grit
     - useEnumInitializers
   exhaustive-branching-over-unions:
     - useExhaustiveSwitchCases
   identifier-case-by-kind:
     - useNamingConvention
-  no-any:
+  any-never-written:
     - noExplicitAny
-  no-unchecked-escape-hatches:
+  type-assertion-never-written:
     - noNonNullAssertion
-    - noTsIgnore
     - noUnsafeTypeAssertion
+  type-error-suppressed-by-ts-expect-error:
+    - noTsIgnore
   nullish-operators-for-absence:
     - useNullishCoalescing
   strict-equality-only:

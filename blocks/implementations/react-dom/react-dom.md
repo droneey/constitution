@@ -13,7 +13,7 @@ governs: ["**/*.tsx"]
 
 > React rendering to the browser's document.
 
-### no-dangerously-set-inner-html → no-raw-html-injection · MUST
+### no-dangerously-set-inner-html → raw-html-never-reaches-the-dom · MUST
 `dangerouslySetInnerHTML` is never set.
 
 | Why | Tags |
@@ -41,7 +41,7 @@ An overlay — a dialog, a popover, a toast — renders through a portal, or in 
 |---|---|
 | outside the portal, a parent's overflow or stacking context clips it, and focus management breaks. | [a11y, ux] |
 
-### browser-apis-read-outside-render → no-browser-globals-during-render · MUST
+### browser-apis-read-outside-render → browser-global-never-read-while-rendering · MUST
 Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with a server snapshot, never during render.
 
 | Why | Tags |
@@ -62,7 +62,7 @@ Render errors are reported once, through the root's `onUncaughtError`, `onCaught
 |---|---|
 | the root sees every render error, the ones a boundary catches included, so each is reported once. | [] |
 
-### jsx-images-declare-their-size → images-declare-their-size · SHOULD
+### jsx-images-declare-their-size → image-declares-its-size · SHOULD
 An `<img>` written in JSX declares `width` and `height`.
 
 | Why | Tags |
@@ -85,7 +85,7 @@ An id comes from `useId`, never typed by hand or random — except the id of an 
 |---|---|
 | a typed id collides when the component renders twice, and a random one differs between server and client. | [] |
 
-### known-fields-declare-autocomplete → fields-declare-autocomplete · MUST
+### known-fields-declare-autocomplete → field-declares-its-autocomplete · MUST
 An email, telephone, password or URL input declares `autocomplete`, with a valid token.
 
 | Why | Tags |

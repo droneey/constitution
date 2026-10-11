@@ -2,23 +2,24 @@ tailwind:
   utilities-only-from-tokens:
     - utilities-only-from-tokens.grit
 css:
-  baseline-features-only:
+  feature-supported-by-every-target-browser:
     - useBaseline
-  classes-declared-and-used:
+  class-declared-is-used:
     - noUnusedClasses
-  custom-properties-declared-before-use:
+  custom-property-read-where-defined:
     - noUndeclaredCustomProperties
     - noInvalidPropertyInitValue
     - noMissingVarFunction
-  no-important-declarations:
+  declaration-never-important:
     - noImportantStyles
-  stylesheet-values-from-theme-properties:
+  stylesheet-value-read-from-the-theme:
     - noHexColors
-  selectors-stay-shallow:
+  selector-classes-within-the-limit:
     - noExcessiveSelectorClasses
+  selector-specificity-never-descends:
     - noDescendingSpecificity
-  styles-in-named-layers:
+  style-rule-in-a-named-layer:
     - useLayeredStyles
     - useNamedLayer
-  styles-never-target-ids:
-    - styles-never-target-ids.grit
+  selector-never-targets-an-id:
+    - selector-never-targets-an-id.grit

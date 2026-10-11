@@ -2,9 +2,11 @@
 
 > Governs how a page reads a person's opt-out signal.
 
+## Opt-out
+
 ### global-privacy-control-read-in-the-page → opt-out-signal-honoured · MUST
-A page reads the opt-out signal from `navigator.globalPrivacyControl`.
+A page that sets a tracker of its own, or hands data to one, reads the opt-out signal from `navigator.globalPrivacyControl` before it does.
 
 | Why | Tags |
 |---|---|
-| a page that sets a tracker of its own learns of the signal only there. | [data] |
+| a request's header reaches only the server, so a page that tracks in the tab learns of the signal only from the page's own reading of it. | [data] |

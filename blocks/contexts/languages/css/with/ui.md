@@ -1,84 +1,100 @@
-# CSS with user interfaces
+# CSS with a user interface
 
-> How a stylesheet serves screens: the pointer it has, and variants that reach every descendant.
+> Governs how a stylesheet serves screens and components: focus, text size, reflow, hover, motion, values and scope.
 
-### stylesheet-values-from-theme-properties → tokens-single-source-of-appearance · MUST
-In a stylesheet, a colour, space, size, radius, shadow, duration or easing is read from a custom property of the theme, `var(--color-text-muted)`; a literal value appears only where the theme defines the property. No stylesheet writes a hexadecimal colour, the theme's included.
+## Accessibility
+
+### focus-ring-drawn-as-an-outline → focus-always-visible · MUST
+Focus is shown on `:focus-visible` by an outline, or by a transparent outline beside a shadow, and no style sets the outline to `none` or `0`.
+
+| Why | Tags |
+|---|---|
+| forced-colors mode drops shadows and repaints outlines in the system's colour, so only a ring drawn as an outline survives it. | [a11y] |
+
+### sticky-content-reserves-scroll-padding → focus-always-visible · MUST
+Content that stays on screen while the page scrolls — a header, a footer, a banner — reserves its size as the scroll container's `scroll-padding`.
+
+| Why | Tags |
+|---|---|
+| the browser then scrolls a focused element clear of it, and focus moved under a sticky header is focus the user cannot see. | [a11y] |
+
+### type-sized-in-rem → wcag-aa-conformance · MUST
+A font size is set in `rem`, or in `em` relative to one, never in `px`.
+
+| Why | Tags |
+|---|---|
+| a size in `rem` follows the text size the user set in the browser, which a size in pixels ignores. | [a11y] |
+
+### text-spacing-overridable-without-clipping → wcag-aa-conformance · MUST
+No box that holds text fixes its height or hides its overflow, so text stays whole when the user sets line height to 1.5 times the font size, paragraph spacing to 2 times, letter spacing to 0.12 times and word spacing to 0.16 times.
+
+| Why | Tags |
+|---|---|
+| people with low vision or dyslexia widen the spacing to read at all, and a box of fixed height cuts off what no longer fits. | [a11y] |
+
+### content-reflows-at-320-css-pixels → wcag-aa-conformance · MUST
+At a width of 320 CSS pixels, content reflows into one column with no sideways scrolling, save content that needs two dimensions, such as a map or a data table.
+
+| Why | Tags |
+|---|---|
+| a page zoomed to 400 percent is 320 CSS pixels wide, and reading line by line while scrolling sideways loses the reader. | [a11y] |
+
+### hover-reveal-also-on-focus → hover-content-reachable-and-dismissible · MUST
+Content a style reveals on `:hover` is revealed on `:focus-within` of the same element too.
+
+| Why | Tags |
+|---|---|
+| a keyboard user never hovers, so content shown on hover alone never reaches them. | [a11y] |
+
+### hover-effect-behind-hover-media · SHOULD
+A style that only decorates hover sits inside `@media (hover: hover)`.
+
+| Why | Tags |
+|---|---|
+| a touch screen applies hover on a tap and keeps it until the next tap elsewhere, so the decoration sticks to whatever was touched last. | [ux] |
+
+### motion-reduced-under-reduced-motion → reduced-motion-honoured · MUST
+A transition or an animation that moves, scales or rotates content runs only inside `@media (prefers-reduced-motion: no-preference)`; under `reduce`, its change is a cut or a fade.
+
+| Why | Tags |
+|---|---|
+| motion across the screen makes people with vestibular disorders ill, while a cut or a fade keeps the feedback the motion carried. | [a11y] |
+
+## Components
+
+### stylesheet-value-read-from-the-theme → tokens-single-source-of-appearance · MUST
+In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property.
 
 | Why | Tags |
 |---|---|
 | a literal in a component is a second source of the value, which a change of the theme misses. | [] |
 
-### components-adapt-by-container-queries → component-sizes-to-its-container · SHOULD
-A component adapts to the space its container gives it with a container query; a media query adapts the page's layout and follows the user's preferences.
+### component-adapts-by-container-query → component-sizes-to-its-container · SHOULD
+A component adapts to the space its container gives it by a container query, never by a media query on the viewport's width.
 
 | Why | Tags |
 |---|---|
 | a component placed in a sidebar and in the main column then fits both, while the viewport says nothing about the space it was given. | [ux] |
 
-### global-styles-only-in-the-entry · SHOULD
-Only the entry stylesheet and the theme it imports style elements and the document globally; every other stylesheet is scoped to one component.
+### component-styles-scoped-to-its-root · SHOULD
+A component's stylesheet styles only the component's own elements: its rules sit in `@scope (<its root>) to (<its slots>)` where every browser the program supports has `@scope`, and under its root's class where one does not.
 
 | Why | Tags |
 |---|---|
-| a global rule in a component's stylesheet reaches every screen and changes whenever that component is loaded. | [] |
+| a rule that leaks reaches every screen that loads the component, and the lower boundary keeps it out of the content other components render in its slots. | [] |
 
-## Accessibility
-
-### focus-ring-from-design-system → focus-always-visible · MUST
-The focus ring is the design system's, shown on `:focus-visible`; `outline: none` needs that replacement.
+### global-style-only-in-the-entry-stylesheet · SHOULD
+Only the entry stylesheet, and the theme it imports, style elements by their type and the document as a whole.
 
 | Why | Tags |
 |---|---|
-| one ring looks the same everywhere and is always visible to keyboard users. | [] |
+| a global rule in a component's stylesheet reaches every screen, and changes whenever that component is or is not loaded. | [] |
 
-### text-scales-and-content-reflows → wcag-aa-conformance · MUST
-Type sizes are in `rem`, text spacing may be overridden by the user, and at 320 CSS pixels content reflows without scrolling sideways.
+## Screens
 
-| Why | Tags |
-|---|---|
-| the user's own text size and spacing settings then apply, and a zoomed page stays readable. | [] |
-
-### hover-styles-behind-hover-media → hover-content-reachable-and-dismissible · MUST
-A hover style that changes visibility has a state without hover, or sits behind `@media (hover: hover)`.
-
-| Why | Tags |
-|---|---|
-| on a touch screen hover never happens, and whatever it reveals would never appear. | [] |
-
-### focus-ring-survives-forced-colors → focus-always-visible · MUST
-The focus ring is an outline, or keeps a transparent outline beside a shadow, so it shows in forced-colors mode; nothing removes the outline outright.
-
-| Why | Tags |
-|---|---|
-| forced-colors mode drops shadows, so a ring drawn only as a shadow shows no focus there. | [a11y] |
-
-### sticky-content-reserves-scroll-padding → wcag-aa-conformance · MUST
-Content that stays on screen while the page scrolls — a header, a footer, a banner — reserves its size as the scroll padding, so a focused element is never hidden under it.
-
-| Why | Tags |
-|---|---|
-| focus moved under a sticky header is focus the user cannot see. | [a11y] |
-
-## Layout
-
-### mobile-first-additive-breakpoints · SHOULD
-Base styles serve the smallest screen, and wider screens add overrides from a minimum width; nothing desktop-first is undone. No minimum width locks a screen out.
+### breakpoints-add-to-the-smallest-screen · SHOULD
+Base styles serve the smallest screen, and a breakpoint only adds styles from a minimum width; no style is set for wide screens and undone for narrow ones.
 
 | Why | Tags |
 |---|---|
 | styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | [] |
-
-### viewport-sizes-in-small-viewport-units · MUST
-A size taken from the viewport uses the small viewport unit or the container — `svh` by default, `dvh` only where content must follow the toolbar — never `100vh` or `100vw`.
-
-| Why | Tags |
-|---|---|
-| `100vh` ignores the browser's own toolbars on phones, and content slides under them. | [] |
-
-### layout-width-from-the-tokens · MUST
-No layout width is fixed in pixels outside the tokens.
-
-| Why | Tags |
-|---|---|
-| a width fixed in a component overflows a narrower screen, and is a size the theme no longer owns. | [ux] |

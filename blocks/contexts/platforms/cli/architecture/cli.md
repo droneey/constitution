@@ -1,12 +1,30 @@
 # Command line
 
-> Its delivery layer is `cli/`; each command of the command line is a file `<name>.cli` there. A command of the command line is not the write side of a use-case, which core keeps in `commands/`.
+> Governs the command line's place in the tree: its commands, their registration and their shared flags.
 
-## Commands
+## Layers
 
-### commands-in-the-cli-folder → package-laid-out-by-the-tree · SHOULD
-The delivery layer is `cli/`: one `<name>.cli` file per command, shared flag definitions in files beside them, reused and never declared twice, and the list of commands registered beside the files. `cli/` holds no file of another role.
+### shared-flag-declared-once-in-shared → shared-piece-placed-by-meaning · SHOULD
+A flag two or more commands take is declared once, in `shared/`, and every command that takes it imports that declaration.
 
 | Why | Tags |
 |---|---|
-| every command is found in one place, and a flag means the same thing in every command that takes it. | [] |
+| a flag then means the same in every command that takes it, and the set folder of commands holds commands alone. | [] |
+
+## Layout
+
+### cli-folder-holds-one-file-per-command → set-folder-holds-only-members · SHOULD
+The delivery layer of a command line is `cli/`, the set folder of its commands: one file for each command, carrying the `cli` role in the language's spelling, and nothing else.
+
+| Why | Tags |
+|---|---|
+| every command is found in one place, and adding a command is adding a file. | [] |
+
+## Root
+
+### command-registered-by-the-root → composition-root-wires-everything · MUST
+The composition root registers every command into the command framework from the names the surface of `cli/` offers; no command is found by scanning a folder or registers itself on import.
+
+| Why | Tags |
+|---|---|
+| the root is then the one place that shows every command the program has, and a command added or removed changes that list, not a framework's guess. | [] |

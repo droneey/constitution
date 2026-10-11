@@ -1,10 +1,12 @@
 # Python with command line
 
-> The command line of a Python program: its delivery layer is the package `cli/` of the import package, and its role suffix `_cli.py`.
+> Governs how a Python program's commands are named and registered.
 
-### python-commands-in-cli-modules → commands-in-the-cli-folder · SHOULD
-`cli/` holds one module `<name>_cli.py` per command and, beside them, the shared flags in modules named in one word — `flags.py` — since in Python a second word reads as a role. The surface `__init__.py` of `cli/` is the list of the commands, and `root/wiring.py` registers each into the command framework's application, and `[project.scripts]` and `__main__.py` both run that application through `main()` of the entry `main.py`.
+## Command line
+
+### command-module-named-with-cli-suffix → cli-folder-holds-one-file-per-command · SHOULD
+A command of the command line is one module `<name>_cli.py`.
 
 | Why | Tags |
 |---|---|
-| the program then has one list of its commands and one way in, whether it is run by its script's name or by `python -m`. | [] |
+| the suffix tells a command from the flags and the registry beside it, and from core's `commands/`, the write side of a use case. | [] |

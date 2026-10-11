@@ -1,6 +1,6 @@
 ---
 id: cli
-summary: A program run from a command line, one command per invocation.
+summary: Commands, flags, streams, exit codes and help of a command line.
 requires: []
 extends: null
 abstract: false
@@ -11,30 +11,140 @@ governs: ["**/cli/**"]
 
 # Command line
 
-> A program a person or a script runs from a terminal.
+> A program a person or a script runs from a terminal, one command per run: it reads flags, the environment and configuration files, writes its result and its diagnostics to two streams, and answers with an exit code.
 
-## Output and exit
+## Errors
 
 ### exit-codes-from-one-map · MUST
-Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag — and 70 an internal error, the program's own bug; an outcome a caller branches on that is neither success nor failure, such as a plan that found changes, takes a code of its own in the map.
+Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 130 a run its user interrupted; any other outcome a caller branches on takes a code of its own in the map.
 
 | Why | Tags |
 |---|---|
-| a script decides what to do from the exit code alone, so each code must mean one thing in every command; 2 is the usage code of the shell's utilities and argument parsers, and 70 is `EX_SOFTWARE` of sysexits, the code for an internal error. | [errors, ux] |
+| a script decides what to do from the exit code alone, so each code must mean one thing in every command; 2 is the usage code of the shell's utilities, 70 is the code sysexits gives an internal error, and 130 is how shells report an interrupt, 128 plus the signal's number. | [errors, ux] |
 
-### stdout-data-stderr-diagnostics · SHOULD
-Data goes to standard output; diagnostics and failures go to standard error.
+### unknown-command-never-guessed · SHOULD
+An unknown command or flag is a usage error that names the closest match and never runs it; no command answers to an abbreviation of its name.
 
 | Why | Tags |
 |---|---|
-| a script that pipes the output receives only the data, and the person at the terminal still sees what went wrong. | [ux] |
+| a guess run in place of what was typed may be the destructive command, and an abbreviation that works today runs another command once a new one shares its start. | [ux, errors] |
 
-### json-flag-for-machine-output · SHOULD
+## Effects
+
+### standard-output-holds-only-data → diagnostics-written-through-a-logger · MUST
+Standard output carries only the command's result; diagnostics, progress, prompts and failures go to standard error.
+
+| Why | Tags |
+|---|---|
+| a pipe or a file then receives only the data the next program reads, while the person at the terminal still sees what happened. | [ux] |
+
+### interrupt-ends-the-run-promptly → program-stops-cleanly · MUST
+On an interrupt a command says it is stopping, cleans up within a bound and exits as interrupted; a second interrupt ends it without the cleanup.
+
+| Why | Tags |
+|---|---|
+| a person presses Ctrl-C to get the terminal back, and a command that ignores it, or hangs in its cleanup, holds the terminal and whatever it locked. | [ux, errors] |
+
+### setting-taken-from-flag-then-environment-then-files · SHOULD
+A setting given in several places is taken from the flag first, then the environment, then the project's configuration file, then the user's, then the system's.
+
+| Why | Tags |
+|---|---|
+| the most specific and most recent choice wins, so a user overrides a file for one run, and a project overrides a user's defaults, without editing either. | [ux] |
+
+### user-file-kept-in-the-systems-base-directories · SHOULD
+Configuration, cache and data a program keeps for its user live in the system's base directory for each kind — the XDG directories on Linux, the platform's own elsewhere — never in a dotfile at the root of the home directory.
+
+| Why | Tags |
+|---|---|
+| people back up, clear and sync these directories by kind, so a cache kept beside configuration is backed up for nothing, and configuration kept in a cache is lost when it is cleared. | [ux, data] |
+
+## Security
+
+### output-masks-every-known-secret → secret-and-personal-data-kept-out-of-output · MUST
+Every value the run knows to be secret is masked in all output, an engine's output included, before it is printed.
+
+| Why | Tags |
+|---|---|
+| terminal output lands in CI logs and on shared screens, where a printed secret is leaked to everyone who reads them. | [security] |
+
+### secret-never-passed-as-a-flag → secret-never-passed-as-a-process-argument · MUST
+A secret reaches a command through a file, standard input or the system's credential store, never as the value of a flag.
+
+| Why | Tags |
+|---|---|
+| a flag's value is visible to every user of the machine in the process list and is kept in the shell's history. | [security] |
+
+## Changes
+
+### json-output-changed-only-by-adding-fields → format-changed-in-steps · MUST
+A command's JSON output changes only by gaining fields; a field removed, renamed or retyped is a breaking change of the program.
+
+| Why | Tags |
+|---|---|
+| scripts read the JSON as a contract, and a field that disappears breaks every one of them silently at the next upgrade. | [data] |
+
+## Tests
+
+### command-tested-through-its-command-line → spec-proves-one-boundary · SHOULD
+A command's spec runs the program on an argument list, with its terminal, prompts and clock replaced, and checks standard output, standard error and the exit code.
+
+| Why | Tags |
+|---|---|
+| the command line is the command's boundary, so the spec proves what its user sees, without a real terminal or a real clock. | [testing] |
+
+## Input
+
+### help-printed-on-h-and-help · MUST
+`-h` and `--help` print the command's help to standard output and exit 0, whatever other arguments are given.
+
+| Why | Tags |
+|---|---|
+| help is how a person or an agent discovers a command, and help that needs every other argument right first cannot be reached when they are wrong. | [ux] |
+
+### help-leads-with-examples · SHOULD
+A command's help opens with what the command does and examples of its common use, before the full list of flags.
+
+| Why | Tags |
+|---|---|
+| people read examples before reference, and most come to the help for the common case. | [ux] |
+
+### version-printed-on-version · SHOULD
+`--version` prints the program's version to standard output and exits 0.
+
+| Why | Tags |
+|---|---|
+| a bug report and a script both need to know which release ran. | [ux] |
+
+### flag-takes-its-conventional-name · SHOULD
+A flag whose purpose has a conventional name takes it: `-q`/`--quiet`, `--verbose`, `-n`/`--dry-run`, `-f`/`--force`, `-o`/`--output`, `--json`, `--no-input`, `--no-color`.
+
+| Why | Tags |
+|---|---|
+| people and agents guess a flag by its convention, and a flag named otherwise is not found or is mistaken for another. | [ux] |
+
+### prompt-only-on-a-terminal · MUST
+A command prompts only when its standard input is a terminal; without one, a missing answer is a usage error that names the flag that gives it.
+
+| Why | Tags |
+|---|---|
+| a prompt in CI or in a pipe waits for an answer nobody can give. | [ux] |
+
+### prompts-turned-off-by-the-no-input-flag · SHOULD
+`--no-input` turns off every prompt, even on a terminal.
+
+| Why | Tags |
+|---|---|
+| a person at a terminal also runs commands from scripts, and needs a way to make a run fail rather than wait for them. | [ux] |
+
+## Output
+
+### data-printed-as-json-on-the-json-flag · SHOULD
 A command that reports data prints it as JSON when given `--json`.
 
 | Why | Tags |
 |---|---|
-| another program can then read the result without parsing text meant for people. | [ux] |
+| another program then reads the result without parsing text written for people. | [ux] |
 
 ### progressive-report-printed-as-events-arrive · SHOULD
 The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
@@ -43,41 +153,28 @@ The command prints a progressive report as its events arrive, and any other repo
 |---|---|
 | a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. | [ux] |
 
-### output-masks-secret-values → secret-and-personal-data-kept-out-of-output · MUST
-Every value the run knows to be secret is masked in all output, an engine's output included, before it is printed.
+### styling-only-on-a-terminal · MUST
+A stream is styled — colour, animation, cursor movement — only when it is a terminal, `TERM` is not `dumb`, `NO_COLOR` is unset or empty and `--no-color` was not given; a flag that asks for colour overrides `NO_COLOR`.
 
 | Why | Tags |
 |---|---|
-| terminal output lands in CI logs and shared screens, where a secret is leaked to everyone who reads them. | [] |
+| escape codes in a pipe, a file or a log are noise to whoever reads it, and `NO_COLOR` is a person's one setting for every program. | [ux, a11y] |
 
-## Input
-
-### flags-over-environment-over-file · SHOULD
-A setting given in several places takes the flag first, then the environment, then the file.
+### status-never-shown-by-colour-alone · SHOULD
+A status shown in colour also carries a word or a symbol.
 
 | Why | Tags |
 |---|---|
-| the most specific, most recent choice wins, so a user overrides a file for one run without editing it. | [ux] |
+| without colour — in a log, under `NO_COLOR`, for a reader who cannot tell the colours apart — colour alone says nothing. | [a11y, ux] |
 
-### no-prompt-without-a-terminal · MUST
-Without a terminal the program never prompts; a missing answer is a usage error that names its flag.
-
-| Why | Tags |
-|---|---|
-| a prompt in CI waits forever for an answer nobody can give. | [ux] |
-
-## Testing
-
-### command-tested-through-its-command-line → spec-proves-one-boundary · SHOULD
-A command's spec runs the program on an argument list with a fake command context, and checks standard output, standard error and the exit code.
+### slow-step-announced-before-it-starts · SHOULD
+Before a step that may take long — a network call, a large read — a command prints on standard error what it is doing.
 
 | Why | Tags |
 |---|---|
-| that is the command's boundary, so the spec proves what a user of the command sees. | [] |
+| silence reads as a hang, and a person who sees nothing interrupts a command that was working. | [ux] |
 
 ## Requirements for implementation
-
-What any command framework must provide.
 
 ### command-framework-parses-flags-by-schema · SHOULD
 Flags are declared with a schema and parsed before the handler runs.

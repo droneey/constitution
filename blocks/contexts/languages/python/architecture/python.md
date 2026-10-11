@@ -1,22 +1,45 @@
 # Python
 
-> A folder's surface is `__init__.py`, a role file is `<name>_<role>.py`, and the wiring file is `root/wiring.py`. Role folders and suffixes are spelled in snake_case: `entities/`, `value_objects/`, `use_cases/`, `errors/`, `constants/`, `types/`, `utils/`, `models/`, `contracts/`, `repositories/`, and `_entity.py`, `_value_object.py`, `_use_case.py`, `_error.py`, `_constants.py`, `_types.py`, `_utils.py`, `_model.py`, `_port.py`, `_repository.py`.
+> Governs how core's tree is spelled in a Python import package: its entry, role files, surfaces, root and domain.
 
-## Modules and files
+## Layers
+
+### type-checking-import-held-to-the-layers → import-points-inward · MUST
+An import inside `if TYPE_CHECKING:` is held to the layer matrix like any other.
+
+| Why | Tags |
+|---|---|
+| a type a layer names is a dependency whether or not it loads at run time, and the layer changes when that type does. | [] |
+
+## Layout
+
+### program-entry-is-main-of-main-py → package-laid-out-by-the-tree · SHOULD
+A program's entry is the function `main()` of `main.py` at the top of the import package; `__main__.py` and the script `[project.scripts]` names only call it.
+
+| Why | Tags |
+|---|---|
+| the program has one way in, whether it is run by its script's name, by `python -m` or by its host, and that way in is found in one place. | [] |
+
+### role-suffix-spelled-in-snake-case → file-carries-its-role-suffix · MUST
+A role file is `<name>_<role>.py`, its role the vocabulary's suffix in snake_case: `_entity`, `_value_object`, `_error`, `_repository`, `_port`, `_adapter`, `_use_case`, `_utils`, `_types`, `_constants`, `_model`, `_config` — `order_entity.py`, `orders_query_repository.py`.
+
+| Why | Tags |
+|---|---|
+| a module's name allows no dot, so the role is its last word, spelled the same in every folder. | [] |
+
+### role-folder-spelled-in-snake-case → folder-takes-its-layer-or-role-name · SHOULD
+A layer or role folder whose name has more than one word is spelled in snake_case: `value_objects/`, `use_cases/`.
+
+| Why | Tags |
+|---|---|
+| a folder of the import package is a package, and a package's name allows no hyphen. | [] |
 
 ### relative-imports-stay-in-the-feature → module-files-import-each-other-directly · MUST
 An import that leaves its feature — or, outside `features/`, the top-level folder it sits in — is absolute, from the import package's name; files inside one feature import each other by relative path, at any depth, and a relative import never climbs out of it. A feature never imports itself by its absolute path.
 
 | Why | Tags |
 |---|---|
-| the specifier then shows at a glance whether an import crosses a feature's border, and a feature that imports its own absolute path starts a cycle through its surface. | [] |
-
-### python-role-and-surface-files → file-carries-its-role-suffix · MUST
-A role file is `<name>_<role>.py` — `order_entity.py`, `orders_repository.py` — and a folder's surface is `__init__.py`.
-
-| Why | Tags |
-|---|---|
-| a module's name allows no dot, so the role is its last word, spelled the same in every folder. | [] |
+| the import then shows at a glance whether it crosses a feature's border, and a feature that imports its own absolute path starts a cycle through its surface. | [] |
 
 ### surface-is-init-with-sorted-all → surface-only-re-exports · MUST
 A surface `__init__.py` holds only `from .<module> import <Name>` lines and an `__all__` that lists those names, sorted.
@@ -25,53 +48,34 @@ A surface `__init__.py` holds only `from .<module> import <Name>` lines and an `
 |---|---|
 | `__all__` is the list of what the folder offers, and a sorted list shows an added or removed name in one line of a diff. | [] |
 
-### import-package-holds-the-tree → package-laid-out-by-the-tree · SHOULD
-The import package `src/<name>/` holds only the top-level folders of the tree and the role folders it needs, the delivery layer its blocks name, `__init__.py`, `__main__.py`, `main.py` and `py.typed`.
-
-| Why | Tags |
-|---|---|
-| the import package's name is the project's own, so no check of names can tell its folder from the folders inside it, and a reviewer holds the rule. | [] |
-
-### feature-package-holds-its-layers → feature-laid-out-by-its-tree · SHOULD
-A feature's package holds only its layer packages and its `__init__.py`.
-
-| Why | Tags |
-|---|---|
-| a module left beside the layers belongs to none of them; the feature's name is the project's own, so no check of names holds its folder apart, and a reviewer does. | [] |
-
-### init-never-imported-from-inside → module-files-import-each-other-directly · MUST
-A file never imports from the `__init__.py` of the module it belongs to: a name of its own folder comes from the file that defines it, never `from .. import Order` at the module's root.
-
-| Why | Tags |
-|---|---|
-| the `__init__.py` imports the files below it, so a file that imports it back starts a cycle; no import contract tells a module's own files from the others, so a reviewer holds the rule. | [] |
-
-### init-is-the-way-in-within-a-layer → module-reached-only-through-its-surface · MUST
-A module is reached from another module of its own layer, and a domain role folder from the rest of its feature, only through their `__init__.py`.
-
-| Why | Tags |
-|---|---|
-| an import contract holds the kernel and a module reached from outside its layer, but tells neither one module of a layer from another nor a package's `__init__.py` from a module, so a reviewer holds the rest. | [] |
-
 ### layer-init-empty → surface-only-on-a-module-or-one-kind · MUST
-A layer folder's `__init__.py` is empty: it makes the folder a package and offers nothing.
+The `__init__.py` of a layer folder, and that of an application's import package, is empty: it makes the folder a package and offers nothing.
 
 | Why | Tags |
 |---|---|
-| an import then names the role folder it couples to, and the coverage of every file below is measured as a package's. | [] |
+| an import then names the module or the role folder it couples to, never a folder whose members lie on both sides of a boundary. | [] |
 
-## Values and configuration
+## Root
+
+### wiring-file-is-root-wiring-py → composition-root-wires-everything · MUST
+The composition root wires the program in `root/wiring.py`.
+
+| Why | Tags |
+|---|---|
+| every concrete choice of a Python program is then found in one file of one name. | [] |
 
 ### environment-read-only-under-root → root-alone-reads-the-environment · MUST
-`os.environ` and `os.getenv` are read only under `root/`, in the entry files and in specs.
+`os.environ`, `os.getenv` and `os.putenv` are reached only under `root/`, in the entry files and in specs.
 
 | Why | Tags |
 |---|---|
-| these are where Python reads a variable, so a search for them outside `root/`, the entry files and the specs finds every read the rule forbids. | [] |
+| a read of the environment anywhere else is a dependency on the process that no signature shows and no spec can hand in. | [security] |
+
+## Domain
 
 ### domain-imports-no-logging → domain-logs-nothing · MUST
-A feature's `domain/` imports no `logging`.
+A feature's `domain/` imports neither `logging` nor a logging library.
 
 | Why | Tags |
 |---|---|
-| the domain logs nothing, and an import contract holds what a reviewer would otherwise have to find. | [] |
+| a domain that cannot reach a logger returns what happened to its caller, which decides what an operator is told. | [] |

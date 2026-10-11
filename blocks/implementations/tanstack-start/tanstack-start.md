@@ -1,7 +1,7 @@
 ---
 id: tanstack-start
 summary: The TanStack app shell — SPA mode, root shell, runtime configuration.
-requires: [tanstack-router]
+requires: [tanstack-router, server]
 extends: null
 abstract: false
 languages: []
@@ -20,14 +20,14 @@ Nitro's `routeRules` set the caching headers: `immutable` with a year's `max-age
 |---|---|
 | the server that serves the files then says how long each may be kept, in the same configuration as the program's other headers. | [performance] |
 
-### content-security-policy-set-in-route-rules → strict-content-security-policy · MUST
+### content-security-policy-set-in-route-rules → document-served-with-a-strict-content-security-policy · MUST
 Nitro's `routeRules` set the Content Security Policy on every document, beside the caching rules, and the policy allows the shell's inline scripts by hash; a test reads the policy the server sends.
 
 | Why | Tags |
 |---|---|
 | the policy then lives in one configuration with the program, not in a proxy nobody here sees, and a test proves it is sent. | [security] |
 
-### security-headers-set-in-route-rules → documents-sent-with-security-headers · SHOULD
+### security-headers-set-in-route-rules · SHOULD
 Nitro's `routeRules` set the other security headers on every document — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy` and `Cross-Origin-Opener-Policy` — beside the Content Security Policy, and a test reads the headers the server sends.
 
 | Why | Tags |

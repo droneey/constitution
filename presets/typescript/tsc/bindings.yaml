@@ -22,7 +22,7 @@ self:
     - noUnusedParameters
     - strict
     - verbatimModuleSyntax
-  no-any:
+  any-never-written:
     - strict
   dead-code-deleted:
     - noUnusedLocals

@@ -450,7 +450,7 @@ const REAL_WEB_APP: ProjectLayout = {
     '',
     'domains: [ui, design-system, remote-data, remote-service, i18n, analytics, privacy,',
     '          version-control, untrusted-client]',
-    'platforms: [browser]',
+    'platforms: [browser, server]',
     'languages: [typescript, css]',
     'implementations: [react-dom, tanstack-router, tanstack-start, tanstack-query, tanstack-form,',
     '                  tailwind, shadcn, storybook, ky, zod, vite, bun-test, testing-library,',

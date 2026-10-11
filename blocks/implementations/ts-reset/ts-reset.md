@@ -13,7 +13,7 @@ governs: ["src/reset.d.ts"]
 
 > An application's standard library typed strictly: what is parsed or fetched is `unknown`.
 
-### reset-loaded-in-applications → no-any · MUST
+### reset-loaded-in-applications → any-never-written · MUST
 An application loads ts-reset once, from `src/reset.d.ts`, so `JSON.parse` and a response body's `json()` return `unknown`, not `any`; a published package never loads it.
 
 | Why | Tags |

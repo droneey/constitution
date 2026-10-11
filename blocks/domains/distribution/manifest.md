@@ -25,6 +25,13 @@ The manifest declares the lowest version of its language's runtime the unit supp
 |---|---|
 | a consumer on an older runtime then fails at install with a clear reason, not at run time on a feature the runtime lacks. | [] |
 
+### runtime-floor-within-the-ecosystems-support-window · SHOULD
+A unit published for others floors its runtime at the oldest version its ecosystem still supports, and supports no older one.
+
+| Why | Tags |
+|---|---|
+| a floor below what the ecosystem supports holds back every dependency the unit shares with its consumers, and a floor above it shuts out consumers for nothing. | [] |
+
 ### manifest-paths-resolve-in-the-packed-unit · MUST
 Every path the manifest names — an entry, its types, a command — resolves inside the unit as it is packed for the registry.
 

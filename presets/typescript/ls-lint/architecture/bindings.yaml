@@ -16,7 +16,7 @@ messaging:
     - 'src/consumers'
     - 'src/jobs'
 cli:
-  commands-in-the-cli-folder:
+  command-file-named-with-the-cli-suffix:
     - 'src/cli'
     - 'exists:0'
   file-name-in-its-owners-case:
@@ -47,7 +47,7 @@ core:
     - '.dir'
   surface-only-on-a-module-or-one-kind:
     - 'src/features/*/domain'
-  typescript-role-and-surface-files:
+  role-suffix-spelled-after-a-dot:
     - 'src/**/constants'
     - 'src/**/contracts'
     - 'src/**/entities'
