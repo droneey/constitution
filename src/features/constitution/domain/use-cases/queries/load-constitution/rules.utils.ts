@@ -36,8 +36,8 @@ interface RulesParsed {
 }
 
 const HEADING = /^### (\S+)(?: → (\S+))?(?: · (\S+))?$/;
-const TITLE = /^# (.+)$/;
-const CHAPTER = /^## (.+)$/;
+const TITLE = /^# (.+)/;
+const CHAPTER = /^## (.+)/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
 const HEADING_FORMS =
   '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';

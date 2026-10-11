@@ -13,6 +13,7 @@ const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md'
 const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
 const TYPES = 'blocks/contexts/languages/typescript/types.md';
 const UNTITLED = 'blocks/core/untitled.md';
+const DELIVERY = 'blocks/contexts/platforms/browser/delivery.md';
 
 describe('rulesCheck', () => {
   it('should report every empty or malformed field when rules break the rule format', () => {
@@ -414,6 +415,28 @@ describe('rulesCheck', () => {
       ]);
     },
   );
+
+  it('should report a rule of a platform that carries out a rule of core under a section named for another chapter', () => {
+    // Arrange
+    const files = validFiles();
+    files[DELIVERY] = `# Delivery\n\n## Names\n\n${rule({
+      parent: 'dependencies-point-inward',
+      slug: 'delivery-points-inward',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "delivery-points-inward" sits under "Names" while it carries out "dependencies-point-inward" of the chapter "Principles"; a rule of a language or a platform sits in the section named for its parent\'s chapter',
+        path: DELIVERY,
+      },
+    ]);
+  });
 
   it('should report a rule of a language whose parent sits in a file with no title', () => {
     // Arrange
