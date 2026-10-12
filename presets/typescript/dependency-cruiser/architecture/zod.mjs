@@ -12,14 +12,5 @@ export default {
         path: 'node_modules/zod/',
       },
     },
-    {
-      comment: 'zod-imported-by-the-config-file-schema',
-      from: {
-        path: '^src/composition/',
-      },
-      to: {
-        path: 'node_modules/zod/',
-      },
-    },
   ],
 };

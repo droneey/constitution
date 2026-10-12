@@ -6,7 +6,7 @@ extends: _api
 abstract: false
 languages: []
 dictionary: []
-governs: []
+governs: ["**"]
 ---
 # MCP API
 

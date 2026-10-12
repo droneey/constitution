@@ -6,7 +6,7 @@ extends: null
 abstract: true
 languages: []
 dictionary: []
-governs: ["**/api/**"]
+governs: ["**"]
 ---
 # API
 

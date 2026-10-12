@@ -132,8 +132,6 @@ yaml-js:
 zod:
   zod-imported-by-forms:
     - zod-imported-by-forms
-  zod-imported-by-the-config-file-schema:
-    - zod-imported-by-the-config-file-schema
 workspace:
   unit-reached-only-through-its-entries:
     - root-imports-units-by-name

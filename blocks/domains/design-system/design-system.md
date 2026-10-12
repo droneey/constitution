@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: []
-governs: []
+governs: ["**"]
 ---
 # Design system
 

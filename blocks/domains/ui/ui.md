@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: []
-governs: ["**/ui/**", "**/components/**", "**/widgets/**"]
+governs: ["**"]
 ---
 # User interface
 
