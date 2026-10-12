@@ -35,7 +35,7 @@ A message type another program reads changes only by addition — a new optional
 | a queue and a log keep messages written before the change, and consumers deployed before it read them and the new ones alike. | [data] |
 
 ### message-contract-change-refused-by-a-diff · MUST
-A check compares the schema of every message type another program reads with the one last released, and fails on a change that is not an addition.
+A check compares the schema of every message type another program reads with the one last released, and fails on a change that is not an addition, save the removal of a version no consumer reads any longer.
 
 | Why | Tags |
 |---|---|

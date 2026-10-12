@@ -56,8 +56,8 @@ Personal data reaches another company only when the inventory lists it as a reci
 |---|---|
 | data handed to a company nobody listed is data no request to export or erase reaches, under terms nobody read. | [data] |
 
-### high-risk-processing-assessed-before-it-starts · SHOULD
-Processing the inventory marks as high-risk to people — profiling, large-scale special categories, monitoring — starts only after an assessment of its impact, kept beside the inventory.
+### high-risk-processing-assessed-before-it-starts · MUST
+Where the law of the region asks for it, processing the inventory marks as high-risk to people — profiling, large-scale special categories, monitoring — starts only after an assessment of its impact, kept beside the inventory.
 
 | Why | Tags |
 |---|---|

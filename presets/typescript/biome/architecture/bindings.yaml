@@ -8,7 +8,7 @@ core:
   surface-only-re-exports:
     - noReExportAll
 ui:
-  component-never-calls-fetch:
+  component-reaches-no-io-global:
     - noRestrictedGlobals
 tanstack-query:
   keys-only-from-the-key-factory:

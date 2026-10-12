@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0171 |
+| One home per rule | ADR-0160 – ADR-0172 |
 
 ---
 
@@ -1028,3 +1028,13 @@
   - Contexts: TypeScript's path check takes the real path, its secret comparison compares digests, a type-only import leaves no empty import, and `#/` is rewritten below the Node.js lines that resolve it; Python gains an `IntEnum` for outside number sets; shell binds embedded commands only by quoting, input and tracing; CSS's id rule no longer bans type selectors; YAML lets a format's own keys stand bare; the CLI's codes follow 128 plus the signal; the mobile app names its file protection class and verifies code it receives over the air.
 - **Rejected.** A retry forbidden above the nearest call, which redelivery of a message breaks; strict compilation of every locale, which forbids the translations the i18n domain lets follow; an `x-extensible-enum` kept as the norm after its own guideline moved to `examples`.
 - **Why.** The reviews found a duplicate the last round left, two clashes between a rule and the redelivery or rotation that carry it out, and a strong rule no tool held; each is closed where its reader looks.
+
+## ADR-0172 — Core, the domains and the contexts after their tenth review
+**Date:** 2026-10-12 · **Status:** Accepted
+
+- **Decision.** The tenth round graded every layer at least 8.9 with every reviewer; what two or three of them found is closed.
+  - Core: markup to render may pass a sanitiser that keeps only what is allowed; a program stops taking work once nothing routes work to it; the logging facade is open to units outside the domain and the environment to the root alone; the base's errors read "At the entries", leaving "edge" to the tree; the consent rule is the agent's, and the rules that ask for it say "consent"; `one-artefact-serves-every-environment` replaces the built-once rule, so a release's travel stays out of the base. TypeScript's `IO` gains `sqlite`, `process`, `timers`, `perf_hooks`, `module` and `vm`, and Bun's own modules move to the bun part; python-check's effect modules gain `multiprocessing` and the rest, and leave `uuid`, `urllib` and `http`, whose types are pure, as `pathlib` stays out for its `Path`; python-check refuses an import past a role folder's or a sibling module's surface, as TypeScript does; both presets keep `kernel`, `shared` and `composition` from being imported as layer folders; dependency-cruiser's development-dependency check holds `production-code-imports-no-tool`.
+  - Domains: focus is trapped only by a modal layer; a streamed answer stays out of live regions and a status announces it; sign-out refuses a store-free token at its expiry; a retired part and an unread message version may be removed; a migration runs once only for a shared store; a read may suspend to a boundary; an address is reached only if public; a package's published props stay; only a schema failure is asked again; an impact assessment binds where the law asks; a webhook's timestamp is checked where signed; `cache-undoes-only-the-failed-writes-change`; trace ids from pino and structlog are taken only from trusted callers.
+  - Contexts: a package others install ships no `#/` specifier; Python resolves the root it confines a path to; text is clipped by no box but one visually hidden; sh uses `pipefail` where it has it; `component-reaches-no-io-global`.
+- **Rejected.** A list of effect modules that flags a pure type such as `uuid.UUID`; trapping focus in every layer, which a tooltip or a combobox must not do.
+- **Why.** Each fix closes a clash between a rule and the rules that carry it out, or a rule no tool held although one can.

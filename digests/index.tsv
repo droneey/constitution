@@ -90,13 +90,13 @@ block	vite	implementation	Vite builds and serves the bundle.		browser	typescript
 block	vulture	implementation	vulture finds the Python code nothing uses.			python		false		python		
 block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md	config-file	typescript		false				**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.			yaml		false		yaml		.yamllint.yaml
-block	zod	implementation	zod parses untrusted input into the program's types.		config-file architecture/convergence architecture/ui	typescript		false				**/models/** **/adapters/**
+block	zod	implementation	zod parses untrusted input into the program's types.		config-file architecture/config-file architecture/ui	typescript		false				**/models/** **/adapters/**
 chapter	core	agents.md	a person or an agent at work on the repository.
 chapter	core	changes.md	a change, one reviewed step of a task's work: its scope, what it carries, its hand-back.
 chapter	core	code.md	any code no other chapter governs.
 chapter	core	comments.md	a comment, the documentation of an entry, a mark of deprecation.
 chapter	core	dependencies.md	packages, downloads and tools taken from others.
-chapter	core	effects.md	calls, resources, concurrency, writes, stopping, records, configuration.
+chapter	core	effects.md	calls, resources, concurrency, writes, stopping, records, configuration, artefacts.
 chapter	core	errors.md	a failure: raised, caught, carried, shown.
 chapter	core	functions.md	a function.
 chapter	core	layout.md	a file or a folder: its kind, name, size and purpose; readmes.
@@ -180,7 +180,7 @@ rule	irreversible-operation-runs-dry-by-default	core	blocks/core/effects.md		MUS
 rule	shared-resource-has-one-writer	core	blocks/core/effects.md		MUST				true
 rule	diagnostics-written-through-a-logger	core	blocks/core/effects.md		MUST	security			true
 rule	configuration-parsed-once-at-start	core	blocks/core/effects.md		MUST	security			true
-rule	artefact-built-once-for-every-environment	core	blocks/core/effects.md		MUST	security			true
+rule	one-artefact-serves-every-environment	core	blocks/core/effects.md		MUST	security			true
 rule	failure-is-expected-or-defect	core	blocks/core/errors.md		MUST	errors			true
 rule	expected-failure-is-part-of-the-contract	core	blocks/core/errors.md		SHOULD	errors			true
 rule	failure-told-apart-by-code	core	blocks/core/errors.md		MUST	errors			true
@@ -747,7 +747,7 @@ rule	personal-data-collected-only-for-its-purpose	privacy	blocks/domains/privacy
 rule	sharing-settings-start-most-protective	privacy	blocks/domains/privacy/privacy.md		MUST	security data			true
 rule	personal-data-kept-no-longer-than-its-retention	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-reaches-only-a-listed-recipient	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
-rule	high-risk-processing-assessed-before-it-starts	privacy	blocks/domains/privacy/privacy.md		SHOULD	data			true
+rule	high-risk-processing-assessed-before-it-starts	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-exported-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	rights-request-verified-before-it-is-answered	privacy	blocks/domains/privacy/privacy.md		MUST	data security			true
 rule	personal-data-erased-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
@@ -777,7 +777,7 @@ rule	cache-key-built-by-its-features-factory	remote-data	blocks/domains/remote-d
 rule	write-invalidates-only-its-features-keys	remote-data	blocks/domains/remote-data/architecture/remote-data.md		MUST	data	architecture	feature-never-imports-a-feature	true
 rule	stream-folded-in-the-domain	remote-data	blocks/domains/remote-data/architecture/remote-data.md		SHOULD	data	architecture		true
 rule	cache-cleared-when-the-session-ends	remote-data	blocks/domains/remote-data/with/access-control.md	access-control	MUST	security data			true
-rule	cache-restores-a-snapshot-when-a-write-fails	remote-data	blocks/domains/remote-data/with/ui.md	ui	MUST	data			true
+rule	cache-undoes-only-the-failed-writes-change	remote-data	blocks/domains/remote-data/with/ui.md	ui	MUST	data			true
 rule	cache-exposes-the-input-of-pending-writes	remote-data	blocks/domains/remote-data/with/ui.md	ui	MUST	data ux			true
 rule	unauthenticated-failure-ends-the-session-once	remote-data	blocks/domains/remote-data/architecture/with/access-control.md	access-control	MUST	errors security	architecture		true
 rule	address-from-a-caller-reached-only-if-public	remote-service	blocks/domains/remote-service/calls.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
@@ -988,7 +988,7 @@ rule	product-units-blind-to-each-other	workspace	blocks/domains/workspace/archit
 rule	units-import-toward-libs	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	import-points-inward	true
 rule	bundle-within-its-size-budget	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
 rule	hashed-file-immutable-and-its-pointers-revalidated	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
-rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/browser.md		MUST	security		artefact-built-once-for-every-environment	true
+rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/browser.md		MUST	security		one-artefact-serves-every-environment	true
 rule	browser-resources-have-one-writer	browser	blocks/contexts/platforms/browser/browser.md		MUST			shared-resource-has-one-writer	true
 rule	service-worker-update-waits-for-the-page	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	ux errors			true
 rule	service-worker-caches-versioned	browser	blocks/contexts/platforms/browser/browser.md		MUST	performance		kept-collection-bounded	true
@@ -1134,7 +1134,7 @@ rule	stop-signal-reaches-the-server-process	server	blocks/contexts/platforms/ser
 rule	server-copy-keeps-only-what-it-can-lose	server	blocks/contexts/platforms/server/server.md		MUST	data			true
 rule	one-off-work-runs-as-its-own-process	server	blocks/contexts/platforms/server/server.md		SHOULD	data			true
 rule	server-pools-sized-to-the-hosts-grant	server	blocks/contexts/platforms/server/server.md		SHOULD	performance			true
-rule	server-configuration-taken-from-its-host	server	blocks/contexts/platforms/server/server.md		MUST	security		artefact-built-once-for-every-environment	true
+rule	server-configuration-taken-from-its-host	server	blocks/contexts/platforms/server/server.md		MUST	security		one-artefact-serves-every-environment	true
 rule	server-listens-where-its-configuration-says	server	blocks/contexts/platforms/server/server.md		SHOULD				true
 rule	server-serves-its-protocol-itself	server	blocks/contexts/platforms/server/server.md		SHOULD				true
 rule	server-log-leaves-as-a-stream	server	blocks/contexts/platforms/server/server.md		MUST	security		diagnostics-written-through-a-logger	true
@@ -1387,7 +1387,7 @@ rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/
 rule	package-export-typed-explicitly	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			distributed-unit-ships-its-types	true
 rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	security		distributed-unit-ships-only-what-its-manifest-names	true
 rule	integration-is-a-subpath-with-an-optional-peer	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			integration-is-an-entry-with-an-optional-framework	true
-rule	hash-imports-rewritten-below-their-runtime	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	errors			true
+rule	hash-imports-rewritten-in-what-ships	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	errors			true
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			manifest-declares-consumer-owned-dependencies-as-peers	true
 rule	runtime-floor-in-engines	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			manifest-declares-the-runtime-floor	true
 rule	dependency-declared-with-a-caret	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			manifest-declares-dependencies-by-range	true
@@ -1397,7 +1397,7 @@ rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
 rule	command-file-named-with-the-cli-suffix	typescript	blocks/contexts/languages/typescript/architecture/with/cli.md	cli	MUST		architecture	cli-folder-holds-one-file-per-command	true
-rule	component-never-calls-fetch	typescript	blocks/contexts/languages/typescript/architecture/with/ui.md	ui	MUST		architecture	presentational-component-performs-no-io	true
+rule	component-reaches-no-io-global	typescript	blocks/contexts/languages/typescript/architecture/with/ui.md	ui	MUST		architecture	presentational-component-performs-no-io	true
 rule	typescript-unit-names-under-the-scope	typescript	blocks/contexts/languages/typescript/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
 rule	engines-floor-raised-only-in-a-major	typescript	blocks/contexts/languages/typescript/workflow/with/distribution.md	distribution	MUST		workflow	runtime-floor-never-raised-in-a-patch	true
 rule	anchor-aliased-at-least-once	yaml	blocks/contexts/languages/yaml/yaml.md		MUST			dead-code-deleted	true
@@ -1529,7 +1529,7 @@ rule	worktree-one-branch-no-linked-folder	git	blocks/implementations/git/git.md	
 rule	gitignore-covers-key-files	git	blocks/implementations/git/git.md		MUST	security		secret-never-in-the-repository	true
 rule	gitignore-covers-environment-files	git	blocks/implementations/git/git.md		MUST	security		machine-local-files-ignored	true
 rule	gitignore-covers-dependencies-output-and-caches	git	blocks/implementations/git/git.md		SHOULD				true
-rule	release-tags-annotated	git	blocks/implementations/git/git.md		MUST	security		release-tag-signed	true
+rule	release-tags-annotated	git	blocks/implementations/git/git.md		MUST				true
 rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/git.md		SHOULD	performance		large-files-outside-history	true
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/hadolint.md		MUST			suppression-silences-one-finding	true
 rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	errors performance		outside-call-has-a-timeout	true
@@ -1640,6 +1640,7 @@ rule	module-never-patched-in-a-spec	pytest	blocks/implementations/pytest/pytest.
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/pytest.md		MUST	errors		async-work-awaited-or-held-by-a-scope	true
 rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/python-check.md		MUST			function-within-its-limits	true
 rule	relative-import-kept-in-its-feature	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	relative-imports-stay-in-the-module	true
+rule	import-past-a-surface-refused	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	module-files-import-each-other-directly	true
 rule	packages-kept-to-their-homes	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	effect-modules-kept-at-the-edge	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	effects-held-only-by-the-edge	true
 rule	dangerously-set-inner-html-never-used	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	security		raw-html-never-reaches-the-dom	true
@@ -1819,7 +1820,7 @@ rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/zod.md		MUS
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/zod.md		SHOULD	errors		parse-failure-lists-every-problem	true
 rule	zod-four-forms-only	zod	blocks/implementations/zod/zod.md		MUST			deprecated-form-never-used	true
 rule	json-schema-from-zod	zod	blocks/implementations/zod/with/config-file.md	config-file	MUST	data		published-schema-generated-from-code	true
-rule	zod-imported-by-the-config-file-schema	zod	blocks/implementations/zod/architecture/with/convergence.md	convergence	MUST		architecture	layer-imports-dependencies-by-its-role	true
+rule	zod-imported-by-the-config-file-schema	zod	blocks/implementations/zod/architecture/with/config-file.md	config-file	MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	zod-imported-by-forms	zod	blocks/implementations/zod/architecture/with/ui.md	ui	MUST		architecture	layer-imports-dependencies-by-its-role	true
 answer	bun	workspace-tool-links-units-from-the-working-tree	yes
 answer	bun	publishing-tool-supports-run-identity-and-provenance	no
@@ -1856,7 +1857,7 @@ answer	tailwind	ui-styling-restricted-to-tokens	yes
 answer	tailwind	ui-styling-resolves-every-mode-from-one-set	yes
 answer	tanstack-query	cache-shares-one-read-per-key	yes
 answer	tanstack-query	cache-invalidates-by-key-prefix	yes
-answer	tanstack-query	cache-restores-a-snapshot-when-a-write-fails	yes
+answer	tanstack-query	cache-undoes-only-the-failed-writes-change	yes
 answer	tanstack-query	cache-exposes-the-input-of-pending-writes	yes
 answer	tanstack-query	cache-passes-every-failure-to-one-handler	yes
 answer	tanstack-query	cache-sets-staleness-per-key	yes

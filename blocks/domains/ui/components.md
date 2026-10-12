@@ -93,7 +93,7 @@ A new prop takes the name the components already use for its meaning, and synony
 | one name per meaning across components makes every component's interface guessable. | [] |
 
 ### unused-props-deleted → dead-code-deleted · MUST
-An optional prop no call site passes is deleted, and its default is written where it was used.
+An optional prop no call site passes is deleted, and its default is written where it was used, save a prop of a component a package publishes to others.
 
 | Why | Tags |
 |---|---|
@@ -164,7 +164,7 @@ An element's state — hovered, focused, selected, open, disabled, invalid, busy
 ## Requirements for implementation
 
 ### ui-primitives-keep-keyboard-and-focus · MUST
-The library's complex patterns follow the platform's keyboard conventions; focus moves into a layer, stays in it while it is open and returns to what opened it, and Escape dismisses the layer.
+The library's complex patterns follow the platform's keyboard conventions for each pattern: focus moves into a modal layer, stays in it while it is open and returns to what opened it; a layer that is not modal lets focus leave or closes when it does; a tooltip and a combobox's list never take focus; Escape dismisses a layer.
 
 | Why | Tags |
 |---|---|

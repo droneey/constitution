@@ -5,7 +5,7 @@
 ## Deciding
 
 ### consent-given-for-the-actions-it-names · MUST
-Consent a rule asks for is a person's go-ahead given where the agent asks for it — a chat, an issue, a review of a change — in the request that names the action, or in advance by a standing grant; it covers only the actions it names and never carries over to others.
+The consent an agent needs from its person is a go-ahead given where the agent asks for it — a chat, an issue, a review of a change — in the request that names the action, or in advance by a standing grant; it covers only the actions it names and never carries over to others.
 
 | Why | Tags |
 |---|---|
@@ -70,7 +70,7 @@ An agent's context never holds a secret: the files and commands that would print
 | whatever enters the context can leave it — in a log, a message, an injected request — so a secret the agent never saw is one it cannot leak. | [security] |
 
 ### agent-never-widens-its-own-limits · MUST
-An agent never widens its own limits: it changes no permission setting, hook, instruction file, grant, check or pipeline that bounds it, unless that change is its task and a person agreed to it.
+An agent never widens its own limits: it changes no permission setting, hook, instruction file, grant, check or pipeline that bounds it, unless that change is its task and a person consented to it.
 
 | Why | Tags |
 |---|---|

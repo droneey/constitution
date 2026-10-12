@@ -31,7 +31,7 @@ A file whose name carries the hash of its content is served as `immutable`, and 
 
 ## Effects
 
-### runtime-configuration-served-beside-bundle → artefact-built-once-for-every-environment · MUST
+### runtime-configuration-served-beside-bundle → one-artefact-serves-every-environment · MUST
 One bundle serves every environment: a setting that differs between environments is served beside the bundle, never built into it.
 
 | Why | Tags |

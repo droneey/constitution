@@ -16,6 +16,9 @@ cli:
     - adapters-know-no-commands
   import-points-inward:
     - commands-reached-only-from-entries
+bun:
+  effects-held-only-by-the-edge:
+    - bun-effects-reached-only-from-the-edge
 _react:
   react-imported-by-the-ui-and-binding-units:
     - react-imported-by-the-ui-and-binding-units

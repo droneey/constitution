@@ -35,7 +35,7 @@ A layer or role folder whose name has more than one word is spelled in snake_cas
 | a folder of the import package is a package, and a package's name allows no hyphen. | [] |
 
 ### relative-imports-stay-in-the-module → module-files-import-each-other-directly · MUST
-An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name; files inside one module import each other by relative path, at any depth, and a relative import never climbs out of it. A module never imports itself by its absolute path.
+An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name; files inside one module import each other by relative path, a role folder of a feature's domain or another module of a layer through its surface, and a relative import never climbs out of the module. A module never imports itself by its absolute path.
 
 | Why | Tags |
 |---|---|

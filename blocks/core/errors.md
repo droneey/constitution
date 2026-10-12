@@ -76,7 +76,7 @@ A failure is retried only when it is transient — a timeout, a dropped connecti
 |---|---|
 | a retry of a failure that will not change wastes time, and a retry of an operation that is not idempotent repeats its effect. | [errors] |
 
-## At the edge
+## At the entries
 
 ### last-resort-handler-one-per-entry · MUST
 A handler of last resort, one for each entry into the program — a command line, a server, a screen, a consumer of messages — turns every failure that reaches it into what that entry’s user sees, and a failure ends the program only there.

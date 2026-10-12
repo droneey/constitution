@@ -169,9 +169,9 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
     ),
     pytest.param(
       DOMAIN,
-      'from uuid import uuid4',
+      'from secrets import token_hex',
       (
-        'features/orders/domain/entities holds no effect, and uuid is one; '
+        'features/orders/domain/entities holds no effect, and secrets is one; '
         'it reaches it through a port'
       ),
       id='an effect of the standard library in the domain',

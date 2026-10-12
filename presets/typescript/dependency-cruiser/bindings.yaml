@@ -4,10 +4,10 @@ core:
   test-code-never-reached-from-production:
     - no-test-code-in-production
 storybook:
-  tools-pinned-in-dev-dependencies:
+  production-code-imports-no-tool:
     - no-development-dependency-in-production
   stories-unreachable-from-production:
     - stories-unreachable-from-production
 typescript:
-  tools-pinned-in-dev-dependencies:
+  production-code-imports-no-tool:
     - no-development-dependency-in-production

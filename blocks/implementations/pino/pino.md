@@ -35,7 +35,7 @@ In production the instance has no `transport` and writes JSON lines to stdout, i
 | a transport moves the writing to a worker thread that a collector reading stdout does not need, and pino-pretty's lines are for a person, not a parser. | [] |
 
 ### trace-id-added-by-mixin → log-record-carries-the-trace-id · SHOULD
-The instance's `mixin` returns the trace id from an `AsyncLocalStorage` — `mixin: () => ({ traceId: traceScope.getStore()?.traceId })` — and the middleware of each request or task enters it with `traceScope.run({ traceId }, next)`, the caller's id from its header or a new one.
+The instance's `mixin` returns the trace id from an `AsyncLocalStorage` — `mixin: () => ({ traceId: traceScope.getStore()?.traceId })` — and the middleware of each request or task enters it with `traceScope.run({ traceId }, next)`, the caller's id from its header where the caller is one of the program's own systems, and a new one otherwise.
 
 | Why | Tags |
 |---|---|

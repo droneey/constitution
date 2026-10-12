@@ -54,15 +54,20 @@ OWN = frozenset({'__future__', *sys.stdlib_module_names})
 # which only the edge imports.
 EFFECTS = frozenset(
   {
+    'ctypes',
+    'dbm',
+    'fcntl',
     'ftplib',
+    'getpass',
     'glob',
-    'http',
     'mmap',
+    'multiprocessing',
     'os',
     'random',
     'secrets',
     'select',
     'selectors',
+    'shelve',
     'shutil',
     'signal',
     'smtplib',
@@ -72,8 +77,7 @@ EFFECTS = frozenset(
     'subprocess',
     'tempfile',
     'time',
-    'urllib',
-    'uuid',
+    'webbrowser',
   }
 )
 

@@ -14,7 +14,7 @@ An output the program acts on — a choice, a record, a tool's arguments — is 
 ## Endings
 
 ### output-used-only-when-finished → failure-is-expected-or-defect · MUST
-An output is acted on, stored as an answer or handed to another step only when the model stopped because it had finished; a stream may be shown as it arrives, marked unfinished until it ends; a stop at the token limit, a refusal, a content filter or an output that fails its schema is an expected failure of its own type, asked again at most the number of times the project sets.
+An output is acted on, stored as an answer or handed to another step only when the model stopped because it had finished; a stream may be shown as it arrives, marked unfinished until it ends; a stop at the token limit, a refusal, a content filter or an output that fails its schema is an expected failure of its own type, and only an output that fails its schema is asked again, at most the number of times the project sets.
 
 | Why | Tags |
 |---|---|

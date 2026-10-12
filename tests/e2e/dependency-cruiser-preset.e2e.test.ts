@@ -153,10 +153,10 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'effects-reached-only-from-the-edge',
     },
     {
-      condition: "a feature's application layer opens a database through Bun",
+      condition: "a feature's application layer opens a database through Node.js",
       files: {
         'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
-          "import { Database } from 'bun:sqlite';\nexport const listOrders = Database;\n",
+          "import { DatabaseSync } from 'node:sqlite';\nexport const listOrders = DatabaseSync;\n",
       },
       rule: 'effects-reached-only-from-the-edge',
     },
@@ -531,6 +531,19 @@ describe('the dependency-cruiser layer set', () => {
   });
 
   it.each([
+    {
+      condition: "a feature's application layer opens a database through Bun",
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+          "import { Database } from 'bun:sqlite';\nexport const listOrders = Database;\n",
+      },
+      parts: [
+        'typescript/bun',
+        'typescript/architecture/bun',
+        'typescript/architecture/core',
+      ],
+      rule: 'bun-effects-reached-only-from-the-edge',
+    },
     {
       condition: 'a component imports an adapter',
       files: {

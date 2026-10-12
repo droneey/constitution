@@ -1,4 +1,4 @@
-# zod with convergence
+# zod with config file
 
 ### zod-imported-by-the-config-file-schema → layer-imports-dependencies-by-its-role · MUST
 zod's home reaches past the edge into `composition/`, where the config file's schema sits.

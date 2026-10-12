@@ -338,7 +338,7 @@ Outside input never reaches a query or markup through an f-string, `%` or `str.f
 | text formatted into a query or markup becomes code, while a parameter or a template keeps the input apart from what the library escapes or binds. | [security] |
 
 ### outside-path-confined-after-resolve → outside-path-confined-to-its-root · MUST
-A path built from outside input is joined to its root, resolved with `Path.resolve()`, and refused unless `is_relative_to(root)` holds for it.
+A path built from outside input is joined to its root, resolved with `Path.resolve()`, and refused unless `is_relative_to(root.resolve())` holds for it.
 
 | Why | Tags |
 |---|---|

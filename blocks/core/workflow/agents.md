@@ -5,7 +5,7 @@
 ## Deciding
 
 ### agent-asks-before-a-consequential-change · MUST
-An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s go-ahead for that change, unless the task names that change.
+An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
 
 | Why | Tags |
 |---|---|

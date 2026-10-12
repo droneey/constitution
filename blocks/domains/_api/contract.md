@@ -46,7 +46,7 @@ A write that a repeat would perform twice — a creation, a payment, a message s
 ## Change
 
 ### published-contract-changed-only-by-addition · MUST
-A published contract changes only by addition — a new operation, a new optional field of a request, a new field of an answer; a removal or a change of meaning ships beside the old one, as a new version, or under a new name in a style that has no versions.
+A published contract changes only by addition — a new operation, a new optional field of a request, a new field of an answer — save the removal of what was retired and is past its announced date; a removal or a change of meaning ships beside the old one, as a new version, or under a new name in a style that has no versions.
 
 | Why | Tags |
 |---|---|

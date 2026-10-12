@@ -28,7 +28,7 @@ A feature never imports another feature; features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. Reading the environment and writing diagnostics through the logging facade stand outside the ports.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. The composition root's reading of the environment, and a unit outside the domain writing diagnostics through the logging facade, stand outside the ports.
 
 | Why | Tags |
 |---|---|

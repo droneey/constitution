@@ -5,7 +5,7 @@
 ## Streaming
 
 ### streamed-answer-announced-once → status-changes-announced · MUST
-A region that receives a streamed answer is marked busy while it streams, so that assistive technology announces the answer once, when it is complete, never chunk by chunk.
+A streamed answer sits outside any live region, so assistive technology never announces it chunk by chunk; a separate status message announces once that the answer is coming and once that it is complete.
 
 | Why | Tags |
 |---|---|

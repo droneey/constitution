@@ -7,6 +7,9 @@ from python_check.findings import Finding
 
 SOURCE_ROOT = 'src'
 FEATURES = 'features'
+DOMAIN = 'domain'
+# The layers whose top-level folders are modules, each reached through its surface.
+MODULE_LAYERS = frozenset({'adapters', 'composition', 'contracts', 'kernel', 'libs', 'shared'})
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -44,6 +47,34 @@ def module_of(folder: tuple[str, ...]) -> tuple[str, ...]:
 # of the file or of the name it names.
 def target_folder(*, root: ImportRoot, target: tuple[str, ...]) -> tuple[str, ...]:
   return target if root.folder.joinpath(*target).is_dir() else target[:-1]
+
+
+# The folder whose surface the rest of its layer reaches it through: a role
+# folder of a feature's domain, or a module of a layer; () for any other folder.
+def unit_of(folder: tuple[str, ...]) -> tuple[str, ...]:
+  if folder[:1] == (FEATURES,) and folder[2:3] == (DOMAIN,) and len(folder) >= 4:
+    return folder[:4]
+
+  if len(folder) >= 2 and folder[0] in MODULE_LAYERS:
+    return folder[:2]
+
+  return ()
+
+
+# The unit whose surface an import reaches past, when it names a file or a
+# folder inside a unit other than the importer's own.
+def _surface_passed(
+  *,
+  importer: tuple[str, ...],
+  root: ImportRoot,
+  target: tuple[str, ...],
+) -> tuple[str, ...] | None:
+  unit = unit_of(target_folder(root=root, target=target))
+
+  if unit and len(target) > len(unit) and unit_of(importer) != unit:
+    return unit
+
+  return None
 
 
 def _relative_targets(
@@ -89,6 +120,14 @@ def _relative_findings(
         line=node.lineno,
         message=f'a relative import leaves its module, {name}; import it by its absolute path',
       )
+    elif (unit := _surface_passed(importer=root.package, root=root, target=target)) is not None:
+      yield Finding(
+        path=path,
+        line=node.lineno,
+        message=(
+          f'a relative import reaches past the surface of {"/".join(unit)}; import that folder'
+        ),
+      )
 
 
 def _absolute_names(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]:
@@ -107,20 +146,28 @@ def _absolute_findings(
 ) -> Iterator[Finding]:
   module = module_of(root.package)
 
-  if module[:1] != (FEATURES,):
-    return
-
   for name in _absolute_names(node):
     target = tuple(name.split('.'))
+    inner = target[1:]
 
-    if (
-      target[0] == root.folder.name
-      and module_of(target_folder(root=root, target=target[1:])) == module
-    ):
+    if target[0] != root.folder.name:
+      continue
+
+    if module[:1] == (FEATURES,) and module_of(target_folder(root=root, target=inner)) == module:
       yield Finding(
         path=path,
         line=node.lineno,
         message=f'a feature imports itself by its absolute path, {name}; import it relatively',
+      )
+    elif (
+      inner[:1] == root.package[:1]
+      and (unit := _surface_passed(importer=root.package, root=root, target=inner)) is not None
+    ):
+      surface = '.'.join((root.folder.name, *unit))
+      yield Finding(
+        path=path,
+        line=node.lineno,
+        message=f'an import reaches past the surface of {surface}; import {surface}',
       )
 
 

@@ -42,7 +42,7 @@ The chain ends in `dict_tracebacks` and `JSONRenderer` in production, and in `Co
 | `dict_tracebacks` turns an exception into fields, so a JSON line keeps its traceback as data a collector reads, not as one escaped string. | [] |
 
 ### trace-id-bound-through-contextvars → log-record-carries-the-trace-id · SHOULD
-`merge_contextvars` is the chain's first processor, and the middleware of each request or task clears the context with `clear_contextvars` and binds its trace id — the caller's, from its header, or a new one — with `bind_contextvars`.
+`merge_contextvars` is the chain's first processor, and the middleware of each request or task clears the context with `clear_contextvars` and binds its trace id — the caller's, from its header, where the caller is one of the program's own systems, and a new one otherwise — with `bind_contextvars`.
 
 | Why | Tags |
 |---|---|

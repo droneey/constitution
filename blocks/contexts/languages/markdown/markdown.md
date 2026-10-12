@@ -68,7 +68,7 @@ No two headings under one parent heading share their text.
 
 | Why | Tags |
 |---|---|
-| a heading's text is its anchor, so a repeated heading gets a numbered anchor that changes when the first is renamed, and a link lands on the wrong section. | [] |
+| two sibling headings with one name read alike in the outline and the table of contents, and a reader cannot tell which part each opens. | [] |
 
 ### heading-never-faked-by-emphasis · SHOULD
 A line that titles a section is a heading, never a paragraph of bold or italic text.

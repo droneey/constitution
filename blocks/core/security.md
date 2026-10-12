@@ -63,7 +63,7 @@ A pattern matched against outside input runs in time linear in its length: a reg
 | a backtracking pattern turns one crafted string into minutes of work, and one request takes the program down. | [security, performance] |
 
 ### outside-input-reaches-interpreters-as-parameters · MUST
-Input from outside — a model’s output included — reaches a query, a shell command, a file path, markup or a template only through that interpreter’s parameters or its encoder.
+Input from outside — a model’s output included — reaches a query, a shell command, markup or a template only through that interpreter’s parameters or its encoder — or, where the input is itself markup to render, a sanitiser that keeps only the elements, attributes and schemes allowed.
 
 | Why | Tags |
 |---|---|

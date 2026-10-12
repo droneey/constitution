@@ -12,7 +12,7 @@ A session gets a new identifier at sign-in and whenever its rights rise, and the
 | an identifier planted before sign-in otherwise becomes, at sign-in, a session the attacker already holds. | [security] |
 
 ### session-ended-on-the-server-at-sign-out · MUST
-A session ends on the server at sign-out: its identifier or token is refused from then on, whatever copy of it survives on a client.
+A session ends on the server at sign-out: its identifier and its refresh token are refused from then on, whatever copy of them survives on a client, and an access token checked without the store is refused at the latest when it expires.
 
 | Why | Tags |
 |---|---|

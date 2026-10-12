@@ -26,7 +26,7 @@ A font size is set in `rem`, or in `em` relative to one, never in `px`.
 | a size in `rem` follows the text size the user set in the browser, which a size in pixels ignores. | [a11y] |
 
 ### text-spacing-overridable-without-clipping → wcag-aa-conformance · MUST
-No box that holds text fixes its height or hides its overflow, so text stays whole when the user sets line height to 1.5 times the font size, paragraph spacing to 2 times, letter spacing to 0.12 times and word spacing to 0.16 times.
+No box that shows text clips it — none fixes its height while hiding its overflow, save one visually hidden for assistive technology — so text stays whole when the user sets line height to 1.5 times the font size, paragraph spacing to 2 times, letter spacing to 0.12 times and word spacing to 0.16 times.
 
 | Why | Tags |
 |---|---|

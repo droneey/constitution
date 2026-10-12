@@ -17,4 +17,3 @@ A unit's runtime floor is never raised in a patch; it is raised in a minor only 
 | Why | Tags |
 |---|---|
 | a consumer takes every patch, and under a range every minor, without reading it; a release that drops its runtime must reach it only where its resolver keeps it on the last release that runs. | [] |
-

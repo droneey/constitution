@@ -30,7 +30,7 @@ A migration keeps the schema usable by the release that runs while it is applied
 ## Running
 
 ### migration-applied-once-before-its-release · MUST
-A migration is applied once, by one run before the release that needs it starts, never by each instance as it boots.
+A migration of a store several instances share is applied once, by one run before the release that needs it starts, never by each instance as it boots.
 
 | Why | Tags |
 |---|---|

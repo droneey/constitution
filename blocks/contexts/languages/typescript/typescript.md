@@ -99,7 +99,7 @@ Every import alias is declared once, in `imports` of `package.json`, the field t
 | one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | [] |
 
 ### hash-alias-for-the-source-root · MUST
-The source root is aliased `#/`: `"#/*": "./src/*"` in `imports`.
+The source root is aliased `#/`: `"#/*": "./src/*"` in `imports`; a specifier that names a folder needs a resolver that maps it to its surface, so code that runs on a runtime without one is bundled first.
 
 | Why | Tags |
 |---|---|
@@ -231,7 +231,7 @@ A token, a nonce or an identifier that guards access comes from `crypto.getRando
 | `Math.random` can be predicted from a few of its outputs, so a value drawn from it is guessed by whoever saw others; Web Crypto is a cryptographic source in every runtime. | [security] |
 
 ### secret-compared-by-timing-safe-equal → security-primitive-from-a-vetted-library · MUST
-A secret — a token, a signature, a key — is compared with `crypto.timingSafeEqual` over the HMACs or digests of both sides, never with `===`.
+A secret — a token, a signature, a key — is compared with `timingSafeEqual` from `node:crypto`, or the runtime's equivalent, over the HMACs or digests of both sides, never with `===`.
 
 | Why | Tags |
 |---|---|

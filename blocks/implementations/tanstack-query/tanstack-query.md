@@ -82,7 +82,7 @@ A mutation's `onSettled` returns the invalidation's promise, so the write stays 
 |---|---|---|
 | `cache-shares-one-read-per-key` | reads with one key share one query and one request | yes |
 | `cache-invalidates-by-key-prefix` | `invalidateQueries` by a key prefix, with or without a refetch | yes |
-| `cache-restores-a-snapshot-when-a-write-fails` | `onMutate` returns a context that `onError` restores, and `onSettled` invalidates | yes |
+| `cache-undoes-only-the-failed-writes-change` | `onMutate` returns a context that `onError` restores, and `onSettled` invalidates | yes |
 | `cache-exposes-the-input-of-pending-writes` | `useMutationState` reads the variables of pending writes | yes |
 | `cache-passes-every-failure-to-one-handler` | `onError` of `QueryCache` and `MutationCache` | yes |
 | `cache-sets-staleness-per-key` | `staleTime` and refetch options per query | yes |

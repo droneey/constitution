@@ -16,6 +16,10 @@ TREE = {
   'src/shop/features/orders/domain/entities/order_entity.py': '',
   'src/shop/features/orders/adapters/sql/orders_repository.py': '',
   'src/shop/features/billing/__init__.py': '',
+  'src/shop/kernel/dates/__init__.py': '',
+  'src/shop/kernel/dates/calendar.py': '',
+  'src/shop/libs/tabula/__init__.py': '',
+  'src/shop/libs/tabula/sheet.py': '',
 }
 
 
@@ -30,8 +34,8 @@ def _findings(*, folder: Path, importer: str, statement: str) -> tuple[Finding, 
   [
     pytest.param(
       'src/shop/features/orders/adapters/sql/orders_repository.py',
-      'from ...domain.entities.order_entity import Order',
-      id='a relative import inside one feature, at any depth',
+      'from ...domain.entities import Order',
+      id="a relative import of a domain role folder's surface",
     ),
     pytest.param(
       'src/shop/features/orders/adapters/sql/orders_repository.py',
@@ -40,8 +44,8 @@ def _findings(*, folder: Path, importer: str, statement: str) -> tuple[Finding, 
     ),
     pytest.param(
       'src/shop/features/orders/__init__.py',
-      'from .domain.entities.order_entity import Order',
-      id="a feature's surface re-exporting its own files",
+      'from .domain.entities import Order',
+      id="a feature's surface re-exporting a role folder's surface",
     ),
     pytest.param(
       'src/shop/kernel/money.py',
@@ -50,8 +54,8 @@ def _findings(*, folder: Path, importer: str, statement: str) -> tuple[Finding, 
     ),
     pytest.param(
       'src/shop/kernel/money/currency.py',
-      'from ..dates.calendar import Calendar',
-      id='a relative import across the subfolders of one top-level folder',
+      'from ..dates import Calendar',
+      id="a relative import of another module's surface in one top-level folder",
     ),
     pytest.param(
       'src/shop/main.py',
@@ -67,6 +71,41 @@ def _findings(*, folder: Path, importer: str, statement: str) -> tuple[Finding, 
       'src/shop/kernel/money.py',
       'from shop.kernel import currency',
       id='a top-level folder importing itself by its absolute path',
+    ),
+    pytest.param(
+      'src/shop/features/orders/domain/entities/order_entity.py',
+      'from .order_value import Value',
+      id='a relative import inside one role folder',
+    ),
+    pytest.param(
+      'src/shop/features/orders/domain/entities/order_entity.py',
+      'from ...app.use_cases.place_order import place',
+      id='a relative import into a folder outside the domain',
+    ),
+    pytest.param(
+      'src/shop/features/orders/domain/use_cases/queries/list_orders.py',
+      'from ..commands.place_order import place',
+      id='a relative import between the folders of one domain role folder',
+    ),
+    pytest.param(
+      'src/shop/libs/tabula/cells/cell.py',
+      'from ..rows.row import Row',
+      id='a relative import between the folders of one module',
+    ),
+    pytest.param(
+      'src/shop/libs/money/amount.py',
+      'from shop.libs.tabula import Sheet',
+      id="an absolute import of a sibling module's surface",
+    ),
+    pytest.param(
+      'src/shop/libs/tabula/sheet.py',
+      'from shop.libs.tabula.cells import Cell',
+      id='a module importing its own file by its absolute path',
+    ),
+    pytest.param(
+      'src/shop/root/wiring.py',
+      'from shop.libs.tabula.sheet import Sheet',
+      id='an absolute import past a surface from another layer, which the contracts hold',
     ),
     pytest.param(
       'tests/test_orders.py',
@@ -124,6 +163,27 @@ def test_should_find_nothing_when_an_import_stays_in_its_module(
       id='a relative import from the package root into a folder',
     ),
     pytest.param(
+      'src/shop/features/orders/adapters/sql/orders_repository.py',
+      'from ...domain.entities.order_entity import Order',
+      (
+        'a relative import reaches past the surface of features/orders/domain/entities; '
+        'import that folder'
+      ),
+      id="a relative import past a domain role folder's surface",
+    ),
+    pytest.param(
+      'src/shop/kernel/money/currency.py',
+      'from ..dates.calendar import Calendar',
+      'a relative import reaches past the surface of kernel/dates; import that folder',
+      id="a relative import past another kernel module's surface",
+    ),
+    pytest.param(
+      'src/shop/libs/money/amount.py',
+      'from shop.libs.tabula.sheet import Sheet',
+      'an import reaches past the surface of shop.libs.tabula; import shop.libs.tabula',
+      id="an absolute import past a sibling module's surface",
+    ),
+    pytest.param(
       'src/shop/kernel/money.py',
       'from ... import other',
       'a relative import climbs out of the import package',
@@ -161,6 +221,27 @@ def test_should_report_an_import_when_it_crosses_the_border_of_its_module(
 
   # Assert
   assert findings == (Finding(path=tmp_path / importer, line=1, message=message),)
+
+
+def test_should_report_the_name_past_a_surface_when_an_import_names_several(
+  tmp_path: Path,
+) -> None:
+  # Arrange
+  statement = 'import json, shop.libs.tabula.sheet'
+
+  # Act
+  findings = _findings(
+    folder=tmp_path, importer='src/shop/libs/money/amount.py', statement=statement
+  )
+
+  # Assert
+  assert findings == (
+    Finding(
+      path=tmp_path / 'src/shop/libs/money/amount.py',
+      line=1,
+      message='an import reaches past the surface of shop.libs.tabula; import shop.libs.tabula',
+    ),
+  )
 
 
 def test_should_report_each_name_when_a_relative_import_names_several(tmp_path: Path) -> None:

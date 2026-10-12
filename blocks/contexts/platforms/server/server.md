@@ -75,7 +75,7 @@ A server sizes its heap, its threads, its workers and its pools to the memory an
 |---|---|
 | a runtime that counts the machine's cores and memory takes more than its copy was given, and the host throttles it or kills it for memory it never had. | [performance] |
 
-### server-configuration-taken-from-its-host → artefact-built-once-for-every-environment · MUST
+### server-configuration-taken-from-its-host → one-artefact-serves-every-environment · MUST
 Every setting that differs between deployments reaches a server from its host — an environment variable or a file the host mounts — and none is built into its artefact.
 
 | Why | Tags |

@@ -68,4 +68,3 @@ An adapter is a factory, a module object for one with no dependency and no state
 | Why | Tags |
 |---|---|
 | each form builds the adapter in one signature that names what it takes. | [] |
-

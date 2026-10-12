@@ -73,7 +73,7 @@ In Bash, a function declares every variable it sets as `local`.
 ## Errors
 
 ### script-stops-on-a-failed-command → failure-is-expected-or-defect · MUST
-A Bash script runs under `set -euo pipefail`, and a POSIX sh script under `set -eu`, set before its first command.
+A Bash script runs under `set -euo pipefail`, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command.
 
 | Why | Tags |
 |---|---|

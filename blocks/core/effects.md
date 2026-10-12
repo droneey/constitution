@@ -1,6 +1,6 @@
 # Effects
 
-> Governs calls, resources, concurrency, writes, stopping, records, configuration.
+> Governs calls, resources, concurrency, writes, stopping, records, configuration, artefacts.
 
 ## Calls and resources
 
@@ -68,7 +68,7 @@ State in the program's memory that concurrent work reaches is owned by one task 
 | two tasks that change one value unguarded lose an update at random, and locks taken in two orders, or held while waiting on another system, deadlock under load. | [data, errors] |
 
 ### program-stops-cleanly · MUST
-A program told to stop — by a termination signal or by its host — takes no new work, finishes or cancels the work in flight within a bound, releases its resources and exits.
+A program told to stop — by a termination signal or by its host — takes no new work once nothing routes work to it any longer, finishes or cancels the work in flight within a bound, releases its resources and exits.
 
 | Why | Tags |
 |---|---|
@@ -133,10 +133,10 @@ Configuration is declared in one place and read only by its declared names, pars
 | Why | Tags |
 |---|---|
 | a setting checked where it is first used fails in the middle of a request, long after the deployment that broke it. | [security] |
-### artefact-built-once-for-every-environment · MUST
-A program deployed to several environments is built once, and one artefact serves them all; a setting that differs between them reaches it from its host, never built into it.
+
+### one-artefact-serves-every-environment · MUST
+One artefact of a program serves every environment it is deployed to; a setting that differs between them reaches it from its host, never built into it.
 
 | Why | Tags |
 |---|---|
-| one tested artefact is then promoted unchanged, and nothing that belongs to one environment ships inside it. | [security] |
-
+| the artefact that was tested is then the one that runs, and nothing that belongs to one environment ships inside it. | [security] |

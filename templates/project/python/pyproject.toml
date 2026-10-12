@@ -200,7 +200,7 @@ forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
 name = "surface-only-on-a-module-or-one-kind"
 type = "forbidden"
 source_modules = ["**"]
-forbidden_modules = ["<package>", "*.adapters", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.libs"]
+forbidden_modules = ["<package>", "*.adapters", "*.composition", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.kernel", "*.libs", "*.shared"]
 as_packages = false
 allow_indirect_imports = true
 

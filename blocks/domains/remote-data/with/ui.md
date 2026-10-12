@@ -4,7 +4,7 @@
 
 ## Requirements for implementation
 
-### cache-restores-a-snapshot-when-a-write-fails · MUST
+### cache-undoes-only-the-failed-writes-change · MUST
 The cache lets a write change its entries before the write runs, and undoes that write's own change alone when it fails — by rendering pending writes from their inputs, or by restoring and reapplying the writes still pending.
 
 | Why | Tags |

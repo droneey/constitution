@@ -37,7 +37,7 @@ const EDGE = [
 ];
 // The runtime's own modules of input and output, which only the edge imports.
 const IO =
-  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|net|os|readline|tls|worker_threads)(?:/|$)|^bun(?::|$)';
+  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|readline|sqlite|timers|tls|vm|worker_threads)(?:/|$)';
 // What a registry installs; the repository's own units are its code, held by the rules between units.
 const PACKAGES = [
   'npm',
@@ -332,7 +332,7 @@ export default {
       to: {
         path: [
           '^src/index\\.[^/]+$',
-          '^src/(features|libs|adapters|integrations|kernel|shared)/index\\.[^/]+$',
+          '^src/(features|libs|adapters|integrations|kernel|shared|composition)/index\\.[^/]+$',
           '^src/features/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
         ],
       },
