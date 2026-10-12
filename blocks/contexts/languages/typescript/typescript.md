@@ -25,7 +25,7 @@ A decorator is a standard ECMAScript decorator; the legacy form behind `experime
 ## Names
 
 ### identifier-case-by-kind → name-case-by-kind · SHOULD
-Types, classes, enums and enum members are PascalCase; functions, variables and instances camelCase; a module-level constant value SCREAMING_SNAKE_CASE, and a constant object or function camelCase. A function a framework renders by the case of its name takes the case that framework's block names.
+Types, classes, enums and enum members are PascalCase; functions, variables and instances camelCase; a module-level constant holding a primitive or a regular expression SCREAMING_SNAKE_CASE, and one holding an object, an array or a function camelCase. A function a framework renders by the case of its name takes the case that framework's block names.
 
 | Why | Tags |
 |---|---|
@@ -85,7 +85,7 @@ Code is grouped by modules, never by a `namespace` or `module` block; a `declare
 | a namespace is an older second way to group what a module already groups, and one that holds values compiles to an object no import rule can see into. | [] |
 
 ### type-only-import-written-as-import-type · MUST
-An import or a re-export used only as a type is written `import type` or `export type`, or marks its name with `type`.
+An import or a re-export whose every name is used only as a type is written `import type` or `export type`; a name marked `type` inside the braces stands only beside names used as values.
 
 | Why | Tags |
 |---|---|
@@ -196,7 +196,7 @@ A process is started with its arguments as an array — `execFile`, `spawn` and 
 | a command line handed to a shell is parsed again, and a `;` or a `$(…)` in its input runs as a command of its own. | [security] |
 
 ### outside-path-checked-by-relative → outside-path-confined-to-its-root · MUST
-A path built from outside input is resolved with `path.resolve(root, input)` and refused when `path.relative(root, resolved)` starts with `..` or is absolute.
+A path built from outside input is resolved with `path.resolve(root, input)`, taken to its real path by `fs.realpath` — of its folder, for a file not yet made — and refused when `path.relative` from the root's real path is `..`, starts with `..` and a separator, or is absolute.
 
 | Why | Tags |
 |---|---|
@@ -231,7 +231,7 @@ A token, a nonce or an identifier that guards access comes from `crypto.getRando
 | `Math.random` can be predicted from a few of its outputs, so a value drawn from it is guessed by whoever saw others; Web Crypto is a cryptographic source in every runtime. | [security] |
 
 ### secret-compared-by-timing-safe-equal → security-primitive-from-a-vetted-library · MUST
-A secret — a token, a signature, a key — is compared with `crypto.timingSafeEqual` over buffers of one length, never with `===`.
+A secret — a token, a signature, a key — is compared with `crypto.timingSafeEqual` over the HMACs or digests of both sides, never with `===`.
 
 | Why | Tags |
 |---|---|

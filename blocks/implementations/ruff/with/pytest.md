@@ -9,14 +9,14 @@
 |---|---|
 | these are pytest's ways to leave a case unrun or let it fail. | [testing] |
 
-### flaky-mark-banned → no-test-reruns · SHOULD
+### flaky-mark-banned → failed-test-never-rerun · SHOULD
 The mark `flaky`, which the plugins that run a case again read, is banned.
 
 | Why | Tags |
 |---|---|
 | a case marked so is run again whenever such a plugin is installed. | [testing] |
 
-### unittest-mock-banned → no-module-patching · SHOULD
+### unittest-mock-banned → module-never-patched-in-a-spec · SHOULD
 `unittest.mock` is banned.
 
 | Why | Tags |

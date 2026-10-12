@@ -35,6 +35,12 @@ describe('rulesCheck', () => {
         tags: '[types]',
       }),
       rule({
+        slug: 'no-any-written',
+      }),
+      rule({
+        slug: 'key-no-longer-held',
+      }),
+      rule({
         slug: 'c',
         why: '',
       }),
@@ -64,6 +70,10 @@ describe('rulesCheck', () => {
       },
       {
         message: 'rule "b" has the tag "types", which is not a lens',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "no-any-written" opens with "no-"; a slug says what holds',
         path: PRINCIPLES,
       },
       {
@@ -480,7 +490,7 @@ describe('rulesCheck', () => {
   it.each([
     {
       browser: `# Browser\n\n## Render\n\n${rule({
-        slug: 'no-window-during-render',
+        slug: 'window-never-read-during-render',
       })}`,
       chapter: 'Render',
       condition: 'the section its parent sits in',
@@ -488,7 +498,7 @@ describe('rulesCheck', () => {
     },
     {
       browser: `# Browser\n\n${rule({
-        slug: 'no-window-during-render',
+        slug: 'window-never-read-during-render',
       })}`,
       chapter: 'Browser',
       condition: "the title of its parent's chapter file",
@@ -501,7 +511,7 @@ describe('rulesCheck', () => {
       const files = validFiles();
       files[BROWSER] = browser;
       files[TYPESCRIPT_WITH_BROWSER] = `# TypeScript with browser\n\n## ${section}\n\n${rule({
-        parent: 'no-window-during-render',
+        parent: 'window-never-read-during-render',
         slug: 'window-read-after-render',
       })}`;
       const input = checkInputOf(files);
@@ -512,7 +522,7 @@ describe('rulesCheck', () => {
       // Assert
       expect(findings).toStrictEqual([
         {
-          message: `rule "window-read-after-render" sits under "${section}" while it carries out "no-window-during-render" of the chapter "${chapter}"; a rule of a language or a platform sits in the section named for its parent's chapter`,
+          message: `rule "window-read-after-render" sits under "${section}" while it carries out "window-never-read-during-render" of the chapter "${chapter}"; a rule of a language or a platform sits in the section named for its parent's chapter`,
           path: TYPESCRIPT_WITH_BROWSER,
         },
       ]);

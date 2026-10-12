@@ -35,7 +35,7 @@ Only the edge holds effects — input and output, the network, storage, the file
 | code without effects is deterministic, so it is tested fast, reasoned about locally and reused, and a test replaces an effect through its port. | [] |
 
 ### root-imported-only-by-entries-and-delivery-wiring · MUST
-The composition root is imported only by entry files and by the delivery layer’s own wiring.
+The composition root is imported only by entry files, by the delivery layer’s own wiring and by specs.
 
 | Why | Tags |
 |---|---|
@@ -56,7 +56,7 @@ No code imports an entrypoint; an entrypoint composes features through their sur
 | an entrypoint is a separate artefact, and importing it drags that artefact into another. | [] |
 
 ### integration-never-imported · MUST
-No other code of the package imports an integration, and an integration imports the package’s surfaces as a consumer would, never another integration.
+No other code of the package imports an integration, and an integration imports only the surfaces of the package’s modules, never its main entry or another integration.
 
 | Why | Tags |
 |---|---|
@@ -114,7 +114,7 @@ Composition across features lives in the delivery unit that needs it and moves t
 | a composition layer made before a second consumer is one nobody needs yet. | [] |
 
 ### shared-piece-placed-by-meaning · SHOULD
-A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; a piece without meaning that the domain or the kernel needs — the base error, a result type, a guard of exhaustiveness — lives in a role folder of the kernel, which both may import. The kernel stays small.
+A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; a piece without meaning that the domain or the kernel needs — a result type, a guard of exhaustiveness — lives in a role folder of the kernel, which both may import. The kernel stays small.
 
 | Why | Tags |
 |---|---|

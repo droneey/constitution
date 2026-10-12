@@ -51,7 +51,7 @@ Code is never commented out; it is deleted.
 | commented-out code rots unseen, while deleted code stays recoverable from history. | [] |
 
 ### dead-code-deleted · MUST
-No file, dependency, export, parameter, variable or label is unused, and no statement is unreachable; what only the specs reach is unused too. An export a package offers to other packages through the entry it publishes is not dead.
+No file, dependency, export, parameter, variable or label is unused — save a parameter a contract or a framework imposes, spelled in its language's form for one left unused — and no statement is unreachable; what only the specs reach is unused too. An export a package offers to other packages through the entry it publishes is not dead.
 
 | Why | Tags |
 |---|---|

@@ -109,7 +109,7 @@ const upperFiles = (): Files => ({
   }),
   ...blockFiles({
     body: `# Untrusted client\n\n${rule({
-      slug: 'no-secret-in-the-client',
+      slug: 'secret-never-held-by-the-client',
       tags: '[security]',
     })}`,
     dir: 'blocks/domains/untrusted-client',
@@ -123,7 +123,7 @@ const contextFiles = (): Files => ({
     dir: 'blocks/contexts/languages/typescript',
     files: {
       'types.md': `# Types\n\n${rule({
-        slug: 'no-any',
+        slug: 'any-never-typed',
         statement: 'A TypeScript value is never typed `any`.',
       })}`,
     },
@@ -139,7 +139,7 @@ const contextFiles = (): Files => ({
     dir: 'blocks/contexts/platforms/browser',
     files: {
       'architecture/browser.md': `# Browser\n\n${rule({
-        slug: 'no-window-during-render',
+        slug: 'window-never-read-during-render',
       })}`,
     },
     id: 'browser',

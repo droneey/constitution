@@ -145,6 +145,47 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'domain-reaches-only-itself-and-kernel',
     },
     {
+      condition: 'shared code reads a file through the runtime',
+      files: {
+        'src/shared/format/format.ts':
+          "import { readFileSync } from 'node:fs';\nexport const format = readFileSync;\n",
+      },
+      rule: 'effects-reached-only-from-the-edge',
+    },
+    {
+      condition: "a feature's application layer opens a database through Bun",
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+          "import { Database } from 'bun:sqlite';\nexport const listOrders = Database;\n",
+      },
+      rule: 'effects-reached-only-from-the-edge',
+    },
+    {
+      condition: "an entity reaches past the surface of the domain's errors",
+      files: {
+        'src/features/orders/domain/entities/order.entity.ts': importing({
+          from: '../errors/order.error',
+          name: 'orderError',
+        }),
+        'src/features/orders/domain/errors/index.ts':
+          "export { orderError } from './order.error';\n",
+        'src/features/orders/domain/errors/order.error.ts': exported('orderError'),
+      },
+      rule: 'domain-role-reaches-a-sibling-through-its-surface',
+    },
+    {
+      condition: "a role of the kernel reaches past another role's surface",
+      files: {
+        'src/kernel/errors/base.error.ts': exported('baseError'),
+        'src/kernel/errors/index.ts': "export { baseError } from './base.error';\n",
+        'src/kernel/values/money.ts': importing({
+          from: '../errors/base.error',
+          name: 'baseError',
+        }),
+      },
+      rule: 'kernel-role-reaches-a-sibling-through-its-surface',
+    },
+    {
       condition: 'the domain imports a library',
       files: {
         'src/features/orders/domain/entities/order.entity.ts': importing({

@@ -1,6 +1,6 @@
 # Changes
 
-> Governs a change, the work of one task: its scope, what it carries, its hand-back.
+> Governs a change, one reviewed step of a task's work: its scope, what it carries, its hand-back.
 
 ## Scope
 

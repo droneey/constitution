@@ -4,7 +4,7 @@
 
 ## The delivery layer
 
-### server-delivery-layer-is-the-api-folder → package-laid-out-by-the-tree · SHOULD
+### server-delivery-layer-is-the-api-folder → delivery-unit-beside-what-it-serves · SHOULD
 The delivery layer of a program that serves requests is `api/`: the handlers that compose several features — a route, an endpoint, a tool — and the wiring that mounts every handler on the server.
 
 | Why | Tags |

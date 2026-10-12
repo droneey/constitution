@@ -63,7 +63,7 @@ A token a caller presents is never sent on to another system; a call onward carr
 | a forwarded token turns the program into a confused deputy and erases its audit trail. | [security] |
 
 ### refresh-token-rotated-or-sender-bound · MUST
-A refresh token the program issues is either rotated on every use, a reused one revoking every token of its family, or bound to its client by DPoP or mutual TLS, as RFC 9700 says.
+A refresh token the program issues to a public client is either rotated on every use, a reused one revoking every token of its family, or bound to its client by DPoP or mutual TLS, as RFC 9700 says.
 
 | Why | Tags |
 |---|---|

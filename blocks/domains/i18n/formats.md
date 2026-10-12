@@ -11,6 +11,13 @@ Numbers, dates, times, amounts and lists are formatted by the active locale, whi
 |---|---|
 | `1,000.50` and `1.000,50` are one number to different readers, and the runtime's locale differs between the server, the client and a spec. | [ux] |
 
+### entered-value-parsed-by-the-active-locale · SHOULD
+A number, a date or an amount its user types is parsed by the active locale's rules, the same that format it.
+
+| Why | Tags |
+|---|---|
+| a user in a locale that writes `1,5` otherwise enters fifteen, or nothing, where they meant one and a half. | [ux, data] |
+
 ### instant-shown-in-the-readers-zone → instant-is-an-exact-time · MUST
 An instant is shown in the reader's time zone, with the zone named where a reader could take it for another; an instant bound to a place — a departure, an opening hour — is shown in that place's zone, and names it.
 

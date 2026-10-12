@@ -15,7 +15,7 @@ governs: []
 ## Shape
 
 ### config-file-rejects-unknown-keys → own-shape-strict-other-shape-tolerant · MUST
-The config file is a shape the program owns, though its user writes it: a key the program does not know fails the read.
+The config file is a shape the program owns, though its user writes it: a key the program does not know fails the read, and the key that points editors at the schema is part of that shape.
 
 | Why | Tags |
 |---|---|

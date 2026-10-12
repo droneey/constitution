@@ -102,7 +102,7 @@ Shared data is read by a unit's specs from its file in the repository, by its pa
 ## Checks
 
 ### unit-checked-by-its-own-parts → rule-held-by-a-tool-where-one-can · MUST
-In a workspace, the files of each package are held by the parts of its own blocks — the repository's and those its path under `packages` in `constitution.yaml` adds — and no package's parts reach another package's files.
+In a workspace, the files of each package are checked by the tools of its own blocks with that package's configuration, and no package's checks reach another package's files.
 
 | Why | Tags |
 |---|---|

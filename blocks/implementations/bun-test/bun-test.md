@@ -22,7 +22,7 @@ A case compares with `toStrictEqual`, never `toEqual`, `toMatchObject`, `expect.
 |---|---|
 | these pass on a partial or loose match — `toEqual` ignores undefined fields and class types, the others whole parts of the outcome — so a case passes on an outcome that differs. | [] |
 
-### no-module-mocks → effect-faked-never-mocked · SHOULD
+### module-never-mocked-in-a-spec → effect-faked-never-mocked · SHOULD
 No `mock.module` and no `spyOn` over a real module.
 
 | Why | Tags |
@@ -43,7 +43,7 @@ Bun's coverage gate fails when the lines or functions of a file a spec loads fal
 |---|---|
 | a line no behaviour reaches fails the check where it appears, not in a later review. | [testing] |
 
-### no-test-retries → flaky-test-fixed-never-retried · SHOULD
+### failed-test-never-retried → flaky-test-fixed-never-retried · SHOULD
 No case passes a `retry` or `repeats` option.
 
 | Why | Tags |
@@ -57,7 +57,7 @@ No case passes a `retry` or `repeats` option.
 |---|---|
 | Bun runs the cases in the order they are written unless the setting shuffles them, and then prints the seed of each run. | [] |
 
-### no-sleep-in-specs → test-never-sleeps-a-fixed-time · SHOULD
+### spec-never-sleeps → test-never-sleeps-a-fixed-time · SHOULD
 A spec calls neither `Bun.sleep`, `Bun.sleepSync` nor the `setTimeout` of `node:timers/promises`, and calls no `setTimeout` inside a promise.
 
 | Why | Tags |

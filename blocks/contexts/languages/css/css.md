@@ -78,7 +78,7 @@ The order of the layers is declared once, at the top of the entry stylesheet, be
 | one line then says which styles win over which, and a layer filled before it is declared takes its place in the order by accident. | [] |
 
 ### declaration-never-important · MUST
-No declaration is `!important`; a rule that must win sits in a later layer. The one exception is the first layer, which resets the defaults, for a user's preference such as reduced motion and for `[hidden]`, its suppression saying so.
+No declaration is `!important`; a rule that must win sits in a later layer. The one exception is the layer that resets the defaults, for a user's preference such as reduced motion and for `[hidden]`, its suppression saying so.
 
 | Why | Tags |
 |---|---|
@@ -108,7 +108,7 @@ A nested style rule sits no deeper than the depth the project sets, counted from
 | each level of nesting is a selector the reader must join in their head and specificity the next rule must beat, and the joined selector appears nowhere a search can find it. | [] |
 
 ### selector-never-targets-an-id · MUST
-A selector names a class or an attribute, never an `id`.
+A selector never names an `id`.
 
 | Why | Tags |
 |---|---|

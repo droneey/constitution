@@ -19,3 +19,10 @@ Every kind of request or task the program serves is measured by its rate, its fa
 | Why | Tags |
 |---|---|
 | these three measures show a service's health at a glance, and an alert on them fires before users report a fault. | [performance] |
+### alert-fires-on-what-users-feel · SHOULD
+An alert fires on what the program's users feel — the error rate and the duration of what it serves, past a bound the project sets — rather than on a cause such as a busy processor.
+
+| Why | Tags |
+|---|---|
+| an alert on a cause wakes someone for what nobody noticed and stays silent for a failure with a cause nobody listed. | [errors] |
+

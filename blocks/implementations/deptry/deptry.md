@@ -20,7 +20,7 @@ deptry fails on a dependency of `[project]` that nothing in `src/` imports (`DEP
 |---|---|
 | a dependency only the specs import, or none, still installs with the program. | [security] |
 
-### dev-tool-never-imported-by-the-program → tools-in-the-dev-group · MUST
+### dev-tool-never-imported-by-the-program → production-code-imports-no-tool · MUST
 deptry fails when code in `src/` imports a package of the `dev` group (`DEP004`).
 
 | Why | Tags |

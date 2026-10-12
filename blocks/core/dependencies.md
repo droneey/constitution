@@ -19,11 +19,18 @@ A file or a reusable step the program, its build or its pipeline fetches outside
 | an unverified download runs whatever its address serves that day. | [security] |
 
 ### tool-pinned-exactly-by-the-repository · MUST
-A dependency that builds, tests or lints, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally, and production code imports none of these tools.
+A dependency that builds, tests or lints, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally.
 
 | Why | Tags |
 |---|---|
 | a tool installed globally runs in another version on every machine, and its new version changes what the check reports. | [security] |
+
+### production-code-imports-no-tool · MUST
+Production code imports no dependency that only builds, tests or lints.
+
+| Why | Tags |
+|---|---|
+| a tool imported by the program ships with it, and its next release changes the program without anyone choosing it. | [] |
 
 ### dependency-resolved-from-its-declared-registry · SHOULD
 A private dependency resolves only from the registry the project names for it, never from a public one.

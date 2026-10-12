@@ -28,7 +28,7 @@ What wraps a query or a mutation returns Query's own result narrowed by its `sta
 | consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". | [data] |
 
 ### optimism-in-the-mutation-lifecycle → overlapping-writes-keep-each-others-results · MUST
-Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight, snapshots, and writes values built by the program's own factories; `onError` restores; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
+Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight and writes values built by the program's own factories; `onError` restores the snapshot and reapplies the mutations on the key still pending; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
 
 | Why | Tags |
 |---|---|

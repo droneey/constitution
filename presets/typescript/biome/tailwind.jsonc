@@ -1,10 +1,10 @@
 {
   "plugins": [
-    "./.droneey/constitution/presets/typescript/biome/plugins/no-screen-sized-classes.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/screen-sized-classes-never-used.grit",
     "./.droneey/constitution/presets/typescript/biome/plugins/mobile-first-breakpoints.grit",
     "./.droneey/constitution/presets/typescript/biome/plugins/focus-shown-by-focusable-utility.grit",
     "./.droneey/constitution/presets/typescript/biome/plugins/logical-utilities-for-direction.grit",
-    "./.droneey/constitution/presets/typescript/biome/plugins/no-important-modifier-in-class-lists.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/important-modifier-never-in-a-class-list.grit",
   ],
   "linter": {
     "rules": {

@@ -2,7 +2,7 @@
 
 > Specs that render into a document and query it.
 
-### no-document-selectors-in-specs · MUST
+### spec-never-selects-from-the-document · MUST
 `container.querySelector` and class selectors are forbidden.
 
 | Why | Tags |

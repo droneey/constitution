@@ -41,7 +41,7 @@ A business value with an invariant — an email address, an amount in its curren
 | the invariant has one home, in the layer that owns its meaning. | [data] |
 
 ### contexts-duplicate-rather-than-share · SHOULD
-Across bounded contexts duplication is the default and sharing the exception: a context that needs another’s entity keeps its own narrow view of it, such as a reference by identifier, and the shared kernel holds only what is universal and stable.
+Across bounded contexts a model is duplicated by default and shared by exception, never a fact or a rule of the business: a context that needs another’s entity keeps its own narrow view of it, such as a reference by identifier, and the shared kernel holds only what is universal and stable.
 
 | Why | Tags |
 |---|---|

@@ -29,7 +29,7 @@ A tool a model calls acts with the rights of the person the model acts for, or i
 
 ## Approval
 
-### consequential-tool-call-approved-by-its-person → irreversible-operation-runs-dry-by-default · MUST
+### consequential-tool-call-approved-by-its-person · MUST
 A tool call that destroys data, spends money, changes another system or sends something in a person's name runs only after that person approves that call, shown with the arguments it will run with, or, in a run with no person present, only within a standing authorisation its owner declared — the action, its bounds and its expiry — checked by code outside the model and recorded per call; a call that only reads needs no approval.
 
 | Why | Tags |

@@ -33,3 +33,10 @@ What a run produces — rendered files, records of state — lands in one work f
 | Why | Tags |
 |---|---|
 | rendered files and state never mix with the config file, and one folder is cleared or ignored as a whole. | [] |
+### work-folder-keeps-secrets-as-references · MUST
+What a run writes to its work folder — rendered files, its plan, its state — holds a secret only as a reference by name, or the folder is encrypted and never shared.
+
+| Why | Tags |
+|---|---|
+| a rendered file or a state file is read by whoever reads the folder, and a secret resolved into it leaks with every copy. | [security] |
+

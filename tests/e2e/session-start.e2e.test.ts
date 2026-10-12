@@ -1333,7 +1333,7 @@ describe('session-start hook', () => {
         files: {
           ...localBlockFiles({
             headings: [
-              '### kit-rule → no-secret-in-code',
+              '### kit-rule → secret-never-in-code',
               '### kit-child → base-rule · MUST',
             ],
             id: 'kit',
@@ -1412,7 +1412,7 @@ describe('session-start hook', () => {
           domains: '[version-control]',
           implementations: '[git]',
           languages: '[typescript]',
-          overrides: `\n  - rule: no-secret-in-code\n    level: MAY\n    reason: "none yet"\n    until: ${HOOK_TODAY}`,
+          overrides: `\n  - rule: secret-never-in-code\n    level: MAY\n    reason: "none yet"\n    until: ${HOOK_TODAY}`,
         }),
       },
       warnings: [],

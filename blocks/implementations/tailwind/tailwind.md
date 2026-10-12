@@ -20,7 +20,7 @@ The theme's tokens are one `@theme` block that holds `--*: initial`, which reset
 |---|---|
 | with the default scales gone, a value outside the tokens cannot be written by accident. | [] |
 
-### no-important-modifier-in-class-lists → declaration-never-important · MUST
+### important-modifier-never-in-a-class-list → declaration-never-important · MUST
 No class list uses the important modifier, `px-0!` or `!px-0`.
 
 | Why | Tags |
@@ -41,7 +41,7 @@ No class opens with a `max-*:` variant: base classes serve small screens and are
 |---|---|
 | styles that only widen never undo each other, and the smallest screen is always the base. | [] |
 
-### no-screen-sized-classes → viewport-size-in-small-viewport-units · MUST
+### screen-sized-classes-never-used → viewport-size-in-small-viewport-units · MUST
 No class sizes with `h-screen` or `w-screen`.
 
 | Why | Tags |

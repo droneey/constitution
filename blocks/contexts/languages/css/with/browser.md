@@ -11,6 +11,8 @@ A feature of CSS the declared target does not cover is used only behind `@suppor
 |---|---|
 | a feature a supported browser lacks breaks silently there, often by dropping the whole rule that uses it, for users nobody on the team sees. | [ux] |
 
+## Viewport
+
 ### viewport-size-in-small-viewport-units · MUST
 A size taken from the viewport leaves out what the browser draws over it: a height is in `svh`, or in `dvh` where content must follow the toolbars as they slide, never in `vh`; a full width is `100%` of its containing block, never `100vw`.
 

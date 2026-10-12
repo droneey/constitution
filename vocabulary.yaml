@@ -14,7 +14,7 @@ architecture:
     - role folder
     - role suffix
     - ubiquitous language
-    - use-case
+    - use case
     - value object
     - wire model
     - wiring file

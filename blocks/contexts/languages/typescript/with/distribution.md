@@ -32,6 +32,13 @@ An integration is an `exports` subpath named after its framework, and the framew
 |---|---|
 | a consumer who imports the subpath brings the framework it already uses, and one who does not is never asked to install it. | [] |
 
+### hash-imports-rewritten-below-their-runtime · MUST
+A package others install ships no `#/` specifier to a runtime its `engines` allows that cannot resolve one — Node.js below 24.14, and 25 below 25.4 — its build rewriting them to relative paths there.
+
+| Why | Tags |
+|---|---|
+| the compiler leaves the specifier as written, and a consumer on an older line the package claims fails on its first import. | [errors] |
+
 ## Manifest
 
 ### peer-floor-in-the-manifest → manifest-declares-consumer-owned-dependencies-as-peers · MUST

@@ -14,20 +14,20 @@ _react:
     - modern-react-api-only.grit
     - noReactForwardRef
     - noReactStringRefs
-  no-component-defined-inside-component:
+  component-never-defined-inside-a-component:
     - noComponentHookFactories
     - noNestedComponentDefinitions
   react-compiler-on:
     - react-compiler-on.grit
 bun-test:
-  no-module-mocks:
-    - no-module-mocks.grit
+  module-never-mocked-in-a-spec:
+    - module-never-mocked-in-a-spec.grit
   test-never-skipped-or-empty:
     - test-never-skipped-or-empty.grit
-  no-sleep-in-specs:
-    - no-sleep-in-specs.grit
-  no-test-retries:
-    - no-test-retries.grit
+  spec-never-sleeps:
+    - spec-never-sleeps.grit
+  failed-test-never-retried:
+    - failed-test-never-retried.grit
   strict-matcher-only:
     - strict-matcher-only.grit
 core:
@@ -82,7 +82,7 @@ lingui:
   module-level-messages-are-descriptors:
     - module-level-messages-are-descriptors.grit
 playwright:
-  no-forced-actions:
+  actions-never-forced:
     - noPlaywrightForceOption
   waits-through-locators-and-assertions:
     - noPlaywrightNetworkidle
@@ -92,7 +92,7 @@ playwright:
   web-first-assertions-awaited:
     - noPlaywrightMissingAwait
 react-dom:
-  no-dangerously-set-inner-html:
+  dangerously-set-inner-html-never-used:
     - noDangerouslySetInnerHtml
   aria-attributes-as-the-dom-spells-them:
     - noUnknownAttribute
@@ -138,11 +138,11 @@ self:
 react-native:
   react-native-imported-from-its-entry:
     - noReactNativeDeepImports
-  no-literal-colour-in-a-style:
+  style-colour-read-from-tokens:
     - noReactNativeLiteralColors
 tailwind:
-  no-screen-sized-classes:
-    - no-screen-sized-classes.grit
+  screen-sized-classes-never-used:
+    - screen-sized-classes-never-used.grit
   mobile-first-breakpoints:
     - mobile-first-breakpoints.grit
   utilities-only-from-tokens:
@@ -151,13 +151,13 @@ tailwind:
     - logical-utilities-for-direction.grit
   focus-shown-by-focusable-utility:
     - focus-shown-by-focusable-utility.grit
-  no-important-modifier-in-class-lists:
-    - no-important-modifier-in-class-lists.grit
+  important-modifier-never-in-a-class-list:
+    - important-modifier-never-in-a-class-list.grit
 tanstack-router:
   links-name-typed-targets:
     - links-name-typed-targets.grit
 testing-library:
-  no-document-selectors-in-specs:
+  spec-never-selects-from-the-document:
     - queries-by-role-label-text.grit
   queries-by-role-label-text:
     - queries-by-role-label-text.grit

@@ -31,7 +31,7 @@ A file whose name carries the hash of its content is served as `immutable`, and 
 
 ## Effects
 
-### runtime-configuration-served-beside-bundle · MUST
+### runtime-configuration-served-beside-bundle → artefact-built-once-for-every-environment · MUST
 One bundle serves every environment: a setting that differs between environments is served beside the bundle, never built into it.
 
 | Why | Tags |
@@ -139,7 +139,7 @@ A message from another window or frame is accepted only from an origin the progr
 | any page can post a message to any window it holds, and a message posted to `*` is read by whatever page that window now shows. | [security] |
 
 ### redirect-target-allowlisted → outside-address-followed-only-from-an-allowlist · MUST
-A redirect target taken from the address or a form — `returnTo`, `next` — is followed only when it is a path of the program's own or an origin on its allowlist; any other target falls back to the home screen.
+A redirect target taken from the address or a form — `returnTo`, `next` — is resolved by the URL parser against the program's origin and followed only when the result's origin is the program's own or one on its allowlist; any other target falls back to the home screen.
 
 | Why | Tags |
 |---|---|

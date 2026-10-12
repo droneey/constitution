@@ -23,7 +23,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-module-mocks.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/module-never-mocked-in-a-spec.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -39,7 +39,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-test-retries.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/failed-test-never-retried.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -47,7 +47,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/no-sleep-in-specs.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/spec-never-sleeps.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",

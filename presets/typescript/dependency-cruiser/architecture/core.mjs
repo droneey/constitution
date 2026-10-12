@@ -35,6 +35,9 @@ const EDGE = [
   ...DELIVERY,
   '^src/(libs|integrations)/',
 ];
+// The runtime's own modules of input and output, which only the edge imports.
+const IO =
+  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|net|os|readline|tls|worker_threads)(?:/|$)|^bun(?::|$)';
 // What a registry installs; the repository's own units are its code, held by the rules between units.
 const PACKAGES = [
   'npm',
@@ -284,6 +287,42 @@ export default {
       to: {
         path: '^src/features/$1/domain/[^/]+/',
         pathNot: '^src/features/$1/domain/.*/index\\.[^/]+$',
+      },
+    },
+    {
+      name: 'domain-role-reaches-a-sibling-through-its-surface',
+      severity: 'error',
+      from: {
+        path: '^src/features/([^/]+)/domain/([^/]+)/',
+      },
+      to: {
+        path: '^src/features/$1/domain/(?!$2/)[^/]+/',
+        pathNot: '^src/features/$1/domain/.*/index\\.[^/]+$',
+      },
+    },
+    {
+      name: 'kernel-role-reaches-a-sibling-through-its-surface',
+      severity: 'error',
+      from: {
+        path: '^src/kernel/([^/]+)/',
+      },
+      to: {
+        path: '^src/kernel/(?!$1/)[^/]+/',
+        pathNot: '^src/kernel/[^/]+/index\\.[^/]+$',
+      },
+    },
+    {
+      name: 'effects-reached-only-from-the-edge',
+      severity: 'error',
+      from: {
+        path: '^src/',
+        pathNot: [
+          ...EDGE,
+          ...SPECS,
+        ],
+      },
+      to: {
+        path: IO,
       },
     },
     {

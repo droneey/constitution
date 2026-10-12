@@ -13,3 +13,10 @@ An import of a package — neither the standard library, the import package itse
 | Why | Tags |
 |---|---|
 | an import contract forbids a package only by its name, one contract per package, and knows nothing of a package nobody named; the check reads every import against the table and the homes the parts give. | [] |
+### effect-modules-kept-at-the-edge → effects-held-only-by-the-edge · MUST
+A module of the standard library that reaches input and output, the clock, randomness or identifiers — `os`, `subprocess`, `socket`, `time`, `random`, `uuid` among them — fails the check outside the edge.
+
+| Why | Tags |
+|---|---|
+| the standard library needs no install, so no table of homes sees it, and an effect reached from a use case stays out of every fake its specs give it. | [] |
+

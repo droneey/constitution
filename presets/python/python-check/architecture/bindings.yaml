@@ -1,8 +1,8 @@
 httpx2:
-  httpx2-only-at-the-edge:
+  httpx2-home-is-the-edge-and-its-failure-mapper:
     - httpx2
 pydantic:
-  pydantic-only-at-the-edge:
+  pydantic-home-is-the-edge-and-shared-parsing:
     - pydantic
     - pydantic_settings
 structlog:

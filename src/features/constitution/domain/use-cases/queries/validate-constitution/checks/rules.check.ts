@@ -18,6 +18,7 @@ const at = (input: { message: string; rule: Rule }): Finding => ({
 const fieldFindings = (rule: Rule): readonly Finding[] => {
   const messages = [
     SLUG.test(rule.slug) ? undefined : 'is not a kebab-case slug',
+    rule.slug.startsWith('no-') ? 'opens with "no-"; a slug says what holds' : undefined,
     rule.statement === '' ? 'has no statement' : undefined,
     rule.why === '' ? 'has no Why' : undefined,
     ...rule.ownTags

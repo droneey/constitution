@@ -27,7 +27,7 @@ A paged list is ordered by a key whose last field is unique, so that no row fall
 
 ## Filters
 
-### list-filtered-and-sorted-only-by-declared-fields · SHOULD
+### list-filtered-and-sorted-only-by-declared-fields · MUST
 A list is filtered and sorted only by the fields its operation declares for it, and a request naming another field is refused.
 
 | Why | Tags |

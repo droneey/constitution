@@ -7,7 +7,7 @@ Unless another active block claims the document's head, `<title>`, `<meta>` and 
 |---|---|
 | React hoists these elements from wherever they are rendered, so each is declared beside what it describes. | [ux] |
 
-### third-party-script-rendered-as-element → document-metadata-owned-by-screen · SHOULD
+### third-party-script-rendered-as-element → third-party-script-declared-where-it-is-used · SHOULD
 A third-party script is rendered as `<script async src>` by the component that uses it.
 
 | Why | Tags |

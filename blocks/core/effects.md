@@ -128,8 +128,15 @@ Diagnostics are written only through a logger — the language’s standard one 
 | one logger decides where diagnostics go and what they may carry, and stray output is noise that can leak what it prints. | [security] |
 
 ### configuration-parsed-once-at-start · MUST
-Configuration is declared in one place and read only by its declared names, parsed once at start into a typed value the program receives; a missing or malformed setting fails the start.
+Configuration is declared in one place and read only by its declared names, parsed once at start into a typed value the program receives; a missing or malformed setting fails the start, and a secret its host rotates is read again through the same declared name and type.
 
 | Why | Tags |
 |---|---|
 | a setting checked where it is first used fails in the middle of a request, long after the deployment that broke it. | [security] |
+### artefact-built-once-for-every-environment · MUST
+A program deployed to several environments is built once, and one artefact serves them all; a setting that differs between them reaches it from its host, never built into it.
+
+| Why | Tags |
+|---|---|
+| one tested artefact is then promoted unchanged, and nothing that belongs to one environment ships inside it. | [security] |
+

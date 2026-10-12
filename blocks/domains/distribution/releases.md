@@ -19,7 +19,7 @@ A release compares its public entries with those of the last release, and a diff
 | a break nobody noticed ships as a minor version and breaks every consumer who trusted the number. | [] |
 
 ### unit-checked-on-every-runtime-it-supports · MUST
-A unit published for others is checked on each release line of its runtime that the runtime's maintainers still support, from its floor to the newest stable one.
+A unit published for others is checked on its floor's release line and on each later line of its runtime that the runtime's maintainers still support, up to the newest stable one.
 
 | Why | Tags |
 |---|---|
@@ -57,7 +57,7 @@ Every release ships a software bill of materials, in SPDX or CycloneDX, listing 
 
 | Why | Tags |
 |---|---|
-| a user learns from it whether a newly published vulnerability reaches them, and the EU's Cyber Resilience Act asks for one. | [security] |
+| a user learns from it whether a newly published vulnerability reaches them, and the EU's Cyber Resilience Act asks the maker to keep one with the technical documentation. | [security] |
 
 ### vulnerability-reported-privately · SHOULD
 A distributed unit names where a vulnerability in it is reported privately.

@@ -39,7 +39,7 @@ describe('createYamlBindingsParser', () => {
     const parser = createYamlBindingsParser();
 
     // Act
-    const read = parser.parse('self: [noConsole]\ncore:\n  no-any: [1]\n');
+    const read = parser.parse('self: [noConsole]\ncore:\n  any-never-typed: [1]\n');
 
     // Assert
     expect(read).toStrictEqual({
@@ -49,7 +49,7 @@ describe('createYamlBindingsParser', () => {
           message: 'Invalid input: expected record, received array',
         },
         {
-          field: 'core.no-any.0',
+          field: 'core.any-never-typed.0',
           message: 'Invalid input: expected string, received number',
         },
       ],

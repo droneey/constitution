@@ -45,7 +45,7 @@ governs: ["bunfig.toml", "package.json"]
 |---|---|
 | a tool with a Node shebang otherwise runs on whichever Node the machine finds, and one runtime for the program and its tools means one version to pin. | [] |
 
-### no-automatic-env-file → configuration-parsed-once-at-start · MUST
+### env-file-never-loaded-automatically → configuration-parsed-once-at-start · MUST
 Bun's automatic loading of the local environment file is off — `--no-env-file` in the entry's shebang — so the program parses only the variables its deployment provides.
 
 | Why | Tags |

@@ -49,7 +49,7 @@ A credential belongs to one identity and one purpose per environment, with only 
 ## Input from outside
 
 ### outside-input-bounded-before-it-is-parsed · MUST
-Input a sender outside the program controls — a body, a file, a message — is refused past a size before it is read whole, and past a depth of nesting while it is parsed.
+Input a sender outside the program controls — a body, a file, a message — is refused past a size before it is read whole, past a size after it is decoded or decompressed, and past a depth of nesting while it is parsed.
 
 | Why | Tags |
 |---|---|
@@ -63,14 +63,14 @@ A pattern matched against outside input runs in time linear in its length: a reg
 | a backtracking pattern turns one crafted string into minutes of work, and one request takes the program down. | [security, performance] |
 
 ### outside-input-reaches-interpreters-as-parameters · MUST
-Input from outside — a model’s output included — reaches a query, a shell command, a file path, markup or a template only through that interpreter’s parameters or its encoder, and a path is resolved and confined to its root before it is used.
+Input from outside — a model’s output included — reaches a query, a shell command, a file path, markup or a template only through that interpreter’s parameters or its encoder.
 
 | Why | Tags |
 |---|---|
 | text joined into code lets whoever wrote the text write the code. | [security] |
 
 ### outside-path-confined-to-its-root · MUST
-A path built from outside input is used only once, resolved, it is confirmed to lie inside the root it is meant for.
+A path built from outside input is used only after its real path, every link followed, is confirmed to lie inside the root it is meant for.
 
 | Why | Tags |
 |---|---|
@@ -82,6 +82,13 @@ Input from outside is never read by a format that can build arbitrary objects or
 | Why | Tags |
 |---|---|
 | such a format runs whatever its sender put in it. | [security] |
+
+### outside-input-parsed-without-external-references · MUST
+A parser of outside input resolves no external reference the input names — an XML entity or document type, an include, a remote `$ref` — save from a list the program fixes.
+
+| Why | Tags |
+|---|---|
+| a reference inside the input makes the parser read a file or call an address the sender chose, on the program's behalf. | [security] |
 
 ### outside-address-followed-only-from-an-allowlist · MUST
 An address or an origin from outside the program — a redirect target, the origin of a message, a host a caller names — is followed, trusted or reached only when it is on an allowlist of the program’s own, or, to reach a host whose names cannot be known in advance, only when the address it resolves to as the connection opens is public.

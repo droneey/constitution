@@ -5,7 +5,7 @@
 ## Concurrent changes
 
 ### stored-record-carries-its-version → write-on-read-data-is-conditional · MUST
-A stored record several writers change carries a version the store checks on every write, and a write made on an older version is refused as a conflict.
+A stored record that a write decides on from a read made in an earlier request carries a version the store checks on that write, and a write made on an older version is refused as a conflict.
 
 | Why | Tags |
 |---|---|

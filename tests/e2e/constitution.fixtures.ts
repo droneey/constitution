@@ -134,7 +134,7 @@ const coreFiles = (): Files =>
         governs: 'any code no other chapter governs.',
         rules: [
           {
-            slug: 'no-secret-in-code',
+            slug: 'secret-never-in-code',
             statement: 'No secret is written into the code.',
           },
         ],
@@ -261,7 +261,7 @@ const domainFiles = (): Files => ({
     id: 'untrusted-client',
     rules: [
       {
-        slug: 'no-secret-in-the-client',
+        slug: 'secret-never-held-by-the-client',
         statement: 'The client holds no secret.',
       },
     ],
@@ -348,7 +348,7 @@ const contextFiles = (): Files => ({
     id: 'typescript',
     rules: [
       {
-        slug: 'no-any',
+        slug: 'any-never-typed',
         statement: 'A value is never typed `any`.',
       },
     ],
@@ -360,7 +360,7 @@ const contextFiles = (): Files => ({
     id: 'python',
     rules: [
       {
-        slug: 'no-bare-except',
+        slug: 'bare-except-never-written',
         statement: 'An except clause names what it catches.',
       },
     ],
@@ -377,7 +377,7 @@ const contextFiles = (): Files => ({
     ],
     rules: [
       {
-        slug: 'no-window-during-render',
+        slug: 'window-never-read-during-render',
         statement: 'Rendering never reads the window.',
       },
     ],

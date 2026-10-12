@@ -29,11 +29,18 @@ A person is told, where their data is collected, what is collected, for which pu
 | a person can use a right only over data they know is kept, and a notice written apart from the inventory drifts from what the program does. | [data] |
 
 ### personal-data-collected-only-for-its-purpose · MUST
-Personal data is collected only as far as a stated purpose needs, and the settings that share or expose it start at their most protective.
+Personal data is collected only as far as a stated purpose needs.
 
 | Why | Tags |
 |---|---|
 | data never collected cannot leak, be misused or be asked for back. | [data] |
+
+### sharing-settings-start-most-protective · MUST
+The settings that share or expose a person's data start at their most protective, until the person changes them.
+
+| Why | Tags |
+|---|---|
+| a person who never opens the settings is otherwise exposed by a default nobody chose for them. | [security, data] |
 
 ### personal-data-kept-no-longer-than-its-retention · MUST
 Personal data is deleted or made anonymous when the retention period of its purpose ends.
@@ -48,6 +55,13 @@ Personal data reaches another company only when the inventory lists it as a reci
 | Why | Tags |
 |---|---|
 | data handed to a company nobody listed is data no request to export or erase reaches, under terms nobody read. | [data] |
+
+### high-risk-processing-assessed-before-it-starts · SHOULD
+Processing the inventory marks as high-risk to people — profiling, large-scale special categories, monitoring — starts only after an assessment of its impact, kept beside the inventory.
+
+| Why | Tags |
+|---|---|
+| the law asks for the assessment before such processing begins, and a risk found after launch is found in people's data. | [data] |
 
 ## Rights
 

@@ -53,7 +53,11 @@ core:
   feature-never-imports-a-feature:
     - feature-never-imports-a-feature
   module-files-import-each-other-directly:
+    - domain-role-reaches-a-sibling-through-its-surface
+    - kernel-role-reaches-a-sibling-through-its-surface
     - module-never-imports-its-own-surface
+  effects-held-only-by-the-edge:
+    - effects-reached-only-from-the-edge
   kernel-imports-only-itself:
     - kernel-reaches-only-itself
   surface-only-on-a-module-or-one-kind:
@@ -125,8 +129,8 @@ yaml-js:
 zod:
   zod-imported-by-forms:
     - zod-imported-by-forms
-  zod-imported-by-the-document:
-    - zod-imported-by-the-document
+  zod-imported-by-the-config-file-schema:
+    - zod-imported-by-the-config-file-schema
 workspace:
   unit-reached-only-through-its-entries:
     - root-imports-units-by-name

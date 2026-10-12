@@ -34,7 +34,7 @@ Every web-first assertion — an `expect` on a locator or a page — is awaited.
 |---|---|
 | a web-first assertion retries until the page agrees; left unawaited, the case ends before it has checked anything. | [] |
 
-### no-forced-actions → layout-and-focus-proven-on-the-platform · SHOULD
+### actions-never-forced → layout-and-focus-proven-on-the-platform · SHOULD
 No action passes `force: true`.
 
 | Why | Tags |

@@ -16,7 +16,7 @@ governs: ["**/cli/**"]
 ## Errors
 
 ### exit-codes-from-one-map · MUST
-Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 130 a run its user interrupted; any other outcome a caller branches on takes a code of its own in the map.
+Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 128 plus the number of the signal that ended a run — 130 an interrupt, 141 a closed pipe, 143 a stop; any other outcome a caller branches on takes a code of its own in the map.
 
 | Why | Tags |
 |---|---|
@@ -44,6 +44,13 @@ On an interrupt a command says it is stopping, cleans up within a bound and exit
 | Why | Tags |
 |---|---|
 | a person presses Ctrl-C to get the terminal back, and a command that ignores it, or hangs in its cleanup, holds the terminal and whatever it locked. | [ux, errors] |
+
+### closed-output-ends-the-run-quietly · SHOULD
+When the reader of standard output closes it, as `head` does, the command stops without a stack trace and exits as a program ended by `SIGPIPE`.
+
+| Why | Tags |
+|---|---|
+| a pipeline that reads only the first lines is a normal use, and a trace printed for it reads as a failure of the command. | [ux] |
 
 ### setting-taken-from-flag-then-environment-then-files · SHOULD
 A setting given in several places is taken from the flag first, then the environment, then the project's configuration file, then the user's, then the system's.
@@ -78,7 +85,7 @@ A secret reaches a command through a file, standard input, the system's credenti
 ## Changes
 
 ### json-output-changed-only-by-adding-fields → format-changed-in-steps · MUST
-A command's JSON output changes only by gaining fields; a field removed, renamed or retyped is a breaking change of the program.
+A command's JSON output changes by gaining fields; a field is removed, renamed or retyped only in a major release, after a release that offered its replacement beside it.
 
 | Why | Tags |
 |---|---|
@@ -180,13 +187,6 @@ Before a step that may take long — a network call, a large read — a command 
 | Why | Tags |
 |---|---|
 | silence reads as a hang, and a person who sees nothing interrupts a command that was working. | [ux] |
-
-### closed-output-ends-the-run-quietly · SHOULD
-When the reader of standard output closes it, as `head` does, the command stops without a stack trace and exits as a program ended by `SIGPIPE`.
-
-| Why | Tags |
-|---|---|
-| a pipeline that reads only the first lines is a normal use, and a trace printed for it reads as a failure of the command. | [ux] |
 
 ## Requirements for implementation
 

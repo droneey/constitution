@@ -20,7 +20,7 @@ A list that can grow is never `map` in a `ScrollView`.
 |---|---|
 | a `ScrollView` mounts every child at once, so a mapped list in it renders every row however long it grows. | [] |
 
-### no-literal-colour-in-a-style → tokens-single-source-of-appearance · MUST
+### style-colour-read-from-tokens → tokens-single-source-of-appearance · MUST
 A style names no literal colour.
 
 | Why | Tags |

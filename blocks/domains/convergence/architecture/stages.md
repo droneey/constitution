@@ -4,7 +4,7 @@
 
 ## Stages
 
-### stages-validate-render-plan-apply · SHOULD
+### each-stage-is-a-use-case-of-its-own · SHOULD
 Validate, render, plan and apply are separate use cases.
 
 | Why | Tags |

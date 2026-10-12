@@ -5,7 +5,7 @@
 ## Context
 
 ### trace-id-taken-only-from-a-trusted-caller · SHOULD
-A unit of work continues the trace id its caller sent in the W3C Trace Context only when that caller is one of the program's own systems; for any other it starts a new one.
+A unit of work continues the trace id its caller sent in the W3C Trace Context only when that caller is one of the program's own systems; for any other it starts a new one, linked to the context it was sent.
 
 | Why | Tags |
 |---|---|

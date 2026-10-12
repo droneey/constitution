@@ -20,8 +20,8 @@ Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as I
 |---|---|
 | the macros extract every message into the catalog, with its parameters and plural forms intact. | [] |
 
-### missing-translation-fails-the-check → user-facing-text-from-catalog · MUST
-The catalogs compile in strict mode, so a missing translation fails the compile.
+### source-catalog-current-in-the-check → i18n-missing-key-fails-the-check · MUST
+The check extracts the source locale's catalog and fails when it differs from the one committed; a translation another locale lacks falls back to its source message.
 
 | Why | Tags |
 |---|---|
@@ -40,5 +40,5 @@ Text defined outside a render — an option list, an enum's labels — is a `msg
 |---|---|---|
 | `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | yes |
 | `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | yes |
-| `i18n-missing-key-fails-the-check` | a message's id is its source text, checked by extraction; no compile-time key type; the strict compile fails on a missing message (`missing-translation-fails-the-check`) | partly |
+| `i18n-missing-key-fails-the-check` | a message's id is its source text, and the check fails when the extracted source catalog differs from the committed one (`source-catalog-current-in-the-check`) | yes |
 | `i18n-locale-loaded-on-demand` | a dynamic import per locale through the build plugin | yes |

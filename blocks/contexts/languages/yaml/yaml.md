@@ -39,7 +39,7 @@ A boolean is written `true` or `false`, in lower case.
 | YAML 1.1 also reads `yes`, `no`, `on` and `off` as booleans while YAML 1.2 reads them as text, so any other spelling means different things to different readers. | [data] |
 
 ### ambiguous-scalar-quoted · MUST
-A plain scalar meant as text that any reader might resolve to another type is quoted: `"no"`, `"on"`, `"null"`, `"~"`, `"3.10"`, `"0755"`, `"1:20"`, `"2026-10-11"`.
+A plain scalar meant as text that any reader might resolve to another type is quoted — `"no"`, `"on"`, `"null"`, `"~"`, `"3.10"`, `"0755"`, `"1:20"`, `"2026-10-11"` — save a key the format's own reader defines, such as a workflow's `on`.
 
 | Why | Tags |
 |---|---|

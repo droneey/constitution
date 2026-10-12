@@ -50,6 +50,32 @@ ENTRIES = frozenset({'__main__', 'main'})
 # The word a home names the whole edge by.
 EDGE_HOME = 'edge'
 OWN = frozenset({'__future__', *sys.stdlib_module_names})
+# The standard library's modules of input and output, the clock, randomness and identifiers,
+# which only the edge imports.
+EFFECTS = frozenset(
+  {
+    'ftplib',
+    'glob',
+    'http',
+    'mmap',
+    'os',
+    'random',
+    'secrets',
+    'select',
+    'selectors',
+    'shutil',
+    'signal',
+    'smtplib',
+    'socket',
+    'sqlite3',
+    'ssl',
+    'subprocess',
+    'tempfile',
+    'time',
+    'urllib',
+    'uuid',
+  }
+)
 
 
 class Role(StrEnum):
@@ -121,6 +147,9 @@ class _Importer:
 
 
 def _package_message(*, importer: _Importer, package: str) -> str | None:
+  if package in EFFECTS and importer.role is not Role.EDGE:
+    return f'{importer.where} holds no effect, and {package} is one; it reaches it through a port'
+
   home = importer.settings.homes.get(package)
 
   if package in importer.own or (

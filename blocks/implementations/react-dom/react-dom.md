@@ -13,7 +13,7 @@ governs: ["**/*.tsx"]
 
 > React rendering to the browser's document.
 
-### no-dangerously-set-inner-html → raw-html-never-reaches-the-dom · MUST
+### dangerously-set-inner-html-never-used → raw-html-never-reaches-the-dom · MUST
 `dangerouslySetInnerHTML` is never set.
 
 | Why | Tags |

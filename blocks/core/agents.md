@@ -4,8 +4,15 @@
 
 ## Deciding
 
+### consent-given-for-the-actions-it-names · MUST
+Consent a rule asks for is a person's go-ahead given where the agent asks for it — a chat, an issue, a review of a change — in the request that names the action, or in advance by a standing grant; it covers only the actions it names and never carries over to others.
+
+| Why | Tags |
+|---|---|
+| consent is given where the person who answers for an action sees it asked, and only for what they saw. | [security] |
+
 ### agent-asks-before-an-irreversible-action · MUST
-An agent takes no irreversible action — destroying, spending money, changing a live system, sending something outward in someone’s name — without a person’s go-ahead for that action, given when the agent asks, in the request that names that action, or in advance by a standing grant; reading from an outside service is no such action.
+An agent takes no irreversible action — destroying, spending money, changing a live system, sending something outward in someone’s name — without a person’s consent to that action; reading from an outside service is no such action.
 
 | Why | Tags |
 |---|---|

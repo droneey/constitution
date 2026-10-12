@@ -13,7 +13,7 @@ export default {
       },
     },
     {
-      comment: 'zod-imported-by-the-document',
+      comment: 'zod-imported-by-the-config-file-schema',
       from: {
         path: '^src/composition/',
       },

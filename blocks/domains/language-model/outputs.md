@@ -29,6 +29,13 @@ A link, an image or any other address in a model's output is made live, loaded o
 |---|---|
 | text the model read can tell it to write an image whose address carries the person's data, and the renderer sends that data when it loads the image. | [security] |
 
+### output-rendered-as-markup-sanitised → outside-input-reaches-interpreters-as-parameters · MUST
+A model's output rendered as markup — HTML, or text in a lighter markup turned into it — passes a sanitiser that keeps only the elements and attributes the screen allows.
+
+| Why | Tags |
+|---|---|
+| text the model was led to write by content it read becomes script, a form or a tracking image in its reader's screen. | [security] |
+
 ## Disclosure
 
 ### person-told-they-talk-with-a-model · MUST
@@ -39,7 +46,7 @@ A person who exchanges messages or speech with a model is told so before the exc
 | a person weighs an answer by who gave it, and the law fines a product that lets them take a model for a person. | [ux] |
 
 ### generated-content-marked-as-generated · MUST
-Text, audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act for a system placed on the market from 2 August 2026.
+Text, audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act — from 2 August 2026 for a system placed on the market since, and from 2 December 2026 for one placed before.
 
 | Why | Tags |
 |---|---|

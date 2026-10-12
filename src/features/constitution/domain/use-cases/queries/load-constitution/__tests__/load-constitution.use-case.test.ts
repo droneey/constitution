@@ -720,9 +720,9 @@ describe('loadConstitution', () => {
     },
     {
       message:
-        'does not match its schema: core.no-any: Too small: expected array to have >=1 items',
+        'does not match its schema: core.any-never-typed: Too small: expected array to have >=1 items',
       name: 'a rule lists no setting',
-      text: 'core:\n  no-any: []\n',
+      text: 'core:\n  any-never-typed: []\n',
     },
   ])('should report the bindings and load none when $name', ({ message, text }) => {
     // Arrange

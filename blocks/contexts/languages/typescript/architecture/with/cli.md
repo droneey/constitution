@@ -5,7 +5,7 @@
 ## Layout
 
 ### command-file-named-with-the-cli-suffix → cli-folder-holds-one-file-per-command · MUST
-Each command of the command line is one file, `cli/<name>.cli.ts`.
+A command's file is named `<name>.cli.ts`.
 
 | Why | Tags |
 |---|---|

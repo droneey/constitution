@@ -45,7 +45,7 @@ A worktree holds one branch, and no folder of it is a link into another checkout
 |---|---|
 | what the build or the machine produces never belongs in history, and an ignore rule alone leaves tracked what is already there. | [] |
 
-### release-tags-annotated → release-marked-by-immutable-tag · MUST
+### release-tags-annotated → release-tag-signed · MUST
 A release tag is annotated.
 
 | Why | Tags |

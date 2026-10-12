@@ -53,7 +53,7 @@ Before a new interactive component ships, a person operates it with the keyboard
 
 | Why | Tags |
 |---|---|
-| tools see a third of the problems; the rest are found only by using the component as its users do. | [a11y] |
+| tools see about half of the problems; the rest are found only by using the component as its users do. | [a11y] |
 
 ## Requirements for implementation
 

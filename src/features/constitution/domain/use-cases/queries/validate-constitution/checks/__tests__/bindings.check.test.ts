@@ -171,7 +171,7 @@ describe('bindingsCheck', () => {
       scope: 'typescript',
     },
     {
-      binding: `${HOOKS_BINDING}i18n:\n  no-any: [useHookAtTopLevel]\n`,
+      binding: `${HOOKS_BINDING}i18n:\n  any-never-typed: [useHookAtTopLevel]\n`,
       folder: '',
       name: "a part of a language's scope holds a rule of its language",
       part: 'i18n',
@@ -209,7 +209,7 @@ describe('bindingsCheck', () => {
     const files = {
       ...presetFiles(),
       [BINDINGS]: HOOKS_BINDING,
-      [bindings]: 'i18n:\n  no-any: [useHookAtTopLevel]\n',
+      [bindings]: 'i18n:\n  any-never-typed: [useHookAtTopLevel]\n',
       'presets/common/biome/i18n.jsonc': '{ "useHookAtTopLevel": "error" }\n',
     };
 
@@ -220,7 +220,7 @@ describe('bindingsCheck', () => {
     expect(findings).toStrictEqual([
       {
         message:
-          'binds no-any, a rule of typescript, to the part i18n, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
+          'binds any-never-typed, a rule of typescript, to the part i18n, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
         path: bindings,
       },
     ]);

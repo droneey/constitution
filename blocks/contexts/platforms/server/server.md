@@ -75,7 +75,7 @@ A server sizes its heap, its threads, its workers and its pools to the memory an
 |---|---|
 | a runtime that counts the machine's cores and memory takes more than its copy was given, and the host throttles it or kills it for memory it never had. | [performance] |
 
-### server-configuration-taken-from-its-host → configuration-parsed-once-at-start · MUST
+### server-configuration-taken-from-its-host → artefact-built-once-for-every-environment · MUST
 Every setting that differs between deployments reaches a server from its host — an environment variable or a file the host mounts — and none is built into its artefact.
 
 | Why | Tags |
@@ -135,7 +135,7 @@ A server's process runs as a user without administrative rights, cannot write it
 
 ## Tests
 
-### server-stop-proven-by-a-spec → lifecycle-tested-to-its-final-state · SHOULD
+### server-stop-proven-by-a-spec · SHOULD
 A server has a spec that starts it, gives it work, tells it to stop while the work runs, and checks that the work finishes, new work is refused and the process exits within its bound.
 
 | Why | Tags |

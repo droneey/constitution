@@ -90,11 +90,18 @@ A release build is not debuggable and carries no development menu, no connection
 | each of these lets whoever holds the phone read the app's memory, change its code or read its traffic. | [security] |
 
 ### personal-data-at-rest-kept-in-the-protected-class · MUST
-Personal data the app stores beyond its credentials sits in the system's protected file class — Data Protection on iOS, the app's private storage on Android — is left out of backups to other devices where it identifies its person, and never reaches the system's shared logs.
+Personal data the app stores beyond its credentials sits in the system's strongest protected file class it can use — `complete` on iOS, or `completeUnlessOpen` where work in the background must write it, and the app's private, encrypted storage on Android — is left out of backups to other devices where it identifies its person, and never reaches the system's shared logs.
 
 | Why | Tags |
 |---|---|
 | a device that is lost, backed up to another account or read by another app gives up whatever the app left outside the protected class. | [security, data] |
+
+### downloaded-code-verified-before-it-runs · MUST
+Code the app receives after it is installed — an update of its script bundle over the air — runs only once its signature, made by the project's own key, is verified on the device.
+
+| Why | Tags |
+|---|---|
+| an update channel that serves unsigned code lets whoever reaches it run their code in every installed copy. | [security] |
 
 ### genuine-app-proven-by-the-systems-attestation · MAY
 A server that must know a request comes from the genuine app on a genuine device checks the system's attestation — App Attest on iOS, Play Integrity on Android.
@@ -102,6 +109,15 @@ A server that must know a request comes from the genuine app on a genuine device
 | Why | Tags |
 |---|---|
 | a modified app or an emulator sends the same requests as the real app, and only a statement the system signs tells them apart. | [security] |
+
+## Dependencies
+
+### minimum-os-version-declared-and-reviewed · SHOULD
+The oldest system version the app supports is declared with its reason, and reviewed each year against the versions its users run and those its vendor still ships security updates for.
+
+| Why | Tags |
+|---|---|
+| an app on a system without patches runs on known holes that its own code cannot close. | [security] |
 
 ## Untrusted client
 
@@ -120,13 +136,6 @@ A purchase or a subscription is granted only after the server verifies the store
 | a modified app reports every purchase as paid, and only the store's signed record proves one was. | [security] |
 
 ## Versions
-
-### minimum-os-version-declared-and-reviewed · SHOULD
-The oldest system version the app supports is declared with its reason, and reviewed each year against the versions its users run and those its vendor still ships security updates for.
-
-| Why | Tags |
-|---|---|
-| an app on a system without patches runs on known holes that its own code cannot close. | [security] |
 
 ### unsupported-app-version-asks-to-update · SHOULD
 The app learns the oldest version of itself its server still supports and, below it, asks its user to update before going on.

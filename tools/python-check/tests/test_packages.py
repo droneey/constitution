@@ -62,6 +62,10 @@ def _findings(*, importer: str, statement: str) -> tuple[Finding, ...]:
     pytest.param('src/shop/api/orders_api.py', 'import pydantic', id='a home that names the edge'),
     pytest.param('src/shop/root/logging.py', 'import structlog', id='a home inside the edge'),
     pytest.param('tests/test_orders.py', 'import pytest', id='a file outside the source root'),
+    pytest.param(
+      'src/shop/adapters/mail/mail_adapter.py', 'import smtplib', id='an effect in an adapter'
+    ),
+    pytest.param('src/shop/root/settings.py', 'from os import environ', id='an effect in the root'),
   ],
 )
 def test_should_find_nothing_when_a_package_is_imported_in_its_home(
@@ -153,6 +157,24 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
       'import httpx',
       'httpx has no home in features; a package without one is imported at the edge',
       id='a package without a home in a main file that is no entry',
+    ),
+    pytest.param(
+      APP,
+      'import subprocess',
+      (
+        'features/orders/app/use_cases holds no effect, and subprocess is one; '
+        'it reaches it through a port'
+      ),
+      id='an effect of the standard library in a binding unit',
+    ),
+    pytest.param(
+      DOMAIN,
+      'from uuid import uuid4',
+      (
+        'features/orders/domain/entities holds no effect, and uuid is one; '
+        'it reaches it through a port'
+      ),
+      id='an effect of the standard library in the domain',
     ),
     pytest.param(
       'src/shop/adapters/log/log_adapter.py',

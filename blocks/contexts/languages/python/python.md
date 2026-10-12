@@ -71,7 +71,7 @@ No code uses the `global` statement, and no module-level name holds a list, a di
 | a module is imported once per process, so its state is shared by every caller and leaks from one test into the next. | [] |
 
 ### parameter-default-never-mutable → state-never-global-and-mutable · MUST
-A parameter's default is an immutable value — `None`, a number, a string, a tuple, a frozen value — never a list, a dict, a set or a call's result.
+A parameter's default is an immutable value — `None`, a number, a string, a tuple, a frozen value — never a list, a dict, a set or a call that builds a mutable value.
 
 | Why | Tags |
 |---|---|
@@ -143,11 +143,18 @@ A `match` or an `if` chain over a closed set — an enumeration, a union of clas
 | `assert_never` fails the type check wherever a member added to the set is not handled, and raises if one arrives at run time. | [] |
 
 ### enumeration-is-a-unique-str-enum · SHOULD
-An enumeration is an `enum.StrEnum` marked `@unique`, each member's value written out as the string the program stores and sends, never `auto()`.
+An enumeration of values the program owns is an `enum.StrEnum` marked `@unique`, each member's value written out as the string the program stores and sends, never `auto()`.
 
 | Why | Tags |
 |---|---|
 | a value written out survives a member's rename, which `auto()` would carry into every stored record and message, and `@unique` refuses two names for one value. | [] |
+
+### outside-number-set-is-an-int-enum · SHOULD
+A set of numbers another system defines — exit statuses, HTTP statuses — is an `enum.IntEnum` with every member's value written, or the standard library's own such as `http.HTTPStatus`.
+
+| Why | Tags |
+|---|---|
+| the numbers are fixed by the other system, so the members carry its values, and a string enumeration would hold a copy that the other side never reads. | [] |
 
 ### identifier-is-a-new-type → identifier-branded-by-entity · SHOULD
 An entity's identifier is a `NewType` over its primitive: `OrderId = NewType('OrderId', UUID)`.
@@ -213,7 +220,7 @@ An exact decimal quantity is an `int` of its smallest unit or a `decimal.Decimal
 | `Decimal(0.1)` keeps the binary error of the float it was given, while `Decimal('0.1')` is exact. | [data] |
 
 ### text-opened-with-utf-8-named → text-encoded-as-utf-8 · MUST
-Every call that opens or decodes text — `open`, `Path.open`, `Path.read_text`, `Path.write_text`, a `subprocess` call with `text=True` — names `encoding='utf-8'`.
+Every call that opens or decodes text — `open`, `Path.open`, `Path.read_text`, `Path.write_text`, a `subprocess` call with `text=True` — names `encoding='utf-8'` while the project's floor is below Python 3.15.
 
 | Why | Tags |
 |---|---|

@@ -38,7 +38,7 @@ pytest-randomly is installed, so the cases are shuffled and the seed is reported
 |---|---|
 | pytest keeps the cases in the order it collects them, and the plugin, once installed, shuffles them with no setting. | [] |
 
-### no-test-reruns → flaky-test-fixed-never-retried · SHOULD
+### failed-test-never-rerun → flaky-test-fixed-never-retried · SHOULD
 No plugin that runs a case again — pytest-rerunfailures, flaky — is installed, and no case is marked `flaky`.
 
 | Why | Tags |
@@ -68,7 +68,7 @@ The fixtures the specs of a folder share are in that folder's `conftest.py`.
 |---|---|
 | the standard library's clients, and the libraries built on them, open a connection through these calls of `socket`, and an autouse fixture holds for every spec under its folder with no line in the spec. | [] |
 
-### no-module-patching → effect-faked-never-mocked · SHOULD
+### module-never-patched-in-a-spec → effect-faked-never-mocked · SHOULD
 No `unittest.mock`, and no `monkeypatch` over a module of the program; `monkeypatch` changes only what the sandbox and the environment hold.
 
 | Why | Tags |

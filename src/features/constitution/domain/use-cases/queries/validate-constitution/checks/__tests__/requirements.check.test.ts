@@ -71,7 +71,7 @@ describe('requirementsCheck', () => {
       '',
       '| Requirement | How | Met |',
       '|---|---|---|',
-      '| `no-any` | the noExplicitAny rule | yes |',
+      '| `any-never-typed` | the noExplicitAny rule | yes |',
       '| `dependencies-point-inward` | review | yes |',
       '',
     ].join('\n');
@@ -151,7 +151,7 @@ describe('requirementsCheck', () => {
     },
     {
       met: 'no',
-      row: '| `i18n-plurals-by-cldr` | none; `no-any` stands in | no |',
+      row: '| `i18n-plurals-by-cldr` | none; `any-never-typed` stands in | no |',
     },
   ])(
     'should report a $met answer when it names in backticks no rule of its own block',

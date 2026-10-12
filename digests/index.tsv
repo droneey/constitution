@@ -64,7 +64,7 @@ block	nestjs	implementation	NestJS — modules, providers and the injector that 
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.		docker			false				osv-scanner.toml
 block	pino	implementation	pino writes the program's log records as JSON lines.	architecture/pino.md	http-server architecture/_api	typescript observability		false				**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.			browser ui typescript		false				tests/e2e/** playwright.config.*
-block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	architecture/pydantic.md	convergence	python		false				**/models/** **/adapters/** **/root/**
+block	pydantic	implementation	pydantic parses what crosses the program's edge into models.	architecture/pydantic.md	config-file	python		false				**/models/** **/adapters/** **/root/**
 block	pytest	implementation	pytest runs Python's specs and holds the coverage gate.	architecture/pytest.md		python		false		python		**/tests/**
 block	python-check	implementation	The constitution's own check of what no Python tool holds.	architecture/python-check.md		python		false		python		
 block	react-dom	implementation	React in the browser — the DOM, the document, labels and portals.	architecture/react-dom.md	bun-test	browser	_react	false			_react	**/*.tsx
@@ -79,7 +79,7 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.		design-system i18n	ui browser typescript css		false				**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	architecture/tanstack-form.md		_react		false				**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	architecture/tanstack-query.md	architecture/access-control	_react remote-data remote-service		false				**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	architecture/tanstack-router.md	access-control tanstack-query version-control architecture/access-control	react-dom		false				src/routes/** src/router.tsx
+block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	architecture/tanstack-router.md	tanstack-query version-control architecture/access-control	react-dom		false				src/routes/** src/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	architecture/tanstack-start.md		tanstack-router server		false				src/routes/__root.tsx src/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.		react-dom remote-data remote-service	_react		false				**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.			typescript		false				src/reset.d.ts
@@ -88,11 +88,11 @@ block	ty	implementation	ty checks the types of Python.			python		false		python		
 block	uv	implementation	uv as Python's package manager, resolver and build backend.		distribution workspace architecture/workspace	python		false				pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.		browser	typescript		false				vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.			python		false		python		
-block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md	convergence	typescript		false				**/adapters/**
+block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md	config-file	typescript		false				**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.			yaml		false		yaml		.yamllint.yaml
-block	zod	implementation	zod parses untrusted input into the program's types.		convergence architecture/convergence architecture/ui	typescript		false				**/models/** **/adapters/**
+block	zod	implementation	zod parses untrusted input into the program's types.		config-file architecture/convergence architecture/ui	typescript		false				**/models/** **/adapters/**
 chapter	core	agents.md	a person or an agent at work on the repository.
-chapter	core	changes.md	a change, the work of one task: its scope, what it carries, its hand-back.
+chapter	core	changes.md	a change, one reviewed step of a task's work: its scope, what it carries, its hand-back.
 chapter	core	code.md	any code no other chapter governs.
 chapter	core	comments.md	a comment, the documentation of an entry, a mark of deprecation.
 chapter	core	dependencies.md	packages, downloads and tools taken from others.
@@ -114,6 +114,7 @@ chapter	core	architecture/ports.md	a contract at a boundary and its adapter.
 chapter	core	architecture/root.md	the composition root: wiring and configuration.
 chapter	core	architecture/tests.md	which units of the tree are a spec's boundaries.
 chapter	core	workflow/agents.md	the working agreement with agents.
+rule	consent-given-for-the-actions-it-names	core	blocks/core/agents.md		MUST	security			true
 rule	agent-asks-before-an-irreversible-action	core	blocks/core/agents.md		MUST	security			true
 rule	unattended-agent-acts-within-a-standing-grant	core	blocks/core/agents.md		MUST	security			true
 rule	agent-asks-when-readings-diverge	core	blocks/core/agents.md		SHOULD				true
@@ -151,6 +152,7 @@ rule	retired-code-marked-deprecated	core	blocks/core/comments.md		SHOULD				true
 rule	dependencies-locked-by-one-lockfile	core	blocks/core/dependencies.md		MUST	security			true
 rule	download-pinned-by-version-and-checksum	core	blocks/core/dependencies.md		MUST	security			true
 rule	tool-pinned-exactly-by-the-repository	core	blocks/core/dependencies.md		MUST	security			true
+rule	production-code-imports-no-tool	core	blocks/core/dependencies.md		MUST				true
 rule	dependency-resolved-from-its-declared-registry	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	new-dependency-vetted	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	new-release-adopted-after-a-cooldown	core	blocks/core/dependencies.md		SHOULD	security			true
@@ -178,6 +180,7 @@ rule	irreversible-operation-runs-dry-by-default	core	blocks/core/effects.md		MUS
 rule	shared-resource-has-one-writer	core	blocks/core/effects.md		MUST				true
 rule	diagnostics-written-through-a-logger	core	blocks/core/effects.md		MUST	security			true
 rule	configuration-parsed-once-at-start	core	blocks/core/effects.md		MUST	security			true
+rule	artefact-built-once-for-every-environment	core	blocks/core/effects.md		MUST	security			true
 rule	failure-is-expected-or-defect	core	blocks/core/errors.md		MUST	errors			true
 rule	expected-failure-is-part-of-the-contract	core	blocks/core/errors.md		SHOULD	errors			true
 rule	failure-told-apart-by-code	core	blocks/core/errors.md		MUST	errors			true
@@ -245,6 +248,7 @@ rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	sec
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
 rule	outside-path-confined-to-its-root	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
+rule	outside-input-parsed-without-external-references	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
 rule	security-check-fails-closed	core	blocks/core/security.md		MUST	security			true
 rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
@@ -370,9 +374,8 @@ rule	root-alone-reads-the-environment	core	blocks/core/architecture/root.md		MUS
 rule	root-applies-the-decorators	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
-rule	consent-given-for-the-actions-it-names	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
 rule	agent-asks-before-a-consequential-change	core	blocks/core/workflow/agents.md		MUST		workflow		true
-rule	design-settled-in-the-chat-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
+rule	design-settled-with-its-person-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
 rule	agent-writes-tests-first-from-a-description	core	blocks/core/workflow/agents.md		SHOULD	testing	workflow		true
 rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
@@ -383,7 +386,7 @@ rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/workflow/agents.md		
 rule	list-answer-paged-with-a-maximum	_api	blocks/domains/_api/collections.md		MUST	performance security		outside-read-bounded	true
 rule	list-paged-by-an-opaque-cursor	_api	blocks/domains/_api/collections.md		MUST	performance			true
 rule	list-ordered-by-a-unique-key	_api	blocks/domains/_api/collections.md		MUST	data			true
-rule	list-filtered-and-sorted-only-by-declared-fields	_api	blocks/domains/_api/collections.md		SHOULD	security performance			true
+rule	list-filtered-and-sorted-only-by-declared-fields	_api	blocks/domains/_api/collections.md		MUST	security performance			true
 rule	batch-declares-atomic-or-answers-each-item	_api	blocks/domains/_api/collections.md		SHOULD	data			true
 rule	contract-published-machine-readable	_api	blocks/domains/_api/contract.md		MUST				true
 rule	breaking-change-refused-by-a-contract-diff	_api	blocks/domains/_api/contract.md		MUST				true
@@ -410,7 +413,7 @@ rule	instant-sent-as-rfc-3339	_api	blocks/domains/_api/values.md		MUST	data		ins
 rule	money-sent-as-a-decimal-and-its-currency	_api	blocks/domains/_api/values.md		MUST	data		exact-quantity-never-binary-float	true
 rule	large-integer-sent-as-a-string	_api	blocks/domains/_api/values.md		SHOULD	data			true
 rule	field-names-in-one-case	_api	blocks/domains/_api/values.md		SHOULD				true
-rule	server-delivery-layer-is-the-api-folder	_api	blocks/domains/_api/architecture/_api.md		SHOULD		architecture	package-laid-out-by-the-tree	true
+rule	server-delivery-layer-is-the-api-folder	_api	blocks/domains/_api/architecture/_api.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	one-error-handler-registered-by-the-root	_api	blocks/domains/_api/architecture/_api.md		MUST	errors security	architecture	last-resort-handler-one-per-entry	true
 rule	call-handle-checked-against-its-caller	_api	blocks/domains/_api/with/access-control.md	access-control	MUST	security			true
 rule	hidden-object-answered-as-not-found	_api	blocks/domains/_api/with/access-control.md	access-control	SHOULD	security			true
@@ -443,6 +446,7 @@ rule	session-has-idle-and-absolute-limits	access-control	blocks/domains/access-c
 rule	entry-point-declares-its-access	access-control	blocks/domains/access-control/architecture/access-control.md		MUST	security	architecture		true
 rule	session-cookie-closed-to-script	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
 rule	unauthenticated-request-answered-401-with-a-challenge	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
+rule	request-without-the-right-answered-403	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security			true
 rule	sign-in-refused-from-other-origins	access-control	blocks/domains/access-control/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
 rule	sign-in-needs-no-cognitive-test	access-control	blocks/domains/access-control/with/ui.md	ui	MUST	a11y security			true
 rule	session-limits-warned-before-they-end	access-control	blocks/domains/access-control/with/ui.md	ui	MUST	a11y security ux		time-limit-warned-and-extendable	true
@@ -493,7 +497,8 @@ rule	stages-run-alone	convergence	blocks/domains/convergence/stages.md		SHOULD		
 rule	rendering-runs-no-engine	convergence	blocks/domains/convergence/stages.md		SHOULD				true
 rule	run-reports-per-stage	convergence	blocks/domains/convergence/stages.md		SHOULD	ux errors			true
 rule	run-output-in-one-work-folder	convergence	blocks/domains/convergence/stages.md		SHOULD				true
-rule	stages-validate-render-plan-apply	convergence	blocks/domains/convergence/architecture/stages.md		SHOULD		architecture		true
+rule	work-folder-keeps-secrets-as-references	convergence	blocks/domains/convergence/stages.md		MUST	security			true
+rule	each-stage-is-a-use-case-of-its-own	convergence	blocks/domains/convergence/architecture/stages.md		SHOULD		architecture		true
 rule	run-output-in-an-ignored-work-folder	convergence	blocks/domains/convergence/with/version-control.md	version-control	MUST			generated-files-not-committed	true
 rule	primitive-passes-its-element-through	design-system	blocks/domains/design-system/design-system.md		SHOULD	ux			true
 rule	token-sits-in-one-tier	design-system	blocks/domains/design-system/design-system.md		MUST	ux			true
@@ -566,6 +571,7 @@ rule	socket-upgrade-accepted-only-from-an-allowed-origin	http-server	blocks/doma
 rule	long-lived-connection-bounded	http-server	blocks/domains/http-server/origins.md		MUST	performance		kept-collection-bounded	true
 rule	opt-out-signal-read-from-the-request	http-server	blocks/domains/http-server/with/privacy.md	privacy	MUST	data		opt-out-signal-honoured	true
 rule	values-formatted-by-the-active-locale	i18n	blocks/domains/i18n/formats.md		MUST	ux			true
+rule	entered-value-parsed-by-the-active-locale	i18n	blocks/domains/i18n/formats.md		SHOULD	ux data			true
 rule	instant-shown-in-the-readers-zone	i18n	blocks/domains/i18n/formats.md		MUST	data		instant-is-an-exact-time	true
 rule	currency-from-the-amount	i18n	blocks/domains/i18n/formats.md		MUST	data ux			true
 rule	text-sorted-by-the-locale	i18n	blocks/domains/i18n/formats.md		SHOULD	ux			true
@@ -591,7 +597,7 @@ rule	model-client-sets-bounds-and-reports-the-stop	language-model	blocks/domains
 rule	model-given-only-the-tools-its-task-needs	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	outside-tool-definition-pinned	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	tool-acts-with-the-persons-rights	language-model	blocks/domains/language-model/agency.md		MUST	security		credential-has-least-privilege	true
-rule	consequential-tool-call-approved-by-its-person	language-model	blocks/domains/language-model/agency.md		MUST	security ux		irreversible-operation-runs-dry-by-default	true
+rule	consequential-tool-call-approved-by-its-person	language-model	blocks/domains/language-model/agency.md		MUST	security ux			true
 rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data			true
 rule	generated-code-runs-only-in-a-sandbox	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	memory-keeps-its-source-and-person	language-model	blocks/domains/language-model/agency.md		SHOULD	security			true
@@ -606,6 +612,7 @@ rule	model-grader-checked-against-people	language-model	blocks/domains/language-
 rule	model-output-parsed-by-the-programs-schema	language-model	blocks/domains/language-model/outputs.md		MUST	security data		outside-value-untyped-until-parsed	true
 rule	output-used-only-when-finished	language-model	blocks/domains/language-model/outputs.md		MUST	errors		failure-is-expected-or-defect	true
 rule	output-address-followed-only-from-an-allowlist	language-model	blocks/domains/language-model/outputs.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
+rule	output-rendered-as-markup-sanitised	language-model	blocks/domains/language-model/outputs.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	person-told-they-talk-with-a-model	language-model	blocks/domains/language-model/outputs.md		MUST	ux			true
 rule	generated-content-marked-as-generated	language-model	blocks/domains/language-model/outputs.md		MUST	ux			true
 rule	prompt-text-versioned-with-the-code	language-model	blocks/domains/language-model/prompts.md		MUST	security			true
@@ -679,12 +686,12 @@ rule	message-contract-published-machine-readable	messaging	blocks/domains/messag
 rule	message-type-changed-only-by-addition	messaging	blocks/domains/messaging/messages.md		MUST	data		format-changed-in-steps	true
 rule	message-contract-change-refused-by-a-diff	messaging	blocks/domains/messaging/messages.md		MUST	data			true
 rule	message-carries-only-its-declared-fields	messaging	blocks/domains/messaging/messages.md		MUST	data security			true
-rule	message-carries-no-secret	messaging	blocks/domains/messaging/messages.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	message-carries-no-secret-and-only-needed-personal-data	messaging	blocks/domains/messaging/messages.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	publish-done-only-once-the-broker-confirms	messaging	blocks/domains/messaging/publishing.md		MUST	data errors			true
 rule	ordered-messages-share-an-ordering-key	messaging	blocks/domains/messaging/publishing.md		MUST	data			true
 rule	redelivery-and-reordering-have-cases	messaging	blocks/domains/messaging/tests.md		SHOULD	testing		edge-cases-chosen-by-risk	true
 rule	publisher-is-a-port-in-the-domains-words	messaging	blocks/domains/messaging/architecture/messaging.md		MUST		architecture	contract-knows-no-vendor	true
-rule	consumers-and-jobs-are-the-delivery-layer	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	package-laid-out-by-the-tree	true
+rule	consumers-and-jobs-are-the-delivery-layer	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	message-handler-stays-thin	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	delivery-unit-stays-thin	true
 rule	message-carries-the-identity-it-acts-for	messaging	blocks/domains/messaging/with/access-control.md	access-control	MUST	security data		tenant-data-scoped-in-every-read-and-write	true
 rule	message-carries-its-creators-trace-context	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			trace-context-propagated-onward	true
@@ -707,6 +714,7 @@ rule	log-level-has-one-meaning	observability	blocks/domains/observability/logs.m
 rule	log-output-structured-in-production	observability	blocks/domains/observability/logs.md		SHOULD				true
 rule	metric-labels-bounded	observability	blocks/domains/observability/metrics.md		MUST	performance			true
 rule	served-request-measured-by-rate-errors-and-duration	observability	blocks/domains/observability/metrics.md		SHOULD	performance			true
+rule	alert-fires-on-what-users-feel	observability	blocks/domains/observability/metrics.md		SHOULD	errors			true
 rule	trace-id-taken-only-from-a-trusted-caller	observability	blocks/domains/observability/traces.md		SHOULD	security			true
 rule	trace-context-propagated-onward	observability	blocks/domains/observability/traces.md		SHOULD				true
 rule	unit-of-work-opens-a-span	observability	blocks/domains/observability/traces.md		SHOULD				true
@@ -736,8 +744,10 @@ rule	migrations-applied-in-ci-from-the-last-release	owned-data	blocks/domains/ow
 rule	personal-data-inventoried	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	privacy-notice-follows-the-inventory	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-collected-only-for-its-purpose	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	sharing-settings-start-most-protective	privacy	blocks/domains/privacy/privacy.md		MUST	security data			true
 rule	personal-data-kept-no-longer-than-its-retention	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	personal-data-reaches-only-a-listed-recipient	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
+rule	high-risk-processing-assessed-before-it-starts	privacy	blocks/domains/privacy/privacy.md		SHOULD	data			true
 rule	personal-data-exported-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
 rule	rights-request-verified-before-it-is-answered	privacy	blocks/domains/privacy/privacy.md		MUST	data security			true
 rule	personal-data-erased-on-request	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
@@ -978,7 +988,7 @@ rule	product-units-blind-to-each-other	workspace	blocks/domains/workspace/archit
 rule	units-import-toward-libs	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	import-points-inward	true
 rule	bundle-within-its-size-budget	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
 rule	hashed-file-immutable-and-its-pointers-revalidated	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
-rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/browser.md		MUST	security			true
+rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/browser.md		MUST	security		artefact-built-once-for-every-environment	true
 rule	browser-resources-have-one-writer	browser	blocks/contexts/platforms/browser/browser.md		MUST			shared-resource-has-one-writer	true
 rule	service-worker-update-waits-for-the-page	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	ux errors			true
 rule	service-worker-caches-versioned	browser	blocks/contexts/platforms/browser/browser.md		MUST	performance		kept-collection-bounded	true
@@ -1039,6 +1049,7 @@ rule	exit-codes-from-one-map	cli	blocks/contexts/platforms/cli/cli.md		MUST	erro
 rule	unknown-command-never-guessed	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux errors			true
 rule	standard-output-holds-only-data	cli	blocks/contexts/platforms/cli/cli.md		MUST	ux security		diagnostics-written-through-a-logger	true
 rule	interrupt-ends-the-run-promptly	cli	blocks/contexts/platforms/cli/cli.md		MUST	ux errors data		program-stops-cleanly	true
+rule	closed-output-ends-the-run-quietly	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
 rule	setting-taken-from-flag-then-environment-then-files	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
 rule	user-file-kept-in-the-systems-base-directories	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux data			true
 rule	output-masks-every-known-secret	cli	blocks/contexts/platforms/cli/cli.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
@@ -1057,7 +1068,6 @@ rule	progressive-report-printed-as-events-arrive	cli	blocks/contexts/platforms/c
 rule	styling-only-on-a-terminal	cli	blocks/contexts/platforms/cli/cli.md		MUST	ux a11y			true
 rule	status-never-shown-by-colour-alone	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	a11y ux			true
 rule	slow-step-announced-before-it-starts	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
-rule	closed-output-ends-the-run-quietly	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
 rule	command-framework-parses-flags-by-schema	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
 rule	command-framework-leaves-exits-to-the-handler	cli	blocks/contexts/platforms/cli/cli.md		MUST	errors			true
 rule	command-framework-runs-in-a-test-sandbox	cli	blocks/contexts/platforms/cli/cli.md		MUST	testing			true
@@ -1078,10 +1088,11 @@ rule	biometric-unlock-opens-a-protected-key	mobile	blocks/contexts/platforms/mob
 rule	push-payload-holds-no-secret	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	release-build-carries-no-debugging	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	personal-data-at-rest-kept-in-the-protected-class	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
+rule	downloaded-code-verified-before-it-runs	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	genuine-app-proven-by-the-systems-attestation	mobile	blocks/contexts/platforms/mobile/mobile.md		MAY	security			true
+rule	minimum-os-version-declared-and-reviewed	mobile	blocks/contexts/platforms/mobile/mobile.md		SHOULD	security			true
 rule	credential-kept-in-the-keychain-or-keystore	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security		client-credential-kept-in-the-protected-store	true
 rule	purchase-granted-after-the-server-verifies-it	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security		client-check-repeated-out-of-its-reach	true
-rule	minimum-os-version-declared-and-reviewed	mobile	blocks/contexts/platforms/mobile/mobile.md		SHOULD	security			true
 rule	unsupported-app-version-asks-to-update	mobile	blocks/contexts/platforms/mobile/mobile.md		SHOULD	security data			true
 rule	device-capability-reached-through-a-port	mobile	blocks/contexts/platforms/mobile/architecture/mobile.md		MUST	testing	architecture	effects-held-only-by-the-edge	true
 rule	app-extension-is-an-entrypoint	mobile	blocks/contexts/platforms/mobile/architecture/mobile.md		SHOULD	performance	architecture	package-laid-out-by-the-tree	true
@@ -1123,7 +1134,7 @@ rule	stop-signal-reaches-the-server-process	server	blocks/contexts/platforms/ser
 rule	server-copy-keeps-only-what-it-can-lose	server	blocks/contexts/platforms/server/server.md		MUST	data			true
 rule	one-off-work-runs-as-its-own-process	server	blocks/contexts/platforms/server/server.md		SHOULD	data			true
 rule	server-pools-sized-to-the-hosts-grant	server	blocks/contexts/platforms/server/server.md		SHOULD	performance			true
-rule	server-configuration-taken-from-its-host	server	blocks/contexts/platforms/server/server.md		MUST	security		configuration-parsed-once-at-start	true
+rule	server-configuration-taken-from-its-host	server	blocks/contexts/platforms/server/server.md		MUST	security		artefact-built-once-for-every-environment	true
 rule	server-listens-where-its-configuration-says	server	blocks/contexts/platforms/server/server.md		SHOULD				true
 rule	server-serves-its-protocol-itself	server	blocks/contexts/platforms/server/server.md		SHOULD				true
 rule	server-log-leaves-as-a-stream	server	blocks/contexts/platforms/server/server.md		MUST	security		diagnostics-written-through-a-logger	true
@@ -1131,7 +1142,7 @@ rule	server-work-in-flight-bounded	server	blocks/contexts/platforms/server/serve
 rule	server-secret-read-from-the-host-not-the-environment	server	blocks/contexts/platforms/server/server.md		SHOULD	security			true
 rule	server-cloud-access-through-workload-identity	server	blocks/contexts/platforms/server/server.md		SHOULD	security		credential-has-least-privilege	true
 rule	server-process-runs-unprivileged	server	blocks/contexts/platforms/server/server.md		MUST	security		credential-has-least-privilege	true
-rule	server-stop-proven-by-a-spec	server	blocks/contexts/platforms/server/server.md		SHOULD	testing		lifecycle-tested-to-its-final-state	true
+rule	server-stop-proven-by-a-spec	server	blocks/contexts/platforms/server/server.md		SHOULD	testing			true
 rule	server-liveness-reports-the-process-alone	server	blocks/contexts/platforms/server/server.md		MUST	errors			true
 rule	server-readiness-reports-what-serving-needs	server	blocks/contexts/platforms/server/server.md		MUST	errors			true
 rule	server-start-outwaits-its-dependencies	server	blocks/contexts/platforms/server/server.md		SHOULD	errors			true
@@ -1141,7 +1152,7 @@ rule	server-processes-entered-from-entrypoints	server	blocks/contexts/platforms/
 rule	server-probes-and-stop-path-live-in-the-root	server	blocks/contexts/platforms/server/architecture/server.md		SHOULD		architecture	package-laid-out-by-the-tree	true
 rule	readiness-check-offered-by-the-adapter	server	blocks/contexts/platforms/server/architecture/server.md		SHOULD		architecture		true
 rule	server-lifecycle-wired-by-the-root	server	blocks/contexts/platforms/server/architecture/server.md		MUST	errors	architecture	composition-root-wires-everything	true
-rule	server-idle-connection-outlasts-the-proxys	server	blocks/contexts/platforms/server/with/http-server.md	http-server	MUST	errors security performance		request-read-within-a-time-bound	true
+rule	server-idle-connection-outlasts-the-proxy	server	blocks/contexts/platforms/server/with/http-server.md	http-server	MUST	errors security performance		request-read-within-a-time-bound	true
 rule	stopping-server-closes-each-connection	server	blocks/contexts/platforms/server/with/http-server.md	http-server	SHOULD	errors			true
 rule	probe-answer-holds-only-its-status	server	blocks/contexts/platforms/server/with/http-server.md	http-server	MUST	security			true
 rule	probe-served-apart-from-the-public-address	server	blocks/contexts/platforms/server/with/http-server.md	http-server	SHOULD	security			true
@@ -1218,6 +1229,7 @@ rule	narrowing-function-returns-typeis	python	blocks/contexts/languages/python/p
 rule	staged-value-is-a-union-of-dataclasses	python	blocks/contexts/languages/python/python.md		MUST			illegal-state-unrepresentable	true
 rule	closed-set-match-ends-in-assert-never	python	blocks/contexts/languages/python/python.md		MUST			closed-set-branched-exhaustively	true
 rule	enumeration-is-a-unique-str-enum	python	blocks/contexts/languages/python/python.md		SHOULD				true
+rule	outside-number-set-is-an-int-enum	python	blocks/contexts/languages/python/python.md		SHOULD				true
 rule	identifier-is-a-new-type	python	blocks/contexts/languages/python/python.md		SHOULD			identifier-branded-by-entity	true
 rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/python.md		MUST				true
 rule	annotation-written-unquoted	python	blocks/contexts/languages/python/python.md		SHOULD				true
@@ -1375,6 +1387,7 @@ rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/
 rule	package-export-typed-explicitly	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			distributed-unit-ships-its-types	true
 rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	security		distributed-unit-ships-only-what-its-manifest-names	true
 rule	integration-is-a-subpath-with-an-optional-peer	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			integration-is-an-entry-with-an-optional-framework	true
+rule	hash-imports-rewritten-below-their-runtime	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	errors			true
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			manifest-declares-consumer-owned-dependencies-as-peers	true
 rule	runtime-floor-in-engines	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			manifest-declares-the-runtime-floor	true
 rule	dependency-declared-with-a-caret	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			manifest-declares-dependencies-by-range	true
@@ -1403,7 +1416,7 @@ rule	render-is-pure	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	function-components-only	_react	blocks/implementations/_react/_react.md		MUST			behaviour-composed-not-inherited	true
 rule	hooks-at-top-level	_react	blocks/implementations/_react/_react.md		MUST	errors			true
-rule	no-component-defined-inside-component	_react	blocks/implementations/_react/_react.md		MUST	errors performance			true
+rule	component-never-defined-inside-a-component	_react	blocks/implementations/_react/_react.md		MUST	errors performance			true
 rule	list-keys-from-identity	_react	blocks/implementations/_react/_react.md		SHOULD	errors			true
 rule	components-named-in-pascal-case	_react	blocks/implementations/_react/_react.md		SHOULD			identifier-case-by-kind	true
 rule	nothing-rendered-as-null	_react	blocks/implementations/_react/_react.md		MUST	data		absence-shown-by-the-type	true
@@ -1437,7 +1450,7 @@ rule	bun-is-the-only-package-manager	bun	blocks/implementations/bun/bun.md		MUST
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/bun.md		MUST	security		install-scripts-run-only-for-listed-dependencies	true
 rule	release-age-set-for-installs	bun	blocks/implementations/bun/bun.md		SHOULD	security		new-release-adopted-after-a-cooldown	true
 rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/bun.md		MUST	security		tool-pinned-exactly-by-the-repository	true
-rule	no-automatic-env-file	bun	blocks/implementations/bun/bun.md		MUST	security		configuration-parsed-once-at-start	true
+rule	env-file-never-loaded-automatically	bun	blocks/implementations/bun/bun.md		MUST	security		configuration-parsed-once-at-start	true
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/bun.md		SHOULD				true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/bun.md		SHOULD				true
 rule	process-env-read-only-in-root	bun	blocks/implementations/bun/architecture/bun.md		MUST	security	architecture	root-alone-reads-the-environment	true
@@ -1447,12 +1460,12 @@ rule	own-units-at-workspace-version	bun	blocks/implementations/bun/with/workspac
 rule	shared-data-bundled-by-the-build	bun	blocks/implementations/bun/with/workspace.md	workspace	MUST	data		file-lives-once-across-units	true
 rule	workspaces-globbed-by-the-tree	bun	blocks/implementations/bun/architecture/with/workspace.md	workspace	SHOULD		architecture		true
 rule	strict-matcher-only	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		case-proves-one-intent	true
-rule	no-module-mocks	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		effect-faked-never-mocked	true
+rule	module-never-mocked-in-a-spec	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		effect-faked-never-mocked	true
 rule	integration-specs-ignored-by-bunfig	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		integration-spec-runs-the-real-engine	true
 rule	coverage-gate-on-loaded-files	bun-test	blocks/implementations/bun-test/bun-test.md		MUST	testing		logic-fully-covered	true
-rule	no-test-retries	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		flaky-test-fixed-never-retried	true
+rule	failed-test-never-retried	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		flaky-test-fixed-never-retried	true
 rule	test-order-randomized	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		case-independent-of-order	true
-rule	no-sleep-in-specs	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		test-never-sleeps-a-fixed-time	true
+rule	spec-never-sleeps	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		test-never-sleeps-a-fixed-time	true
 rule	network-refused-by-the-test-preload	bun-test	blocks/implementations/bun-test/bun-test.md		MUST	testing		unit-spec-refuses-the-network	true
 rule	coverage-gate-on-the-unit-alone	bun-test	blocks/implementations/bun-test/with/workspace.md	workspace	MUST	testing		unit-checked-by-its-own-parts	true
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/bunli.md		SHOULD	testing		command-tested-through-its-command-line	true
@@ -1469,7 +1482,7 @@ rule	dclint-suppression-names-rule-and-reason	dclint	blocks/implementations/dcli
 rule	cruiser-configuration-per-unit	dependency-cruiser	blocks/implementations/dependency-cruiser/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	imports-between-units-held-at-the-root	dependency-cruiser	blocks/implementations/dependency-cruiser/architecture/with/workspace.md	workspace	MUST		architecture	units-import-toward-libs	true
 rule	unused-dependency-fails	deptry	blocks/implementations/deptry/deptry.md		MUST	security		dead-code-deleted	true
-rule	dev-tool-never-imported-by-the-program	deptry	blocks/implementations/deptry/deptry.md		MUST	security		tools-in-the-dev-group	true
+rule	dev-tool-never-imported-by-the-program	deptry	blocks/implementations/deptry/deptry.md		MUST			production-code-imports-no-tool	true
 rule	spec-modules-unreachable-from-src	deptry	blocks/implementations/deptry/deptry.md		MUST	testing		test-code-never-reached-from-production	true
 rule	docker-files-linted-in-the-check	docker	blocks/implementations/docker/docker.md		MUST				true
 rule	images-pinned-by-version-and-digest	docker	blocks/implementations/docker/docker.md		MUST	security		download-pinned-by-version-and-checksum	true
@@ -1516,7 +1529,7 @@ rule	worktree-one-branch-no-linked-folder	git	blocks/implementations/git/git.md	
 rule	gitignore-covers-key-files	git	blocks/implementations/git/git.md		MUST	security		secret-never-in-the-repository	true
 rule	gitignore-covers-environment-files	git	blocks/implementations/git/git.md		MUST	security		machine-local-files-ignored	true
 rule	gitignore-covers-dependencies-output-and-caches	git	blocks/implementations/git/git.md		SHOULD				true
-rule	release-tags-annotated	git	blocks/implementations/git/git.md		MUST	security		release-marked-by-immutable-tag	true
+rule	release-tags-annotated	git	blocks/implementations/git/git.md		MUST	security		release-tag-signed	true
 rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/git.md		SHOULD	performance		large-files-outside-history	true
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/hadolint.md		MUST			suppression-silences-one-finding	true
 rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	errors performance		outside-call-has-a-timeout	true
@@ -1527,7 +1540,7 @@ rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/httpx
 rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST		architecture	one-transport-instance-per-system	true
 rule	httpx2-errors-mapped-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST	errors	architecture	transport-failures-mapped-once	true
 rule	retries-written-in-the-adapter	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		SHOULD	errors	architecture		true
-rule	httpx2-only-at-the-edge	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST		architecture	effects-held-only-by-the-edge	true
+rule	httpx2-home-is-the-edge-and-its-failure-mapper	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		property-tested-where-it-pays	true
 rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		property-tested-where-it-pays	true
 rule	ci-profile-left-to-hypothesis	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		flaky-test-fixed-never-retried	true
@@ -1549,7 +1562,7 @@ rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/leftho
 rule	commit-scan-redacted	lefthook	blocks/implementations/lefthook/workflow/with/betterleaks.md	betterleaks	MUST	security data	workflow	secret-and-personal-data-kept-out-of-output	true
 rule	commit-subject-never-a-placeholder	lefthook	blocks/implementations/lefthook/workflow/with/version-control.md	version-control	MUST		workflow	commit-subject-says-what-changed	true
 rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/lingui.md		MUST	ux		messages-take-named-parameters	true
-rule	missing-translation-fails-the-check	lingui	blocks/implementations/lingui/lingui.md		MUST	ux		user-facing-text-from-catalog	true
+rule	source-catalog-current-in-the-check	lingui	blocks/implementations/lingui/lingui.md		MUST	ux		i18n-missing-key-fails-the-check	true
 rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/lingui.md		MUST			module-level-text-holds-the-message	true
 rule	components-take-t-from-use-lingui	lingui	blocks/implementations/lingui/with/_react.md	_react	MUST	ux			true
 rule	macros-expanded-by-the-test-preload	lingui	blocks/implementations/lingui/with/bun-test.md	bun-test	MUST	testing ux			true
@@ -1578,7 +1591,7 @@ rule	nestjs-files-in-the-tree	nestjs	blocks/implementations/nestjs/architecture/
 rule	adapter-is-an-injectable-class	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		SHOULD	testing	architecture	adapter-built-by-factory-object-or-class	true
 rule	providers-injected-through-the-constructor	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	testing	architecture	composition-root-wires-everything	true
 rule	injector-never-asked-for-a-dependency	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	testing	architecture	composition-root-wires-everything	true
-rule	no-global-module	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST		architecture	composition-root-wires-everything	true
+rule	global-module-never-declared	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST		architecture	composition-root-wires-everything	true
 rule	contracts-injected-by-token	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	testing	architecture	composition-root-wires-everything	true
 rule	error-kit-mapped-by-one-exception-filter	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST	errors security	architecture	one-error-handler-registered-by-the-root	true
 rule	nestjs-imported-by-modules-and-providers	nestjs	blocks/implementations/nestjs/architecture/nestjs.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
@@ -1602,7 +1615,7 @@ rule	trace-middleware-registered-by-the-root	pino	blocks/implementations/pino/ar
 rule	locators-by-role-label-text	playwright	blocks/implementations/playwright/playwright.md		MUST	a11y testing		element-found-by-role-label-or-text	true
 rule	waits-through-locators-and-assertions	playwright	blocks/implementations/playwright/playwright.md		SHOULD	testing		test-never-sleeps-a-fixed-time	true
 rule	web-first-assertions-awaited	playwright	blocks/implementations/playwright/playwright.md		MUST	errors		async-work-awaited-or-held-by-a-scope	true
-rule	no-forced-actions	playwright	blocks/implementations/playwright/playwright.md		SHOULD	a11y testing		layout-and-focus-proven-on-the-platform	true
+rule	actions-never-forced	playwright	blocks/implementations/playwright/playwright.md		SHOULD	a11y testing		layout-and-focus-proven-on-the-platform	true
 rule	retries-off-in-the-config	playwright	blocks/implementations/playwright/playwright.md		SHOULD	testing		flaky-test-fixed-never-retried	true
 rule	trace-kept-on-failure	playwright	blocks/implementations/playwright/playwright.md		SHOULD	testing			true
 rule	screens-scanned-in-the-browser	playwright	blocks/implementations/playwright/playwright.md		MUST	a11y testing		ui-specs-scan-accessibility	true
@@ -1612,23 +1625,24 @@ rule	settings-model-prefixed-and-closed	pydantic	blocks/implementations/pydantic
 rule	models-frozen	pydantic	blocks/implementations/pydantic/pydantic.md		SHOULD			value-immutable-by-default	true
 rule	secrets-typed-secret-str	pydantic	blocks/implementations/pydantic/pydantic.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	pydantic-two-forms-only	pydantic	blocks/implementations/pydantic/pydantic.md		MUST			deprecated-form-never-used	true
-rule	pydantic-only-at-the-edge	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	security	architecture	outside-value-untyped-until-parsed	true
+rule	pydantic-home-is-the-edge-and-shared-parsing	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	data	architecture	outside-shape-mapped-in-the-adapter	true
 rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	security	architecture	root-alone-reads-the-environment	true
-rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/with/convergence.md	convergence	MUST	data		published-schema-generated-from-code	true
+rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/with/config-file.md	config-file	MUST	data		published-schema-generated-from-code	true
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/pytest.md		MUST	testing		every-spec-passes	true
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/pytest.md		MUST	testing		logic-fully-covered	true
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		case-independent-of-order	true
-rule	no-test-reruns	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		flaky-test-fixed-never-retried	true
+rule	failed-test-never-rerun	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		flaky-test-fixed-never-retried	true
 rule	integration-folders-not-collected	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		integration-spec-runs-the-real-engine	true
 rule	shared-fixtures-in-the-conftest	pytest	blocks/implementations/pytest/pytest.md		MUST	testing		test-folder-files-in-python-forms	true
 rule	network-refused-by-the-conftest	pytest	blocks/implementations/pytest/pytest.md		MUST	testing		unit-spec-refuses-the-network	true
-rule	no-module-patching	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		effect-faked-never-mocked	true
+rule	module-never-patched-in-a-spec	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		effect-faked-never-mocked	true
 rule	async-specs-by-anyio	pytest	blocks/implementations/pytest/pytest.md		MUST	errors		async-work-awaited-or-held-by-a-scope	true
 rule	function-and-file-lines-counted	python-check	blocks/implementations/python-check/python-check.md		MUST			function-within-its-limits	true
 rule	relative-import-kept-in-its-feature	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	relative-imports-stay-in-the-module	true
 rule	packages-kept-to-their-homes	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
-rule	no-dangerously-set-inner-html	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	security		raw-html-never-reaches-the-dom	true
+rule	effect-modules-kept-at-the-edge	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	effects-held-only-by-the-edge	true
+rule	dangerously-set-inner-html-never-used	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	security		raw-html-never-reaches-the-dom	true
 rule	one-writer-of-the-head	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	ux		browser-resources-have-one-writer	true
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	a11y			true
 rule	overlays-rendered-through-portal	react-dom	blocks/implementations/react-dom/react-dom.md		SHOULD	a11y ux			true
@@ -1644,10 +1658,10 @@ rule	jsx-controls-named	react-dom	blocks/implementations/react-dom/react-dom.md	
 rule	jsx-roles-and-aria-valid	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	a11y		native-semantics-first	true
 rule	jsx-viewport-never-blocks-zoom	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	a11y		viewport-never-blocks-zoom	true
 rule	document-metadata-rendered-by-its-owner	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		SHOULD	ux	architecture	document-metadata-owned-by-screen	true
-rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		SHOULD	performance	architecture	document-metadata-owned-by-screen	true
+rule	third-party-script-rendered-as-element	react-dom	blocks/implementations/react-dom/architecture/react-dom.md		SHOULD	performance	architecture	third-party-script-declared-where-it-is-used	true
 rule	dom-registered-before-the-sandbox	react-dom	blocks/implementations/react-dom/with/bun-test.md	bun-test	MUST	testing		network-refused-by-the-test-preload	true
 rule	list-never-mapped-in-a-scroll-view	react-native	blocks/implementations/react-native/react-native.md		SHOULD	performance		long-lists-virtualised	true
-rule	no-literal-colour-in-a-style	react-native	blocks/implementations/react-native/react-native.md		MUST	ux		tokens-single-source-of-appearance	true
+rule	style-colour-read-from-tokens	react-native	blocks/implementations/react-native/react-native.md		MUST	ux		tokens-single-source-of-appearance	true
 rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/react-native.md		MUST			dependency-reached-through-its-public-entry	true
 rule	react-native-imported-by-the-ui	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	update-cooldown-configured	renovate	blocks/implementations/renovate/renovate.md		SHOULD	security		new-release-adopted-after-a-cooldown	true
@@ -1661,8 +1675,8 @@ rule	preview-rules-only-by-code	ruff	blocks/implementations/ruff/ruff.md		SHOULD
 rule	noqa-names-its-codes	ruff	blocks/implementations/ruff/ruff.md		MUST			suppression-silences-one-finding	true
 rule	http-exception-banned	ruff	blocks/implementations/ruff/with/fastapi.md	fastapi	MUST	errors		program-raises-no-http-exception	true
 rule	skips-and-expected-failures-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	MUST	testing		test-never-skipped-or-empty	true
-rule	flaky-mark-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing		no-test-reruns	true
-rule	unittest-mock-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing		no-module-patching	true
+rule	flaky-mark-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing		failed-test-never-rerun	true
+rule	unittest-mock-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing		module-never-patched-in-a-spec	true
 rule	pytest-asyncio-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	MUST	testing errors		async-specs-by-anyio	true
 rule	specs-lift-only-assert-and-package-rules	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing			true
 rule	complex-widgets-on-base-ui	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	a11y ux		complex-pattern-built-on-accessible-primitives	true
@@ -1691,10 +1705,10 @@ rule	stryker-runs-the-archive-runner	stryker	blocks/implementations/stryker/with
 rule	stryker-configuration-per-unit	stryker	blocks/implementations/stryker/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	syncpack-holds-versions-and-field-order	syncpack	blocks/implementations/syncpack/syncpack.md		MUST				true
 rule	utilities-only-from-tokens	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	ux		tokens-single-source-of-appearance	true
-rule	no-important-modifier-in-class-lists	tailwind	blocks/implementations/tailwind/tailwind.md		MUST			declaration-never-important	true
+rule	important-modifier-never-in-a-class-list	tailwind	blocks/implementations/tailwind/tailwind.md		MUST			declaration-never-important	true
 rule	bare-utility-only-without-a-token	tailwind	blocks/implementations/tailwind/tailwind.md		SHOULD	ux			true
 rule	mobile-first-breakpoints	tailwind	blocks/implementations/tailwind/tailwind.md		MUST			breakpoints-add-to-the-smallest-screen	true
-rule	no-screen-sized-classes	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	ux		viewport-size-in-small-viewport-units	true
+rule	screen-sized-classes-never-used	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	ux		viewport-size-in-small-viewport-units	true
 rule	class-merger-knows-the-theme	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	ux			true
 rule	tailwind-layers-are-the-order	tailwind	blocks/implementations/tailwind/tailwind.md		SHOULD			layer-order-declared-once	true
 rule	focus-shown-by-focusable-utility	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	a11y		focus-always-visible	true
@@ -1747,12 +1761,12 @@ rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tans
 rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD		architecture	screen-private-pieces-beside-screen	true
 rule	routes-imported-by-no-inner-layer	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	import-points-inward	true
 rule	services-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	composition-root-wires-everything	true
-rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/with/access-control.md	access-control	MUST	security		access-denied-unless-granted	true
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	MUST	data		fact-has-one-source	true
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	MAY				true
 rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	SHOULD				true
 rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/with/version-control.md	version-control	SHOULD			generated-files-not-committed	true
 rule	guard-reaches-features-outside-react	tanstack-router	blocks/implementations/tanstack-router/architecture/with/access-control.md	access-control	MUST	security	architecture	screen-guarded-through-the-session-owners-surface	true
+rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/architecture/with/access-control.md	access-control	MUST	security	architecture	screen-guarded-through-the-session-owners-surface	true
 rule	caching-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	performance		hashed-file-immutable-and-its-pointers-revalidated	true
 rule	content-security-policy-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		MUST	security		document-served-with-a-strict-content-security-policy	true
 rule	security-headers-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	security			true
@@ -1764,7 +1778,7 @@ rule	interactions-through-user-event	testing-library	blocks/implementations/test
 rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	testing		test-never-sleeps-a-fixed-time	true
 rule	hooks-proven-through-their-screen	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	testing		spec-proves-one-boundary	true
 rule	render-helper-builds-fresh-providers	testing-library	blocks/implementations/testing-library/testing-library.md		MUST	testing		case-independent-of-order	true
-rule	no-document-selectors-in-specs	testing-library	blocks/implementations/testing-library/with/react-dom.md	react-dom	MUST	a11y testing			true
+rule	spec-never-selects-from-the-document	testing-library	blocks/implementations/testing-library/with/react-dom.md	react-dom	MUST	a11y testing			true
 rule	ui-specs-run-the-axe-scan	testing-library	blocks/implementations/testing-library/with/react-dom.md	react-dom	MUST	a11y testing		ui-specs-scan-accessibility	true
 rule	spec-cache-client-fresh-without-retries	testing-library	blocks/implementations/testing-library/with/remote-data.md	remote-data	MUST	testing		case-independent-of-order	true
 rule	render-helper-replaces-the-transport	testing-library	blocks/implementations/testing-library/with/remote-service.md	remote-service	MUST	testing		ui-specs-replace-the-transport	true
@@ -1797,15 +1811,15 @@ rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/vu
 rule	yaml-failures-become-one-coded-error	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	errors		parse-failure-lists-every-problem	true
 rule	yaml-written-without-folding	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	data			true
 rule	yaml-only-at-the-edge	yaml-js	blocks/implementations/yaml-js/architecture/yaml-js.md		MUST	security	architecture	outside-value-untyped-until-parsed	true
-rule	document-header-names-its-schema	yaml-js	blocks/implementations/yaml-js/with/convergence.md	convergence	SHOULD	ux		config-file-points-editors-at-the-schema	true
+rule	config-file-header-names-its-schema	yaml-js	blocks/implementations/yaml-js/with/config-file.md	config-file	SHOULD	ux		config-file-points-editors-at-the-schema	true
 rule	yamllint-rules-set-as-errors	yamllint	blocks/implementations/yamllint/yamllint.md		MUST			rule-held-by-a-tool-where-one-can	true
 rule	schema-never-brands	zod	blocks/implementations/zod/zod.md		MUST	data		invariant-value-is-a-branded-type	true
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/zod.md		MUST	data		own-shape-strict-other-shape-tolerant	true
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/zod.md		MUST			declared-values-never-typed-again	true
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/zod.md		SHOULD	errors		parse-failure-lists-every-problem	true
 rule	zod-four-forms-only	zod	blocks/implementations/zod/zod.md		MUST			deprecated-form-never-used	true
-rule	json-schema-from-zod	zod	blocks/implementations/zod/with/convergence.md	convergence	MUST	data		published-schema-generated-from-code	true
-rule	zod-imported-by-the-document	zod	blocks/implementations/zod/architecture/with/convergence.md	convergence	MUST		architecture	layer-imports-dependencies-by-its-role	true
+rule	json-schema-from-zod	zod	blocks/implementations/zod/with/config-file.md	config-file	MUST	data		published-schema-generated-from-code	true
+rule	zod-imported-by-the-config-file-schema	zod	blocks/implementations/zod/architecture/with/convergence.md	convergence	MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	zod-imported-by-forms	zod	blocks/implementations/zod/architecture/with/ui.md	ui	MUST		architecture	layer-imports-dependencies-by-its-role	true
 answer	bun	workspace-tool-links-units-from-the-working-tree	yes
 answer	bun	publishing-tool-supports-run-identity-and-provenance	no
@@ -1824,7 +1838,7 @@ answer	ky	transport-tells-failures-apart	yes
 answer	ky	failure-retried-only-when-transient	yes
 answer	lingui	plural-forms-by-locale-rules	yes
 answer	lingui	messages-take-named-parameters	yes
-answer	lingui	i18n-missing-key-fails-the-check	partly
+answer	lingui	i18n-missing-key-fails-the-check	yes
 answer	lingui	i18n-locale-loaded-on-demand	yes
 answer	matomo	analytics-stores-nothing-until-consent	yes
 answer	matomo	analytics-drops-the-ip-address	yes

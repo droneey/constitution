@@ -4,7 +4,7 @@
 
 ## HTTP server
 
-### server-idle-connection-outlasts-the-proxys → request-read-within-a-time-bound · MUST
+### server-idle-connection-outlasts-the-proxy → request-read-within-a-time-bound · MUST
 A server keeps an idle connection open longer than the proxy or the load balancer in front of it keeps it.
 
 | Why | Tags |

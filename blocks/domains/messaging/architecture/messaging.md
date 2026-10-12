@@ -13,7 +13,7 @@ Code inside the edge publishes through a port that takes the feature's own event
 
 ## The delivery layer
 
-### consumers-and-jobs-are-the-delivery-layer → package-laid-out-by-the-tree · SHOULD
+### consumers-and-jobs-are-the-delivery-layer → delivery-unit-beside-what-it-serves · SHOULD
 The delivery layer of a program that consumes messages is `consumers/`, one `.consumer` file per message type it handles, and of one that runs scheduled work `jobs/`, one `.job` file per job, each beside the wiring that subscribes or schedules them.
 
 | Why | Tags |

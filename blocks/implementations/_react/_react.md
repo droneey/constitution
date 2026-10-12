@@ -50,7 +50,7 @@ Hooks are called only at the top level of a component or a hook, never in a cond
 |---|---|
 | React matches hooks by their call order; a hook called conditionally reads another hook's state. | [errors] |
 
-### no-component-defined-inside-component · MUST
+### component-never-defined-inside-a-component · MUST
 No component is defined inside another component.
 
 | Why | Tags |

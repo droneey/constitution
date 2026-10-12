@@ -47,14 +47,14 @@ A set of values the program declares is never typed out again: a subset is a nam
 | a restated set drifts from its source, and a schema stricter or looser than its type locks out, or lets in, what the program does not mean. | [] |
 
 ### outside-vocabulary-reached-through-a-total-table · MUST
-A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows.
+A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read.
 
 | Why | Tags |
 |---|---|
 | a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. | [data] |
 
 ### enumeration-others-read-declared-extensible · MUST
-An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know; reading a contract another party owns and may extend, the program maps a value it does not know to a member of its own for the unknown, which every branch names, and never fails for it. An enumeration in a request the program accepts stays closed.
+An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know.
 
 | Why | Tags |
 |---|---|
@@ -107,7 +107,7 @@ A narrowing that claims a type checks every property of it, as running the type�
 | code after the narrowing trusts every property, so a narrowing that checks one is a lie the type checker repeats. | [] |
 
 ### own-shape-strict-other-shape-tolerant · MUST
-A shape the program owns is parsed strictly — an unknown key or a value of another type fails — and a shape another party owns and may extend is parsed tolerantly: a field it adds is ignored.
+A shape the program owns is parsed strictly — an unknown key, a value of another type or a value outside an enumeration of a request it accepts fails — and a shape another party owns and may extend is parsed tolerantly: a field it adds is ignored.
 
 | Why | Tags |
 |---|---|
