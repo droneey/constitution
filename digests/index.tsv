@@ -479,7 +479,7 @@ rule	config-file-points-editors-at-the-schema	config-file	blocks/domains/config-
 rule	schema-library-rejects-unknown-keys	config-file	blocks/domains/config-file/config-file.md		MUST	data			true
 rule	schema-library-selects-unions-by-a-discriminant	config-file	blocks/domains/config-file/config-file.md		MUST	data errors			true
 rule	schema-library-generates-json-schema	config-file	blocks/domains/config-file/config-file.md		MUST	data			true
-rule	config-file-type-lives-in-composition	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	code-placed-by-its-reason-to-change	true
+rule	config-file-type-declared-with-its-port	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	code-placed-by-its-reason-to-change	true
 rule	config-file-parsed-by-its-adapter	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	feature-blind-to-the-config-file	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	feature-asks-another-through-its-own-contract	true
 rule	run-reads-one-config-file	convergence	blocks/domains/convergence/declared-state.md		MUST				true

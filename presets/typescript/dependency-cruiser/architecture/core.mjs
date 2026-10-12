@@ -35,7 +35,6 @@ const EDGE = [
   ...DELIVERY,
   '^src/(libs|integrations)/',
 ];
-// The runtime's own modules of input and output, which only the edge imports.
 const IO =
   '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|readline|sqlite|timers|tls|vm|worker_threads)(?:/|$)';
 // What a registry installs; the repository's own units are its code, held by the rules between units.

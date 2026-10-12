@@ -63,7 +63,7 @@ Every reference the config file makes is resolved when the config file is read �
 ## Schema
 
 ### published-schema-generated-from-code → generated-file-never-edited · MUST
-The schema published for editors is generated from the program's own schema of the config file, never written by hand.
+The schema published for editors is generated from the program's schema of the config file, never written by hand.
 
 | Why | Tags |
 |---|---|

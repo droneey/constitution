@@ -8,7 +8,6 @@ from python_check.findings import Finding
 SOURCE_ROOT = 'src'
 FEATURES = 'features'
 DOMAIN = 'domain'
-# The layers whose top-level folders are modules, each reached through its surface.
 MODULE_LAYERS = frozenset({'adapters', 'composition', 'contracts', 'kernel', 'libs', 'shared'})
 
 

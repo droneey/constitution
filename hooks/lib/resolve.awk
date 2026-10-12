@@ -384,7 +384,7 @@ function needed(s, id,   out, n, a, k) {
 }
 
 # A block also governs what every active block that needs it, directly or
-# through others, governs: a domain names no file form of its own.
+# through others, governs.
 function inherit(s, from, id, globs,   n, a, k) {
   if ((s, from, id) in REACHED) return
   REACHED[s, from, id] = 1

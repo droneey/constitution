@@ -4,15 +4,15 @@
 
 ## Placement
 
-### config-file-type-lives-in-composition → code-placed-by-its-reason-to-change · MUST
-The config file's type, which joins the sections of several features, is a type of the program's own and lives in `composition/`.
+### config-file-type-declared-with-its-port → code-placed-by-its-reason-to-change · MUST
+The config file's type, which joins the sections of several features, is a type of the program's own, declared in the top-level `contracts/` beside the port that reads the file; `composition/` splits it into each feature's section.
 
 | Why | Tags |
 |---|---|
-| every entry that reads the config file needs the whole of it, so its type belongs in the one place that knows every feature. | [] |
+| the adapter that parses the file and the composition that splits it both reach `contracts/`, and neither may reach the other. | [] |
 
 ### config-file-parsed-by-its-adapter → layer-imports-dependencies-by-its-role · MUST
-The schema that parses the config file, and the library it is written with, live in the adapter that reads the file, which maps what it parsed to the config file's type; `composition/` imports no parsing library.
+The schema that parses the config file, and the library it is written with, live in the adapter that implements that port, which maps what it parsed to the config file's type; neither `contracts/` nor `composition/` imports a parsing library.
 
 | Why | Tags |
 |---|---|
