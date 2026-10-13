@@ -250,7 +250,7 @@ rule	secret-never-passed-as-a-process-argument	core	blocks/core/security.md		MUS
 rule	child-process-environment-built-for-it	core	blocks/core/security.md		MUST	security			true
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
 rule	credential-has-least-privilege	core	blocks/core/security.md		MUST	security			true
-rule	credential-documented-beside-its-use	core	blocks/core/security.md		SHOULD	security			true
+rule	credential-declared-with-owner-scope-and-rotation	core	blocks/core/security.md		SHOULD	security			true
 rule	credential-short-lived	core	blocks/core/security.md		SHOULD	security			true
 rule	process-runs-with-only-the-rights-its-job-needs	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
@@ -1100,7 +1100,7 @@ rule	biometric-unlock-opens-a-protected-key	mobile	blocks/contexts/platforms/mob
 rule	push-payload-holds-no-secret	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	release-build-carries-no-debugging	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	personal-data-at-rest-kept-in-the-protected-class	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
-rule	credential-and-restorable-data-left-out-of-device-backups	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
+rule	restorable-personal-data-left-out-of-device-backups	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
 rule	downloaded-code-verified-before-it-runs	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	genuine-app-proven-by-the-systems-attestation	mobile	blocks/contexts/platforms/mobile/mobile.md		MAY	security			true
 rule	minimum-os-version-declared-and-reviewed	mobile	blocks/contexts/platforms/mobile/mobile.md		SHOULD	security			true

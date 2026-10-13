@@ -19,7 +19,7 @@ A file or a reusable step the program, its build or its pipeline fetches outside
 | an unverified download runs whatever its address serves that day. | [security] |
 
 ### tool-pinned-exactly-by-the-repository · MUST
-A dependency that builds, tests or lints, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally; a build backend that the consumers of a distributed package resolve is capped below its next minor instead.
+A dependency that builds, tests or lints, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally; the build backend a package's manifest requires, which whoever builds the package resolves, is capped below its next minor instead.
 
 | Why | Tags |
 |---|---|

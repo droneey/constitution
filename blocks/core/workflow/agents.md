@@ -49,4 +49,3 @@ A sub-agent does the work it is given and nothing more; whether that work is rec
 | Why | Tags |
 |---|---|
 | a sub-agent acts without the person watching. | [] |
-

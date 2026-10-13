@@ -46,7 +46,7 @@ A credential belongs to one identity and one purpose per environment, with only 
 |---|---|
 | a credential with only the permissions its job needs limits what a leak can do, and one identity per credential says who did what. | [security] |
 
-### credential-documented-beside-its-use · SHOULD
+### credential-declared-with-owner-scope-and-rotation · SHOULD
 A credential's declaration names its owner, its scope, its issuer and how it is rotated.
 
 | Why | Tags |
