@@ -26,7 +26,7 @@ A secret is never passed to a process as a command-line argument; it reaches the
 | a process's arguments are read by every user of the machine through its process listing, and are kept in shell histories and the logs of the tools that start it. | [security] |
 
 ### child-process-environment-built-for-it · MUST
-A process the program starts receives an environment built for it, holding only what that child needs, never the program's whole environment.
+A process the program starts receives an environment built for it, holding only what that child needs, never the program's whole environment; a script that only joins commands passes on the environment its caller built for them, with every secret it received unset.
 
 | Why | Tags |
 |---|---|
@@ -91,7 +91,7 @@ Input from outside — a model’s output included — reaches a query, a shell 
 | text joined into code lets whoever wrote the text write the code. | [security] |
 
 ### outside-path-confined-to-its-root · MUST
-A path built from outside input is used only after its real path, every link followed, is confirmed to lie inside the root it is meant for.
+A path built from outside input is used only after its real path, every link followed, is confirmed to lie inside the root it is meant for; where another writer can change the tree between the check and the use, the file is opened beneath the root by the platform's confined open, or the check is made on the file once opened.
 
 | Why | Tags |
 |---|---|

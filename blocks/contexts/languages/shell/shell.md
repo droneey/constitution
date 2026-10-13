@@ -64,20 +64,27 @@ A script that defines functions runs its logic in a function `main`, called on i
 ## Relations
 
 ### function-variable-declared-local → state-never-global-and-mutable · MUST
-In Bash, a function declares every variable it sets as `local`, and one assigned from a command substitution on a line of its own before it: `local out` then `out="$(command)"`.
+In Bash, a function declares every variable it sets as `local`.
 
 | Why | Tags |
 |---|---|
-| a variable a function sets without `local` changes the caller's variable of the same name, an effect no call shows, and `local out="$(command)"` returns the status of `local`, so `set -e` never sees the command fail. | [] |
+| a variable a function sets without `local` changes the caller's variable of the same name, an effect no call shows. | [] |
 
 ## Errors
 
 ### script-stops-on-a-failed-command → failure-is-expected-or-defect · MUST
-A Bash script runs under `set -euo pipefail` and `shopt -s inherit_errexit`, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command.
+A Bash script runs under `set -euo pipefail`, and `shopt -s inherit_errexit` where its Bash is 4.4 or later, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command.
 
 | Why | Tags |
 |---|---|
 | by default the shell carries on after a failed command, a failed stage of a pipe or an unset variable, so the next command runs on a result that never came, as `rm -rf "$dir/"` does with an empty `dir`. | [errors] |
+
+### command-substitution-assigned-apart-from-its-declaration → failure-is-expected-or-defect · MUST
+A variable assigned from a command substitution is declared — by `local`, `export`, `readonly` or `declare` — on a line of its own before it: `local out` then `out="$(command)"`.
+
+| Why | Tags |
+|---|---|
+| `local out="$(command)"` returns the status of `local`, so `set -e` never sees the command fail. | [errors] |
 
 ## Effects
 
@@ -119,7 +126,7 @@ A script reads a secret it received into a variable it does not export and unset
 | every command a script runs inherits what it exported, so a secret exported once reaches every tool, and every tool those start. | [security] |
 
 ### variable-exported-only-for-the-commands-that-read-it → child-process-environment-built-for-it · MUST
-A script exports no variable its commands do not read; the rest of the environment it received is its caller's choice for them.
+A script exports no variable its commands do not read.
 
 | Why | Tags |
 |---|---|

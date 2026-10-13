@@ -1,4 +1,11 @@
 {
+  "linter": {
+    "rules": {
+      "style": {
+        "noProcessEnv": "error",
+      },
+    },
+  },
   "plugins": [
     {
       "path": "./.droneey/constitution/presets/typescript/biome/plugins/undefined-is-the-only-absence.grit",
@@ -35,6 +42,26 @@
         "**/composition/**",
         "!**/__tests__/**",
       ],
+    },
+  ],
+  "overrides": [
+    {
+      "includes": [
+        "**/root/**",
+        "**/main.*",
+        "**/entrypoints/*/main.*",
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off",
+          },
+        },
+      },
     },
   ],
 }

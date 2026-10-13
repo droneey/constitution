@@ -36,7 +36,7 @@ block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extensio
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	architecture/_react.md	remote-data	ui typescript		true	react-dom react-native			**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	architecture/biome.md	workspace	typescript		false		typescript css		biome.json biome.*.jsonc **/*.grit
-block	bun	implementation	Bun as runtime, package manager and script runner.	architecture/bun.md	distribution workspace architecture/workspace	typescript		false				bunfig.toml package.json
+block	bun	implementation	Bun as runtime, package manager and script runner.		distribution workspace architecture/workspace	typescript		false				bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	architecture/bun-test.md	workspace	bun		false		typescript		**/__tests__/**
 block	bunli	implementation	bunli declares each command, its flags and its handler.	architecture/bunli.md		bun cli		false				**/cli/**
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.			python		false		python		
@@ -1099,6 +1099,7 @@ rule	biometric-unlock-opens-a-protected-key	mobile	blocks/contexts/platforms/mob
 rule	push-payload-holds-no-secret	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	release-build-carries-no-debugging	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	personal-data-at-rest-kept-in-the-protected-class	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
+rule	personal-data-left-out-of-device-backups	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	downloaded-code-verified-before-it-runs	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	genuine-app-proven-by-the-systems-attestation	mobile	blocks/contexts/platforms/mobile/mobile.md		MAY	security			true
 rule	minimum-os-version-declared-and-reviewed	mobile	blocks/contexts/platforms/mobile/mobile.md		SHOULD	security			true
@@ -1314,6 +1315,7 @@ rule	shell-name-case-by-kind	shell	blocks/contexts/languages/shell/shell.md		SHO
 rule	script-logic-in-a-main-function	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	function-variable-declared-local	shell	blocks/contexts/languages/shell/shell.md		MUST			state-never-global-and-mutable	true
 rule	script-stops-on-a-failed-command	shell	blocks/contexts/languages/shell/shell.md		MUST	errors		failure-is-expected-or-defect	true
+rule	command-substitution-assigned-apart-from-its-declaration	shell	blocks/contexts/languages/shell/shell.md		MUST	errors		failure-is-expected-or-defect	true
 rule	temporary-file-removed-by-an-exit-trap	shell	blocks/contexts/languages/shell/shell.md		MUST	security		resource-released-on-every-path	true
 rule	script-diagnostics-on-standard-error	shell	blocks/contexts/languages/shell/shell.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	outside-input-passed-as-an-argument	shell	blocks/contexts/languages/shell/shell.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
@@ -1399,6 +1401,7 @@ rule	surface-imported-by-its-folders-path	typescript	blocks/contexts/languages/t
 rule	null-mapped-to-undefined-in-the-adapter	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	data	architecture	outside-shape-mapped-in-the-adapter	true
 rule	port-is-an-interface	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	contract-declared-by-the-layer-that-needs-it	true
 rule	wiring-file-is-root-wiring-ts	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	composition-root-wires-everything	true
+rule	process-env-read-only-under-root	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	security	architecture	root-alone-reads-the-environment	true
 rule	class-used-is-declared	typescript	blocks/contexts/languages/typescript/with/css.md	css	MUST				true
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			distributed-unit-ships-its-types	true
 rule	package-export-typed-explicitly	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			distributed-unit-ships-its-types	true
@@ -1413,6 +1416,7 @@ rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/types
 rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	SHOULD	ux		text-sorted-by-the-locale	true
 rule	package-script-kept-short	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	SHOULD				true
 rule	package-script-expansion-double-quoted	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST			expansion-double-quoted	true
+rule	package-script-never-traces	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST	security data		xtrace-never-ships	true
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			workspace-root-private	true
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
@@ -1437,6 +1441,7 @@ rule	yaml-file-holds-one-document	yaml	blocks/contexts/languages/yaml/yaml.md		S
 rule	embedded-command-kept-short	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	SHOULD				true
 rule	embedded-command-expansion-double-quoted	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST			expansion-double-quoted	true
 rule	runner-value-reaches-the-command-through-the-environment	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST	security		outside-input-reaches-interpreters-as-parameters	true
+rule	embedded-command-never-traces	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST	security data		xtrace-never-ships	true
 rule	react-compiler-on	_react	blocks/implementations/_react/_react.md		MUST	performance			true
 rule	render-is-pure	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST				true
@@ -1479,7 +1484,6 @@ rule	every-tool-runs-on-bun	bun	blocks/implementations/bun/bun.md		MUST	security
 rule	env-file-never-loaded-automatically	bun	blocks/implementations/bun/bun.md		MUST	security		configuration-parsed-once-at-start	true
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/bun.md		SHOULD				true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/bun.md		SHOULD				true
-rule	process-env-read-only-in-root	bun	blocks/implementations/bun/architecture/bun.md		MUST	security	architecture	root-alone-reads-the-environment	true
 rule	units-published-by-npm	bun	blocks/implementations/bun/with/distribution.md	distribution	MUST	security		version-published-with-provenance	true
 rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
 rule	own-units-at-workspace-version	bun	blocks/implementations/bun/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
@@ -1721,7 +1725,7 @@ rule	stories-unreachable-from-production	storybook	blocks/implementations/storyb
 rule	screenshots-over-kit-stories-only	storybook	blocks/implementations/storybook/storybook.md		SHOULD	ux testing		screenshots-only-where-look-is-contract	true
 rule	stories-fail-on-a11y-violations	storybook	blocks/implementations/storybook/storybook.md		MUST	a11y testing		ui-specs-scan-accessibility	true
 rule	stories-import-what-they-render-with	storybook	blocks/implementations/storybook/architecture/storybook.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
-rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/structlog.md		MUST	security		diagnostics-written-through-a-logger	true
+rule	code-logs-through-the-standard-logger	structlog	blocks/implementations/structlog/structlog.md		MUST	security		logger-got-by-module-name	true
 rule	one-chain-for-every-record	structlog	blocks/implementations/structlog/structlog.md		MUST	security		log-record-passes-one-pipeline	true
 rule	secret-keys-masked-by-a-processor	structlog	blocks/implementations/structlog/structlog.md		MUST	security data		log-value-masked-by-its-key	true
 rule	json-in-production-console-in-development	structlog	blocks/implementations/structlog/structlog.md		SHOULD			log-output-structured-in-production	true

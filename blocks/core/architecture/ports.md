@@ -19,7 +19,7 @@ A port at a boundary with something outside — a vendor, an engine, a transport
 | the seam at a real boundary is where change arrives, whether or not a second implementation ever does. | [] |
 
 ### contract-knows-no-vendor · MUST
-A contract — a port, its parameters and results — imports no vendor, no adapter, no other feature and no other contract’s internals; it speaks only the domain’s types.
+A contract — a port, its parameters and results — imports no vendor, no adapter, no other feature and no other contract’s internals; it speaks only the domain's and the kernel's types and the values of the language's standard library that hold no effect.
 
 | Why | Tags |
 |---|---|

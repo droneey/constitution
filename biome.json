@@ -9,8 +9,7 @@
     "./.droneey/constitution/presets/typescript/biome/bun-test.jsonc",
     "./.droneey/constitution/presets/typescript/biome/dependency-cruiser.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/bun.jsonc"
+    "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc"
   ],
   "overrides": [
     {

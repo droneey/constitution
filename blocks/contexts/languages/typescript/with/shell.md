@@ -18,3 +18,11 @@ A script of `package.json` double-quotes every expansion, as a shell script does
 |---|---|
 | a package script is parsed by a shell, so an unquoted expansion splits and globs there too. | [] |
 
+## Security
+
+### package-script-never-traces → xtrace-never-ships · MUST
+A script of `package.json` never turns on `set -x` or runs a shell with `-x`.
+
+| Why | Tags |
+|---|---|
+| the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |

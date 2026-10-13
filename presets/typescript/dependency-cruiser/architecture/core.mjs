@@ -114,6 +114,9 @@ export default {
         pathNot: SPECS,
       },
       to: {
+        dependencyTypesNot: [
+          'core',
+        ],
         pathNot: [
           '^src/features/$1/domain/',
           '^src/kernel/',
@@ -137,6 +140,9 @@ export default {
         pathNot: SPECS,
       },
       to: {
+        dependencyTypesNot: [
+          'core',
+        ],
         pathNot: [
           '^src/kernel/',
           DATA,
@@ -358,6 +364,9 @@ export default {
         pathNot: SPECS,
       },
       to: {
+        dependencyTypesNot: [
+          'core',
+        ],
         pathNot: [
           '^src/contracts/$1/',
           '^src/contracts/[^/]+/index\\.[^/]+$',

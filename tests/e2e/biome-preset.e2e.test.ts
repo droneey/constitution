@@ -1523,7 +1523,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: true,
       parts: [
         ...BASE_PARTS,
-        'typescript/architecture/bun',
+        'typescript/architecture/typescript',
       ],
       rule: 'noProcessEnv',
     },
@@ -1536,7 +1536,7 @@ describe('the Biome part that needs each setting', () => {
       isReported: false,
       parts: [
         ...BASE_PARTS,
-        'typescript/architecture/bun',
+        'typescript/architecture/typescript',
       ],
       rule: 'noProcessEnv',
     },

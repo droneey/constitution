@@ -63,7 +63,7 @@ timeout = "10"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["**/main.py", "**/__main__.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py"]
+omit = ["**/main.py", "**/__main__.py", "**/entrypoints/*/main.py", "**/root/wiring.py", "**/*_gen.py", "**/*_gen/**"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -74,7 +74,7 @@ exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 # mutmut: the mutants, each one killed
 [tool.mutmut]
 source_paths = ["src"]
-do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py"]
+do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
 pytest_add_cli_args = ["-p", "no:randomly"]
 type_check_command = ["ty", "check", "--output-format", "gitlab"]
 

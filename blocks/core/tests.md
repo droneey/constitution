@@ -227,7 +227,7 @@ Each faked contract has one fake, shared by every spec that needs it.
 | one fake is kept in step with its real implementation once, not once per spec. | [testing] |
 
 ### effect-faked-never-mocked · SHOULD
-No spec mocks, patches or spies on a module of the program; an effect is replaced by the fake of its contract or, beneath an adapter, by a transport that serves captured responses.
+No spec mocks, patches or spies on a module of the program; an effect is replaced by the fake of its contract or, beneath the code that speaks to an outside system, by a transport that serves captured responses.
 
 | Why | Tags |
 |---|---|

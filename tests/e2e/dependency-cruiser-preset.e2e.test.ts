@@ -139,8 +139,10 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'the domain imports a vendor package',
       files: {
-        'src/features/orders/domain/entities/order.entity.ts':
-          "import { readFile } from 'node:fs';\nexport const order = readFile;\n",
+        'src/features/orders/domain/entities/order.entity.ts': importing({
+          from: 'kit',
+          name: 'value',
+        }),
       },
       rule: 'domain-reaches-only-itself-kernel-and-contracts',
     },
@@ -1171,6 +1173,10 @@ describe('the dependency-cruiser layer set', () => {
         'src/libs/ui/button.stories.tsx':
           "import { value } from 'devtool';\nimport { button } from './button';\nexport const stories = [value, button];\n",
         'src/libs/ui/button.tsx': exported('button'),
+        'src/features/orders/domain/utils/digest.utils.ts':
+          "import { createHash } from 'node:crypto';\nexport const digest = createHash;\n",
+        'src/kernel/utils/format.utils.ts':
+          "import { format } from 'node:util';\nexport const formatted = format;\n",
         'src/index.ts': "export { readOrders } from './adapters/files';\n",
         'src/adapters/files/index.ts':
           "import { readFile } from 'node:fs/promises';\nexport const readOrders = readFile;\n",

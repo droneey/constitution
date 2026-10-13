@@ -83,11 +83,18 @@ A release build is not debuggable and carries no development menu, and no connec
 | each of these lets whoever holds the phone read the app's memory, change its code or read its traffic. | [security] |
 
 ### personal-data-at-rest-kept-in-the-protected-class · MUST
-Personal data the app stores beyond its credentials sits in the system's strongest protected file class it can use — `complete` on iOS, or `completeUnlessOpen` where work in the background must write it, and the app's private, encrypted storage on Android — and is left out of backups to other devices where it identifies its person.
+Personal data the app stores beyond its credentials sits in the system's strongest protected file class it can use — `complete` on iOS, `completeUnlessOpen` where work in the background must write it and `completeUntilFirstUserAuthentication` where it must read it, and the app's private, encrypted storage on Android.
 
 | Why | Tags |
 |---|---|
 | a device that is lost, backed up to another account or read by another app gives up whatever the app left outside the protected class. | [security, data] |
+
+### personal-data-left-out-of-device-backups → secret-and-personal-data-kept-out-of-output · MUST
+Personal data that identifies its person is left out of backups to other devices.
+
+| Why | Tags |
+|---|---|
+| a backup restored to another device carries the person's data to a device and an account they may not hold. | [security, data] |
 
 ### downloaded-code-verified-before-it-runs · MUST
 Code the app receives after it is installed — an update of its script bundle over the air — runs only once its signature, made by the project's own key, is verified on the device.

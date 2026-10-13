@@ -110,10 +110,8 @@
       "path": "./.droneey/constitution/presets/typescript/biome/plugins/module-level-value-never-changed.grit",
       "includes": [
         "**",
-        "!**/__tests__/**",
         "!**/*.test.ts",
         "!**/*.test.tsx",
-        "!tests/**",
       ],
     },
     {

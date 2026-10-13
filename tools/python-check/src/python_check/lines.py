@@ -8,7 +8,7 @@ FUNCTION_LINES = 100
 FILE_LINES = 500
 TESTS = 'tests'
 GENERATED_FILE = '_gen'
-GENERATED_FOLDER = '.gen'
+GENERATED_FOLDER = '_gen'
 # A function whose body is one data literal lifts its limit by this comment on its `def` line.
 LIFTED = re.compile(rb'#\s*python-check: ignore\[function-lines\] -- \S')
 

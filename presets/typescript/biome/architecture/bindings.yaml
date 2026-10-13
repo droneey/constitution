@@ -1,9 +1,6 @@
 _react:
   component-effects-in-its-hooks-file:
     - component-effects-in-its-hooks-file.grit
-bun:
-  process-env-read-only-in-root:
-    - noProcessEnv
 core:
   effects-held-only-by-the-edge:
     - effects-held-only-by-the-edge.grit
@@ -21,6 +18,8 @@ tanstack-query:
   read-declared-once-as-query-options:
     - read-declared-once-as-query-options.grit
 typescript:
+  process-env-read-only-under-root:
+    - noProcessEnv
   surface-only-re-exports:
     - surface-only-re-exports.grit
   timer-set-only-by-the-edge-and-binding-units:

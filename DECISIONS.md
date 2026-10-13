@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0181 |
+| One home per rule | ADR-0160 – ADR-0182 |
 
 ---
 
@@ -1124,3 +1124,13 @@
   - Contexts: TypeScript's module-level variables are `const` in one rule, save the diagnostics facades, and its plugin, named for that rule, refuses a module-level `let` or `var` whether exported or not; a spec's setup that its hooks set for each case is no state of the program, so specs stand outside the plugin; Python keeps an arriving number an `int` until compared, logs outside input only as an `extra=` field, and names `torch.load` with `weights_only=False`; a value a CI runner substitutes reaches a command only through the environment; an embedded command and a package script double-quote their expansions as a rule of their own; a script exports only what its commands read, as a rule of its own; `local` stands apart from a command substitution; pytest's fixtures and core's are told apart; zod checks an invariant before it brands; ui allows a breakpoint repeated where a token cannot be read.
 - **Rejected.** Counting a vendor's package reached through a lib by a reachable rule to every package, which needs the homes of all packages in one more place; narrowing the tools' line limits to spec files, which would bind the fakes and fixtures the owner's tests share.
 - **Why.** Each fix closes a clash between two rules, a slug that said less than its rule, or a tool that held more or less than its rule.
+
+## ADR-0182 — Core and the contexts after their seventeenth review
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** The seventeenth round graded core 8.9 with every reviewer and the contexts 9.0, 8.9 and 8.9; what two reviewers or more found is closed.
+  - Core: the kernel and a contract, like the domain, may use the parts of the standard library that hold no effect, and dependency-cruiser no longer refuses a pure built-in of the runtime in them; where a defect may be caught is said once, in the catch rule, a supervisor starting its worker again and never the unit of work that failed; a transient failure counts a model's answer that fails its schema; a path is opened beneath its root where another writer can change the tree; a spec replaces the code that speaks to an outside system without naming an adapter; the root alone reads the environment, its configuration provider included; a type's one home is beside the signature that introduces it or in the folder its kind has; placement's workflow axis holds who submits, commits and ships; a script that only joins commands passes on its caller's environment with every secret it received unset.
+  - Tools: python-check fails at start on a home that is no list of folders; a Python generated package is `<name>_gen/`, which python-check, coverage and mutmut leave aside.
+  - Contexts: TypeScript reads `process.env` only under the root, a rule moved from bun to the language, since Node reads it alike; module-level and static state, and Python's class attributes and `functools.cache`, change after load nowhere but in the diagnostics facades and a spec's hook-set setup; `shopt -s inherit_errexit` where Bash is 4.4 or later, as macOS ships 3.2; a variable assigned from a command substitution is declared apart, as a rule of errors; an embedded command and a package script never trace; mobile's backup clause is a rule of its own, and background work may read data protected until the first unlock; structlog's logger carries out Python's.
+- **Rejected.** Splitting the rendering server's session proxy into the browser's seam with server, whose rule could not tighten a rule of the browser's own block; a Bash floor for every script, which scripts the project pins Bash for do not need.
+- **Why.** Each fix closes a clash between two rules, a tool that held more than its rule, or a form a language owed its parent.

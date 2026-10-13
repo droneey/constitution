@@ -64,7 +64,7 @@ A method that overrides one of a base class is decorated `@typing.override`; `__
 | a marked method whose base renamed or dropped its counterpart then fails the type check, and the methods aside are hooks of the language that no mark would make clearer. | [] |
 
 ### module-level-state-never-mutable → state-never-global-and-mutable · MUST
-No code uses the `global` statement, and no module-level name holds a list, a dict, a set or another container the code changes after import.
+No code uses the `global` statement; no module-level name or class attribute holds a value whose state changes after import — a container, an object whose attributes change, a cache of `functools.cache` or `lru_cache` — save the logging facade.
 
 | Why | Tags |
 |---|---|
@@ -421,7 +421,7 @@ Every folder of the import package holds an `__init__.py`; the import tree has n
 | a folder without one is a namespace package, which another installed distribution can merge into, and whose files nothing imports go unmeasured by coverage. | [] |
 
 ### module-named-in-snake-case → file-name-in-its-owners-case · MUST
-A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the import package is a snake_case package — `value_objects/`, `use_cases/` — and a folder of `tests/` a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
+A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the import package is a snake_case package — `value_objects/`, `use_cases/` — a generated module `<name>_gen.py` and a generated package `<name>_gen/`; a folder of `tests/` is a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
 
 | Why | Tags |
 |---|---|

@@ -22,7 +22,7 @@ def _findings(*, path: str, source: str) -> tuple[Finding, ...]:
     ),
     pytest.param('src/shop/orders_gen.py', python('LIMIT = 1') * 501, id='a generated file'),
     pytest.param(
-      'src/shop/schema.gen/orders.py', python('LIMIT = 1') * 501, id='a generated folder'
+      'src/shop/schema_gen/orders.py', python('LIMIT = 1') * 501, id='a generated folder'
     ),
     pytest.param(
       'src/shop/orders.py',

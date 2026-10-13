@@ -24,8 +24,26 @@ def _document(path: Path) -> dict[str, Any]:
     return tomllib.load(file)
 
 
+class SettingsError(ValueError):
+  pass
+
+
+def _folders(package: str, folders: object) -> tuple[str, ...]:
+  names = (
+    tuple(folder for folder in folders if isinstance(folder, str))
+    if isinstance(folders, list)
+    else ()
+  )
+
+  if not isinstance(folders, list) or len(names) != len(folders):
+    message = f'the home of {package} is a list of folders, not {folders!r}'
+    raise SettingsError(message)
+
+  return names
+
+
 def _homes_of(table: Mapping[str, Any]) -> dict[str, tuple[str, ...]]:
-  return {package: tuple(folders) for package, folders in table.items()}
+  return {package: _folders(package, folders) for package, folders in table.items()}
 
 
 # The build backend names the import package after the distribution.

@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from python_check.settings import Settings, settings_of
+import pytest
+from python_check.settings import Settings, SettingsError, settings_of
 from source_fixtures import write_files
 
 
@@ -76,3 +77,24 @@ def test_should_name_the_workspace_units_when_its_sources_link_them(tmp_path: Pa
 
   # Assert
   assert settings == Settings(units=frozenset({'shop_libs_money', 'shop_shared'}))
+
+
+@pytest.mark.parametrize(
+  ('home', 'shown'),
+  [
+    pytest.param('"edge"', "'edge'", id='a home written as one folder'),
+    pytest.param('["edge", 1]', "['edge', 1]", id='a home that names a number'),
+  ],
+)
+def test_should_fail_when_a_home_is_no_list_of_folders(
+  tmp_path: Path, home: str, shown: str
+) -> None:
+  # Arrange
+  write_files(tmp_path, {'pyproject.toml': f'[tool.python-check.homes]\npydantic = {home}\n'})
+
+  # Act
+  with pytest.raises(SettingsError) as raised:
+    settings_of(tmp_path)
+
+  # Assert
+  assert str(raised.value) == f'the home of pydantic is a list of folders, not {shown}'

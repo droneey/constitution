@@ -63,7 +63,7 @@ No other code of the package imports an integration, and an integration imports 
 | the host framework calls the package, so an integration offered as its own entry loads the framework only for those who use it. | [] |
 
 ### kernel-imports-only-itself · MUST
-The kernel imports only itself and the data files its values are read from.
+The kernel imports only itself, the data files its values are read from, and the parts of the language's standard library that hold no effect.
 
 | Why | Tags |
 |---|---|

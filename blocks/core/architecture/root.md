@@ -19,7 +19,7 @@ The composition root builds every adapter and every stateful client — a cache,
 | a part the root hands in is visible and replaceable, in production and in tests. | [] |
 
 ### root-alone-reads-the-environment · MUST
-The composition root — or the configuration provider a block below names — and the entry files alone read the environment; a spec may read it to drive the program.
+The composition root, its configuration provider included, and the entry files alone read the environment; a spec may read it to drive the program.
 
 | Why | Tags |
 |---|---|
@@ -33,7 +33,7 @@ The composition root applies every decorator — behaviour wrapped around an imp
 | the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps. | [] |
 
 ### root-alone-configures-logging · MUST
-The composition root alone configures where log records go; a unit outside the domain reaches the language’s standard logging facade, or the program’s own logging facade where the language has none, without having it handed in.
+The composition root alone configures where log records go.
 
 | Why | Tags |
 |---|---|
