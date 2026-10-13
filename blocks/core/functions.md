@@ -12,11 +12,18 @@ A function does one thing, at one level of abstraction: it calls steps named for
 | a function that does one thing can be named, tested and reused; one that does two is none of these. | [] |
 
 ### function-answers-or-changes · SHOULD
-A function either answers a question or changes state, never both: one that answers changes nothing and depends only on its input and the dependencies it is handed — the time and the configuration among them, never read from where it runs; one that changes state decides only on its input and on what it changes. An atomic operation that reports the outcome of its own change — a compare-and-set, a take from a queue — is one change.
+A function either answers a question or changes state, never both: one that answers changes nothing, and one that changes state decides only on its input and on what it changes. An atomic operation that reports the outcome of its own change — a compare-and-set, a take from a queue — is one change.
 
 | Why | Tags |
 |---|---|
 | a question that changes something cannot be asked twice safely, and a change that reads more than it changes decides on data its caller never saw. | [] |
+
+### function-answers-from-its-input-and-handed-dependencies · SHOULD
+A function that answers depends only on its input and on the dependencies it is handed — a clock, a configuration, a store; the time and the configuration reach a function as input or through such a dependency, never read from where it runs.
+
+| Why | Tags |
+|---|---|
+| a pure function can be understood, tested and moved on its own. | [] |
 
 ## Size and flow
 

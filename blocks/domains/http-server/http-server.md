@@ -24,11 +24,18 @@ A request by a safe method of HTTP — `GET`, `HEAD`, `OPTIONS` — changes no s
 ## Bodies
 
 ### answer-declares-its-exact-content-type · MUST
-Every answer carries its exact `Content-Type` and `X-Content-Type-Options: nosniff`, and an operation that answers JSON never answers `text/html`, its failures and the framework's defaults included.
+Every answer carries its exact `Content-Type`, and an operation that answers JSON never answers `text/html`, its failures and the framework's defaults included.
 
 | Why | Tags |
 |---|---|
-| a client that knows the type parses the body as it was meant, and a browser that guesses the type, or reads an HTML answer from an API, may run a caller's text as a page. | [security] |
+| a client that knows the type parses the body as it was meant, and an HTML answer from an API is a page a browser may run. | [security] |
+
+### answer-forbids-type-sniffing · MUST
+Every answer carries `X-Content-Type-Options: nosniff`.
+
+| Why | Tags |
+|---|---|
+| a browser that guesses the type of an answer holding a caller's text may run it as a page. | [security] |
 
 ### request-body-refused-in-an-undeclared-type · MUST
 A request whose body is in a media type its operation does not declare is refused with `415` before it is read; an operation of JSON never accepts `text/plain` or a form encoding.

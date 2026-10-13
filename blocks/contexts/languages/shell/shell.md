@@ -119,11 +119,18 @@ A committed script never turns on `set -x`.
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
-A script exports no variable its commands do not read; a secret it received it reads into a variable it does not export, unsets the name it came by — `token="$TOKEN"; unset TOKEN` — and passes only to the one command that reads it: `TOKEN="$token" command`, or on its standard input.
+A script reads a secret it received into a variable it does not export and unsets the name it came by — `token="$TOKEN"; unset TOKEN` — and passes the secret only to the one command that reads it: `TOKEN="$token" command`, or on its standard input.
 
 | Why | Tags |
 |---|---|
 | every command a script runs inherits what it exported, so a secret exported once reaches every tool, and every tool those start. | [security] |
+
+### variable-exported-only-for-the-commands-that-read-it → child-process-environment-built-for-it · MUST
+A script exports no variable its commands do not read.
+
+| Why | Tags |
+|---|---|
+| every command a script runs inherits what it exported, and every command those start. | [security] |
 
 ## Layout
 

@@ -201,6 +201,7 @@ rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/errors.md		SH
 rule	error-library-gives-code-cause-and-details	core	blocks/core/errors.md		MUST	errors			true
 rule	function-does-one-thing	core	blocks/core/functions.md		SHOULD				true
 rule	function-answers-or-changes	core	blocks/core/functions.md		SHOULD				true
+rule	function-answers-from-its-input-and-handed-dependencies	core	blocks/core/functions.md		SHOULD				true
 rule	function-within-its-limits	core	blocks/core/functions.md		MUST				true
 rule	function-leaves-early-on-failure	core	blocks/core/functions.md		SHOULD				true
 rule	function-takes-at-most-three-positions	core	blocks/core/functions.md		SHOULD				true
@@ -269,6 +270,7 @@ rule	declared-failure-has-a-case	core	blocks/core/tests.md		SHOULD	testing error
 rule	edge-cases-chosen-by-risk	core	blocks/core/tests.md		SHOULD	testing			true
 rule	property-tested-where-it-pays	core	blocks/core/tests.md		SHOULD	testing			true
 rule	lifecycle-tested-to-its-final-state	core	blocks/core/tests.md		SHOULD	testing			true
+rule	contract-has-one-suite	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-proves-one-intent	core	blocks/core/tests.md		SHOULD	testing			true
 rule	variants-are-one-table	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-holds-no-logic	core	blocks/core/tests.md		SHOULD	testing			true
@@ -470,7 +472,8 @@ rule	config-file-value-kind-has-one-syntax	config-file	blocks/domains/config-fil
 rule	config-file-constraints-checked-on-read	config-file	blocks/domains/config-file/config-file.md		MUST	data errors security		outside-value-untyped-until-parsed	true
 rule	config-file-secret-written-as-a-reference	config-file	blocks/domains/config-file/config-file.md		MUST	security			true
 rule	config-file-reference-resolved-on-read	config-file	blocks/domains/config-file/config-file.md		MUST	security errors		configuration-parsed-once-at-start	true
-rule	published-schema-generated-from-code	config-file	blocks/domains/config-file/config-file.md		MUST	testing data		generated-file-never-edited	true
+rule	published-schema-generated-from-code	config-file	blocks/domains/config-file/config-file.md		MUST	data		generated-file-never-edited	true
+rule	published-schema-copy-checked-by-a-spec	config-file	blocks/domains/config-file/config-file.md		MUST	testing data			true
 rule	config-file-points-editors-at-the-schema	config-file	blocks/domains/config-file/config-file.md		SHOULD	ux			true
 rule	schema-library-rejects-unknown-keys	config-file	blocks/domains/config-file/config-file.md		MUST	data			true
 rule	schema-library-selects-unions-by-a-discriminant	config-file	blocks/domains/config-file/config-file.md		MUST	data errors			true
@@ -521,7 +524,9 @@ rule	distributed-unit-ships-its-licence	distribution	blocks/domains/distribution
 rule	integration-is-an-entry-with-an-optional-framework	distribution	blocks/domains/distribution/contents.md		SHOULD				true
 rule	readme-shows-install-and-first-use	distribution	blocks/domains/distribution/contents.md		SHOULD			readme-is-the-front-door	true
 rule	shipped-configuration-asserted-by-spec	distribution	blocks/domains/distribution/contents.md		MUST	testing		spec-proves-one-boundary	true
-rule	manifest-declares-licence-source-and-floor	distribution	blocks/domains/distribution/manifest.md		MUST	security			true
+rule	manifest-licence-is-an-spdx-expression	distribution	blocks/domains/distribution/manifest.md		MUST	security			true
+rule	manifest-names-the-source-repository	distribution	blocks/domains/distribution/manifest.md		MUST	security			true
+rule	manifest-declares-the-runtime-floor	distribution	blocks/domains/distribution/manifest.md		MUST				true
 rule	runtime-floor-within-the-ecosystems-support-window	distribution	blocks/domains/distribution/manifest.md		SHOULD				true
 rule	manifest-paths-resolve-in-the-packed-unit	distribution	blocks/domains/distribution/manifest.md		MUST	testing			true
 rule	manifest-declares-dependencies-by-range	distribution	blocks/domains/distribution/manifest.md		SHOULD				true
@@ -542,6 +547,7 @@ rule	versions-follow-semver	distribution	blocks/domains/distribution/workflow/re
 rule	runtime-floor-never-raised-in-a-patch	distribution	blocks/domains/distribution/workflow/releases.md		MUST		workflow		true
 rule	safe-method-changes-nothing	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	answer-declares-its-exact-content-type	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
+rule	answer-forbids-type-sniffing	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	request-body-refused-in-an-undeclared-type	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	uploaded-file-never-rendered-from-the-programs-origin	http-server	blocks/domains/http-server/http-server.md		MUST	security			true
 rule	personal-answer-kept-out-of-shared-caches	http-server	blocks/domains/http-server/http-server.md		MUST	security data			true
@@ -671,7 +677,7 @@ rule	message-handler-stays-thin	messaging	blocks/domains/messaging/architecture/
 rule	message-carries-the-identity-it-acts-for	messaging	blocks/domains/messaging/with/access-control.md	access-control	MUST	security data		tenant-data-scoped-in-every-read-and-write	true
 rule	message-carries-its-creators-trace-context	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			trace-context-propagated-onward	true
 rule	handled-message-spanned-and-linked	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			unit-of-work-opens-a-span	true
-rule	backlog-dead-letters-and-missed-runs-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors performance			true
+rule	stalled-message-work-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors performance			true
 rule	change-and-its-message-written-through-an-outbox	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
 rule	outbox-relayed-in-commit-order-per-key	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data			true
 rule	processed-message-recorded-with-its-effect	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
@@ -711,6 +717,7 @@ rule	migration-applied-once-before-its-release	owned-data	blocks/domains/owned-d
 rule	migration-holds-no-long-lock	owned-data	blocks/domains/owned-data/migrations.md		SHOULD	data performance			true
 rule	aggregate-changed-only-through-its-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture		true
 rule	independent-entity-is-its-own-aggregate	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	data	architecture		true
+rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture	data-port-one-per-entity-and-side	true
 rule	transaction-changes-one-aggregate	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	data	architecture		true
 rule	migrations-applied-in-ci-from-the-last-release	owned-data	blocks/domains/owned-data/workflow/owned-data.md		SHOULD	data	workflow		true
 rule	personal-data-inventoried	privacy	blocks/domains/privacy/privacy.md		MUST	data			true
@@ -1262,6 +1269,7 @@ rule	script-diagnostics-on-standard-error	shell	blocks/contexts/languages/shell/
 rule	outside-input-passed-as-an-argument	shell	blocks/contexts/languages/shell/shell.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	xtrace-never-ships	shell	blocks/contexts/languages/shell/shell.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	secret-set-only-for-the-command-that-reads-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
+rule	variable-exported-only-for-the-commands-that-read-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
 rule	executable-script-names-its-shell	shell	blocks/contexts/languages/shell/shell.md		MUST				true
 rule	shell-file-ends-in-sh	shell	blocks/contexts/languages/shell/shell.md		SHOULD			format-has-one-extension	true
 rule	decorator-is-a-standard-decorator	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
@@ -1350,7 +1358,7 @@ rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/with/
 rule	integration-is-a-subpath-with-an-optional-peer	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			integration-is-an-entry-with-an-optional-framework	true
 rule	hash-imports-rewritten-in-what-ships	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	errors			true
 rule	peer-floor-in-the-manifest	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			manifest-declares-consumer-owned-dependencies-as-peers	true
-rule	runtime-floor-in-engines	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	security		manifest-declares-licence-source-and-floor	true
+rule	runtime-floor-in-engines	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			manifest-declares-the-runtime-floor	true
 rule	dependency-declared-with-a-caret	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			manifest-declares-dependencies-by-range	true
 rule	optional-peer-pinned-as-a-dev-dependency	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD				true
 rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	MUST	ux		values-formatted-by-the-active-locale	true
@@ -1598,7 +1606,7 @@ rule	pydantic-two-forms-only	pydantic	blocks/implementations/pydantic/pydantic.m
 rule	pydantic-home-is-the-edge-and-shared-parsing	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	wire-model-mapped-to-the-domain	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	data	architecture	outside-shape-mapped-in-the-adapter	true
 rule	settings-model-built-by-the-root	pydantic	blocks/implementations/pydantic/architecture/pydantic.md		MUST	security	architecture	root-alone-reads-the-environment	true
-rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/with/config-file.md	config-file	MUST	testing data		published-schema-generated-from-code	true
+rule	json-schema-from-pydantic	pydantic	blocks/implementations/pydantic/with/config-file.md	config-file	MUST	data		published-schema-generated-from-code	true
 rule	pytest-runs-strict	pytest	blocks/implementations/pytest/pytest.md		MUST	testing		every-spec-passes	true
 rule	coverage-gate-with-branches	pytest	blocks/implementations/pytest/pytest.md		MUST	testing		logic-fully-covered	true
 rule	test-order-randomized-by-pytest-randomly	pytest	blocks/implementations/pytest/pytest.md		SHOULD	testing		case-independent-of-order	true
@@ -1790,7 +1798,7 @@ rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/zod.md		M
 rule	schema-held-exactly-to-its-model	zod	blocks/implementations/zod/zod.md		MUST			declared-values-never-typed-again	true
 rule	zod-issues-become-error-details	zod	blocks/implementations/zod/zod.md		SHOULD	errors		parse-failure-lists-every-problem	true
 rule	zod-four-forms-only	zod	blocks/implementations/zod/zod.md		MUST			deprecated-form-never-used	true
-rule	json-schema-from-zod	zod	blocks/implementations/zod/with/config-file.md	config-file	MUST	testing data		published-schema-generated-from-code	true
+rule	json-schema-from-zod	zod	blocks/implementations/zod/with/config-file.md	config-file	MUST	data		published-schema-generated-from-code	true
 rule	zod-imported-by-forms	zod	blocks/implementations/zod/architecture/with/ui.md	ui	MUST		architecture	layer-imports-dependencies-by-its-role	true
 answer	bun	workspace-tool-links-units-from-the-working-tree	yes
 answer	bun	publishing-tool-supports-run-identity-and-provenance	no

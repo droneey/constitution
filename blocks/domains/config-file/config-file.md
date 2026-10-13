@@ -63,11 +63,18 @@ Every reference the config file makes is resolved when the config file is read �
 ## Schema
 
 ### published-schema-generated-from-code → generated-file-never-edited · MUST
-The schema published for editors is generated from the program's schema of the config file, never written by hand, and a spec compares the copy kept in the repository with a fresh generation.
+The schema published for editors is generated from the program's schema of the config file, never written by hand.
 
 | Why | Tags |
 |---|---|
-| a schema written twice drifts, and editors then accept files the program rejects; a stale copy is what editors fetch, and only a spec notices that the code's schema moved on without it. | [testing, data] |
+| a schema written twice drifts, and editors then accept files the program rejects. | [data] |
+
+### published-schema-copy-checked-by-a-spec · MUST
+The copy of the published schema kept in the repository is compared by a spec with a fresh generation, and differs in nothing.
+
+| Why | Tags |
+|---|---|
+| a stale copy is what editors fetch, and only a spec notices that the code's schema moved on without it. | [testing, data] |
 
 ### config-file-points-editors-at-the-schema · SHOULD
 The config file points editors at the published schema.

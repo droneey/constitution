@@ -48,7 +48,7 @@ The tool a package configures, and the framework it plugs into, is a `peerDepend
 |---|---|
 | the floor states the oldest version the package supports, and leaves the choice of version to the consumer. | [] |
 
-### runtime-floor-in-engines → manifest-declares-licence-source-and-floor · MUST
+### runtime-floor-in-engines → manifest-declares-the-runtime-floor · MUST
 The runtime floor is `engines` in `package.json`: each runtime the package supports, with a `>=` floor.
 
 | Why | Tags |

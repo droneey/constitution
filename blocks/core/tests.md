@@ -59,6 +59,13 @@ A lifecycle test takes a value made by its factory through every transition to i
 |---|---|
 | each transition may pass alone while their sequence breaks. | [testing] |
 
+### contract-has-one-suite · SHOULD
+Each contract with a fake has one contract suite, run against the fake and against its real implementation where that implementation's engine runs in the sandbox.
+
+| Why | Tags |
+|---|---|
+| a fake that behaves unlike the real implementation makes every test that uses it prove the wrong thing. | [testing] |
+
 ## How a case is written
 
 ### case-proves-one-intent · SHOULD
@@ -206,7 +213,7 @@ In a unit spec every call that opens a connection is replaced, once for all unit
 | a spec that reaches a server by mistake fails at once where the mistake is, instead of at random later. | [testing] |
 
 ### contract-has-one-fake · SHOULD
-Each faked contract has one fake, shared by every spec that needs it, and one contract suite, run against the fake and against the real implementation where its engine runs in the sandbox.
+Each faked contract has one fake, shared by every spec that needs it.
 
 | Why | Tags |
 |---|---|

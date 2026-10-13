@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0185 |
+| One home per rule | ADR-0160 – ADR-0186 |
 
 ---
 
@@ -1165,3 +1165,10 @@
   - Trimmed: a boolean prop, a compound component, session warnings, time limits, sign-out, log masking, structured log output, dated legal clauses, the config file's unknown keys and a unit's integration.
 - **Rejected.** Folding a SHOULD into a MUST by a merge — navigation by slot, permissions passed down, a screen's private pieces, a busy submit's focus, a local tool server — which would raise a level the owner never chose; deleting a fast source's one update a frame, the parent two implementations carry out; a merge that would put a rule of the architecture into the base, a rule of a seam into its block, or a field's deprecation into the rule on headers — a store kept from the drilled prop, the session's presence, the binding units' consumers and the deprecated field stay rules of their own; one core rule for TLS in place of the three in remote-service, owned-data and messaging, since a network is a domain's subject and each of the three may be active alone; cutting the runtime floor's exception for a minor, on which Python's floor rule rests; merging a GET's cache policy into the personal answer's, which raises a level and waits for the owner.
 - **Why.** A rule that only repeats a parent, a sibling or a standard costs every reader and says nothing new.
+
+## ADR-0186 — A merge keeps one meaning
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** A rule merged into another stays merged only when it is a case of the survivor's one meaning; where the survivor's slug no longer said what it held, the merge had joined two meanings and is undone. The rules ADR-0184 and ADR-0185 had merged are split again: a function's purity from command–query separation, the contract suite from the one fake, a script's exports from its secret, the published schema's copy check from its generation, `nosniff` from the declared content type, the command repository from the aggregate's root, and the manifest's licence, source repository and runtime floor into their three rules. The merges that are cases of one meaning stay: the root's wiring, a constant's spec, a sub-agent's commit, a contract's diff, the extensible enumeration, the cursor's unique key, 401 and 403, a tool's bounded schema, HTTP's methods and statuses, the private units, a unit's licences, a model call's bounds, and a stalled messaging work's alerts, renamed `stalled-message-work-alerted` for its one meaning.
+- **Rejected.** Renaming a merged slug to list both halves, which names the smell instead of curing it.
+- **Why.** A slug says what holds; when it must say two things, there are two rules.

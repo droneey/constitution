@@ -4,12 +4,26 @@
 
 ## What it declares
 
-### manifest-declares-licence-source-and-floor · MUST
-The manifest declares its licence as an SPDX expression, its source repository and its runtime floor.
+### manifest-licence-is-an-spdx-expression · MUST
+The manifest names the unit's licence as an SPDX expression.
 
 | Why | Tags |
 |---|---|
-| a consumer's licence check reads an SPDX expression exactly, a version's provenance is checked against the repository the manifest names, and a consumer on an older runtime fails at install with a clear reason, not at run time on a feature the runtime lacks. | [security] |
+| a consumer's licence check reads an SPDX expression exactly, and free text leaves it to guess. | [security] |
+
+### manifest-names-the-source-repository · MUST
+The manifest names the repository the unit is built from.
+
+| Why | Tags |
+|---|---|
+| a consumer finds the source from the registry, and a version's provenance is checked against the repository the manifest names. | [security] |
+
+### manifest-declares-the-runtime-floor · MUST
+The manifest declares the lowest version of its language's runtime the unit supports.
+
+| Why | Tags |
+|---|---|
+| a consumer on an older runtime then fails at install with a clear reason, not at run time on a feature the runtime lacks. | [] |
 
 ### runtime-floor-within-the-ecosystems-support-window · SHOULD
 A unit published for others floors its runtime no lower than the oldest release line the runtime's maintainers still support, unless its language's block names a narrower window.
