@@ -80,7 +80,7 @@ A Bash script runs under `set -euo pipefail`, and `shopt -s inherit_errexit` whe
 | by default the shell carries on after a failed command, a failed stage of a pipe or an unset variable, so the next command runs on a result that never came, as `rm -rf "$dir/"` does with an empty `dir`. | [errors] |
 
 ### command-substitution-assigned-apart-from-its-declaration → failure-is-expected-or-defect · MUST
-A variable assigned from a command substitution is declared — by `local`, `export`, `readonly` or `declare` — on a line of its own before it: `local out` then `out="$(command)"`.
+A variable assigned from a command substitution is declared — by `local`, `export` or `declare` — on a line of its own before it: `local out` then `out="$(command)"`.
 
 | Why | Tags |
 |---|---|

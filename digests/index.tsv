@@ -310,7 +310,7 @@ rule	illegal-state-unrepresentable	core	blocks/core/types.md		MUST				true
 rule	closed-set-branched-exhaustively	core	blocks/core/types.md		MUST				true
 rule	identifier-branded-by-entity	core	blocks/core/types.md		SHOULD				true
 rule	shape-composed-of-small-shapes	core	blocks/core/types.md		SHOULD				true
-rule	type-lives-beside-the-signature-that-introduces-it	core	blocks/core/types.md		MUST				true
+rule	type-has-one-home	core	blocks/core/types.md		MUST				true
 rule	declared-values-never-typed-again	core	blocks/core/types.md		MUST				true
 rule	outside-vocabulary-reached-through-a-total-table	core	blocks/core/types.md		MUST	data			true
 rule	enumeration-others-read-declared-extensible	core	blocks/core/types.md		MUST	data			true
@@ -1382,7 +1382,7 @@ rule	brand-is-a-unique-symbol-key	typescript	blocks/contexts/languages/typescrip
 rule	brand-set-only-where-minted-or-parsed	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			identifier-branded-by-entity	true
 rule	invariant-value-is-a-branded-type	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		invariant-value-is-plain-immutable-data	true
 rule	semantic-alias-names-a-shared-meaning	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
-rule	program-type-never-declared-ambient	typescript	blocks/contexts/languages/typescript/types.md		MUST			type-lives-beside-the-signature-that-introduces-it	true
+rule	program-type-never-declared-ambient	typescript	blocks/contexts/languages/typescript/types.md		MUST			type-has-one-home	true
 rule	conformance-checked-by-satisfies	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			value-immutable-by-default	true

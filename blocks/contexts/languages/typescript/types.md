@@ -116,7 +116,7 @@ A semantic alias — `type ChatTitle = string` — names a meaning found in two 
 |---|---|
 | an alias names a meaning the program shares; one for every string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. | [] |
 
-### program-type-never-declared-ambient → type-lives-beside-the-signature-that-introduces-it · MUST
+### program-type-never-declared-ambient → type-has-one-home · MUST
 A type of the program is exported by a module and imported where it is used, never declared ambient in a global `.d.ts` or `declare global`; an ambient declaration only describes what the runtime or a library provides.
 
 | Why | Tags |
