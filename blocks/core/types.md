@@ -33,7 +33,7 @@ A shared shape is composed of small named shapes — an identifier, timestamps, 
 | a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. | [] |
 
 ### type-lives-with-its-consumer · MUST
-A type lives beside the unit whose signature introduces it, every other unit imports it from there, and it is declared nowhere else; when a second consumer appears it lifts as any code does, to a file of its own. A surface that re-exports it offers it without becoming its home.
+A type lives beside the unit whose signature introduces it, every other unit imports it from there, and it is declared nowhere else; when a second consumer appears it lifts as any code does, to a file of its own. A file that only re-exports it offers it without becoming its home.
 
 | Why | Tags |
 |---|---|

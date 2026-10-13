@@ -28,7 +28,7 @@ A role file is `<name>_<role>.py`, its role the vocabulary's suffix in snake_cas
 | a module's name allows no dot, so the role is its last word, spelled the same in every folder. | [] |
 
 ### relative-imports-stay-in-the-module → module-files-import-each-other-directly · MUST
-An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name; Files inside one module import each other by relative path, and a relative import never climbs out of the module. A role folder of a feature's domain, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
+An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name. Files inside one module import each other by relative path, and a relative import never climbs out of the module. A role folder of a feature's domain, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
 
 | Why | Tags |
 |---|---|
