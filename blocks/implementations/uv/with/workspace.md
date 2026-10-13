@@ -2,7 +2,7 @@
 
 > A workspace of Python units as a uv workspace.
 
-### workspace-root-has-no-project → workspace-root-private · MUST
+### workspace-root-has-no-project → root-and-internal-units-private · MUST
 The root `pyproject.toml` of a uv workspace has no `[project]` table.
 
 | Why | Tags |

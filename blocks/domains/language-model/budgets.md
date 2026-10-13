@@ -4,7 +4,7 @@
 
 ## Calls
 
-### model-call-sets-its-output-limit → outside-call-has-a-timeout · MUST
+### model-call-bounds-its-output-and-its-time → outside-call-has-a-timeout · MUST
 Every model call sets the most tokens its output may take, sized to its task, and a timeout of its own, never its library's default; a stream also bounds the wait between two chunks.
 
 | Why | Tags |

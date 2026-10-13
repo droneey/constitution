@@ -10,7 +10,7 @@ governs: ["**"]
 ---
 # MCP API
 
-> A server of tools that models call over the Model Context Protocol. Its rules bind the tools the program serves, and no other: how a tool is defined for a model, how it answers and fails, its transport, how it talks to the person, and its specs. Calling another program's tools is a remote service.
+> A server of tools that models call over the Model Context Protocol. Its rules bind the tools the program serves, and no other: how a tool is defined for a model, how it answers and fails, how it talks to the person, and its specs. Calling another program's tools is a remote service.
 
 ## Definitions
 

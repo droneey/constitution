@@ -584,7 +584,7 @@ rule	consequential-tool-call-approved-by-its-person	language-model	blocks/domain
 rule	agent-reading-untrusted-text-sends-nothing-out-unapproved	language-model	blocks/domains/language-model/agency.md		MUST	security data			true
 rule	generated-code-runs-only-in-a-sandbox	language-model	blocks/domains/language-model/agency.md		MUST	security			true
 rule	memory-keeps-its-source-and-person	language-model	blocks/domains/language-model/agency.md		SHOULD	security			true
-rule	model-call-sets-its-output-limit	language-model	blocks/domains/language-model/budgets.md		MUST	errors performance		outside-call-has-a-timeout	true
+rule	model-call-bounds-its-output-and-its-time	language-model	blocks/domains/language-model/budgets.md		MUST	errors performance		outside-call-has-a-timeout	true
 rule	model-input-bounded-before-the-call	language-model	blocks/domains/language-model/budgets.md		MUST	security performance		outside-input-bounded-before-it-is-parsed	true
 rule	agent-run-bounded-in-steps-and-tokens	language-model	blocks/domains/language-model/budgets.md		MUST	performance errors			true
 rule	spend-bounded-per-caller-and-in-total	language-model	blocks/domains/language-model/budgets.md		MUST	security performance			true
@@ -671,7 +671,7 @@ rule	message-handler-stays-thin	messaging	blocks/domains/messaging/architecture/
 rule	message-carries-the-identity-it-acts-for	messaging	blocks/domains/messaging/with/access-control.md	access-control	MUST	security data		tenant-data-scoped-in-every-read-and-write	true
 rule	message-carries-its-creators-trace-context	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			trace-context-propagated-onward	true
 rule	handled-message-spanned-and-linked	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			unit-of-work-opens-a-span	true
-rule	consumer-lag-measured-and-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors performance			true
+rule	backlog-dead-letters-and-missed-runs-alerted	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD	errors performance			true
 rule	change-and-its-message-written-through-an-outbox	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
 rule	outbox-relayed-in-commit-order-per-key	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data			true
 rule	processed-message-recorded-with-its-effect	messaging	blocks/domains/messaging/with/owned-data.md	owned-data	MUST	data errors		write-lands-whole	true
@@ -774,13 +774,14 @@ rule	stream-returned-as-a-sequence-of-domain-events	remote-service	blocks/domain
 rule	one-transport-instance-per-system	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST		architecture	composition-root-wires-everything	true
 rule	resource-path-names-nouns	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD				true
 rule	partial-update-by-merge-patch	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD	data			true
-rule	rest-status-means-what-http-registers	rest-api	blocks/domains/rest-api/answers.md		MUST	errors data			true
+rule	rest-method-and-status-mean-what-http-registers	rest-api	blocks/domains/rest-api/answers.md		MUST	errors data			true
 rule	failure-answered-as-a-problem-document	rest-api	blocks/domains/rest-api/answers.md		MUST	errors		failure-answered-by-its-code	true
 rule	update-guarded-by-if-match	rest-api	blocks/domains/rest-api/answers.md		MUST	data		write-on-read-data-is-conditional	true
 rule	long-operation-answered-202-with-its-status	rest-api	blocks/domains/rest-api/answers.md		SHOULD			long-operation-answered-with-a-handle	true
 rule	answer-top-level-is-an-object	rest-api	blocks/domains/rest-api/answers.md		MUST				true
 rule	contract-published-as-openapi	rest-api	blocks/domains/rest-api/contract.md		MUST	testing		contract-published-machine-readable	true
 rule	version-named-once-by-its-major	rest-api	blocks/domains/rest-api/contract.md		SHOULD				true
+rule	retired-field-marked-deprecated-in-the-openapi-document	rest-api	blocks/domains/rest-api/contract.md		MUST			retired-operation-announced-before-removal	true
 rule	idempotency-key-carried-by-its-header	rest-api	blocks/domains/rest-api/wire.md		SHOULD	data		write-takes-an-idempotency-key	true
 rule	retired-operation-answers-deprecation-headers	rest-api	blocks/domains/rest-api/wire.md		MUST			retired-operation-announced-before-removal	true
 rule	wcag-aa-conformance	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
@@ -863,10 +864,12 @@ rule	form-reuses-domain-predicates	ui	blocks/domains/ui/architecture/ui.md		MUST
 rule	component-lives-where-its-knowledge-lives	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	code-placed-by-its-reason-to-change	true
 rule	component-named-by-location	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	folder-takes-its-layer-or-role-name	true
 rule	presentational-component-performs-no-io	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	effects-held-only-by-the-edge	true
+rule	binding-units-consumed-by-screens-and-widgets	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
 rule	component-never-imports-a-widget	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
 rule	ui-layer-imports-only-what-its-feature-offers	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	import-points-inward	true
 rule	component-in-its-own-folder	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	module-reached-only-through-its-surface	true
 rule	vendored-component-placed-by-its-home	ui	blocks/domains/ui/architecture/ui.md		MUST	ux	architecture		true
+rule	store-never-replaces-a-drilled-prop	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	composition-root-wires-everything	true
 rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
 rule	binding-unit-imports-nothing-of-the-ui	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
@@ -880,6 +883,7 @@ rule	user-input-survives-connection-loss	ui	blocks/domains/ui/with/remote-servic
 rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/with/remote-service.md	remote-service	MUST	testing		effect-faked-never-mocked	true
 rule	screen-guarded-through-the-session-owners-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	security	architecture	entry-point-declares-its-access	true
 rule	feature-screens-adapt-to-permissions-passed-down	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	SHOULD	security	architecture		true
+rule	session-presence-kept-in-a-root-store	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	data	architecture		true
 rule	write-invalidates-in-its-binding-unit	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	data	architecture		true
 rule	client-holds-nothing-hidden	untrusted-client	blocks/domains/untrusted-client/untrusted-client.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	client-credential-kept-in-the-protected-store	untrusted-client	blocks/domains/untrusted-client/untrusted-client.md		MUST	security			true
@@ -912,7 +916,7 @@ rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-co
 rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow	person-decides-what-is-committed-or-shipped	true
 rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	person-decides-what-is-committed-or-shipped	true
 rule	agent-never-force-pushes	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	agent-asks-before-an-irreversible-action	true
-rule	workspace-root-private	workspace	blocks/domains/workspace/workspace.md		MUST	security			true
+rule	root-and-internal-units-private	workspace	blocks/domains/workspace/workspace.md		MUST	security			true
 rule	root-holds-only-the-workspace	workspace	blocks/domains/workspace/workspace.md		SHOULD				true
 rule	root-holds-one-workspace-per-language	workspace	blocks/domains/workspace/workspace.md		SHOULD				true
 rule	dependency-has-one-version-across-units	workspace	blocks/domains/workspace/workspace.md		MUST				true
@@ -1352,7 +1356,7 @@ rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/types
 rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	SHOULD	ux		text-sorted-by-the-locale	true
 rule	package-script-kept-short	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	SHOULD				true
 rule	package-script-expansion-double-quoted	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST			expansion-double-quoted	true
-rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST	security		workspace-root-private	true
+rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST	security		root-and-internal-units-private	true
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
 rule	yaml-parsed-by-the-core-schema	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	SHOULD	data		reader-resolves-scalars-by-the-core-schema	true
@@ -1696,7 +1700,7 @@ rule	invalidation-in-on-settled	tanstack-query	blocks/implementations/tanstack-q
 rule	query-retry-only-transient	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	errors		failure-retried-only-when-transient	true
 rule	query-signal-reaches-the-request	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	performance		outside-call-can-be-cancelled	true
 rule	input-query-keyed-on-debounced-value	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	ux performance		input-driven-requests-debounced	true
-rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data performance ux		interaction-answered-before-its-work	true
+rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data			true
 rule	write-pending-until-its-refresh-lands	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data			true
 rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	data	architecture	binding-unit-composes-its-operation	true
 rule	query-functions-call-the-handed-adapter	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD		architecture	binding-unit-composes-its-operation	true
@@ -1764,7 +1768,7 @@ rule	sdists-never-built	uv	blocks/implementations/uv/uv.md		MUST	security		insta
 rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/uv.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	files-shipped-named-in-pyproject	uv	blocks/implementations/uv/with/distribution.md	distribution	MUST	security		distributed-unit-ships-only-what-its-manifest-names	true
 rule	distribution-uploaded-with-its-attestation	uv	blocks/implementations/uv/with/distribution.md	distribution	MUST	security		version-published-with-provenance	true
-rule	workspace-root-has-no-project	uv	blocks/implementations/uv/with/workspace.md	workspace	MUST	security		workspace-root-private	true
+rule	workspace-root-has-no-project	uv	blocks/implementations/uv/with/workspace.md	workspace	MUST	security		root-and-internal-units-private	true
 rule	packages-linked-by-workspace-source	uv	blocks/implementations/uv/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
 rule	one-lock-for-the-workspace	uv	blocks/implementations/uv/with/workspace.md	workspace	MUST			dependency-has-one-version-across-units	true
 rule	shared-data-linked-into-the-import-package	uv	blocks/implementations/uv/with/workspace.md	workspace	MUST	data		file-lives-once-across-units	true

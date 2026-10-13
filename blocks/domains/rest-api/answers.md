@@ -1,10 +1,10 @@
 # Answers
 
-> Governs a REST operation's status, body and conditions.
+> Governs a REST operation's method and status, body and conditions.
 
 ## Statuses
 
-### rest-status-means-what-http-registers · MUST
+### rest-method-and-status-mean-what-http-registers · MUST
 Methods and statuses mean what HTTP registers; a `DELETE` of something already gone answers `404`.
 
 | Why | Tags |

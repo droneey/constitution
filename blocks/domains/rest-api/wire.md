@@ -12,8 +12,8 @@ An idempotency key travels in the `Idempotency-Key` header, and a repeat with a 
 | one header and two statuses let every client and proxy handle a repeat the same way. | [data] |
 
 ### retired-operation-answers-deprecation-headers → retired-operation-announced-before-removal · MUST
-A retirement is announced where its caller reads it: an operation by headers — `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, and a `Link` with `rel="deprecation"` to its notice; a field by `deprecated` in the OpenAPI document, naming its replacement and its removal date.
+An operation being retired answers with `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, and a `Link` with `rel="deprecation"` to its notice.
 
 | Why | Tags |
 |---|---|
-| a caller's monitoring sees an operation's retirement in every answer, long before the removal breaks it, and a field has no header of its own, so the contract is where a caller and a generated client learn it is going. | [] |
+| a caller's monitoring sees the retirement in every answer, long before the removal breaks it. | [] |

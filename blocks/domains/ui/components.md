@@ -42,11 +42,11 @@ A component with a second region, an optional part that carries the caller's con
 | a component with a prop per region grows a prop for every new need; a compound grows by composition. | [ux] |
 
 ### props-drilled-at-most-two-levels · SHOULD
-A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself, never a store.
+A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself.
 
 | Why | Tags |
 |---|---|
-| a prop threaded through components that do not use it couples them all to it, and state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | [] |
+| a prop threaded through components that do not use it couples them all to it. | [] |
 
 ### stateful-component-controllable-or-not · SHOULD
 A component that holds a value can be driven from outside or left to itself through one interface — the value, its initial value and a change callback — and never switches between the two.

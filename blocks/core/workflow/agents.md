@@ -25,7 +25,7 @@ Only a person decides what of an agent’s work is committed, shared or shipped;
 
 | Why | Tags |
 |---|---|
-| committing, sharing and shipping a change are decisions made under the person’s name. | [] |
+| committing, sharing and shipping a change are decisions made under the person’s name, and a sub-agent acts where the person does not watch. | [] |
 
 ### submitted-change-read-by-its-person · MUST
 A person submits an agent's change only once they have read it and can explain it.
@@ -40,6 +40,3 @@ A submission made under a person’s name — a change, its description, a docum
 | Why | Tags |
 |---|---|
 | the person who submits a change answers for it, and an attribution line adds noise and no accountability. | [] |
-
-## Delegating
-

@@ -33,7 +33,7 @@ A shared shape is composed of small named shapes — an identifier, timestamps, 
 | a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. | [] |
 
 ### type-has-one-home · MUST
-A type has one home — beside the signature that introduces it, or in the folder the layout gives its kind — every other unit imports it from there, and it is declared nowhere else.
+A type has one home — beside the signature that introduces it, or in the folder the layout gives its kind — every other unit imports it from there or from a surface that re-exports it, and it is declared nowhere else.
 
 | Why | Tags |
 |---|---|

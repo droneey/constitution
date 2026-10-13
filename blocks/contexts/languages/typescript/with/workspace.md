@@ -4,7 +4,7 @@
 
 ## Workspace
 
-### root-manifest-private → workspace-root-private · MUST
+### root-manifest-private → root-and-internal-units-private · MUST
 The root `package.json` of a workspace sets `"private": true`.
 
 | Why | Tags |

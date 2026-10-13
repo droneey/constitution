@@ -11,7 +11,7 @@
 ## What a spec proves
 
 ### spec-proves-one-boundary · SHOULD
-A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none, save a constant a reader outside the code relies on — a code users script against, a name another system reads — proven by one table per contract.
+A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none unless a rule asks for one; a constant a reader outside the code relies on — a code users script against, a name another system reads — is proven by one table per contract.
 
 | Why | Tags |
 |---|---|

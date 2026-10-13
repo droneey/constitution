@@ -1,6 +1,6 @@
 # Messaging with observability
 
-> Governs the trace a message carries, the span of its handling, the lag of a consumer and the alert of a dead letter.
+> Governs the trace a message carries, the span of its handling, the lag of a consumer, and the alerts of a dead letter and of a scheduled run that fails or never runs.
 
 ## Context
 
@@ -22,7 +22,7 @@ Handling a message runs in a consumer span named after its operation and destina
 
 ## Measures
 
-### consumer-lag-measured-and-alerted · SHOULD
+### backlog-dead-letters-and-missed-runs-alerted · SHOULD
 Every consumer is measured by its lag — the age of its oldest waiting message and their count; lag past a bound the project sets, a message arriving in dead letters, and a scheduled run that fails or never runs each alert the operators.
 
 | Why | Tags |

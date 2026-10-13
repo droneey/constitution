@@ -14,7 +14,7 @@ governs: ["**"]
 
 ## The root
 
-### workspace-root-private · MUST
+### root-and-internal-units-private · MUST
 The root and every unit nobody outside installs are marked private.
 
 | Why | Tags |
