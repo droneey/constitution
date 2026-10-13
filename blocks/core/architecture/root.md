@@ -5,18 +5,11 @@
 ## Wiring
 
 ### composition-root-wires-everything · MUST
-The composition root chooses every concrete implementation and wires the program in one known place. A unit receives its dependencies typed by their contracts and never builds or asks for an adapter; reading a typed scope the root fills — one contract per key, filled once, read by delivery and binding units — is receiving, and so is choosing, by the kind its data names, a member of an open set the root handed in; asking a registry for a dependency by its contract is not. A framework's container, where the program's framework block brings one, wires only from bindings written in the declarations the root composes; one that finds them by scanning, name or convention is forbidden.
+The composition root chooses every concrete implementation, builds every adapter and stateful client — a cache, a store, a connection — applies every decorator, and wires the program in one known place. A unit receives its dependencies typed by their contracts — as parameters, or from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention.
 
 | Why | Tags |
 |---|---|
 | one place that names every concrete choice makes the program’s shape readable and every choice replaceable. | [] |
-
-### root-builds-and-hands-in-every-stateful-part · MUST
-The composition root builds every adapter and every stateful client — a cache, a store, a connection — and hands each in, an adapter its own dependencies as a factory’s parameters or through its constructor.
-
-| Why | Tags |
-|---|---|
-| a part the root hands in is visible and replaceable, in production and in tests. | [] |
 
 ### root-alone-reads-the-environment · MUST
 The composition root, its configuration provider included, and the entry files alone read the environment; a spec may read it to drive the program.
@@ -24,13 +17,6 @@ The composition root, its configuration provider included, and the entry files a
 | Why | Tags |
 |---|---|
 | no module depends on the process’s environment through a read no signature shows. | [security] |
-
-### root-applies-the-decorators · MUST
-The composition root applies every decorator — behaviour wrapped around an implementation of a contract, the pattern rather than a language's decorator syntax — where it chooses that implementation.
-
-| Why | Tags |
-|---|---|
-| the wrapped unit stays unchanged, and the root shows every wrapper beside the choice it wraps. | [] |
 
 ### root-alone-configures-logging · MUST
 The composition root alone configures where log records go.

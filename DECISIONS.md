@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0183 |
+| One home per rule | ADR-0160 – ADR-0184 |
 
 ---
 
@@ -1144,3 +1144,14 @@
   - Contexts: Python's module state allows the diagnostics facades and a spec's setup, as core and TypeScript do, and its types move to a chapter file; both languages state how a path is opened beneath its root, how a pattern on outside input avoids backtracking, how an identifier is normalised, and how text for a machine avoids the locale; shell's failure rules carry out the catch rule, `.bash` files are governed, and an empty array is expanded safely below Bash 4.4; a destructive command line confirms or needs `--force`; mobile leaves personal data the server can restore out of backups and backs up what lives only on the device, its credentials already kept out by the keystore rule; the browser refuses `setHTMLUnsafe` and `parseHTMLUnsafe`; TypeScript's equality rule forbids only loose comparison; a server's settings may come from a store read with its host's identity.
 - **Rejected.** Splitting core's rule on secrets and personal data in output, whose children in observability, messaging and the untrusted client hold both halves at once; exempting a generated file from the complexity limit, which no reviewer agreed on and complexipy's settings were not checked for.
 - **Why.** Each fix closes a clash between two rules, a rule a project could lose with an axis, or a form a language owed its parent.
+
+## ADR-0184 — Core and the contexts cleared of what the review rounds added beyond need
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** The owner ended the review rounds at 8.9 and asked that every layer hold nothing superfluous. An editor's audit of what rounds eleven to eighteen added to core and the contexts removed fourteen rules and trimmed eleven:
+  - Deleted: the post-quantum key exchange, which current guidance on algorithms already covers; tracing in a package script or an embedded command, which the length rules push into a `.sh` file; a credential's declaration, which no reader can check; the server's listening address; TypeScript's singular enum name and a type parameter's second use.
+  - Merged: the root's building of stateful parts and its decorators into `composition-root-wires-everything`, whose text says it once; a function's handed dependencies into `function-answers-or-changes`; the contract suite into the fake's rule; a constant's spec into `spec-proves-one-boundary`; the sub-agent's limit into the person's decision to commit or ship; a script's exports into its secret rule.
+  - Trimmed: the catch rule, the trifecta, the one writer of a shared resource, the identifier rule (a path is confined, not case-folded), the rendering server's session, the delivery unit's edge, the instant, the sandbox, a type's home, a transient failure and an agent's limits each lose a clause another rule already holds.
+  - Renamed: the language forms of machine text and of a pattern on outside input name their form instead of their language.
+- **Rejected.** Folding the remaining deadline into the timeout rule, which would raise a SHOULD to a MUST; shortening the catalogue of patterns, the one place they are named.
+- **Why.** A rule added to answer one reviewer's edge case costs every reader; what a parent, a sibling or a tool already holds is said once.

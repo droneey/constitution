@@ -119,7 +119,7 @@ An operation run by hand or by a pipeline against a live system (one others use,
 | an irreversible operation run by mistake cannot be undone by a better test. | [security, ux] |
 
 ### shared-resource-has-one-writer · MUST
-Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer, a standard stream one per kind of record it carries: the logger for diagnostics, one writer for its user's output. A block that brings its own writer for such a resource claims it in a rule, and the writer the program would otherwise use yields to it.
+Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer, a standard stream one per kind of record it carries: the logger for diagnostics, one writer for its user's output.
 
 | Why | Tags |
 |---|---|

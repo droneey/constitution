@@ -201,7 +201,6 @@ rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/errors.md		SH
 rule	error-library-gives-code-cause-and-details	core	blocks/core/errors.md		MUST	errors			true
 rule	function-does-one-thing	core	blocks/core/functions.md		SHOULD				true
 rule	function-answers-or-changes	core	blocks/core/functions.md		SHOULD				true
-rule	function-answers-from-its-input-and-handed-dependencies	core	blocks/core/functions.md		SHOULD				true
 rule	function-within-its-limits	core	blocks/core/functions.md		MUST				true
 rule	function-leaves-early-on-failure	core	blocks/core/functions.md		SHOULD				true
 rule	function-takes-at-most-three-positions	core	blocks/core/functions.md		SHOULD				true
@@ -250,7 +249,6 @@ rule	secret-never-passed-as-a-process-argument	core	blocks/core/security.md		MUS
 rule	child-process-environment-built-for-it	core	blocks/core/security.md		MUST	security			true
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
 rule	credential-has-least-privilege	core	blocks/core/security.md		MUST	security			true
-rule	credential-declared-with-owner-scope-and-rotation	core	blocks/core/security.md		SHOULD	security			true
 rule	credential-short-lived	core	blocks/core/security.md		SHOULD	security			true
 rule	process-runs-with-only-the-rights-its-job-needs	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
@@ -263,17 +261,14 @@ rule	outside-input-parsed-without-external-references	core	blocks/core/security.
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
 rule	security-check-fails-closed	core	blocks/core/security.md		MUST	security			true
 rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
-rule	key-exchange-hybrid-with-post-quantum	core	blocks/core/security.md		SHOULD	security			true
 rule	security-primitive-from-a-vetted-library	core	blocks/core/security.md		MUST	security			true
 rule	spec-proves-one-boundary	core	blocks/core/tests.md		SHOULD	testing			true
-rule	constant-specced-only-as-a-contract	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-asserts-what-a-caller-observes	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-earns-its-place	core	blocks/core/tests.md		SHOULD	testing			true
 rule	declared-failure-has-a-case	core	blocks/core/tests.md		SHOULD	testing errors			true
 rule	edge-cases-chosen-by-risk	core	blocks/core/tests.md		SHOULD	testing			true
 rule	property-tested-where-it-pays	core	blocks/core/tests.md		SHOULD	testing			true
 rule	lifecycle-tested-to-its-final-state	core	blocks/core/tests.md		SHOULD	testing			true
-rule	contract-has-one-suite	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-proves-one-intent	core	blocks/core/tests.md		SHOULD	testing			true
 rule	variants-are-one-table	core	blocks/core/tests.md		SHOULD	testing			true
 rule	case-holds-no-logic	core	blocks/core/tests.md		SHOULD	testing			true
@@ -382,9 +377,7 @@ rule	adapter-imports-only-its-owners-domain-and-shared-layers	core	blocks/core/a
 rule	adapter-one-per-system-and-owner	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	adapter-built-by-factory-object-or-class	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	composition-root-wires-everything	core	blocks/core/architecture/root.md		MUST		architecture		true
-rule	root-builds-and-hands-in-every-stateful-part	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-reads-the-environment	core	blocks/core/architecture/root.md		MUST	security	architecture		true
-rule	root-applies-the-decorators	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
 rule	design-settled-with-its-person-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
@@ -392,7 +385,6 @@ rule	agent-writes-tests-first-from-a-description	core	blocks/core/workflow/agent
 rule	person-decides-what-is-committed-or-shipped	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
-rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	list-answer-paged-with-a-maximum	_api	blocks/domains/_api/collections.md		MUST	performance security		outside-read-bounded	true
 rule	list-paged-by-an-opaque-cursor	_api	blocks/domains/_api/collections.md		MUST	performance			true
 rule	list-ordered-by-a-unique-key	_api	blocks/domains/_api/collections.md		MUST	data			true
@@ -1149,7 +1141,6 @@ rule	server-copy-keeps-only-what-it-can-lose	server	blocks/contexts/platforms/se
 rule	one-off-work-runs-as-its-own-process	server	blocks/contexts/platforms/server/server.md		SHOULD	data			true
 rule	server-pools-sized-to-the-hosts-grant	server	blocks/contexts/platforms/server/server.md		SHOULD	performance			true
 rule	server-configuration-taken-from-its-host	server	blocks/contexts/platforms/server/server.md		MUST	security		one-artefact-serves-every-environment	true
-rule	server-listens-where-its-configuration-says	server	blocks/contexts/platforms/server/server.md		SHOULD				true
 rule	server-serves-its-protocol-itself	server	blocks/contexts/platforms/server/server.md		SHOULD				true
 rule	server-log-leaves-as-a-stream	server	blocks/contexts/platforms/server/server.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	server-work-in-flight-bounded	server	blocks/contexts/platforms/server/server.md		SHOULD	performance errors			true
@@ -1254,7 +1245,7 @@ rule	child-process-given-its-own-env	python	blocks/contexts/languages/python/pyt
 rule	outside-data-never-unpickled	python	blocks/contexts/languages/python/python.md		MUST	security		outside-input-never-rebuilt-as-objects	true
 rule	guarding-value-drawn-from-secrets	python	blocks/contexts/languages/python/python.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	secret-compared-by-compare-digest	python	blocks/contexts/languages/python/python.md		MUST	security		security-primitive-from-a-vetted-library	true
-rule	outside-pattern-matched-without-backtracking-in-python	python	blocks/contexts/languages/python/python.md		MUST	security performance		outside-input-matched-in-linear-time	true
+rule	outside-pattern-safe-or-on-google-re2	python	blocks/contexts/languages/python/python.md		MUST	security performance		outside-input-matched-in-linear-time	true
 rule	outside-identifier-normalised-and-casefolded	python	blocks/contexts/languages/python/python.md		MUST	security		outside-identifier-normalised-before-comparison	true
 rule	tools-in-the-dev-group	python	blocks/contexts/languages/python/python.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	requires-python-at-the-pinned-minor	python	blocks/contexts/languages/python/python.md		SHOULD				true
@@ -1289,7 +1280,7 @@ rule	instant-is-an-aware-datetime	python	blocks/contexts/languages/python/types.
 rule	duration-measured-by-time-monotonic	python	blocks/contexts/languages/python/types.md		MUST	data		duration-measured-on-a-monotonic-clock	true
 rule	exact-quantity-is-an-int-or-a-decimal	python	blocks/contexts/languages/python/types.md		MUST	data		exact-quantity-never-binary-float	true
 rule	text-opened-with-utf-8-named	python	blocks/contexts/languages/python/types.md		MUST	data		text-encoded-as-utf-8	true
-rule	machine-text-formatted-without-a-locale-in-python	python	blocks/contexts/languages/python/types.md		MUST	data		machine-text-independent-of-the-locale	true
+rule	machine-text-never-formatted-by-the-locale-module	python	blocks/contexts/languages/python/types.md		MUST	data		machine-text-independent-of-the-locale	true
 rule	type-checking-import-held-to-the-layers	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	import-points-inward	true
 rule	program-entry-is-main-of-main-py	python	blocks/contexts/languages/python/architecture/python.md		SHOULD		architecture	package-laid-out-by-the-tree	true
 rule	role-suffix-spelled-in-snake-case	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	file-carries-its-role-suffix	true
@@ -1325,13 +1316,11 @@ rule	script-diagnostics-on-standard-error	shell	blocks/contexts/languages/shell/
 rule	outside-input-passed-as-an-argument	shell	blocks/contexts/languages/shell/shell.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	xtrace-never-ships	shell	blocks/contexts/languages/shell/shell.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	secret-set-only-for-the-command-that-reads-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
-rule	variable-exported-only-for-the-commands-that-read-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
 rule	executable-script-names-its-shell	shell	blocks/contexts/languages/shell/shell.md		MUST				true
 rule	shell-file-ends-in-sh	shell	blocks/contexts/languages/shell/shell.md		SHOULD			format-has-one-extension	true
 rule	decorator-is-a-standard-decorator	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	identifier-case-by-kind	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD			name-case-by-kind	true
 rule	type-names-undecorated	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
-rule	enum-named-in-the-singular	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	type-parameter-starts-with-t	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	parameter-object-has-a-named-type	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
@@ -1359,7 +1348,7 @@ rule	code-never-run-from-a-string	typescript	blocks/contexts/languages/typescrip
 rule	outside-keyed-collection-is-a-map	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-input-never-rebuilt-as-objects	true
 rule	guarding-random-value-from-web-crypto	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	secret-compared-by-timing-safe-equal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
-rule	outside-pattern-matched-without-backtracking	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security performance		outside-input-matched-in-linear-time	true
+rule	outside-pattern-a-safe-literal-or-on-re2	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security performance		outside-input-matched-in-linear-time	true
 rule	outside-identifier-normalised-by-nfkc	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-identifier-normalised-before-comparison	true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	tools-pinned-in-dev-dependencies	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		tool-pinned-exactly-by-the-repository	true
@@ -1383,7 +1372,7 @@ rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/t
 rule	exhaustive-branching-over-unions	typescript	blocks/contexts/languages/typescript/types.md		MUST			closed-set-branched-exhaustively	true
 rule	closed-name-set-is-a-string-enum	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
 rule	outside-number-set-is-a-numeric-enum	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		outside-vocabulary-reached-through-a-total-table	true
-rule	machine-text-formatted-without-a-locale	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		machine-text-independent-of-the-locale	true
+rule	machine-text-never-formatted-by-intl	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		machine-text-independent-of-the-locale	true
 rule	union-discriminant-is-an-enum-member	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
 rule	brand-is-a-unique-symbol-key	typescript	blocks/contexts/languages/typescript/types.md		MUST			identifier-branded-by-entity	true
 rule	brand-set-only-where-minted-or-parsed	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			identifier-branded-by-entity	true
@@ -1394,7 +1383,6 @@ rule	conformance-checked-by-satisfies	typescript	blocks/contexts/languages/types
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			value-immutable-by-default	true
 rule	received-array-changed-only-by-copying-methods	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			value-immutable-by-default	true
-rule	type-parameter-appears-twice	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	value-made-text-by-a-named-form	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	date-and-time-are-temporal-values	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		instant-is-an-exact-time	true
 rule	duration-measured-by-performance-now	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		duration-measured-on-a-monotonic-clock	true
@@ -1423,7 +1411,6 @@ rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/types
 rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	SHOULD	ux		text-sorted-by-the-locale	true
 rule	package-script-kept-short	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	SHOULD				true
 rule	package-script-expansion-double-quoted	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST			expansion-double-quoted	true
-rule	package-script-never-traces	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST	security data		xtrace-never-ships	true
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			workspace-root-private	true
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
@@ -1448,7 +1435,6 @@ rule	yaml-file-holds-one-document	yaml	blocks/contexts/languages/yaml/yaml.md		S
 rule	embedded-command-kept-short	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	SHOULD				true
 rule	embedded-command-expansion-double-quoted	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST			expansion-double-quoted	true
 rule	runner-value-reaches-the-command-through-the-environment	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST	security		outside-input-reaches-interpreters-as-parameters	true
-rule	embedded-command-never-traces	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST	security data		xtrace-never-ships	true
 rule	react-compiler-on	_react	blocks/implementations/_react/_react.md		MUST	performance			true
 rule	render-is-pure	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST				true
@@ -1777,7 +1763,7 @@ rule	key-factory-in-cache-utils	tanstack-query	blocks/implementations/tanstack-q
 rule	keys-only-from-the-key-factory	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	data	architecture	cache-key-built-by-its-features-factory	true
 rule	query-library-home-is-the-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	read-declared-once-as-query-options	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	data	architecture	cache-key-built-by-its-features-factory	true
-rule	query-client-built-by-the-root	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST		architecture	root-builds-and-hands-in-every-stateful-part	true
+rule	query-client-built-by-the-root	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST		architecture	composition-root-wires-everything	true
 rule	unauthorized-handled-once-in-the-cache	tanstack-query	blocks/implementations/tanstack-query/architecture/with/access-control.md	access-control	MUST	errors security	architecture	unauthenticated-failure-ends-the-session-once	true
 rule	layout-lives-in-route-file	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD				true
 rule	tanstack-router-file-names-kept	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		MUST			file-name-in-its-owners-case	true

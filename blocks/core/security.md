@@ -46,13 +46,6 @@ A credential belongs to one identity and one purpose per environment, with only 
 |---|---|
 | a credential with only the permissions its job needs limits what a leak can do, and one identity per credential says who did what. | [security] |
 
-### credential-declared-with-owner-scope-and-rotation · SHOULD
-A credential's declaration names its owner, its scope, its issuer and how it is rotated.
-
-| Why | Tags |
-|---|---|
-| a credential nobody can trace to its use is never rotated or revoked in time. | [security] |
-
 ### credential-short-lived · SHOULD
 A credential is short-lived where the platform issues such.
 
@@ -98,7 +91,7 @@ A path built from outside input is used only after its real path, every link fol
 | a `..` or an absolute path in a name reaches any file the program may read or write. | [security] |
 
 ### outside-identifier-normalised-before-comparison · MUST
-An identifier from outside that grants or refuses access — a user name, an e-mail address, a host name, a path — is normalised to one form before it is compared, stored or checked against a list.
+An identifier from outside that grants or refuses access — a user name, an e-mail address, a host name — is normalised to one form before it is compared, stored or checked against a list.
 
 | Why | Tags |
 |---|---|
@@ -140,13 +133,6 @@ A cryptographic algorithm, mode and key size are ones current guidance approves 
 | Why | Tags |
 |---|---|
 | a vetted library still offers broken algorithms, and data protected by one is open to whoever reads it later. | [security] |
-
-### key-exchange-hybrid-with-post-quantum · SHOULD
-A key exchange that protects data meant to stay secret for years is hybrid with a post-quantum algorithm — ML-KEM with X25519 — where the platform offers one.
-
-| Why | Tags |
-|---|---|
-| traffic recorded today is decrypted once a quantum computer breaks the classical exchange, so data that must outlive that day is protected by both. | [security] |
 
 ### security-primitive-from-a-vetted-library · MUST
 A security primitive comes from the platform or a vetted library: a token, a nonce or an identifier that guards access from a cryptographic random source, a password stored only by a password-hashing function, a secret compared in constant time; the project writes no cryptography of its own.

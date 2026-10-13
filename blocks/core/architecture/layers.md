@@ -137,7 +137,7 @@ A protocol two artefacts of one program speak lives in the program’s shared pl
 ## The delivery layer
 
 ### delivery-unit-beside-what-it-serves · SHOULD
-A delivery unit that serves one feature lives in that feature’s application layer where the block of the program's interface allows it; one that composes several lives in the delivery layer or in composition. One in a feature's application layer is no part of the edge, and reaches effects through ports.
+A delivery unit that serves one feature lives in that feature’s application layer where the block of the program's interface allows it; one that composes several lives in the delivery layer or in composition.
 
 | Why | Tags |
 |---|---|

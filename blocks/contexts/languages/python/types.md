@@ -128,7 +128,7 @@ Every call that opens or decodes text — `open`, `Path.open`, `Path.read_text`,
 |---|---|
 | below Python 3.15 these calls default to the machine's locale, and from 3.15 a host's `PYTHONUTF8=0` brings it back, so the same file reads as different text on two machines. | [] |
 
-### machine-text-formatted-without-a-locale-in-python → machine-text-independent-of-the-locale · MUST
+### machine-text-never-formatted-by-the-locale-module → machine-text-independent-of-the-locale · MUST
 Text written for another program uses no call of the `locale` module, no `'{:n}'` and no `strftime` directive that reads the locale — `%a`, `%b`, `%c`, `%p`, `%x`, `%X`; an instant is written by `isoformat()`.
 
 | Why | Tags |

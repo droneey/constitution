@@ -33,7 +33,7 @@ A shared shape is composed of small named shapes — an identifier, timestamps, 
 | a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. | [] |
 
 ### type-has-one-home · MUST
-A type has one home — beside the signature that introduces it, or in the folder the layout gives its kind — every other unit imports it from there, and it is declared nowhere else. A file that only re-exports it offers it without becoming its home.
+A type has one home — beside the signature that introduces it, or in the folder the layout gives its kind — every other unit imports it from there, and it is declared nowhere else.
 
 | Why | Tags |
 |---|---|
@@ -123,7 +123,7 @@ Absence is spelled by one value, which the language block names, and shown in th
 | two spellings of absence make every check ask twice, and a stand-in value passes for a real one. | [data] |
 
 ### instant-is-an-exact-time · MUST
-An instant is an exact time — in UTC, or with its offset — kept apart from a calendar date and a wall time, which are types of their own; a time a person sets in a place — a meeting, a departure, an opening hour — is kept as its wall time with that place's IANA zone, and becomes an instant only when it is used, since the zone's rules may change before then; no time is read in the machine’s zone by default.
+An instant is an exact time — in UTC, or with its offset — kept apart from a calendar date and a wall time, which are types of their own; a time a person sets in a place — a meeting, a departure, an opening hour — is kept as its wall time with that place's IANA zone, and becomes an instant only when it is used; no time is read in the machine’s zone by default.
 
 | Why | Tags |
 |---|---|

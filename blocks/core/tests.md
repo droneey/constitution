@@ -11,18 +11,11 @@
 ## What a spec proves
 
 ### spec-proves-one-boundary · SHOULD
-A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none unless a rule asks for one.
+A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none, save a constant a reader outside the code relies on — a code users script against, a name another system reads — proven by one table per contract.
 
 | Why | Tags |
 |---|---|
 | a spec per file mirrors the layout, not the behaviour: it breaks when a helper moves while the behaviour stays. | [testing] |
-
-### constant-specced-only-as-a-contract · SHOULD
-A constant gets a spec only when a reader outside the code relies on it — a code users script against, a name another system reads — and then as one table per contract.
-
-| Why | Tags |
-|---|---|
-| a spec that restates a constant catches nothing and fails on every deliberate change. | [testing] |
 
 ### case-asserts-what-a-caller-observes · SHOULD
 A case checks an outcome a caller observes — a returned value, a changed state, what a user sees — and a call on a fake only when the call itself is the behaviour.
@@ -65,13 +58,6 @@ A lifecycle test takes a value made by its factory through every transition to i
 | Why | Tags |
 |---|---|
 | each transition may pass alone while their sequence breaks. | [testing] |
-
-### contract-has-one-suite · SHOULD
-Each contract with a fake has one contract suite, run against the fake and against its real implementation where that implementation's engine runs in the sandbox.
-
-| Why | Tags |
-|---|---|
-| a fake that behaves unlike the real implementation makes every test that uses it prove the wrong thing. | [testing] |
 
 ## How a case is written
 
@@ -206,7 +192,7 @@ A unit case runs in one process with no output, no waiting and no real clock, an
 ## The sandbox
 
 ### test-runs-in-a-sandbox · MUST
-A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential but those of the engines it started; the repository’s own files are read, never written — save the snapshots and golden files a run told to update them writes, and the caches its tools keep out of version control — and a real vendor is reached only apart from the tests.
+A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential but those of the engines it started; the repository’s own files are read, never written — save the snapshots and golden files a run told to update them writes — and a real vendor is reached only apart from the tests.
 
 | Why | Tags |
 |---|---|
@@ -220,7 +206,7 @@ In a unit spec every call that opens a connection is replaced, once for all unit
 | a spec that reaches a server by mistake fails at once where the mistake is, instead of at random later. | [testing] |
 
 ### contract-has-one-fake · SHOULD
-Each faked contract has one fake, shared by every spec that needs it.
+Each faked contract has one fake, shared by every spec that needs it, and one contract suite, run against the fake and against the real implementation where its engine runs in the sandbox.
 
 | Why | Tags |
 |---|---|

@@ -26,11 +26,3 @@ A value a CI runner substitutes into a step — `${{ github.event.issue.title }}
 | Why | Tags |
 |---|---|
 | the runner pastes the value into the text before the shell parses it, so a title that holds `$(…)` runs as a command with the pipeline's secrets. | [security] |
-
-### embedded-command-never-traces → xtrace-never-ships · MUST
-A command a YAML file holds never turns on `set -x` or runs a shell with `-x`.
-
-| Why | Tags |
-|---|---|
-| the trace prints every command with its expanded arguments, the secrets a step derives included, which the runner's masking does not know. | [security] |
-

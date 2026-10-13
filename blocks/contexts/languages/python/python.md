@@ -244,7 +244,7 @@ A secret — a token, a signature, a key — is compared with `hmac.compare_dige
 |---|---|
 | `==` stops at the first character that differs, so its timing tells an attacker how much of a guess was right. | [security] |
 
-### outside-pattern-matched-without-backtracking-in-python → outside-input-matched-in-linear-time · MUST
+### outside-pattern-safe-or-on-google-re2 → outside-input-matched-in-linear-time · MUST
 A regular expression that runs on outside input has no nested or overlapping quantifiers — possessive or atomic where it needs one — or runs on `google-re2`; it is never compiled from outside input.
 
 | Why | Tags |

@@ -21,7 +21,7 @@ When a behaviour is described before it is built, an agent writes its tests from
 ## Acting
 
 ### person-decides-what-is-committed-or-shipped · MUST
-Only a person decides what of an agent’s work is committed, shared or shipped; the agent does so only when the person asks or a standing grant names that act.
+Only a person decides what of an agent’s work is committed, shared or shipped; the agent does so only when the person asks or a standing grant names that act; a sub-agent never does.
 
 | Why | Tags |
 |---|---|
@@ -43,9 +43,3 @@ A submission made under a person’s name — a change, its description, a docum
 
 ## Delegating
 
-### sub-agent-only-does-the-work · MUST
-A sub-agent does the work it is given and nothing more; whether that work is recorded, shared or shipped stays with the agent the person talks to.
-
-| Why | Tags |
-|---|---|
-| a sub-agent acts without the person watching. | [] |

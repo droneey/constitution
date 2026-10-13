@@ -72,7 +72,7 @@ A set of numbers another system defines — exit statuses, HTTP statuses — is 
 |---|---|
 | each number gets the name its system documents, and an arriving number kept as `number` is never taken for a member it may not be. | [] |
 
-### machine-text-formatted-without-a-locale → machine-text-independent-of-the-locale · MUST
+### machine-text-never-formatted-by-intl → machine-text-independent-of-the-locale · MUST
 Text written for another program uses no `toLocaleString`, `toLocaleUpperCase`, `toLocaleLowerCase`, `localeCompare` or `Intl` call; a number is written by `String` or `toFixed`, an instant by `toString` of Temporal or `toISOString`.
 
 | Why | Tags |
@@ -157,13 +157,6 @@ An array the code received or shares is changed through the copying methods — 
 | Why | Tags |
 |---|---|
 | the mutating methods change the array in place for every holder of it, so a sort for one screen reorders the data another reads. | [] |
-
-### type-parameter-appears-twice · SHOULD
-A type parameter appears at least twice in its signature; one that appears once is its constraint written out.
-
-| Why | Tags |
-|---|---|
-| a parameter used once relates nothing, and only lets a caller claim a type the function never checks. | [] |
 
 ### value-made-text-by-a-named-form · SHOULD
 A value becomes text through a form that names it — a formatter, `String` of a primitive, a template of strings — never by `+` with a value that is not a string, nor by an object's default `toString`.

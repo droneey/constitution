@@ -38,13 +38,6 @@ A type's name is a noun with no decoration: no `I` prefix, on interfaces too, an
 |---|---|
 | a decoration repeats what the language already shows and makes every name longer. | [] |
 
-### enum-named-in-the-singular · SHOULD
-An enum is named in the singular: `OrderStatus`, not `OrderStatuses`.
-
-| Why | Tags |
-|---|---|
-| a value of the enum is one member, so `status: OrderStatus` reads as what it holds. | [] |
-
 ### type-parameter-starts-with-t · SHOULD
 A type parameter is `T`, or a name that starts with `T` and says its role: `TItem`, `TError`.
 
@@ -244,7 +237,7 @@ A secret — a token, a signature, a key — is compared with `timingSafeEqual` 
 |---|---|
 | `===` stops at the first byte that differs, and the time it takes tells an attacker how much of a guess was right. | [security] |
 
-### outside-pattern-matched-without-backtracking → outside-input-matched-in-linear-time · MUST
+### outside-pattern-a-safe-literal-or-on-re2 → outside-input-matched-in-linear-time · MUST
 A regular expression that runs on outside input is a literal with no nested or overlapping quantifiers, or runs on a linear engine such as RE2; it is never built from outside input.
 
 | Why | Tags |

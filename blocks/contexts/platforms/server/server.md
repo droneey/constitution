@@ -82,13 +82,6 @@ Every setting that differs between deployments reaches a server from its host �
 |---|---|
 | one built artefact is then promoted from staging to production unchanged, and it holds nothing one environment must keep from another. | [security] |
 
-### server-listens-where-its-configuration-says · SHOULD
-A server listens on the address and the port its configuration names.
-
-| Why | Tags |
-|---|---|
-| its host then routes to the port it assigned, and the same process runs alike under any host, in a spec and on a laptop. | [] |
-
 ### server-serves-its-protocol-itself · SHOULD
 A server serves its protocol itself, with no web server its host must put around it.
 
