@@ -197,7 +197,7 @@ A test waits for a condition or advances a fake clock, never a fixed delay.
 | a fixed delay is too short on a slow machine and wasted on a fast one. | [testing] |
 
 ### unit-case-stays-in-process · SHOULD
-A unit case runs in one process with no output, no waiting and no real clock, and reads no file but its golden files, and so finishes in milliseconds; a case that needs more is an integration case.
+A unit case runs in one process with no output, no waiting and no real clock, and reads no file but its golden files and snapshots, and so finishes in milliseconds; a case that needs more is an integration case.
 
 | Why | Tags |
 |---|---|
@@ -206,7 +206,7 @@ A unit case runs in one process with no output, no waiting and no real clock, an
 ## The sandbox
 
 ### test-runs-in-a-sandbox · MUST
-A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential but those of the engines it started; the repository’s own files are read, never written, and a real vendor is reached only apart from the tests.
+A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential but those of the engines it started; the repository’s own files are read, never written — save the snapshots and golden files a run told to update them writes, and the caches its tools keep out of version control — and a real vendor is reached only apart from the tests.
 
 | Why | Tags |
 |---|---|
@@ -234,7 +234,7 @@ No spec mocks, patches or spies on a module of the program; an effect is replace
 | a mocked module replaces the code the spec claims to test and breaks when the module moves. | [testing] |
 
 ### integration-spec-runs-the-real-engine · SHOULD
-Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there, with a case for each operation and each failure it maps; such a spec counts toward the coverage gate only for an engine whose data the project owns, such as its own database.
+Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there — by the contract suite where it has one — with a case for each failure it maps; such specs stay out of the coverage gate.
 
 | Why | Tags |
 |---|---|
@@ -257,7 +257,7 @@ Every spec passes.
 | a spec left failing proves nothing from then on. | [testing] |
 
 ### logic-fully-covered · MUST
-All logic is covered at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the specs of its boundaries; entry files, the wiring, generated files, declarations and vendored code are excluded. A line no behaviour reaches is a missing case or dead code.
+Logic — all production code but the entry files, the file that wires the program, generated files, declarations and vendored code — is covered at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the specs of its boundaries. A line no behaviour reaches is a missing case or dead code.
 
 | Why | Tags |
 |---|---|

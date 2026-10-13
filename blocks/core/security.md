@@ -12,7 +12,7 @@ A secret is never written into the repository in a form that reveals it — in c
 | a secret in the repository is readable by everyone who can read it, and by every copy made of it. | [security] |
 
 ### secret-and-personal-data-kept-out-of-output · MUST
-A secret never appears in a log, an error, a URL, a build artefact, test data or a document, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's. Personal data appears in none of them; a record is named there by an identifier that carries no personal data, and an error that reaches anyone but the data’s owner carries such identifiers, never the values it rejected. An audit record kept for security holds the identifier and the address its event needs, and nothing more.
+A secret never appears in a log, an error, a URL or a build artefact, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's. Personal data appears in none of them, nor in test data or a document; a record is named there by an identifier that carries no personal data, and an error that reaches anyone but the data’s owner carries such identifiers, never the values it rejected. An audit record kept for security holds the identifier and the network address its event needs, and nothing more.
 
 | Why | Tags |
 |---|---|
@@ -44,7 +44,7 @@ A credential belongs to one identity and one purpose per environment, with only 
 
 | Why | Tags |
 |---|---|
-| a narrow, short-lived credential limits what a leak can do, and one identity per credential says who did what. | [security] |
+| a credential with only the permissions its job needs limits what a leak can do, and one identity per credential says who did what. | [security] |
 
 ### credential-documented-and-short-lived · SHOULD
 A credential is documented beside its use, and short-lived where the platform issues such.

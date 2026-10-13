@@ -28,10 +28,10 @@ block	cli	platform	Commands, flags, streams, exit codes and help of a command li
 block	mobile	platform	Storage, links, traffic and releases of an app on a phone or tablet.	architecture/mobile.md	access-control design-system i18n privacy remote-data remote-service ui	untrusted-client		false				**
 block	server	platform	A long-running process a host starts, routes to, restarts and stops.	architecture/server.md	http-server messaging observability owned-data			false				**
 block	css	language	Stylesheets: cascade layers, selectors, custom properties and classes.	architecture/css.md	browser design-system i18n ui architecture/ui			false				**/*.css
-block	markdown	language	Markdown documents: headings, links, images and code blocks.					false				**/*.md
+block	markdown	language	Markdown documents: headings, links, images and code blocks.					false				**/*.md **/*.markdown **/*.mdown
 block	python	language	Python's modules, types, async code, specs and dependencies.	architecture/python.md	distribution yaml architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
 block	shell	language	Shell scripts: their shell, failures, quoting and temporary files.					false				**/*.sh
-block	typescript	language	TypeScript's forms of modules, types, errors, effects and packages.	types.md architecture/typescript.md	css distribution i18n shell workspace yaml architecture/cli architecture/ui architecture/workspace workflow/distribution			false				**/*.ts **/*.tsx package.json
+block	typescript	language	TypeScript's forms of modules, types, errors, effects and packages.	types.md architecture/typescript.md	css distribution i18n shell workspace yaml architecture/cli architecture/ui architecture/workspace workflow/distribution			false				**/*.ts **/*.tsx **/*.mts **/*.cts package.json
 block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extension.		shell			false				**/*.yaml **/*.yml
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	architecture/_react.md	remote-data	ui typescript		true	react-dom react-native			**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false				.betterleaks.toml .betterleaksignore
@@ -94,7 +94,7 @@ block	zod	implementation	zod parses untrusted input into the program's types.		c
 chapter	core	agents.md	a person or an agent at work on the repository.
 chapter	core	changes.md	a change, one step of a task's work: its scope, what it carries, its hand-back.
 chapter	core	code.md	any code no other chapter governs.
-chapter	core	comments.md	a comment, the documentation of an entry, a mark of deprecation.
+chapter	core	comments.md	a comment, the documentation of an exported declaration, a mark of deprecation.
 chapter	core	dependencies.md	packages, downloads and tools taken from others.
 chapter	core	effects.md	calls, resources, concurrency, writes, stopping, records, configuration.
 chapter	core	errors.md	a failure: raised, caught, carried, shown.
@@ -189,7 +189,7 @@ rule	expected-failure-is-part-of-the-contract	core	blocks/core/errors.md		SHOULD
 rule	failure-told-apart-by-code	core	blocks/core/errors.md		MUST	errors			true
 rule	parse-failure-lists-every-problem	core	blocks/core/errors.md		SHOULD	errors			true
 rule	catch-handles-only-what-it-recognises	core	blocks/core/errors.md		MUST	errors			true
-rule	optional-part-isolated-from-its-faults	core	blocks/core/errors.md		SHOULD	errors			true
+rule	optional-part-isolated-from-its-faults	core	blocks/core/errors.md		MUST	errors			true
 rule	error-keeps-its-cause	core	blocks/core/errors.md		MUST	errors			true
 rule	thrown-value-is-an-error	core	blocks/core/errors.md		MUST	errors			true
 rule	failure-logged-once	core	blocks/core/errors.md		SHOULD	errors			true
@@ -309,7 +309,7 @@ rule	illegal-state-unrepresentable	core	blocks/core/types.md		MUST				true
 rule	closed-set-branched-exhaustively	core	blocks/core/types.md		MUST				true
 rule	identifier-branded-by-entity	core	blocks/core/types.md		SHOULD				true
 rule	shape-composed-of-small-shapes	core	blocks/core/types.md		SHOULD				true
-rule	type-lives-with-its-consumer	core	blocks/core/types.md		SHOULD				true
+rule	type-lives-with-its-consumer	core	blocks/core/types.md		MUST				true
 rule	declared-values-never-typed-again	core	blocks/core/types.md		MUST				true
 rule	outside-vocabulary-reached-through-a-total-table	core	blocks/core/types.md		MUST	data			true
 rule	enumeration-others-read-declared-extensible	core	blocks/core/types.md		MUST	data			true
@@ -387,7 +387,7 @@ rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
 rule	design-settled-with-its-person-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
 rule	agent-writes-tests-first-from-a-description	core	blocks/core/workflow/agents.md		SHOULD	testing	workflow		true
-rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/agents.md		MUST		workflow		true
+rule	person-decides-what-is-committed-or-shipped	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
@@ -972,8 +972,8 @@ rule	change-request-lands-as-one-commit	version-control	blocks/domains/version-c
 rule	change-request-reviewable-in-one-sitting	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD		workflow	change-limited-to-its-task	true
 rule	change-request-description-holds-the-reason	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow		true
 rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD		workflow		true
-rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow	person-decides-what-is-recorded-or-shipped	true
-rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	person-decides-what-is-recorded-or-shipped	true
+rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow	person-decides-what-is-committed-or-shipped	true
+rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	person-decides-what-is-committed-or-shipped	true
 rule	agent-never-force-pushes	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	agent-asks-before-an-irreversible-action	true
 rule	workspace-root-private	workspace	blocks/domains/workspace/workspace.md		MUST				true
 rule	root-holds-only-the-workspace	workspace	blocks/domains/workspace/workspace.md		SHOULD				true
@@ -1056,7 +1056,7 @@ rule	language-declared-by-lang	browser	blocks/contexts/platforms/browser/with/ui
 rule	rendering-server-only-delivers	browser	blocks/contexts/platforms/browser/architecture/with/server.md	server	MUST	security	architecture		true
 rule	document-metadata-owned-by-screen	browser	blocks/contexts/platforms/browser/architecture/with/ui.md	ui	SHOULD		architecture		true
 rule	third-party-script-declared-where-it-is-used	browser	blocks/contexts/platforms/browser/architecture/with/ui.md	ui	SHOULD	performance	architecture		true
-rule	exit-codes-from-one-map	cli	blocks/contexts/platforms/cli/cli.md		MUST	errors ux			true
+rule	exit-codes-from-one-map	cli	blocks/contexts/platforms/cli/cli.md		MUST	errors ux		failure-told-apart-by-code	true
 rule	unknown-command-never-guessed	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux errors			true
 rule	standard-output-holds-only-data	cli	blocks/contexts/platforms/cli/cli.md		MUST	ux security		diagnostics-written-through-a-logger	true
 rule	interrupt-ends-the-run-promptly	cli	blocks/contexts/platforms/cli/cli.md		MUST	ux errors data		program-stops-cleanly	true
@@ -1176,7 +1176,7 @@ rule	class-declared-is-used	css	blocks/contexts/languages/css/css.md		MUST			dea
 rule	class-name-in-kebab-case	css	blocks/contexts/languages/css/css.md		SHOULD			name-case-by-kind	true
 rule	class-named-for-what-the-element-is	css	blocks/contexts/languages/css/css.md		SHOULD			name-reveals-intent	true
 rule	custom-property-read-where-defined	css	blocks/contexts/languages/css/css.md		MUST				true
-rule	custom-property-registered-where-typed	css	blocks/contexts/languages/css/css.md		MUST				true
+rule	animated-custom-property-registered	css	blocks/contexts/languages/css/css.md		MUST				true
 rule	style-rule-in-a-named-layer	css	blocks/contexts/languages/css/css.md		MUST				true
 rule	layer-order-declared-once	css	blocks/contexts/languages/css/css.md		SHOULD				true
 rule	declaration-never-important	css	blocks/contexts/languages/css/css.md		MUST				true
@@ -1194,6 +1194,11 @@ rule	custom-property-spells-its-token	css	blocks/contexts/languages/css/with/des
 rule	theme-colour-written-in-oklch	css	blocks/contexts/languages/css/with/design-system.md	design-system	SHOULD	ux a11y		mode-values-derived-by-rule	true
 rule	mode-colour-written-as-light-dark	css	blocks/contexts/languages/css/with/design-system.md	design-system	SHOULD	ux			true
 rule	inline-side-written-logically	css	blocks/contexts/languages/css/with/i18n.md	i18n	SHOULD	ux			true
+rule	breakpoints-add-to-the-smallest-screen	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD				true
+rule	stylesheet-value-read-from-the-theme	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	ux		tokens-single-source-of-appearance	true
+rule	component-adapts-by-container-query	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD	ux		component-sizes-to-its-container	true
+rule	component-styles-scoped-to-its-root	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD				true
+rule	global-style-only-in-the-entry-stylesheet	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD				true
 rule	focus-ring-drawn-as-an-outline	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	a11y		focus-always-visible	true
 rule	sticky-content-reserves-scroll-padding	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	a11y		focus-always-visible	true
 rule	type-sized-in-rem	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	a11y			true
@@ -1202,11 +1207,6 @@ rule	content-reflows-at-320-css-pixels	css	blocks/contexts/languages/css/with/ui
 rule	hover-reveal-also-on-focus	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	a11y ux		hover-content-reachable-and-dismissible	true
 rule	hover-effect-behind-hover-media	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD	ux			true
 rule	motion-reduced-under-reduced-motion	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	a11y		reduced-motion-honoured	true
-rule	stylesheet-value-read-from-the-theme	css	blocks/contexts/languages/css/with/ui.md	ui	MUST	ux		tokens-single-source-of-appearance	true
-rule	component-adapts-by-container-query	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD	ux		component-sizes-to-its-container	true
-rule	component-styles-scoped-to-its-root	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD				true
-rule	global-style-only-in-the-entry-stylesheet	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD				true
-rule	breakpoints-add-to-the-smallest-screen	css	blocks/contexts/languages/css/with/ui.md	ui	SHOULD				true
 rule	component-styles-in-its-folder	css	blocks/contexts/languages/css/architecture/with/ui.md	ui	MUST		architecture	component-in-its-own-folder	true
 rule	document-written-in-commonmark-and-gfm	markdown	blocks/contexts/languages/markdown/markdown.md		SHOULD				true
 rule	raw-html-only-where-markdown-has-no-form	markdown	blocks/contexts/languages/markdown/markdown.md		SHOULD				true
@@ -1228,7 +1228,6 @@ rule	boolean-parameter-keyword-only	python	blocks/contexts/languages/python/pyth
 rule	overrides-marked-by-decorator	python	blocks/contexts/languages/python/python.md		MUST			override-marked-where-declared	true
 rule	module-level-state-never-mutable	python	blocks/contexts/languages/python/python.md		MUST			state-never-global-and-mutable	true
 rule	parameter-default-never-mutable	python	blocks/contexts/languages/python/python.md		MUST			state-never-global-and-mutable	true
-rule	implementation-never-inherits-its-contract	python	blocks/contexts/languages/python/python.md		SHOULD			behaviour-composed-not-inherited	true
 rule	import-never-a-wildcard	python	blocks/contexts/languages/python/python.md		MUST				true
 rule	sys-path-never-touched	python	blocks/contexts/languages/python/python.md		MUST				true
 rule	absence-spelled-none	python	blocks/contexts/languages/python/python.md		MUST	data		absence-shown-by-the-type	true
@@ -1237,8 +1236,8 @@ rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python
 rule	narrowing-function-returns-typeis	python	blocks/contexts/languages/python/python.md		MUST			narrowing-proves-all-it-claims	true
 rule	staged-value-is-a-union-of-dataclasses	python	blocks/contexts/languages/python/python.md		MUST			illegal-state-unrepresentable	true
 rule	closed-set-match-ends-in-assert-never	python	blocks/contexts/languages/python/python.md		MUST			closed-set-branched-exhaustively	true
-rule	enumeration-is-a-unique-str-enum	python	blocks/contexts/languages/python/python.md		SHOULD				true
-rule	outside-number-set-is-an-int-enum	python	blocks/contexts/languages/python/python.md		SHOULD				true
+rule	enumeration-is-a-unique-str-enum	python	blocks/contexts/languages/python/python.md		MUST				true
+rule	outside-number-set-is-an-int-enum	python	blocks/contexts/languages/python/python.md		MUST				true
 rule	identifier-is-a-new-type	python	blocks/contexts/languages/python/python.md		SHOULD			identifier-branded-by-entity	true
 rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/python.md		MUST				true
 rule	annotation-written-unquoted	python	blocks/contexts/languages/python/python.md		SHOULD				true
@@ -1264,6 +1263,7 @@ rule	thread-shared-state-guarded-by-a-lock	python	blocks/contexts/languages/pyth
 rule	logger-got-by-module-name	python	blocks/contexts/languages/python/python.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	process-started-with-an-argument-list	python	blocks/contexts/languages/python/python.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	interpreter-input-never-formatted-into-text	python	blocks/contexts/languages/python/python.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
+rule	text-never-run-as-code	python	blocks/contexts/languages/python/python.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	outside-path-confined-after-resolve	python	blocks/contexts/languages/python/python.md		MUST	security		outside-path-confined-to-its-root	true
 rule	child-process-given-its-own-env	python	blocks/contexts/languages/python/python.md		MUST	security		child-process-environment-built-for-it	true
 rule	outside-data-never-unpickled	python	blocks/contexts/languages/python/python.md		MUST	security		outside-input-never-rebuilt-as-objects	true
@@ -1287,7 +1287,6 @@ rule	case-function-holds-no-branch	python	blocks/contexts/languages/python/pytho
 rule	type-checking-import-held-to-the-layers	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	import-points-inward	true
 rule	program-entry-is-main-of-main-py	python	blocks/contexts/languages/python/architecture/python.md		SHOULD		architecture	package-laid-out-by-the-tree	true
 rule	role-suffix-spelled-in-snake-case	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	file-carries-its-role-suffix	true
-rule	role-folder-spelled-in-snake-case	python	blocks/contexts/languages/python/architecture/python.md		SHOULD		architecture	folder-takes-its-layer-or-role-name	true
 rule	relative-imports-stay-in-the-module	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	module-files-import-each-other-directly	true
 rule	surface-is-init-with-sorted-all	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	surface-only-re-exports	true
 rule	layer-init-empty	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	surface-only-on-a-module-or-one-kind	true
@@ -1300,7 +1299,9 @@ rule	integration-is-a-submodule-and-an-extra	python	blocks/contexts/languages/py
 rule	dependency-declared-with-a-floor	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD			manifest-declares-dependencies-by-range	true
 rule	requires-python-floor-in-the-support-window	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD			runtime-floor-within-the-ecosystems-support-window	true
 rule	classifiers-list-every-supported-minor	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD				true
+rule	yaml-read-by-a-yaml-1-2-loader	python	blocks/contexts/languages/python/with/yaml.md	yaml	SHOULD	data		reader-resolves-scalars-by-the-core-schema	true
 rule	yaml-from-outside-loaded-by-a-safe-loader-only	python	blocks/contexts/languages/python/with/yaml.md	yaml	MUST	security		outside-yaml-loaded-by-a-safe-loader	true
+rule	yaml-from-outside-refused-with-an-alias	python	blocks/contexts/languages/python/with/yaml.md	yaml	MUST	security performance		alias-expansion-bounded	true
 rule	command-module-named-with-the-cli-suffix	python	blocks/contexts/languages/python/architecture/with/cli.md	cli	MUST		architecture	cli-folder-holds-one-file-per-command	true
 rule	unit-names-spelled-under-the-scope	python	blocks/contexts/languages/python/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
 rule	requires-python-raised-in-a-minor-or-a-major	python	blocks/contexts/languages/python/workflow/with/distribution.md	distribution	MUST		workflow	runtime-floor-never-raised-in-a-patch	true
@@ -1333,6 +1334,7 @@ rule	alias-declared-in-package-imports	typescript	blocks/contexts/languages/type
 rule	hash-alias-for-the-source-root	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	module-exports-by-name	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	export-never-reassignable	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			state-never-global-and-mutable	true
+rule	module-level-value-never-changed	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			state-never-global-and-mutable	true
 rule	overrides-marked-by-keyword	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			override-marked-where-declared	true
 rule	mapped-error-passes-its-cause	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors		error-keeps-its-cause	true
 rule	caught-value-recognised-before-use	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors		catch-handles-only-what-it-recognises	true
@@ -1347,7 +1349,7 @@ rule	child-process-started-without-a-shell	typescript	blocks/contexts/languages/
 rule	outside-path-checked-by-relative	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-path-confined-to-its-root	true
 rule	child-process-given-an-env-of-its-own	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		child-process-environment-built-for-it	true
 rule	code-never-run-from-a-string	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
-rule	outside-keyed-collection-is-a-map	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security			true
+rule	outside-keyed-collection-is-a-map	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-input-never-rebuilt-as-objects	true
 rule	guarding-random-value-from-web-crypto	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	secret-compared-by-timing-safe-equal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
@@ -1377,7 +1379,7 @@ rule	brand-is-a-unique-symbol-key	typescript	blocks/contexts/languages/typescrip
 rule	brand-set-only-where-minted-or-parsed	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			identifier-branded-by-entity	true
 rule	invariant-value-is-a-branded-type	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		invariant-value-is-plain-immutable-data	true
 rule	semantic-alias-names-a-shared-meaning	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
-rule	program-type-never-declared-ambient	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			type-lives-with-its-consumer	true
+rule	program-type-never-declared-ambient	typescript	blocks/contexts/languages/typescript/types.md		MUST			type-lives-with-its-consumer	true
 rule	conformance-checked-by-satisfies	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			value-immutable-by-default	true
@@ -1388,6 +1390,7 @@ rule	date-and-time-are-temporal-values	typescript	blocks/contexts/languages/type
 rule	duration-measured-by-performance-now	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		duration-measured-on-a-monotonic-clock	true
 rule	exact-quantity-counted-in-integer-minor-units	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		exact-quantity-never-binary-float	true
 rule	enum-never-declared-const	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
+rule	timer-set-only-by-the-edge-and-binding-units	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	effects-held-only-by-the-edge	true
 rule	hash-imports-leave-the-module	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	module-files-import-each-other-directly	true
 rule	role-suffix-spelled-after-a-dot	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	file-carries-its-role-suffix	true
 rule	surface-is-the-folders-index-ts	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	surface-only-on-a-module-or-one-kind	true
@@ -1664,6 +1667,7 @@ rule	relative-import-kept-in-its-feature	python-check	blocks/implementations/pyt
 rule	import-past-a-surface-refused	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	module-files-import-each-other-directly	true
 rule	packages-kept-to-their-homes	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	effect-modules-kept-at-the-edge	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST		architecture	effects-held-only-by-the-edge	true
+rule	environment-read-held-to-the-root	python-check	blocks/implementations/python-check/architecture/python-check.md		MUST	security	architecture	environment-read-only-under-root	true
 rule	dangerously-set-inner-html-never-used	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	security		raw-html-never-reaches-the-dom	true
 rule	one-writer-of-the-head	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	ux		browser-resources-have-one-writer	true
 rule	aria-attributes-as-the-dom-spells-them	react-dom	blocks/implementations/react-dom/react-dom.md		MUST	a11y			true

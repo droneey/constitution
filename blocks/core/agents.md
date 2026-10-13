@@ -12,14 +12,14 @@ The consent an agent needs from its person is a go-ahead given where the agent a
 | consent is given where the person who answers for an action sees it asked, and only for what they saw. | [security] |
 
 ### agent-asks-before-an-irreversible-action · MUST
-An agent takes no irreversible action — destroying, spending money, changing a live system, sending something outward in someone’s name — without a person’s consent to that action; reading from an outside service is no such action.
+An agent takes no irreversible action — destroying, spending money, changing a live system — one others use, or whose data outlives the task — sending something outward in someone’s name — without a person’s consent to that action; reading from an outside service is no such action.
 
 | Why | Tags |
 |---|---|
 | these actions are hard to undo or reach beyond the change, so the person who answers for them decides. | [security] |
 
 ### unattended-agent-acts-within-a-standing-grant · MUST
-An agent run with no person present — in a pipeline, on a schedule, from an issue — acts only within a standing grant — an entry of the project's agent settings, the same for every person, that names the run's task, the actions it may take and their bounds — under an identity scoped to its task, and what lies outside the grant waits for a person.
+An agent run with no person present — in a pipeline, on a schedule, from an issue — acts only within a standing grant — a record of the project's agent settings, the same for every person, that names the run's task, the actions it may take and their bounds — under an identity scoped to its task, and what lies outside the grant waits for a person.
 
 | Why | Tags |
 |---|---|
@@ -33,7 +33,7 @@ The project’s permission settings for agents, deny rules included, live in the
 | settings kept with the project give every person’s agent the same limits. | [security] |
 
 ### agent-asks-before-a-consequential-change · MUST
-An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
+An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a database schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
 
 | Why | Tags |
 |---|---|

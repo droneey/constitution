@@ -15,7 +15,7 @@ governs: ["**"]
 
 ## Errors
 
-### exit-codes-from-one-map · MUST
+### exit-codes-from-one-map → failure-told-apart-by-code · MUST
 Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 128 plus the number of the signal that ended a run — 130 an interrupt, 141 a closed pipe, 143 a termination request (`SIGTERM`); any other outcome a caller branches on takes a code of its own in the map.
 
 | Why | Tags |
@@ -60,7 +60,7 @@ A setting given in several places is taken from the flag first, then the environ
 | the most specific and most recent choice wins, so a user overrides a file for one run, and a project overrides a user's defaults, without editing either. | [ux] |
 
 ### user-file-kept-in-the-systems-base-directories · SHOULD
-Configuration, cache and data a program keeps for its user live in the system's base directory for each kind — the XDG directories on Linux and macOS, and the platform's own on Windows, an `XDG_*` variable that is set honoured on every system — never in a dotfile at the root of the home directory.
+Configuration, cache and data a program keeps for its user live in the system's base directory for each kind — the XDG directories on Linux, and on macOS too, and the platform's own on Windows, an `XDG_*` variable that is set honoured on every system — never in a dotfile at the root of the home directory.
 
 | Why | Tags |
 |---|---|
@@ -69,7 +69,7 @@ Configuration, cache and data a program keeps for its user live in the system's 
 ## Security
 
 ### output-masks-every-known-secret → secret-and-personal-data-kept-out-of-output · MUST
-Every value the run knows to be secret is masked in all output, an engine's output included, before it is printed.
+Every value the run knows to be secret is masked in all output, that of the tools it runs included, before it is printed.
 
 | Why | Tags |
 |---|---|
@@ -85,7 +85,7 @@ A secret reaches a command through a file, standard input, the system's credenti
 ## Changes
 
 ### json-output-changed-only-by-adding-fields → format-changed-in-steps · MUST
-A command's JSON output changes by gaining fields; a field is removed, renamed or retyped only in a major release, after a release that offered its replacement beside it.
+A command's JSON output changes by gaining fields; a field is removed, renamed or retyped only after a release that offered its replacement beside it.
 
 | Why | Tags |
 |---|---|

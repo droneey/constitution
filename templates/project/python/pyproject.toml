@@ -119,6 +119,13 @@ source_modules = ["*.features.*.domain"]
 forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
+# python-check refuses an effect imported below the edge; this contract follows the imports through a lib.
+name = "effects-held-only-by-the-edge"
+type = "forbidden"
+source_modules = ["*.composition", "*.contracts", "*.features.*.app", "*.features.*.domain", "*.kernel", "*.shared"]
+forbidden_modules = ["ctypes", "curses", "dbm", "fcntl", "fileinput", "ftplib", "getpass", "glob", "grp", "imaplib", "mmap", "multiprocessing", "os", "platform", "poplib", "pty", "pwd", "random", "resource", "runpy", "secrets", "select", "selectors", "shelve", "shutil", "signal", "smtplib", "socket", "socketserver", "sqlite3", "ssl", "subprocess", "syslog", "tempfile", "termios", "time", "tty", "webbrowser", "wsgiref", "xmlrpc"]
+
+[[tool.importlinter.contracts]]
 name = "domain-imports-no-logging"
 type = "forbidden"
 source_modules = ["*.features.*.domain"]

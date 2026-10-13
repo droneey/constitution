@@ -73,7 +73,7 @@ In Bash, a function declares every variable it sets as `local`.
 ## Errors
 
 ### script-stops-on-a-failed-command → failure-is-expected-or-defect · MUST
-A Bash script runs under `set -euo pipefail`, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command.
+A Bash script runs under `set -euo pipefail` and `shopt -s inherit_errexit`, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command.
 
 | Why | Tags |
 |---|---|
@@ -89,7 +89,7 @@ A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT`
 | a fixed name collides with other runs and can be planted by another user, and only the trap removes the file when the script fails or is interrupted. | [security] |
 
 ### script-diagnostics-on-standard-error → diagnostics-written-through-a-logger · MUST
-A script writes its diagnostics and errors to standard error, and only its output to standard output.
+A script writes its diagnostics and errors through one function of its own that prints to standard error — `log() { printf '%s\n' "$*" >&2; }` — and only its output to standard output.
 
 | Why | Tags |
 |---|---|
@@ -112,7 +112,7 @@ A committed script never turns on `set -x`.
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
-A script exports no variable its commands do not need, passes a secret only to the one command that reads it — `TOKEN="$token" command`, or on its standard input — and starts every command that does not need a secret it received with that name unset, by `env -u`, or under `env -i` with the names it needs.
+A script reads a secret it received into a variable it does not export and unsets the name it came by — `token="$TOKEN"; unset TOKEN` — exports no variable its commands do not need, and passes a secret only to the one command that reads it: `TOKEN="$token" command`, or on its standard input.
 
 | Why | Tags |
 |---|---|

@@ -105,6 +105,22 @@
     },
     {
       "includes": [
+        "**/*.gen.*",
+        "**/*.gen/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+          },
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
         "**/*.test.tsx",

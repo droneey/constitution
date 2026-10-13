@@ -5,7 +5,7 @@
 ## Calls and resources
 
 ### async-work-awaited-or-held-by-a-scope · MUST
-Asynchronous work is awaited, or started within a scope that waits for it, cancels it and receives its failures — work that must outlive its caller in a longer-lived scope such as a supervisor; no task outlives every scope.
+Asynchronous work is awaited, or started within a scope that waits for it, cancels it and receives its failures — work that must outlive its caller is started in a longer-lived scope, such as a supervisor; no task outlives every scope.
 
 | Why | Tags |
 |---|---|
@@ -112,14 +112,14 @@ A business process that spans several programs or transactions keeps its state i
 | no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
-An operation run by hand or by a pipeline against a live system — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
+An operation run by hand or by a pipeline against a live system — one others use, or whose data outlives the task: a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
 
 | Why | Tags |
 |---|---|
 | an irreversible operation run by mistake cannot be undone by a better test. | [security, ux] |
 
 ### shared-resource-has-one-writer · MUST
-Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer, a standard stream one per kind of record it carries: the logger for diagnostics, one writer for its user's output.
+Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer, a standard stream one per kind of record it carries: the logger for diagnostics, one writer for its user's output. A block that brings its own writer for such a resource claims it in a rule, and the writer the program would otherwise use yields to it.
 
 | Why | Tags |
 |---|---|

@@ -5,11 +5,11 @@
 ## Modules
 
 ### module-is-deep · SHOULD
-A module hides much behind a small interface: few operations, each doing much its callers need not know. A unit that only forwards a call to the next one adds nothing and is removed, save an entry that re-exports and a seam at a boundary with something outside.
+A module hides much behind a small interface: few operations, each doing much its callers need not know. A unit that only forwards a call to the next one adds nothing and is removed, save a surface that re-exports, and a seam at a boundary with something outside, another part of the program's own included.
 
 | Why | Tags |
 |---|---|
-| a deep module spares its callers the details it hides; a shallow one makes them learn an entry nearly as large as the work behind it. | [] |
+| a deep module spares its callers the details it hides; a shallow one makes them learn an interface nearly as large as the work behind it. | [] |
 
 ### module-imports-form-no-cycle · MUST
 Files and modules form no import cycle, direct or through a chain.

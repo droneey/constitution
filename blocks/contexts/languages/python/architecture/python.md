@@ -21,21 +21,14 @@ A program's entry is the function `main()` of `main.py` at the top of the import
 | the program has one way in, whether it is run by its script's name, by `python -m` or by its host, and that way in is found in one place. | [] |
 
 ### role-suffix-spelled-in-snake-case → file-carries-its-role-suffix · MUST
-A role file is `<name>_<role>.py`, its role the vocabulary's suffix in snake_case: `_entity`, `_value_object`, `_error`, `_repository`, `_port`, `_adapter`, `_use_case`, `_utils`, `_types`, `_constants`, `_model`, `_config` — `order_entity.py`, `orders_query_repository.py`.
+A role file is `<name>_<role>.py`, its role the vocabulary's suffix in snake_case — `order_entity.py`, `orders_query_repository.py`.
 
 | Why | Tags |
 |---|---|
 | a module's name allows no dot, so the role is its last word, spelled the same in every folder. | [] |
 
-### role-folder-spelled-in-snake-case → folder-takes-its-layer-or-role-name · SHOULD
-A layer or role folder whose name has more than one word is spelled in snake_case: `value_objects/`, `use_cases/`.
-
-| Why | Tags |
-|---|---|
-| a folder of the import package is a package, and a package's name allows no hyphen. | [] |
-
 ### relative-imports-stay-in-the-module → module-files-import-each-other-directly · MUST
-An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name; files inside one module import each other by relative path, a role folder of a feature's domain or another module of a layer through its surface, and a relative import never climbs out of the module. A module never imports itself by its absolute path.
+An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name; Files inside one module import each other by relative path, and a relative import never climbs out of the module. A role folder of a feature's domain, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
 
 | Why | Tags |
 |---|---|

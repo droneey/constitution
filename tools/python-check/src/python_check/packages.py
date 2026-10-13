@@ -9,6 +9,7 @@ from python_check.imports import import_root_of
 from python_check.settings import Settings
 
 FEATURES = 'features'
+ROOT = 'root'
 ENTRYPOINTS = 'entrypoints'
 LAYERS = frozenset(
   {
@@ -20,7 +21,7 @@ LAYERS = frozenset(
     'integrations',
     'kernel',
     'libs',
-    'root',
+    ROOT,
     'shared',
   }
 )
@@ -45,7 +46,7 @@ ROLES = frozenset(
   }
 )
 PURE = frozenset({'contracts', 'kernel'})
-EDGE = frozenset({'adapters', 'integrations', 'libs', 'root'})
+EDGE = frozenset({'adapters', 'integrations', 'libs', ROOT})
 ENTRIES = frozenset({'__main__', 'main'})
 # The word a home names the whole edge by.
 EDGE_HOME = 'edge'
@@ -135,6 +136,12 @@ EFFECT_NAMES = frozenset(
 )
 # A call through a class imported from datetime, such as `datetime.now()`.
 DATETIME = 'datetime'
+# A timer, which a binding unit alone may hold to schedule its own work.
+TIMERS = frozenset({'asyncio.sleep', 'threading.Timer'})
+# What reads or changes the environment, which only the root and the entry files reach.
+ENVIRONMENT = frozenset(
+  {'os.environ', 'os.environb', 'os.getenv', 'os.getenvb', 'os.putenv', 'os.unsetenv'}
+)
 
 
 class Role(StrEnum):
@@ -204,8 +211,12 @@ def _named(node: ast.AST) -> tuple[str, ...]:
       return ()
 
 
-def _effect(node: ast.AST) -> str | None:
-  return next((name for name in _named(node) if name in EFFECT_NAMES), None)
+def _effect(node: ast.AST, *, effects: frozenset[str]) -> str | None:
+  return next((name for name in _named(node) if name in effects), None)
+
+
+def _binding(folders: tuple[str, ...]) -> bool:
+  return folders[:1] == (FEATURES,) and folders[2:3] == ('app',)
 
 
 def _message(*, home: tuple[str, ...] | None, package: str, role: Role, where: str) -> str | None:
@@ -272,6 +283,7 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     for package in _packages(node)
     if (message := _package_message(importer=importer, package=package)) is not None
   )
+  effects_here = EFFECT_NAMES if _binding(root.package) else EFFECT_NAMES | TIMERS
   effects = tuple(
     Finding(
       path=path,
@@ -281,7 +293,21 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     for node in ast.walk(tree)
     if importer.role is not Role.EDGE
     and isinstance(node, ast.Import | ast.ImportFrom | ast.Attribute | ast.Call)
-    and (name := _effect(node)) is not None
+    and (name := _effect(node, effects=effects_here)) is not None
   )
 
-  return packages + effects
+  environment = tuple(
+    Finding(
+      path=path,
+      line=node.lineno,
+      message=f'{importer.where} reads the environment through {name}; only the root reads it',
+    )
+    for node in ast.walk(tree)
+    if importer.role is Role.EDGE
+    and root.package[:1] != (ROOT,)
+    and not _is_entry(folders=root.package, stem=path.stem)
+    and isinstance(node, ast.Import | ast.ImportFrom | ast.Attribute)
+    and (name := next((name for name in _named(node) if name in ENVIRONMENT), None)) is not None
+  )
+
+  return packages + effects + environment

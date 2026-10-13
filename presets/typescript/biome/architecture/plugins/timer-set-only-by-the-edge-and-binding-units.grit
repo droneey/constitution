@@ -1,0 +1,9 @@
+language js
+
+or {
+  `setTimeout($...)`,
+  `setInterval($...)`,
+  `setImmediate($...)`
+} as $call where {
+  register_diagnostic(span=$call, message="A timer outside the edge and the binding units: the clock reaches this code through a port", severity="error")
+}

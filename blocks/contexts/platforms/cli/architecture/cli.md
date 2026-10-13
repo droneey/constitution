@@ -14,7 +14,7 @@ A flag two or more commands take is declared once, in `shared/`, and every comma
 ## Layout
 
 ### cli-folder-holds-one-file-per-command → set-folder-holds-only-members · SHOULD
-The delivery layer of a command line is `cli/`, the set folder of its commands: one file for each command, carrying the `cli` role in the language's spelling, and nothing else.
+The delivery layer of a command line is `cli/`, the set folder of its commands: one file for each command, carrying the `cli` role in the language's spelling, and the surface that offers them, and nothing else. Its name is singular to keep it apart from the domain's `commands/`.
 
 | Why | Tags |
 |---|---|

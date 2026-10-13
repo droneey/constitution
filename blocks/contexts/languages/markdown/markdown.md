@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [Markdown, CommonMark]
-governs: ["**/*.md"]
+governs: ["**/*.md", "**/*.markdown", "**/*.mdown"]
 ---
 
 # Markdown
@@ -28,8 +28,6 @@ A document writes raw HTML only for what Markdown has no syntax for, such as `<d
 | Why | Tags |
 |---|---|
 | raw HTML is noise in the plain text people and agents read, and a renderer that strips it loses the content inside. | [] |
-
-## Security
 
 ## Layout
 

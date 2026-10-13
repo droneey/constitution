@@ -1,6 +1,6 @@
 # Comments
 
-> Governs a comment, the documentation of an entry, a mark of deprecation.
+> Governs a comment, the documentation of an exported declaration, a mark of deprecation.
 
 ## Comments
 

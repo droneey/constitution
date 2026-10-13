@@ -83,7 +83,7 @@ A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps it
 
 | Why | Tags |
 |---|---|
-| a `disabled` button drops its focus to the page and leaves the reach of assistive technology, while `aria-disabled` keeps it in reach and says why it does nothing. | [a11y] |
+| a `disabled` button drops its focus to the page and leaves the order of the keyboard, while `aria-disabled` keeps it focusable and says why it does nothing. | [a11y] |
 
 ## Accessibility
 

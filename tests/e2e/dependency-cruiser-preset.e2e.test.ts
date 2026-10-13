@@ -164,6 +164,19 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'effects-reached-only-from-the-edge',
     },
     {
+      condition: "a feature's application layer reads a file through a lib",
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+          from: '../../../../../../libs/files',
+          name: 'readText',
+        }),
+        'src/libs/files/index.ts': "export { readText } from './read-text';\n",
+        'src/libs/files/read-text.ts':
+          "import { readFileSync } from 'node:fs';\nexport const readText = readFileSync;\n",
+      },
+      rule: 'effects-reached-only-from-the-edge',
+    },
+    {
       condition: "a feature's application layer opens a database through Node.js",
       files: {
         'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':

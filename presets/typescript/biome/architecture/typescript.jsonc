@@ -22,6 +22,18 @@
       "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
       "includes": [
         "**/index.ts",
+        "**/index.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/timer-set-only-by-the-edge-and-binding-units.grit",
+      "includes": [
+        "**/features/*/domain/**",
+        "**/kernel/**",
+        "**/contracts/**",
+        "**/shared/**",
+        "**/composition/**",
+        "!**/__tests__/**",
       ],
     },
   ],

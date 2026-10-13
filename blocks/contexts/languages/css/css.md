@@ -47,7 +47,7 @@ A custom property is read only through `var()`, and only where the theme, or a r
 |---|---|
 | a custom property nothing defines resolves to an invalid value, and the declaration that reads it silently falls back to the inherited or initial value. | [] |
 
-### custom-property-registered-where-typed · MUST
+### animated-custom-property-registered · MUST
 A custom property that is animated or transitioned is registered by `@property` with its syntax, its inheritance and a valid initial value.
 
 | Why | Tags |

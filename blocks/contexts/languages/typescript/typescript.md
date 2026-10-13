@@ -6,12 +6,12 @@ extends: null
 abstract: false
 languages: []
 dictionary: [TypeScript, .ts, .tsx, .d.ts, index.ts, main.ts, package.json, JSDoc]
-governs: ["**/*.ts", "**/*.tsx", package.json]
+governs: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", package.json]
 ---
 
 # TypeScript
 
-> Programs written in TypeScript: their source files and imports, their types, failures and effects, and the `package.json` that declares them. Each rule gives a rule of core, or of a block this one meets, the form it takes in TypeScript.
+> Programs written in TypeScript: their source files and imports, their types, failures and effects, and the `package.json` that declares them. Most rules give a rule of core, or of a block this one meets, the form it takes in TypeScript.
 
 ## Code
 
@@ -92,11 +92,11 @@ An import or a re-export whose every name is used only as a type is written `imp
 | the line then says it vanishes from the running program, so it never loads a module for its side effects nor closes a cycle at run time. | [] |
 
 ### alias-declared-in-package-imports · MUST
-Every import alias is declared once, in `imports` of `package.json`, the field the runtime reads; a tool that cannot read `imports` mirrors it word for word, and no configuration declares an alias of its own.
+Every import alias is declared once, in `imports` of `package.json`; a tool that cannot read `imports` mirrors it word for word, and no configuration declares an alias of its own.
 
 | Why | Tags |
 |---|---|
-| one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | [] |
+| one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. Node.js and the compiler read `imports`, and a runtime that reads a `#/` alias only through `paths` takes it from the mirror. | [] |
 
 ### hash-alias-for-the-source-root · MUST
 The source root is aliased `#/`: `"#/*": "./src/*"` in `imports`.
@@ -118,6 +118,13 @@ No module exports a binding declared by `let` or `var`.
 | Why | Tags |
 |---|---|
 | an exported binding that can be reassigned is state every importer shares without seeing who changes it, and it carries over from one spec into the next. | [] |
+
+### module-level-value-never-changed → state-never-global-and-mutable · MUST
+No `Map`, `Set`, array or object declared at module level is changed after the module loads.
+
+| Why | Tags |
+|---|---|
+| a module loads once per process, so what it holds is shared by every caller and carries over from one spec into the next. | [] |
 
 ### overrides-marked-by-keyword → override-marked-where-declared · MUST
 A method that overrides one of its base class carries `override`.
@@ -143,7 +150,7 @@ A `catch` reads its value, typed `unknown`, only after `instanceof` or the error
 | anything can be thrown, by the program's dependencies too, so a caught value read as an `Error` without a check fails a second time inside the handler meant for the first. | [] |
 
 ### return-awaited-inside-try → catch-handles-only-what-it-recognises · MUST
-Inside a `try`, a returned promise is awaited — `return await` — so its rejection reaches the `catch`.
+Inside a `try`, or a scope that holds a resource by `using` or `await using`, a returned promise is awaited — `return await` — so its rejection reaches the `catch`, and the resource outlives it.
 
 | Why | Tags |
 |---|---|
@@ -187,11 +194,11 @@ Every promise is awaited, returned or handed to a scope that awaits it; `void` n
 | a promise nobody awaits fails where nobody sees it, and the work it stands for outlives the code that started it. | [errors] |
 
 ### request-path-calls-no-sync-io · SHOULD
-Code on the path of a request or an event the program serves calls no synchronous input or output — `readFileSync`, `execSync`, `pbkdf2Sync`, `scryptSync` — and runs heavy work in a worker.
+Code on the path of a request or an event the program serves calls no synchronous input or output — `readFileSync`, `execFileSync`, `pbkdf2Sync`, `scryptSync` — and runs heavy work in a worker.
 
 | Why | Tags |
 |---|---|
-| one synchronous call stalls the event loop, and every request the copy holds waits behind it. | [performance] |
+| one synchronous call stalls the event loop, and every request the process holds waits behind it. | [performance] |
 
 ## Security
 
@@ -207,7 +214,7 @@ A path built from outside input is resolved with `path.resolve(root, input)`, ta
 
 | Why | Tags |
 |---|---|
-| `path.join` keeps every `..` it is given, and a check on the string before it is resolved misses an encoded or nested one. | [security] |
+| `path.join` follows every `..` it is given, out of the root, and a check on the string before it is resolved misses an encoded or nested one. | [security] |
 
 ### child-process-given-an-env-of-its-own → child-process-environment-built-for-it · MUST
 A process the program starts — through `spawn`, `execFile` or the runtime's own forms of them — is passed an `env` built for it, never left to inherit `process.env` and never given a copy of it.
@@ -223,7 +230,7 @@ No code is run from a string: no `eval`, no `new Function`, and no `setTimeout` 
 |---|---|
 | a string run as code runs whatever reaches it, so one piece of outside input inside it becomes the attacker's program, with every right the program has. | [security] |
 
-### outside-keyed-collection-is-a-map · MUST
+### outside-keyed-collection-is-a-map → outside-input-never-rebuilt-as-objects · MUST
 A collection keyed by values from outside the program is a `Map`, or an object made by `Object.create(null)`; outside input is never merged into a plain object by its own keys.
 
 | Why | Tags |

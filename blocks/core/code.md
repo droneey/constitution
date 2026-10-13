@@ -19,14 +19,14 @@ Each fact — a value, a rule of the business, a piece of state — has one home
 | two copies of one fact drift apart, and the program is then wrong in one of them. | [data] |
 
 ### structure-appears-by-symptom · SHOULD
-A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it; code that only looks alike waits for its third occurrence before it is joined.
+A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it; code that only looks alike waits for its third occurrence before it is joined. A unit a second consumer needs lifts by its placement, and a new member of an open set by its registration, without waiting.
 
 | Why | Tags |
 |---|---|
 | a structure made in advance guesses its axis, usually wrongly, and must be torn out before it can be fixed. | [] |
 
 ### new-kind-added-as-a-member · MUST
-A new kind of an open set — a vendor, a command, a format — is added as a new member and its registration, without editing the code that handles the other members. A set is open when its members share one contract and the program treats them alike — vendors, commands, formats — and closed when the program's logic decides on each member apart — stages, outcomes.
+A new kind of an open set — a vendor, a command, a format — is added as a new member and its registration, without editing the code that handles the other members. A set is open when its members share one contract and the program treats them alike — vendors, commands, formats — and closed when the program's logic decides on each member apart — stages, outcomes; a set with one member is not yet open.
 
 | Why | Tags |
 |---|---|

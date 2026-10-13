@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0177 |
+| One home per rule | ADR-0160 – ADR-0178 |
 
 ---
 
@@ -1086,3 +1086,14 @@
   - Contexts: a format's rules that bind code reach it through a seam of the code's language — TypeScript and Python with YAML, one seam rule to each YAML rule it carries out, TypeScript with CSS and with shell, YAML with shell; the Markdown renderer's rule leaves, its subject being a program's output and not a Markdown file; a file name a framework reads keeps its spelling; TypeScript keeps synchronous input and output off the request path; Python's unpickling list names every object-building loader; the mobile release, attestation and backup rules each say one thing.
 - **Rejected.** Moving `one-artefact-serves-every-environment` into `code`, where no section holds it and its children lose their chapter; a parent in YAML's seam for the package scripts, which TypeScript's seam with shell does not need.
 - **Why.** Each fix closes a gap the reviewers agreed on: a rule a tool could hold but did not, a level looser than the harm, or a rule whose files never held the code it binds.
+
+## ADR-0178 — Core and the contexts after their fourteenth review
+**Date:** 2026-10-13 · **Status:** Accepted
+
+- **Decision.** The fourteenth round graded core 8.7, 8.7 and 8.6 and the contexts 8.7, 8.8 and 8.8; what two reviewers or more found, and each fact a reviewer proved by running the tool, is closed.
+  - The edge is the folders that may hold effects and import any package, and the chapter on layers opens with the inward order. A unit outside the edge reaches no effect through a lib either: dependency-cruiser follows the imports to the runtime's effect modules, and import-linter's `effects-held-only-by-the-edge` contract to the standard library's. A timer is held to the edge and the binding units — Biome by a TypeScript rule's plugin, python-check by `asyncio.sleep` and `threading.Timer` — and python-check refuses a read of the environment at the edge outside the root.
+  - A generated file has no line limit in either language, and a function that returns one data literal lifts its own by Biome's suppression or python-check's reasoned comment.
+  - Core: a function that answers changes nothing, and depends only on its input where it receives no port; the time reaches it as input or through a port. A test run writes the snapshots and golden files it was told to update. A type lifts as any code does, at the same level; a set with one member is not yet open. The writer a block brings for a shared resource is claimed in that rule, not in the precedence. Integration specs stay out of the coverage gate. A supervisor may restart the work a defect broke. "Live system", "committed" and the decorator pattern are said once and plainly, and "entry" keeps the senses of a package's entry and a way in.
+  - Contexts: Python's YAML seam carries each YAML rule that binds code, by a YAML 1.2 loader and by refusing an alias, since no Python loader bounds them; Python runs no text as code, keeps a synchronous call's `timeout=`, types an exact quantity by its unit, and makes an owned enumeration a `StrEnum` at the level TypeScript does. TypeScript changes no module-level value, awaits a returned promise inside a `using` scope, and reads `.mts` and `.cts`. A shell script logs through one function and unsets the secret it received. A rendering server may keep the tokens in a session store of its own. Markdown governs `.markdown`.
+- **Rejected.** Folding Bun's reading of `#/` into the TypeScript block, which names no runtime; lowering `case-split-by-arrange-act-assert-comments`, which the owner's specs follow everywhere, until he decides it; widening the TypeScript block to `.js` files, which only tools' configuration uses.
+- **Why.** Each fix closes a rule that contradicted another, a tool that held less than its rule, or a fact the tools disproved.

@@ -25,3 +25,5 @@ tanstack-query:
 typescript:
   surface-only-re-exports:
     - surface-only-re-exports.grit
+  timer-set-only-by-the-edge-and-binding-units:
+    - timer-set-only-by-the-edge-and-binding-units.grit

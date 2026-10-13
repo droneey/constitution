@@ -2,6 +2,45 @@
 
 > Governs how a stylesheet serves screens and components: focus, text size, reflow, hover, motion, values and scope.
 
+## Screens
+
+### breakpoints-add-to-the-smallest-screen · SHOULD
+Base styles serve the smallest screen, and a breakpoint only adds styles from a minimum width; no style is set for wide screens and undone for narrow ones.
+
+| Why | Tags |
+|---|---|
+| styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | [] |
+
+## Components
+
+### stylesheet-value-read-from-the-theme → tokens-single-source-of-appearance · MUST
+In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property, and in a value no theme names — `0`, a percentage, a viewport unit, `auto` — and in the condition of a media or a container query, where `var()` cannot be read.
+
+| Why | Tags |
+|---|---|
+| a literal in a component is a second source of the value, which a change of the theme misses. | [] |
+
+### component-adapts-by-container-query → component-sizes-to-its-container · SHOULD
+A component adapts to the space its container gives it by a container query, never by a media query on the viewport's width.
+
+| Why | Tags |
+|---|---|
+| a component placed in a sidebar and in the main column then fits both, while the viewport says nothing about the space it was given. | [ux] |
+
+### component-styles-scoped-to-its-root · SHOULD
+A component's stylesheet styles only the component's own elements: its rules sit in `@scope (<its root>) to (<its slots>)` where every browser the program supports has `@scope`, and under its root's class where one does not.
+
+| Why | Tags |
+|---|---|
+| a rule that leaks reaches every screen that loads the component, and the lower boundary keeps it out of the content other components render in its slots. | [] |
+
+### global-style-only-in-the-entry-stylesheet · SHOULD
+Only the entry stylesheet, and the theme it imports, style elements by their type and the document as a whole.
+
+| Why | Tags |
+|---|---|
+| a global rule in a component's stylesheet reaches every screen, and changes whenever that component is or is not loaded. | [] |
+
 ## Accessibility
 
 ### focus-ring-drawn-as-an-outline → focus-always-visible · MUST
@@ -59,42 +98,3 @@ A transition or an animation that moves, scales or rotates content runs only ins
 | Why | Tags |
 |---|---|
 | motion across the screen makes people with vestibular disorders ill, while a cut or a fade keeps the feedback the motion carried. | [a11y] |
-
-## Components
-
-### stylesheet-value-read-from-the-theme → tokens-single-source-of-appearance · MUST
-In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property, and in a value no theme names — `0`, a percentage, a viewport unit, `auto` — and in the condition of a media or a container query, where `var()` cannot be read.
-
-| Why | Tags |
-|---|---|
-| a literal in a component is a second source of the value, which a change of the theme misses. | [] |
-
-### component-adapts-by-container-query → component-sizes-to-its-container · SHOULD
-A component adapts to the space its container gives it by a container query, never by a media query on the viewport's width.
-
-| Why | Tags |
-|---|---|
-| a component placed in a sidebar and in the main column then fits both, while the viewport says nothing about the space it was given. | [ux] |
-
-### component-styles-scoped-to-its-root · SHOULD
-A component's stylesheet styles only the component's own elements: its rules sit in `@scope (<its root>) to (<its slots>)` where every browser the program supports has `@scope`, and under its root's class where one does not.
-
-| Why | Tags |
-|---|---|
-| a rule that leaks reaches every screen that loads the component, and the lower boundary keeps it out of the content other components render in its slots. | [] |
-
-### global-style-only-in-the-entry-stylesheet · SHOULD
-Only the entry stylesheet, and the theme it imports, style elements by their type and the document as a whole.
-
-| Why | Tags |
-|---|---|
-| a global rule in a component's stylesheet reaches every screen, and changes whenever that component is or is not loaded. | [] |
-
-## Screens
-
-### breakpoints-add-to-the-smallest-screen · SHOULD
-Base styles serve the smallest screen, and a breakpoint only adds styles from a minimum width; no style is set for wide screens and undone for narrow ones.
-
-| Why | Tags |
-|---|---|
-| styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. | [] |

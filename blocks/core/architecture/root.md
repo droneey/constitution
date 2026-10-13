@@ -26,7 +26,7 @@ The composition root — or the configuration provider a block below names — a
 | no module depends on the process’s environment through a read no signature shows. | [security] |
 
 ### root-applies-the-decorators · MUST
-The composition root applies every decorator — behaviour wrapped around an implementation — where it chooses that implementation.
+The composition root applies every decorator — behaviour wrapped around an implementation of a contract, the pattern rather than a language's decorator syntax — where it chooses that implementation.
 
 | Why | Tags |
 |---|---|

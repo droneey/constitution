@@ -5,7 +5,7 @@
 ## User interface
 
 ### document-metadata-owned-by-screen · SHOULD
-The title, description and links of the document are declared by the screen that owns them.
+The description and links of the document are declared by the screen that owns them.
 
 | Why | Tags |
 |---|---|

@@ -20,12 +20,12 @@ When a behaviour is described before it is built, an agent writes its tests from
 
 ## Acting
 
-### person-decides-what-is-recorded-or-shipped · MUST
-Only a person decides what of an agent’s work is recorded, shared or shipped; the agent does so only when the person asks or a standing grant names that act.
+### person-decides-what-is-committed-or-shipped · MUST
+Only a person decides what of an agent’s work is committed, shared or shipped; the agent does so only when the person asks or a standing grant names that act.
 
 | Why | Tags |
 |---|---|
-| recording, sharing and shipping a change are decisions made under the person’s name. | [] |
+| committing, sharing and shipping a change are decisions made under the person’s name. | [] |
 
 ### submitted-change-read-by-its-person · MUST
 A person submits an agent's change only once they have read it and can explain it.

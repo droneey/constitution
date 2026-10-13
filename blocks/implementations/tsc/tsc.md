@@ -25,4 +25,4 @@ The compiler, not a bundler or the runtime, is the type gate, and its configurat
 
 | Why | Tags |
 |---|---|
-| the compiler does not resolve a folder's `index.ts` through `imports`, so it needs the mirror; an alias only `paths` declares resolves in the editor and fails at run time. | [] |
+| the compiler does not resolve a folder's `index.ts` through `imports`, so it needs the mirror; an alias only `paths` declares resolves in the editor and fails at run time under Node.js. | [] |

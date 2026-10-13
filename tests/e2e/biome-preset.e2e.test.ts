@@ -668,6 +668,20 @@ describe("the parts of Biome's base", () => {
       rule: 'useMaxParams',
     },
     {
+      condition: 'a generated file passes 500 lines',
+      files: {
+        'src/orders.gen.ts': fileOfLines(600),
+      },
+      rule: 'noExcessiveLinesPerFile',
+    },
+    {
+      condition: 'a generated file holds a function of more than 100 lines',
+      files: {
+        'src/schema.gen/orders.ts': functionWithBodyOf(150),
+      },
+      rule: 'noExcessiveLinesPerFunction',
+    },
+    {
       condition: 'a *.test.ts spec passes 500 lines',
       files: {
         'src/main.test.ts': fileOfLines(600),
@@ -2578,6 +2592,7 @@ describe('the Biome architecture parts', () => {
         },
         parts: [
           ...BASE_PARTS,
+          'typescript/architecture/typescript',
           'typescript/architecture/core',
         ],
       };
@@ -2587,6 +2602,39 @@ describe('the Biome architecture parts', () => {
 
       // Assert
       expect(plugins.some((finding) => finding.startsWith('An effect outside the edge'))).toBe(
+        isReported,
+      );
+    },
+  );
+
+  it.each([
+    {
+      file: 'src/features/orders/domain/entities/order.entity.ts',
+      isReported: true,
+    },
+    {
+      file: 'src/features/orders/app/use-cases/poll-orders.use-case.ts',
+      isReported: false,
+    },
+  ])(
+    'should report a timer $isReported in $file when a project extends the typescript part',
+    ({ file, isReported }) => {
+      // Arrange
+      const project = {
+        files: {
+          [file]: 'export const later = (run: () => void): void => {\n  setTimeout(run, 10);\n};\n',
+        },
+        parts: [
+          ...BASE_PARTS,
+          'typescript/architecture/typescript',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.some((finding) => finding.startsWith('A timer outside the edge'))).toBe(
         isReported,
       );
     },

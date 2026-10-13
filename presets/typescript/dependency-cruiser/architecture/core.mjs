@@ -322,6 +322,7 @@ export default {
       },
       to: {
         path: IO,
+        reachable: true,
       },
     },
     {

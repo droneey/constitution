@@ -2,12 +2,12 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is the outer ring of the tree: adapters, libs, the root, the entry files, the delivery layer and integrations.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files, the delivery layer and integrations. Inward means toward the kernel: the entry files, the root and the delivery layer import composition and features, a feature's application layer imports its domain, and the domain imports the kernel and the contracts; shared plumbing, adapters and libs import what their own rules allow.
 
 ## Direction
 
 ### import-points-inward · MUST
-An import points inward, toward stability: an outer layer imports an inner one, never the reverse.
+An import points inward, toward stability, in the order this chapter opens with; never the reverse.
 
 | Why | Tags |
 |---|---|
@@ -28,7 +28,7 @@ A feature never imports another feature; features are combined only by the layer
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. The composition root's reading of the environment, a unit outside the domain writing diagnostics through the logging facade, and a binding unit's timer that schedules its own work stand outside the ports.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. A unit outside the edge reaches no effect through a lib either. A unit outside the domain writing diagnostics through the logging facade, and a binding unit's timer that schedules its own work, stand outside the ports.
 
 | Why | Tags |
 |---|---|
@@ -70,7 +70,7 @@ The kernel imports only itself and the data files its values are read from.
 | everything depends on the kernel, so it depends on nothing that changes. | [] |
 
 ### libs-import-no-application-code · MUST
-A lib imports no code of the application — no feature, the kernel, shared, contracts, adapters, integrations or the root — and knows nothing of the repository that uses it.
+A lib imports no code of the application — no feature, nor the kernel, shared, contracts, adapters, integrations or the root — and knows nothing of the repository that uses it.
 
 | Why | Tags |
 |---|---|
@@ -107,7 +107,7 @@ A contract belongs to the feature that needs it; when a second feature needs it 
 | a contract owned by one feature and used by another couples the second to the first. | [] |
 
 ### composition-lifts-on-its-second-consumer · MUST
-Composition across features lives in the delivery unit that needs it and moves to its own composition module when a second consumer needs it; facts derived from several features are derived there, and a contract one feature meets through another’s surface is implemented there from its first use.
+Composition across features lives in the delivery unit that needs it and moves to its own composition module when a second consumer needs it; facts derived from several features, and a contract one feature meets through another’s surface, are derived and implemented in a composition module from their first use.
 
 | Why | Tags |
 |---|---|
@@ -137,7 +137,7 @@ A protocol two artefacts of one program speak lives in the program’s shared pl
 ## The delivery layer
 
 ### delivery-unit-beside-what-it-serves · SHOULD
-A delivery unit that serves one feature lives in that feature’s application layer where the block of the program's interface allows it; one that composes several lives in the delivery layer or in composition.
+A delivery unit that serves one feature lives in that feature’s application layer where the block of the program's interface allows it; one that composes several lives in the delivery layer or in composition. One in a feature's application layer is no part of the edge, and reaches effects through ports.
 
 | Why | Tags |
 |---|---|

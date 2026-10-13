@@ -77,13 +77,6 @@ A parameter's default is an immutable value — `None`, a number, a string, a tu
 |---|---|
 | a default is evaluated once, when the function is defined, so a mutable one is a single object every call shares and changes. | [] |
 
-### implementation-never-inherits-its-contract → behaviour-composed-not-inherited · SHOULD
-An implementation meets its contract by its shape and never inherits it; an abstract base class is no contract.
-
-| Why | Tags |
-|---|---|
-| an implementation that inherits its contract inherits code and a hierarchy with it, while a protocol lets a fake or an adapter keep the contract without importing anything of the other. | [] |
-
 ### import-never-a-wildcard · MUST
 An import names each name it takes; `from <module> import *` is never written.
 
@@ -142,14 +135,14 @@ A `match` or an `if` chain over a closed set — an enumeration, a union of clas
 |---|---|
 | `assert_never` fails the type check wherever a member added to the set is not handled, and raises if one arrives at run time. | [] |
 
-### enumeration-is-a-unique-str-enum · SHOULD
+### enumeration-is-a-unique-str-enum · MUST
 An enumeration of values the program owns is an `enum.StrEnum` marked `@unique`, each member's value written out as the string the program stores and sends, never `auto()`.
 
 | Why | Tags |
 |---|---|
 | a value written out survives a member's rename, which `auto()` would carry into every stored record and message, and `@unique` refuses two names for one value. | [] |
 
-### outside-number-set-is-an-int-enum · SHOULD
+### outside-number-set-is-an-int-enum · MUST
 A set of numbers another system defines — exit statuses, HTTP statuses — is an `enum.IntEnum` with every member's value written, or the standard library's own such as `http.HTTPStatus`.
 
 | Why | Tags |
@@ -199,7 +192,7 @@ A dataclass that keeps an invariant checks it in `__post_init__` and raises an e
 | every way of building the value — the constructor, `replace`, a parser — passes through `__post_init__`, so a value that exists is valid. | [] |
 
 ### instant-is-an-aware-datetime → instant-is-an-exact-time · MUST
-A `datetime` carries its time zone: `now` and `fromtimestamp` are given one, the constructor and `strptime` produce one, and `utcnow`, `utcfromtimestamp` and `today` are never called.
+A `datetime` carries its time zone: `now` and `fromtimestamp` are given one, the constructor and `strptime` produce one, and `datetime.utcnow`, `datetime.utcfromtimestamp`, `datetime.today` and `date.today` are never called; a time set in a place keeps its wall time with its `zoneinfo.ZoneInfo`.
 
 | Why | Tags |
 |---|---|
@@ -213,7 +206,7 @@ A duration is measured by `time.monotonic()` or `time.perf_counter()`, never as 
 | the wall clock jumps when it is corrected, and a duration measured across the jump is wrong or negative. | [data] |
 
 ### exact-quantity-is-an-int-or-a-decimal → exact-quantity-never-binary-float · MUST
-An exact decimal quantity is an `int` of its smallest unit or a `decimal.Decimal` built from a string or an `int`, never from a `float`.
+An exact decimal quantity is an `int` of its smallest unit or a `decimal.Decimal` built from a string or an `int`, never from a `float`, typed by its unit or currency — a `NewType` for each.
 
 | Why | Tags |
 |---|---|
@@ -233,7 +226,7 @@ An `except` clause names the exception types it handles; a bare `except:`, or on
 
 | Why | Tags |
 |---|---|
-| a broad clause catches the defects and the cancellation it never meant to handle along with the failure it did. | [] |
+| a broad clause catches the defects it never meant to handle along with the failure it did — and, bare or as `BaseException`, the cancellation too. | [] |
 
 ### except-never-only-passes → catch-handles-only-what-it-recognises · MUST
 No `except` body is only `pass`, `...` or `continue`; a failure ignored on purpose is ignored by `contextlib.suppress`, with its reason in a comment beside it.
@@ -280,7 +273,7 @@ Concurrent work starts in a task group — `asyncio.TaskGroup`, or the one of th
 | a task group waits for its tasks, cancels the rest on the first failure and raises every failure together, where a bare task is dropped or fails unseen. | [errors] |
 
 ### deadline-by-a-timeout-scope → outside-call-has-a-timeout · MUST
-Awaited work across a process boundary that its client does not bound itself runs inside a timeout scope — `asyncio.timeout`, or the async library's own.
+Awaited work across a process boundary that its client does not bound itself runs inside a timeout scope — `asyncio.timeout`, or the async library's own — and a synchronous call across one passes its client's `timeout=`.
 
 | Why | Tags |
 |---|---|
@@ -331,11 +324,18 @@ A process is started with its arguments as a list — `subprocess.run([...])`, `
 | each item of a list reaches the program as one argument, while a shell parses the string and runs whatever a value smuggles into it. | [security] |
 
 ### interpreter-input-never-formatted-into-text → outside-input-reaches-interpreters-as-parameters · MUST
-Outside input never reaches a query or markup through an f-string, `%` or `str.format`; it travels as the interpreter's parameter, or in a template string `t'…'` that the interpreter's library renders.
+Outside input never reaches a query, markup or a log message through an f-string, `%` or `str.format`; it travels as the interpreter's parameter — `logger.info('%s', value)` for a log message — or in a template string `t'…'` that the interpreter's library renders.
 
 | Why | Tags |
 |---|---|
 | text formatted into a query or markup becomes code, while a parameter or a template keeps the input apart from what the library escapes or binds. | [security] |
+
+### text-never-run-as-code → outside-input-reaches-interpreters-as-parameters · MUST
+Text is never run as code — no `eval`, `exec` or `compile` of a string — and a literal read from text is parsed by `ast.literal_eval` or a parser of its format.
+
+| Why | Tags |
+|---|---|
+| text that reaches `eval` runs with the program's rights, whoever wrote it. | [security] |
 
 ### outside-path-confined-after-resolve → outside-path-confined-to-its-root · MUST
 A path built from outside input is joined to its root, resolved with `Path.resolve()`, and refused unless `is_relative_to(root.resolve())` holds for it.
@@ -421,7 +421,7 @@ Every folder of the import package holds an `__init__.py`; the import tree has n
 | a folder without one is a namespace package, which another installed distribution can merge into, and whose files nothing imports go unmeasured by coverage. | [] |
 
 ### module-named-in-snake-case → file-name-in-its-owners-case · MUST
-A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the import package is a snake_case package, and a folder of `tests/` a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them. Every other file and folder is kebab-case.
+A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the import package is a snake_case package — `value_objects/`, `use_cases/` — and a folder of `tests/` a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
 
 | Why | Tags |
 |---|---|
@@ -458,7 +458,7 @@ A docstring is in the Google form: a one-line summary on its first line, then th
 | one form reads the same in every module, and the summary on the first line is what `help()` and an editor show first. | [] |
 
 ### deprecated-by-decorator → retired-code-marked-deprecated · SHOULD
-Code kept only for its old callers is decorated `@warnings.deprecated`, imported from `typing_extensions` below Python 3.13, with a message that names its replacement.
+Code kept only for its old callers is decorated `@warnings.deprecated` with a message that names its replacement.
 
 | Why | Tags |
 |---|---|

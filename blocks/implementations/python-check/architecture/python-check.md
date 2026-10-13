@@ -22,8 +22,15 @@ An import of a package — neither the standard library, the import package itse
 | an import contract forbids a package only by its name, one contract per package, and knows nothing of a package nobody named; the check reads every import against the table and the homes the parts give. | [] |
 
 ### effect-modules-kept-at-the-edge → effects-held-only-by-the-edge · MUST
-A module of the standard library that reaches input and output, the clock or randomness — `os`, `subprocess`, `socket`, `time`, `random` among them — fails the check outside the edge, and so does an effectful name of a module whose types are pure — `urllib.request`, `uuid.uuid4`, `datetime.now()`, `open()`.
+A module of the standard library that reaches input and output, the clock or randomness — `os`, `subprocess`, `socket`, `time`, `random` among them — fails the check outside the edge, and so does an effectful name of a module whose types are pure — `urllib.request`, `uuid.uuid4`, `datetime.now()`, `open()` — and a timer, `asyncio.sleep` or `threading.Timer`, outside the edge and the binding units.
 
 | Why | Tags |
 |---|---|
 | the standard library needs no install, so no table of homes sees it, and an effect reached from a use case stays out of every fake its specs give it. | [] |
+
+### environment-read-held-to-the-root → environment-read-only-under-root · MUST
+A read or a change of the environment — `os.environ`, `os.getenv`, `os.putenv` and their kin — fails the check at the edge outside `root/` and the entry files; below the edge, `os` itself fails.
+
+| Why | Tags |
+|---|---|
+| no linter of Python knows which folder is the root, and an adapter that reads the environment passes every import contract. | [security] |

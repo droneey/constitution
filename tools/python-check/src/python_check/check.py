@@ -33,7 +33,7 @@ def file_findings(*, path: Path, settings: Settings) -> tuple[Finding, ...]:
     return (Finding(path=path, line=line, message=f'the file does not parse: {error.msg}'),)
 
   return (
-    line_findings(path=path, tree=tree, lines=len(source.splitlines()))
+    line_findings(path=path, tree=tree, source=source)
     + import_findings(path=path, tree=tree)
     + package_findings(path=path, settings=settings, tree=tree)
   )

@@ -45,7 +45,7 @@ No type assertion is written: no `as` but `as const`, no `<T>value`, and no `!` 
 | an assertion claims a type no check proved and the compiler believes it, so the failure surfaces later, far from the line that claimed it. | [] |
 
 ### boundary-values-unknown-until-parsed → outside-value-untyped-until-parsed · MUST
-A value from outside the program — the result of `JSON.parse` included — is typed `unknown`, and its plain checks are `typeof`, `in` and `Array.isArray`; `.json<T>()` and `as Promise<T>` are casts.
+A value from outside the program — the result of `JSON.parse` and of `Response.json()`, typed `any`, included — is typed `unknown`, and its plain checks are `typeof`, `in` and `Array.isArray`; a type argument a client's `.json<T>()` takes and `as Promise<T>` are casts.
 
 | Why | Tags |
 |---|---|
@@ -84,7 +84,7 @@ A brand is an intersection with a property keyed by the program's one `declare c
 
 | Why | Tags |
 |---|---|
-| one form of brand reads the same in every file, and a symbol key shows in no completion, `keyof` or serialised value, and no object written elsewhere carries it by accident. | [] |
+| one form of brand reads the same in every file; no object literal written elsewhere can spell its symbol key, so nothing carries the brand by accident, and it never exists at run time. | [] |
 
 ### brand-set-only-where-minted-or-parsed → identifier-branded-by-entity · SHOULD
 An identifier's brand is set only where the identifier is minted — its factory — or where it enters the program, in the parse of the outside value that carries it.
@@ -116,7 +116,7 @@ A semantic alias — `type ChatTitle = string` — names a meaning found in two 
 |---|---|
 | an alias names a meaning the program shares; one for every string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. | [] |
 
-### program-type-never-declared-ambient → type-lives-with-its-consumer · SHOULD
+### program-type-never-declared-ambient → type-lives-with-its-consumer · MUST
 A type of the program is exported by a module and imported where it is used, never declared ambient in a global `.d.ts` or `declare global`; an ambient declaration only describes what the runtime or a library provides.
 
 | Why | Tags |

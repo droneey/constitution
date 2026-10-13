@@ -34,7 +34,7 @@ A failure that no request, message or job owns — an uncaught exception, an unh
 ## Effects
 
 ### server-stop-waits-for-routing-to-end → program-stops-cleanly · MUST
-A server's stop begins once its host has stopped routing work to it: the host holds back the stop signal for a pause that outlasts the removal from routing, or, where it cannot, the server goes on answering through such a pause before it closes its listener; only then does it take no new work.
+A server's stop begins once its host has stopped routing work to it: the host holds back the stop signal for a pause that outlasts the removal from routing, or, where it cannot, the server goes on answering through such a pause before it closes its listener; only then does it stop taking new work.
 
 | Why | Tags |
 |---|---|
@@ -113,7 +113,7 @@ A server bounds the work it holds in flight, and refuses what comes beyond the b
 ## Security
 
 ### server-secret-read-from-the-host-not-the-environment · SHOULD
-A server reads each secret from a file its host mounts in memory, such as a Swarm secret, or fetches it with its host's workload identity, at start and again when its host rotates it; it takes a secret from its environment only where its host offers no other way.
+A server reads each secret from a file its host mounts in memory, such as a secret volume of Kubernetes, or fetches it with its host's workload identity, at start and again when its host rotates it; it takes a secret from its environment only where its host offers no other way.
 
 | Why | Tags |
 |---|---|

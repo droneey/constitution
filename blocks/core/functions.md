@@ -12,14 +12,14 @@ A function does one thing, at one level of abstraction: it calls steps named for
 | a function that does one thing can be named, tested and reused; one that does two is none of these. | [] |
 
 ### function-answers-or-changes · SHOULD
-A function either answers a question or changes state, never both. One that answers has no effect; one that changes state decides only on its input and on what it changes, and the time and the configuration reach it as input. An atomic operation that reports the outcome of its own change — a compare-and-set, a take from a queue — is one change.
+A function either answers a question or changes state, never both. One that answers changes nothing; one that changes state decides only on its input and on what it changes, and the time and the configuration reach it as input or through a port it receives. An atomic operation that reports the outcome of its own change — a compare-and-set, a take from a queue — is one change.
 
 | Why | Tags |
 |---|---|
 | a question that changes something cannot be asked twice safely, and a change that reads more than it changes decides on data its caller never saw. | [] |
 
 ### function-pure-by-default · SHOULD
-A function that answers depends only on its input.
+A function that answers and receives no port depends only on its input.
 
 | Why | Tags |
 |---|---|

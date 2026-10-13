@@ -37,7 +37,7 @@ A package others install ships no `#/` specifier: its build rewrites each to a r
 
 | Why | Tags |
 |---|---|
-| the compiler leaves the specifier as written, and Node.js resolves no folder and no `#/` below its newest lines, so a consumer fails on its first import. | [errors] |
+| the compiler leaves the specifier as written, and Node.js resolves no folder and no `#/` below its newest lines, and some runtimes a `#/` only through a `tsconfig.json`, so a consumer fails on its first import. | [errors] |
 
 ## Manifest
 

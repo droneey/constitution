@@ -215,6 +215,19 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
+      condition: "a feature's application layer runs a process through a lib",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_export.py': 'from shop.libs.run import run\n',
+        'src/shop/libs/__init__.py': '',
+        'src/shop/libs/run/__init__.py': "from .run_utils import run\n\n__all__ = ['run']\n",
+        'src/shop/libs/run/run_utils.py': "from subprocess import run\n\n__all__ = ['run']\n",
+      },
+      finding: 'effects-held-only-by-the-edge BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a feature imports structlog',
       changes: {
         ...FEATURE,

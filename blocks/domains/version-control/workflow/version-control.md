@@ -82,14 +82,14 @@ Plans and working notes live in a `local/` folder that version control ignores; 
 
 ## Agents
 
-### agent-never-merges → person-decides-what-is-recorded-or-shipped · MUST
+### agent-never-merges → person-decides-what-is-committed-or-shipped · MUST
 An agent never merges a change request; the person who answers for it does.
 
 | Why | Tags |
 |---|---|
 | merging is the decision that ships a change, and it belongs to the person who answers for it. | [] |
 
-### agent-never-pushes-to-the-main-line → person-decides-what-is-recorded-or-shipped · MUST
+### agent-never-pushes-to-the-main-line → person-decides-what-is-committed-or-shipped · MUST
 An agent never pushes to the main line, even where its rights would allow it.
 
 | Why | Tags |

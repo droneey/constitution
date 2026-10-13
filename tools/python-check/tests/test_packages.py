@@ -68,6 +68,15 @@ def _findings(*, importer: str, statement: str) -> tuple[Finding, ...]:
     pytest.param('src/shop/root/settings.py', 'from os import environ', id='an effect in the root'),
     pytest.param(APP, 'import urllib.parse', id='a pure module of a package with an effectful one'),
     pytest.param(
+      'src/shop/root/config/settings.py',
+      'HOST = os.environ[NAME]',
+      id='the root reads the environment',
+    ),
+    pytest.param(APP, 'from asyncio import sleep', id='a binding unit schedules its own work'),
+    pytest.param(
+      'src/shop/main.py', 'HOST = os.getenv(NAME)', id='the entry file reads the environment'
+    ),
+    pytest.param(
       'src/shop/kernel/constants/kinds_constants.py',
       'from importlib.resources import files',
       id='the package reading its own data',
@@ -286,6 +295,36 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
         'it reaches it through a port'
       ),
       id='a process started through asyncio',
+    ),
+    pytest.param(
+      DOMAIN,
+      'from asyncio import sleep',
+      (
+        'features/orders/domain/entities holds no effect, and asyncio.sleep is one; '
+        'it reaches it through a port'
+      ),
+      id='a timer in the domain',
+    ),
+    pytest.param(
+      'src/shop/composition/orders/orders_composition.py',
+      'WAIT = threading.Timer(1, run)',
+      (
+        'composition/orders holds no effect, and threading.Timer is one; '
+        'it reaches it through a port'
+      ),
+      id='a timer in a composition module',
+    ),
+    pytest.param(
+      'src/shop/adapters/mail/mail_adapter.py',
+      'HOST = os.environ[NAME]',
+      'adapters/mail reads the environment through os.environ; only the root reads it',
+      id='an adapter reads the environment',
+    ),
+    pytest.param(
+      'src/shop/cli/orders_cli.py',
+      'from os import getenv',
+      'cli reads the environment through os.getenv; only the root reads it',
+      id='a delivery unit imports a read of the environment',
     ),
     pytest.param(
       'src/shop/adapters/log/log_adapter.py',
