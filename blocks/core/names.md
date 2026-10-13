@@ -5,7 +5,7 @@
 ## Meaning
 
 ### name-reveals-intent · SHOULD
-A name says what its thing is for: pronounceable, searchable, with no abbreviation the business does not already use and no noise word.
+A name says what its thing is for: pronounceable, searchable, with no abbreviation the business does not already use.
 
 | Why | Tags |
 |---|---|

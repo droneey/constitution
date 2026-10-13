@@ -5,7 +5,7 @@
 ## Context
 
 ### message-carries-its-creators-trace-context → trace-context-propagated-onward · SHOULD
-A message carries the W3C Trace Context of the work that created it in its headers, stored beside it in an outbox, so its handling continues that trace and not the relay's.
+A message carries the W3C Trace Context of the work that created it in its headers, stored beside it in an outbox, so its handling's span links to that trace, not the relay's.
 
 | Why | Tags |
 |---|---|

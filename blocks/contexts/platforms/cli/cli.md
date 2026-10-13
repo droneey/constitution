@@ -16,7 +16,7 @@ governs: ["**"]
 ## Errors
 
 ### exit-codes-from-one-map · MUST
-Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 128 plus the number of the signal that ended a run — 130 an interrupt, 141 a closed pipe, 143 a stop; any other outcome a caller branches on takes a code of its own in the map.
+Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 128 plus the number of the signal that ended a run — 130 an interrupt, 141 a closed pipe, 143 a termination request (`SIGTERM`); any other outcome a caller branches on takes a code of its own in the map.
 
 | Why | Tags |
 |---|---|
@@ -110,7 +110,7 @@ A command's spec runs the program on an argument list, with its terminal, prompt
 ## Input
 
 ### help-printed-on-h-and-help · MUST
-`-h` and `--help` print the command's help to standard output and exit 0, whatever other arguments are given.
+`-h` and `--help` print the command's help to standard output and exit 0, whatever other options precede them, unless they follow `--` or are the value of a flag.
 
 | Why | Tags |
 |---|---|

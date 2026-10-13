@@ -84,7 +84,7 @@ A feature holds its layers, its specs and its surface and nothing else, and its 
 | a use case, a port or an adapter is found in the same place in every feature, and a loose file belongs to no layer the rules see. | [] |
 
 ### failures-live-with-their-contract · SHOULD
-Failures every feature shares, and the base error every error of the program extends, live in the kernel’s errors, a feature’s in its domain’s errors.
+Failures every feature shares, and the base error every error the application declares extends, live in the kernel’s errors, a feature’s in its domain’s errors.
 
 | Why | Tags |
 |---|---|

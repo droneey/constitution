@@ -159,7 +159,7 @@ A server's readiness check, where its host routes by one, fails until the server
 | the host routes work only to a ready copy, so a copy that cannot serve leaves rotation without a restart and returns when it can. | [errors] |
 
 ### server-start-outwaits-its-dependencies · SHOULD
-A server starts whatever the state of the systems it depends on: one out of reach at start is retried with a growing delay and a random spread, up to a bound, while the server's readiness fails, and never ends the start.
+A server starts whatever the state of the systems it depends on: one out of reach at start is retried with a delay that grows to a cap the project sets, with a random spread, while the server's readiness fails, and never ends the start.
 
 | Why | Tags |
 |---|---|

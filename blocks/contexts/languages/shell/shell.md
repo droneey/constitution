@@ -11,7 +11,7 @@ governs: ["**/*.sh"]
 
 # Shell
 
-> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools. A command written inside another file — a step of a CI workflow, a hook's command, a package script — is kept to a few commands, quoted as here; anything longer is a `.sh` file the step runs, where this block holds it. The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
+> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools.  The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
 
 ## Code
 
@@ -42,6 +42,13 @@ A line is read by `IFS= read -r`.
 | Why | Tags |
 |---|---|
 | without `-r`, read drops backslashes, and without an empty `IFS` it trims the line's leading and trailing spaces. | [] |
+
+### embedded-command-kept-to-a-few-commands · SHOULD
+A command written inside another file — a step of a CI workflow, a hook's command, a package script — is kept to a few commands, quoted as a script is; anything longer is a `.sh` file the step runs.
+
+| Why | Tags |
+|---|---|
+| a command embedded in another file is read by no shell linter and run by a shell with options its runner chose, so what grows there grows unchecked. | [] |
 
 ## Names
 
@@ -82,7 +89,7 @@ A Bash script runs under `set -euo pipefail`, and a POSIX sh script under `set -
 ## Effects
 
 ### temporary-file-removed-by-an-exit-trap → resource-released-on-every-path · MUST
-A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT`, set right after it is made.
+A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT` — in POSIX sh also on `HUP`, `INT` and `TERM`, by a handler that exits — set right after it is made.
 
 | Why | Tags |
 |---|---|
@@ -112,7 +119,7 @@ A committed script never turns on `set -x`.
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
-A script exports no variable its commands do not need, and passes a secret only to the one command that reads it — `TOKEN="$token" command`, or on its standard input.
+A script exports no variable its commands do not need, passes a secret only to the one command that reads it — `TOKEN="$token" command`, or on its standard input — and starts a command that must not see the environment the script received under `env -i`, with the names it needs.
 
 | Why | Tags |
 |---|---|

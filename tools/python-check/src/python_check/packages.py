@@ -84,6 +84,11 @@ EFFECTS = frozenset(
 # named as an import or a call spells it.
 EFFECT_NAMES = frozenset(
   {
+    'asyncio.create_subprocess_exec',
+    'asyncio.create_subprocess_shell',
+    'asyncio.open_connection',
+    'asyncio.open_unix_connection',
+    'asyncio.start_server',
     'asyncio.subprocess',
     'datetime.date.today',
     'datetime.datetime.now',
@@ -92,10 +97,19 @@ EFFECT_NAMES = frozenset(
     'http.client',
     'http.server',
     'input',
+    'io.open',
     'open',
+    'sys.argv',
+    'sys.exit',
+    'sys.stderr',
+    'sys.stdin',
+    'sys.stdout',
     'urllib.request',
     'uuid.uuid1',
     'uuid.uuid4',
+    'uuid.uuid6',
+    'uuid.uuid7',
+    'uuid.uuid8',
   }
 )
 # A call through a class imported from datetime, such as `datetime.now()`.
@@ -160,9 +174,11 @@ def _named(node: ast.AST) -> tuple[str, ...]:
       return tuple(alias.name for alias in node.names)
     case ast.ImportFrom(level=0, module=str(module)):
       return tuple(f'{module}.{alias.name}' for alias in node.names)
-    case ast.Call(func=func):
-      name = _dotted(func)
+    case ast.Attribute():
+      name = _dotted(node)
       return () if name is None else (name, f'{DATETIME}.{name}')
+    case ast.Call(func=ast.Name(id=name)):
+      return (name,)
     case _:
       return ()
 
@@ -243,7 +259,7 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     )
     for node in ast.walk(tree)
     if importer.role is not Role.EDGE
-    and isinstance(node, ast.Import | ast.ImportFrom | ast.Call)
+    and isinstance(node, ast.Import | ast.ImportFrom | ast.Attribute | ast.Call)
     and (name := _effect(node)) is not None
   )
 

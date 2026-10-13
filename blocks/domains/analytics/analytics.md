@@ -58,7 +58,7 @@ The outcome of every critical scenario of `PROJECT.md` — completed, abandoned,
 
 ## Data
 
-### event-carries-no-personal-data → secret-and-personal-data-kept-out-of-output · MUST
+### event-names-no-person → secret-and-personal-data-kept-out-of-output · MUST
 No event carries data that names a person — a name, an email, a phone, an address — or content a person wrote; the only identifier an event carries is the analytics library's own pseudonymous one.
 
 | Why | Tags |

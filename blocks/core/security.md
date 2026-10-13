@@ -47,7 +47,7 @@ A credential belongs to one identity and one purpose per environment, with only 
 | a narrow, short-lived credential limits what a leak can do, and one identity per credential says who did what. | [security] |
 
 ### process-runs-with-only-the-rights-its-job-needs · MUST
-A program runs as a user with only the operating-system rights and the file access its job needs, never as an administrator, and cannot write its own code.
+A program runs as a user with only the operating-system rights and the file access its job needs.
 
 | Why | Tags |
 |---|---|

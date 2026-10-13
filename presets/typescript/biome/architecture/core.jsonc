@@ -15,7 +15,6 @@
         "**/contracts/**",
         "**/shared/**",
         "**/composition/**",
-        "!**/components/**",
         "!**/__tests__/**",
       ],
       "linter": {
@@ -32,6 +31,7 @@
                   "indexedDB": "Outside the edge, storage reaches this code through a port.",
                   "localStorage": "Outside the edge, storage reaches this code through a port.",
                   "performance": "Outside the edge, the clock reaches this code through a port.",
+                  "process": "Outside the edge, the process, its streams and its arguments reach this code through a port.",
                   "sessionStorage": "Outside the edge, storage reaches this code through a port.",
                 },
               },

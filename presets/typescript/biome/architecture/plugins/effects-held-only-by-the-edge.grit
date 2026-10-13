@@ -2,7 +2,11 @@ language js
 
 or {
   `Date.now()`,
+  `Date()`,
   `new Date()`,
+  `randomUUID($...)`,
+  `randomBytes($...)`,
+  `randomInt($...)`,
   `Math.random()`,
   `crypto.randomUUID()`,
   `crypto.getRandomValues($_)`,

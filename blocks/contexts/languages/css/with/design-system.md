@@ -12,7 +12,7 @@ A variant that restyles descendants is a `data-*` attribute on their ancestor, w
 | the stylesheet then reaches every descendant, and no prop is passed down for looks. | [] |
 
 ### color-scheme-declared-on-root → theme-follows-system-until-chosen · MUST
-The root declares `color-scheme` for the schemes the theme supports.
+The root's `color-scheme` names every scheme the theme supports until the user chooses one, and the chosen scheme alone after, set before the first paint.
 
 | Why | Tags |
 |---|---|

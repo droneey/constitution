@@ -84,7 +84,7 @@ An agent's context never holds a secret: the files and commands that would print
 | whatever enters the context can leave it — in a log, a message, an injected request — so a secret the agent never saw is one it cannot leak. | [security] |
 
 ### agent-never-widens-its-own-limits · MUST
-An agent never widens its own limits: it changes no permission setting, hook, instruction file, grant, check or pipeline that bounds it, unless that change is its task and a person consented to it.
+An agent never widens its own limits: it changes no permission setting, hook, instruction file, grant, check or pipeline that bounds it, unless that change is its task and a person consented to it, or another rule asks for it.
 
 | Why | Tags |
 |---|---|

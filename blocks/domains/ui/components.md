@@ -148,7 +148,7 @@ A list whose length the product does not bound renders only the rows in view and
 ## Appearance
 
 ### tokens-single-source-of-appearance · MUST
-A component's appearance — colour, space, size, type, radius, shadow, motion — comes only from the tokens of the design system it uses, never from a literal value.
+A component's appearance — colour, space, size, type, radius, shadow, motion — comes only from the tokens of the design system it uses, never from a literal value — save a value no theme names: `0`, a percentage, a viewport unit, `auto`.
 
 | Why | Tags |
 |---|---|

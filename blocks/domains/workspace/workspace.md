@@ -47,7 +47,7 @@ A unit nobody outside the repository installs is marked private in its manifest.
 ## Dependencies
 
 ### dependency-has-one-version-across-units · MUST
-A dependency has one version, or one range, across every manifest of the repository, which the lockfile resolves once.
+A dependency has one version, or one range, across every manifest of the repository, which the lockfile resolves once — save the peer range a distributed unit declares for a dependency its consumer owns.
 
 | Why | Tags |
 |---|---|

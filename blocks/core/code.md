@@ -35,7 +35,7 @@ A new kind of an open set — a vendor, a command, a format — is added as a ne
 ## Clarity
 
 ### code-reads-plainly · SHOULD
-Code takes the longer, plain form over the terse, clever one: no nested conditional expression, no assignment inside a condition, no trick a reader must decode.
+Code takes the longer, plain form over the terse, clever one: no nested conditional expression, no assignment inside a condition — save a binding form a language made for testing the value it binds — no trick a reader must decode.
 
 | Why | Tags |
 |---|---|
@@ -48,10 +48,10 @@ Code is never commented out; it is deleted.
 
 | Why | Tags |
 |---|---|
-| commented-out code rots unseen, while deleted code stays recoverable from history. | [] |
+| commented-out code is never compiled, checked or tested, yet a reader takes it for code that still means something. | [] |
 
 ### dead-code-deleted · MUST
-No file, dependency, export, parameter, variable or label is unused — save a parameter a contract or a framework imposes, spelled in its language's form for one left unused — and no statement is unreachable; what only the specs reach is unused too. An export a package offers to other packages through the entry it publishes is not dead.
+No file, dependency, export, parameter, variable or label is unused — save a parameter a contract or a framework imposes, spelled in its language's form for one left unused — and no statement is unreachable; production code that only the specs reach is unused too. An export a package offers to other packages through the entry it publishes is not dead.
 
 | Why | Tags |
 |---|---|

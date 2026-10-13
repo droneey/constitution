@@ -220,11 +220,11 @@ An exact decimal quantity is an `int` of its smallest unit or a `decimal.Decimal
 | `Decimal(0.1)` keeps the binary error of the float it was given, while `Decimal('0.1')` is exact. | [data] |
 
 ### text-opened-with-utf-8-named → text-encoded-as-utf-8 · MUST
-Every call that opens or decodes text — `open`, `Path.open`, `Path.read_text`, `Path.write_text`, a `subprocess` call with `text=True` — names `encoding='utf-8'` while the project's floor is below Python 3.15.
+Every call that opens or decodes text — `open`, `Path.open`, `Path.read_text`, `Path.write_text`, a `subprocess` call with `text=True` — names `encoding='utf-8'`.
 
 | Why | Tags |
 |---|---|
-| below Python 3.15 these calls default to the machine's locale, so the same file reads as different text on a developer's machine and in a container. | [data] |
+| below Python 3.15 these calls default to the machine's locale, and from 3.15 a host's `PYTHONUTF8=0` brings it back, so the same file reads as different text on two machines. | [] |
 
 ## Errors
 

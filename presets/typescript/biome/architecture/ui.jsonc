@@ -1,6 +1,6 @@
 {
-  // Biome 2.5.13 refuses a global by path only in an override; a later override of the same rule
-  // over the same files replaces its denied globals, so no other part denies one in components.
+  // Biome 2.5.13 refuses a global by path only in an override, and a later override of the same rule
+  // over the same files replaces its denied globals: this list repeats core's, where shared/ meets components/.
   "overrides": [
     {
       "includes": [
@@ -13,7 +13,15 @@
               "level": "error",
               "options": {
                 "deniedGlobals": {
+                  "EventSource": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "WebSocket": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "XMLHttpRequest": "A component takes its data and callbacks as props; input and output go through binding units.",
                   "fetch": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "indexedDB": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "localStorage": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "performance": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "process": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "sessionStorage": "A component takes its data and callbacks as props; input and output go through binding units.",
                 },
               },
             },

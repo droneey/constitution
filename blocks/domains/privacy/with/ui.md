@@ -25,8 +25,8 @@ Third-party content waiting for consent leaves a placeholder that says what load
 |---|---|
 | the person decides at the moment the content matters to them, knowing what it costs. | [] |
 
-### honoured-opt-out-shown · SHOULD
-A person whose opt-out signal was honoured can see that it was.
+### honoured-opt-out-shown · MUST
+Where the law of the region the product serves asks it, a person whose opt-out signal was honoured can see that it was.
 
 | Why | Tags |
 |---|---|

@@ -115,7 +115,7 @@ The oldest system version the app supports is declared with its reason, and revi
 ## Untrusted client
 
 ### credential-kept-in-the-keychain-or-keystore → client-credential-kept-in-the-protected-store · MUST
-A token, a credential or a key the app holds lives only in the keychain or the keystore, in a class that never leaves the device in a backup, never in storage another app or a backup can read.
+A token, a credential or a key the app holds lives in the iOS keychain in a class that never leaves the device, or on Android encrypted by a non-exportable Keystore key in the app's private storage, left out of backups; never in storage another app or a backup can read.
 
 | Why | Tags |
 |---|---|

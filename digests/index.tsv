@@ -385,7 +385,7 @@ rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/agents
 rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
-rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/workflow/agents.md		MUST		workflow		true
+rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
 rule	list-answer-paged-with-a-maximum	_api	blocks/domains/_api/collections.md		MUST	performance security		outside-read-bounded	true
 rule	list-paged-by-an-opaque-cursor	_api	blocks/domains/_api/collections.md		MUST	performance			true
 rule	list-ordered-by-a-unique-key	_api	blocks/domains/_api/collections.md		MUST	data			true
@@ -459,7 +459,7 @@ rule	event-sent-once-per-occurrence	analytics	blocks/domains/analytics/analytics
 rule	event-never-renamed	analytics	blocks/domains/analytics/analytics.md		SHOULD	data			true
 rule	context-set-once-as-dimension	analytics	blocks/domains/analytics/analytics.md		SHOULD	data			true
 rule	critical-scenario-outcome-has-an-event	analytics	blocks/domains/analytics/analytics.md		SHOULD	data			true
-rule	event-carries-no-personal-data	analytics	blocks/domains/analytics/analytics.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	event-names-no-person	analytics	blocks/domains/analytics/analytics.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	never-tracked-list-kept	analytics	blocks/domains/analytics/analytics.md		SHOULD	data			true
 rule	environment-sends-to-its-own-destination	analytics	blocks/domains/analytics/analytics.md		MUST	data			true
 rule	analytics-fault-isolated	analytics	blocks/domains/analytics/analytics.md		MUST	errors		optional-part-isolated-from-its-faults	true
@@ -550,7 +550,7 @@ rule	breaking-change-ships-its-migration	distribution	blocks/domains/distributio
 rule	deprecation-names-replacement-and-removal	distribution	blocks/domains/distribution/releases.md		MUST			retired-code-marked-deprecated	true
 rule	release-carries-its-notes	distribution	blocks/domains/distribution/releases.md		MUST	security			true
 rule	release-ships-an-sbom	distribution	blocks/domains/distribution/releases.md		SHOULD	security			true
-rule	vulnerability-reported-privately	distribution	blocks/domains/distribution/releases.md		SHOULD	security			true
+rule	vulnerability-reported-privately	distribution	blocks/domains/distribution/releases.md		MUST	security			true
 rule	exploited-vulnerability-reported-in-time	distribution	blocks/domains/distribution/releases.md		MUST	security			true
 rule	versions-follow-semver	distribution	blocks/domains/distribution/workflow/releases.md		MUST		workflow		true
 rule	runtime-floor-never-raised-in-a-patch	distribution	blocks/domains/distribution/workflow/releases.md		MUST		workflow		true
@@ -664,6 +664,7 @@ rule	stdio-server-writes-only-messages-to-stdout	mcp-api	blocks/domains/mcp-api/
 rule	tool-server-accepts-only-tokens-issued-for-it	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security		token-verified-before-it-is-trusted	true
 rule	tool-server-announces-its-authorization-server	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	proxy-server-asks-consent-per-client	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
+rule	caller-shaped-result-cached-privately	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	tool-server-refuses-a-foreign-origin	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
 rule	local-tool-server-reachable-only-from-its-machine	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	SHOULD	security			true
 rule	broker-rights-scoped-to-own-channels	messaging	blocks/domains/messaging/messaging.md		MUST	security		credential-has-least-privilege	true
@@ -770,7 +771,7 @@ rule	opt-out-signal-honoured	privacy	blocks/domains/privacy/opt-out.md		MUST	dat
 rule	consent-changed-from-every-screen	privacy	blocks/domains/privacy/with/ui.md	ui	MUST	security ux			true
 rule	refusal-shown-beside-consent	privacy	blocks/domains/privacy/with/ui.md	ui	MUST	security ux			true
 rule	blocked-content-loads-on-the-persons-click	privacy	blocks/domains/privacy/with/ui.md	ui	SHOULD				true
-rule	honoured-opt-out-shown	privacy	blocks/domains/privacy/with/ui.md	ui	SHOULD				true
+rule	honoured-opt-out-shown	privacy	blocks/domains/privacy/with/ui.md	ui	MUST				true
 rule	read-superseded-for-its-key-is-cancelled	remote-data	blocks/domains/remote-data/remote-data.md		MUST	data performance		outside-call-can-be-cancelled	true
 rule	cache-shares-one-read-per-key	remote-data	blocks/domains/remote-data/remote-data.md		MUST	data performance			true
 rule	cache-invalidates-by-key-prefix	remote-data	blocks/domains/remote-data/remote-data.md		MUST	data			true
@@ -1303,6 +1304,7 @@ rule	script-only-glues-commands	shell	blocks/contexts/languages/shell/shell.md		
 rule	expansion-double-quoted	shell	blocks/contexts/languages/shell/shell.md		MUST				true
 rule	list-held-in-an-array	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	line-read-raw	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
+rule	embedded-command-kept-to-a-few-commands	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	shell-name-case-by-kind	shell	blocks/contexts/languages/shell/shell.md		SHOULD			name-case-by-kind	true
 rule	script-logic-in-a-main-function	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	function-variable-declared-local	shell	blocks/contexts/languages/shell/shell.md		MUST			state-never-global-and-mutable	true
@@ -1344,7 +1346,7 @@ rule	code-never-run-from-a-string	typescript	blocks/contexts/languages/typescrip
 rule	outside-keyed-collection-is-a-map	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security			true
 rule	guarding-random-value-from-web-crypto	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	secret-compared-by-timing-safe-equal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
-rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			dependency-reached-through-its-public-entry	true
+rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	tools-pinned-in-dev-dependencies	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	stateful-package-resolved-once	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	missing-built-in-polyfilled-by-the-entry	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
@@ -1399,6 +1401,7 @@ rule	runtime-floor-in-engines	typescript	blocks/contexts/languages/typescript/wi
 rule	dependency-declared-with-a-caret	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD			manifest-declares-dependencies-by-range	true
 rule	optional-peer-pinned-as-a-dev-dependency	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD				true
 rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	MUST	ux		values-formatted-by-the-active-locale	true
+rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	SHOULD	ux		text-sorted-by-the-locale	true
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			workspace-root-private	true
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
@@ -1577,7 +1580,7 @@ rule	macros-expanded-by-the-test-preload	lingui	blocks/implementations/lingui/wi
 rule	macros-expanded-by-the-lingui-plugin	lingui	blocks/implementations/lingui/with/vite.md	vite	MUST	ux			true
 rule	lingui-only-where-text-is-rendered	lingui	blocks/implementations/lingui/architecture/with/ui.md	ui	MUST	ux	architecture	domain-returns-codes-not-text	true
 rule	ls-lint-config-ends-in-yaml	ls-lint	blocks/implementations/ls-lint/ls-lint.md		SHOULD			format-has-one-extension	true
-rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/matomo.md		MUST	security data		event-carries-no-personal-data	true
+rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/matomo.md		MUST	security data		event-names-no-person	true
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/matomo.md		MUST	performance			true
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST		architecture	sinks-behind-one-contract	true
 rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/with/privacy.md	privacy	MUST	security data		processing-waits-for-its-consent	true

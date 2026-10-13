@@ -28,7 +28,7 @@ Text a caller sends toward a model is refused past a length the project sets bef
 ## Runs
 
 ### agent-run-bounded-in-steps-and-tokens · MUST
-An agent's run stops at the most steps, tool calls and tokens the project sets for it, and a run stopped at a bound ends with an expected failure that says so, never with a partial answer presented as complete.
+An agent's run stops at the most steps, tool calls, tokens and wall-clock time the project sets for it, and a run stopped at a bound ends with an expected failure that says so, never with a partial answer presented as complete.
 
 | Why | Tags |
 |---|---|

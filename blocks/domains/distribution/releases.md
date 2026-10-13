@@ -59,8 +59,8 @@ Every release ships a software bill of materials, in SPDX or CycloneDX, listing 
 |---|---|
 | a user learns from it whether a newly published vulnerability reaches them, and the EU's Cyber Resilience Act asks the maker to keep one with the technical documentation. | [security] |
 
-### vulnerability-reported-privately · SHOULD
-A distributed unit names where a vulnerability in it is reported privately.
+### vulnerability-reported-privately · MUST
+A distributed unit names, in its manifest or its readme, where a vulnerability in it is reported privately.
 
 | Why | Tags |
 |---|---|

@@ -55,4 +55,4 @@ A sub-agent never runs or changes a live system and never sends anything through
 
 | Why | Tags |
 |---|---|
-| a sub-agent has no chat in which to ask for consent. | [] |
+| the person sees only the agent they talk to, so an act of a sub-agent on a live system is one nobody watched and no grant named. | [security] |

@@ -26,3 +26,12 @@ A tool server that reaches a third party's API under one client id of its own ob
 | Why | Tags |
 |---|---|
 | the third party's consent cookie otherwise sends an authorization code to an attacker's registered redirect. | [security] |
+
+## Caching
+
+### caller-shaped-result-cached-privately · MUST
+A result shaped by its caller's rights — a list of tools, a resource read — sets its `cacheScope` to `private`, never `public`.
+
+| Why | Tags |
+|---|---|
+| a gateway that caches a public result hands one caller's tools and data to the next. | [security] |

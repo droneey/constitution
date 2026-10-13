@@ -127,7 +127,7 @@ An instant is an exact time — in UTC, or with its offset — kept apart from a
 
 | Why | Tags |
 |---|---|
-| a time without its offset names a different moment on each machine. | [data] |
+| a time without its offset names a different moment on each machine, and a future time a person sets moves with its zone's rules, which only its wall time and its zone keep. | [data] |
 
 ### duration-measured-on-a-monotonic-clock · MUST
 A duration the program measures is read from a monotonic clock, never from the wall clock.

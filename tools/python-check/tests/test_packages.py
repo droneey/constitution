@@ -238,6 +238,42 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
       id='a file opened by the builtin',
     ),
     pytest.param(
+      APP,
+      'from uuid import uuid7',
+      (
+        'features/orders/app/use_cases holds no effect, and uuid.uuid7 is one; '
+        'it reaches it through a port'
+      ),
+      id='a time-ordered identifier imported',
+    ),
+    pytest.param(
+      APP,
+      'sys.stdout.write(TEXT)',
+      (
+        'features/orders/app/use_cases holds no effect, and sys.stdout is one; '
+        'it reaches it through a port'
+      ),
+      id='a standard stream written',
+    ),
+    pytest.param(
+      DOMAIN,
+      'ARGUMENTS = sys.argv',
+      (
+        'features/orders/domain/entities holds no effect, and sys.argv is one; '
+        'it reaches it through a port'
+      ),
+      id='the arguments read',
+    ),
+    pytest.param(
+      APP,
+      'PROCESS = asyncio.create_subprocess_exec(COMMAND)',
+      (
+        'features/orders/app/use_cases holds no effect, and asyncio.create_subprocess_exec is one; '
+        'it reaches it through a port'
+      ),
+      id='a process started through asyncio',
+    ),
+    pytest.param(
       'src/shop/adapters/log/log_adapter.py',
       'import structlog',
       'structlog is imported in adapters/log, outside its home: root',

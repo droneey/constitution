@@ -15,7 +15,7 @@ governs: ["**"]
 ## Licence
 
 ### public-repository-carries-a-licence · MUST
-A public repository carries a licence file at its root that names its copyright holder.
+A public repository carries a licence file at its root, and names its copyright holder in it or in a `NOTICE` beside it.
 
 | Why | Tags |
 |---|---|
@@ -31,7 +31,7 @@ A public repository carries a security policy, `SECURITY.md`, beside its private
 | a finder who knows which versions are fixed, and when to expect an answer, waits for the fix instead of going public. | [security] |
 
 ### public-repository-offers-private-reporting · MUST
-A public repository offers a private channel for reporting a vulnerability — the forge's private reporting, or an address someone watches — named in its security policy.
+A public repository offers a private channel for reporting a vulnerability — the forge's private reporting, or an address someone watches — named where a finder looks: its security policy, or its readme where it has none.
 
 | Why | Tags |
 |---|---|

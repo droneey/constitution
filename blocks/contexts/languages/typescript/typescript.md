@@ -239,7 +239,7 @@ A secret — a token, a signature, a key — is compared with `timingSafeEqual` 
 
 ## Dependencies
 
-### exports-map-each-entry → dependency-reached-through-its-public-entry · MUST
+### exports-map-each-entry · MUST
 The `package.json` of a package others import maps each of its entries in `exports`, so no path outside those entries can be imported.
 
 | Why | Tags |

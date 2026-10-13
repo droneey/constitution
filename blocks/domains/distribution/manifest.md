@@ -26,7 +26,7 @@ The manifest declares the lowest version of its language's runtime the unit supp
 | a consumer on an older runtime then fails at install with a clear reason, not at run time on a feature the runtime lacks. | [] |
 
 ### runtime-floor-within-the-ecosystems-support-window · SHOULD
-A unit published for others floors its runtime at the oldest release line the runtime's maintainers still support, unless its language's block names a narrower window.
+A unit published for others floors its runtime no lower than the oldest release line the runtime's maintainers still support, unless its language's block names a narrower window.
 
 | Why | Tags |
 |---|---|
