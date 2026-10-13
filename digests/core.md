@@ -16,7 +16,7 @@ The rules a repository is built by. The digest lists the active blocks and their
 2. Otherwise the more specific layer wins: implementations, then contexts (platforms and languages), then domains, then core. A block tightens what is above it, never loosens it.
 3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project.
 4. Two rules of one layer that disagree are a defect: until it is amended, the one naming the narrower case wins, and the clash is reported.
-5. A block that brings its own writer for a resource the program shares with its host claims it in a rule, and a default writer another active block claims yields.
+5. A block that brings its own writer for a resource the program shares with its host claims it in a rule; where an active block claims such a resource, the default writer of it yields.
 
 ## A dependency with no block
 

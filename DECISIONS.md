@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0176 |
+| One home per rule | ADR-0160 – ADR-0177 |
 
 ---
 
@@ -1076,3 +1076,13 @@
   - Contexts: Android keeps a token encrypted by a Keystore key; the chosen theme narrows `color-scheme`; shell traps `TERM` in sh, starts what must not see its environment under `env -i`, and keeps embedded commands short as a rule; Python names `encoding='utf-8'` on every floor; TypeScript sorts text by a collator; a bearer-token API in the browser asks for a server of the program's own.
 - **Rejected.** Making `node:crypto` an effect module, which would forbid a pure hash in the domain; `pathlib` among the effects, whose `Path` is a value.
 - **Why.** Each fix closes a clash between a rule and the rule, the platform or the tool that carries it out.
+
+## ADR-0177 — Core and the contexts after their thirteenth review
+**Date:** 2026-10-13 · **Status:** Accepted
+
+- **Decision.** The thirteenth round graded core and the contexts 8.9 with every reviewer; what they agreed on is closed, and the domains stay out of the reviews.
+  - Effects outside the edge are held further by the tools: dependency-cruiser refuses every effect module of Node's and a delivery folder reached from below the edge; Biome denies the browser's stores and sockets outside the edge and catches the clock, `Math.random`, key generation and `Temporal.Now`; python-check refuses the effect modules and names of the standard library, a name imported from such a module, and an import of a module's own surface from inside it, while a package still reads its own data through `importlib.resources`.
+  - Core: a retry's safety binds and its backoff stays a SHOULD; a credential's least privilege binds and its documentation and lifetime stay a SHOULD; the declared registry and the split of reads from writes bind, and one semantic unit to a file is a SHOULD; the remote service's rule that a call takes the time its caller has left rises to core, since every call across a process boundary has a timeout; an identifier from outside is normalised before it is compared; text for machines ignores the locale; a long-lived secret's key exchange is hybrid with a post-quantum algorithm; a standard stream has one writer per kind of record.
+  - Contexts: a format's rules that bind code reach it through a seam of the code's language — TypeScript and Python with YAML, one seam rule to each YAML rule it carries out, TypeScript with CSS and with shell, YAML with shell; the Markdown renderer's rule leaves, its subject being a program's output and not a Markdown file; a file name a framework reads keeps its spelling; TypeScript keeps synchronous input and output off the request path; Python's unpickling list names every object-building loader; the mobile release, attestation and backup rules each say one thing.
+- **Rejected.** Moving `one-artefact-serves-every-environment` into `code`, where no section holds it and its children lose their chapter; a parent in YAML's seam for the package scripts, which TypeScript's seam with shell does not need.
+- **Why.** Each fix closes a gap the reviewers agreed on: a rule a tool could hold but did not, a level looser than the harm, or a rule whose files never held the code it binds.

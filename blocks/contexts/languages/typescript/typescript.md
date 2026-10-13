@@ -186,6 +186,13 @@ Every promise is awaited, returned or handed to a scope that awaits it; `void` n
 |---|---|
 | a promise nobody awaits fails where nobody sees it, and the work it stands for outlives the code that started it. | [errors] |
 
+### request-path-calls-no-sync-io · SHOULD
+Code on the path of a request or an event the program serves calls no synchronous input or output — `readFileSync`, `execSync`, `pbkdf2Sync`, `scryptSync` — and runs heavy work in a worker.
+
+| Why | Tags |
+|---|---|
+| one synchronous call stalls the event loop, and every request the copy holds waits behind it. | [performance] |
+
 ## Security
 
 ### child-process-started-without-a-shell → outside-input-reaches-interpreters-as-parameters · MUST
@@ -279,14 +286,14 @@ A type error kept on purpose is silenced by `@ts-expect-error` with its reason o
 ## Layout
 
 ### source-file-named-in-kebab-case → file-name-in-its-owners-case · MUST
-A source file is a kebab-case `.ts` or `.tsx` file.
+A source file is a kebab-case `.ts` or `.tsx` file, save a name a framework or a tool reads by its spelling, which its block names.
 
 | Why | Tags |
 |---|---|
 | one spelling of every kind of file lets the reader find a file by its name. | [] |
 
 ### file-named-after-its-export → file-is-one-semantic-unit · MUST
-A file with one export is named after it — `order-status.ts` exports `OrderStatus` — and a file with several exports after the unit they form.
+A file with one export is named after it — `order-status.ts` exports `OrderStatus` — and a file with several exports after the unit they form, save a name a framework or a tool reads by its spelling, which its block names.
 
 | Why | Tags |
 |---|---|

@@ -55,7 +55,7 @@ The host's stop signal reaches the server's own process: no wrapper stands betwe
 | a signal a wrapper swallows never starts the clean stop, and the host kills the process when its grace runs out. | [errors] |
 
 ### server-copy-keeps-only-what-it-can-lose · MUST
-A copy of a server keeps in its memory and on its disk only what it can lose — a cache, a buffer, a file it is still writing; a session, an upload, a lock, a claim and the progress of work live in a store its copies share.
+A copy of a server keeps in its memory and on its disk only what it can lose — a cache, a buffer, a temporary file it can rebuild or abandon; a session, an upload, a lock, a claim and the progress of work live in a store its copies share.
 
 | Why | Tags |
 |---|---|
@@ -119,7 +119,7 @@ A server reads each secret from a file its host mounts in memory, such as a Swar
 |---|---|
 | the environment is copied into every child process, written into crash reports and diagnostic dumps and shown by the host's inspect commands, while a file mounted in memory reaches only the code that opens it. | [security] |
 
-### server-cloud-access-through-workload-identity → credential-has-least-privilege · SHOULD
+### server-cloud-access-through-workload-identity → credential-documented-and-short-lived · SHOULD
 Where its host gives it a workload identity, a server reaches the systems of that cloud with the identity's short-lived credentials, never with a long-lived key.
 
 | Why | Tags |

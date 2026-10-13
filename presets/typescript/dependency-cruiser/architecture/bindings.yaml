@@ -44,6 +44,7 @@ core:
     - contract-knows-only-itself-and-kernel
   import-points-inward:
     - adapters-know-no-caller
+    - delivery-reached-only-from-the-edge
     - domain-reaches-only-itself-and-kernel
     - features-know-no-composition
     - kernel-reaches-only-itself

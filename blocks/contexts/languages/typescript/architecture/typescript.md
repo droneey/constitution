@@ -35,7 +35,7 @@ An import of a surface names its folder — `#/features/orders`, `#/kernel/error
 ## Ports
 
 ### null-mapped-to-undefined-in-the-adapter → outside-shape-mapped-in-the-adapter · MUST
-`null` lives only in wire types and in the adapters that read and write them, which map it to and from `undefined`.
+A `null` of an outside format lives only in wire types and in the adapters that read and write them, which map it to and from `undefined`.
 
 | Why | Tags |
 |---|---|

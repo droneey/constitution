@@ -151,7 +151,7 @@ After a navigation inside the program, focus moves to the new view's main headin
 | the browser announces nothing when the program changes the URL itself, so without the move a screen-reader user hears no new page. | [a11y] |
 
 ### document-title-names-the-view → wcag-aa-conformance · MUST
-Each view sets the document's title to a name of its own, and a navigation inside the program changes the title with the view.
+Each view declares a title of its own to the head's one writer, which sets it with the view, and a navigation inside the program changes the title with the view.
 
 | Why | Tags |
 |---|---|

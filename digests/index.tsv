@@ -29,10 +29,10 @@ block	mobile	platform	Storage, links, traffic and releases of an app on a phone 
 block	server	platform	A long-running process a host starts, routes to, restarts and stops.	architecture/server.md	http-server messaging observability owned-data			false				**
 block	css	language	Stylesheets: cascade layers, selectors, custom properties and classes.	architecture/css.md	browser design-system i18n ui architecture/ui			false				**/*.css
 block	markdown	language	Markdown documents: headings, links, images and code blocks.					false				**/*.md
-block	python	language	Python's modules, types, async code, specs and dependencies.	architecture/python.md	distribution architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
+block	python	language	Python's modules, types, async code, specs and dependencies.	architecture/python.md	distribution yaml architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
 block	shell	language	Shell scripts: their shell, failures, quoting and temporary files.					false				**/*.sh
-block	typescript	language	TypeScript's forms of modules, types, errors, effects and packages.	types.md architecture/typescript.md	distribution i18n workspace architecture/cli architecture/ui architecture/workspace workflow/distribution			false				**/*.ts **/*.tsx package.json
-block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extension.					false				**/*.yaml **/*.yml
+block	typescript	language	TypeScript's forms of modules, types, errors, effects and packages.	types.md architecture/typescript.md	css distribution i18n shell workspace yaml architecture/cli architecture/ui architecture/workspace workflow/distribution			false				**/*.ts **/*.tsx package.json
+block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extension.		shell			false				**/*.yaml **/*.yml
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	architecture/_react.md	remote-data	ui typescript		true	react-dom react-native			**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	architecture/biome.md	workspace	typescript		false		typescript css		biome.json biome.*.jsonc **/*.grit
@@ -92,11 +92,11 @@ block	yaml-js	implementation	The yaml package reads and writes YAML.	architectur
 block	yamllint	implementation	yamllint holds the style of YAML files.			yaml		false		yaml		.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types.		config-file architecture/ui	typescript		false				**/models/** **/adapters/**
 chapter	core	agents.md	a person or an agent at work on the repository.
-chapter	core	changes.md	a change, one reviewed step of a task's work: its scope, what it carries, its hand-back.
+chapter	core	changes.md	a change, one step of a task's work: its scope, what it carries, its hand-back.
 chapter	core	code.md	any code no other chapter governs.
 chapter	core	comments.md	a comment, the documentation of an entry, a mark of deprecation.
 chapter	core	dependencies.md	packages, downloads and tools taken from others.
-chapter	core	effects.md	calls, resources, concurrency, writes, stopping, records, configuration, artefacts.
+chapter	core	effects.md	calls, resources, concurrency, writes, stopping, records, configuration.
 chapter	core	errors.md	a failure: raised, caught, carried, shown.
 chapter	core	functions.md	a function.
 chapter	core	layout.md	a file or a folder: its kind, name, size and purpose; readmes.
@@ -155,7 +155,7 @@ rule	dependencies-locked-by-one-lockfile	core	blocks/core/dependencies.md		MUST	
 rule	download-pinned-by-version-and-checksum	core	blocks/core/dependencies.md		MUST	security			true
 rule	tool-pinned-exactly-by-the-repository	core	blocks/core/dependencies.md		MUST	security			true
 rule	production-code-imports-no-tool	core	blocks/core/dependencies.md		MUST				true
-rule	dependency-resolved-from-its-declared-registry	core	blocks/core/dependencies.md		SHOULD	security			true
+rule	dependency-resolved-from-its-declared-registry	core	blocks/core/dependencies.md		MUST	security			true
 rule	new-dependency-vetted	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	new-release-adopted-after-a-cooldown	core	blocks/core/dependencies.md		SHOULD	security			true
 rule	dependency-provenance-verified	core	blocks/core/dependencies.md		SHOULD	security			true
@@ -167,6 +167,7 @@ rule	deprecated-dependency-replaced	core	blocks/core/dependencies.md		SHOULD				
 rule	async-work-awaited-or-held-by-a-scope	core	blocks/core/effects.md		MUST	errors			true
 rule	outside-call-has-a-timeout	core	blocks/core/effects.md		MUST	errors performance			true
 rule	outside-call-can-be-cancelled	core	blocks/core/effects.md		SHOULD	performance			true
+rule	call-takes-the-remaining-deadline	core	blocks/core/effects.md		SHOULD	performance			true
 rule	resource-released-on-every-path	core	blocks/core/effects.md		MUST				true
 rule	outside-read-bounded	core	blocks/core/effects.md		MUST	performance			true
 rule	outside-call-never-made-per-item	core	blocks/core/effects.md		SHOULD	performance			true
@@ -192,7 +193,8 @@ rule	optional-part-isolated-from-its-faults	core	blocks/core/errors.md		SHOULD	e
 rule	error-keeps-its-cause	core	blocks/core/errors.md		MUST	errors			true
 rule	thrown-value-is-an-error	core	blocks/core/errors.md		MUST	errors			true
 rule	failure-logged-once	core	blocks/core/errors.md		SHOULD	errors			true
-rule	failure-retried-only-when-transient	core	blocks/core/errors.md		SHOULD	errors			true
+rule	failure-retried-only-when-transient	core	blocks/core/errors.md		MUST	errors			true
+rule	retry-waits-by-backoff-or-the-asked-delay	core	blocks/core/errors.md		SHOULD	errors performance			true
 rule	last-resort-handler-one-per-entry	core	blocks/core/errors.md		MUST	errors			true
 rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/errors.md		SHOULD	errors security ux			true
 rule	error-library-gives-code-cause-and-details	core	blocks/core/errors.md		MUST	errors			true
@@ -206,7 +208,7 @@ rule	function-takes-no-boolean-position	core	blocks/core/functions.md		SHOULD			
 rule	function-tells-same-type-parameters-apart	core	blocks/core/functions.md		SHOULD				true
 rule	file-named-for-its-kind	core	blocks/core/layout.md		MUST				true
 rule	generated-file-never-edited	core	blocks/core/layout.md		MUST				true
-rule	file-is-one-semantic-unit	core	blocks/core/layout.md		MUST				true
+rule	file-is-one-semantic-unit	core	blocks/core/layout.md		SHOULD				true
 rule	file-within-500-lines	core	blocks/core/layout.md		MUST				true
 rule	file-name-in-its-owners-case	core	blocks/core/layout.md		MUST				true
 rule	format-has-one-extension	core	blocks/core/layout.md		SHOULD				true
@@ -246,17 +248,20 @@ rule	secret-and-personal-data-kept-out-of-output	core	blocks/core/security.md		M
 rule	secret-never-passed-as-a-process-argument	core	blocks/core/security.md		MUST	security			true
 rule	child-process-environment-built-for-it	core	blocks/core/security.md		MUST	security			true
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
-rule	credential-has-least-privilege	core	blocks/core/security.md		SHOULD	security			true
+rule	credential-has-least-privilege	core	blocks/core/security.md		MUST	security			true
+rule	credential-documented-and-short-lived	core	blocks/core/security.md		SHOULD	security			true
 rule	process-runs-with-only-the-rights-its-job-needs	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
 rule	outside-path-confined-to-its-root	core	blocks/core/security.md		MUST	security			true
+rule	outside-identifier-normalised-before-comparison	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-never-rebuilt-as-objects	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-parsed-without-external-references	core	blocks/core/security.md		MUST	security			true
 rule	outside-address-followed-only-from-an-allowlist	core	blocks/core/security.md		MUST	security			true
 rule	security-check-fails-closed	core	blocks/core/security.md		MUST	security			true
 rule	cryptographic-algorithm-approved-by-current-guidance	core	blocks/core/security.md		MUST	security			true
+rule	key-exchange-hybrid-with-post-quantum	core	blocks/core/security.md		SHOULD	security			true
 rule	security-primitive-from-a-vetted-library	core	blocks/core/security.md		MUST	security			true
 rule	spec-proves-one-boundary	core	blocks/core/tests.md		SHOULD	testing			true
 rule	constant-specced-only-as-a-contract	core	blocks/core/tests.md		SHOULD	testing			true
@@ -319,6 +324,7 @@ rule	absence-shown-by-the-type	core	blocks/core/types.md		MUST	data			true
 rule	instant-is-an-exact-time	core	blocks/core/types.md		MUST	data			true
 rule	duration-measured-on-a-monotonic-clock	core	blocks/core/types.md		MUST	data			true
 rule	text-encoded-as-utf-8	core	blocks/core/types.md		MUST	data			true
+rule	machine-text-independent-of-the-locale	core	blocks/core/types.md		SHOULD	data			true
 rule	exact-quantity-never-binary-float	core	blocks/core/types.md		MUST	data			true
 rule	business-rule-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	domain-logs-nothing	core	blocks/core/architecture/domain.md		MUST		architecture		true
@@ -328,7 +334,7 @@ rule	contexts-duplicate-rather-than-share	core	blocks/core/architecture/domain.m
 rule	use-case-only-with-business-logic	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	command-loads-through-its-write-port	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	command-returns-nothing	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
-rule	query-and-command-apart	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
+rule	query-and-command-apart	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	pipeline-stage-never-calls-a-stage	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	import-points-inward	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	domain-imports-only-itself-the-kernel-and-top-level-contracts	core	blocks/core/architecture/layers.md		MUST		architecture		true
@@ -788,8 +794,7 @@ rule	cache-exposes-the-input-of-pending-writes	remote-data	blocks/domains/remote
 rule	unauthenticated-failure-ends-the-session-once	remote-data	blocks/domains/remote-data/architecture/with/access-control.md	access-control	MUST	errors security	architecture		true
 rule	address-from-a-caller-reached-only-if-public	remote-service	blocks/domains/remote-service/calls.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
 rule	call-cut-by-the-network-is-an-expected-failure	remote-service	blocks/domains/remote-service/calls.md		MUST	errors		failure-is-expected-or-defect	true
-rule	call-takes-the-remaining-deadline	remote-service	blocks/domains/remote-service/calls.md		SHOULD	performance			true
-rule	retry-honours-retry-after	remote-service	blocks/domains/remote-service/calls.md		SHOULD	errors performance		failure-retried-only-when-transient	true
+rule	retry-honours-retry-after	remote-service	blocks/domains/remote-service/calls.md		SHOULD	errors performance		retry-waits-by-backoff-or-the-asked-delay	true
 rule	concurrent-calls-to-a-system-bounded	remote-service	blocks/domains/remote-service/calls.md		SHOULD	performance			true
 rule	calls-to-a-failing-system-cut-off-by-a-breaker	remote-service	blocks/domains/remote-service/calls.md		SHOULD	errors performance			true
 rule	call-runs-over-verified-tls	remote-service	blocks/domains/remote-service/calls.md		MUST	security			true
@@ -1016,7 +1021,7 @@ rule	feature-beyond-the-target-detected-first	browser	blocks/contexts/platforms/
 rule	credential-never-readable-by-script	browser	blocks/contexts/platforms/browser/browser.md		MUST	security		client-credential-kept-in-the-protected-store	true
 rule	served-configuration-read-at-boot	browser	blocks/contexts/platforms/browser/architecture/browser.md		MUST	security	architecture	root-alone-reads-the-environment	true
 rule	primitive-passes-attributes-and-class	browser	blocks/contexts/platforms/browser/with/design-system.md	design-system	SHOULD	ux		primitive-passes-its-element-through	true
-rule	document-language-follows-locale	browser	blocks/contexts/platforms/browser/with/i18n.md	i18n	MUST	a11y ux			true
+rule	document-lang-and-dir-follow-the-locale	browser	blocks/contexts/platforms/browser/with/i18n.md	i18n	MUST	a11y ux			true
 rule	global-privacy-control-read-in-the-page	browser	blocks/contexts/platforms/browser/with/privacy.md	privacy	MUST	data		opt-out-signal-honoured	true
 rule	first-client-render-matches-the-server-render	browser	blocks/contexts/platforms/browser/with/server.md	server	SHOULD	performance ux			true
 rule	server-function-parses-its-input	browser	blocks/contexts/platforms/browser/with/server.md	server	MUST	security		outside-value-untyped-until-parsed	true
@@ -1146,7 +1151,7 @@ rule	server-serves-its-protocol-itself	server	blocks/contexts/platforms/server/s
 rule	server-log-leaves-as-a-stream	server	blocks/contexts/platforms/server/server.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	server-work-in-flight-bounded	server	blocks/contexts/platforms/server/server.md		SHOULD	performance errors			true
 rule	server-secret-read-from-the-host-not-the-environment	server	blocks/contexts/platforms/server/server.md		SHOULD	security			true
-rule	server-cloud-access-through-workload-identity	server	blocks/contexts/platforms/server/server.md		SHOULD	security		credential-has-least-privilege	true
+rule	server-cloud-access-through-workload-identity	server	blocks/contexts/platforms/server/server.md		SHOULD	security		credential-documented-and-short-lived	true
 rule	server-process-runs-unprivileged	server	blocks/contexts/platforms/server/server.md		MUST	security		process-runs-with-only-the-rights-its-job-needs	true
 rule	server-stop-proven-by-a-spec	server	blocks/contexts/platforms/server/server.md		SHOULD	testing			true
 rule	server-liveness-reports-the-process-alone	server	blocks/contexts/platforms/server/server.md		MUST	errors			true
@@ -1168,7 +1173,6 @@ rule	server-signals-flushed-before-exit	server	blocks/contexts/platforms/server/
 rule	server-signal-names-its-copy	server	blocks/contexts/platforms/server/with/observability.md	observability	SHOULD			signal-carries-the-service-identity	true
 rule	store-connections-bounded-across-copies	server	blocks/contexts/platforms/server/with/owned-data.md	owned-data	SHOULD	performance errors			true
 rule	class-declared-is-used	css	blocks/contexts/languages/css/css.md		MUST			dead-code-deleted	true
-rule	class-used-is-declared	css	blocks/contexts/languages/css/css.md		MUST				true
 rule	class-name-in-kebab-case	css	blocks/contexts/languages/css/css.md		SHOULD			name-case-by-kind	true
 rule	class-named-for-what-the-element-is	css	blocks/contexts/languages/css/css.md		SHOULD			name-reveals-intent	true
 rule	custom-property-read-where-defined	css	blocks/contexts/languages/css/css.md		MUST				true
@@ -1206,7 +1210,6 @@ rule	breakpoints-add-to-the-smallest-screen	css	blocks/contexts/languages/css/wi
 rule	component-styles-in-its-folder	css	blocks/contexts/languages/css/architecture/with/ui.md	ui	MUST		architecture	component-in-its-own-folder	true
 rule	document-written-in-commonmark-and-gfm	markdown	blocks/contexts/languages/markdown/markdown.md		SHOULD				true
 rule	raw-html-only-where-markdown-has-no-form	markdown	blocks/contexts/languages/markdown/markdown.md		SHOULD				true
-rule	outside-markdown-rendered-without-raw-html-or-script-links	markdown	blocks/contexts/languages/markdown/markdown.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	markdown-file-ends-in-md	markdown	blocks/contexts/languages/markdown/markdown.md		SHOULD			format-has-one-extension	true
 rule	document-has-one-title-heading	markdown	blocks/contexts/languages/markdown/markdown.md		MUST				true
 rule	heading-level-never-skipped	markdown	blocks/contexts/languages/markdown/markdown.md		MUST				true
@@ -1296,7 +1299,8 @@ rule	py-typed-where-code-is-imported	python	blocks/contexts/languages/python/wit
 rule	integration-is-a-submodule-and-an-extra	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD			integration-is-an-entry-with-an-optional-framework	true
 rule	dependency-declared-with-a-floor	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD			manifest-declares-dependencies-by-range	true
 rule	requires-python-floor-in-the-support-window	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD			runtime-floor-within-the-ecosystems-support-window	true
-rule	classifiers-list-every-supported-minor	python	blocks/contexts/languages/python/with/distribution.md	distribution	MUST				true
+rule	classifiers-list-every-supported-minor	python	blocks/contexts/languages/python/with/distribution.md	distribution	SHOULD				true
+rule	yaml-from-outside-loaded-by-a-safe-loader-only	python	blocks/contexts/languages/python/with/yaml.md	yaml	MUST	security		outside-yaml-loaded-by-a-safe-loader	true
 rule	command-module-named-with-the-cli-suffix	python	blocks/contexts/languages/python/architecture/with/cli.md	cli	MUST		architecture	cli-folder-holds-one-file-per-command	true
 rule	unit-names-spelled-under-the-scope	python	blocks/contexts/languages/python/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
 rule	requires-python-raised-in-a-minor-or-a-major	python	blocks/contexts/languages/python/workflow/with/distribution.md	distribution	MUST		workflow	runtime-floor-never-raised-in-a-patch	true
@@ -1304,7 +1308,6 @@ rule	script-only-glues-commands	shell	blocks/contexts/languages/shell/shell.md		
 rule	expansion-double-quoted	shell	blocks/contexts/languages/shell/shell.md		MUST				true
 rule	list-held-in-an-array	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	line-read-raw	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
-rule	embedded-command-kept-to-a-few-commands	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	shell-name-case-by-kind	shell	blocks/contexts/languages/shell/shell.md		SHOULD			name-case-by-kind	true
 rule	script-logic-in-a-main-function	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	function-variable-declared-local	shell	blocks/contexts/languages/shell/shell.md		MUST			state-never-global-and-mutable	true
@@ -1339,6 +1342,7 @@ rule	cancellation-by-abort-signal	typescript	blocks/contexts/languages/typescrip
 rule	outside-call-timed-out-by-abort-signal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors performance		outside-call-has-a-timeout	true
 rule	scoped-resource-held-by-using	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			resource-released-on-every-path	true
 rule	promise-awaited-returned-or-handed-to-a-scope	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors		async-work-awaited-or-held-by-a-scope	true
+rule	request-path-calls-no-sync-io	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD	performance			true
 rule	child-process-started-without-a-shell	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	outside-path-checked-by-relative	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-path-confined-to-its-root	true
 rule	child-process-given-an-env-of-its-own	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		child-process-environment-built-for-it	true
@@ -1391,6 +1395,7 @@ rule	surface-imported-by-its-folders-path	typescript	blocks/contexts/languages/t
 rule	null-mapped-to-undefined-in-the-adapter	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST	data	architecture	outside-shape-mapped-in-the-adapter	true
 rule	port-is-an-interface	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	contract-declared-by-the-layer-that-needs-it	true
 rule	wiring-file-is-root-wiring-ts	typescript	blocks/contexts/languages/typescript/architecture/typescript.md		MUST		architecture	composition-root-wires-everything	true
+rule	class-used-is-declared	typescript	blocks/contexts/languages/typescript/with/css.md	css	MUST				true
 rule	manifest-exports-with-types-condition	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			distributed-unit-ships-its-types	true
 rule	package-export-typed-explicitly	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST			distributed-unit-ships-its-types	true
 rule	files-list-what-ships	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	MUST	security		distributed-unit-ships-only-what-its-manifest-names	true
@@ -1402,12 +1407,16 @@ rule	dependency-declared-with-a-caret	typescript	blocks/contexts/languages/types
 rule	optional-peer-pinned-as-a-dev-dependency	typescript	blocks/contexts/languages/typescript/with/distribution.md	distribution	SHOULD				true
 rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	MUST	ux		values-formatted-by-the-active-locale	true
 rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	SHOULD	ux		text-sorted-by-the-locale	true
+rule	package-script-kept-short	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	SHOULD				true
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			workspace-root-private	true
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
+rule	yaml-parsed-by-the-core-schema	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	SHOULD	data		reader-resolves-scalars-by-the-core-schema	true
+rule	yaml-from-outside-parsed-with-no-custom-tags	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	MUST	security		outside-yaml-loaded-by-a-safe-loader	true
+rule	yaml-from-outside-parsed-with-an-alias-bound	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	MUST	security performance		alias-expansion-bounded	true
 rule	command-file-named-with-the-cli-suffix	typescript	blocks/contexts/languages/typescript/architecture/with/cli.md	cli	MUST		architecture	cli-folder-holds-one-file-per-command	true
 rule	component-reaches-no-io-global	typescript	blocks/contexts/languages/typescript/architecture/with/ui.md	ui	MUST		architecture	presentational-component-performs-no-io	true
-rule	typescript-unit-names-under-the-scope	typescript	blocks/contexts/languages/typescript/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
+rule	unit-package-named-under-the-scope	typescript	blocks/contexts/languages/typescript/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
 rule	engines-floor-raised-only-in-a-major	typescript	blocks/contexts/languages/typescript/workflow/with/distribution.md	distribution	MUST		workflow	runtime-floor-never-raised-in-a-patch	true
 rule	anchor-aliased-at-least-once	yaml	blocks/contexts/languages/yaml/yaml.md		MUST			dead-code-deleted	true
 rule	collection-written-in-block-style	yaml	blocks/contexts/languages/yaml/yaml.md		MUST				true
@@ -1420,6 +1429,7 @@ rule	outside-yaml-loaded-by-a-safe-loader	yaml	blocks/contexts/languages/yaml/ya
 rule	alias-expansion-bounded	yaml	blocks/contexts/languages/yaml/yaml.md		MUST	security performance		outside-input-bounded-before-it-is-parsed	true
 rule	yaml-file-ends-in-yaml	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD			format-has-one-extension	true
 rule	yaml-file-holds-one-document	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD				true
+rule	embedded-command-kept-short	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	SHOULD				true
 rule	react-compiler-on	_react	blocks/implementations/_react/_react.md		MUST	performance			true
 rule	render-is-pure	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST				true
@@ -1544,7 +1554,7 @@ rule	lfs-for-files-over-a-megabyte	git	blocks/implementations/git/git.md		SHOULD
 rule	hadolint-suppression-names-rule-and-reason	hadolint	blocks/implementations/hadolint/hadolint.md		MUST			suppression-silences-one-finding	true
 rule	timeout-on-every-client-and-call	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	errors performance		outside-call-has-a-timeout	true
 rule	client-open-for-the-program-life	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	performance		resource-released-on-every-path	true
-rule	httpx2-retries-kept-to-transient-failures	httpx2	blocks/implementations/httpx2/httpx2.md		SHOULD	errors		failure-retried-only-when-transient	true
+rule	httpx2-retries-kept-to-transient-failures	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	errors		failure-retried-only-when-transient	true
 rule	response-body-parsed-by-its-model	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	security		boundary-values-object-until-parsed	true
 rule	mock-transport-refuses-unmatched	httpx2	blocks/implementations/httpx2/httpx2.md		MUST	testing security		unmatched-request-fails-the-spec	true
 rule	one-client-per-system-built-by-the-root	httpx2	blocks/implementations/httpx2/architecture/httpx2.md		MUST		architecture	one-transport-instance-per-system	true
@@ -1560,7 +1570,7 @@ rule	units-ordered-by-a-layers-contract	import-linter	blocks/implementations/imp
 rule	production-set-marked-in-the-entries	knip	blocks/implementations/knip/knip.md		MUST			dead-code-deleted	true
 rule	optional-peer-ignored-in-production	knip	blocks/implementations/knip/with/distribution.md	distribution	MUST				true
 rule	ky-timeout-and-signal-kept	ky	blocks/implementations/ky/ky.md		MUST	performance errors		outside-call-has-a-timeout	true
-rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/ky.md		SHOULD	performance errors		failure-retried-only-when-transient	true
+rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/ky.md		MUST	performance errors		failure-retried-only-when-transient	true
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/ky.md		MUST	security		boundary-values-unknown-until-parsed	true
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		MUST		architecture	one-transport-instance-per-system	true
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	errors	architecture	transport-failures-mapped-once	true
@@ -1738,7 +1748,7 @@ rule	query-for-reads-mutation-for-writes	tanstack-query	blocks/implementations/t
 rule	query-result-returned-as-status-union	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	data ux		data-result-is-union-by-status	true
 rule	optimism-in-the-mutation-lifecycle	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	ux data		overlapping-writes-keep-each-others-results	true
 rule	invalidation-in-on-settled	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data			true
-rule	query-retry-only-transient	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	errors		failure-retried-only-when-transient	true
+rule	query-retry-only-transient	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	errors		failure-retried-only-when-transient	true
 rule	query-signal-reaches-the-request	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	performance		outside-call-can-be-cancelled	true
 rule	input-query-keyed-on-debounced-value	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	ux performance		input-driven-requests-debounced	true
 rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data performance		fast-source-updates-once-per-frame	true

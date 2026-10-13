@@ -185,7 +185,7 @@ A type of the program's business data is a dataclass with `frozen=True, slots=Tr
 | the runtime then refuses a mutation the business never meant, each field is set by its name, and a `frozendict` keeps the value hashable where a `dict` behind `Mapping` does not. | [] |
 
 ### invariant-value-is-a-frozen-dataclass → invariant-value-is-plain-immutable-data · MUST
-A value that keeps an invariant is a dataclass with `frozen=True, slots=True`, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset`, a `frozendict` or another such value — and never a `NamedTuple` or a parsing library's model.
+A value that keeps an invariant is a dataclass with `frozen=True, slots=True`, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset`, a `frozendict` where the floor is Python 3.15, or another such value — and never a `NamedTuple` or a parsing library's model.
 
 | Why | Tags |
 |---|---|
@@ -352,7 +352,7 @@ A process the program starts — through `subprocess` or `asyncio.create_subproc
 | every one of these calls copies the program's whole environment into the child when `env` is left out or `None`, a secret among it. | [security] |
 
 ### outside-data-never-unpickled → outside-input-never-rebuilt-as-objects · MUST
-Data from outside is never read by `pickle`, `marshal` or `shelve`.
+Data from outside is never read by a loader that builds objects from what it names — `pickle`, `marshal`, `shelve`, `dill`, `jsonpickle`, `torch.load` without `weights_only=True`.
 
 | Why | Tags |
 |---|---|

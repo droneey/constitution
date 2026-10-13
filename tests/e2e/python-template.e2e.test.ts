@@ -53,7 +53,7 @@ const ORDERS_WITH_LABEL = (comment: string): string =>
     'def label() -> str:',
     `  return 'orders'${comment}`,
   );
-// A feature's folders, as the anatomy lays them out, before a case adds a layer.
+// A feature's folders, as core's tree lays them out, before a case adds a layer.
 const FEATURE = {
   'src/shop/features/__init__.py': '',
   'src/shop/features/orders/__init__.py': '',

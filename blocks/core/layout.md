@@ -5,7 +5,7 @@
 ## Kinds
 
 ### file-named-for-its-kind · MUST
-A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
+A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
 
 | Why | Tags |
 |---|---|
@@ -18,7 +18,7 @@ A generated file is never edited by hand: a change goes to its source, and the f
 |---|---|
 | a hand edit to a generated file is lost at the next generation. | [] |
 
-### file-is-one-semantic-unit · MUST
+### file-is-one-semantic-unit · SHOULD
 A file holds one semantic unit and is named after it; an unrelated export goes to its own file.
 
 | Why | Tags |

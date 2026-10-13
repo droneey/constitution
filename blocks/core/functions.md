@@ -19,7 +19,7 @@ A function either answers a question or changes state, never both. One that answ
 | a question that changes something cannot be asked twice safely, and a change that reads more than it changes decides on data its caller never saw. | [] |
 
 ### function-pure-by-default · SHOULD
-A function that answers depends only on its input and changes none of its arguments.
+A function that answers depends only on its input.
 
 | Why | Tags |
 |---|---|

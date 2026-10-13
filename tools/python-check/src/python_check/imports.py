@@ -76,6 +76,22 @@ def _surface_passed(
   return None
 
 
+# The surfaces of the importer's own module: its feature, or the module of a
+# layer it sits in.
+def _own_surfaces(package: tuple[str, ...]) -> tuple[tuple[str, ...], ...]:
+  if package[:1] == (FEATURES,):
+    return (package[:2],)
+
+  return (package[:2],) if len(package) >= 2 and package[0] in MODULE_LAYERS else ()
+
+
+# A target that names neither a folder nor a module names what a surface offers.
+def _names_a_surface_member(*, root: ImportRoot, target: tuple[str, ...]) -> bool:
+  path = root.folder.joinpath(*target)
+  module = path.with_suffix('.py')  # pragma: no mutate -- macOS reads any case of it
+  return not path.is_dir() and not module.is_file()
+
+
 def _relative_targets(
   *,
   node: ast.ImportFrom,
@@ -119,6 +135,17 @@ def _relative_findings(
         line=node.lineno,
         message=f'a relative import leaves its module, {name}; import it by its absolute path',
       )
+    elif target[:-1] in _own_surfaces(root.package) and _names_a_surface_member(
+      root=root, target=target
+    ):
+      yield Finding(
+        path=path,
+        line=node.lineno,
+        message=(
+          f"a relative import reaches its own module's surface, {'/'.join(target[:-1])}; "
+          'import the file that declares it'
+        ),
+      )
     elif (unit := _surface_passed(importer=root.package, root=root, target=target)) is not None:
       yield Finding(
         path=path,
@@ -157,6 +184,14 @@ def _absolute_findings(
         path=path,
         line=node.lineno,
         message=f'a feature imports itself by its absolute path, {name}; import it relatively',
+      )
+    elif inner in _own_surfaces(root.package):
+      yield Finding(
+        path=path,
+        line=node.lineno,
+        message=(
+          f"an import reaches its own module's surface, {name}; import the file that declares it"
+        ),
       )
     elif (
       inner[:1] == root.package[:1]

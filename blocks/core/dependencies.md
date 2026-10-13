@@ -32,7 +32,7 @@ Production code imports no dependency that only builds, tests or lints.
 |---|---|
 | a tool imported by the program ships with it, and its next release changes the program without anyone choosing it. | [] |
 
-### dependency-resolved-from-its-declared-registry · SHOULD
+### dependency-resolved-from-its-declared-registry · MUST
 A private dependency resolves only from the registry the project names for it, never from a public one.
 
 | Why | Tags |

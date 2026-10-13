@@ -22,14 +22,7 @@ A call to a remote system that times out, loses its connection or cannot reach t
 
 ## Time
 
-### call-takes-the-remaining-deadline · SHOULD
-A call made for a unit of work that has a deadline — a request, a task — takes the time that unit has left, never a full timeout of its own, and is not made once none is left.
-
-| Why | Tags |
-|---|---|
-| a nested call with a full timeout of its own keeps working after its caller has given up, and its answer reaches nobody. | [performance] |
-
-### retry-honours-retry-after → failure-retried-only-when-transient · SHOULD
+### retry-honours-retry-after → retry-waits-by-backoff-or-the-asked-delay · SHOULD
 A retry of a call the remote system refused as rate-limited or unavailable waits at least as long as its `Retry-After` asks, and gives up when that wait passes the caller's deadline.
 
 | Why | Tags |

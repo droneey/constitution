@@ -76,14 +76,14 @@ A push notification's payload holds no secret and no personal data in clear: it 
 | a push passes through the platform's push service and may show on a locked screen, so what it carries in clear reaches people and systems the user never chose. | [security, data] |
 
 ### release-build-carries-no-debugging · MUST
-A release build is not debuggable and carries no development menu, no connection to a development server and no trust of user-added certificates.
+A release build is not debuggable and carries no development menu, and no connection to a development server.
 
 | Why | Tags |
 |---|---|
 | each of these lets whoever holds the phone read the app's memory, change its code or read its traffic. | [security] |
 
 ### personal-data-at-rest-kept-in-the-protected-class · MUST
-Personal data the app stores beyond its credentials sits in the system's strongest protected file class it can use — `complete` on iOS, or `completeUnlessOpen` where work in the background must write it, and the app's private, encrypted storage on Android — is left out of backups to other devices where it identifies its person, and never reaches the system's shared logs.
+Personal data the app stores beyond its credentials sits in the system's strongest protected file class it can use — `complete` on iOS, or `completeUnlessOpen` where work in the background must write it, and the app's private, encrypted storage on Android — and is left out of backups to other devices where it identifies its person.
 
 | Why | Tags |
 |---|---|
@@ -97,7 +97,7 @@ Code the app receives after it is installed — an update of its script bundle o
 | an update channel that serves unsigned code lets whoever reaches it run their code in every installed copy. | [security] |
 
 ### genuine-app-proven-by-the-systems-attestation · MAY
-A server that must know a request comes from the genuine app on a genuine device checks the system's attestation — App Attest on iOS, Play Integrity on Android.
+The app obtains the system's attestation — App Attest on iOS, Play Integrity on Android — and sends it with each request a server must trust as coming from the genuine app on a genuine device.
 
 | Why | Tags |
 |---|---|

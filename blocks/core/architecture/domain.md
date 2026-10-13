@@ -41,7 +41,7 @@ A business value with an invariant — an email address, an amount in its curren
 | the invariant has one home, in the layer that owns its meaning. | [data] |
 
 ### contexts-duplicate-rather-than-share · SHOULD
-Across bounded contexts a model is duplicated by default and shared by exception, never a fact or a rule of the business: a context that needs another’s entity keeps its own narrow view of it, such as a reference by identifier, and the shared kernel holds only what is universal and stable.
+Across bounded contexts a model is duplicated by default and shared by exception; a fact or a rule of the business is never duplicated: a context that needs another’s entity keeps its own narrow view of it, such as a reference by identifier, and the shared kernel holds only what is universal and stable.
 
 | Why | Tags |
 |---|---|
@@ -70,8 +70,8 @@ A command returns no data — only its success or its expected failure; the call
 |---|---|
 | a command that returns data is half a query, and an identifier the caller makes lets it retry the command safely. | [] |
 
-### query-and-command-apart · SHOULD
-The read side and the write side never import each other, directly or through a surface that joins them.
+### query-and-command-apart · MUST
+Where a feature splits its read side from its write side, the two never import each other, directly or through a surface that joins them.
 
 | Why | Tags |
 |---|---|

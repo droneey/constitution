@@ -36,7 +36,7 @@ const EDGE = [
   '^src/(libs|integrations)/',
 ];
 const IO =
-  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|readline|sqlite|timers|tls|vm|worker_threads)(?:/|$)';
+  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|quic|readline|repl|sqlite|timers|tls|trace_events|tty|v8|vm|wasi|worker_threads)(?:/|$)';
 // What a registry installs; the repository's own units are its code, held by the rules between units.
 const PACKAGES = [
   'npm',
@@ -322,6 +322,16 @@ export default {
       },
       to: {
         path: IO,
+      },
+    },
+    {
+      name: 'delivery-reached-only-from-the-edge',
+      severity: 'error',
+      from: {
+        path: '^src/(features|kernel|contracts|shared|libs|composition|adapters)/',
+      },
+      to: {
+        path: DELIVERY,
       },
     },
     {

@@ -137,11 +137,18 @@ A duration the program measures is read from a monotonic clock, never from the w
 | a wall clock that jumps — a correction, a change of season — corrupts every duration measured across the jump. | [data] |
 
 ### text-encoded-as-utf-8 · MUST
-Text the program reads or writes — a file, a stream, a message — is UTF-8, named explicitly wherever an interface takes an encoding, never the platform's default; an outside format that fixes another encoding is decoded where it enters.
+Text the program reads or writes — a file, a stream, a message — is UTF-8, named explicitly wherever an interface takes an encoding, never the platform's default; an outside format that fixes another encoding is decoded where it enters and encoded where it leaves.
 
 | Why | Tags |
 |---|---|
 | a default encoding differs between machines, so the same bytes read as different text in development and in production. | [data] |
+
+### machine-text-independent-of-the-locale · SHOULD
+Text written for another program — a number, a date, a key, an identifier — is formatted, parsed, compared and cased independently of the locale the process runs in.
+
+| Why | Tags |
+|---|---|
+| the same code writes `1,5` for one user and `1.5` for another, or upper-cases `i` to `İ`, and the reader on the other side refuses or misreads it. | [data] |
 
 ### exact-quantity-never-binary-float · MUST
 Money and every other exact decimal quantity is an integer of its smallest unit or a decimal type, with its currency or unit in the type, never binary floating point.

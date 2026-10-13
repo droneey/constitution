@@ -55,15 +55,25 @@ OWN = frozenset({'__future__', *sys.stdlib_module_names})
 EFFECTS = frozenset(
   {
     'ctypes',
+    'curses',
     'dbm',
     'fcntl',
+    'fileinput',
     'ftplib',
     'getpass',
     'glob',
+    'grp',
+    'imaplib',
     'mmap',
     'multiprocessing',
     'os',
+    'platform',
+    'poplib',
+    'pty',
+    'pwd',
     'random',
+    'resource',
+    'runpy',
     'secrets',
     'select',
     'selectors',
@@ -72,12 +82,18 @@ EFFECTS = frozenset(
     'signal',
     'smtplib',
     'socket',
+    'socketserver',
     'sqlite3',
     'ssl',
     'subprocess',
+    'syslog',
     'tempfile',
+    'termios',
     'time',
+    'tty',
     'webbrowser',
+    'wsgiref',
+    'xmlrpc',
   }
 )
 # What of the standard library reaches an effect although its module's types are pure,
@@ -90,20 +106,25 @@ EFFECT_NAMES = frozenset(
     'asyncio.open_unix_connection',
     'asyncio.start_server',
     'asyncio.subprocess',
+    'codecs.open',
     'datetime.date.today',
     'datetime.datetime.now',
     'datetime.datetime.today',
     'datetime.datetime.utcnow',
+    'gzip.open',
     'http.client',
     'http.server',
+    'importlib.metadata',
     'input',
     'io.open',
+    'locale.setlocale',
     'open',
     'sys.argv',
     'sys.exit',
     'sys.stderr',
     'sys.stdin',
     'sys.stdout',
+    'tarfile.open',
     'urllib.request',
     'uuid.uuid1',
     'uuid.uuid4',
@@ -173,7 +194,7 @@ def _named(node: ast.AST) -> tuple[str, ...]:
     case ast.Import():
       return tuple(alias.name for alias in node.names)
     case ast.ImportFrom(level=0, module=str(module)):
-      return tuple(f'{module}.{alias.name}' for alias in node.names)
+      return (module, *(f'{module}.{alias.name}' for alias in node.names))
     case ast.Attribute():
       name = _dotted(node)
       return () if name is None else (name, f'{DATETIME}.{name}')

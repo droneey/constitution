@@ -63,7 +63,7 @@ A transition or an animation that moves, scales or rotates content runs only ins
 ## Components
 
 ### stylesheet-value-read-from-the-theme → tokens-single-source-of-appearance · MUST
-In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property, and in a value no theme names — `0`, a percentage, a viewport unit, `auto`.
+In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property, and in a value no theme names — `0`, a percentage, a viewport unit, `auto` — and in the condition of a media or a container query, where `var()` cannot be read.
 
 | Why | Tags |
 |---|---|

@@ -31,13 +31,6 @@ A document writes raw HTML only for what Markdown has no syntax for, such as `<d
 
 ## Security
 
-### outside-markdown-rendered-without-raw-html-or-script-links → outside-input-reaches-interpreters-as-parameters · MUST
-Markdown from outside the program is rendered with its raw HTML escaped or sanitised and its link and image destinations limited to safe schemes, so no `javascript:`, `vbscript:` or `data:` link survives.
-
-| Why | Tags |
-|---|---|
-| CommonMark passes raw HTML and any link destination through to the page, so whoever wrote the text runs script in the reader's session. | [security] |
-
 ## Layout
 
 ### markdown-file-ends-in-md → format-has-one-extension · SHOULD
@@ -57,7 +50,7 @@ A document read as a page has one first-level heading, its title, before any oth
 | renderers, outlines and readers take the first-level heading as the document's name, and with two the document has no one name. | [] |
 
 ### heading-level-never-skipped · MUST
-A heading is at most one level deeper than the heading before it: a `###` follows a `##` or a `###`, never a `#` — save in a file whose heading levels a tool or a schema fixes.
+A heading is at most one level deeper than the heading before it: a `###` follows a `##` or any deeper heading, never a `#` — save in a file whose heading levels a tool or a schema fixes.
 
 | Why | Tags |
 |---|---|

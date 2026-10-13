@@ -1,6 +1,6 @@
 # Effects
 
-> Governs calls, resources, concurrency, writes, stopping, records, configuration, artefacts.
+> Governs calls, resources, concurrency, writes, stopping, records, configuration.
 
 ## Calls and resources
 
@@ -24,6 +24,13 @@ Every call across a process boundary can be cancelled by its caller.
 | Why | Tags |
 |---|---|
 | a call that cannot be cancelled keeps working for a caller who left. | [performance] |
+
+### call-takes-the-remaining-deadline · SHOULD
+A call made for a unit of work that has a deadline — a request, a task — takes the time that unit has left, never a full timeout of its own, and is not made once none is left.
+
+| Why | Tags |
+|---|---|
+| a nested call with a full timeout of its own keeps working after its caller has given up, and its answer reaches nobody. | [performance] |
 
 ### resource-released-on-every-path · MUST
 A resource the code acquires — a handle, a connection, a lock, a subscription — is released on every way out, a failure’s included, by the language’s scoped form of release.
@@ -68,7 +75,7 @@ State in the program's memory that concurrent work reaches is owned by one task 
 | two tasks that change one value unguarded lose an update at random, and locks taken in two orders, or held while waiting on another system, deadlock under load. | [data, errors] |
 
 ### program-stops-cleanly · MUST
-A program told to stop — by a termination signal or by its host — takes no new work once nothing routes work to it any longer, finishes or cancels the work in flight within a bound, releases its resources and exits.
+A program told to stop — by a termination signal or by its host — keeps taking the work routed to it until nothing routes work to it, then takes none, finishes or cancels the work in flight within a bound, releases its resources and exits.
 
 | Why | Tags |
 |---|---|
@@ -112,7 +119,7 @@ An operation run by hand or by a pipeline against a live system — a script, a 
 | an irreversible operation run by mistake cannot be undone by a better test. | [security, ux] |
 
 ### shared-resource-has-one-writer · MUST
-Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer.
+Every resource the program shares with its host — a signal’s handler, the exit code, the working directory, a standard stream — has one writer, a standard stream one per kind of record it carries: the logger for diagnostics, one writer for its user's output.
 
 | Why | Tags |
 |---|---|

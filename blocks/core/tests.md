@@ -132,7 +132,7 @@ No test is skipped, pending, focused, run only under a condition, expected to fa
 | a skipped test looks like coverage and proves nothing, and a focused one silently skips all the others. | [testing] |
 
 ### spec-folder-holds-only-test-files · MUST
-A folder of specs holds only specs, fakes, fixtures and golden files, each named for its kind and after what it proves or serves.
+A folder of specs holds only specs, fakes, fixtures, golden files and the snapshots its runner writes, each named for its kind and after what it proves or serves.
 
 | Why | Tags |
 |---|---|
@@ -206,7 +206,7 @@ A unit case runs in one process with no output, no waiting and no real clock, an
 ## The sandbox
 
 ### test-runs-in-a-sandbox · MUST
-A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential; the repository’s own files are read, never written, and a real vendor is reached only apart from the tests.
+A test touches no network beyond the engines it started on the loopback, no real file system outside a temporary folder, no process it did not start and no credential but those of the engines it started; the repository’s own files are read, never written, and a real vendor is reached only apart from the tests.
 
 | Why | Tags |
 |---|---|

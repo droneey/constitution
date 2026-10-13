@@ -69,12 +69,19 @@ A failure is logged once, by the unit that handles it or, where that unit logs n
 |---|---|
 | a failure reported at every level looks like several. | [errors] |
 
-### failure-retried-only-when-transient · SHOULD
-A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, with an exponential backoff and a random spread, or after the delay the other side asks for, and a limit, at one level: the code nearest the call, or — for a unit of work a broker or a scheduler runs again within its own limit — that run alone, and then not the code nearest the call; once its retries are spent, or none is safe, it reaches the caller as an expected failure, which no level above retries again.
+### failure-retried-only-when-transient · MUST
+A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, within a limit, at one level: the code nearest the call, or — for a unit of work a broker or a scheduler runs again within its own limit — that run alone, and then not the code nearest the call; once its retries are spent, or none is safe, it reaches the caller as an expected failure, which no level above retries again.
 
 | Why | Tags |
 |---|---|
 | a retry of a failure that will not change wastes time, and a retry of an operation that is not idempotent repeats its effect. | [errors] |
+
+### retry-waits-by-backoff-or-the-asked-delay · SHOULD
+A retry waits by an exponential backoff with a random spread, or for the delay the other side asks for.
+
+| Why | Tags |
+|---|---|
+| retries that fire at once, or all together, turn one failure into a crowd that keeps the other side down. | [errors, performance] |
 
 ## At the entries
 

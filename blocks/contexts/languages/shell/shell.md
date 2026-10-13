@@ -11,7 +11,7 @@ governs: ["**/*.sh"]
 
 # Shell
 
-> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools.  The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
+> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools. The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
 
 ## Code
 
@@ -42,13 +42,6 @@ A line is read by `IFS= read -r`.
 | Why | Tags |
 |---|---|
 | without `-r`, read drops backslashes, and without an empty `IFS` it trims the line's leading and trailing spaces. | [] |
-
-### embedded-command-kept-to-a-few-commands · SHOULD
-A command written inside another file — a step of a CI workflow, a hook's command, a package script — is kept to a few commands, quoted as a script is; anything longer is a `.sh` file the step runs.
-
-| Why | Tags |
-|---|---|
-| a command embedded in another file is read by no shell linter and run by a shell with options its runner chose, so what grows there grows unchecked. | [] |
 
 ## Names
 
@@ -119,7 +112,7 @@ A committed script never turns on `set -x`.
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
-A script exports no variable its commands do not need, passes a secret only to the one command that reads it — `TOKEN="$token" command`, or on its standard input — and starts a command that must not see the environment the script received under `env -i`, with the names it needs.
+A script exports no variable its commands do not need, passes a secret only to the one command that reads it — `TOKEN="$token" command`, or on its standard input — and starts every command that does not need a secret it received with that name unset, by `env -u`, or under `env -i` with the names it needs.
 
 | Why | Tags |
 |---|---|
@@ -135,7 +128,7 @@ An executable script names the shell it is written for on its first line: `#!/us
 | a script run by another shell than its own fails on the first construct that shell lacks, often silently, and `env` finds the Bash the project pins rather than an older one of the system. | [] |
 
 ### shell-file-ends-in-sh → format-has-one-extension · SHOULD
-A shell file ends in `.sh`, save a command installed on a user's path, whose name is the command.
+A shell file ends in `.sh`; a command installed on a user's path under its own name is built or linked from such a file.
 
 | Why | Tags |
 |---|---|

@@ -27,7 +27,7 @@ A client is opened once, with `async with`, for as long as the program runs, and
 |---|---|
 | a client pools its connections, so a client per call pays for a new connection and handshake each time, and one never closed leaks its sockets. | [performance] |
 
-### httpx2-retries-kept-to-transient-failures → failure-retried-only-when-transient · SHOULD
+### httpx2-retries-kept-to-transient-failures → failure-retried-only-when-transient · MUST
 A call is retried only after a timeout, a lost connection, a `429` or a `503` — after the `Retry-After` the answer gives — with backoff and a limit, and only when it repeats safely.
 
 | Why | Tags |

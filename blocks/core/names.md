@@ -54,7 +54,7 @@ A member never repeats the name of the type or the object it belongs to: `MenuIt
 | the owner is written beside every use of its member, so its name said again is noise that hides the part that differs. | [] |
 
 ### business-name-free-of-vendor-and-storage · SHOULD
-A name of the business names its concept, never the vendor or the storage behind it: `UserRecord`, not `UserMongoDocument`.
+A name of the business names its concept, never the vendor or the storage behind it: `User`, not `UserMongoDocument` or `UserRow`.
 
 | Why | Tags |
 |---|---|

@@ -78,7 +78,7 @@ do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py"]
 pytest_add_cli_args = ["-p", "no:randomly"]
 type_check_command = ["ty", "check", "--output-format", "gitlab"]
 
-# import-linter: core's import rules, by the folders of its anatomy
+# import-linter: core's import rules, by the folders of core's tree
 [tool.importlinter]
 root_packages = ["<package>"]
 include_external_packages = true

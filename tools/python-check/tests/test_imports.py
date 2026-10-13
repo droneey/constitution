@@ -6,7 +6,7 @@ from python_check.findings import Finding
 from python_check.imports import import_findings
 from source_fixtures import write_files
 
-# The folders of a package laid out as core's anatomy lays it out.
+# The folders of a package laid out as core's tree lays it out.
 TREE = {
   'src/shop/__init__.py': '',
   'src/shop/main.py': '',
@@ -182,6 +182,33 @@ def test_should_find_nothing_when_an_import_stays_in_its_module(
       'from shop.libs.tabula.sheet import Sheet',
       'an import reaches past the surface of shop.libs.tabula; import shop.libs.tabula',
       id="an absolute import past a sibling module's surface",
+    ),
+    pytest.param(
+      'src/shop/libs/tabula/cells/cell.py',
+      'from .. import Workbook',
+      (
+        "a relative import reaches its own module's surface, libs/tabula; "
+        'import the file that declares it'
+      ),
+      id="a relative import of its own module's surface",
+    ),
+    pytest.param(
+      'src/shop/features/orders/domain/entities/order_entity.py',
+      'from ... import Order',
+      (
+        "a relative import reaches its own module's surface, features/orders; "
+        'import the file that declares it'
+      ),
+      id="a relative import of its own feature's surface",
+    ),
+    pytest.param(
+      'src/shop/libs/tabula/sheet.py',
+      'from shop.libs.tabula import Sheet',
+      (
+        "an import reaches its own module's surface, shop.libs.tabula; "
+        'import the file that declares it'
+      ),
+      id="an absolute import of its own module's surface",
     ),
     pytest.param(
       'src/shop/kernel/money.py',

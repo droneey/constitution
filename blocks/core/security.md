@@ -39,19 +39,26 @@ A secret that leaked — into the repository, a log, a message — is rotated at
 |---|---|
 | a leaked secret is compromised whether or not the leak is undone, and only its access log says whether it was used. | [security] |
 
-### credential-has-least-privilege · SHOULD
-A credential belongs to one identity and one purpose per environment, with only the permissions its job needs, documented beside its use, and short-lived where the platform issues such; access is granted to people and services, never through a shared credential.
+### credential-has-least-privilege · MUST
+A credential belongs to one identity and one purpose per environment, with only the permissions its job needs; access is granted to people and services, never through a shared credential.
 
 | Why | Tags |
 |---|---|
 | a narrow, short-lived credential limits what a leak can do, and one identity per credential says who did what. | [security] |
+
+### credential-documented-and-short-lived · SHOULD
+A credential is documented beside its use, and short-lived where the platform issues such.
+
+| Why | Tags |
+|---|---|
+| a credential nobody can trace to its use is never rotated or revoked in time, and one that lives long stays useful to whoever takes it. | [security] |
 
 ### process-runs-with-only-the-rights-its-job-needs · MUST
 A program runs as a user with only the operating-system rights and the file access its job needs.
 
 | Why | Tags |
 |---|---|
-| one flaw that runs code in a privileged process owns its machine, and a program that can rewrite its own code keeps what an attacker leaves in it. | [security] |
+| one flaw that runs code in a process with more rights than its job needs reaches everything those rights reach. | [security] |
 
 ## Input from outside
 
@@ -82,6 +89,13 @@ A path built from outside input is used only after its real path, every link fol
 | Why | Tags |
 |---|---|
 | a `..` or an absolute path in a name reaches any file the program may read or write. | [security] |
+
+### outside-identifier-normalised-before-comparison · MUST
+An identifier from outside that grants or refuses access — a user name, an e-mail address, a host name, a path — is normalised to one form before it is compared, stored or checked against a list.
+
+| Why | Tags |
+|---|---|
+| two spellings of one identifier — another case, another Unicode form, a trailing dot — pass a check made on one and reach what the other guards. | [security] |
 
 ### outside-input-never-rebuilt-as-objects · MUST
 Input from outside is never read by a format that can build arbitrary objects or run code.
@@ -119,6 +133,13 @@ A cryptographic algorithm, mode and key size are ones current guidance approves 
 | Why | Tags |
 |---|---|
 | a vetted library still offers broken algorithms, and data protected by one is open to whoever reads it later. | [security] |
+
+### key-exchange-hybrid-with-post-quantum · SHOULD
+A key exchange that protects data meant to stay secret for years is hybrid with a post-quantum algorithm — ML-KEM with X25519 — where the platform offers one.
+
+| Why | Tags |
+|---|---|
+| traffic recorded today is decrypted once a quantum computer breaks the classical exchange, so data that must outlive that day is protected by both. | [security] |
 
 ### security-primitive-from-a-vetted-library · MUST
 A security primitive comes from the platform or a vetted library: a token, a nonce or an identifier that guards access from a cryptographic random source, a password stored only by a password-hashing function, a secret compared in constant time; the project writes no cryptography of its own.

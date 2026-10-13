@@ -68,6 +68,11 @@ def _findings(*, importer: str, statement: str) -> tuple[Finding, ...]:
     pytest.param('src/shop/root/settings.py', 'from os import environ', id='an effect in the root'),
     pytest.param(APP, 'import urllib.parse', id='a pure module of a package with an effectful one'),
     pytest.param(
+      'src/shop/kernel/constants/kinds_constants.py',
+      'from importlib.resources import files',
+      id='the package reading its own data',
+    ),
+    pytest.param(
       'src/shop/adapters/clock/clock_adapter.py',
       'STAMP = datetime.now()',
       id='a call to the clock in an adapter',
@@ -191,6 +196,15 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
         'it reaches it through a port'
       ),
       id='an effectful submodule imported',
+    ),
+    pytest.param(
+      APP,
+      'from urllib.request import urlopen',
+      (
+        'features/orders/app/use_cases holds no effect, and urllib.request is one; '
+        'it reaches it through a port'
+      ),
+      id='a name imported from an effectful submodule',
     ),
     pytest.param(
       APP,

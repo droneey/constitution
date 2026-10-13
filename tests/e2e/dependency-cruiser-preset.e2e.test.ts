@@ -145,6 +145,17 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'domain-reaches-only-itself-and-kernel',
     },
     {
+      condition: 'a feature imports a delivery folder no block names',
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+          from: '../../../../../../reports/orders.report',
+          name: 'report',
+        }),
+        'src/reports/orders.report.ts': exported('report'),
+      },
+      rule: 'delivery-reached-only-from-the-edge',
+    },
+    {
       condition: 'shared code reads a file through the runtime',
       files: {
         'src/shared/format/format.ts':

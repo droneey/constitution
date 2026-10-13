@@ -22,13 +22,6 @@ Every class a stylesheet declares is used by markup, save a class a package offe
 |---|---|
 | an unused class is dead code nobody dares delete, since nothing in the stylesheet shows that it styles nothing. | [] |
 
-### class-used-is-declared · MUST
-Every class markup uses is declared, by a stylesheet of the program or by its styling library.
-
-| Why | Tags |
-|---|---|
-| a class nothing declares is a typo or a leftover that styles nothing, while it reads as if it did. | [] |
-
 ## Names
 
 ### class-name-in-kebab-case → name-case-by-kind · SHOULD
@@ -55,7 +48,7 @@ A custom property is read only through `var()`, and only where the theme, or a r
 | a custom property nothing defines resolves to an invalid value, and the declaration that reads it silently falls back to the inherited or initial value. | [] |
 
 ### custom-property-registered-where-typed · MUST
-A custom property that is animated or transitioned, or that code sets at run time, is registered by `@property` with its syntax, its inheritance and a valid initial value.
+A custom property that is animated or transitioned is registered by `@property` with its syntax, its inheritance and a valid initial value.
 
 | Why | Tags |
 |---|---|
