@@ -35,7 +35,7 @@ Nitro's `routeRules` set the other security headers on every document — `Stric
 | one place for every header keeps them from drifting apart, and the test covers them all. | [security] |
 
 ### runtime-config-from-one-server-function → runtime-configuration-served-beside-bundle · MUST
-One server function serves the public projection of the configuration the root parsed at start; the root route loads it once, before anything reads configuration.
+One server function serves the public projection of the configuration parsed at start; the root route loads it once, before anything reads configuration.
 
 | Why | Tags |
 |---|---|

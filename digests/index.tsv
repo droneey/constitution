@@ -1458,6 +1458,7 @@ rule	env-file-never-loaded-automatically	bun	blocks/implementations/bun/bun.md		
 rule	other-runtime-only-where-bun-cannot	bun	blocks/implementations/bun/bun.md		SHOULD				true
 rule	programs-built-by-bun-build	bun	blocks/implementations/bun/bun.md		SHOULD				true
 rule	process-env-read-only-in-root	bun	blocks/implementations/bun/architecture/bun.md		MUST	security	architecture	root-alone-reads-the-environment	true
+rule	bun-global-reached-only-from-the-edge	bun	blocks/implementations/bun/architecture/bun.md		MUST		architecture	effects-held-only-by-the-edge	true
 rule	units-published-by-npm	bun	blocks/implementations/bun/with/distribution.md	distribution	MUST	security		version-published-with-provenance	true
 rule	workspaces-declared-in-the-root	bun	blocks/implementations/bun/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
 rule	own-units-at-workspace-version	bun	blocks/implementations/bun/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true

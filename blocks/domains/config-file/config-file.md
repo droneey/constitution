@@ -54,7 +54,7 @@ A secret in the config file is written as a reference by name — to the environ
 | the config file can then be committed, shared and reviewed without leaking what it needs. | [security] |
 
 ### config-file-reference-resolved-on-read → configuration-parsed-once-at-start · MUST
-Every reference the config file makes is resolved when the config file is read, by a resolver the root hands its reader — from the environment, the local environment file beside the config file, a file its host mounts, or the secret store it names — and the read fails naming every one that is missing.
+Every reference the config file makes is resolved when the config file is read — from the environment, the local environment file beside the config file, a file its host mounts, or the secret store it names — and the read fails naming every one that is missing.
 
 | Why | Tags |
 |---|---|

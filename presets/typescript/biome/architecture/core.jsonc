@@ -15,6 +15,7 @@
         "**/contracts/**",
         "**/shared/**",
         "**/composition/**",
+        "!**/components/**",
         "!**/__tests__/**",
       ],
       "linter": {
@@ -24,7 +25,6 @@
               "level": "error",
               "options": {
                 "deniedGlobals": {
-                  "Bun": "Outside the edge, input and output reach this code through a port.",
                   "EventSource": "Outside the edge, the network reaches this code through a port.",
                   "WebSocket": "Outside the edge, the network reaches this code through a port.",
                   "XMLHttpRequest": "Outside the edge, the network reaches this code through a port.",

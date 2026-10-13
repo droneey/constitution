@@ -12,7 +12,7 @@ The config file's type, which joins the sections of several features, is a type 
 | the adapter that parses the file and the composition that splits it both reach `contracts/`, and neither may reach the other. | [] |
 
 ### config-file-parsed-by-its-adapter → layer-imports-dependencies-by-its-role · MUST
-The schema that parses the config file, and the library it is written with, live in the adapter that implements that port, which maps what it parsed to the config file's type; neither `contracts/` nor `composition/` imports a parsing library.
+The schema that parses the config file, and the library it is written with, live in the adapter that implements that port, which maps what it parsed to the config file's type and resolves the file's references through a resolver the root hands it; neither `contracts/` nor `composition/` imports a parsing library.
 
 | Why | Tags |
 |---|---|
