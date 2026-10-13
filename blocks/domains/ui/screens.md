@@ -86,3 +86,10 @@ An interaction shows its first visible response — a pressed state, an opened l
 | Why | Tags |
 |---|---|
 | a press that shows nothing reads as missed, so the user presses again or leaves. | [performance, ux] |
+
+### fast-source-updates-once-per-frame · SHOULD
+A fast source — a resize, a scroll, a stream — updates a screen's state at most once a frame, its events folded in batches.
+
+| Why | Tags |
+|---|---|
+| dozens of updates a second redraw nothing the user can see and starve everything else. | [performance] |

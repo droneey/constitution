@@ -108,7 +108,7 @@ Pending, optimistic and transition state go through `useActionState`, `useTransi
 |---|---|
 | React then knows what is pending, and keeps the user interface responsive while it is. | [ux] |
 
-### fast-source-batched-in-its-hook → interaction-answered-before-its-work · SHOULD
+### fast-source-batched-in-its-hook → fast-source-updates-once-per-frame · SHOULD
 A hook that folds a fast source schedules its state once per animation frame; an expensive render driven by input reads `useDeferredValue`.
 
 | Why | Tags |

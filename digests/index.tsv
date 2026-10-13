@@ -845,6 +845,7 @@ rule	passing-state-kept-in-its-component	ui	blocks/domains/ui/screens.md		SHOULD
 rule	loading-never-replaces-shown-content	ui	blocks/domains/ui/screens.md		SHOULD	ux			true
 rule	late-content-reserves-its-space	ui	blocks/domains/ui/screens.md		SHOULD	ux performance			true
 rule	interaction-answered-before-its-work	ui	blocks/domains/ui/screens.md		SHOULD	performance ux			true
+rule	fast-source-updates-once-per-frame	ui	blocks/domains/ui/screens.md		SHOULD	performance			true
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/tests.md		SHOULD	ux testing		spec-proves-one-boundary	true
 rule	component-spec-proves-behaviour-and-keyboard	ui	blocks/domains/ui/tests.md		SHOULD	a11y testing		spec-proves-one-boundary	true
 rule	element-found-by-role-label-or-text	ui	blocks/domains/ui/tests.md		MUST	a11y testing		case-asserts-what-a-caller-observes	true
@@ -1393,7 +1394,7 @@ rule	effects-only-for-external-systems	_react	blocks/implementations/_react/_rea
 rule	derived-state-computed-in-render	_react	blocks/implementations/_react/_react.md		MUST	performance			true
 rule	effect-cleans-up-and-cancels	_react	blocks/implementations/_react/_react.md		MUST			resource-released-on-every-path	true
 rule	async-ui-state-through-actions	_react	blocks/implementations/_react/_react.md		SHOULD	ux			true
-rule	fast-source-batched-in-its-hook	_react	blocks/implementations/_react/_react.md		SHOULD	performance ux		interaction-answered-before-its-work	true
+rule	fast-source-batched-in-its-hook	_react	blocks/implementations/_react/_react.md		SHOULD	performance		fast-source-updates-once-per-frame	true
 rule	compound-parts-share-the-root-context	_react	blocks/implementations/_react/_react.md		SHOULD	ux		component-with-regions-is-a-compound	true
 rule	compound-parts-reached-through-the-root	_react	blocks/implementations/_react/_react.md		SHOULD	ux		component-with-regions-is-a-compound	true
 rule	slot-and-container-children-typed	_react	blocks/implementations/_react/_react.md		SHOULD				true
@@ -1700,7 +1701,7 @@ rule	invalidation-in-on-settled	tanstack-query	blocks/implementations/tanstack-q
 rule	query-retry-only-transient	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		MUST	errors		failure-retried-only-when-transient	true
 rule	query-signal-reaches-the-request	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	performance		outside-call-can-be-cancelled	true
 rule	input-query-keyed-on-debounced-value	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	ux performance		input-driven-requests-debounced	true
-rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data			true
+rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data performance		fast-source-updates-once-per-frame	true
 rule	write-pending-until-its-refresh-lands	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data			true
 rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	data	architecture	binding-unit-composes-its-operation	true
 rule	query-functions-call-the-handed-adapter	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD		architecture	binding-unit-composes-its-operation	true
