@@ -19,18 +19,11 @@ A distributed unit ships the types of every entry a consumer imports code from, 
 | without them a consumer's type checker reads every name of the unit as unchecked, and a change of its signatures breaks the consumer at run time. | [] |
 
 ### distributed-unit-ships-its-licence · MUST
-A distributed unit ships its licence file.
+A distributed unit ships its licence file, and the licence notices of the code of others it bundles.
 
 | Why | Tags |
 |---|---|
-| a unit is used apart from its repository, and without the licence beside it nobody can lawfully use it. | [] |
-
-### distributed-unit-ships-the-notices-of-what-it-bundles · MUST
-A distributed unit that bundles code of others ships their licence notices with it.
-
-| Why | Tags |
-|---|---|
-| most licences allow redistribution only with their notice, so a bundle without it breaks the licence of every library inside. | [] |
+| a unit is used apart from its repository, and without the licence beside it nobody can lawfully use it; most licences allow redistribution only with their notice, so a bundle without it breaks the licence of every library inside. | [] |
 
 ## Entries
 

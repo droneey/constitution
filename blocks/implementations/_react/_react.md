@@ -108,7 +108,7 @@ Pending, optimistic and transition state go through `useActionState`, `useTransi
 |---|---|
 | React then knows what is pending, and keeps the user interface responsive while it is. | [ux] |
 
-### fast-source-batched-in-its-hook → fast-source-updates-once-per-frame · SHOULD
+### fast-source-batched-in-its-hook → interaction-answered-before-its-work · SHOULD
 A hook that folds a fast source schedules its state once per animation frame; an expensive render driven by input reads `useDeferredValue`.
 
 | Why | Tags |
@@ -117,7 +117,7 @@ A hook that folds a fast source schedules its state once per animation frame; an
 
 ## Composition
 
-### compound-parts-share-the-root-context → compound-root-owns-choreography · SHOULD
+### compound-parts-share-the-root-context → component-with-regions-is-a-compound · SHOULD
 A compound's parts are attached to its root with a typed `Object.assign`, and the root shares its state — the choreography of animated regions included — through `<name>.context.ts`.
 
 | Why | Tags |

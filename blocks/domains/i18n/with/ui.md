@@ -4,13 +4,6 @@
 
 ## Screens
 
-### locale-reachable-without-props → props-drilled-at-most-two-levels · SHOULD
-The current locale is reachable anywhere in the presentation without being passed as a prop.
-
-| Why | Tags |
-|---|---|
-| a locale threaded through every component couples all of them to it. | [] |
-
 ### layout-mirrors-right-to-left · MUST
 In a locale written right to left, a screen's layout mirrors — what starts on the left starts on the right, and an icon that points along the reading direction turns — while numbers, media controls and logos keep their direction.
 

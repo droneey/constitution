@@ -54,4 +54,3 @@ The text shadcn source ships — a screen reader's "Close" among it — is remov
 |---|---|---|
 | `ui-primitives-keep-keyboard-and-focus` | Base UI implements the WAI-ARIA patterns: keyboard, focus, roles | yes |
 | `ui-primitives-unstyled` | Base UI primitives carry no look; shadcn's classes are rewritten to tokens on arrival | yes |
-| `ui-primitives-render-the-callers-element` | Base UI's `render` prop | yes |

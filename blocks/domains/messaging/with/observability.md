@@ -23,22 +23,8 @@ Handling a message runs in a consumer span named after its operation and destina
 ## Measures
 
 ### consumer-lag-measured-and-alerted · SHOULD
-Every consumer is measured by its lag — the age of its oldest waiting message and their count — and alerts when the lag passes a bound the project sets.
+Every consumer is measured by its lag — the age of its oldest waiting message and their count; lag past a bound the project sets, a message arriving in dead letters, and a scheduled run that fails or never runs each alert the operators.
 
 | Why | Tags |
 |---|---|
-| a queue hides an outage behind a growing backlog, and its oldest message's age shows the delay a user feels before any failure is logged. | [performance] |
-
-### dead-letter-arrival-alerted · SHOULD
-A message arriving in dead letters alerts the people who operate the program, with its type and the code of its failure.
-
-| Why | Tags |
-|---|---|
-| a dead letter is work the program gave up on, and one nobody is told of is lost as surely as a message never sent. | [errors] |
-
-### scheduled-run-failure-alerted · SHOULD
-A scheduled job whose run fails, or whose tick passes with no run, alerts.
-
-| Why | Tags |
-|---|---|
-| a job that stops running fails in silence, and its absence is noticed only when its work is missed. | [errors] |
+| a queue hides an outage behind a growing backlog, a dead letter is work the program gave up on, and a job that stops running fails in silence — each noticed only when its work is missed, unless someone is told. | [errors, performance] |

@@ -12,18 +12,11 @@ A list answer is paged, with a default page size and a maximum the caller cannot
 | one request for every row otherwise exhausts the program's memory and its store for every other caller. | [performance, security] |
 
 ### list-paged-by-an-opaque-cursor · MUST
-A list is paged by an opaque cursor the server issues with each page and accepts back only with the filter and the order it was issued for; the last page carries none.
+A list is paged by an opaque cursor over an order whose last key is unique; the server issues one with each page and accepts it back only with the filter and the order it was issued for, and the last page carries none.
 
 | Why | Tags |
 |---|---|
-| an offset skips or repeats rows added between pages and grows slower with depth, and an opaque cursor can change its form without breaking callers. | [performance] |
-
-### list-ordered-by-a-unique-key · MUST
-A paged list is ordered by a key whose last field is unique, so that no row falls on two pages or on none.
-
-| Why | Tags |
-|---|---|
-| an order with ties lets the store return tied rows in another order on each page. | [data] |
+| an offset skips or repeats rows added between pages and grows slower with depth, an order with ties returns tied rows in another order on each page, and an opaque cursor can change its form without breaking callers. | [performance, data] |
 
 ## Filters
 

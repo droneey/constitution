@@ -39,14 +39,14 @@ A model's output rendered as markup — HTML, or text in a lighter markup turned
 ## Disclosure
 
 ### person-told-they-talk-with-a-model · MUST
-A person who exchanges messages or speech with a model is told so before the exchange begins, unless the context makes it plain, wherever the law of the region the product serves makes it binding, as the EU's AI Act does from 2 August 2026.
+A person who exchanges messages or speech with a model is told so before the exchange begins, unless the context makes it plain, wherever the law of the region the product serves makes it binding, as the EU's AI Act does.
 
 | Why | Tags |
 |---|---|
 | a person weighs an answer by who gave it, and the law fines a product that lets them take a model for a person. | [ux] |
 
 ### generated-content-marked-as-generated · MUST
-Text, audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act — from 2 August 2026 for a system placed on the market since, and from 2 December 2026 for one placed before.
+Text, audio, images and video the program generates carry a machine-readable mark that they were generated, where the law that binds the product asks it, such as Article 50 of the EU AI Act.
 
 | Why | Tags |
 |---|---|

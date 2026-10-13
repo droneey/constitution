@@ -62,7 +62,7 @@ A query driven by typing is keyed on the debounced or deferred value, and keeps 
 |---|---|
 | a query per keystroke floods the server, and a blank list between keystrokes flickers. | [] |
 
-### stream-folded-into-cache-per-frame → fast-source-updates-once-per-frame · SHOULD
+### stream-folded-into-cache-per-frame → interaction-answered-before-its-work · SHOULD
 A stream's events reach the cache in batches, with at most one cache write per frame.
 
 | Why | Tags |

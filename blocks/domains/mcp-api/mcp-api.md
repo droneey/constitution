@@ -35,13 +35,6 @@ A tool's name opens with the area it belongs to — `accounting_search_articles`
 |---|---|
 | a client that holds tools from several servers tells them apart by the prefix. | [] |
 
-### tool-name-in-the-protocols-character-set · MUST
-A tool's name matches `^[A-Za-z0-9_.-]{1,128}$`.
-
-| Why | Tags |
-|---|---|
-| a name outside that set travels encoded in a header, and some clients refuse it. | [] |
-
 ### tool-definition-fixed-by-the-release · MUST
 A tool's name, description, schemas and annotations, and the server's instructions, come from the program's code and change only with a release; none is built from stored data, a caller's input or anything fetched at run time.
 
@@ -50,18 +43,11 @@ A tool's name, description, schemas and annotations, and the server's instructio
 | a model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. | [security] |
 
 ### tool-input-schema-closed → request-binds-only-declared-fields · MUST
-A tool's `inputSchema` refuses an argument it does not declare: `additionalProperties: false`, or `unevaluatedProperties: false` where the schema composes others.
+A tool's `inputSchema` is closed and bounds each argument: it refuses an argument it does not declare — `additionalProperties: false`, or `unevaluatedProperties: false` where the schema composes others — and bounds each one it declares by its type, its range or values, and its length.
 
 | Why | Tags |
 |---|---|
-| a model invents arguments, and an open schema that drops an invented filter silently lets the model believe the filter was applied. | [security] |
-
-### tool-arguments-bounded → request-size-bounded · MUST
-Each argument a tool declares is bounded in its schema — its type, its range or values, and its length.
-
-| Why | Tags |
-|---|---|
-| a model fills an unbounded argument with whatever it imagines, and the server spends what the model chose. | [] |
+| a model invents arguments and fills an unbounded one with whatever it imagines: an open schema that drops an invented filter lets the model believe the filter was applied, and an unbounded argument lets the server spend what the model chose. | [security] |
 
 ### model-reached-data-served-as-a-tool · SHOULD
 What a model must reach on its own is a tool, or a resource a tool's answer links to; a resource or a prompt alone serves what the application or the user chooses.

@@ -20,15 +20,6 @@ A call to a remote system that times out, loses its connection or cannot reach t
 |---|---|
 | a remote system is out of reach somewhere every day, and a program that treats that as a bug fails its users each time. | [errors] |
 
-## Time
-
-### retry-honours-retry-after → retry-waits-by-backoff-or-the-asked-delay · SHOULD
-A retry of a call the remote system refused as rate-limited or unavailable waits at least as long as its `Retry-After` asks, and gives up when that wait passes the caller's deadline.
-
-| Why | Tags |
-|---|---|
-| a retry sooner than the remote system asked is refused again and deepens the overload it was told about. | [errors, performance] |
-
 ## Load
 
 ### concurrent-calls-to-a-system-bounded · SHOULD

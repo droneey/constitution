@@ -17,12 +17,3 @@ A feature's screens adapt to the permissions composition passes them, never reac
 | Why | Tags |
 |---|---|
 | no feature then knows how sessions work, and a change of the session's model never reaches a screen. | [security] |
-
-## Session state
-
-### session-presence-kept-in-a-root-store · MUST
-Whether a session exists is one of the global concerns the client owns, in a small store the root builds; what the session carries — the user, their rights — keeps the home of the data it is.
-
-| Why | Tags |
-|---|---|
-| every screen asks one place whether someone is signed in, and the user's details are not copied into a store beside their real home. | [data] |

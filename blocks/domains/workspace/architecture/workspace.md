@@ -33,20 +33,13 @@ Whatever a unit offers — its core, its wire shapes, its integrations into host
 | a consumer installs one package and imports the entries it needs, and the unit is versioned and released as one. | [] |
 
 ### unit-named-after-its-folder · SHOULD
-A unit is imported by its name, which follows its folder under the repository's scope: a product by its own name, in each of its languages; `shared/` as `shared`; a unit of `libs/` as `libs-<name>`. An integration is an entry of the unit's package.
+A unit is imported by its name, which follows its folder under the repository's scope: a product by its own name, in each of its languages; `shared/` as `shared`; a unit of `libs/` as `libs-<name>`.
 
 | Why | Tags |
 |---|---|
 | an import then names the folder it reaches, so a reader sees which way it points. | [] |
 
 ## Shared
-
-### shared-unit-laid-out-by-meaning · SHOULD
-`shared/` is laid out by meaning, as a program's `shared/` is — `contracts/`, `kinds/`, the protocol two products speak.
-
-| Why | Tags |
-|---|---|
-| every product looks for what it shares in one place, sorted by what it is. | [] |
 
 ### shared-part-appears-with-its-second-product → code-placed-by-its-reason-to-change · MUST
 A part of `shared/` appears when a second product needs it; until then it lives with its one product.

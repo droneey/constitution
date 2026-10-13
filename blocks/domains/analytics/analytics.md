@@ -42,13 +42,6 @@ An event, once sent, keeps its name and its meaning; a change of meaning is a ne
 |---|---|
 | a renamed or redefined event breaks every report that spans the change. | [data] |
 
-### context-set-once-as-dimension · SHOULD
-Context shared by every event — signed in or not, the mode — is set once, as a dimension.
-
-| Why | Tags |
-|---|---|
-| every event then carries it without every call passing it. | [data] |
-
 ### critical-scenario-outcome-has-an-event · SHOULD
 The outcome of every critical scenario of `PROJECT.md` — completed, abandoned, blocked and why — has an event.
 
@@ -64,13 +57,6 @@ No event carries data that names a person — a name, an email, a phone, an addr
 | Why | Tags |
 |---|---|
 | analytics services are third parties, and what reaches them has left the product's control. | [security, data] |
-
-### never-tracked-list-kept · SHOULD
-The project keeps a written list of what is never tracked, and why.
-
-| Why | Tags |
-|---|---|
-| the list stops the same question being answered differently each time, and shows users what is left out. | [data] |
 
 ### environment-sends-to-its-own-destination · MUST
 Each environment — development, preview, production — sends to its own destination or to none, so only production's events reach production's reports.
@@ -96,10 +82,3 @@ The library truncates or drops the IP address.
 | Why | Tags |
 |---|---|
 | a library that identifies users by default leaks personal data on its first event. | [security, data] |
-
-### analytics-loads-without-blocking · SHOULD
-The library loads and sends without delaying what the user waits for: a render, a response, a command.
-
-| Why | Tags |
-|---|---|
-| measurement must not make the product slower to use. | [performance] |

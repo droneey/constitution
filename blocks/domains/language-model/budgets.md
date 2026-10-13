@@ -4,19 +4,12 @@
 
 ## Calls
 
-### model-call-sets-its-output-limit · MUST
-Every model call sets the most tokens its output may take, sized to its task.
+### model-call-sets-its-output-limit → outside-call-has-a-timeout · MUST
+Every model call sets the most tokens its output may take, sized to its task, and a timeout of its own, never its library's default; a stream also bounds the wait between two chunks.
 
 | Why | Tags |
 |---|---|
-| an output with no limit runs to the model's maximum, at the price and the latency of the longest answer. | [performance] |
-
-### model-call-sets-its-own-timeout → outside-call-has-a-timeout · MUST
-Every model call sets a timeout of its own, never its library's default, and a streamed call also bounds the wait between two chunks.
-
-| Why | Tags |
-|---|---|
-| a library's default suits the longest generation it supports, often minutes, and a stream that stalls without closing holds its caller until then. | [errors, performance] |
+| an output with no limit runs to the model's maximum, at the price and the latency of the longest answer, and a library's default timeout suits the longest generation it supports, often minutes, while a stream that stalls without closing holds its caller until then. | [errors, performance] |
 
 ### model-input-bounded-before-the-call → outside-input-bounded-before-it-is-parsed · MUST
 Text a caller sends toward a model is refused past a length the project sets before any call is made, and the conversation and documents added to it are cut to a token budget the program counts.

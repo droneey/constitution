@@ -79,10 +79,3 @@ The library makes a missing or misspelt key fail the check.
 | Why | Tags |
 |---|---|
 | a missing key shows the user a raw key instead of text, and only a check finds it before they do. | [ux] |
-
-### i18n-locale-loaded-on-demand · SHOULD
-The library loads each locale's catalog on demand.
-
-| Why | Tags |
-|---|---|
-| a user downloads only the language they read. | [performance] |

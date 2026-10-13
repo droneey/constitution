@@ -13,19 +13,12 @@ A session the server keeps for a caller signed in from a browser travels in a co
 
 ## Authentication
 
-### unauthenticated-request-answered-401-with-a-challenge · MUST
-A request without valid credentials is answered `401` with a `WWW-Authenticate` challenge, save a page a browser navigates to, which is sent to sign in.
+### refused-request-answered-401-or-403 · MUST
+A request without valid credentials is answered `401` with a `WWW-Authenticate` challenge, save a page a browser navigates to, which is sent to sign in; one with valid credentials that lack the right is answered `403` where the caller may know the object exists.
 
 | Why | Tags |
 |---|---|
-| a client tells a missing sign-in from a missing right by the status alone, and the challenge says how to sign in. | [security] |
-
-### request-without-the-right-answered-403 · MUST
-A request for a resource or a page, made with valid credentials that lack the right, is answered `403` where the caller may know the object exists.
-
-| Why | Tags |
-|---|---|
-| a `401` there sends a signed-in caller to sign in again, which changes nothing, while `403` tells it the right is what it lacks. | [security] |
+| a client tells a missing sign-in from a missing right by the status alone: the challenge says how to sign in, and a `401` to a signed-in caller only sends it to sign in again. | [security] |
 
 ### sign-in-refused-from-other-origins → state-changing-request-refused-from-other-origins · MUST
 A request that signs a person in with what they typed is refused from another origin by the same check; the answer of an outside identity provider, which its `state`, PKCE and `nonce` guard, is not.

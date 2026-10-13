@@ -12,7 +12,7 @@ Every log record — the program's, its libraries' and its server's — passes o
 | a record that bypasses the pipeline skips the mask and the trace id, and lands in a second format nobody parses. | [security] |
 
 ### log-value-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
-The log pipeline replaces, before any output, the value of every key that holds, as consecutive words, the words of a name the project lists as secret or personal — such as `password`, `token`, `api key`, `private key`, `authorization`, `cookie`, `secret`, `email` and `phone` — the words split at a change of case, `_`, `.` and `-`, compared without case and at any depth: `refreshToken`, `apiKey` and `user_email` are masked, `input_tokens` is not.
+The log pipeline replaces, before any output, the value of every key that holds the words of a name the project lists as secret or personal — such as `password`, `token`, `api key`, `private key`, `authorization`, `cookie`, `secret`, `email` and `phone` — compared as whole words, at any depth: `refreshToken`, `apiKey` and `user_email` are masked, `input_tokens` is not.
 
 | Why | Tags |
 |---|---|
@@ -51,8 +51,8 @@ A record's level says what its reader must do: an error, that someone acts; a wa
 ## Output
 
 ### log-output-structured-in-production · SHOULD
-The log is written as one structured object per record in production and as readable lines in development, as a setting read at the program's start chooses, never as guessed from the terminal.
+The log is written as one structured object per record in production and as readable lines in development, as a setting read at the program's start chooses.
 
 | Why | Tags |
 |---|---|
-| a collector parses one object per record and a person reads lines; a guess from the terminal picks wrongly when a person pipes the output or a container gives the program a terminal. | [] |
+| a collector parses one object per record and a person reads lines. | [] |

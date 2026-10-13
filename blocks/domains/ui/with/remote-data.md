@@ -18,13 +18,6 @@ No default stands in for data not yet loaded; the waiting state is shown as wait
 |---|---|
 | an invented default hides loading and failure behind something that looks like data. | [] |
 
-### every-consumer-handles-every-state · SHOULD
-Every consumer of a data result handles each of its states, or leaves the waiting and failed states to its screen.
-
-| Why | Tags |
-|---|---|
-| a state no consumer handles shows as a blank or a crash the first time it occurs. | [] |
-
 ## Writes
 
 ### optimistic-change-rolled-back-on-refusal · MUST

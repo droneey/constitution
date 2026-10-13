@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0184 |
+| One home per rule | ADR-0160 – ADR-0185 |
 
 ---
 
@@ -1155,3 +1155,13 @@
   - Renamed: the language forms of machine text and of a pattern on outside input name their form instead of their language.
 - **Rejected.** Folding the remaining deadline into the timeout rule, which would raise a SHOULD to a MUST; shortening the catalogue of patterns, the one place they are named.
 - **Why.** A rule added to answer one reviewer's edge case costs every reader; what a parent, a sibling or a tool already holds is said once.
+
+## ADR-0185 — The domains cleared of what restates a parent, a sibling or a protocol
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** An editor's audit of the domains, which grew from 228 rules on the last release to 605, cut them to 546, with no domain merged and no level raised.
+  - Deleted: rules that restated a core parent or a sibling — the remote service's `Retry-After`, the ui's configuration provider and plain form, a prop's name, the OpenAPI document's one source, a consumer's states, a token's deprecation, the failure cases of a call and of a model, a locale without props, a library's log output, a conversation's owner, erasure in indexes, the opt-out header, specs reading shared data; protocol obligations HTTP and MCP already state — a refused method's `Allow`, `304`, a tool name's characters, stdio's standard output, `201` and `429` under the rule that methods and statuses mean what HTTP registers; and advice too small for a constitution in ui, i18n, analytics and distribution.
+  - Merged, each into the rule whose meaning it extends, at the survivor's level only where both were already of it: a contract diff into adding only, in the API and in messaging; the extensible enumeration of rest and MCP into one rule of `_api`; dead letters and failed runs into the consumer's alert; a unique last key into the cursor; `nosniff` into the content type; 401 and 403 into one rule; an argument's bound into the closed schema; a field's deprecation into the operation's; a store into the drilled prop; the session's presence into the root's stores; a token's grammar, a repository per root, a private unit, the published schema's copy, the bundled notices, the manifest's three fields, and the model call's timeout.
+  - Trimmed: a boolean prop, a compound component, session warnings, time limits, sign-out, log masking, structured log output, dated legal clauses, the config file's unknown keys and a unit's integration.
+- **Rejected.** Folding a SHOULD into a MUST by a merge — navigation by slot, permissions passed down, a screen's private pieces, a busy submit's focus, a local tool server — which would raise a level the owner never chose; one core rule for TLS in place of the three in remote-service, owned-data and messaging, since a network is a domain's subject and each of the three may be active alone; cutting the runtime floor's exception for a minor, on which Python's floor rule rests; merging a GET's cache policy into the personal answer's, which raises a level and waits for the owner.
+- **Why.** A rule that only repeats a parent, a sibling or a standard costs every reader and says nothing new.

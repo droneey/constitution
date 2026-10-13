@@ -34,7 +34,7 @@ The program raises the error kit's errors, never `ToolError`.
 |---|---|
 | a `ToolError` carries a message and no code. | [errors] |
 
-### tool-arguments-bounded-by-their-annotations → tool-arguments-bounded · MUST
+### tool-arguments-bounded-by-their-annotations → tool-input-schema-closed · MUST
 A tool's parameters are typed as narrowly as the business allows — a `Literal`, `Annotated[int, Field(ge=1, le=100)]`, a model with `extra='forbid'` — so the server refuses a wrong argument before the tool runs.
 
 | Why | Tags |

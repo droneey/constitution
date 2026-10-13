@@ -38,18 +38,11 @@ A component reads only semantic and common tokens, never a primitive.
 | a component that reads a primitive keeps its colour when the theme changes the purpose the colour served. | [] |
 
 ### token-name-follows-the-grammar · MUST
-A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action`; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A primitive takes its category, its scale and its step. Examples: `color.surface.level-1`, `color.text.muted`, `font.text.body.sm`; a primitive, `color.blue.500`.
+A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action`; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A primitive takes its category, its scale and its step. Examples: `color.surface.level-1`, `color.text.muted`, `font.text.body.sm`; a primitive, `color.blue.500`. No token is named after a component — `card.background`, `button.padding-x`; a component's own look comes from its variants over semantic tokens.
 
 | Why | Tags |
 |---|---|
-| the name alone then says what a token styles and what for, and one search finds it in the source and in every output. | [ux] |
-
-### token-never-named-after-a-component · MUST
-No token is named after a component — `card.background`, `button.padding-x`; a component's own look comes from its variants over semantic tokens.
-
-| Why | Tags |
-|---|---|
-| a token named after one component cannot be shared, and turns the design system into a list of exceptions. | [] |
+| the name alone then says what a token styles and what for, and one search finds it in the source and in every output; a token named after one component cannot be shared, and turns the design system into a list of exceptions. | [ux] |
 
 ### missing-value-added-as-a-token → tokens-single-source-of-appearance · MUST
 A visual value no token holds is added as a token of the tier its meaning gives it, never written in place and never borrowed from a token whose name means something else.
@@ -122,13 +115,6 @@ The design system's tokens have one source, a file in the W3C Design Tokens form
 |---|---|
 | one source in an open format is read by design tools and by every platform alike, so they never drift apart. | [ux] |
 
-### retired-token-marked-deprecated → retired-code-marked-deprecated · SHOULD
-A token to be removed is first marked deprecated in the source, naming its replacement, and removed only once nothing reads it.
-
-| Why | Tags |
-|---|---|
-| a token removed at once breaks every reader the change did not see, and the mark shows each of them the way off. | [ux] |
-
 ## Proof
 
 ### contrast-tested-over-token-pairs → text-and-controls-meet-the-contrast-minimum · MUST
@@ -160,10 +146,3 @@ The library lets its default scales be reset, so a check rejects a value outside
 | Why | Tags |
 |---|---|
 | without it, the rule that tokens are the only source of appearance cannot be held by a tool. | [ux] |
-
-### ui-styling-resolves-every-mode-from-one-set · SHOULD
-The library resolves every mode from one set of token names.
-
-| Why | Tags |
-|---|---|
-| a library that needs a second set per mode doubles every style. | [ux] |

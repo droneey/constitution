@@ -10,7 +10,7 @@ governs: ["**"]
 ---
 # Observability
 
-> A program whose people follow what it does from outside: one pipeline masks, enriches and renders every log record, every unit of work is a span of a trace that crosses systems, what the program serves is measured by its rate, errors and duration, and every signal names the service that sent it. Where logging is configured is in `architecture/`.
+> A program whose people follow what it does from outside: one pipeline masks, enriches and renders every log record, every unit of work is a span of a trace that crosses systems, what the program serves is measured by its rate, errors and duration, and every signal names the service that sent it.
 
 ## Signals
 

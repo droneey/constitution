@@ -67,7 +67,7 @@ A distributed unit names, in its manifest or its readme, where a vulnerability i
 | a finder with no private channel reports in public, and the users learn last. | [security] |
 
 ### exploited-vulnerability-reported-in-time · MUST
-An actively exploited vulnerability in a released version is reported to the authority within the times the law that binds the product sets, such as the EU Cyber Resilience Act's 24 hours for an early warning from 11 September 2026.
+An actively exploited vulnerability in a released version is reported to the authority within the times the law that binds the product sets, such as the EU Cyber Resilience Act's 24 hours for an early warning.
 
 | Why | Tags |
 |---|---|

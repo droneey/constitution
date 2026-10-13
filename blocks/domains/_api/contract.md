@@ -11,13 +11,6 @@ The API's contract — every operation, its parameters, its answers and its fail
 |---|---|
 | callers, generated clients and checks read one contract, and a server that drifts from it fails a spec, not a caller. | [] |
 
-### breaking-change-refused-by-a-contract-diff · MUST
-A check compares the contract with the one last released and fails on a breaking change to what was released, save the removal of what was announced as retired and is past its date.
-
-| Why | Tags |
-|---|---|
-| an incompatibility a tool finds before the merge costs nothing, and one a caller finds in production costs an outage. | [] |
-
 ## Shapes
 
 ### answer-built-from-a-declared-shape · MUST
@@ -34,6 +27,13 @@ A request sets only the fields its operation's declared shape lets a caller set;
 |---|---|
 | a caller who adds `role: admin` to a body otherwise grants it to themselves. | [security] |
 
+### answer-enumeration-extensible-in-the-contract → enumeration-others-read-declared-extensible · MUST
+An enumeration in an answer is declared in the contract as a string whose known values it lists, never a closed `enum`.
+
+| Why | Tags |
+|---|---|
+| a generated or validating client fails on a value outside a closed `enum`, so the first value added breaks every client built before it. | [] |
+
 ## Effects
 
 ### write-takes-an-idempotency-key → operation-idempotent-by-design · SHOULD
@@ -46,11 +46,11 @@ A write that a repeat would perform twice — a creation, a payment, a message s
 ## Change
 
 ### published-contract-changed-only-by-addition · MUST
-A published contract changes only by addition — a new operation, a new optional field of a request, a new field of an answer — save the removal of what was retired and is past its announced date; a removal or a change of meaning ships beside the old one, as a new version, or under a new name in a style that has no versions.
+A published contract changes only by addition — a new operation, a new optional field of a request, a new field of an answer — save the removal of what was retired and is past its announced date; a removal or a change of meaning ships beside the old one, as a new version, or under a new name in a style that has no versions; a check against the last released contract fails on any other change.
 
 | Why | Tags |
 |---|---|
-| a caller the program does not deploy breaks the day a field it reads disappears or changes meaning. | [] |
+| a caller the program does not deploy breaks the day a field it reads disappears or changes meaning, and a check finds that before the merge, where it costs nothing. | [] |
 
 ### retired-operation-announced-before-removal · MUST
 An operation or a field a published contract retires is announced before it is removed, and removed no earlier than its announced date.

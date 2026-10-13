@@ -90,4 +90,3 @@ Font-size tokens are in `rem`, and line-height tokens are unitless ratios.
 | Requirement | How | Met |
 |---|---|---|
 | `ui-styling-restricted-to-tokens` | `@theme` holds the tokens and resets the default scales | yes |
-| `ui-styling-resolves-every-mode-from-one-set` | the tokens' variables are redefined under one selector | yes |

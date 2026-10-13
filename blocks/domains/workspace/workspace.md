@@ -15,11 +15,11 @@ governs: ["**"]
 ## The root
 
 ### workspace-root-private · MUST
-The root of a workspace is marked private and is never published.
+The root and every unit nobody outside installs are marked private.
 
 | Why | Tags |
 |---|---|
-| a consumer who installed the root would get the repository's tooling instead of a unit. | [] |
+| a consumer who installed the root would get the repository's tooling instead of a unit, and a publish run over the whole workspace cannot release by mistake a unit nobody outside installs, with whatever it holds. | [security] |
 
 ### root-holds-only-the-workspace · SHOULD
 The root of a workspace holds only the workspace and the configuration of its tools, and no code of its own.
@@ -34,15 +34,6 @@ The root holds one workspace for each language, whose members are every package 
 | Why | Tags |
 |---|---|
 | a workspace nested in a package is refused by one package manager and ignored by another, so its packages are never linked. | [] |
-
-## Units
-
-### internal-unit-marked-private · MUST
-A unit nobody outside the repository installs is marked private in its manifest.
-
-| Why | Tags |
-|---|---|
-| a publish run over the whole workspace then cannot release it by mistake, with whatever it holds. | [security] |
 
 ## Dependencies
 
@@ -91,13 +82,6 @@ Data in no language that several units read — a schema, a table of cases — i
 | Why | Tags |
 |---|---|
 | a reader that trusts the shape of a file it does not own breaks unseen when the file changes. | [data] |
-
-### shared-data-read-by-specs-from-its-file · MUST
-Shared data is read by a unit's specs from its file in the repository, by its path, never from a copy.
-
-| Why | Tags |
-|---|---|
-| a spec that reads a copy keeps passing after the file it stands for has changed. | [testing] |
 
 ## Checks
 

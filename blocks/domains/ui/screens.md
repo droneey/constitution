@@ -25,13 +25,6 @@ An empty state names the situation and offers an action, and a state with no res
 |---|---|
 | each is a moment the user decides what to do next, and a blank area leaves them stuck. | [ux] |
 
-### long-load-says-what-it-does · SHOULD
-A long load says what it is doing, and shows its progress when the progress is known.
-
-| Why | Tags |
-|---|---|
-| a wait the user can read is a wait they sit through. | [] |
-
 ### unknown-address-shows-the-not-found-screen · SHOULD
 An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
 
@@ -78,13 +71,6 @@ Content a screen already shows stays in place while it reloads or the screen mov
 |---|---|
 | content that blinks to a placeholder on every refresh reads as a failure, and the user loses their place. | [ux] |
 
-### loading-indicator-waits-its-delay · SHOULD
-A first-load indicator appears only after a delay the project sets, so a fast load shows no indicator at all.
-
-| Why | Tags |
-|---|---|
-| an indicator that flashes for a moment on a fast load reads as a flicker and makes the screen feel slower than it is. | [ux] |
-
 ### late-content-reserves-its-space · SHOULD
 Content that arrives after the screen is drawn — data, an image, an embed, a notice — has its space reserved before it arrives, by its indicator or its declared size, so nothing already shown moves.
 
@@ -100,10 +86,3 @@ An interaction shows its first visible response — a pressed state, an opened l
 | Why | Tags |
 |---|---|
 | a press that shows nothing reads as missed, so the user presses again or leaves. | [performance, ux] |
-
-### fast-source-updates-once-per-frame · SHOULD
-A fast source — a resize, a scroll, a stream — updates a screen's state at most once a frame, its events folded in batches.
-
-| Why | Tags |
-|---|---|
-| dozens of updates a second redraw nothing the user can see and starve everything else. | [performance] |

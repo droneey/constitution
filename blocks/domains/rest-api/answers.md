@@ -5,11 +5,11 @@
 ## Statuses
 
 ### rest-status-means-what-http-registers · MUST
-A REST operation answers a status HTTP registers, for its registered meaning: a `2xx` only for a success, never a failure inside a `200` body, a `4xx` for the caller's failure and a `5xx` for the server's.
+Methods and statuses mean what HTTP registers; a `DELETE` of something already gone answers `404`.
 
 | Why | Tags |
 |---|---|
-| caches, proxies, retries and monitoring act on the status alone, and a failure sent as `200` is cached, counted as a success and never retried. | [errors] |
+| clients, proxies, caches and retrying libraries act on the method and the status alone: they repeat a `PUT` or a `DELETE` on their own, and a failure sent as `200` is cached, counted as a success and never retried. | [errors, data] |
 
 ### failure-answered-as-a-problem-document → failure-answered-by-its-code · MUST
 A failure of a REST operation carries the status its code or kind maps to — `500` for an internal one — and a body of RFC 9457, `application/problem+json`, whose `type` names its code and which carries the code as a member of its own; a refused input lists each field it refused by its JSON Pointer.

@@ -24,12 +24,3 @@ A transport replaced by captured responses fails on a request none of them match
 | Why | Tags |
 |---|---|
 | a request nobody captured otherwise gets an empty answer, and the spec passes on code that would fail against the real system. | [testing] |
-
-## Failures
-
-### call-timeout-and-lost-connection-have-cases → declared-failure-has-a-case · SHOULD
-A call to a remote system has a case for its timeout and one for its lost connection.
-
-| Why | Tags |
-|---|---|
-| these failures are rare on a developer's machine and common in the field, so only a case exercises them before a user does. | [testing] |

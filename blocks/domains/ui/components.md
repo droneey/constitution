@@ -35,32 +35,18 @@ A component installed as source is adapted in the change that installs it — re
 ## Composition
 
 ### component-with-regions-is-a-compound · SHOULD
-A component with a second region, an optional part that carries the caller's content, or a slot is a compound — a root with named parts, its content passed as children — never a prop per region; a leaf with a small, stable content stays a leaf. The signs that call for a compound: a switch that adds a part holding the caller's content, an array prop mapped into children, a prop named after a position.
+A component with a second region, an optional part that carries the caller's content, or a slot is a compound — a root with named parts, its content passed as children — never a prop per region; a leaf with a small, stable content stays a leaf.
 
 | Why | Tags |
 |---|---|
 | a component with a prop per region grows a prop for every new need; a compound grows by composition. | [ux] |
 
-### recurring-arrangement-wrapped-once · SHOULD
-An arrangement of a compound's parts that recurs across the application is wrapped once in a component of its own, never folded back into props of the compound.
-
-| Why | Tags |
-|---|---|
-| the common case is then one line at each call site, while the compound keeps growing by composition. | [ux] |
-
-### compound-root-owns-choreography · SHOULD
-The root of a compound owns the timing of its animated parts, and every part follows it.
-
-| Why | Tags |
-|---|---|
-| parts that animate on their own drift out of step; one owner keeps them in time. | [ux] |
-
 ### props-drilled-at-most-two-levels · SHOULD
-A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself.
+A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself, never a store.
 
 | Why | Tags |
 |---|---|
-| a prop threaded through components that do not use it couples them all to it. | [] |
+| a prop threaded through components that do not use it couples them all to it, and state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | [] |
 
 ### stateful-component-controllable-or-not · SHOULD
 A component that holds a value can be driven from outside or left to itself through one interface — the value, its initial value and a change callback — and never switches between the two.
@@ -72,11 +58,11 @@ A component that holds a value can be driven from outside or left to itself thro
 ## Props
 
 ### boolean-props-prefixed → boolean-name-is-a-positive-predicate · MUST
-A boolean prop a component of the program's own introduces starts with `is` for a state, `has` for a presence, `can` for a permission, `with` for an opt-in part that carries no content of the caller — `withDivider` — or `should` for a policy, never a bare, mixed or negated name; a boolean of the element or primitive it passes through, and a library's prop of composition such as `asChild`, keep their own names, and one a component replaces with its own prefixed prop is rendered under the element's name: `disabled={isDisabled}`.
+A boolean prop a component of the program's own introduces starts with `is` for a state, `has` for a presence, `can` for a permission, `with` for an opt-in part that carries no content of the caller — `withDivider` — or `should` for a policy, never a bare, mixed or negated name.
 
 | Why | Tags |
 |---|---|
-| the prefix says what kind of switch a prop is, so a reader knows its effect from the call site, and one name per switch holds across every layer of components. | [] |
+| the prefix says what kind of switch a prop is, so a reader knows its effect from the call site. | [] |
 
 ### event-props-named-on-event → concept-has-one-word · MUST
 A callback prop is named `on<Event>` for the event it answers, never an action verb, a `handle` name or a bare past tense such as `submitted`.
@@ -84,13 +70,6 @@ A callback prop is named `on<Event>` for the event it answers, never an action v
 | Why | Tags |
 |---|---|
 | `on<Event>` says when the callback runs and leaves what it does to the caller, and one name per event holds across every component. | [] |
-
-### prop-name-reused-for-its-meaning → concept-has-one-word · SHOULD
-A new prop takes the name the components already use for its meaning, and synonyms found — `isLoading`, `isPending`, `isFetching` for one state — are converged in the change that finds them.
-
-| Why | Tags |
-|---|---|
-| one name per meaning across components makes every component's interface guessable. | [] |
 
 ### unused-props-deleted → dead-code-deleted · MUST
 An optional prop no call site passes is deleted, and its default is written where it was used, save a prop of a component a package publishes to others.
@@ -131,13 +110,6 @@ A button names its result, verb and object — never "Submit" or "OK". "Cancel" 
 |---|---|
 | a person reads the button to know what will happen; a vague label makes them guess. | [ux] |
 
-### drag-shows-its-state · SHOULD
-Drag and drop shows that an item can be grabbed, that it is grabbed, where it can land, and a preview of the result.
-
-| Why | Tags |
-|---|---|
-| a drag without feedback is a guess, and a dropped item lands where the user did not mean. | [ux] |
-
 ### long-lists-virtualised · SHOULD
 A list whose length the product does not bound renders only the rows in view and those near them, or is paged.
 
@@ -169,10 +141,3 @@ The library's complex patterns follow the platform's keyboard conventions for ea
 | Why | Tags |
 |---|---|
 | without it, the rule on accessible primitives cannot be kept through the library. | [a11y] |
-
-### ui-primitives-render-the-callers-element · SHOULD
-The library lets a primitive render the caller's element — a link, a custom element — with the primitive's behaviour, without wrapping it in another element.
-
-| Why | Tags |
-|---|---|
-| a link can then take a primitive's behaviour and stay a real link, with no extra element around it. | [] |

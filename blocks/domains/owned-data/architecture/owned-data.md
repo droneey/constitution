@@ -5,7 +5,7 @@
 ## Aggregates
 
 ### aggregate-changed-only-through-its-root · MUST
-An aggregate — an entity and what belongs to it — changes only through its root, the entity that keeps its invariants; no code reaches an inner entity to change it.
+An aggregate — an entity and what belongs to it — changes only through its root, the entity that keeps its invariants: no code reaches an inner entity to change it, and a command repository exists only for a root.
 
 | Why | Tags |
 |---|---|
@@ -17,13 +17,6 @@ An entity with a life of its own — created, changed or removed apart from its 
 | Why | Tags |
 |---|---|
 | an aggregate that holds what changes apart locks it on every change, and two people editing unrelated things collide. | [data] |
-
-### command-repository-per-aggregate-root → data-port-one-per-entity-and-side · MUST
-A command repository exists only for an aggregate's root, never for an entity inside an aggregate.
-
-| Why | Tags |
-|---|---|
-| a write that reaches an entity past its root skips the invariants the root keeps. | [data] |
 
 ## Transactions
 

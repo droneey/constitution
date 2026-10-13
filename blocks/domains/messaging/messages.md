@@ -28,18 +28,11 @@ A message another program sends or reads — its channel, its type and the schem
 | publishers and consumers deploy apart and read one contract, and a publisher that drifts from it fails a spec, not a consumer in production. | [] |
 
 ### message-type-changed-only-by-addition → format-changed-in-steps · MUST
-A message type another program reads changes only by addition — a new optional field; a removal, a rename or a change of meaning is a new version of the type, published beside the old one until no consumer reads it.
+A message type another program reads changes only by addition — a new optional field; a removal, a rename or a change of meaning is a new version of the type, published beside the old one until no consumer reads it; a check against the last released schema fails on any other change.
 
 | Why | Tags |
 |---|---|
-| a queue and a log keep messages written before the change, and consumers deployed before it read them and the new ones alike. | [data] |
-
-### message-contract-change-refused-by-a-diff · MUST
-A check compares the schema of every message type another program reads with the one last released, and fails on a change that is not an addition, save the removal of a version no consumer reads any longer.
-
-| Why | Tags |
-|---|---|
-| a queue keeps messages of the old shape and consumers deployed before the change read the new one, so an incompatibility a tool finds before the merge is one no consumer meets. | [data] |
+| a queue and a log keep messages written before the change, and consumers deployed before it read them and the new ones alike, so an incompatibility a check finds before the merge is one no consumer meets. | [data] |
 
 ## Content
 

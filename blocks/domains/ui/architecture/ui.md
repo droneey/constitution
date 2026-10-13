@@ -41,13 +41,6 @@ Pieces and binding units private to one screen live beside it, private to it.
 |---|---|
 | what one screen uses changes with that screen, and nothing else can reach it by accident. | [] |
 
-### layout-state-in-its-own-binding-units · SHOULD
-A layout that several screens share composes the state they share in binding units of its own.
-
-| Why | Tags |
-|---|---|
-| the state a layout shares then lives with the layout, and no screen reaches into another for it. | [] |
-
 ### root-boundary-catches-the-rest → last-resort-handler-one-per-entry · MUST
 One handler in `root/` catches every failure that no screen contains itself.
 
@@ -56,11 +49,11 @@ One handler in `root/` catches every failure that no screen contains itself.
 | a failure no screen contained still reaches a handler that shows it, and the user is never left with a blank page. | [errors] |
 
 ### client-concerns-in-root-built-stores → fact-has-one-source · MUST
-The few global concerns the client owns — the theme, the notices — live in small stores the root builds, one store per concern.
+The few global concerns the client owns — the theme, the notices, whether a session exists — live in small stores the root builds, one store per concern; what a session carries — the user, their rights — keeps the home of the data it is.
 
 | Why | Tags |
 |---|---|
-| a concern every screen shares has one home, which the root hands to the screens and a spec replaces; a store built anywhere else is a second copy of it. | [] |
+| a concern every screen shares has one home, which the root hands to the screens and a spec replaces; a store built anywhere else, or a user's details copied into one, is a second copy of it. | [data] |
 
 ### form-reuses-domain-predicates → business-value-lives-in-the-domain · MUST
 A form's schema composes the checks of the domain's value objects and sits with the form; it never restates an invariant.
@@ -86,18 +79,11 @@ A component's folder name carries its location and role: no prefix in `libs/ui` 
 | the name alone tells where a component comes from and whether it holds logic. | [] |
 
 ### presentational-component-performs-no-io → effects-held-only-by-the-edge · MUST
-A component in `components/` takes data and callbacks and performs no input or output.
+A component in `components/` takes data and callbacks and performs no input or output: it consumes no binding unit, which screens and widgets alone consume, and a widget works wherever it is placed.
 
 | Why | Tags |
 |---|---|
-| a presentational component can then be shown, reused and tested with any data. | [] |
-
-### binding-units-consumed-by-screens-and-widgets · MUST
-Within the interface, binding units are consumed by screens and widgets only, never by a component, and a widget works wherever it is placed.
-
-| Why | Tags |
-|---|---|
-| a component that reaches no binding unit renders anything its caller hands it, and a widget that needs no screen's data goes anywhere. | [] |
+| a presentational component can then be shown, reused and tested with any data, and a widget that needs no screen's data goes anywhere. | [] |
 
 ### component-never-imports-a-widget · MUST
 A component never imports a widget.
@@ -127,22 +113,6 @@ A component installed as source is moved, before review, to the home its knowled
 |---|---|
 | an installer's folder follows another project's layout, and a component left there is not where any reader looks for it. | [ux] |
 
-### store-never-replaces-a-drilled-prop · SHOULD
-A deep component never reads a store to spare a prop its path; the state stays in its home and reaches the component by composition or a nearer widget.
-
-| Why | Tags |
-|---|---|
-| state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. | [] |
-
-## Theme and configuration
-
-### configuration-provider-reads-environment → root-alone-reads-the-environment · MUST
-The configuration provider reads the environment for the screens and components, which never read it themselves.
-
-| Why | Tags |
-|---|---|
-| a screen or component then depends on typed configuration it receives, and a missing setting fails before any of them renders. | [security] |
-
 ## Binding units
 
 ### providers-compose-the-ui-application → composition-root-wires-everything · MUST
@@ -165,10 +135,3 @@ A binding unit imports nothing of `ui/`, which imports it.
 | Why | Tags |
 |---|---|
 | a binding unit that imports the interface forms a cycle with it. | [] |
-
-### binding-unit-gets-a-plain-form-on-demand → structure-appears-by-symptom · SHOULD
-A binding unit gains a plain function form only when a caller outside the screens — a guard, a loader — needs one.
-
-| Why | Tags |
-|---|---|
-| a second form made in advance is code nobody calls, kept in step with the first for nothing. | [] |
