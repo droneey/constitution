@@ -11,8 +11,8 @@ Every user interface meets WCAG 2.2 at level AA; the rules of this block name th
 |---|---|
 | one measurable bar serves people and the tools that check for them; EN 301 549 v4.1.1 adopts it for the European Union once the Official Journal cites it, v3.2.1 and WCAG 2.1 until then. | [a11y] |
 
-### accessibility-statement-published · SHOULD
-A product published to the public states its accessibility: what it conforms to, its known gaps, and how to report a barrier.
+### accessibility-statement-published · MUST
+Where the law of the region asks for it, a product published to the public states its accessibility: what it conforms to, its known gaps, and how to report a barrier.
 
 | Why | Tags |
 |---|---|

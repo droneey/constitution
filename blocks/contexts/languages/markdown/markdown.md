@@ -57,7 +57,7 @@ A document read as a page has one first-level heading, its title, before any oth
 | renderers, outlines and readers take the first-level heading as the document's name, and with two the document has no one name. | [] |
 
 ### heading-level-never-skipped · MUST
-A heading is at most one level deeper than the heading before it: a `###` follows a `##` or a `###`, never a `#` — save in a file whose format fixes its headings, such as a block of rules.
+A heading is at most one level deeper than the heading before it: a `###` follows a `##` or a `###`, never a `#` — save in a file whose heading levels a tool or a schema fixes.
 
 | Why | Tags |
 |---|---|

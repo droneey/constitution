@@ -4,13 +4,6 @@
 
 ## Deciding
 
-### agent-asks-before-a-consequential-change · MUST
-An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
-
-| Why | Tags |
-|---|---|
-| these changes reach beyond the task and are hard to take back once others build on them. | [] |
-
 ### design-settled-with-its-person-first · SHOULD
 A question of design is settled with its person — in the chat, an issue or a review — before code is written for it.
 
@@ -40,13 +33,6 @@ A person submits an agent's change only once they have read it and can explain i
 | Why | Tags |
 |---|---|
 | the person who submits a change answers for it, and a change nobody read is answered for by nobody. | [] |
-
-### agent-permissions-kept-with-the-project · SHOULD
-The project’s permission settings for agents, deny rules included, live in the project’s files, the same for every person; only each person’s own overrides stay on their machine.
-
-| Why | Tags |
-|---|---|
-| settings kept with the project give every person’s agent the same limits. | [security] |
 
 ### submission-carries-no-tool-attribution · MUST
 A submission made under a person’s name — a change, its description, a document — carries no attribution to the tool or the model that helped write it, unless the policy of the project that receives it asks for a disclosure.

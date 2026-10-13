@@ -49,7 +49,7 @@ The manifest declares each dependency a consumer installs with the unit by the r
 | a consumer's package manager can then share one compatible version among every package that needs it. | [] |
 
 ### manifest-declares-consumer-owned-dependencies-as-peers · MUST
-The manifest declares a dependency the consumer owns — the tool a package configures, the host framework it plugs into — as a peer, with the lowest version the package supports, and the package never installs it itself.
+The manifest declares a dependency the consumer owns — the tool a package configures, the host framework it plugs into — with the lowest version the package supports — as a peer where the ecosystem has peers — and never bundles or pins it.
 
 | Why | Tags |
 |---|---|

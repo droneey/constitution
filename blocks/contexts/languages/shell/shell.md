@@ -11,7 +11,7 @@ governs: ["**/*.sh"]
 
 # Shell
 
-> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools. Its rules on quoting, outside input and tracing bind shell wherever it is written — a step of a CI workflow, a hook's command, a package script, a container's build step — whose runner sets the failure options; a script of more than a few commands lives in a `.sh` file, where the whole block holds it. The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
+> Shell scripts, in Bash or in POSIX sh where Bash is absent, that glue commands together: hooks, CI steps, installers and small tools. A command written inside another file — a step of a CI workflow, a hook's command, a package script — is kept to a few commands, quoted as here; anything longer is a `.sh` file the step runs, where this block holds it. The shell splits and globs every word it expands unless it is quoted, and carries on after a failed command unless the script tells it otherwise.
 
 ## Code
 
@@ -110,6 +110,13 @@ A committed script never turns on `set -x`.
 | Why | Tags |
 |---|---|
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
+
+### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
+A script exports no variable its commands do not need, and passes a secret only to the one command that reads it — `TOKEN="$token" command`, or on its standard input.
+
+| Why | Tags |
+|---|---|
+| every command a script runs inherits what it exported, so a secret exported once reaches every tool, and every tool those start. | [security] |
 
 ## Layout
 

@@ -6,7 +6,54 @@
       },
     },
   },
+  "overrides": [
+    {
+      "includes": [
+        "**/features/*/domain/**",
+        "**/features/*/app/**",
+        "**/kernel/**",
+        "**/contracts/**",
+        "**/shared/**",
+        "**/composition/**",
+        "!**/__tests__/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "Bun": "Outside the edge, input and output reach this code through a port.",
+                  "EventSource": "Outside the edge, the network reaches this code through a port.",
+                  "WebSocket": "Outside the edge, the network reaches this code through a port.",
+                  "XMLHttpRequest": "Outside the edge, the network reaches this code through a port.",
+                  "fetch": "Outside the edge, the network reaches this code through a port.",
+                  "indexedDB": "Outside the edge, storage reaches this code through a port.",
+                  "localStorage": "Outside the edge, storage reaches this code through a port.",
+                  "performance": "Outside the edge, the clock reaches this code through a port.",
+                  "sessionStorage": "Outside the edge, storage reaches this code through a port.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ],
   "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/effects-held-only-by-the-edge.grit",
+      "includes": [
+        "**/features/*/domain/**",
+        "**/features/*/app/**",
+        "**/kernel/**",
+        "**/contracts/**",
+        "**/shared/**",
+        "**/composition/**",
+        "!**/__tests__/**",
+      ],
+    },
     {
       "path": "./.droneey/constitution/presets/typescript/biome/plugins/biome-refuses-empty-names.grit",
       "includes": [

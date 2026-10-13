@@ -11,6 +11,23 @@ core:
   function-takes-at-most-three-positions:
     - PLR0917
     - max-positional-args
+  code-never-commented-out:
+    - ERA
+  function-takes-no-boolean-position:
+    - FBT
+  todo-names-its-issue:
+    - FIX001
+    - FIX003
+    - FIX004
+    - TD
+  catch-handles-only-what-it-recognises:
+    - BLE
+  outside-call-has-a-timeout:
+    - S
+  outside-input-never-rebuilt-as-objects:
+    - S
+  outside-input-reaches-interpreters-as-parameters:
+    - S
 fastapi:
   dependencies-declared-in-annotated:
     - FAST

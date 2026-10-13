@@ -28,14 +28,14 @@ Nitro's `routeRules` set the Content Security Policy on every document, beside t
 | the policy then lives in one configuration with the program, not in a proxy nobody here sees, and a test proves it is sent. | [security] |
 
 ### security-headers-set-in-route-rules · SHOULD
-Nitro's `routeRules` set the other security headers on every document — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy` and `Cross-Origin-Opener-Policy` — beside the Content Security Policy, and a test reads the headers the server sends.
+Nitro's `routeRules` set the other security headers on every document — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy`, `Permissions-Policy` and `Reporting-Endpoints` — beside the Content Security Policy, and a test reads the headers the server sends.
 
 | Why | Tags |
 |---|---|
 | one place for every header keeps them from drifting apart, and the test covers them all. | [security] |
 
 ### runtime-config-from-one-server-function → runtime-configuration-served-beside-bundle · MUST
-One server function reads the environment, parses it by a schema and serves it; the root route loads it once, before anything reads configuration.
+One server function serves the public projection of the configuration the root parsed at start; the root route loads it once, before anything reads configuration.
 
 | Why | Tags |
 |---|---|

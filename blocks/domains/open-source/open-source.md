@@ -30,6 +30,13 @@ A public repository carries a security policy, `SECURITY.md`, beside its private
 |---|---|
 | a finder who knows which versions are fixed, and when to expect an answer, waits for the fix instead of going public. | [security] |
 
+### public-repository-offers-private-reporting · MUST
+A public repository offers a private channel for reporting a vulnerability — the forge's private reporting, or an address someone watches — named in its security policy.
+
+| Why | Tags |
+|---|---|
+| a report filed in the open tells every attacker of the flaw before its fix ships. | [security] |
+
 ## Contributing
 
 ### public-repository-carries-a-contribution-guide · SHOULD

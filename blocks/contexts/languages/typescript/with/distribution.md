@@ -42,7 +42,7 @@ A package others install ships no `#/` specifier: its build rewrites each to a r
 ## Manifest
 
 ### peer-floor-in-the-manifest → manifest-declares-consumer-owned-dependencies-as-peers · MUST
-The tool a package configures, and the framework it plugs into, is a `peerDependencies` entry with a `>=` floor.
+The tool a package configures, and the framework it plugs into, is a `peerDependencies` entry whose range opens at the lowest supported version, a caret range for each supported major joined by `||`.
 
 | Why | Tags |
 |---|---|

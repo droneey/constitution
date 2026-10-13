@@ -25,7 +25,7 @@ block	version-control	domain	Changes checked, history and releases kept, and wha
 block	workspace	domain	Several units in one repository: their folders, imports and links.	architecture/workspace.md				false				**
 block	browser	platform	Delivery, defences, storage and lifecycle of code in a browser tab.	architecture/browser.md	design-system i18n privacy server ui architecture/server architecture/ui	untrusted-client		false				**
 block	cli	platform	Commands, flags, streams, exit codes and help of a command line.	architecture/cli.md	config-file convergence			false				**
-block	mobile	platform	Storage, links, traffic and releases of an app on a phone or tablet.	architecture/mobile.md	access-control design-system i18n privacy remote-data ui	untrusted-client		false				**
+block	mobile	platform	Storage, links, traffic and releases of an app on a phone or tablet.	architecture/mobile.md	access-control design-system i18n privacy remote-data remote-service ui	untrusted-client		false				**
 block	server	platform	A long-running process a host starts, routes to, restarts and stops.	architecture/server.md	http-server messaging observability owned-data			false				**
 block	css	language	Stylesheets: cascade layers, selectors, custom properties and classes.	architecture/css.md	browser design-system i18n ui architecture/ui			false				**/*.css
 block	markdown	language	Markdown documents: headings, links, images and code blocks.					false				**/*.md
@@ -117,6 +117,8 @@ chapter	core	workflow/agents.md	the working agreement with agents.
 rule	consent-given-for-the-actions-it-names	core	blocks/core/agents.md		MUST	security			true
 rule	agent-asks-before-an-irreversible-action	core	blocks/core/agents.md		MUST	security			true
 rule	unattended-agent-acts-within-a-standing-grant	core	blocks/core/agents.md		MUST	security			true
+rule	agent-permissions-kept-with-the-project	core	blocks/core/agents.md		SHOULD	security			true
+rule	agent-asks-before-a-consequential-change	core	blocks/core/agents.md		MUST				true
 rule	agent-asks-when-readings-diverge	core	blocks/core/agents.md		SHOULD				true
 rule	agent-reports-outcomes-as-they-are	core	blocks/core/agents.md		MUST				true
 rule	agent-takes-instructions-only-from-its-person	core	blocks/core/agents.md		MUST	security			true
@@ -243,6 +245,7 @@ rule	secret-never-passed-as-a-process-argument	core	blocks/core/security.md		MUS
 rule	child-process-environment-built-for-it	core	blocks/core/security.md		MUST	security			true
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
 rule	credential-has-least-privilege	core	blocks/core/security.md		SHOULD	security			true
+rule	process-runs-with-only-the-rights-its-job-needs	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
@@ -374,12 +377,10 @@ rule	root-alone-reads-the-environment	core	blocks/core/architecture/root.md		MUS
 rule	root-applies-the-decorators	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
-rule	agent-asks-before-a-consequential-change	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	design-settled-with-its-person-first	core	blocks/core/workflow/agents.md		SHOULD		workflow		true
 rule	agent-writes-tests-first-from-a-description	core	blocks/core/workflow/agents.md		SHOULD	testing	workflow		true
 rule	person-decides-what-is-recorded-or-shipped	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
-rule	agent-permissions-kept-with-the-project	core	blocks/core/workflow/agents.md		SHOULD	security	workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/workflow/agents.md		MUST		workflow		true
@@ -723,6 +724,7 @@ rule	span-attribute-masked-by-its-key	observability	blocks/domains/observability
 rule	library-adds-no-log-output	observability	blocks/domains/observability/architecture/observability.md		MUST	security	architecture	root-alone-configures-logging	true
 rule	public-repository-carries-a-licence	open-source	blocks/domains/open-source/open-source.md		MUST				true
 rule	public-repository-states-security-policy	open-source	blocks/domains/open-source/open-source.md		SHOULD	security			true
+rule	public-repository-offers-private-reporting	open-source	blocks/domains/open-source/open-source.md		MUST	security			true
 rule	public-repository-carries-a-contribution-guide	open-source	blocks/domains/open-source/open-source.md		SHOULD				true
 rule	public-repository-carries-a-code-of-conduct	open-source	blocks/domains/open-source/open-source.md		SHOULD				true
 rule	outside-change-runs-without-secrets	open-source	blocks/domains/open-source/workflow/open-source.md		MUST	security	workflow	credential-has-least-privilege	true
@@ -758,7 +760,7 @@ rule	consent-asked-only-where-the-law-requires-it	privacy	blocks/domains/privacy
 rule	processing-waits-for-its-consent	privacy	blocks/domains/privacy/consent.md		MUST	security data			true
 rule	declined-consent-costs-nothing-else	privacy	blocks/domains/privacy/consent.md		MUST	ux data			true
 rule	refusal-as-easy-as-consent	privacy	blocks/domains/privacy/consent.md		MUST	security ux			true
-rule	consent-given-per-purpose-never-in-advance	privacy	blocks/domains/privacy/consent.md		MUST	security ux			true
+rule	consent-given-per-purpose-never-preselected	privacy	blocks/domains/privacy/consent.md		MUST	security ux			true
 rule	consent-withdrawn-as-easily-as-given	privacy	blocks/domains/privacy/consent.md		MUST	security ux			true
 rule	consent-choice-recorded	privacy	blocks/domains/privacy/consent.md		MUST	security data			true
 rule	refusal-respected-for-the-set-period	privacy	blocks/domains/privacy/consent.md		SHOULD	ux			true
@@ -822,7 +824,7 @@ rule	idempotency-key-carried-by-its-header	rest-api	blocks/domains/rest-api/wire
 rule	rate-limited-request-answered-429	rest-api	blocks/domains/rest-api/wire.md		SHOULD	performance security		caller-rate-limited	true
 rule	retired-operation-answers-deprecation-headers	rest-api	blocks/domains/rest-api/wire.md		MUST			retired-operation-announced-before-removal	true
 rule	wcag-aa-conformance	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
-rule	accessibility-statement-published	ui	blocks/domains/ui/accessibility.md		SHOULD	a11y			true
+rule	accessibility-statement-published	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	native-semantics-first	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	every-control-has-an-accessible-name	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	visible-label-in-accessible-name	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
@@ -1080,7 +1082,6 @@ rule	flag-never-changes-the-declared-state	cli	blocks/contexts/platforms/cli/wit
 rule	plan-with-changes-exits-with-its-own-code	cli	blocks/contexts/platforms/cli/with/convergence.md	convergence	MUST	errors		plan-outcome-told-apart	true
 rule	data-from-another-app-parsed-as-outside-input	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security		outside-value-untyped-until-parsed	true
 rule	background-work-handed-to-the-systems-scheduler	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	data errors		async-work-awaited-or-held-by-a-scope	true
-rule	traffic-sent-only-over-tls	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	pinned-endpoint-carries-a-backup-pin	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security errors			true
 rule	sensitive-link-is-a-verified-app-link	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	webview-confined-to-allowed-origins	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security		outside-address-followed-only-from-an-allowlist	true
@@ -1109,6 +1110,7 @@ rule	account-deletion-started-in-the-app	mobile	blocks/contexts/platforms/mobile
 rule	cross-app-tracking-waits-for-the-systems-prompt	mobile	blocks/contexts/platforms/mobile/with/privacy.md	privacy	MUST	data security		processing-waits-for-its-consent	true
 rule	cached-remote-data-served-offline	mobile	blocks/contexts/platforms/mobile/with/remote-data.md	remote-data	SHOULD	ux data			true
 rule	offline-write-queued-or-refused	mobile	blocks/contexts/platforms/mobile/with/remote-data.md	remote-data	MUST	data			true
+rule	traffic-sent-only-over-tls	mobile	blocks/contexts/platforms/mobile/with/remote-service.md	remote-service	MUST	security		call-runs-over-verified-tls	true
 rule	state-survives-the-os-lifecycle	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	SHOULD	ux data			true
 rule	content-kept-inside-the-safe-areas	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	ux			true
 rule	back-gesture-goes-back	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	SHOULD	ux			true
@@ -1142,7 +1144,7 @@ rule	server-log-leaves-as-a-stream	server	blocks/contexts/platforms/server/serve
 rule	server-work-in-flight-bounded	server	blocks/contexts/platforms/server/server.md		SHOULD	performance errors			true
 rule	server-secret-read-from-the-host-not-the-environment	server	blocks/contexts/platforms/server/server.md		SHOULD	security			true
 rule	server-cloud-access-through-workload-identity	server	blocks/contexts/platforms/server/server.md		SHOULD	security		credential-has-least-privilege	true
-rule	server-process-runs-unprivileged	server	blocks/contexts/platforms/server/server.md		MUST	security		credential-has-least-privilege	true
+rule	server-process-runs-unprivileged	server	blocks/contexts/platforms/server/server.md		MUST	security		process-runs-with-only-the-rights-its-job-needs	true
 rule	server-stop-proven-by-a-spec	server	blocks/contexts/platforms/server/server.md		SHOULD	testing			true
 rule	server-liveness-reports-the-process-alone	server	blocks/contexts/platforms/server/server.md		MUST	errors			true
 rule	server-readiness-reports-what-serving-needs	server	blocks/contexts/platforms/server/server.md		MUST	errors			true
@@ -1307,6 +1309,7 @@ rule	temporary-file-removed-by-an-exit-trap	shell	blocks/contexts/languages/shel
 rule	script-diagnostics-on-standard-error	shell	blocks/contexts/languages/shell/shell.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	outside-input-passed-as-an-argument	shell	blocks/contexts/languages/shell/shell.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	xtrace-never-ships	shell	blocks/contexts/languages/shell/shell.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	secret-set-only-for-the-command-that-reads-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
 rule	executable-script-names-its-shell	shell	blocks/contexts/languages/shell/shell.md		MUST				true
 rule	shell-file-ends-in-sh	shell	blocks/contexts/languages/shell/shell.md		SHOULD			format-has-one-extension	true
 rule	decorator-is-a-standard-decorator	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
@@ -1555,6 +1558,7 @@ rule	ky-retries-kept-to-transient-failures	ky	blocks/implementations/ky/ky.md		S
 rule	ky-body-parsed-by-schema	ky	blocks/implementations/ky/ky.md		MUST	security		boundary-values-unknown-until-parsed	true
 rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md		MUST		architecture	one-transport-instance-per-system	true
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	errors	architecture	transport-failures-mapped-once	true
+rule	ky-home-is-the-edge-and-its-failure-mapper	ky	blocks/implementations/ky/architecture/ky.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	security	workflow		true
 rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD		workflow		true
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	testing	workflow	commit-checked-by-the-hooks	true

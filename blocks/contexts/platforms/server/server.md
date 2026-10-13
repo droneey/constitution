@@ -126,7 +126,7 @@ Where its host gives it a workload identity, a server reaches the systems of tha
 |---|---|
 | a credential the host issues and rotates leaves no key to copy, leak or forget. | [security] |
 
-### server-process-runs-unprivileged → credential-has-least-privilege · MUST
+### server-process-runs-unprivileged → process-runs-with-only-the-rights-its-job-needs · MUST
 A server's process runs as a user without administrative rights, cannot write its own code, and writes only to the paths it declares.
 
 | Why | Tags |
@@ -159,7 +159,7 @@ A server's readiness check, where its host routes by one, fails until the server
 | the host routes work only to a ready copy, so a copy that cannot serve leaves rotation without a restart and returns when it can. | [errors] |
 
 ### server-start-outwaits-its-dependencies · SHOULD
-A server starts whatever the state of the systems it depends on: one out of reach at start is retried with a growing delay while the server's readiness fails, and never ends the start.
+A server starts whatever the state of the systems it depends on: one out of reach at start is retried with a growing delay and a random spread, up to a bound, while the server's readiness fails, and never ends the start.
 
 | Why | Tags |
 |---|---|

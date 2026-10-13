@@ -36,8 +36,8 @@ Refusing takes no more steps than consenting, where consent is first asked.
 |---|---|
 | a refusal hidden behind a second step is consent taken, not given. | [security, ux] |
 
-### consent-given-per-purpose-never-in-advance · MUST
-Consent is given for each purpose on its own, and no purpose is chosen in advance.
+### consent-given-per-purpose-never-preselected · MUST
+Consent is given for each purpose on its own, and no purpose is preselected.
 
 | Why | Tags |
 |---|---|

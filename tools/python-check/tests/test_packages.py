@@ -66,6 +66,13 @@ def _findings(*, importer: str, statement: str) -> tuple[Finding, ...]:
       'src/shop/adapters/mail/mail_adapter.py', 'import smtplib', id='an effect in an adapter'
     ),
     pytest.param('src/shop/root/settings.py', 'from os import environ', id='an effect in the root'),
+    pytest.param(APP, 'import urllib.parse', id='a pure module of a package with an effectful one'),
+    pytest.param(
+      'src/shop/adapters/clock/clock_adapter.py',
+      'STAMP = datetime.now()',
+      id='a call to the clock in an adapter',
+    ),
+    pytest.param(DOMAIN, 'VALUE = (lambda: 1)()', id='a call of something with no name'),
   ],
 )
 def test_should_find_nothing_when_a_package_is_imported_in_its_home(
@@ -175,6 +182,60 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
         'it reaches it through a port'
       ),
       id='an effect of the standard library in the domain',
+    ),
+    pytest.param(
+      APP,
+      'import urllib.request',
+      (
+        'features/orders/app/use_cases holds no effect, and urllib.request is one; '
+        'it reaches it through a port'
+      ),
+      id='an effectful submodule imported',
+    ),
+    pytest.param(
+      APP,
+      'from uuid import uuid4',
+      (
+        'features/orders/app/use_cases holds no effect, and uuid.uuid4 is one; '
+        'it reaches it through a port'
+      ),
+      id='an effectful function imported',
+    ),
+    pytest.param(
+      DOMAIN,
+      'STAMP = datetime.now()',
+      (
+        'features/orders/domain/entities holds no effect, and datetime.datetime.now is one; '
+        'it reaches it through a port'
+      ),
+      id='the clock called through an imported class',
+    ),
+    pytest.param(
+      DOMAIN,
+      'TODAY = date.today()',
+      (
+        'features/orders/domain/entities holds no effect, and datetime.date.today is one; '
+        'it reaches it through a port'
+      ),
+      id='the date called through an imported class',
+    ),
+    pytest.param(
+      DOMAIN,
+      'IDENTIFIER = uuid.uuid4()',
+      (
+        'features/orders/domain/entities holds no effect, and uuid.uuid4 is one; '
+        'it reaches it through a port'
+      ),
+      id='an identifier drawn through its module',
+    ),
+    pytest.param(
+      DOMAIN,
+      "TEXT = open('orders.txt').read()",
+      (
+        'features/orders/domain/entities holds no effect, and open is one; '
+        'it reaches it through a port'
+      ),
+      id='a file opened by the builtin',
     ),
     pytest.param(
       'src/shop/adapters/log/log_adapter.py',

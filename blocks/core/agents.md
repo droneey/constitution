@@ -25,6 +25,20 @@ An agent run with no person present — in a pipeline, on a schedule, from an is
 |---|---|
 | no one is there to consent to each action, so the grant written in advance is the consent, and its bounds are all that stand between the agent and what the text it reads asks. | [security] |
 
+### agent-permissions-kept-with-the-project · SHOULD
+The project’s permission settings for agents, deny rules included, live in the project’s files, the same for every person; only each person’s own overrides stay on their machine.
+
+| Why | Tags |
+|---|---|
+| settings kept with the project give every person’s agent the same limits. | [security] |
+
+### agent-asks-before-a-consequential-change · MUST
+An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
+
+| Why | Tags |
+|---|---|
+| these changes reach beyond the task and are hard to take back once others build on them. | [] |
+
 ### agent-asks-when-readings-diverge · SHOULD
 An agent asks when a request can be read in two ways that lead to different work; when the readings lead to the same work, it decides and states its assumption.
 
@@ -77,7 +91,7 @@ An agent never widens its own limits: it changes no permission setting, hook, in
 | an agent steered by what it reads would otherwise remove the very limit that stops it, and every other rule of this chapter would hold only until then. | [security] |
 
 ### agent-extension-vetted-as-a-dependency · SHOULD
-A server, plugin or skill that extends an agent is a dependency, vetted as one and pinned to a version.
+A server, plugin or skill that extends an agent is a dependency, vetted as one and pinned to a version; a remote one whose version cannot be pinned has its tool definitions pinned, and a change to them is reviewed before use.
 
 | Why | Tags |
 |---|---|

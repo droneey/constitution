@@ -14,7 +14,7 @@ An import points inward, toward stability: an outer layer imports an inner one, 
 | an outward import lets a volatile detail break a stable rule. | [] |
 
 ### domain-imports-only-itself-the-kernel-and-top-level-contracts · MUST
-The domain imports only itself, the kernel and the top-level `contracts/`: no framework and no input or output; a tool’s types stop at its boundary.
+The domain imports only itself, the kernel and the top-level `contracts/`: no framework and no input or output; a library’s types stop at its boundary.
 
 | Why | Tags |
 |---|---|
@@ -93,7 +93,7 @@ Each folder of the tree imports installed dependencies by its role: the domain, 
 ## Placement
 
 ### code-placed-by-its-reason-to-change · MUST
-Code lives in the layer that owns its reason to change, beside its consumer when they share it, and lifts to the nearest common level only when a second consumer appears; a tool is placed the same way.
+Code lives in the layer that owns its reason to change, beside its consumer when they share it, and lifts to the nearest common level only when a second consumer appears; a library or a helper is placed the same way.
 
 | Why | Tags |
 |---|---|

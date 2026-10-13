@@ -141,3 +141,6 @@ workspace:
   units-import-toward-libs:
     - libs-know-no-product
     - shared-knows-no-product-unit
+ky:
+  ky-home-is-the-edge-and-its-failure-mapper:
+    - ky-home-is-the-edge-and-its-failure-mapper

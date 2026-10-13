@@ -15,7 +15,7 @@ governs: ["**"]
 ## Reads
 
 ### read-superseded-for-its-key-is-cancelled → outside-call-can-be-cancelled · MUST
-A read superseded by a newer read of the same key is cancelled, so only the latest answer reaches the cache.
+A read superseded by one that replaces what is cached for its key — a refetch after a write or an invalidation — is cancelled, so only the latest answer reaches the cache; any other read of the key joins the one in flight.
 
 | Why | Tags |
 |---|---|

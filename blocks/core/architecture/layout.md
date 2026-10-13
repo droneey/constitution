@@ -70,7 +70,7 @@ Behaviour — what a package does — lives in a feature with its layers; vocabu
 | behaviour found only in features is found with its domain, its adapters and its binding units around it. | [] |
 
 ### package-laid-out-by-the-tree · SHOULD
-A package’s root holds its manifest, its source, the suites that drive the built package, the writing for readers outside the code, one folder per kind of content it ships as is, and the files tools look up there; its source holds only the folders of the tree and role folders.
+A package’s root holds its manifest, its source, the suites that drive the built package and, where the language's runner expects one, the tree of specs that mirrors the source, the writing for readers outside the code, one folder per kind of content it ships as is, and the files tools look up there; its source holds only the folders of the tree and role folders.
 
 | Why | Tags |
 |---|---|
@@ -144,7 +144,7 @@ A folder whose purpose a layer or a role of the active vocabulary names takes th
 | a folder named by the vocabulary tells its place in the tree before it is opened. | [] |
 
 ### file-carries-its-role-suffix · MUST
-A file carries its role’s suffix, whatever its folder; a surface, an entry, a name a tool fixes, a component named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
+A file carries its role’s suffix, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
 
 | Why | Tags |
 |---|---|

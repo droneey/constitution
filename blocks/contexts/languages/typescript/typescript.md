@@ -99,7 +99,7 @@ Every import alias is declared once, in `imports` of `package.json`, the field t
 | one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. | [] |
 
 ### hash-alias-for-the-source-root · MUST
-The source root is aliased `#/`: `"#/*": "./src/*"` in `imports`; a specifier that names a folder needs a resolver that maps it to its surface, so code that runs on a runtime without one is bundled first.
+The source root is aliased `#/`: `"#/*": "./src/*"` in `imports`.
 
 | Why | Tags |
 |---|---|

@@ -101,7 +101,7 @@ No code reads or changes `sys.path`.
 ## Types
 
 ### absence-spelled-none → absence-shown-by-the-type · MUST
-Absence is `None`, typed `T | None`, and no other value stands for it. Where `None` is itself a value a caller passes — a patch that clears a field — “not given” is one sentinel declared once: the built-in `sentinel` from Python 3.15, `typing_extensions.Sentinel` below it.
+Absence is `None`, typed `T | None`, and no other value stands for it. Where `None` is itself a value a caller passes — a patch that clears a field — “not given” is one sentinel declared once: the built-in `sentinel` from Python 3.15, and below it a one-member enumeration.
 
 | Why | Tags |
 |---|---|
@@ -435,7 +435,7 @@ A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`
 | a spec is found by its `test_` prefix, so a spec named otherwise never runs, and a helper named like one would. | [testing] |
 
 ### spec-kind-named-by-its-folder → file-named-for-its-kind · MUST
-An integration spec sits in `tests/integration/`, an end-to-end spec in `tests/e2e/`, and a unit spec elsewhere in `tests/`.
+An integration spec sits in `tests/integration/`, an end-to-end spec in `tests/e2e/`, each in a tree under it that mirrors the import package, and a unit spec elsewhere in `tests/`.
 
 | Why | Tags |
 |---|---|

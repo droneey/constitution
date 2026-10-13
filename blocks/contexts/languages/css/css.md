@@ -16,7 +16,7 @@ governs: ["**/*.css"]
 ## Code
 
 ### class-declared-is-used → dead-code-deleted · MUST
-Every class a stylesheet declares is used by markup.
+Every class a stylesheet declares is used by markup, save a class a package offers to other packages through the stylesheet it publishes.
 
 | Why | Tags |
 |---|---|

@@ -69,7 +69,7 @@ A YAML reader the program runs resolves plain scalars by YAML 1.2's core schema.
 ## Security
 
 ### outside-yaml-loaded-by-a-safe-loader → outside-input-never-rebuilt-as-objects · MUST
-YAML from outside the program is loaded by a loader that builds only mappings, sequences and the core schema's scalars, and refuses a tag that names a type of the language.
+YAML from outside the program is loaded by a loader that builds only mappings, sequences and plain scalars, and refuses a tag that names a type of the language.
 
 | Why | Tags |
 |---|---|

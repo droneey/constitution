@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0173 |
+| One home per rule | ADR-0160 – ADR-0174 |
 
 ---
 
@@ -1047,3 +1047,14 @@
   - The config file is parsed at the edge: `config-file-parsed-by-its-adapter` puts its schema, and the parsing library, in the adapter that reads the file, which maps the result to `config-file-type-declared-with-its-port`, a type of the program's own in the top-level `contracts/` beside the port, since an adapter may not import `composition/`. zod's home in `composition/` goes, with its dependency-cruiser setting, and pydantic needs none; both languages now read the config file the same way.
 - **Rejected.** Globs for each domain and platform, such as `**/root/**` for a server, which miss a file the moment a tree names its folders otherwise and bind a rule to a folder's name; a parsing library in `composition/`, the exception ADR-0086 gave zod, which leaves a vendor below the edge — Seemann's composition root, Cosmic Python's validation at the edge and Clean Architecture all keep the format of outside input at the edge.
 - **Why.** A kind of program holds for every file of it, and the edge is where a format is known.
+
+## ADR-0174 — Core, the domains and the contexts after their eleventh review
+**Date:** 2026-10-13 · **Status:** Accepted
+
+- **Decision.** The eleventh round graded core 8.9 by every reviewer, the domains 8.9 to 9.0 and the contexts 8.8 to 9.0; the owner asked for what weighs to be closed on every layer.
+  - Effects reached without an import are held by tools: Biome's core architecture part denies the globals of input and output, storage and `performance` outside the edge, and its plugin `effects-held-only-by-the-edge` the calls that read the clock or draw randomness and identifiers — `Date.now()`, `new Date()` with no argument, `Math.random()`, `crypto.randomUUID()`; python-check refuses an effectful name of a pure module — `urllib.request`, `uuid.uuid4`, `datetime.now()`, `open()`. Ruff's codes that already held core rules are bound to them.
+  - Core: a unit of work a broker or a scheduler runs again is not also retried by the code nearest the call; a time a person sets in a place is kept as its wall time with its zone; `process-runs-with-only-the-rights-its-job-needs` is new, and the server's unprivileged process carries it out; one artefact serves a program its host runs or serves; a secret encrypted to a key the repository holds counts as revealed; a log line takes outside input only as a parameter; the agent's consequential change and its project-wide permissions move to the base; "tool" keeps one meaning and "component" leaves core.
+  - Domains: the config file's references are resolved by what the root hands its reader; `consent-given-per-purpose-never-preselected`; `public-repository-offers-private-reporting`; a consumer-owned dependency is a peer only where the ecosystem has peers; a model's read is free of approval only from an address the program chose; a committed generated file is one a fresh clone's check needs; a read that replaces the cache cancels the one in flight, any other joins it; ky gets a home in `shared/` for its failure mapper, as httpx2 has.
+  - Contexts: shell passes a secret only to the command that reads it and keeps embedded commands short; CSS spares a published package's classes and allows fluid type in `rem`; a mobile sign-in's answer may come back through the provider's scheme inside the system's session, the per-app language ranks first, and its TLS rule carries out remote-service's; Python mirrors the import package under its spec folders and needs no `typing_extensions` for a sentinel; TypeScript's peer range names its majors.
+- **Rejected.** Denying timers in the application layer, whose binding units debounce with them; flagging `uuid.UUID`, `http.HTTPStatus` or `pathlib.Path`, whose types are pure.
+- **Why.** The strongest architecture rule was held by prose where tools could hold it, and each other fix closes a clash between a rule and the rules or the tools that carry it out.

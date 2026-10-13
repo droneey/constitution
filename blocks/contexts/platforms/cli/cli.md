@@ -60,7 +60,7 @@ A setting given in several places is taken from the flag first, then the environ
 | the most specific and most recent choice wins, so a user overrides a file for one run, and a project overrides a user's defaults, without editing either. | [ux] |
 
 ### user-file-kept-in-the-systems-base-directories · SHOULD
-Configuration, cache and data a program keeps for its user live in the system's base directory for each kind — the XDG directories on Linux, the platform's own elsewhere — never in a dotfile at the root of the home directory.
+Configuration, cache and data a program keeps for its user live in the system's base directory for each kind — the XDG directories on Linux and macOS, and the platform's own on Windows, an `XDG_*` variable that is set honoured on every system — never in a dotfile at the root of the home directory.
 
 | Why | Tags |
 |---|---|

@@ -33,13 +33,6 @@ Work that must finish after the app leaves the foreground — an upload, a sync,
 
 ## Security
 
-### traffic-sent-only-over-tls · MUST
-Every connection the app opens runs over TLS and trusts only the system's certificate authorities: App Transport Security keeps its defaults, Android's network configuration refuses cleartext, and an exception names its host and its reason.
-
-| Why | Tags |
-|---|---|
-| a phone joins networks its user does not control, where plain traffic is read and changed by anyone on the path. | [security] |
-
 ### pinned-endpoint-carries-a-backup-pin · MUST
 An endpoint whose identity the app pins is pinned to at least two keys, one of them a backup not yet in use.
 
@@ -48,7 +41,7 @@ An endpoint whose identity the app pins is pinned to at least two keys, one of t
 | a pinned key that must be replaced otherwise cuts every installed copy off its server until its user installs an update. | [security, errors] |
 
 ### sensitive-link-is-a-verified-app-link · MUST
-A link that carries a credential or completes a sensitive flow — a sign-in's answer, a password reset, a payment's return — is a verified link, Universal Links on iOS and App Links with `autoVerify` on Android, never a custom scheme.
+A link that carries a credential or completes a sensitive flow — a password reset, a payment's return — is a verified link, Universal Links on iOS and App Links with `autoVerify` on Android, never a custom scheme; a sign-in's answer received inside the system's authentication session, with PKCE, may use the scheme its provider requires.
 
 | Why | Tags |
 |---|---|

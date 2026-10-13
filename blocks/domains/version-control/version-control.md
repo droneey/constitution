@@ -91,7 +91,7 @@ A large binary file lives outside the history, which keeps only a reference to i
 | a large file in the history is downloaded by every clone for ever, even after it is deleted. | [performance] |
 
 ### generated-files-not-committed · SHOULD
-A generated file is not committed; the build produces it. Two kinds are committed: a file an author's step generates and the code imports, which no build produces, and a copy kept for readers outside the code, such as a schema an editor fetches by its address.
+A generated file is not committed; the build produces it. Two kinds are committed: a file the code imports that a check of a fresh clone needs before any build runs, and a copy kept for readers outside the code, such as a schema an editor fetches by its address.
 
 | Why | Tags |
 |---|---|

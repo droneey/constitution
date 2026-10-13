@@ -19,7 +19,7 @@ Content that stays on screen while the page scrolls — a header, a footer, a ba
 | the browser then scrolls a focused element clear of it, and focus moved under a sticky header is focus the user cannot see. | [a11y] |
 
 ### type-sized-in-rem · MUST
-A font size is set in `rem`, or in `em` relative to one, never in `px`.
+A font size is set in `rem`, in `em` relative to one, or by a `clamp()` whose bounds are in `rem` and whose preferred value adds a `rem` term, never in `px`.
 
 | Why | Tags |
 |---|---|

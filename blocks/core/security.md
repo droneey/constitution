@@ -5,7 +5,7 @@
 ## Secrets
 
 ### secret-never-in-the-repository · MUST
-A secret is never written into the repository — not in code, documents, tests or fixtures.
+A secret is never written into the repository in a form that reveals it — in clear, or encrypted to a key the repository holds — not in code, documents, tests or fixtures.
 
 | Why | Tags |
 |---|---|
@@ -46,6 +46,13 @@ A credential belongs to one identity and one purpose per environment, with only 
 |---|---|
 | a narrow, short-lived credential limits what a leak can do, and one identity per credential says who did what. | [security] |
 
+### process-runs-with-only-the-rights-its-job-needs · MUST
+A program runs as a user with only the operating-system rights and the file access its job needs, never as an administrator, and cannot write its own code.
+
+| Why | Tags |
+|---|---|
+| one flaw that runs code in a privileged process owns its machine, and a program that can rewrite its own code keeps what an attacker leaves in it. | [security] |
+
 ## Input from outside
 
 ### outside-input-bounded-before-it-is-parsed · MUST
@@ -63,7 +70,7 @@ A pattern matched against outside input runs in time linear in its length: a reg
 | a backtracking pattern turns one crafted string into minutes of work, and one request takes the program down. | [security, performance] |
 
 ### outside-input-reaches-interpreters-as-parameters · MUST
-Input from outside — a model’s output included — reaches a query, a shell command, markup or a template only through that interpreter’s parameters or its encoder — or, where the input is itself markup to render, a sanitiser that keeps only the elements, attributes and schemes allowed.
+Input from outside — a model’s output included — reaches a query, a shell command, markup, a template or a log line only through that interpreter’s parameters or its encoder — or, where the input is itself markup to render, a sanitiser that keeps only the elements, attributes and schemes allowed.
 
 | Why | Tags |
 |---|---|

@@ -22,7 +22,7 @@ An import of a package — neither the standard library, the import package itse
 | an import contract forbids a package only by its name, one contract per package, and knows nothing of a package nobody named; the check reads every import against the table and the homes the parts give. | [] |
 
 ### effect-modules-kept-at-the-edge → effects-held-only-by-the-edge · MUST
-A module of the standard library that reaches input and output, the clock, randomness or identifiers — `os`, `subprocess`, `socket`, `time`, `random`, `uuid` among them — fails the check outside the edge.
+A module of the standard library that reaches input and output, the clock or randomness — `os`, `subprocess`, `socket`, `time`, `random` among them — fails the check outside the edge, and so does an effectful name of a module whose types are pure — `urllib.request`, `uuid.uuid4`, `datetime.now()`, `open()`.
 
 | Why | Tags |
 |---|---|

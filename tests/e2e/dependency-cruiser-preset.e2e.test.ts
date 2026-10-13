@@ -1123,6 +1123,10 @@ describe('the dependency-cruiser layer set', () => {
           from: 'kit',
           name: 'value',
         }),
+        'src/shared/http/http-errors.ts': importing({
+          from: 'ky',
+          name: 'value',
+        }),
         'src/libs/ui/button.stories.tsx':
           "import { value } from 'devtool';\nimport { button } from './button';\nexport const stories = [value, button];\n",
         'src/libs/ui/button.tsx': exported('button'),
@@ -1144,6 +1148,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/storybook',
         'typescript/architecture/storybook',
         'typescript/architecture/yaml-js',
+        'typescript/architecture/ky',
         'typescript/architecture/core',
       ],
     };

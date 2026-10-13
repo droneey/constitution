@@ -35,7 +35,7 @@ A failed parse of outside input is one expected failure whose details name every
 ## Catching and carrying
 
 ### catch-handles-only-what-it-recognises · MUST
-A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at the boundary of an optional part, which contains and reports them, and at the handler of last resort, which turns them into what the entry's user sees; one around a dependency maps that dependency's failures to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
+A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at the boundary of an optional part, which contains and reports them, and at the handler of last resort, which turns them into what the entry's user sees; one around a dependency maps the failures of that dependency it recognises to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
 
 | Why | Tags |
 |---|---|
@@ -70,7 +70,7 @@ A failure is logged once, by the unit that handles it or, where that unit logs n
 | a failure reported at every level looks like several. | [errors] |
 
 ### failure-retried-only-when-transient · SHOULD
-A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, with an exponential backoff, a random spread and a limit, at one level: the code nearest the call, or a broker or a scheduler that runs the whole unit of work again within its own limit; once its retries are spent, or none is safe, it reaches the caller as an expected failure, which no level above retries again.
+A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, with an exponential backoff, a random spread and a limit, at one level: the code nearest the call, or — for a unit of work a broker or a scheduler runs again within its own limit — that run alone, and then not the code nearest the call; once its retries are spent, or none is safe, it reaches the caller as an expected failure, which no level above retries again.
 
 | Why | Tags |
 |---|---|

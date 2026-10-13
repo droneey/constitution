@@ -91,7 +91,7 @@ A write that changes several things — records, files, a record and the message
 | a write that stops halfway leaves data no rule of the program expects, and nothing later can tell which half landed. | [data, errors] |
 
 ### write-on-read-data-is-conditional · MUST
-A write decided on data read earlier is made only if that data is still unchanged — checked by a version, a compare-and-set or a lock — and is refused otherwise.
+A write decided on data read earlier, which another writer may change meanwhile, is made only if that data is still unchanged — checked by a version, a compare-and-set or a lock — and is refused otherwise.
 
 | Why | Tags |
 |---|---|
@@ -135,7 +135,7 @@ Configuration is declared in one place and read only by its declared names, pars
 | a setting checked where it is first used fails in the middle of a request, long after the deployment that broke it. | [security] |
 
 ### one-artefact-serves-every-environment · MUST
-One artefact of a program serves every environment it is deployed to; a setting that differs between them reaches it from its host, never built into it.
+One artefact of a program its host runs or serves is deployed to every environment; a setting that differs between them reaches it from its host, never built into it.
 
 | Why | Tags |
 |---|---|

@@ -26,7 +26,7 @@ A surface is the `index.ts` of its folder, and a folder that has no surface — 
 | `index.ts` is the file a folder's import resolves to, so one placed in a layer folder opens a door core keeps shut. | [] |
 
 ### surface-imported-by-its-folders-path → module-reached-only-through-its-surface · MUST
-An import of a surface names its folder — `#/features/orders`, `#/kernel/errors` — never its `index` or a file below it.
+An import of a surface names its folder — `#/features/orders`, `#/kernel/errors` — never its `index` or a file below it; code that runs on a runtime whose resolver maps no folder to its surface is bundled first.
 
 | Why | Tags |
 |---|---|

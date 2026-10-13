@@ -42,7 +42,7 @@ A write invalidates its keys in `onSettled`.
 | `onSettled` runs after success and failure alike, so the cache is refreshed either way. | [data] |
 
 ### query-retry-only-transient → failure-retried-only-when-transient · SHOULD
-The client's `retry` is a predicate on the error's transience, with a limit — never the default three retries on every error; a mutation retries only when it is idempotent.
+The client's `retry` is a predicate on the error's transience, with a limit — never the default three retries on every error — and `false` where the transport already retries; a mutation retries only when it is idempotent.
 
 | Why | Tags |
 |---|---|

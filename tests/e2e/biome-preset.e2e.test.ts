@@ -2489,6 +2489,78 @@ describe('the Biome framework parts', () => {
 describe('the Biome architecture parts', () => {
   it.each([
     {
+      code: 'export const placedAt = (): number => performance.now();\n',
+      file: 'src/features/orders/app/use-cases/place-order.use-case.ts',
+      isReported: true,
+    },
+    {
+      code: "export const load = (): Promise<Response> => fetch('/orders');\n",
+      file: 'src/kernel/values/money.ts',
+      isReported: true,
+    },
+    {
+      code: 'export const placedAt = (): number => performance.now();\n',
+      file: 'src/adapters/clock/clock.adapter.ts',
+      isReported: false,
+    },
+  ])(
+    'should report an effect reached through a global $isReported in $file when a project extends the core part',
+    ({ code, file, isReported }) => {
+      // Arrange
+      const project = {
+        files: {
+          [file]: code,
+        },
+        parts: [
+          ...BASE_PARTS,
+          'typescript/architecture/core',
+        ],
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noRestrictedGlobals')).toBe(isReported);
+    },
+  );
+
+  it.each([
+    {
+      file: 'src/features/orders/domain/entities/order.entity.ts',
+      isReported: true,
+    },
+    {
+      file: 'src/adapters/ids/ids.adapter.ts',
+      isReported: false,
+    },
+  ])(
+    'should report a random value drawn $isReported in $file when a project extends the core part',
+    ({ file, isReported }) => {
+      // Arrange
+      const project = {
+        files: {
+          [file]:
+            'export const orderId = (): string => crypto.randomUUID();\nexport const placedAt = (): number => Date.now();\n',
+        },
+        parts: [
+          ...BASE_PARTS,
+          'typescript/architecture/core',
+        ],
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.some((finding) => finding.startsWith('An effect outside the edge'))).toBe(
+        isReported,
+      );
+    },
+  );
+
+  it.each([
+    {
       condition: 'a surface re-exports everything',
       files: {
         'src/features/orders/index.ts': "export * from './app';\n",

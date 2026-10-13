@@ -80,6 +80,26 @@ EFFECTS = frozenset(
     'webbrowser',
   }
 )
+# What of the standard library reaches an effect although its module's types are pure,
+# named as an import or a call spells it.
+EFFECT_NAMES = frozenset(
+  {
+    'asyncio.subprocess',
+    'datetime.date.today',
+    'datetime.datetime.now',
+    'datetime.datetime.today',
+    'datetime.datetime.utcnow',
+    'http.client',
+    'http.server',
+    'input',
+    'open',
+    'urllib.request',
+    'uuid.uuid1',
+    'uuid.uuid4',
+  }
+)
+# A call through a class imported from datetime, such as `datetime.now()`.
+DATETIME = 'datetime'
 
 
 class Role(StrEnum):
@@ -121,6 +141,34 @@ def _packages(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]:
       return tuple(alias.name.split('.')[0] for alias in node.names)
     case _:
       return ()
+
+
+def _dotted(node: ast.expr) -> str | None:
+  match node:
+    case ast.Name(id=name):
+      return name
+    case ast.Attribute(value=value, attr=attr):
+      base = _dotted(value)
+      return None if base is None else f'{base}.{attr}'  # pragma: no mutate -- rootless: no effect
+    case _:  # pragma: no mutate -- without it the match falls through to None
+      return None
+
+
+def _named(node: ast.AST) -> tuple[str, ...]:
+  match node:
+    case ast.Import():
+      return tuple(alias.name for alias in node.names)
+    case ast.ImportFrom(level=0, module=str(module)):
+      return tuple(f'{module}.{alias.name}' for alias in node.names)
+    case ast.Call(func=func):
+      name = _dotted(func)
+      return () if name is None else (name, f'{DATETIME}.{name}')
+    case _:
+      return ()
+
+
+def _effect(node: ast.AST) -> str | None:
+  return next((name for name in _named(node) if name in EFFECT_NAMES), None)
 
 
 def _message(*, home: tuple[str, ...] | None, package: str, role: Role, where: str) -> str | None:
@@ -180,10 +228,23 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     where='/'.join(root.package) or 'the package root',
   )
 
-  return tuple(
+  packages = tuple(
     Finding(path=path, line=node.lineno, message=message)
     for node in ast.walk(tree)
     if isinstance(node, ast.Import | ast.ImportFrom)
     for package in _packages(node)
     if (message := _package_message(importer=importer, package=package)) is not None
   )
+  effects = tuple(
+    Finding(
+      path=path,
+      line=node.lineno,
+      message=f'{importer.where} holds no effect, and {name} is one; it reaches it through a port',
+    )
+    for node in ast.walk(tree)
+    if importer.role is not Role.EDGE
+    and isinstance(node, ast.Import | ast.ImportFrom | ast.Call)
+    and (name := _effect(node)) is not None
+  )
+
+  return packages + effects
