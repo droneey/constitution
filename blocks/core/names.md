@@ -25,6 +25,13 @@ A concept has one word across the program, and a word names one concept: not `fe
 |---|---|
 | a reader who sees two words assumes two things, and a search misses the other one. | [] |
 
+### opposite-acts-named-by-a-verb-and-its-antonym · SHOULD
+Two acts that undo each other are named by a verb and its antonym, the same pair across the program: `add` and `remove`, `create` and `delete`, `open` and `close`, `start` and `stop`, `show` and `hide`.
+
+| Why | Tags |
+|---|---|
+| a reader who meets one half of a pair finds the other by its antonym, and `create` beside `remove` reads as two unrelated acts. | [] |
+
 ### name-never-an-empty-word · SHOULD
 A name is never only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff`, `thing`; code that knows nothing of the program may use one for what is truly generic.
 
@@ -38,6 +45,13 @@ A function's name is a concrete verb and its object — `cancelOrder`, `getOrder
 | Why | Tags |
 |---|---|
 | an empty verb says that a function does something, never what. | [] |
+
+### member-name-never-repeats-its-owner · SHOULD
+A member never repeats the name of the type or the object it belongs to: `MenuItem.onClick`, not `MenuItem.onMenuItemClick`; `order.total`, not `order.orderTotal`. A name a module exports is read without its module, and keeps its object: `listOrders`.
+
+| Why | Tags |
+|---|---|
+| the owner is written beside every use of its member, so its name said again is noise that hides the part that differs. | [] |
 
 ### business-name-free-of-vendor-and-storage · SHOULD
 A name of the business names its concept, never the vendor or the storage behind it: `UserRecord`, not `UserMongoDocument`.

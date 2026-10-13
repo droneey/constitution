@@ -218,8 +218,10 @@ rule	module-readme-holds-its-knowledge	core	blocks/core/layout.md		SHOULD				tru
 rule	name-reveals-intent	core	blocks/core/names.md		SHOULD				true
 rule	name-from-the-glossary	core	blocks/core/names.md		SHOULD				true
 rule	concept-has-one-word	core	blocks/core/names.md		SHOULD				true
+rule	opposite-acts-named-by-a-verb-and-its-antonym	core	blocks/core/names.md		SHOULD				true
 rule	name-never-an-empty-word	core	blocks/core/names.md		SHOULD				true
 rule	function-name-has-a-concrete-verb	core	blocks/core/names.md		SHOULD				true
+rule	member-name-never-repeats-its-owner	core	blocks/core/names.md		SHOULD				true
 rule	business-name-free-of-vendor-and-storage	core	blocks/core/names.md		SHOULD				true
 rule	literal-with-a-meaning-is-named	core	blocks/core/names.md		SHOULD				true
 rule	name-case-by-kind	core	blocks/core/names.md		SHOULD				true

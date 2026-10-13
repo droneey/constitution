@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0174 |
+| One home per rule | ADR-0160 – ADR-0175 |
 
 ---
 
@@ -1058,3 +1058,10 @@
   - Contexts: shell passes a secret only to the command that reads it and keeps embedded commands short; CSS spares a published package's classes and allows fluid type in `rem`; a mobile sign-in's answer may come back through the provider's scheme inside the system's session, the per-app language ranks first, and its TLS rule carries out remote-service's; Python mirrors the import package under its spec folders and needs no `typing_extensions` for a sentinel; TypeScript's peer range names its majors.
 - **Rejected.** Denying timers in the application layer, whose binding units debounce with them; flagging `uuid.UUID`, `http.HTTPStatus` or `pathlib.Path`, whose types are pure.
 - **Why.** The strongest architecture rule was held by prose where tools could hold it, and each other fix closes a clash between a rule and the rules or the tools that carry it out.
+
+## ADR-0175 — Names: antonyms in pairs, and a member never repeats its owner
+**Date:** 2026-10-13 · **Status:** Accepted
+
+- **Decision.** Core's `names` gains two SHOULD rules the owner accepted from Vitaly Friedman's naming guide and the naming cheatsheet it links: `opposite-acts-named-by-a-verb-and-its-antonym` — `add` and `remove`, `create` and `delete`, `open` and `close` — and `member-name-never-repeats-its-owner` — `MenuItem.onClick`, not `MenuItem.onMenuItemClick`.
+- **Rejected.** A name a module exports cut down to its verb, `list` in `orders`, which is read without the module wherever it is imported; component tokens in the token grammar, as Intuit's and Vodafone's taxonomies allow, which `token-never-named-after-a-component` refuses on purpose.
+- **Why.** Clean Code's consistent antonyms and the cheatsheet's rule against duplicated context make a name say only what its place does not.
