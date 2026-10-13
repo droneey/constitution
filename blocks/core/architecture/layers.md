@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files, the delivery layer and integrations. Inward means toward the kernel: the entry files, the root and the delivery layer import composition and features, a feature's application layer imports its domain, and the domain imports the kernel and the contracts; shared plumbing, adapters and libs import what their own rules allow.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files, the delivery layer and integrations. Inward means toward the kernel, in this order: the entry files and the root; the delivery layer; composition; a feature's application layer; its domain; the contracts; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
 
 ## Direction
 

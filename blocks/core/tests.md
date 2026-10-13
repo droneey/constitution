@@ -234,7 +234,7 @@ No spec mocks, patches or spies on a module of the program; an effect is replace
 | a mocked module replaces the code the spec claims to test and breaks when the module moves. | [testing] |
 
 ### integration-spec-runs-the-real-engine · SHOULD
-Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there — by the contract suite where it has one — with a case for each failure it maps; such specs stay out of the coverage gate.
+Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there — by the contract suite where it has one — with a case for each failure it maps.
 
 | Why | Tags |
 |---|---|
@@ -257,7 +257,7 @@ Every spec passes.
 | a spec left failing proves nothing from then on. | [testing] |
 
 ### logic-fully-covered · MUST
-Logic — all production code but the entry files, the file that wires the program, generated files, declarations and vendored code — is covered at 100 percent of lines and functions, and of branches where the runner measures them, reached only through the specs of its boundaries. A line no behaviour reaches is a missing case or dead code.
+Logic — all production code but the entry files, the file that wires the program, generated files, declarations and vendored code — is covered at 100 percent of lines and functions, and of branches where the runner measures them, by the unit specs of its boundaries alone; integration and end-to-end specs count toward no coverage. A line no behaviour reaches is a missing case or dead code.
 
 | Why | Tags |
 |---|---|

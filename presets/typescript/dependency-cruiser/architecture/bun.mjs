@@ -1,4 +1,4 @@
-import { EDGE, SPECS } from './core.mjs';
+import { EDGE, PACKAGE_SURFACE, SPECS } from './core.mjs';
 
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
@@ -11,10 +11,12 @@ export default {
         pathNot: [
           ...EDGE,
           ...SPECS,
+          PACKAGE_SURFACE,
         ],
       },
       to: {
         path: '^bun(?::|$)',
+        reachable: true,
       },
     },
   ],

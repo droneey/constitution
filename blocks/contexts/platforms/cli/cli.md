@@ -76,7 +76,7 @@ Every value the run knows to be secret is masked in all output, that of the tool
 | terminal output lands in CI logs and on shared screens, where a printed secret is leaked to everyone who reads them. | [security] |
 
 ### secret-never-passed-as-a-flag → secret-never-passed-as-a-process-argument · MUST
-A secret reaches a command through a file, standard input, the system's credential store, or the environment where its caller offers no other way, never as the value of a flag.
+A secret reaches a command through a file only its user can read, standard input, the system's credential store, or an environment built for it where its caller offers no other way, never as the value of a flag.
 
 | Why | Tags |
 |---|---|

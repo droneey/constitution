@@ -1,0 +1,12 @@
+self:
+  anchor-aliased-at-least-once:
+    - forbid-unused-anchors
+  ambiguous-scalar-quoted:
+    - forbid-implicit-octal
+  boolean-written-true-or-false:
+    - truthy
+  collection-written-in-block-style:
+    - braces
+    - brackets
+  mapping-key-unique:
+    - key-duplicates

@@ -28,3 +28,8 @@ rules:
       - 'true'
       - 'false'
     check-keys: false
+  anchors:
+    forbid-unused-anchors: true
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true

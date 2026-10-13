@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — a timeout, a dropped connection — is expected. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part, or by a supervisor that reports it and starts again the work it ran; everywhere else it travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — one the same request may not meet again: a timeout, a dropped connection, a rate limit, a sampled answer — is expected. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part, or by a supervisor that reports it and starts again the work it ran; everywhere else it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|
@@ -35,7 +35,7 @@ A failed parse of outside input is one expected failure whose details name every
 ## Catching and carrying
 
 ### catch-handles-only-what-it-recognises · MUST
-A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at the boundary of an optional part, which contains and reports them, and at the handler of last resort, which turns them into what the entry's user sees; one around a dependency maps the failures of that dependency it recognises to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
+A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at the boundary of an optional part, which contains and reports them, at a supervisor, which reports them and starts the work again, and at the handler of last resort, which turns them into what the entry's user sees; one around a dependency maps the failures of that dependency it recognises to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
 
 | Why | Tags |
 |---|---|

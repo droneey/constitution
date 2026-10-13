@@ -94,7 +94,7 @@ An identifier's brand is set only where the identifier is minted — its factory
 | a brand set in one place proves the value came through it; set anywhere, it proves nothing. | [] |
 
 ### invariant-value-is-a-branded-type → invariant-value-is-plain-immutable-data · MUST
-A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the value's error when the invariant fails, and narrowed by `is<Name>`.
+A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the value's error when the invariant fails, narrowed by `is<Name>`, and, where it is an object, compared by `equals<Name>`, never by `===`.
 
 ```ts
 type Email = string & { readonly [brand]: 'Email' };

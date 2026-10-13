@@ -5,7 +5,7 @@
 ## Consuming
 
 ### consumer-liveness-reports-its-loop · MUST
-The liveness check of a server that consumes reports whether its consuming loop still turns — it took, settled or waited for a message within a bound the project sets — never only whether the process answers.
+The liveness check of a server that consumes reports whether its consuming loop still turns — it took, settled or waited for a message, or retried its connection to the broker, within a bound the project sets — never only whether the process answers.
 
 | Why | Tags |
 |---|---|

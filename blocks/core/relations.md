@@ -5,7 +5,7 @@
 ## Modules
 
 ### module-is-deep · SHOULD
-A module hides much behind a small interface: few operations, each doing much its callers need not know. A unit that only forwards a call to the next one adds nothing and is removed, save a file that only re-exports, and a seam at a boundary with something outside, another part of the program's own included.
+A module hides much behind a small interface: few operations, each doing much its callers need not know. A unit that only forwards a call to the next one adds nothing and is removed, save a file that only re-exports, and a seam that implements one part's contract by calling another part or something outside the program.
 
 | Why | Tags |
 |---|---|

@@ -29,6 +29,8 @@ const DELIVERY = [
   `^src/(?!(?:${LAYERS}|${ROLES}|__tests__)/)[^/]+/`,
   '^src/(?!(?:main|index)\\.)[^/]+\\.[^/]+$',
 ];
+// The package's surface, which may offer an adapter to the package's consumers.
+const PACKAGE_SURFACE = '^src/index\\.[^/]+$';
 const EDGE = [
   ...ADAPTERS,
   ...ROOT,
@@ -36,7 +38,7 @@ const EDGE = [
   '^src/(libs|integrations)/',
 ];
 const IO =
-  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|quic|readline|repl|sqlite|timers|tls|trace_events|tty|v8|vm|wasi|worker_threads)(?:/|$)';
+  '^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|quic|readline|repl|sqlite|tls|trace_events|tty|v8|vm|wasi|worker_threads)(?:/|$)';
 // What a registry installs; the repository's own units are its code, held by the rules between units.
 const PACKAGES = [
   'npm',
@@ -51,7 +53,7 @@ const ROOT_CALLERS = [
   ...SPECS,
 ];
 
-export { ADAPTERS, DELIVERY, EDGE, PACKAGES, ROOT, ROOT_CALLERS, SPECS };
+export { ADAPTERS, DELIVERY, EDGE, PACKAGE_SURFACE, PACKAGES, ROOT, ROOT_CALLERS, SPECS };
 
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
@@ -105,7 +107,7 @@ export default {
       },
     },
     {
-      name: 'domain-reaches-only-itself-and-kernel',
+      name: 'domain-reaches-only-itself-kernel-and-contracts',
       severity: 'error',
       from: {
         path: '^src/features/([^/]+)/domain/',
@@ -318,6 +320,7 @@ export default {
         pathNot: [
           ...EDGE,
           ...SPECS,
+          PACKAGE_SURFACE,
         ],
       },
       to: {

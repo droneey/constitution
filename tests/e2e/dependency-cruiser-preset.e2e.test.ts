@@ -142,7 +142,7 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/domain/entities/order.entity.ts':
           "import { readFile } from 'node:fs';\nexport const order = readFile;\n",
       },
-      rule: 'domain-reaches-only-itself-and-kernel',
+      rule: 'domain-reaches-only-itself-kernel-and-contracts',
     },
     {
       condition: 'a feature imports a delivery folder no block names',
@@ -218,7 +218,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/libs/smtp/index.ts': exported('smtp'),
       },
-      rule: 'domain-reaches-only-itself-and-kernel',
+      rule: 'domain-reaches-only-itself-kernel-and-contracts',
     },
     {
       condition: 'the kernel imports shared code',
@@ -555,6 +555,23 @@ describe('the dependency-cruiser layer set', () => {
   });
 
   it.each([
+    {
+      condition: "a feature's application layer opens a database through Bun by a lib",
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+          from: '../../../../../../libs/db',
+          name: 'open',
+        }),
+        'src/libs/db/index.ts':
+          "import { Database } from 'bun:sqlite';\nexport const open = Database;\n",
+      },
+      parts: [
+        'typescript/bun',
+        'typescript/architecture/bun',
+        'typescript/architecture/core',
+      ],
+      rule: 'bun-effects-reached-only-from-the-edge',
+    },
     {
       condition: "a feature's application layer opens a database through Bun",
       files: {
@@ -1154,6 +1171,9 @@ describe('the dependency-cruiser layer set', () => {
         'src/libs/ui/button.stories.tsx':
           "import { value } from 'devtool';\nimport { button } from './button';\nexport const stories = [value, button];\n",
         'src/libs/ui/button.tsx': exported('button'),
+        'src/index.ts': "export { readOrders } from './adapters/files';\n",
+        'src/adapters/files/index.ts':
+          "import { readFile } from 'node:fs/promises';\nexport const readOrders = readFile;\n",
         'src/root/wiring.ts': exported('wiring'),
         'src/routes/__root.tsx': importing({
           from: '../root/wiring',

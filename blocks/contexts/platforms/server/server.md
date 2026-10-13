@@ -119,7 +119,7 @@ A server reads each secret from a file its host mounts in memory, such as a secr
 |---|---|
 | the environment is copied into every child process, written into crash reports and diagnostic dumps and shown by the host's inspect commands, while a file mounted in memory reaches only the code that opens it. | [security] |
 
-### server-cloud-access-through-workload-identity → credential-documented-and-short-lived · SHOULD
+### server-cloud-access-through-workload-identity → credential-short-lived · SHOULD
 Where its host gives it a workload identity, a server reaches the systems of that cloud with the identity's short-lived credentials, never with a long-lived key.
 
 | Why | Tags |

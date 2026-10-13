@@ -5,17 +5,17 @@
 ## Types
 
 ### yaml-read-by-a-yaml-1-2-loader → reader-resolves-scalars-by-the-core-schema · SHOULD
-Code that parses YAML reads it by a loader of YAML 1.2, such as ruamel.yaml's `YAML(typ='safe')`, never by PyYAML, whose resolver follows YAML 1.1.
+Code that parses YAML reads it by YAML 1.2's core schema — ruamel.yaml's `YAML(typ='safe', pure=True)`, with the timestamp tag constructed as text — never by PyYAML, whose resolver follows YAML 1.1.
 
 | Why | Tags |
 |---|---|
-| PyYAML's `safe_load` reads `no` as false and `1:20` as 80, so the program reads what the writer never meant. | [data] |
+| PyYAML's `safe_load` reads `no` as false and `1:20` as 80, and a loader that keeps its timestamps reads a date as a `date`, so the program reads what the writer never meant. | [data] |
 
 
 ## Security
 
 ### yaml-from-outside-loaded-by-a-safe-loader-only → outside-yaml-loaded-by-a-safe-loader · MUST
-Code that loads YAML from outside the program uses a safe loader — `YAML(typ='safe')`, or PyYAML's `safe_load` — and never a full or an unsafe one.
+Code that loads YAML from outside the program uses a safe loader — `YAML(typ='safe')` — and never a full or an unsafe one.
 
 | Why | Tags |
 |---|---|

@@ -45,13 +45,13 @@ core:
   import-points-inward:
     - adapters-know-no-caller
     - delivery-reached-only-from-the-edge
-    - domain-reaches-only-itself-and-kernel
+    - domain-reaches-only-itself-kernel-and-contracts
     - features-know-no-composition
     - kernel-reaches-only-itself
     - libs-know-no-application
     - shared-knows-no-feature-or-root
   domain-imports-only-itself-the-kernel-and-top-level-contracts:
-    - domain-reaches-only-itself-and-kernel
+    - domain-reaches-only-itself-kernel-and-contracts
   feature-laid-out-by-its-tree:
     - feature-root-reached-only-through-its-layers
   feature-never-imports-a-feature:

@@ -11,7 +11,7 @@ A data view shows each state its data can have: loading, failure, content, and t
 |---|---|
 | an empty view cannot otherwise be told from a slow or a broken one, and the user does not know what to do. | [ux, a11y] |
 
-### failure-contained-to-its-screen · MUST
+### failure-contained-to-its-screen → optional-part-isolated-from-its-faults · MUST
 A failure while a screen loads or renders costs that screen alone: the screen shows it in its own place, and the rest of the application stays usable.
 
 | Why | Tags |

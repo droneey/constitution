@@ -120,7 +120,7 @@ No module exports a binding declared by `let` or `var`.
 | an exported binding that can be reassigned is state every importer shares without seeing who changes it, and it carries over from one spec into the next. | [] |
 
 ### module-level-value-never-changed → state-never-global-and-mutable · MUST
-No `Map`, `Set`, array or object declared at module level is changed after the module loads.
+Every binding at module level is `const`, and no `Map`, `Set`, array or object it holds is changed after the module loads.
 
 | Why | Tags |
 |---|---|
@@ -150,7 +150,7 @@ A `catch` reads its value, typed `unknown`, only after `instanceof` or the error
 | anything can be thrown, by the program's dependencies too, so a caught value read as an `Error` without a check fails a second time inside the handler meant for the first. | [] |
 
 ### return-awaited-inside-try → catch-handles-only-what-it-recognises · MUST
-Inside a `try`, or a scope that holds a resource by `using` or `await using`, a returned promise is awaited — `return await` — so its rejection reaches the `catch`, and the resource outlives it.
+Inside a `try`, a returned promise is awaited — `return await` — so its rejection reaches the `catch`.
 
 | Why | Tags |
 |---|---|
@@ -180,7 +180,7 @@ A call across a process boundary that its client does not bound by a timeout of 
 | that signal is the timeout every API of the platform takes, and joining it to the caller's keeps one way to stop a call, whether the time ran out or the caller gave up. | [] |
 
 ### scoped-resource-held-by-using → resource-released-on-every-path · MUST
-A resource whose life is one scope — a file handle, a lock, a temporary folder, a connection for one task — is held by `using` or `await using`.
+A resource whose life is one scope — a file handle, a lock, a temporary folder, a connection for one task — is held by `using` or `await using`, and a promise returned inside its scope is awaited, so the resource outlives it.
 
 | Why | Tags |
 |---|---|
@@ -194,7 +194,7 @@ Every promise is awaited, returned or handed to a scope that awaits it; `void` n
 | a promise nobody awaits fails where nobody sees it, and the work it stands for outlives the code that started it. | [errors] |
 
 ### request-path-calls-no-sync-io · SHOULD
-Code on the path of a request or an event the program serves calls no synchronous input or output — `readFileSync`, `execFileSync`, `pbkdf2Sync`, `scryptSync` — and runs heavy work in a worker.
+Code on the path of a request or an event the program serves calls no synchronous input or output — `readFileSync`, `execFileSync` — and runs heavy work, a key derivation by `pbkdf2Sync` or `scryptSync` among it, in a worker.
 
 | Why | Tags |
 |---|---|

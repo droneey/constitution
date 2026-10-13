@@ -249,7 +249,8 @@ rule	secret-never-passed-as-a-process-argument	core	blocks/core/security.md		MUS
 rule	child-process-environment-built-for-it	core	blocks/core/security.md		MUST	security			true
 rule	leaked-secret-rotated-at-once	core	blocks/core/security.md		MUST	security			true
 rule	credential-has-least-privilege	core	blocks/core/security.md		MUST	security			true
-rule	credential-documented-and-short-lived	core	blocks/core/security.md		SHOULD	security			true
+rule	credential-documented-beside-its-use	core	blocks/core/security.md		SHOULD	security			true
+rule	credential-short-lived	core	blocks/core/security.md		SHOULD	security			true
 rule	process-runs-with-only-the-rights-its-job-needs	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	security performance			true
@@ -324,7 +325,7 @@ rule	absence-shown-by-the-type	core	blocks/core/types.md		MUST	data			true
 rule	instant-is-an-exact-time	core	blocks/core/types.md		MUST	data			true
 rule	duration-measured-on-a-monotonic-clock	core	blocks/core/types.md		MUST	data			true
 rule	text-encoded-as-utf-8	core	blocks/core/types.md		MUST	data			true
-rule	machine-text-independent-of-the-locale	core	blocks/core/types.md		SHOULD	data			true
+rule	machine-text-independent-of-the-locale	core	blocks/core/types.md		MUST	data			true
 rule	exact-quantity-never-binary-float	core	blocks/core/types.md		MUST	data			true
 rule	business-rule-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	domain-logs-nothing	core	blocks/core/architecture/domain.md		MUST		architecture		true
@@ -887,7 +888,7 @@ rule	submit-busy-keeps-its-focus	ui	blocks/domains/ui/forms.md		SHOULD	ux a11y		
 rule	destructive-action-confirmed-or-undoable	ui	blocks/domains/ui/forms.md		MUST	ux a11y data			true
 rule	unsaved-input-guarded-on-leave	ui	blocks/domains/ui/forms.md		SHOULD	ux data			true
 rule	data-view-shows-every-state	ui	blocks/domains/ui/screens.md		MUST	ux a11y			true
-rule	failure-contained-to-its-screen	ui	blocks/domains/ui/screens.md		MUST	errors ux			true
+rule	failure-contained-to-its-screen	ui	blocks/domains/ui/screens.md		MUST	errors ux		optional-part-isolated-from-its-faults	true
 rule	empty-state-offers-an-action	ui	blocks/domains/ui/screens.md		SHOULD	ux			true
 rule	long-load-says-what-it-does	ui	blocks/domains/ui/screens.md		SHOULD				true
 rule	unknown-address-shows-the-not-found-screen	ui	blocks/domains/ui/screens.md		SHOULD	ux			true
@@ -1130,7 +1131,7 @@ rule	refused-permission-leaves-the-app-working	mobile	blocks/contexts/platforms/
 rule	copied-secret-marked-sensitive	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	SHOULD	security			true
 rule	focused-field-kept-above-the-keyboard	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	SHOULD	ux			true
 rule	sensitive-field-kept-from-keyboard-learning	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	security a11y ux		field-declares-its-kind	true
-rule	touch-target-44-pt-or-48-dp	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	a11y ux		target-meets-the-minimum-size	true
+rule	touch-target-44-pt-on-ios-48-dp-on-android	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	a11y ux		target-meets-the-minimum-size	true
 rule	control-declares-label-role-and-state	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	a11y		every-control-has-an-accessible-name	true
 rule	screen-reader-order-follows-the-layout	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	a11y		focus-order-follows-the-visual-order	true
 rule	text-follows-the-systems-text-size	mobile	blocks/contexts/platforms/mobile/with/ui.md	ui	MUST	a11y		wcag-aa-conformance	true
@@ -1151,7 +1152,7 @@ rule	server-serves-its-protocol-itself	server	blocks/contexts/platforms/server/s
 rule	server-log-leaves-as-a-stream	server	blocks/contexts/platforms/server/server.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	server-work-in-flight-bounded	server	blocks/contexts/platforms/server/server.md		SHOULD	performance errors			true
 rule	server-secret-read-from-the-host-not-the-environment	server	blocks/contexts/platforms/server/server.md		SHOULD	security			true
-rule	server-cloud-access-through-workload-identity	server	blocks/contexts/platforms/server/server.md		SHOULD	security		credential-documented-and-short-lived	true
+rule	server-cloud-access-through-workload-identity	server	blocks/contexts/platforms/server/server.md		SHOULD	security		credential-short-lived	true
 rule	server-process-runs-unprivileged	server	blocks/contexts/platforms/server/server.md		MUST	security		process-runs-with-only-the-rights-its-job-needs	true
 rule	server-stop-proven-by-a-spec	server	blocks/contexts/platforms/server/server.md		SHOULD	testing			true
 rule	server-liveness-reports-the-process-alone	server	blocks/contexts/platforms/server/server.md		MUST	errors			true

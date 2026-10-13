@@ -64,7 +64,7 @@ A script that defines functions runs its logic in a function `main`, called on i
 ## Relations
 
 ### function-variable-declared-local → state-never-global-and-mutable · MUST
-In Bash, a function declares every variable it sets as `local`.
+In Bash, a function declares every variable it sets as `local`, on a line of its own before the command that assigns it: `local out` then `out="$(command)"`.
 
 | Why | Tags |
 |---|---|
@@ -112,7 +112,7 @@ A committed script never turns on `set -x`.
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
-A script reads a secret it received into a variable it does not export and unsets the name it came by — `token="$TOKEN"; unset TOKEN` — exports no variable its commands do not need, and passes a secret only to the one command that reads it: `TOKEN="$token" command`, or on its standard input.
+A script reads a secret it received into a variable it does not export and unsets the name it came by — `token="$TOKEN"; unset TOKEN` — exports no variable its commands do not need — the rest of what it received being its caller's choice for them — and passes a secret only to the one command that reads it: `TOKEN="$token" command`, or on its standard input.
 
 | Why | Tags |
 |---|---|

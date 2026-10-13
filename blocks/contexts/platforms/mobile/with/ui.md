@@ -87,8 +87,8 @@ A field that takes a secret is declared a secure entry, and one that takes other
 
 ## Accessibility
 
-### touch-target-44-pt-or-48-dp → target-meets-the-minimum-size · MUST
-A touch target is at least 44 × 44 points, or 48 × 48 density-independent pixels, padding included.
+### touch-target-44-pt-on-ios-48-dp-on-android → target-meets-the-minimum-size · MUST
+A touch target is at least 44 × 44 points on iOS and 48 × 48 density-independent pixels on Android, padding included.
 
 | Why | Tags |
 |---|---|

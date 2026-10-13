@@ -68,14 +68,14 @@ Work started concurrently over a collection — calls, tasks, jobs — runs at m
 | an unbounded fan-out over a large collection exhausts connections, memory and the quota of the system it calls. | [performance] |
 
 ### state-shared-by-concurrent-work-owned-or-guarded · MUST
-State in the program's memory that concurrent work reaches is owned by one task and changed only through messages to it, changed only by atomic operations, or guarded by locks taken in one fixed order and never held while waiting on another process.
+State in the program's memory that concurrent work reaches is owned by one task and changed only through messages to it, changed only by atomic operations, or guarded by locks taken in one fixed order and never held while waiting on another system, save across one call that has a timeout and takes no other lock.
 
 | Why | Tags |
 |---|---|
 | two tasks that change one value unguarded lose an update at random, and locks taken in two orders, or held while waiting on another system, deadlock under load. | [data, errors] |
 
 ### program-stops-cleanly · MUST
-A program told to stop — by a termination signal or by its host — keeps taking the work routed to it until nothing routes work to it, then takes none, finishes or cancels the work in flight within a bound, releases its resources and exits.
+A program told to stop — by a termination signal or by its host — keeps taking the work routed to it until nothing routes work to it, then takes none, finishes or cancels the work in flight within a bound, releases its resources and exits; a second request to stop may end it at once, without the cleanup.
 
 | Why | Tags |
 |---|---|
@@ -112,7 +112,7 @@ A business process that spans several programs or transactions keeps its state i
 | no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. | [data, errors] |
 
 ### irreversible-operation-runs-dry-by-default · MUST
-An operation run by hand or by a pipeline against a live system — one others use, or whose data outlives the task: a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
+An operation run by hand or by a pipeline against a live system (one others use, or whose data outlives the task) — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
 
 | Why | Tags |
 |---|---|

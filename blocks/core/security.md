@@ -46,12 +46,19 @@ A credential belongs to one identity and one purpose per environment, with only 
 |---|---|
 | a credential with only the permissions its job needs limits what a leak can do, and one identity per credential says who did what. | [security] |
 
-### credential-documented-and-short-lived · SHOULD
-A credential is documented beside its use, and short-lived where the platform issues such.
+### credential-documented-beside-its-use · SHOULD
+A credential is documented beside its use.
 
 | Why | Tags |
 |---|---|
-| a credential nobody can trace to its use is never rotated or revoked in time, and one that lives long stays useful to whoever takes it. | [security] |
+| a credential nobody can trace to its use is never rotated or revoked in time. | [security] |
+
+### credential-short-lived · SHOULD
+A credential is short-lived where the platform issues such.
+
+| Why | Tags |
+|---|---|
+| a credential that lives long stays useful to whoever takes it. | [security] |
 
 ### process-runs-with-only-the-rights-its-job-needs · MUST
 A program runs as a user with only the operating-system rights and the file access its job needs.

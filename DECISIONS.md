@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0178 |
+| One home per rule | ADR-0160 – ADR-0179 |
 
 ---
 
@@ -1097,3 +1097,13 @@
   - Contexts: Python's YAML seam carries each YAML rule that binds code, by a YAML 1.2 loader and by refusing an alias, since no Python loader bounds them; Python runs no text as code, keeps a synchronous call's `timeout=`, types an exact quantity by its unit, and makes an owned enumeration a `StrEnum` at the level TypeScript does. TypeScript changes no module-level value, awaits a returned promise inside a `using` scope, and reads `.mts` and `.cts`. A shell script logs through one function and unsets the secret it received. A rendering server may keep the tokens in a session store of its own. Markdown governs `.markdown`.
 - **Rejected.** Folding Bun's reading of `#/` into the TypeScript block, which names no runtime; lowering `case-split-by-arrange-act-assert-comments`, which the owner's specs follow everywhere, until he decides it; widening the TypeScript block to `.js` files, which only tools' configuration uses.
 - **Why.** Each fix closes a rule that contradicted another, a tool that held less than its rule, or a fact the tools disproved.
+
+## ADR-0179 — Core and the contexts after their fifteenth review
+**Date:** 2026-10-13 · **Status:** Accepted
+
+- **Decision.** The fifteenth round, briefed as the thirteenth, graded core 8.8, 8.9 and 8.9 and the contexts 8.9, 8.9 and 8.8; what two reviewers or more found, and each defect a reviewer reproduced, is closed.
+  - The tools: dependency-cruiser follows a lib to Bun's modules as it does to Node's, lets the package's surface offer an adapter, and leaves `node:timers` to the timer rule, which allows a binding unit's; its rule on the domain is named for the contracts it allows. import-linter protects Python's entry file. yamllint refuses an unused anchor and an octal value, and its bindings name what it holds.
+  - Core: a supervisor catches as an optional part's boundary does; a transient failure is one the same request may not meet again; a function that answers depends on its input and on the dependencies it is handed, and the time reaches it through either; text for machines is independent of the locale at MUST; the coverage gate counts the unit specs alone, and a unit of the root other than the wiring is a boundary; choosing a member of an open set the root handed in is receiving, while asking a registry for a dependency is not; a forwarder stays only as a re-export or a seam that implements a contract; a component and a derived value are named for what they return; a second request to stop may end a program at once; a lock may be held across one call that has a timeout; the inward order is written whole; a credential's documentation and its life are two rules; a screen's failure is an optional part's.
+  - Contexts: Python reads YAML by ruamel's pure loader with dates kept as text, makes an owned closed set a `StrEnum`, logs outside input as a field the formatter encodes, and lets a supervisor catch broadly. TypeScript keeps every module binding `const`, compares an object-shaped brand by `equals<Name>`, and awaits a promise returned inside a `using` scope. Shell declares `local` apart from the assignment. A touch target is 44 points on iOS and 48 dp on Android; a consumer retrying its broker is alive; a breakpoint in a media query repeats the theme's.
+- **Rejected.** Counting integration specs toward the coverage gate for an adapter over an owned engine, which changes the gate the owner keeps; tool blocks for shell and Markdown in this round, which belong to the implementations layer.
+- **Why.** Each fix closes a clash between two rules, a tool that held less than its rule, or a fact the tools disproved.

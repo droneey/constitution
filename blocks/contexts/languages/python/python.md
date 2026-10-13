@@ -136,7 +136,7 @@ A `match` or an `if` chain over a closed set — an enumeration, a union of clas
 | `assert_never` fails the type check wherever a member added to the set is not handled, and raises if one arrives at run time. | [] |
 
 ### enumeration-is-a-unique-str-enum · MUST
-An enumeration of values the program owns is an `enum.StrEnum` marked `@unique`, each member's value written out as the string the program stores and sends, never `auto()`.
+A closed set of named values the program owns is an `enum.StrEnum` marked `@unique`, never a union of `Literal` strings, each member's value written out as the string the program stores and sends, never `auto()`.
 
 | Why | Tags |
 |---|---|
@@ -222,7 +222,7 @@ Every call that opens or decodes text — `open`, `Path.open`, `Path.read_text`,
 ## Errors
 
 ### except-clause-names-what-it-handles → catch-handles-only-what-it-recognises · MUST
-An `except` clause names the exception types it handles; a bare `except:`, or one that catches `Exception` or `BaseException`, stands only in a handler of last resort or at the boundary of an optional part.
+An `except` clause names the exception types it handles; a bare `except:`, or one that catches `Exception` or `BaseException`, stands only in a handler of last resort, at a supervisor or at the boundary of an optional part.
 
 | Why | Tags |
 |---|---|
@@ -324,7 +324,7 @@ A process is started with its arguments as a list — `subprocess.run([...])`, `
 | each item of a list reaches the program as one argument, while a shell parses the string and runs whatever a value smuggles into it. | [security] |
 
 ### interpreter-input-never-formatted-into-text → outside-input-reaches-interpreters-as-parameters · MUST
-Outside input never reaches a query, markup or a log message through an f-string, `%` or `str.format`; it travels as the interpreter's parameter — `logger.info('%s', value)` for a log message — or in a template string `t'…'` that the interpreter's library renders.
+Outside input never reaches a query, markup or a log message through an f-string, `%` or `str.format`; it travels as the interpreter's parameter — for a log message, a field of the record, `extra=`, that the formatter encodes — or in a template string `t'…'` that the interpreter's library renders.
 
 | Why | Tags |
 |---|---|

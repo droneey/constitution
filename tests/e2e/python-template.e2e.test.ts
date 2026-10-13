@@ -260,6 +260,17 @@ describe('the python template', () => {
       task: 'code:check',
     },
     {
+      condition: 'a feature imports the entry file',
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_start.py': 'from shop.main import main\n',
+        'src/shop/main.py': 'def main() -> None:\n  pass\n',
+      },
+      finding: 'entrypoint-never-imported BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a feature imports the integration of a host framework',
       changes: {
         ...FEATURE,
