@@ -67,7 +67,7 @@ A unit is ready to use when its constructor or factory returns; a required order
 | a hidden order of calls is a bug waiting for the first caller who does not know it. | [] |
 
 ### state-never-global-and-mutable · MUST
-State that changes never lives at module, static or global level; it lives in values the program creates and passes in. The diagnostics facades — the language’s logging facade, or the program’s own where the language has none, and the facades of tracing and metrics a block below names — configured once at start, are the one exception.
+State that changes never lives at module, static or global level; it lives in values the program creates and passes in. The diagnostics facades — the language’s logging facade, or the program’s own where the language has none, and the facades of tracing and metrics a block below names — configured once at start, are the one exception. A spec's own setup, which its hooks set for each case, is no state of the program.
 
 | Why | Tags |
 |---|---|

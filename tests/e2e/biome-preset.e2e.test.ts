@@ -767,7 +767,14 @@ describe("the parts of Biome's base", () => {
       files: {
         'src/session.ts': 'export let current = 0;\n',
       },
-      message: 'Export a const',
+      message: 'Declare a module-level variable as const',
+    },
+    {
+      condition: 'a module keeps a variable it can reassign',
+      files: {
+        'src/session.ts': 'let current = 0;\nexport const next = (): number => current + 1;\n',
+      },
+      message: 'Declare a module-level variable as const',
     },
     {
       condition: 'a spec compares with toEqual',

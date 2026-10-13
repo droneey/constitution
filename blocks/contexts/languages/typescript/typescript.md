@@ -113,7 +113,7 @@ A module exports by name, never by `export default`, save where a framework or a
 | a thing then has one name in every import, so a search finds every use and a rename reaches them all. | [] |
 
 ### module-level-value-never-changed → state-never-global-and-mutable · MUST
-Every variable declared at module level is `const`, and no `Map`, `Set`, array or object it holds is changed after the module loads, save the diagnostics facades the root configures once at start.
+Every variable declared at module level is `const`, and no `Map`, `Set`, array or object it holds is changed after the module loads, save the diagnostics facades configured once at start.
 
 | Why | Tags |
 |---|---|
