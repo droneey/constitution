@@ -176,8 +176,14 @@ modules = ["*.entrypoints.*"]
 [[tool.importlinter.contracts]]
 name = "entrypoint-never-imported"
 type = "protected"
-protected_modules = ["*.__main__", "*.main"]
+protected_modules = ["*.__main__"]
 allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.main"]
+allowed_importers = ["*.__main__"]
 
 [[tool.importlinter.contracts]]
 name = "integration-never-imported"

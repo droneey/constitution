@@ -494,6 +494,14 @@ describe('the python template', () => {
       task: 'test:check',
     },
     {
+      condition: '__main__.py calls main() of main.py',
+      changes: {
+        'src/shop/__main__.py': 'from shop.main import main\n\nmain()\n',
+        'src/shop/main.py': 'def main() -> None:\n  pass\n',
+      },
+      task: 'architecture:check',
+    },
+    {
       condition: 'Hypothesis kept its examples in .hypothesis/',
       changes: {
         '.hypothesis/examples/0a1b2c3d/4e5f6a7b': '',
