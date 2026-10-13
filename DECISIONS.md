@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0179 |
+| One home per rule | ADR-0160 – ADR-0180 |
 
 ---
 
@@ -1107,3 +1107,10 @@
   - Contexts: Python reads YAML by ruamel's pure loader with dates kept as text, makes an owned closed set a `StrEnum`, logs outside input as a field the formatter encodes, and lets a supervisor catch broadly. TypeScript keeps every module binding `const`, compares an object-shaped brand by `equals<Name>`, and awaits a promise returned inside a `using` scope. Shell declares `local` apart from the assignment. A touch target is 44 points on iOS and 48 dp on Android; a consumer retrying its broker is alive; a breakpoint in a media query repeats the theme's.
 - **Rejected.** Counting integration specs toward the coverage gate for an adapter over an owned engine, which changes the gate the owner keeps; tool blocks for shell and Markdown in this round, which belong to the implementations layer.
 - **Why.** Each fix closes a clash between two rules, a tool that held less than its rule, or a fact the tools disproved.
+
+## ADR-0180 — No list of a runtime's members, and the sections of a case held by review
+**Date:** 2026-10-13 · **Status:** Accepted
+
+- **Decision.** No tool refuses the `Bun` global outside the edge: `bun-global-reached-only-from-the-edge` and its GritQL plugin go. A call through it that reaches an effect — `Bun.file`, `Bun.spawn` — is still refused by core's `effects-held-only-by-the-edge`, and a reviewer holds it; a pure one — `Bun.deepEquals`, `Bun.hash` — is allowed, as `node:util` is. `case-split-by-arrange-act-assert-comments` stays a MUST that a reviewer holds.
+- **Rejected.** Refusing every member of `Bun`, which forbade its pure helpers that Node's own modules are allowed; a list of the pure members allowed, or of the effectful ones refused, which must follow every release of the runtime; a check of a case's comments, a parser of comments for each language that costs more than a reviewer's look at a case.
+- **Why.** A list of a runtime's members goes stale with each release and needs keeping for little gain, and a rule a reviewer holds at a glance is not worth the complexity of a check.

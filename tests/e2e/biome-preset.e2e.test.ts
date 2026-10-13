@@ -2503,39 +2503,6 @@ describe('the Biome framework parts', () => {
 describe('the Biome architecture parts', () => {
   it.each([
     {
-      file: 'src/features/orders/app/use-cases/export-orders.use-case.ts',
-      isReported: true,
-    },
-    {
-      file: 'src/root/files.ts',
-      isReported: false,
-    },
-  ])(
-    'should report a call through the Bun global $isReported in $file when a project extends the bun part',
-    ({ file, isReported }) => {
-      // Arrange
-      const project = {
-        files: {
-          [file]: "export const exported = (): unknown => Bun.file('orders.json');\n",
-        },
-        parts: [
-          ...BASE_PARTS,
-          'typescript/architecture/bun',
-        ],
-      };
-
-      // Act
-      const { plugins } = lintFindings(project);
-
-      // Assert
-      expect(plugins.some((finding) => finding.startsWith('The Bun global outside the edge'))).toBe(
-        isReported,
-      );
-    },
-  );
-
-  it.each([
-    {
       code: 'export const placedAt = (): number => performance.now();\n',
       file: 'src/features/orders/app/use-cases/place-order.use-case.ts',
       isReported: true,

@@ -1,5 +1,0 @@
-language js
-
-`Bun.$member` as $call where {
-  register_diagnostic(span=$call, message="The Bun global outside the edge: input and output reach this code through a port", severity="error")
-}

@@ -6,20 +6,6 @@
       },
     },
   },
-  "plugins": [
-    {
-      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/bun-global-reached-only-from-the-edge.grit",
-      "includes": [
-        "**/features/*/domain/**",
-        "**/features/*/app/**",
-        "**/kernel/**",
-        "**/contracts/**",
-        "**/shared/**",
-        "**/composition/**",
-        "!**/__tests__/**",
-      ],
-    },
-  ],
   "overrides": [
     {
       "includes": [
