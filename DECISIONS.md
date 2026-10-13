@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0180 |
+| One home per rule | ADR-0160 – ADR-0181 |
 
 ---
 
@@ -1114,3 +1114,13 @@
 - **Decision.** No tool refuses the `Bun` global outside the edge: `bun-global-reached-only-from-the-edge` and its GritQL plugin go. A call through it that reaches an effect — `Bun.file`, `Bun.spawn` — is still refused by core's `effects-held-only-by-the-edge`, and a reviewer holds it; a pure one — `Bun.deepEquals`, `Bun.hash` — is allowed, as `node:util` is. `case-split-by-arrange-act-assert-comments` stays a MUST that a reviewer holds.
 - **Rejected.** Refusing every member of `Bun`, which forbade its pure helpers that Node's own modules are allowed; a list of the pure members allowed, or of the effectful ones refused, which must follow every release of the runtime; a check of a case's comments, a parser of comments for each language that costs more than a reviewer's look at a case.
 - **Why.** A list of a runtime's members goes stale with each release and needs keeping for little gain, and a rule a reviewer holds at a glance is not worth the complexity of a check.
+
+## ADR-0181 — Core and the contexts after their sixteenth review
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** The sixteenth round graded core 8.9, 8.8 and 8.8 and the contexts 8.9 with every reviewer; what two reviewers or more found is closed.
+  - Core: a tool holds a rule where its gain repays its cost, and a decision records a rule left to review; test code — a spec, a fake, a contract suite, fixtures — has no line limit, as both tools read it, and a contract suite is a kind of file, `<contract>.suite`; the delivery layer's own wiring is the one import of the root the inward order allows, and integrations stand beside the entry files; the domain may import the standard library's parts that hold no effect; a transient failure is one the same request might not meet again, defined once; a supervisor starts its worker again, never the unit of work that failed; a user interface, not each screen, has a handler of last resort; two slugs now say what their statements hold, `type-lives-beside-the-signature-that-introduces-it` and `function-answers-from-its-input-and-handed-dependencies`.
+  - Tools: dependency-cruiser refuses only the `bun:` modules, and the `bun` module's pure helpers stand as the global's do; a vendor's package a lib wraps is left to a reviewer in both languages, the tools following only the runtime's own effects.
+  - Contexts: TypeScript's module-level variables are `const` in one rule, save the diagnostics facades, and its plugin is named for that rule; Python keeps an arriving number an `int` until compared, logs outside input only as an `extra=` field, and names `torch.load` with `weights_only=False`; a value a CI runner substitutes reaches a command only through the environment; an embedded command and a package script double-quote their expansions as a rule of their own; a script exports only what its commands read, as a rule of its own; `local` stands apart from a command substitution; pytest's fixtures and core's are told apart; zod checks an invariant before it brands; ui allows a breakpoint repeated where a token cannot be read.
+- **Rejected.** Counting a vendor's package reached through a lib by a reachable rule to every package, which needs the homes of all packages in one more place; narrowing the tools' line limits to spec files, which would bind the fakes and fixtures the owner's tests share.
+- **Why.** Each fix closes a clash between two rules, a slug that said less than its rule, or a tool that held more or less than its rule.

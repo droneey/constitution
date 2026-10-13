@@ -53,7 +53,7 @@ No plugin that runs a case again — pytest-rerunfailures, flaky — is installe
 | pytest collects every folder under `tests/`, so only `norecursedirs` keeps the integration and end-to-end specs out of the unit specs, their sandbox and their coverage gate. | [] |
 
 ### shared-fixtures-in-the-conftest → test-folder-files-in-python-forms · MUST
-The fixtures the specs of a folder share are in that folder's `conftest.py`.
+pytest's fixtures — the functions the specs of a folder share by name — are in that folder's `conftest.py`; core's fixtures, the factories of valid values, stay in `<name>_fixtures.py`.
 
 | Why | Tags |
 |---|---|

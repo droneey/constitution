@@ -166,8 +166,8 @@ typescript:
     - useDisposables
   date-and-time-are-temporal-values:
     - noRestrictedImports
-  export-never-reassignable:
-    - export-never-reassignable.grit
+  module-level-value-never-changed:
+    - module-level-value-never-changed.grit
   module-exports-by-name:
     - noDefaultExport
   return-type-no-wider-than-returned:

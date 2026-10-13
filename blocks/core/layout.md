@@ -5,7 +5,7 @@
 ## Kinds
 
 ### file-named-for-its-kind · MUST
-A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
+A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; a contract suite is `<contract>.suite`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
 
 | Why | Tags |
 |---|---|
@@ -26,7 +26,7 @@ A file holds one semantic unit and is named after it; an unrelated export goes t
 | a file’s name then tells what is inside, and a change to one unit touches one file. | [] |
 
 ### file-within-500-lines · MUST
-A file of code the project writes holds at most 500 lines; a spec, a generated file, a document and data have no line limit.
+A file of code the project writes holds at most 500 lines; test code, a generated file, a document and data have no line limit.
 
 | Why | Tags |
 |---|---|

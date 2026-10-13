@@ -143,7 +143,7 @@ A closed set of named values the program owns is an `enum.StrEnum` marked `@uniq
 | a value written out survives a member's rename, which `auto()` would carry into every stored record and message, and `@unique` refuses two names for one value. | [] |
 
 ### outside-number-set-is-an-int-enum · MUST
-A set of numbers another system defines — exit statuses, HTTP statuses — is an `enum.IntEnum` with every member's value written, or the standard library's own such as `http.HTTPStatus`.
+A set of numbers another system defines — exit statuses, HTTP statuses — is an `enum.IntEnum` with every member's value written, or the standard library's own such as `http.HTTPStatus`; a number that arrives stays an `int` until it is compared with the members, never converted by calling the enumeration.
 
 | Why | Tags |
 |---|---|
@@ -324,7 +324,7 @@ A process is started with its arguments as a list — `subprocess.run([...])`, `
 | each item of a list reaches the program as one argument, while a shell parses the string and runs whatever a value smuggles into it. | [security] |
 
 ### interpreter-input-never-formatted-into-text → outside-input-reaches-interpreters-as-parameters · MUST
-Outside input never reaches a query, markup or a log message through an f-string, `%` or `str.format`; it travels as the interpreter's parameter — for a log message, a field of the record, `extra=`, that the formatter encodes — or in a template string `t'…'` that the interpreter's library renders.
+Outside input never reaches a query, markup or a log message through an f-string, `%` or `str.format`; it travels as the interpreter's parameter — for a log message, a field in `extra=` that the formatter encodes, never a `%s` argument of the message — or in a template string `t'…'` that the interpreter's library renders.
 
 | Why | Tags |
 |---|---|
@@ -352,7 +352,7 @@ A process the program starts — through `subprocess` or `asyncio.create_subproc
 | every one of these calls copies the program's whole environment into the child when `env` is left out or `None`, a secret among it. | [security] |
 
 ### outside-data-never-unpickled → outside-input-never-rebuilt-as-objects · MUST
-Data from outside is never read by a loader that builds objects from what it names — `pickle`, `marshal`, `shelve`, `dill`, `jsonpickle`, `torch.load` without `weights_only=True`.
+Data from outside is never read by a loader that builds objects from what it names — `pickle`, `marshal`, `shelve`, `dill`, `jsonpickle`, `torch.load` with `weights_only=False`.
 
 | Why | Tags |
 |---|---|
@@ -428,7 +428,7 @@ A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the impor
 | a module's name is the name it is imported by, and the language allows no hyphen in it; outside the import tree, core's case holds. | [] |
 
 ### test-folder-files-in-python-forms → file-named-for-its-kind · MUST
-A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`, fixtures `<name>_fixtures.py`, or a file whose name the test runner fixes.
+A `.py` file in `tests/` is a spec `test_<name>.py`, a fake `<contract>_fake.py`, a contract suite `<contract>_suite.py`, fixtures `<name>_fixtures.py`, or a file whose name the test runner fixes.
 
 | Why | Tags |
 |---|---|

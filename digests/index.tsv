@@ -200,7 +200,7 @@ rule	failure-shown-as-what-happened-and-what-next	core	blocks/core/errors.md		SH
 rule	error-library-gives-code-cause-and-details	core	blocks/core/errors.md		MUST	errors			true
 rule	function-does-one-thing	core	blocks/core/functions.md		SHOULD				true
 rule	function-answers-or-changes	core	blocks/core/functions.md		SHOULD				true
-rule	function-pure-by-default	core	blocks/core/functions.md		SHOULD				true
+rule	function-answers-from-its-input-and-handed-dependencies	core	blocks/core/functions.md		SHOULD				true
 rule	function-within-its-limits	core	blocks/core/functions.md		MUST				true
 rule	function-leaves-early-on-failure	core	blocks/core/functions.md		SHOULD				true
 rule	function-takes-at-most-three-positions	core	blocks/core/functions.md		SHOULD				true
@@ -310,7 +310,7 @@ rule	illegal-state-unrepresentable	core	blocks/core/types.md		MUST				true
 rule	closed-set-branched-exhaustively	core	blocks/core/types.md		MUST				true
 rule	identifier-branded-by-entity	core	blocks/core/types.md		SHOULD				true
 rule	shape-composed-of-small-shapes	core	blocks/core/types.md		SHOULD				true
-rule	type-lives-with-its-consumer	core	blocks/core/types.md		MUST				true
+rule	type-lives-beside-the-signature-that-introduces-it	core	blocks/core/types.md		MUST				true
 rule	declared-values-never-typed-again	core	blocks/core/types.md		MUST				true
 rule	outside-vocabulary-reached-through-a-total-table	core	blocks/core/types.md		MUST	data			true
 rule	enumeration-others-read-declared-extensible	core	blocks/core/types.md		MUST	data			true
@@ -1319,6 +1319,7 @@ rule	script-diagnostics-on-standard-error	shell	blocks/contexts/languages/shell/
 rule	outside-input-passed-as-an-argument	shell	blocks/contexts/languages/shell/shell.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	xtrace-never-ships	shell	blocks/contexts/languages/shell/shell.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	secret-set-only-for-the-command-that-reads-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
+rule	variable-exported-only-for-the-commands-that-read-it	shell	blocks/contexts/languages/shell/shell.md		MUST	security		child-process-environment-built-for-it	true
 rule	executable-script-names-its-shell	shell	blocks/contexts/languages/shell/shell.md		MUST				true
 rule	shell-file-ends-in-sh	shell	blocks/contexts/languages/shell/shell.md		SHOULD			format-has-one-extension	true
 rule	decorator-is-a-standard-decorator	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
@@ -1334,7 +1335,6 @@ rule	type-only-import-written-as-import-type	typescript	blocks/contexts/language
 rule	alias-declared-in-package-imports	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	hash-alias-for-the-source-root	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	module-exports-by-name	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
-rule	export-never-reassignable	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			state-never-global-and-mutable	true
 rule	module-level-value-never-changed	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			state-never-global-and-mutable	true
 rule	overrides-marked-by-keyword	typescript	blocks/contexts/languages/typescript/typescript.md		MUST			override-marked-where-declared	true
 rule	mapped-error-passes-its-cause	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	errors		error-keeps-its-cause	true
@@ -1380,7 +1380,7 @@ rule	brand-is-a-unique-symbol-key	typescript	blocks/contexts/languages/typescrip
 rule	brand-set-only-where-minted-or-parsed	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			identifier-branded-by-entity	true
 rule	invariant-value-is-a-branded-type	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		invariant-value-is-plain-immutable-data	true
 rule	semantic-alias-names-a-shared-meaning	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
-rule	program-type-never-declared-ambient	typescript	blocks/contexts/languages/typescript/types.md		MUST			type-lives-with-its-consumer	true
+rule	program-type-never-declared-ambient	typescript	blocks/contexts/languages/typescript/types.md		MUST			type-lives-beside-the-signature-that-introduces-it	true
 rule	conformance-checked-by-satisfies	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	derivable-types-derived-inline	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
 rule	business-types-readonly	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			value-immutable-by-default	true
@@ -1412,6 +1412,7 @@ rule	optional-peer-pinned-as-a-dev-dependency	typescript	blocks/contexts/languag
 rule	locale-passed-to-every-intl-call	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	MUST	ux		values-formatted-by-the-active-locale	true
 rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/languages/typescript/with/i18n.md	i18n	SHOULD	ux		text-sorted-by-the-locale	true
 rule	package-script-kept-short	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	SHOULD				true
+rule	package-script-expansion-double-quoted	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST			expansion-double-quoted	true
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			workspace-root-private	true
 rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
@@ -1434,6 +1435,8 @@ rule	alias-expansion-bounded	yaml	blocks/contexts/languages/yaml/yaml.md		MUST	s
 rule	yaml-file-ends-in-yaml	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD			format-has-one-extension	true
 rule	yaml-file-holds-one-document	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD				true
 rule	embedded-command-kept-short	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	SHOULD				true
+rule	embedded-command-expansion-double-quoted	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST			expansion-double-quoted	true
+rule	runner-value-reaches-the-command-through-the-environment	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST	security		outside-input-reaches-interpreters-as-parameters	true
 rule	react-compiler-on	_react	blocks/implementations/_react/_react.md		MUST	performance			true
 rule	render-is-pure	_react	blocks/implementations/_react/_react.md		MUST				true
 rule	modern-react-api-only	_react	blocks/implementations/_react/_react.md		MUST				true

@@ -14,7 +14,7 @@ governs: ["**/models/**", "**/adapters/**"]
 > Parses untrusted input into the program's types.
 
 ### schema-never-brands → invariant-value-is-a-branded-type · MUST
-A schema never calls `.brand()`; it produces a branded value through the value's own `create<Name>`, as in `z.string().transform(createEmail)`.
+A schema never calls `.brand()`; it produces a branded value through the value's own `create<Name>`, after the schema has checked the invariant, as in `z.string().refine(isEmail).transform(createEmail)`, since a transform that throws escapes `safeParse`.
 
 | Why | Tags |
 |---|---|

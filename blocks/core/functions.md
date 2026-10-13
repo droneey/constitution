@@ -18,7 +18,7 @@ A function either answers a question or changes state, never both: one that answ
 |---|---|
 | a question that changes something cannot be asked twice safely, and a change that reads more than it changes decides on data its caller never saw. | [] |
 
-### function-pure-by-default · SHOULD
+### function-answers-from-its-input-and-handed-dependencies · SHOULD
 A function that answers depends only on its input and on the dependencies it is handed — a clock, a configuration, a store; the time and the configuration reach a function as input or through such a dependency, never read from where it runs.
 
 | Why | Tags |
@@ -28,7 +28,7 @@ A function that answers depends only on its input and on the dependencies it is 
 ## Size and flow
 
 ### function-within-its-limits · MUST
-A function holds at most 100 lines and a cognitive complexity of at most 10. A function whose body is one data literal it returns — a table, a drawing — may lift the line limit by a suppression that says so; a spec and a generated file have no line limit.
+A function holds at most 100 lines and a cognitive complexity of at most 10. A function whose body is one data literal it returns — a table, a drawing — may lift the line limit by a suppression that says so; test code — a spec, a fake, a contract suite, fixtures — and a generated file have no line limit.
 
 | Why | Tags |
 |---|---|

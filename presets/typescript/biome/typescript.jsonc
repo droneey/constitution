@@ -106,7 +106,7 @@
   },
   "plugins": [
     "./.droneey/constitution/presets/typescript/biome/plugins/type-names-undecorated.grit",
-    "./.droneey/constitution/presets/typescript/biome/plugins/export-never-reassignable.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/module-level-value-never-changed.grit",
     {
       "path": "./.droneey/constitution/presets/typescript/biome/plugins/undefined-is-the-only-absence.grit",
       "includes": [

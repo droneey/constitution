@@ -19,6 +19,7 @@ ls:
     .*.*.test.ts: kebab-case
     .*.*.test.tsx: kebab-case
     .fake.ts: kebab-case
+    .suite.ts: kebab-case
     .fixtures.ts: kebab-case
     .fixtures.tsx: kebab-case
     .yml: regex:^$

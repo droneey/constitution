@@ -12,7 +12,7 @@ The consent an agent needs from its person is a go-ahead given where the agent a
 | consent is given where the person who answers for an action sees it asked, and only for what they saw. | [security] |
 
 ### agent-asks-before-an-irreversible-action · MUST
-An agent takes no irreversible action — destroying, spending money, changing a live system (one others use, or whose data outlives the task), sending something outward in someone’s name — without a person’s consent to that action; reading from an outside service is no such action.
+An agent takes no irreversible action — destroying, spending money, changing a live system, sending something outward in someone’s name — without a person’s consent to that action; reading from an outside service is no such action.
 
 | Why | Tags |
 |---|---|

@@ -112,15 +112,8 @@ A module exports by name, never by `export default`, save where a framework or a
 |---|---|
 | a thing then has one name in every import, so a search finds every use and a rename reaches them all. | [] |
 
-### export-never-reassignable → state-never-global-and-mutable · MUST
-No module exports a binding declared by `let` or `var`.
-
-| Why | Tags |
-|---|---|
-| an exported binding that can be reassigned is state every importer shares without seeing who changes it, and it carries over from one spec into the next. | [] |
-
 ### module-level-value-never-changed → state-never-global-and-mutable · MUST
-Every binding at module level is `const`, and no `Map`, `Set`, array or object it holds is changed after the module loads.
+Every variable declared at module level is `const`, and no `Map`, `Set`, array or object it holds is changed after the module loads, save the diagnostics facades the root configures once at start.
 
 | Why | Tags |
 |---|---|
@@ -314,7 +307,7 @@ A file is `.tsx` only where it writes markup.
 | the extension then says which files render, and a plain module is never parsed for markup. | [] |
 
 ### test-folder-files-in-test-forms → file-named-for-its-kind · MUST
-A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`, `.fake` or `.fixtures` file.
+A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`, `.fake`, `.suite` or `.fixtures` file.
 
 | Why | Tags |
 |---|---|

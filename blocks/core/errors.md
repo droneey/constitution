@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — one the same request may not meet again: a timeout, a dropped connection, a rate limit, a sampled answer — is expected. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part, or by a supervisor that reports it and starts again the work it ran; everywhere else it travels to the handler of last resort.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — one the same request might not meet again: a timeout, a dropped connection, a rate limit, a model's answer drawn by sampling — is expected. A defect is never replaced by a fallback value, and is caught to carry on only at the boundary of an optional part, or by a supervisor that reports it and starts its worker again, never the unit of work that failed; everywhere else it travels to the handler of last resort.
 
 | Why | Tags |
 |---|---|
@@ -70,7 +70,7 @@ A failure is logged once, by the unit that handles it or, where that unit logs n
 | a failure reported at every level looks like several. | [errors] |
 
 ### failure-retried-only-when-transient · MUST
-A failure is retried only when it is transient — a timeout, a dropped connection, a rate limit — and the operation is idempotent or carries its idempotency key, and only within a limit. It is retried at one level: the code nearest the call or, for a unit of work a broker or a scheduler runs again within its own limit, that run alone. Once its retries are spent, or none is safe, it reaches the caller as an expected failure, which no level above retries again.
+A failure is retried only when it is transient and the operation is idempotent or carries its idempotency key, and only within a limit. It is retried at one level: the code nearest the call or, for a unit of work a broker or a scheduler runs again within its own limit, that run alone. Once its retries are spent, or none is safe, it reaches the caller as an expected failure, which no level above retries again.
 
 | Why | Tags |
 |---|---|
@@ -86,7 +86,7 @@ A retry waits by an exponential backoff with a random spread, or for the delay t
 ## At the entries
 
 ### last-resort-handler-one-per-entry · MUST
-A handler of last resort, one for each entry into the program — a command line, a server, a screen, a consumer of messages — turns every failure that reaches it into what that entry’s user sees, and a failure ends the program only there.
+A handler of last resort, one for each entry into the program — a command line, a server, a user interface, a consumer of messages — turns every failure that reaches it into what that entry’s user sees, and a failure ends the program only there.
 
 | Why | Tags |
 |---|---|

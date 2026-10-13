@@ -14,6 +14,6 @@ ls:
     .dir: snake_case
     .*: kebab-case
     .*.*: kebab-case
-    .py: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures)$
-    .*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures)$
+    .py: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures|suite)$
+    .*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$ | regex:^[a-z0-9_]+_(fake|fixtures|suite)$
     .*.*.*.*.pyc: regex:^test_[a-z0-9_]+$ | regex:^conftest$

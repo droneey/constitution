@@ -132,7 +132,7 @@ No test is skipped, pending, focused, run only under a condition, expected to fa
 | a skipped test looks like coverage and proves nothing, and a focused one silently skips all the others. | [testing] |
 
 ### spec-folder-holds-only-test-files · MUST
-A folder of specs holds only specs, fakes, fixtures, golden files and the snapshots its runner writes, each named for its kind and after what it proves or serves.
+A folder of specs holds only specs, fakes, contract suites, fixtures, golden files and the snapshots its runner writes, each named for its kind and after what it proves or serves.
 
 | Why | Tags |
 |---|---|
