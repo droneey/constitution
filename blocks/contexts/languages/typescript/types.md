@@ -23,8 +23,8 @@ An optional field that is absent is left out of its object, never set to `undefi
 |---|---|
 | a negation and a logical or also treat `0` and the empty string as absent, a bug waiting for its input. | [] |
 
-### strict-equality-only · MUST
-Values are compared strictly — `===` and `!==`, against `null` too; never `==` or `!=`.
+### equality-never-loose · MUST
+No comparison is loose — no `==` or `!=`, against `null` too.
 
 | Why | Tags |
 |---|---|
@@ -65,12 +65,19 @@ A closed set of named values the program owns is a string `enum` — never a uni
 |---|---|
 | the set is then one declaration with one name for each member, which a search, a rename and the compiler follow to every use. | [] |
 
-### outside-number-set-is-a-numeric-enum · MUST
+### outside-number-set-is-a-numeric-enum → outside-vocabulary-reached-through-a-total-table · MUST
 A set of numbers another system defines — exit statuses, HTTP statuses — is a numeric `enum` with every member's value written, and a number that arrives keeps the type `number` until it is compared with the members.
 
 | Why | Tags |
 |---|---|
 | each number gets the name its system documents, and an arriving number kept as `number` is never taken for a member it may not be. | [] |
+
+### machine-text-formatted-without-a-locale → machine-text-independent-of-the-locale · MUST
+Text written for another program uses no `toLocaleString`, `toLocaleUpperCase`, `toLocaleLowerCase`, `localeCompare` or `Intl` call; a number is written by `String` or `toFixed`, an instant by `toString` of Temporal or `toISOString`.
+
+| Why | Tags |
+|---|---|
+| these calls read the locale of the process or the browser, so the same value is written differently on each machine. | [data] |
 
 ### union-discriminant-is-an-enum-member · MUST
 The discriminant of a union is a member of the enum that names its kinds — `kind: ShapeKind.Circle`; a string literal only in a type that describes another system's data.

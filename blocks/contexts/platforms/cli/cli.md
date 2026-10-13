@@ -66,6 +66,13 @@ Configuration, cache and data a program keeps for its user live in the system's 
 |---|---|
 | people back up, clear and sync these directories by kind, so a cache kept beside configuration is backed up for nothing, and configuration kept in a cache is lost when it is cleared. | [ux, data] |
 
+### destructive-command-confirmed-or-forced → irreversible-operation-runs-dry-by-default · MUST
+A command that destroys more than its arguments name, or what it cannot restore, asks for confirmation on a terminal; without one it refuses with a usage error unless `--force` is given, and it offers `--dry-run`.
+
+| Why | Tags |
+|---|---|
+| a typo, or an agent running the command unattended, otherwise destroys what nobody meant to, and no prompt can be answered where no terminal is. | [security, ux] |
+
 ## Security
 
 ### output-masks-every-known-secret → secret-and-personal-data-kept-out-of-output · MUST

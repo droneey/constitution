@@ -47,14 +47,14 @@ A set of values the program declares is never typed out again: a subset is a nam
 | a restated set drifts from its source, and a schema stricter or looser than its type locks out, or lets in, what the program does not mean. | [] |
 
 ### outside-vocabulary-reached-through-a-total-table · MUST
-A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read.
+A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read. A set of numbers another system defines is declared once, with every value written, and a number that arrives stays a number until it is compared with them.
 
 | Why | Tags |
 |---|---|
 | a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. | [data] |
 
 ### enumeration-others-read-declared-extensible · MUST
-An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know.
+An enumeration the program writes into a contract another program reads — an answer, a message, a file — is declared extensible, its readers told to expect values they do not know, save a set complete by its meaning — a sort direction, the days of the week — which stays closed.
 
 | Why | Tags |
 |---|---|

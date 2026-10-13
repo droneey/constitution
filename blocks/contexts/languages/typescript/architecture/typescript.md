@@ -68,7 +68,7 @@ The program is wired in `root/wiring.ts`, unless the block of the program's fram
 | the one known place core asks for then has one name in every TypeScript program, and a reader opens it without searching. | [] |
 
 ### process-env-read-only-under-root → root-alone-reads-the-environment · MUST
-`process.env` is read only under `root/`, in the entry files and in specs.
+`process.env`, and every alias of it the runtime offers, is read only under `root/`, in the entry files and in specs.
 
 | Why | Tags |
 |---|---|

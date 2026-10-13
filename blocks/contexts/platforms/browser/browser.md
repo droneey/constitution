@@ -125,7 +125,7 @@ Every document is served with a `Permissions-Policy` that disables each powerful
 | a script that slips into the page, or a frame it embeds, then cannot turn on a sensor or a payment the program never asked for. | [security, data] |
 
 ### raw-html-never-reaches-the-dom → outside-input-reaches-interpreters-as-parameters · MUST
-Markup reaches the DOM only through the platform's element interfaces or a sanitising renderer, never as a string assigned to `innerHTML`, `outerHTML` or `srcdoc`, passed to `insertAdjacentHTML`, `DOMParser.parseFromString` or `Range.createContextualFragment`, or written by `document.write`.
+Markup reaches the DOM only through the platform's element interfaces or a sanitising renderer — `Element.setHTML()` among them — never as a string assigned to `innerHTML`, `outerHTML` or `srcdoc`, passed to `insertAdjacentHTML`, `setHTMLUnsafe`, `Document.parseHTMLUnsafe`, `DOMParser.parseFromString` or `Range.createContextualFragment`, or written by `document.write` or `document.writeln`.
 
 | Why | Tags |
 |---|---|

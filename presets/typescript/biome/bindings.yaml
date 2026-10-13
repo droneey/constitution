@@ -193,7 +193,7 @@ typescript:
     - noTsIgnore
   nullish-operators-for-absence:
     - useNullishCoalescing
-  strict-equality-only:
+  equality-never-loose:
     - noDoubleEquals
   type-names-undecorated:
     - type-names-undecorated.grit

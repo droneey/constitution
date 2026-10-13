@@ -50,9 +50,3 @@ A sub-agent does the work it is given and nothing more; whether that work is rec
 |---|---|
 | a sub-agent acts without the person watching. | [] |
 
-### sub-agent-never-acts-on-a-live-system · MUST
-A sub-agent never runs or changes a live system and never sends anything through a real outside service; reading one is allowed.
-
-| Why | Tags |
-|---|---|
-| the person sees only the agent they talk to, so an act of a sub-agent on a live system is one nobody watched and no grant named. | [security] |

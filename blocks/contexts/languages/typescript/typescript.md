@@ -113,7 +113,7 @@ A module exports by name, never by `export default`, save where a framework or a
 | a thing then has one name in every import, so a search finds every use and a rename reaches them all. | [] |
 
 ### module-level-value-never-changed → state-never-global-and-mutable · MUST
-Every variable declared at module level is `const`, and no `Map`, `Set`, array or object it holds is changed after the module loads, save the diagnostics facades configured once at start and a spec's setup that its hooks set for each case; nor does a class's static field hold such a value.
+Save the diagnostics facades configured once at start and a spec's setup that its hooks set for each case, every variable declared at module level is `const`, no `Map`, `Set`, array or object it holds is changed after the module loads, and no class's static field holds such a value.
 
 | Why | Tags |
 |---|---|
@@ -203,7 +203,7 @@ A process is started with its arguments as an array — `execFile`, `spawn` and 
 | a command line handed to a shell is parsed again, and a `;` or a `$(…)` in its input runs as a command of its own. | [security] |
 
 ### outside-path-checked-by-relative → outside-path-confined-to-its-root · MUST
-A path built from outside input is resolved with `path.resolve(root, input)`, taken to its real path by `fs.realpath` — of its folder, for a file not yet made — and refused when `path.relative` from the root's real path is `..`, starts with `..` and a separator, or is absolute.
+A path built from outside input is resolved with `path.resolve(root, input)`, taken to its real path by `fs.realpath` — of its folder, for a file not yet made — and refused when `path.relative` from the root's real path is `..`, starts with `..` and a separator, or is absolute; where another writer can change the tree, the file is opened and its handle's `stat()` device and inode are compared with those of the checked real path.
 
 | Why | Tags |
 |---|---|
@@ -244,6 +244,20 @@ A secret — a token, a signature, a key — is compared with `timingSafeEqual` 
 |---|---|
 | `===` stops at the first byte that differs, and the time it takes tells an attacker how much of a guess was right. | [security] |
 
+### outside-pattern-matched-without-backtracking → outside-input-matched-in-linear-time · MUST
+A regular expression that runs on outside input is a literal with no nested or overlapping quantifiers, or runs on a linear engine such as RE2; it is never built from outside input.
+
+| Why | Tags |
+|---|---|
+| JavaScript's engine backtracks, so a nested quantifier on a crafted input runs for minutes and holds the event loop. | [security] |
+
+### outside-identifier-normalised-by-nfkc → outside-identifier-normalised-before-comparison · MUST
+An identifier from outside is compared as `value.normalize('NFKC').toLowerCase()`, never as it arrived.
+
+| Why | Tags |
+|---|---|
+| two spellings of one name, another Unicode form or another case, otherwise pass a check made on one of them. | [security] |
+
 ## Dependencies
 
 ### exports-map-each-entry · MUST
@@ -268,7 +282,7 @@ A package that holds state or types across the program — the schema library, t
 | two copies of such a package split its state, and its types stop matching across the split. | [] |
 
 ### missing-built-in-polyfilled-by-the-entry · MUST
-A built-in the code relies on that a runtime it supports lacks — `Temporal`, `Symbol.dispose`, `DisposableStack` — gets its polyfill once, imported by the entry file before any code uses it.
+A built-in the code relies on that a runtime it supports lacks — `Temporal`, `Symbol.dispose`, `DisposableStack` — gets its polyfill once, imported by the entry file before any code uses it; a package others install imports the polyfill's module value and never installs it globally.
 
 | Why | Tags |
 |---|---|

@@ -128,7 +128,7 @@ A feature’s surface offers its operations and their presentation — use cases
 | a caller that reaches a mechanism depends on how the feature works rather than on what it does. | [] |
 
 ### surface-only-on-a-module-or-one-kind · MUST
-A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target, and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
+A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target — save `root/`, whose surface the entry files import — and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
 
 | Why | Tags |
 |---|---|

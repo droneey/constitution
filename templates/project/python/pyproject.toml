@@ -149,6 +149,12 @@ source_modules = ["*.adapters", "*.features.*.adapters"]
 forbidden_modules = ["*.composition", "*.entrypoints", "*.features.*.app", "*.root"]
 
 [[tool.importlinter.contracts]]
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
+type = "forbidden"
+source_modules = ["*.adapters"]
+forbidden_modules = ["*.features"]
+
+[[tool.importlinter.contracts]]
 name = "root-imported-only-by-entries-and-delivery-wiring"
 type = "protected"
 protected_modules = ["*.root"]

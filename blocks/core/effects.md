@@ -33,7 +33,7 @@ A call made for a unit of work that has a deadline — a request, a task — tak
 | a nested call with a full timeout of its own keeps working after its caller has given up, and its answer reaches nobody. | [performance] |
 
 ### resource-released-on-every-path · MUST
-A resource the code acquires — a handle, a connection, a lock, a subscription — is released on every way out, a failure’s included, by the language’s scoped form of release.
+A resource the code acquires — a handle, a connection, a lock, a subscription — is released on every way out, a failure’s included: one whose life is one scope by the language’s scoped form of release, one that outlives its scope by the owner that holds it.
 
 | Why | Tags |
 |---|---|
@@ -142,7 +142,7 @@ Configuration is declared in one place and read only by its declared names, pars
 | a setting checked where it is first used fails in the middle of a request, long after the deployment that broke it. | [security] |
 
 ### one-artefact-serves-every-environment · MUST
-One artefact of a program its host runs or serves is deployed to every environment; a setting that differs between them reaches it from its host, never built into it.
+One artefact of a program a host of the project runs or serves — a server, a served bundle — is deployed to every environment; a setting that differs between them reaches it from its host, never built into it.
 
 | Why | Tags |
 |---|---|

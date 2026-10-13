@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0182 |
+| One home per rule | ADR-0160 – ADR-0183 |
 
 ---
 
@@ -1134,3 +1134,13 @@
   - Contexts: TypeScript reads `process.env` only under the root, a rule moved from bun to the language, since Node reads it alike; module-level and static state, and Python's class attributes and `functools.cache`, change after load nowhere but in the diagnostics facades and a spec's hook-set setup; `shopt -s inherit_errexit` where Bash is 4.4 or later, as macOS ships 3.2; a variable assigned from a command substitution is declared apart, as a rule of errors; an embedded command and a package script never trace; mobile's backup clause is a rule of its own, and background work may read data protected until the first unlock; structlog's logger carries out Python's.
 - **Rejected.** Splitting the rendering server's session proxy into the browser's seam with server, whose rule could not tighten a rule of the browser's own block; a Bash floor for every script, which scripts the project pins Bash for do not need.
 - **Why.** Each fix closes a clash between two rules, a tool that held more than its rule, or a form a language owed its parent.
+
+## ADR-0183 — Core and the contexts after their eighteenth review
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** The eighteenth round graded core and the contexts 8.9 with every reviewer; what two reviewers or more found is closed.
+  - Core: a sub-agent never acts on a live system, a rule of the base now, which a project without the workflow axis keeps; the agent's model provider, a recipient the project lists, is no way out of the trifecta; a credential's declaration names its owner, scope, issuer and rotation; personal data kept out of output is what the program holds about the people it serves; a script passes each secret it received only to the command that reads it; a set of numbers another system defines is declared once, as both languages already said, and a set complete by its meaning stays closed; a resource that outlives its scope is released by its owner; one artefact is the program a host of the project runs or serves; a build backend a distributed package's consumers resolve is capped, not pinned; an optional part shows itself unavailable rather than crash; `root/` keeps the surface the entry files import.
+  - Tools: python-check also refuses `bz2.open`, `lzma.open`, `zipfile.ZipFile`, `Path.cwd`, `Path.home` and `uuid.getnode` below the edge; a shared adapter in Python imports no feature, as in TypeScript.
+  - Contexts: Python's module state allows the diagnostics facades and a spec's setup, as core and TypeScript do, and its types move to a chapter file; both languages state how a path is opened beneath its root, how a pattern on outside input avoids backtracking, how an identifier is normalised, and how text for a machine avoids the locale; shell's failure rules carry out the catch rule, `.bash` files are governed, and an empty array is expanded safely below Bash 4.4; a destructive command line confirms or needs `--force`; mobile leaves credentials and restorable data out of backups and backs up what lives only on the device; the browser refuses `setHTMLUnsafe` and `parseHTMLUnsafe`; TypeScript's equality rule forbids only loose comparison; a server's settings may come from a store read with its host's identity.
+- **Rejected.** Splitting core's rule on secrets and personal data in output, whose children in observability, messaging and the untrusted client hold both halves at once; exempting a generated file from the complexity limit, which no reviewer agreed on and complexipy's settings were not checked for.
+- **Why.** Each fix closes a clash between two rules, a rule a project could lose with an axis, or a form a language owed its parent.

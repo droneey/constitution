@@ -89,12 +89,12 @@ Personal data the app stores beyond its credentials sits in the system's stronge
 |---|---|
 | a device that is lost, backed up to another account or read by another app gives up whatever the app left outside the protected class. | [security, data] |
 
-### personal-data-left-out-of-device-backups → secret-and-personal-data-kept-out-of-output · MUST
-Personal data that identifies its person is left out of backups to other devices.
+### credential-and-restorable-data-left-out-of-device-backups · MUST
+A credential, a token, and personal data the server holds and can restore are left out of backups to other devices; data that lives only on the device is backed up within the protection its class gives.
 
 | Why | Tags |
 |---|---|
-| a backup restored to another device carries the person's data to a device and an account they may not hold. | [security, data] |
+| a backup restored to another device carries a session and the person's data to a device and an account they may not hold, while data that lives only on the device is lost without its backup. | [security, data] |
 
 ### downloaded-code-verified-before-it-runs · MUST
 Code the app receives after it is installed — an update of its script bundle over the air — runs only once its signature, made by the project's own key, is verified on the device.

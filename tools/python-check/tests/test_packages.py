@@ -315,6 +315,24 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
       id='a timer in a composition module',
     ),
     pytest.param(
+      DOMAIN,
+      'HERE = Path.cwd()',
+      (
+        'features/orders/domain/entities holds no effect, and Path.cwd is one; '
+        'it reaches it through a port'
+      ),
+      id='the working folder read through pathlib',
+    ),
+    pytest.param(
+      APP,
+      'from bz2 import open',
+      (
+        'features/orders/app/use_cases holds no effect, and bz2.open is one; '
+        'it reaches it through a port'
+      ),
+      id='a compressed file opened',
+    ),
+    pytest.param(
       'src/shop/adapters/mail/mail_adapter.py',
       'HOST = os.environ[NAME]',
       'adapters/mail reads the environment through os.environ; only the root reads it',

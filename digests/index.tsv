@@ -29,8 +29,8 @@ block	mobile	platform	Storage, links, traffic and releases of an app on a phone 
 block	server	platform	A long-running process a host starts, routes to, restarts and stops.	architecture/server.md	http-server messaging observability owned-data			false				**
 block	css	language	Stylesheets: cascade layers, selectors, custom properties and classes.	architecture/css.md	browser design-system i18n ui architecture/ui			false				**/*.css
 block	markdown	language	Markdown documents: headings, links, images and code blocks.					false				**/*.md **/*.markdown **/*.mdown
-block	python	language	Python's modules, types, async code, specs and dependencies.	architecture/python.md	distribution yaml architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
-block	shell	language	Shell scripts: their shell, failures, quoting and temporary files.					false				**/*.sh
+block	python	language	Python's modules, types, async code, specs and dependencies.	types.md architecture/python.md	distribution yaml architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
+block	shell	language	Shell scripts: their shell, failures, quoting and temporary files.					false				**/*.sh **/*.bash
 block	typescript	language	TypeScript's forms of modules, types, errors, effects and packages.	types.md architecture/typescript.md	css distribution i18n shell workspace yaml architecture/cli architecture/ui architecture/workspace workflow/distribution			false				**/*.ts **/*.tsx **/*.mts **/*.cts package.json
 block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extension.		shell			false				**/*.yaml **/*.yml
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	architecture/_react.md	remote-data	ui typescript		true	react-dom react-native			**/*.tsx **/*.hooks.ts **/*.context.ts
@@ -130,6 +130,7 @@ rule	agent-extension-vetted-as-a-dependency	core	blocks/core/agents.md		SHOULD	s
 rule	delegating-agent-keeps-the-responsibility	core	blocks/core/agents.md		SHOULD				true
 rule	agent-file-restates-no-rule	core	blocks/core/agents.md		SHOULD				true
 rule	agent-keeps-knowledge-in-the-project	core	blocks/core/agents.md		SHOULD				true
+rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/agents.md		MUST	security			true
 rule	change-limited-to-its-task	core	blocks/core/changes.md		SHOULD				true
 rule	change-corrects-the-documents-it-falsifies	core	blocks/core/changes.md		SHOULD				true
 rule	change-moves-a-file-never-rewrites-it	core	blocks/core/changes.md		MUST				true
@@ -392,7 +393,6 @@ rule	person-decides-what-is-committed-or-shipped	core	blocks/core/workflow/agent
 rule	submitted-change-read-by-its-person	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	submission-carries-no-tool-attribution	core	blocks/core/workflow/agents.md		MUST		workflow		true
 rule	sub-agent-only-does-the-work	core	blocks/core/workflow/agents.md		MUST		workflow		true
-rule	sub-agent-never-acts-on-a-live-system	core	blocks/core/workflow/agents.md		MUST	security	workflow		true
 rule	list-answer-paged-with-a-maximum	_api	blocks/domains/_api/collections.md		MUST	performance security		outside-read-bounded	true
 rule	list-paged-by-an-opaque-cursor	_api	blocks/domains/_api/collections.md		MUST	performance			true
 rule	list-ordered-by-a-unique-key	_api	blocks/domains/_api/collections.md		MUST	data			true
@@ -1064,6 +1064,7 @@ rule	interrupt-ends-the-run-promptly	cli	blocks/contexts/platforms/cli/cli.md		M
 rule	closed-output-ends-the-run-quietly	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
 rule	setting-taken-from-flag-then-environment-then-files	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux			true
 rule	user-file-kept-in-the-systems-base-directories	cli	blocks/contexts/platforms/cli/cli.md		SHOULD	ux data			true
+rule	destructive-command-confirmed-or-forced	cli	blocks/contexts/platforms/cli/cli.md		MUST	security ux		irreversible-operation-runs-dry-by-default	true
 rule	output-masks-every-known-secret	cli	blocks/contexts/platforms/cli/cli.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	secret-never-passed-as-a-flag	cli	blocks/contexts/platforms/cli/cli.md		MUST	security		secret-never-passed-as-a-process-argument	true
 rule	json-output-changed-only-by-adding-fields	cli	blocks/contexts/platforms/cli/cli.md		MUST	data		format-changed-in-steps	true
@@ -1099,7 +1100,7 @@ rule	biometric-unlock-opens-a-protected-key	mobile	blocks/contexts/platforms/mob
 rule	push-payload-holds-no-secret	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
 rule	release-build-carries-no-debugging	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	personal-data-at-rest-kept-in-the-protected-class	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
-rule	personal-data-left-out-of-device-backups	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
+rule	credential-and-restorable-data-left-out-of-device-backups	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security data			true
 rule	downloaded-code-verified-before-it-runs	mobile	blocks/contexts/platforms/mobile/mobile.md		MUST	security			true
 rule	genuine-app-proven-by-the-systems-attestation	mobile	blocks/contexts/platforms/mobile/mobile.md		MAY	security			true
 rule	minimum-os-version-declared-and-reviewed	mobile	blocks/contexts/platforms/mobile/mobile.md		SHOULD	security			true
@@ -1232,24 +1233,6 @@ rule	module-level-state-never-mutable	python	blocks/contexts/languages/python/py
 rule	parameter-default-never-mutable	python	blocks/contexts/languages/python/python.md		MUST			state-never-global-and-mutable	true
 rule	import-never-a-wildcard	python	blocks/contexts/languages/python/python.md		MUST				true
 rule	sys-path-never-touched	python	blocks/contexts/languages/python/python.md		MUST				true
-rule	absence-spelled-none	python	blocks/contexts/languages/python/python.md		MUST	data		absence-shown-by-the-type	true
-rule	typing-any-never-written	python	blocks/contexts/languages/python/python.md		MUST			unchecked-type-never-used	true
-rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/python.md		MUST	security		outside-value-untyped-until-parsed	true
-rule	narrowing-function-returns-typeis	python	blocks/contexts/languages/python/python.md		MUST			narrowing-proves-all-it-claims	true
-rule	staged-value-is-a-union-of-dataclasses	python	blocks/contexts/languages/python/python.md		MUST			illegal-state-unrepresentable	true
-rule	closed-set-match-ends-in-assert-never	python	blocks/contexts/languages/python/python.md		MUST			closed-set-branched-exhaustively	true
-rule	enumeration-is-a-unique-str-enum	python	blocks/contexts/languages/python/python.md		MUST				true
-rule	outside-number-set-is-an-int-enum	python	blocks/contexts/languages/python/python.md		MUST				true
-rule	identifier-is-a-new-type	python	blocks/contexts/languages/python/python.md		SHOULD			identifier-branded-by-entity	true
-rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/python.md		MUST				true
-rule	annotation-written-unquoted	python	blocks/contexts/languages/python/python.md		SHOULD				true
-rule	business-types-frozen-dataclasses	python	blocks/contexts/languages/python/python.md		SHOULD			value-immutable-by-default	true
-rule	invariant-value-is-a-frozen-dataclass	python	blocks/contexts/languages/python/python.md		MUST	data		invariant-value-is-plain-immutable-data	true
-rule	invariant-checked-in-post-init	python	blocks/contexts/languages/python/python.md		MUST			invariant-checked-at-construction	true
-rule	instant-is-an-aware-datetime	python	blocks/contexts/languages/python/python.md		MUST	data		instant-is-an-exact-time	true
-rule	duration-measured-by-time-monotonic	python	blocks/contexts/languages/python/python.md		MUST	data		duration-measured-on-a-monotonic-clock	true
-rule	exact-quantity-is-an-int-or-a-decimal	python	blocks/contexts/languages/python/python.md		MUST	data		exact-quantity-never-binary-float	true
-rule	text-opened-with-utf-8-named	python	blocks/contexts/languages/python/python.md		MUST	data		text-encoded-as-utf-8	true
 rule	except-clause-names-what-it-handles	python	blocks/contexts/languages/python/python.md		MUST	errors		catch-handles-only-what-it-recognises	true
 rule	except-never-only-passes	python	blocks/contexts/languages/python/python.md		MUST	errors		catch-handles-only-what-it-recognises	true
 rule	exception-group-caught-by-except-star	python	blocks/contexts/languages/python/python.md		MUST	errors		catch-handles-only-what-it-recognises	true
@@ -1271,6 +1254,8 @@ rule	child-process-given-its-own-env	python	blocks/contexts/languages/python/pyt
 rule	outside-data-never-unpickled	python	blocks/contexts/languages/python/python.md		MUST	security		outside-input-never-rebuilt-as-objects	true
 rule	guarding-value-drawn-from-secrets	python	blocks/contexts/languages/python/python.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	secret-compared-by-compare-digest	python	blocks/contexts/languages/python/python.md		MUST	security		security-primitive-from-a-vetted-library	true
+rule	outside-pattern-matched-without-backtracking-in-python	python	blocks/contexts/languages/python/python.md		MUST	security performance		outside-input-matched-in-linear-time	true
+rule	outside-identifier-normalised-and-casefolded	python	blocks/contexts/languages/python/python.md		MUST	security		outside-identifier-normalised-before-comparison	true
 rule	tools-in-the-dev-group	python	blocks/contexts/languages/python/python.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	requires-python-at-the-pinned-minor	python	blocks/contexts/languages/python/python.md		SHOULD				true
 rule	private-name-of-a-dependency-never-imported	python	blocks/contexts/languages/python/python.md		MUST			dependency-reached-through-its-public-entry	true
@@ -1286,6 +1271,25 @@ rule	deprecated-by-decorator	python	blocks/contexts/languages/python/python.md		
 rule	specs-in-a-tests-tree-beside-src	python	blocks/contexts/languages/python/python.md		SHOULD	testing		spec-found-from-its-units-path	true
 rule	case-named-test-should	python	blocks/contexts/languages/python/python.md		SHOULD	testing		case-named-should-when	true
 rule	case-function-holds-no-branch	python	blocks/contexts/languages/python/python.md		SHOULD	testing		case-holds-no-logic	true
+rule	absence-spelled-none	python	blocks/contexts/languages/python/types.md		MUST	data		absence-shown-by-the-type	true
+rule	typing-any-never-written	python	blocks/contexts/languages/python/types.md		MUST			unchecked-type-never-used	true
+rule	boundary-values-object-until-parsed	python	blocks/contexts/languages/python/types.md		MUST	security		outside-value-untyped-until-parsed	true
+rule	narrowing-function-returns-typeis	python	blocks/contexts/languages/python/types.md		MUST			narrowing-proves-all-it-claims	true
+rule	staged-value-is-a-union-of-dataclasses	python	blocks/contexts/languages/python/types.md		MUST			illegal-state-unrepresentable	true
+rule	closed-set-match-ends-in-assert-never	python	blocks/contexts/languages/python/types.md		MUST			closed-set-branched-exhaustively	true
+rule	enumeration-is-a-unique-str-enum	python	blocks/contexts/languages/python/types.md		MUST				true
+rule	outside-number-set-is-an-int-enum	python	blocks/contexts/languages/python/types.md		MUST	data		outside-vocabulary-reached-through-a-total-table	true
+rule	identifier-is-a-new-type	python	blocks/contexts/languages/python/types.md		SHOULD			identifier-branded-by-entity	true
+rule	generics-in-pep-695-form	python	blocks/contexts/languages/python/types.md		MUST				true
+rule	annotation-written-unquoted	python	blocks/contexts/languages/python/types.md		SHOULD				true
+rule	business-types-frozen-dataclasses	python	blocks/contexts/languages/python/types.md		SHOULD			value-immutable-by-default	true
+rule	invariant-value-is-a-frozen-dataclass	python	blocks/contexts/languages/python/types.md		MUST	data		invariant-value-is-plain-immutable-data	true
+rule	invariant-checked-in-post-init	python	blocks/contexts/languages/python/types.md		MUST			invariant-checked-at-construction	true
+rule	instant-is-an-aware-datetime	python	blocks/contexts/languages/python/types.md		MUST	data		instant-is-an-exact-time	true
+rule	duration-measured-by-time-monotonic	python	blocks/contexts/languages/python/types.md		MUST	data		duration-measured-on-a-monotonic-clock	true
+rule	exact-quantity-is-an-int-or-a-decimal	python	blocks/contexts/languages/python/types.md		MUST	data		exact-quantity-never-binary-float	true
+rule	text-opened-with-utf-8-named	python	blocks/contexts/languages/python/types.md		MUST	data		text-encoded-as-utf-8	true
+rule	machine-text-formatted-without-a-locale-in-python	python	blocks/contexts/languages/python/types.md		MUST	data		machine-text-independent-of-the-locale	true
 rule	type-checking-import-held-to-the-layers	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	import-points-inward	true
 rule	program-entry-is-main-of-main-py	python	blocks/contexts/languages/python/architecture/python.md		SHOULD		architecture	package-laid-out-by-the-tree	true
 rule	role-suffix-spelled-in-snake-case	python	blocks/contexts/languages/python/architecture/python.md		MUST		architecture	file-carries-its-role-suffix	true
@@ -1314,8 +1318,8 @@ rule	line-read-raw	shell	blocks/contexts/languages/shell/shell.md		SHOULD				tru
 rule	shell-name-case-by-kind	shell	blocks/contexts/languages/shell/shell.md		SHOULD			name-case-by-kind	true
 rule	script-logic-in-a-main-function	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
 rule	function-variable-declared-local	shell	blocks/contexts/languages/shell/shell.md		MUST			state-never-global-and-mutable	true
-rule	script-stops-on-a-failed-command	shell	blocks/contexts/languages/shell/shell.md		MUST	errors		failure-is-expected-or-defect	true
-rule	command-substitution-assigned-apart-from-its-declaration	shell	blocks/contexts/languages/shell/shell.md		MUST	errors		failure-is-expected-or-defect	true
+rule	script-stops-on-a-failed-command	shell	blocks/contexts/languages/shell/shell.md		MUST	errors		catch-handles-only-what-it-recognises	true
+rule	command-substitution-assigned-apart-from-its-declaration	shell	blocks/contexts/languages/shell/shell.md		MUST	errors		catch-handles-only-what-it-recognises	true
 rule	temporary-file-removed-by-an-exit-trap	shell	blocks/contexts/languages/shell/shell.md		MUST	security		resource-released-on-every-path	true
 rule	script-diagnostics-on-standard-error	shell	blocks/contexts/languages/shell/shell.md		MUST	security		diagnostics-written-through-a-logger	true
 rule	outside-input-passed-as-an-argument	shell	blocks/contexts/languages/shell/shell.md		MUST	security		outside-input-reaches-interpreters-as-parameters	true
@@ -1355,6 +1359,8 @@ rule	code-never-run-from-a-string	typescript	blocks/contexts/languages/typescrip
 rule	outside-keyed-collection-is-a-map	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-input-never-rebuilt-as-objects	true
 rule	guarding-random-value-from-web-crypto	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
 rule	secret-compared-by-timing-safe-equal	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		security-primitive-from-a-vetted-library	true
+rule	outside-pattern-matched-without-backtracking	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security performance		outside-input-matched-in-linear-time	true
+rule	outside-identifier-normalised-by-nfkc	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		outside-identifier-normalised-before-comparison	true
 rule	exports-map-each-entry	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	tools-pinned-in-dev-dependencies	typescript	blocks/contexts/languages/typescript/typescript.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	stateful-package-resolved-once	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
@@ -1370,13 +1376,14 @@ rule	exported-type-proven-by-type-cases	typescript	blocks/contexts/languages/typ
 rule	undefined-is-the-only-absence	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		absence-shown-by-the-type	true
 rule	absent-optional-field-left-out	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		absence-shown-by-the-type	true
 rule	nullish-operators-for-absence	typescript	blocks/contexts/languages/typescript/types.md		SHOULD				true
-rule	strict-equality-only	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
+rule	equality-never-loose	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
 rule	any-never-written	typescript	blocks/contexts/languages/typescript/types.md		MUST			unchecked-type-never-used	true
 rule	type-assertion-never-written	typescript	blocks/contexts/languages/typescript/types.md		MUST			narrowing-proves-all-it-claims	true
 rule	boundary-values-unknown-until-parsed	typescript	blocks/contexts/languages/typescript/types.md		MUST	security		outside-value-untyped-until-parsed	true
 rule	exhaustive-branching-over-unions	typescript	blocks/contexts/languages/typescript/types.md		MUST			closed-set-branched-exhaustively	true
 rule	closed-name-set-is-a-string-enum	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
-rule	outside-number-set-is-a-numeric-enum	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
+rule	outside-number-set-is-a-numeric-enum	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		outside-vocabulary-reached-through-a-total-table	true
+rule	machine-text-formatted-without-a-locale	typescript	blocks/contexts/languages/typescript/types.md		MUST	data		machine-text-independent-of-the-locale	true
 rule	union-discriminant-is-an-enum-member	typescript	blocks/contexts/languages/typescript/types.md		MUST				true
 rule	brand-is-a-unique-symbol-key	typescript	blocks/contexts/languages/typescript/types.md		MUST			identifier-branded-by-entity	true
 rule	brand-set-only-where-minted-or-parsed	typescript	blocks/contexts/languages/typescript/types.md		SHOULD			identifier-branded-by-entity	true

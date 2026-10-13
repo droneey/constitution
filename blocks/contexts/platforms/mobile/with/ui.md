@@ -123,7 +123,7 @@ The request for reduced motion is the system's setting — Reduce Motion on iOS,
 | the setting is the user's request, made once for every app. | [a11y] |
 
 ### orientations-declared-in-the-manifest → orientation-never-locked · MUST
-The app declares portrait and landscape in its manifest — `Info.plist` on iOS, `AndroidManifest.xml` on Android — save for a screen whose one orientation is essential.
+The app's manifest — `Info.plist` on iOS, `AndroidManifest.xml` on Android — declares portrait and landscape; a screen whose one orientation is essential locks it in its own code.
 
 | Why | Tags |
 |---|---|

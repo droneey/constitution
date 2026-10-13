@@ -260,6 +260,16 @@ describe('the python template', () => {
       task: 'code:check',
     },
     {
+      condition: 'a shared adapter imports a feature',
+      changes: {
+        ...FEATURE,
+        'src/shop/adapters/__init__.py': '',
+        'src/shop/adapters/mail/__init__.py': 'from shop.features import orders\n',
+      },
+      finding: 'adapter-imports-only-its-owners-domain-and-shared-layers BROKEN',
+      task: 'architecture:check',
+    },
+    {
       condition: 'a feature imports the entry file',
       changes: {
         ...FEATURE,

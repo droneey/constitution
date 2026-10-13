@@ -79,7 +79,7 @@ The motion tokens collapse under reduced motion, in the theme.
 | every animation reads the tokens, so one rule in the theme stops them all. | [] |
 
 ### type-tokens-in-rem → type-sized-in-rem · MUST
-Font-size and line-height tokens are in `rem`.
+Font-size tokens are in `rem`, and line-height tokens are unitless ratios.
 
 | Why | Tags |
 |---|---|

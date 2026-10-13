@@ -12,7 +12,7 @@ A secret is never written into the repository in a form that reveals it — in c
 | a secret in the repository is readable by everyone who can read it, and by every copy made of it. | [security] |
 
 ### secret-and-personal-data-kept-out-of-output · MUST
-A secret never appears in a log, an error, a URL or a build artefact, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's. Personal data appears in none of them, nor in test data or a document; a record is named there by an identifier that carries no personal data, and an error that reaches anyone but the data’s owner carries such identifiers, never the values it rejected. An audit record kept for security holds the identifier and the network address its event needs, and nothing more.
+A secret never appears in a log, an error, a URL or a build artefact, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's. Personal data the program holds about the people it serves appears in none of them, nor in test data or a document; a record is named there by an identifier that carries no personal data, and an error that reaches anyone but the data’s owner carries such identifiers, never the values it rejected. An audit record kept for security holds the identifier and the network address its event needs, and nothing more.
 
 | Why | Tags |
 |---|---|
@@ -26,7 +26,7 @@ A secret is never passed to a process as a command-line argument; it reaches the
 | a process's arguments are read by every user of the machine through its process listing, and are kept in shell histories and the logs of the tools that start it. | [security] |
 
 ### child-process-environment-built-for-it · MUST
-A process the program starts receives an environment built for it, holding only what that child needs, never the program's whole environment; a script that only joins commands passes on the environment its caller built for them, with every secret it received unset.
+A process the program starts receives an environment built for it, holding only what that child needs, never the program's whole environment; a script that only joins commands passes on the environment its caller built for them, each secret it received only to the command that reads it.
 
 | Why | Tags |
 |---|---|
@@ -47,7 +47,7 @@ A credential belongs to one identity and one purpose per environment, with only 
 | a credential with only the permissions its job needs limits what a leak can do, and one identity per credential says who did what. | [security] |
 
 ### credential-documented-beside-its-use · SHOULD
-A credential is documented beside its use.
+A credential's declaration names its owner, its scope, its issuer and how it is rotated.
 
 | Why | Tags |
 |---|---|

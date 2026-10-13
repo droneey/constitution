@@ -5,7 +5,7 @@
 ## Kinds of failure
 
 ### failure-is-expected-or-defect · MUST
-A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — one the same request might not meet again: a timeout, a dropped connection, a rate limit, a model's answer that fails its schema — is expected. A defect is never replaced by a fallback value.
+A failure is expected — a case the contract foresees and a caller can act on: not found, invalid input, a conflict — or a defect: a bug or a broken environment no caller can fix. A transient failure — one the same request might not meet again: a timeout, a dropped connection, a rate limit, a model's answer that fails its schema — is expected. A defect is never replaced by a fallback value, save at the boundary of an optional part, which shows the part as unavailable.
 
 | Why | Tags |
 |---|---|
