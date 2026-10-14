@@ -16,7 +16,7 @@ A server's probes and its stop path live in `root/`, beside the handler of last 
 
 | Why | Tags |
 |---|---|
-| the root alone knows every part a probe reports on and every resource the stop releases, and the product's delivery layer stays the product's. | [] |
+| the root alone knows every part a probe reports on and every resource the stop releases, and the product's delivery units stay the product's. | [] |
 
 ## Ports
 

@@ -32,7 +32,7 @@ An adapter is a factory function that takes its dependencies and returns the ada
 ## Packages
 
 ### react-imported-by-the-ui-and-binding-units → layer-imports-dependencies-by-its-role · MUST
-React's home reaches past the edge into a UI's components and widgets and the binding units of `app/` and `composition/`, which are hooks.
+React's home reaches past the edge into a UI's screens, components and widgets and the binding units of `app/` and `composition/`, which are hooks.
 
 | Why | Tags |
 |---|---|

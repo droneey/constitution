@@ -3,7 +3,6 @@ architecture:
     - binding unit
     - bounded context
     - composition root
-    - delivery layer
     - delivery unit
     - domain error
     - domain event
@@ -21,9 +20,7 @@ architecture:
     - write side
   folders:
     - adapters/
-    - api/
     - app/
-    - cli/
     - commands/
     - components/
     - consumers/
@@ -42,6 +39,7 @@ architecture:
     - queries/
     - repositories/
     - root/
+    - screens/
     - shared/
     - sinks/
     - steps/

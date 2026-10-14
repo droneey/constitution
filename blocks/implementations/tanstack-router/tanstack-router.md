@@ -1,17 +1,17 @@
 ---
 id: tanstack-router
-summary: File routes as screens — URL state, layouts, guards and links.
+summary: File routes registering screens — URL state, layouts, guards, links.
 requires: [react-dom]
 extends: null
 abstract: false
 languages: []
 dictionary: [TanStack Router, routeTree.gen.ts]
-governs: ["src/routes/**", "src/router.tsx"]
+governs: ["src/routes/**", "src/router.tsx", "src/root/routes/**", "src/root/router.tsx"]
 ---
 
 # TanStack Router
 
-> The project's only router. `router.tsx` is a name the framework fixes.
+> The project's only router.
 
 ### layout-lives-in-route-file · SHOULD
 A layout is a pathless `_name/route.tsx` that renders `<Outlet/>`, never an `index.tsx`.

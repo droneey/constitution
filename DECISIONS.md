@@ -36,6 +36,7 @@
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
+| The program's tree | ADR-0187 – ADR-0190 |
 
 ---
 
@@ -1172,3 +1173,31 @@
 - **Decision.** A rule merged into another stays merged only when it is a case of the survivor's one meaning; where the survivor's slug no longer said what it held, the merge had joined two meanings and is undone. The rules ADR-0184 and ADR-0185 had merged are split again: a function's purity from command–query separation, the contract suite from the one fake, a script's exports from its secret, the published schema's copy check from its generation, `nosniff` from the declared content type, the command repository from the aggregate's root, and the manifest's licence, source repository and runtime floor into their three rules. The merges that are cases of one meaning stay: the root's wiring, a constant's spec, a sub-agent's commit, a contract's diff, the extensible enumeration, the cursor's unique key, 401 and 403, a tool's bounded schema, HTTP's methods and statuses, the private units, a unit's licences, a model call's bounds, and a stalled messaging work's alerts, renamed `stalled-message-work-alerted` for its one meaning.
 - **Rejected.** Renaming a merged slug to list both halves, which names the smell instead of curing it.
 - **Why.** A slug says what holds; when it must say two things, there are two rules.
+
+## ADR-0187 — A package holds one root, and a second root is a second product
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** A package holds at most one composition root and a library none; a program that wires itself apart is a package of its own, and what two of them run lives in a package with no root — in a workspace, a unit of `packages/` per program and `shared/` for what they share, made only once the second program exists.
+- **Rejected.** A monorepo triggered by two platforms or two technologies: it splits Flutter or Expo, which serve several platforms from one root, and misses two React applications of one product, which share a technology and still have two roots. A shared package made ahead of the second program: its boundary is a guess, and every change pays for two manifests meanwhile; the layer rules already keep the business ready to move.
+- **Why.** A root is the one place that wires a program; a second one in the same tree splits every layer between two programs.
+
+## ADR-0188 — No folder is a delivery layer: a delivery unit lives with what it serves, and the root registers it
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** A delivery unit of one feature lives in that feature's application layer, one that composes several in a module of composition, which takes a feature's form and is blind to the other modules; a screen always lives in composition, a widget with the one feature it serves or in composition; a command is its operation's binding unit, `<op>.cli`, beside the operation. The root registers every unit, in the folder a framework fixes where it fixes one, and alone knows the addresses: screens, widgets and components receive links as slots and transitions as callbacks. A delivery unit reads and writes only through what its framework hands it.
+- **Rejected.** A top-level delivery folder its block names — `cli/`, `api/`, `routes/`: it names the platform the whole program already is, as a `browser/` folder would in a React application. Screens kept in the root: the root would mix wiring with the interface. A screen in its feature while it uses one feature: it would move the day it shows a second. A navigation port: the router is a host, like the interface's framework, and props already keep the paths out.
+- **Why.** A unit changes with what it serves, and a program's entries are listed in one place, the root's registration.
+
+## ADR-0189 — A feature never subscribes to another's events
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** A feature publishes its own events; the reaction to another feature's event lives in a module of composition, which calls the reacting feature's operation.
+- **Rejected.** A feature subscribing to another's events directly: it couples the two as an import would, and spreads the chain of reactions through the features.
+- **Why.** Composition is where features meet, for events as for answers.
+
+## ADR-0190 — Business shared across languages is one compiled package first
+**Date:** 2026-10-14 · **Status:** Accepted
+
+- **Decision.** Business that programs in different languages run lives first in one package in a language every target runs, compiled for each through generated bindings; then in the service they call; a copy per language, held by the schema and the conformance cases of `shared/`, is the last resort. Products that own their data apart share only contracts and wire shapes.
+- **Rejected.** The service first: it puts every client behind the network even where one compiled core would serve them all. A business package shared by services deployed on their own: it ties their releases into one program deployed in pieces.
+- **Why.** Business written once cannot drift between languages or between services.

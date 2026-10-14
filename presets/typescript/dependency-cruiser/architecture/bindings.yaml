@@ -1,5 +1,5 @@
 analytics:
-  event-sent-only-by-the-delivery-layer:
+  event-sent-only-by-delivery-units:
     - features-never-track
 _api:
   adapter-imports-only-its-owners-domain-and-shared-layers:
@@ -75,7 +75,7 @@ core:
   query-and-command-apart:
     - reads-never-reach-writes
     - writes-never-reach-reads
-  root-imported-only-by-entries-and-delivery-wiring:
+  root-imported-only-by-entries:
     - root-reached-only-from-entries
   shared-imports-no-feature-adapter-contract-or-root:
     - shared-knows-no-feature-or-root
@@ -107,15 +107,8 @@ tanstack-query:
 tanstack-router:
   adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-know-no-routes
-  route-pieces-reach-the-route-by-its-api:
-    - route-pieces-never-import-route-files
-  routes-imported-by-no-inner-layer:
-    - routes-reached-only-from-the-router
-  root-imported-only-by-entries-and-delivery-wiring:
+  root-imported-only-by-entries:
     - root-reached-only-from-entries
-  router-primitives-only-in-screens-and-widgets:
-    - router-primitives-only-in-screens-and-widgets
-    - router-only-in-its-home
 ui:
   binding-unit-composes-its-operation:
     - binding-units-reach-no-adapter-or-ui

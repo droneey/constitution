@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [bunli]
-governs: ["**/cli/**"]
+governs: ["**/*.cli.ts"]
 ---
 
 # bunli

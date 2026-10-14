@@ -4,7 +4,7 @@
 
 ## The trees
 
-A package keeps each folder below only when it has a file to hold. The block that owns the program's interface names its delivery layer: the commands of a command line, the handlers of a server, the screens of a router.
+A package keeps each folder below only when it has a file to hold. A delivery unit lives in the feature or the composition module it serves, and the root registers it.
 
 ```
 <package>/
@@ -18,10 +18,9 @@ src/
 ├── main.*                 the entry of a program: builds the root and runs it
 ├── index.*                the surface of a package others import: its main entry
 ├── root/                  the composition root: the wiring file, providers, configuration parsed at start,
-│                          the handler of last resort
-├── <delivery>/            the delivery layer: commands, handlers or screens; its block names the folder
-├── composition/           what several features make together, once two consumers need it
-│                          or one feature’s contract is met through another’s surface
+│                          the handler of last resort, the registration of every delivery unit
+├── composition/<m>/       modules laid out as features: what several features make together, and the
+│                          delivery units that compose them; each named after what it assembles
 ├── features/<f>/          bounded contexts, blind to each other
 ├── contracts/             ports two or more features need
 ├── adapters/<system>/     adapters implementing those shared ports
@@ -43,7 +42,7 @@ features/<f>/
 └── index.*                the surface
 ```
 
-A surface is the file the language resolves when a folder is imported. A binding unit binds one operation to the delivery's framework.
+A surface is the file the language resolves when a folder is imported. A binding unit binds one operation to the program's framework.
 
 ## The vocabulary
 
@@ -56,7 +55,7 @@ The language fixes the spelling. Each block names its own folders and suffixes, 
 ## Form
 
 ### module-has-the-one-form · SHOULD
-Every module, at any depth — the source of a package others import, a feature, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the layers or role folders it needs and modules of this same form.
+Every module, at any depth — the source of a package others import, a feature, a module of composition, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the layers or role folders it needs and modules of this same form.
 
 | Why | Tags |
 |---|---|
@@ -77,7 +76,7 @@ A package’s root holds its manifest, its source, the suites that drive the bui
 | a reader who knows one repository finds the way in every other, and a file has one obvious place. | [] |
 
 ### feature-laid-out-by-its-tree · SHOULD
-A feature holds its layers, its specs and its surface and nothing else, and its domain holds only the role folders of the tree.
+A feature, and a module of composition, holds its layers, its specs and its surface and nothing else, and its domain holds only the role folders of the tree.
 
 | Why | Tags |
 |---|---|

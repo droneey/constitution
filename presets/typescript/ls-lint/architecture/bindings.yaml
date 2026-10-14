@@ -12,9 +12,6 @@ messaging:
   file-name-in-its-owners-case:
     - 'src/consumers'
     - 'src/jobs'
-  consumers-and-jobs-are-the-delivery-layer:
-    - 'src/consumers'
-    - 'src/jobs'
 cli:
   command-file-named-with-the-cli-suffix:
     - 'src/cli'
@@ -64,10 +61,6 @@ core:
 expo:
   expo-router-file-names-kept:
     - _layout
-  expo-router-root-is-routes:
-    - 'app'
-    - 'src/app'
-    - 'src/routes'
   file-name-in-its-owners-case:
     - 'src/routes'
 nestjs:
@@ -82,13 +75,6 @@ nestjs:
     - '.interceptor.ts'
 tanstack-router:
   file-name-in-its-owners-case:
-    - 'src/routes'
-  screen-private-pieces-in-dash-folders:
-    - 'src/routes'
-    - 'src/routes/**/-components'
-    - 'src/routes/**/-components/[!_]*'
-    - 'src/routes/**/-hooks'
-  screens-are-file-routes:
     - 'src/routes'
 ui:
   component-in-its-own-folder:

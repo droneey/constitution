@@ -5,7 +5,7 @@
 ## Files
 
 ### nestjs-files-in-the-tree → package-laid-out-by-the-tree · SHOULD
-The root's module, `root/root.module.ts`, is the program's wiring file, and `api/api.module.ts` mounts the controllers of `api/`; a feature's module is `<feature>.module.ts` in its `app/`, and a module that joins features is `composition/<name>/<name>.module.ts`. A controller is `<name>.controller.ts`, in `api/`, or in a feature's `app/` when it serves that feature alone. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role. A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `.interceptor` files, and its surface.
+The root's module, `root/root.module.ts`, is the program's wiring file and imports the modules of features and of composition; a feature's module is `<feature>.module.ts` in its `app/`, and a composition module's is `<name>.module.ts` in `composition/<name>/app/`. A controller is `<name>.controller.ts` in the `app/` of the feature it serves alone, or of the composition module whose features it composes. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role. A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `.interceptor` files, and its surface.
 
 | Why | Tags |
 |---|---|

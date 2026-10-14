@@ -25,6 +25,20 @@ A unit in several languages holds `shared/`, its data in no language laid out by
 |---|---|
 | the unit is found in one folder whatever its languages, and its data in no language is written once beside the packages that read it. | [] |
 
+### program-with-its-own-root-is-a-product → package-has-at-most-one-root · MUST
+A program with a root of its own is a unit of `packages/`.
+
+| Why | Tags |
+|---|---|
+| each program then wires one tree of its own, released and changed apart from the others. | [] |
+
+### business-shared-across-languages-lives-in-one-package · SHOULD
+Business that programs in different languages run lives first in one package, written in a language every one of them can run and compiled for each, reached through generated bindings — Rust through native bindings and WebAssembly, Kotlin Multiplatform; where no such language serves every target, it lives in the service they call, and a client keeps only what must work without it, shared through the schema and the conformance cases of `shared/`.
+
+| Why | Tags |
+|---|---|
+| business written once cannot drift between languages, and a copy per language is the last resort, held together by the cases every copy must pass. | [] |
+
 ### unit-offers-everything-through-its-one-package · SHOULD
 Whatever a unit offers — its core, its wire shapes, its integrations into host frameworks — is a module or an entry of its one package per language, an integration in `integrations/<host>/`, never a package of its own.
 
@@ -42,7 +56,7 @@ A unit is imported by its name, which follows its folder under the repository's 
 ## Shared
 
 ### shared-part-appears-with-its-second-product → code-placed-by-its-reason-to-change · MUST
-A part of `shared/` appears when a second product needs it; until then it lives with its one product.
+A part of `shared/` appears when a second product needs it, and returns to its product when only one still does; until then it lives with its one product.
 
 | Why | Tags |
 |---|---|

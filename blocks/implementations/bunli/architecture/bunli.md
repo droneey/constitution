@@ -20,3 +20,10 @@ The root gives `createCLI` the program's configuration — its name, version, de
 | Why | Tags |
 |---|---|
 | the root then names every choice the program makes, and a spec builds the same program from it. | [] |
+
+### bunli-imported-by-commands → layer-imports-dependencies-by-its-role · MUST
+bunli's home reaches past the edge into the command files of `app/` and `composition/`.
+
+| Why | Tags |
+|---|---|
+| a command lives beside its operation, and the framework stays out of the domain and the use cases below it. | [] |

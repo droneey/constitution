@@ -11,14 +11,14 @@ Code inside the edge publishes through a port that takes the feature's own event
 |---|---|
 | the broker, its topology and its envelope change without touching the business rules, and a spec replaces the broker through the port. | [] |
 
-## The delivery layer
+## Delivery units
 
-### consumers-and-jobs-are-the-delivery-layer → delivery-unit-beside-what-it-serves · SHOULD
-The delivery layer of a program that consumes messages is `consumers/`, one `.consumer` file per message type it handles, and of one that runs scheduled work `jobs/`, one `.job` file per job, each beside the wiring that subscribes or schedules them.
+### consumers-and-jobs-beside-the-work-they-run → delivery-unit-beside-what-it-serves · SHOULD
+A consumer, one `.consumer` file per message type, lives in `consumers/` of the application layer of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in `jobs/` the same way.
 
 | Why | Tags |
 |---|---|
-| every way work enters the program is found from one place, and a subscription is not hidden in the feature it calls. | [] |
+| a consumer changes with the work it starts, and the root's registration still lists every way work enters the program. | [] |
 
 ### message-handler-stays-thin → delivery-unit-stays-thin · SHOULD
 A consumer or a job parses its message or its tick, calls one operation of the feature that owns the work and returns its outcome for settlement; it holds no business rule and decides no retry.

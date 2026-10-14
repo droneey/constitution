@@ -5,18 +5,18 @@
 ## Guards
 
 ### screen-guarded-through-the-session-owners-surface → entry-point-declares-its-access · MUST
-A screen's guards and redirects live in the screens layer and use the surface of the feature that owns sessions.
+A screen's guards and redirects live in the screen's registration in the root and use the surface of the feature that owns sessions.
 
 | Why | Tags |
 |---|---|
-| access is decided before the screen renders, in one layer, and no feature reaches into the session's internals. | [security] |
+| access is decided before the screen renders, in one place, and no feature reaches into the session's internals. | [security] |
 
-### feature-screens-adapt-to-permissions-passed-down · SHOULD
-A feature's screens adapt to the permissions composition passes them, never reaching into the session's internals.
+### feature-ui-adapts-to-permissions-passed-down · SHOULD
+A feature's widgets and components adapt to the permissions composition passes them, never reaching into the session's internals.
 
 | Why | Tags |
 |---|---|
-| no feature then knows how sessions work, and a change of the session's model never reaches a screen. | [security] |
+| no feature then knows how sessions work, and a change of the session's model never reaches a feature's interface. | [security] |
 
 ## Session state
 

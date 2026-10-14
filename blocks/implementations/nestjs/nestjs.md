@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [NestJS, Nest, "@nestjs", nestjs-pino, nest-cli.json, .swcrc]
-governs: ["nest-cli.json", ".swcrc", "**/api/**", "**/root/**", "**/*.module.ts", "**/*.controller.ts"]
+governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.controller.ts"]
 ---
 
 # NestJS

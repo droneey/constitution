@@ -155,7 +155,7 @@ source_modules = ["*.adapters"]
 forbidden_modules = ["*.features"]
 
 [[tool.importlinter.contracts]]
-name = "root-imported-only-by-entries-and-delivery-wiring"
+name = "root-imported-only-by-entries"
 type = "protected"
 protected_modules = ["*.root"]
 allowed_importers = ["*.main", "*.entrypoints.*.main"]

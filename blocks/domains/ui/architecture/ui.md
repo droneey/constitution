@@ -2,16 +2,23 @@
 
 > Governs the interface's place in the tree: screens, components, theme and binding units.
 
-**Vocabulary.** Folders: `ui` — a feature's presentation layer, and also `root/ui`, `shared/ui`, `libs/ui`; `components` — presentational; `widgets` — smart; `assets` — icons, images and fonts. Suffix: `.variants`. A feature adds `ui/{components,widgets}/`. The screens are the delivery layer; the router's block names their folder.
+**Vocabulary.** Folders: `ui` — the presentation layer of a feature or of a composition module, and `shared/ui`, `libs/ui`; `screens` — a composition module's screens; `components` — presentational; `widgets` — smart; `assets` — icons, images and fonts. Suffix: `.variants`. A feature adds `ui/{components,widgets}/`, a composition module `ui/{screens,components,widgets}/`. Screens live in composition, and the root registers them.
 
 ## Screens
 
 ### screen-loads-its-data-and-composes-the-page → delivery-unit-stays-thin · SHOULD
-A screen reads and validates its address, loads the data its pieces render, and composes the page from widgets and from pieces private to it.
+A screen receives its parsed address from its registration, loads the data its pieces render, and composes the page from widgets and from pieces private to it.
 
 | Why | Tags |
 |---|---|
-| the screen is the one place that knows its address and its data, and one loading point shows one loading state and one error instead of a page that fills in piece by piece. | [ux, performance] |
+| the screen is the one place that knows its data, and one loading point shows one loading state and one error instead of a page that fills in piece by piece. | [ux, performance] |
+
+### screen-lives-in-composition → delivery-unit-beside-what-it-serves · SHOULD
+Every screen lives in a composition module's `ui/screens/`, whatever features it uses today; a feature offers its widgets, components and binding units, never a screen.
+
+| Why | Tags |
+|---|---|
+| a screen is a place in the product, not an operation of a feature, and it does not move when it starts showing a second feature. | [] |
 
 ### screen-piece-receives-data-and-callbacks · SHOULD
 A screen's piece receives data and `on<Event>` callbacks and never knows which screen it sits on; where one loading point hurts its screen it becomes a widget with a binding unit of its own.
@@ -20,19 +27,19 @@ A screen's piece receives data and `on<Event>` callbacks and never knows which s
 |---|---|
 | a piece that knows only its data is reused and tested alone. | [] |
 
-### pieces-never-touch-navigation · MUST
-A presentational component or a screen's piece imports no navigation or route-parameter primitive.
+### ui-never-touches-navigation · MUST
+No screen, widget or component imports a navigation or route-parameter primitive or knows an address.
 
 | Why | Tags |
 |---|---|
-| a piece that navigates by itself works on one screen only, and its behaviour hides from the screen that composes it. | [] |
+| addresses are then known in the root alone, so a change of the navigation library or of a path never reaches a screen, and a piece that navigates by itself cannot hide its behaviour from what composes it. | [] |
 
 ### navigation-passed-by-slot · SHOULD
-Navigation reaches a presentational component through a slot that renders the link; any other action reaches it through a callback.
+Navigation reaches a screen, a widget or a component as props: its parameters as values, its links as slots that render them, its transitions and any other action as `on<Event>` callbacks; the screen's registration hands them to the screen, which passes them on.
 
 | Why | Tags |
 |---|---|
-| the component stays free of navigation, and the link stays a real link the platform can open, share and announce. | [ux] |
+| the interface stays free of navigation, and the link stays a real link the platform can open, share and announce. | [ux] |
 
 ### screen-private-pieces-beside-screen → delivery-unit-beside-what-it-serves · SHOULD
 Pieces and binding units private to one screen live beside it, private to it.
@@ -65,14 +72,14 @@ A form's schema composes the checks of the domain's value objects and sits with 
 ## Components
 
 ### component-lives-where-its-knowledge-lives → code-placed-by-its-reason-to-change · MUST
-A component lives where its knowledge lives: used by one screen, beside it; knows a feature, in that feature's `ui/`; a generic primitive, in `libs/ui`; specific to the application and used by two or more features, in `shared/ui`; the application's shell, in `root/ui`.
+A component lives where its knowledge lives: used by one screen, beside it; knows one feature, in that feature's `ui/`; assembles several features — the application's shell, a widget of several features — in a composition module's `ui/`; a generic primitive, in `libs/ui`; specific to the application and used by two or more features, in `shared/ui`.
 
 | Why | Tags |
 |---|---|
 | a component placed by what it knows can be found, and it moves only when its knowledge does. | [] |
 
 ### component-named-by-location → folder-takes-its-layer-or-role-name · MUST
-A component's folder name carries its location and role: no prefix in `libs/ui` and `shared/ui`, `root-` in `root/ui`, the feature's name in a feature, and `-widget` on every widget.
+A component's folder name carries its location and role: no prefix in `libs/ui` and `shared/ui`, the feature's name in a feature, the module's name in a composition module, and `-widget` on every widget.
 
 | Why | Tags |
 |---|---|

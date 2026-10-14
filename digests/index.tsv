@@ -22,7 +22,7 @@ block	rest-api	domain	An HTTP API of resources: methods, statuses, answers and c
 block	ui	domain	Screens, components, forms and accessibility of any interface.	accessibility.md components.md forms.md screens.md tests.md architecture/ui.md	remote-data remote-service architecture/access-control architecture/remote-data			false				**
 block	untrusted-client	domain	Code that runs where its user can read and change it.					false				**
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	workflow/version-control.md				false				**
-block	workspace	domain	Several units in one repository: their folders, imports and links.	architecture/workspace.md				false				**
+block	workspace	domain	Several units in one repository: their folders, imports and links.	architecture/workspace.md	architecture/owned-data			false				**
 block	browser	platform	Delivery, defences, storage and lifecycle of code in a browser tab.	architecture/browser.md	design-system i18n privacy server ui architecture/server architecture/ui	untrusted-client		false				**
 block	cli	platform	Commands, flags, streams, exit codes and help of a command line.	architecture/cli.md	config-file convergence			false				**
 block	mobile	platform	Storage, links, traffic and releases of an app on a phone or tablet.	architecture/mobile.md	access-control design-system i18n privacy remote-data remote-service ui	untrusted-client		false				**
@@ -38,15 +38,15 @@ block	betterleaks	implementation	Scans changes and history for committed secrets
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	architecture/biome.md	workspace	typescript		false		typescript css		biome.json biome.*.jsonc **/*.grit
 block	bun	implementation	Bun as runtime, package manager and script runner.		distribution workspace architecture/workspace	typescript		false				bunfig.toml package.json
 block	bun-test	implementation	Bun's test runner, its coverage gate and its specs.	architecture/bun-test.md	workspace	bun		false		typescript		**/__tests__/**
-block	bunli	implementation	bunli declares each command, its flags and its handler.	architecture/bunli.md		bun cli		false				**/cli/**
+block	bunli	implementation	bunli declares each command, its flags and its handler.	architecture/bunli.md		bun cli		false				**/*.cli.ts
 block	complexipy	implementation	complexipy holds the cognitive complexity of Python's functions.			python		false		python		
 block	dclint	implementation	Lints Docker Compose files.			docker		false				.dclintrc
 block	dependency-cruiser	implementation	Holds the import rules between layers, modules and packages.	architecture/dependency-cruiser.md	workspace architecture/workspace	typescript		false		typescript		.dependency-cruiser.mjs
 block	deptry	implementation	deptry checks the dependencies a Python package declares and imports.			python		false		python		
 block	docker	implementation	Container images and the services Docker Compose runs from them.					false				**/Dockerfile **/*.Dockerfile **/.dockerignore **/compose.yaml **/compose.*.yaml
 block	expo	implementation	Expo on React Native — app config, native builds, secure storage.	architecture/expo.md	version-control	react-native		false				app.config.ts eas.json
-block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicorn.	architecture/fastapi.md	structlog	python pydantic rest-api		false				**/api/** **/root/**
-block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	architecture/fastmcp.md	structlog	python pydantic mcp-api		false				**/api/** **/root/**
+block	fastapi	implementation	FastAPI serves the program over HTTP, run by Uvicorn.	architecture/fastapi.md	structlog	python pydantic rest-api		false				**/app/** **/root/**
+block	fastmcp	implementation	FastMCP serves the program's tools to models over MCP.	architecture/fastmcp.md	structlog	python pydantic mcp-api		false				**/app/** **/root/**
 block	git	implementation	Git's ignores, tags, large files and worktrees.			version-control		false				.gitignore .gitattributes
 block	hadolint	implementation	Lints Dockerfiles, their shell steps included.			docker		false				.hadolint.yaml
 block	httpx2	implementation	httpx2, the HTTP client — one per system, a timeout on every call.	architecture/httpx2.md		python remote-service		false				**/adapters/** **/root/**
@@ -60,7 +60,7 @@ block	ls-lint	implementation	Holds the names of files and folders in every langu
 block	matomo	implementation	Matomo as one of the product's analytics services.	architecture/matomo.md	privacy	analytics browser typescript		false				**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	workflow/mise.md	version-control			false				mise.toml mise.lock
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.			pytest		false		python		
-block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	architecture/nestjs.md	bun-test pino	typescript tsc _api		false				nest-cli.json .swcrc **/api/** **/root/** **/*.module.ts **/*.controller.ts
+block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	architecture/nestjs.md	bun-test pino	typescript tsc _api		false				nest-cli.json .swcrc **/root/** **/*.module.ts **/*.controller.ts
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.		docker			false				osv-scanner.toml
 block	pino	implementation	pino writes the program's log records as JSON lines.	architecture/pino.md	http-server architecture/_api	typescript observability		false				**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.			browser ui typescript		false				tests/e2e/** playwright.config.*
@@ -79,8 +79,8 @@ block	syncpack	implementation	Holds dependency versions and the shape of every m
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.		design-system i18n	ui browser typescript css		false				**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	architecture/tanstack-form.md		_react		false				**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	architecture/tanstack-query.md	architecture/access-control	_react remote-data remote-service		false				**/*.hooks.ts **/root/providers/** **/cache.utils.ts
-block	tanstack-router	implementation	File routes as screens — URL state, layouts, guards and links.	architecture/tanstack-router.md	tanstack-query version-control architecture/access-control	react-dom		false				src/routes/** src/router.tsx
-block	tanstack-start	implementation	The TanStack app shell — SPA mode, root shell, runtime configuration.	architecture/tanstack-start.md		tanstack-router server		false				src/routes/__root.tsx src/router.tsx
+block	tanstack-router	implementation	File routes registering screens — URL state, layouts, guards, links.	architecture/tanstack-router.md	tanstack-query version-control architecture/access-control	react-dom		false				src/routes/** src/router.tsx src/root/routes/** src/root/router.tsx
+block	tanstack-start	implementation	The TanStack app shell — SPA mode, the document, runtime config.	architecture/tanstack-start.md		tanstack-router server		false				src/routes/__root.tsx src/router.tsx src/root/routes/__root.tsx src/root/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.		react-dom remote-data remote-service	_react		false				**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.			typescript		false				src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.		bun-test workspace	typescript		false		typescript		tsconfig.json tsconfig.src.json tsconfig.test.json
@@ -338,8 +338,9 @@ rule	pipeline-stage-never-calls-a-stage	core	blocks/core/architecture/domain.md	
 rule	import-points-inward	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	domain-imports-only-itself-the-kernel-and-top-level-contracts	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	feature-never-imports-a-feature	core	blocks/core/architecture/layers.md		MUST		architecture		true
+rule	composition-module-never-imports-another	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	effects-held-only-by-the-edge	core	blocks/core/architecture/layers.md		MUST		architecture		true
-rule	root-imported-only-by-entries-and-delivery-wiring	core	blocks/core/architecture/layers.md		MUST		architecture		true
+rule	root-imported-only-by-entries	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	adapter-imported-only-by-the-root	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	entrypoint-never-imported	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	integration-never-imported	core	blocks/core/architecture/layers.md		MUST		architecture		true
@@ -373,12 +374,15 @@ rule	contract-declared-by-the-layer-that-needs-it	core	blocks/core/architecture/
 rule	port-justified-by-its-boundary	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	contract-knows-no-vendor	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	feature-asks-another-through-its-own-contract	core	blocks/core/architecture/ports.md		MUST		architecture		true
+rule	feature-reacts-to-another-only-through-composition	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	data-port-one-per-entity-and-side	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	outside-shape-mapped-in-the-adapter	core	blocks/core/architecture/ports.md		MUST	data	architecture		true
 rule	adapter-imports-only-its-owners-domain-and-shared-layers	core	blocks/core/architecture/ports.md		MUST		architecture		true
 rule	adapter-one-per-system-and-owner	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	adapter-built-by-factory-object-or-class	core	blocks/core/architecture/ports.md		SHOULD		architecture		true
 rule	composition-root-wires-everything	core	blocks/core/architecture/root.md		MUST		architecture		true
+rule	package-has-at-most-one-root	core	blocks/core/architecture/root.md		MUST		architecture		true
+rule	delivery-unit-registered-by-the-root	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	root-alone-reads-the-environment	core	blocks/core/architecture/root.md		MUST	security	architecture		true
 rule	root-alone-configures-logging	core	blocks/core/architecture/root.md		MUST		architecture		true
 rule	spec-boundaries-follow-the-tree	core	blocks/core/architecture/tests.md		SHOULD	testing	architecture		true
@@ -416,7 +420,6 @@ rule	instant-sent-as-rfc-3339	_api	blocks/domains/_api/values.md		MUST	data		ins
 rule	money-sent-as-a-decimal-and-its-currency	_api	blocks/domains/_api/values.md		MUST	data		exact-quantity-never-binary-float	true
 rule	large-integer-sent-as-a-string	_api	blocks/domains/_api/values.md		SHOULD	data			true
 rule	field-names-in-one-case	_api	blocks/domains/_api/values.md		SHOULD				true
-rule	server-delivery-layer-is-the-api-folder	_api	blocks/domains/_api/architecture/_api.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	one-error-handler-registered-by-the-root	_api	blocks/domains/_api/architecture/_api.md		MUST	errors security	architecture	last-resort-handler-one-per-entry	true
 rule	call-handle-checked-against-its-caller	_api	blocks/domains/_api/with/access-control.md	access-control	MUST	security			true
 rule	hidden-object-answered-as-not-found	_api	blocks/domains/_api/with/access-control.md	access-control	SHOULD	security			true
@@ -462,7 +465,7 @@ rule	environment-sends-to-its-own-destination	analytics	blocks/domains/analytics
 rule	analytics-fault-isolated	analytics	blocks/domains/analytics/analytics.md		MUST	errors		optional-part-isolated-from-its-faults	true
 rule	analytics-drops-the-ip-address	analytics	blocks/domains/analytics/analytics.md		MUST	security data			true
 rule	sinks-behind-one-contract	analytics	blocks/domains/analytics/architecture/analytics.md		MUST		architecture	new-kind-added-as-a-member	true
-rule	event-sent-only-by-the-delivery-layer	analytics	blocks/domains/analytics/architecture/analytics.md		MUST		architecture	code-placed-by-its-reason-to-change	true
+rule	event-sent-only-by-delivery-units	analytics	blocks/domains/analytics/architecture/analytics.md		MUST		architecture	code-placed-by-its-reason-to-change	true
 rule	identity-reset-on-sign-out	analytics	blocks/domains/analytics/with/access-control.md	access-control	MUST	data security			true
 rule	analytics-stores-nothing-until-consent	analytics	blocks/domains/analytics/with/privacy.md	privacy	MUST	security data			true
 rule	page-view-named-by-route-template	analytics	blocks/domains/analytics/with/ui.md	ui	MUST	data security			true
@@ -672,7 +675,7 @@ rule	publish-done-only-once-the-broker-confirms	messaging	blocks/domains/messagi
 rule	ordered-messages-share-an-ordering-key	messaging	blocks/domains/messaging/publishing.md		MUST	data			true
 rule	redelivery-and-reordering-have-cases	messaging	blocks/domains/messaging/tests.md		SHOULD	testing		edge-cases-chosen-by-risk	true
 rule	publisher-is-a-port-in-the-domains-words	messaging	blocks/domains/messaging/architecture/messaging.md		MUST		architecture	contract-knows-no-vendor	true
-rule	consumers-and-jobs-are-the-delivery-layer	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
+rule	consumers-and-jobs-beside-the-work-they-run	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	message-handler-stays-thin	messaging	blocks/domains/messaging/architecture/messaging.md		SHOULD		architecture	delivery-unit-stays-thin	true
 rule	message-carries-the-identity-it-acts-for	messaging	blocks/domains/messaging/with/access-control.md	access-control	MUST	security data		tenant-data-scoped-in-every-read-and-write	true
 rule	message-carries-its-creators-trace-context	messaging	blocks/domains/messaging/with/observability.md	observability	SHOULD			trace-context-propagated-onward	true
@@ -862,8 +865,9 @@ rule	ui-specs-scan-accessibility	ui	blocks/domains/ui/tests.md		MUST	a11y testin
 rule	interactive-checked-by-hand	ui	blocks/domains/ui/tests.md		SHOULD	a11y			true
 rule	a11y-scanner-runs-inside-a-spec	ui	blocks/domains/ui/tests.md		MUST	a11y testing			true
 rule	screen-loads-its-data-and-composes-the-page	ui	blocks/domains/ui/architecture/ui.md		SHOULD	ux performance	architecture	delivery-unit-stays-thin	true
+rule	screen-lives-in-composition	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	screen-piece-receives-data-and-callbacks	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
-rule	pieces-never-touch-navigation	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
+rule	ui-never-touches-navigation	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
 rule	navigation-passed-by-slot	ui	blocks/domains/ui/architecture/ui.md		SHOULD	ux	architecture		true
 rule	screen-private-pieces-beside-screen	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	root-boundary-catches-the-rest	ui	blocks/domains/ui/architecture/ui.md		MUST	errors	architecture	last-resort-handler-one-per-entry	true
@@ -890,7 +894,7 @@ rule	remote-field-error-shown-on-its-field	ui	blocks/domains/ui/with/remote-serv
 rule	user-input-survives-connection-loss	ui	blocks/domains/ui/with/remote-service.md	remote-service	SHOULD	ux data			true
 rule	ui-specs-replace-the-transport	ui	blocks/domains/ui/with/remote-service.md	remote-service	MUST	testing		effect-faked-never-mocked	true
 rule	screen-guarded-through-the-session-owners-surface	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	security	architecture	entry-point-declares-its-access	true
-rule	feature-screens-adapt-to-permissions-passed-down	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	SHOULD	security	architecture		true
+rule	feature-ui-adapts-to-permissions-passed-down	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	SHOULD	security	architecture		true
 rule	session-presence-kept-in-a-root-store	ui	blocks/domains/ui/architecture/with/access-control.md	access-control	MUST	data	architecture		true
 rule	write-invalidates-in-its-binding-unit	ui	blocks/domains/ui/architecture/with/remote-data.md	remote-data	SHOULD	data	architecture		true
 rule	client-holds-nothing-hidden	untrusted-client	blocks/domains/untrusted-client/untrusted-client.md		MUST	security data		secret-and-personal-data-kept-out-of-output	true
@@ -938,11 +942,14 @@ rule	workspace-tool-links-units-from-the-working-tree	workspace	blocks/domains/w
 rule	workspace-units-placed-by-reach	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-in-one-language-is-its-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-in-several-languages-holds-a-package-per-language	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
+rule	program-with-its-own-root-is-a-product	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	package-has-at-most-one-root	true
+rule	business-shared-across-languages-lives-in-one-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-offers-everything-through-its-one-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-named-after-its-folder	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	shared-part-appears-with-its-second-product	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	code-placed-by-its-reason-to-change	true
 rule	product-units-blind-to-each-other	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	feature-never-imports-a-feature	true
 rule	units-import-toward-libs	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	import-points-inward	true
+rule	products-owning-their-data-share-only-contracts	workspace	blocks/domains/workspace/architecture/with/owned-data.md	owned-data	MUST		architecture		true
 rule	bundle-within-its-size-budget	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
 rule	hashed-file-immutable-and-its-pointers-revalidated	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/browser.md		MUST	security		one-artefact-serves-every-environment	true
@@ -1030,8 +1037,7 @@ rule	command-framework-parses-flags-by-schema	cli	blocks/contexts/platforms/cli/
 rule	command-framework-leaves-exits-to-the-handler	cli	blocks/contexts/platforms/cli/cli.md		MUST	errors			true
 rule	command-framework-runs-in-a-test-sandbox	cli	blocks/contexts/platforms/cli/cli.md		MUST	testing			true
 rule	shared-flag-declared-once-in-shared	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD		architecture	shared-piece-placed-by-meaning	true
-rule	cli-folder-holds-one-file-per-command	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD		architecture	set-folder-holds-only-members	true
-rule	command-registered-by-the-root	cli	blocks/contexts/platforms/cli/architecture/cli.md		MUST		architecture	composition-root-wires-everything	true
+rule	command-is-its-operations-binding-unit	cli	blocks/contexts/platforms/cli/architecture/cli.md		SHOULD		architecture	delivery-unit-beside-what-it-serves	true
 rule	init-writes-the-config-file-from-a-template	cli	blocks/contexts/platforms/cli/with/config-file.md	config-file	SHOULD	ux			true
 rule	flag-never-changes-the-declared-state	cli	blocks/contexts/platforms/cli/with/convergence.md	convergence	MUST			run-reads-one-config-file	true
 rule	plan-with-changes-exits-with-its-own-code	cli	blocks/contexts/platforms/cli/with/convergence.md	convergence	MUST	errors		plan-outcome-told-apart	true
@@ -1252,7 +1258,7 @@ rule	classifiers-list-every-supported-minor	python	blocks/contexts/languages/pyt
 rule	yaml-read-by-a-yaml-1-2-loader	python	blocks/contexts/languages/python/with/yaml.md	yaml	SHOULD	data		reader-resolves-scalars-by-the-core-schema	true
 rule	yaml-from-outside-loaded-by-a-safe-loader-only	python	blocks/contexts/languages/python/with/yaml.md	yaml	MUST	security		outside-yaml-loaded-by-a-safe-loader	true
 rule	yaml-from-outside-refused-with-an-alias	python	blocks/contexts/languages/python/with/yaml.md	yaml	MUST	security performance		alias-expansion-bounded	true
-rule	command-module-named-with-the-cli-suffix	python	blocks/contexts/languages/python/architecture/with/cli.md	cli	MUST		architecture	cli-folder-holds-one-file-per-command	true
+rule	command-module-named-with-the-cli-suffix	python	blocks/contexts/languages/python/architecture/with/cli.md	cli	MUST		architecture	command-is-its-operations-binding-unit	true
 rule	unit-names-spelled-under-the-scope	python	blocks/contexts/languages/python/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
 rule	requires-python-raised-in-a-minor-or-a-major	python	blocks/contexts/languages/python/workflow/with/distribution.md	distribution	MUST		workflow	runtime-floor-never-raised-in-a-patch	true
 rule	script-only-glues-commands	shell	blocks/contexts/languages/shell/shell.md		SHOULD				true
@@ -1371,7 +1377,7 @@ rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/
 rule	yaml-parsed-by-the-core-schema	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	SHOULD	data		reader-resolves-scalars-by-the-core-schema	true
 rule	yaml-from-outside-parsed-with-no-custom-tags	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	MUST	security		outside-yaml-loaded-by-a-safe-loader	true
 rule	yaml-from-outside-parsed-with-an-alias-bound	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	MUST	security performance		alias-expansion-bounded	true
-rule	command-file-named-with-the-cli-suffix	typescript	blocks/contexts/languages/typescript/architecture/with/cli.md	cli	MUST		architecture	cli-folder-holds-one-file-per-command	true
+rule	command-file-named-with-the-cli-suffix	typescript	blocks/contexts/languages/typescript/architecture/with/cli.md	cli	MUST		architecture	command-is-its-operations-binding-unit	true
 rule	component-reaches-no-io-global	typescript	blocks/contexts/languages/typescript/architecture/with/ui.md	ui	MUST		architecture	presentational-component-performs-no-io	true
 rule	unit-package-named-under-the-scope	typescript	blocks/contexts/languages/typescript/architecture/with/workspace.md	workspace	SHOULD		architecture	unit-named-after-its-folder	true
 rule	engines-floor-raised-only-in-a-major	typescript	blocks/contexts/languages/typescript/workflow/with/distribution.md	distribution	MUST		workflow	runtime-floor-never-raised-in-a-patch	true
@@ -1453,6 +1459,7 @@ rule	program-keeps-no-bunli-config	bunli	blocks/implementations/bunli/bunli.md		
 rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architecture/bunli.md		SHOULD		architecture	delivery-unit-stays-thin	true
 rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	errors	architecture	last-resort-handler-one-per-entry	true
 rule	bunli-configured-inline	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST		architecture	composition-root-wires-everything	true
+rule	bunli-imported-by-commands	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	cognitive-complexity-held-at-ten	complexipy	blocks/implementations/complexipy/complexipy.md		MUST			function-within-its-limits	true
 rule	dclint-rules-set-as-errors	dclint	blocks/implementations/dclint/dclint.md		MUST			docker-files-linted-in-the-check	true
 rule	dclint-suppression-names-rule-and-reason	dclint	blocks/implementations/dclint/dclint.md		MUST			suppression-silences-one-finding	true
@@ -1481,7 +1488,7 @@ rule	dependencies-wait-until-healthy	docker	blocks/implementations/docker/docker
 rule	test-services-never-restart	docker	blocks/implementations/docker/docker.md		SHOULD	testing			true
 rule	native-modules-at-sdk-versions	expo	blocks/implementations/expo/expo.md		SHOULD				true
 rule	expo-router-file-names-kept	expo	blocks/implementations/expo/expo.md		MUST			file-name-in-its-owners-case	true
-rule	expo-router-root-is-routes	expo	blocks/implementations/expo/architecture/expo.md		SHOULD		architecture	package-laid-out-by-the-tree	true
+rule	expo-router-root-is-root-routes	expo	blocks/implementations/expo/architecture/expo.md		MUST		architecture	delivery-unit-registered-by-the-root	true
 rule	native-projects-generated-by-prebuild	expo	blocks/implementations/expo/with/version-control.md	version-control	MUST			generated-files-not-committed	true
 rule	dependencies-declared-in-annotated	fastapi	blocks/implementations/fastapi/fastapi.md		SHOULD				true
 rule	path-parameters-read-by-the-handler	fastapi	blocks/implementations/fastapi/fastapi.md		SHOULD				true
@@ -1493,6 +1500,7 @@ rule	unexpected-error-logged-once	fastapi	blocks/implementations/fastapi/fastapi
 rule	specs-through-the-asgi-transport	fastapi	blocks/implementations/fastapi/fastapi.md		MUST	testing security		server-spec-runs-in-process	true
 rule	app-assembled-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST	testing	architecture	composition-root-wires-everything	true
 rule	error-kit-handlers-registered-by-the-root	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST	errors security	architecture	one-error-handler-registered-by-the-root	true
+rule	fastapi-imported-by-delivery-units	fastapi	blocks/implementations/fastapi/architecture/fastapi.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	uvicorn-records-join-the-chain	fastapi	blocks/implementations/fastapi/with/structlog.md	structlog	MUST	security		one-chain-for-every-record	true
 rule	tool-described-by-its-docstring	fastmcp	blocks/implementations/fastmcp/fastmcp.md		MUST			tool-described-for-the-model	true
 rule	kit-error-answered-as-a-tool-result	fastmcp	blocks/implementations/fastmcp/fastmcp.md		MUST	errors security		tool-failure-answered-as-an-error-result	true
@@ -1501,6 +1509,7 @@ rule	tool-arguments-bounded-by-their-annotations	fastmcp	blocks/implementations/
 rule	validation-inside-a-tool-is-internal	fastmcp	blocks/implementations/fastmcp/fastmcp.md		MUST	errors		failure-answered-by-its-code	true
 rule	specs-through-the-in-memory-client	fastmcp	blocks/implementations/fastmcp/fastmcp.md		MUST	testing security		server-spec-runs-in-process	true
 rule	tool-failures-answered-by-one-middleware	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		MUST	errors security	architecture	one-error-handler-registered-by-the-root	true
+rule	fastmcp-imported-by-delivery-units	fastmcp	blocks/implementations/fastmcp/architecture/fastmcp.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	fastmcp-records-join-the-chain	fastmcp	blocks/implementations/fastmcp/with/structlog.md	structlog	MUST	security		one-chain-for-every-record	true
 rule	worktree-one-branch-no-linked-folder	git	blocks/implementations/git/git.md		MUST				true
 rule	gitignore-covers-key-files	git	blocks/implementations/git/git.md		MUST	security		secret-never-in-the-repository	true
@@ -1733,13 +1742,9 @@ rule	search-falls-back-to-defaults	tanstack-router	blocks/implementations/tansta
 rule	not-found-declared-by-the-root	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		SHOULD	ux		unknown-address-shows-the-not-found-screen	true
 rule	error-component-per-route	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		MUST	errors ux		failure-contained-to-its-screen	true
 rule	focus-moved-when-a-navigation-resolves	tanstack-router	blocks/implementations/tanstack-router/tanstack-router.md		MUST	a11y ux		navigation-moves-focus-to-the-view	true
-rule	screens-are-file-routes	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD		architecture		true
-rule	route-owns-its-url	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	ux performance	architecture	screen-loads-its-data-and-composes-the-page	true
-rule	router-primitives-only-in-screens-and-widgets	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	pieces-never-touch-navigation	true
-rule	screen-private-pieces-in-dash-folders	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD		architecture	screen-private-pieces-beside-screen	true
+rule	routes-registered-in-the-root	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	delivery-unit-registered-by-the-root	true
+rule	router-primitives-only-in-the-root	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	ui-never-touches-navigation	true
 rule	document-head-declared-by-route	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD	ux	architecture	document-metadata-owned-by-screen	true
-rule	route-pieces-reach-the-route-by-its-api	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		SHOULD		architecture	screen-private-pieces-beside-screen	true
-rule	routes-imported-by-no-inner-layer	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	import-points-inward	true
 rule	services-reach-loaders-through-router-context	tanstack-router	blocks/implementations/tanstack-router/architecture/tanstack-router.md		MUST		architecture	composition-root-wires-everything	true
 rule	loaders-read-through-the-query-cache	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	MUST	data		fact-has-one-source	true
 rule	reads-suspend-into-the-route	tanstack-router	blocks/implementations/tanstack-router/with/tanstack-query.md	tanstack-query	MAY				true
@@ -1752,7 +1757,8 @@ rule	content-security-policy-set-in-route-rules	tanstack-start	blocks/implementa
 rule	security-headers-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	security			true
 rule	runtime-config-from-one-server-function	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		MUST	security		runtime-configuration-served-beside-bundle	true
 rule	spa-mode-without-server-logic	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST	security	architecture	rendering-server-only-delivers	true
-rule	root-route-is-the-delivery-wiring	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST		architecture	root-imported-only-by-entries-and-delivery-wiring	true
+rule	root-route-builds-the-document	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST		architecture	composition-root-wires-everything	true
+rule	start-router-entries-point-into-the-root	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST		architecture	routes-registered-in-the-root	true
 rule	queries-by-role-label-text	testing-library	blocks/implementations/testing-library/testing-library.md		MUST	a11y testing		element-found-by-role-label-or-text	true
 rule	interactions-through-user-event	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	testing			true
 rule	async-ui-awaited-with-find	testing-library	blocks/implementations/testing-library/testing-library.md		SHOULD	testing		test-never-sleeps-a-fixed-time	true

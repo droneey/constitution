@@ -32,6 +32,13 @@ A feature that needs an answer from another declares a contract in its own words
 |---|---|
 | the feature stays blind to the other, and the other can change its model without breaking it. | [] |
 
+### feature-reacts-to-another-only-through-composition · MUST
+A feature publishes its own events and never subscribes to another feature's; the reaction to another feature's event lives in a composition module, which calls the reacting feature's operation.
+
+| Why | Tags |
+|---|---|
+| a feature that listens to another depends on its events as much as on an import, and the chain of reactions is read in composition instead of hidden in subscribers spread through the features. | [] |
+
 ### data-port-one-per-entity-and-side · SHOULD
 A data port is a repository per side — one for reads, one for writes — for each entity a caller loads or changes on its own, each declaring its operations’ parameters and results; a shape both sides use is an entity.
 
@@ -49,7 +56,7 @@ An outside shape — a response, a row, a message, a file format — is mapped t
 | a vendor’s shape inside the domain turns every change of the vendor into a change of the business rules. | [data] |
 
 ### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
-An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, the delivery layer or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
+An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, a composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
 
 | Why | Tags |
 |---|---|

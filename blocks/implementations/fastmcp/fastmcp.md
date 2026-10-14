@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [FastMCP, fastmcp]
-governs: ["**/api/**", "**/root/**"]
+governs: ["**/app/**", "**/root/**"]
 ---
 
 # FastMCP

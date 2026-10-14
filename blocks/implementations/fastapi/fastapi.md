@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [FastAPI, fastapi, Starlette, starlette, Uvicorn, uvicorn]
-governs: ["**/api/**", "**/root/**"]
+governs: ["**/app/**", "**/root/**"]
 ---
 
 # FastAPI

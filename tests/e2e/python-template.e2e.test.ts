@@ -301,7 +301,7 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'WIRED = 1\n',
       },
-      finding: 'root-imported-only-by-entries-and-delivery-wiring BROKEN',
+      finding: 'root-imported-only-by-entries BROKEN',
       task: 'architecture:check',
     },
     {

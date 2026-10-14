@@ -1,15 +1,6 @@
 # API
 
-> Governs the server's place in the tree and its one handler of failures.
-
-## The delivery layer
-
-### server-delivery-layer-is-the-api-folder → delivery-unit-beside-what-it-serves · SHOULD
-The delivery layer of a program that serves requests is `api/`: the handlers that compose several features — a route, an endpoint, a tool — and the wiring that mounts every handler on the server.
-
-| Why | Tags |
-|---|---|
-| every way into the program is found from one place, and the server's wiring is not spread through the features. | [] |
+> Governs the server's one handler of failures.
 
 ## Failures
 

@@ -11,7 +11,7 @@ Each analytics service is one sink, one `.sink` file in `sinks/`, under one cont
 |---|---|
 | a service is added or removed as one file, and nothing else knows which services exist. | [] |
 
-### event-sent-only-by-the-delivery-layer → code-placed-by-its-reason-to-change · MUST
+### event-sent-only-by-delivery-units → code-placed-by-its-reason-to-change · MUST
 No domain, use case or adapter of a feature sends an event; a screen, a widget or another delivery unit translates what the user did and what the operation returned into events.
 
 | Why | Tags |

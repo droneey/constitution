@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files, the delivery layer and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; the delivery layer, whose own wiring alone imports the root; composition; a feature's application layer; its domain; the contracts; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; composition; a feature's application layer; its domain; the contracts; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
 
 ## Direction
 
@@ -27,15 +27,22 @@ A feature never imports another feature; features are combined only by the layer
 |---|---|
 | a feature that knows another cannot change, be tested or be removed alone. | [] |
 
+### composition-module-never-imports-another · MUST
+A module of composition never imports another; what two of them need lives in the kernel when it carries business meaning and in shared when it does not, and what they need of the features is composed in each, or the two become one module.
+
+| Why | Tags |
+|---|---|
+| a composition module that leans on another becomes a layer above it, and the composition stops being one flat level any module can be read from alone. | [] |
+
 ### effects-held-only-by-the-edge · MUST
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. A unit outside the edge reaches no effect through a lib either. A unit outside the domain writing diagnostics through the logging facade, and a binding unit's timer that schedules its own work, stand outside the ports.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. A unit outside the edge reaches no effect through a lib either. A unit outside the domain writing diagnostics through the logging facade, a binding unit's timer that schedules its own work, and a delivery unit reading and writing through the input and output its framework hands it — a request and its reply, the streams of a run — stand outside the ports.
 
 | Why | Tags |
 |---|---|
 | code without effects is deterministic, so it is tested fast, reasoned about locally and reused, and a test replaces an effect through its port. | [] |
 
-### root-imported-only-by-entries-and-delivery-wiring · MUST
-The composition root is imported only by entry files, by the delivery layer’s own wiring and by specs.
+### root-imported-only-by-entries · MUST
+The composition root is imported only by entry files and by specs.
 
 | Why | Tags |
 |---|---|
@@ -107,7 +114,7 @@ A contract belongs to the feature that needs it; when a second feature needs it 
 | a contract owned by one feature and used by another couples the second to the first. | [] |
 
 ### composition-lifts-on-its-second-consumer · MUST
-Composition across features lives in the delivery unit that needs it and moves to its own composition module when a second consumer needs it; facts derived from several features, and a contract one feature meets through another’s surface, are derived and implemented in a composition module from their first use.
+Composition across features lives beside the delivery unit that needs it, in that unit's composition module, and lifts into the module's own layers when a second unit needs it; facts derived from several features, and a contract one feature meets through another’s surface, live in a composition module's layers from their first use.
 
 | Why | Tags |
 |---|---|
@@ -134,10 +141,10 @@ A protocol two artefacts of one program speak lives in the program’s shared pl
 |---|---|
 | each side speaks the same types, and neither artefact imports the other. | [] |
 
-## The delivery layer
+## Delivery units
 
 ### delivery-unit-beside-what-it-serves · SHOULD
-A delivery unit that serves one feature lives in that feature’s application layer where the block of the program's interface allows it; one that composes several lives in the delivery layer or in composition.
+A delivery unit that serves one feature’s operations lives in that feature’s application layer; one that composes several features lives in the composition module that composes them. No folder of the tree is a delivery layer of its own.
 
 | Why | Tags |
 |---|---|

@@ -2,10 +2,10 @@
 
 > Governs how a Python program's commands are named and registered.
 
-## Layout
+## Layers
 
-### command-module-named-with-the-cli-suffix → cli-folder-holds-one-file-per-command · MUST
-A command's module is named `<name>_cli.py`.
+### command-module-named-with-the-cli-suffix → command-is-its-operations-binding-unit · MUST
+A command's module is named `<op>_cli.py`, after the operation it runs.
 
 | Why | Tags |
 |---|---|

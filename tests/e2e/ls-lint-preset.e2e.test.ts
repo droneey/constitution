@@ -69,11 +69,6 @@ const WELL_FORMED_WITH_PARTS = [
   'src/routes/_auth.tsx',
   'src/routes/about.lazy.tsx',
   'src/routes/(shop)/orders/$orderId.tsx',
-  'src/routes/(shop)/orders/-components/index.ts',
-  'src/routes/(shop)/orders/-components/order-summary/index.ts',
-  'src/routes/(shop)/orders/-components/order-summary/order-summary.tsx',
-  'src/routes/(shop)/orders/-components/order-summary/__tests__/order-summary.test.tsx',
-  'src/routes/(shop)/orders/-hooks/order.hooks.ts',
   'src/api/api.module.ts',
   'src/api/orders/orders.controller.ts',
   'src/api/__tests__/api.module.test.ts',
@@ -249,21 +244,6 @@ describe('the ls-lint preset', () => {
       condition: 'the command folder holds a file of another role',
       path: 'src/cli/init.utils.ts',
       reported: 'src/cli',
-    },
-    {
-      condition: "a screen's private folder is not a dash folder",
-      path: 'src/routes/orders/Components/order-summary.tsx',
-      reported: 'src/routes/orders/Components',
-    },
-    {
-      condition: 'a screen piece sits loose in its dash folder',
-      path: 'src/routes/orders/-components/order-summary.tsx',
-      reported: 'src/routes/orders/-components',
-    },
-    {
-      condition: "a screen's hooks file has no hooks suffix",
-      path: 'src/routes/orders/-hooks/use-order.ts',
-      reported: 'src/routes/orders/-hooks/use-order.ts',
     },
     {
       condition: 'a route file is in PascalCase',
