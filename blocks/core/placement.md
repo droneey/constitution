@@ -4,7 +4,7 @@
 
 Three questions, asked apart, place a rule.
 
-Its layer: what must disappear for it to lose its meaning? Nothing: core. An aspect a product may lack — a user interface, an API, a network: that domain. A runtime or a language: that context. A library or a tool: its block.
+Its layer: what must disappear for it to lose its meaning? Nothing: core. An aspect a product may lack — a user interface, an API, a network: that domain. A platform or a language: that context. A library, a tool or a vendor's service the project installs, runs or reaches: its block. A protocol, or a specification of what programs exchange — OpenAPI, OAuth, Standard Webhooks — belongs to the domain it serves; a language's own specification is its context.
 
 Its axis: who would still want it? Not a team with another architecture: `architecture/` — layers and the direction of dependencies, ports and adapters, the homes of input, output and state, the wiring, the isolation of parts, the tree. Not a team with another workflow: `workflow/` — how a change travels from the idea to the release — its branch, commit, review, gates and hooks, merge, release and updates — and who submits, commits and ships it. Any team: the base, at the block's root.
 

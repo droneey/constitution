@@ -1,6 +1,8 @@
-# yaml-js with config file
+# YAML with config file
 
-> A config file written in YAML.
+> Governs a config file written in YAML.
+
+## Config file
 
 ### config-file-header-names-its-schema → config-file-points-editors-at-the-schema · SHOULD
 The config file's first line is `# yaml-language-server: $schema=<published schema URL>`.

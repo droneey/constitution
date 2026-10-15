@@ -21,15 +21,15 @@ No default stands in for data not yet loaded; the waiting state is shown as wait
 ## Writes
 
 ### optimistic-change-rolled-back-on-refusal · MUST
-A change shown before the remote system confirms it is made where the write can roll it back, and is rolled back when the system refuses it; folding a stream's data as it arrives is no such change.
+A change shown before the remote system confirms it is made where the write can roll it back, and is rolled back alone when the system refuses it, leaving every other pending write's change shown; folding a stream's data as it arrives is no such change.
 
 | Why | Tags |
 |---|---|
 | an optimistic change without a rollback leaves the screen showing what the remote system refused. | [data] |
 
 ### overlapping-writes-keep-each-others-results · MUST
-Writes that overlap never undo each other's results: a read already in flight never overwrites a change shown ahead of confirmation, one write's failure rolls back only its own change, and an item waiting for the identifier the remote system assigns keeps its place on the screen.
+Writes that overlap never undo each other's results: a read already in flight never overwrites a change shown ahead of confirmation, and an item waiting for the identifier the remote system assigns keeps its place on the screen.
 
 | Why | Tags |
 |---|---|
-| a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read erases the shown change, or one failure erases another's success. | [data] |
+| a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read erases the shown change, or a new item jumps once the remote system names it. | [data] |

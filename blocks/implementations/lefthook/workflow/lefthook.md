@@ -27,3 +27,10 @@ A hook that formats rewrites only the staged files and stages them again.
 | Why | Tags |
 |---|---|
 | a hook that touches unstaged files mixes work in progress into the commit. | [] |
+
+### commit-subject-never-a-placeholder → commit-subject-says-what-changed · MUST
+The `commit-msg` hook rejects a placeholder subject: "update", "fix stuff", "wip", "changes", "misc".
+
+| Why | Tags |
+|---|---|
+| a placeholder subject makes the history useless at exactly the commit someone needs to understand. | [] |

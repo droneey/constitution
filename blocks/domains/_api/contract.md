@@ -71,8 +71,8 @@ An uploaded file is accepted only when its kind, read from its content, is one t
 ## Requirements for implementation
 
 ### framework-parses-a-request-before-its-handler · MUST
-The server framework parses a request's parameters and body against a declared shape before the route or tool runs, and passes a refusal to the one handler with the path of each field it refused.
+The server framework parses a request's parameters and body against a declared shape before the operation runs, and passes a refusal to the one handler with the path of each field it refused.
 
 | Why | Tags |
 |---|---|
-| without it, each route parses its own input, and the edge the program trusts is wherever each one remembered to parse. | [security] |
+| without it, each operation parses its own input, and the edge the program trusts is wherever each one remembered to parse. | [security] |

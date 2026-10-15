@@ -1,7 +1,7 @@
 ---
 id: nestjs
 summary: NestJS — modules, providers and the injector that wires them.
-requires: [typescript, tsc, _api]
+requires: [typescript, tsc, _api, http-server]
 extends: null
 abstract: false
 languages: []
@@ -11,7 +11,7 @@ governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.contr
 
 # NestJS
 
-> Builds a server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
+> Builds an HTTP server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
 
 ### nestjs-keeps-decorator-metadata · MUST
 The compiler and the build keep what Nest's injector reads: `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig.json`, and, where swc builds the program, `legacyDecorator` and `decoratorMetadata` in `.swcrc`.

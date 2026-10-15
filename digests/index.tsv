@@ -33,7 +33,7 @@ block	markdown	language	Markdown documents: headings, links, images and code blo
 block	python	language	Python's modules, types, async code, specs and dependencies.	types.md architecture/python.md	distribution yaml architecture/cli architecture/workspace workflow/distribution			false				**/*.py **/*.pyi pyproject.toml
 block	shell	language	Shell scripts: their shell, failures, quoting and temporary files.					false				**/*.sh **/*.bash
 block	typescript	language	TypeScript's forms of modules, types, errors, effects and packages.	types.md architecture/typescript.md	css distribution i18n shell workspace yaml architecture/cli architecture/ui architecture/workspace workflow/distribution			false				**/*.ts **/*.tsx **/*.mts **/*.cts package.json
-block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extension.		shell			false				**/*.yaml **/*.yml
+block	yaml	language	YAML files: scalars, keys, aliases, loaders and the extension.		config-file shell			false				**/*.yaml **/*.yml
 block	_react	implementation	React as every renderer shares it — hooks, effects, state, boundaries.	architecture/_react.md	remote-data	ui typescript		true	react-dom react-native			**/*.tsx **/*.hooks.ts **/*.context.ts
 block	betterleaks	implementation	Scans changes and history for committed secrets.			git		false				.betterleaks.toml .betterleaksignore
 block	biome	implementation	Formats and lints TypeScript and CSS, with GritQL rules of our own.	architecture/biome.md	workspace	typescript		false		typescript css		biome.json biome.*.jsonc **/*.grit
@@ -55,13 +55,13 @@ block	hypothesis	implementation	Hypothesis writes Python's property tests.			pyt
 block	import-linter	implementation	import-linter holds the import rules between Python's modules.	architecture/import-linter.md	architecture/workspace	python		false		python		
 block	knip	implementation	Finds unused files, dependencies and exports.		distribution	typescript		false		typescript		knip.config.ts
 block	ky	implementation	ky, the HTTP client — one instance per system, errors mapped.	architecture/ky.md		typescript remote-service		false				**/providers/** **/adapters/**
-block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks workflow/version-control	git		false				lefthook.yaml
+block	lefthook	implementation	Git hooks that check branch names, messages and staged changes.	workflow/lefthook.md	workflow/betterleaks	git		false				lefthook.yaml
 block	lingui	implementation	Lingui for messages — ICU catalogs compiled per locale.		_react bun-test vite architecture/ui	i18n typescript		false				lingui.config.ts **/locales/**
 block	ls-lint	implementation	Holds the names of files and folders in every language.	architecture/ls-lint.md				false				.ls-lint.yaml
 block	matomo	implementation	Matomo as one of the product's analytics services.	architecture/matomo.md	privacy	analytics browser typescript		false				**/matomo.sink.ts
 block	mise	implementation	Pins the developer and CI toolchain to exact, locked versions.	workflow/mise.md	version-control			false				mise.toml mise.lock
 block	mutmut	implementation	mutmut measures Python's specs by the mutants they kill.			pytest		false		python		
-block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	architecture/nestjs.md	bun-test pino	typescript tsc _api		false				nest-cli.json .swcrc **/root/** **/*.module.ts **/*.controller.ts
+block	nestjs	implementation	NestJS — modules, providers and the injector that wires them.	architecture/nestjs.md	bun-test pino	typescript tsc _api http-server		false				nest-cli.json .swcrc **/root/** **/*.module.ts **/*.controller.ts
 block	osv-scanner	implementation	Checks the lockfiles for known vulnerabilities and licences.		docker			false				osv-scanner.toml
 block	pino	implementation	pino writes the program's log records as JSON lines.	architecture/pino.md	http-server architecture/_api	typescript observability		false				**/root/**
 block	playwright	implementation	Drives the built program in real browsers for end-to-end specs.			browser ui typescript		false				tests/e2e/** playwright.config.*
@@ -79,7 +79,7 @@ block	stryker	implementation	Stryker measures the tests by the mutants they kill
 block	syncpack	implementation	Holds dependency versions and the shape of every manifest.			typescript		false		typescript		.syncpackrc.mjs
 block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and class merging.		design-system i18n	ui browser typescript css		false				**/*.css **/*.variants.ts
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	architecture/tanstack-form.md		_react		false				**/*.tsx
-block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	architecture/tanstack-query.md	architecture/access-control	_react remote-data remote-service		false				**/*.hooks.ts **/root/providers/** **/cache.utils.ts
+block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	architecture/tanstack-query.md	architecture/access-control	_react remote-data		false				**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes registering screens — URL state, layouts, guards, links.	architecture/tanstack-router.md	tanstack-query version-control architecture/access-control	react-dom		false				src/routes/** src/router.tsx src/root/routes/** src/root/router.tsx
 block	tanstack-start	implementation	The TanStack app shell — SPA mode, the document, runtime config.	architecture/tanstack-start.md		tanstack-router server		false				src/routes/__root.tsx src/router.tsx src/root/routes/__root.tsx src/root/router.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.		react-dom remote-data remote-service	_react		false				**/__tests__/**/*.test.tsx
@@ -89,7 +89,7 @@ block	ty	implementation	ty checks the types of Python.			python		false		python		
 block	uv	implementation	uv as Python's package manager, resolver and build backend.		distribution workspace architecture/workspace	python		false				pyproject.toml uv.lock
 block	vite	implementation	Vite builds and serves the bundle.		browser	typescript		false				vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.			python		false		python		
-block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md	config-file	typescript		false				**/adapters/**
+block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md		typescript		false				**/adapters/**
 block	yamllint	implementation	yamllint holds the style of YAML files.			yaml		false		yaml		.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types.		config-file architecture/ui	typescript		false				**/models/** **/adapters/**
 chapter	core	agents.md	a person or an agent at work on the repository.
@@ -1430,6 +1430,7 @@ rule	outside-yaml-loaded-by-a-safe-loader	yaml	blocks/contexts/languages/yaml/ya
 rule	alias-expansion-bounded	yaml	blocks/contexts/languages/yaml/yaml.md		MUST	security performance		outside-input-bounded-before-it-is-parsed	true
 rule	yaml-file-ends-in-yaml	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD			format-has-one-extension	true
 rule	yaml-file-holds-one-document	yaml	blocks/contexts/languages/yaml/yaml.md		SHOULD				true
+rule	config-file-header-names-its-schema	yaml	blocks/contexts/languages/yaml/with/config-file.md	config-file	SHOULD	ux		config-file-points-editors-at-the-schema	true
 rule	embedded-command-kept-short	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	SHOULD				true
 rule	embedded-command-expansion-double-quoted	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST			expansion-double-quoted	true
 rule	runner-value-reaches-the-command-through-the-environment	yaml	blocks/contexts/languages/yaml/with/shell.md	shell	MUST	security		outside-input-reaches-interpreters-as-parameters	true
@@ -1583,9 +1584,9 @@ rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workf
 rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD		workflow		true
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	testing	workflow	commit-checked-by-the-hooks	true
 rule	hook-rewrites-only-staged-files	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	security	workflow	commit-holds-only-its-task-files	true
+rule	commit-subject-never-a-placeholder	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST		workflow	commit-subject-says-what-changed	true
 rule	staged-changes-scanned-before-commit	lefthook	blocks/implementations/lefthook/workflow/with/betterleaks.md	betterleaks	MUST	security	workflow	secret-never-in-the-repository	true
 rule	commit-scan-redacted	lefthook	blocks/implementations/lefthook/workflow/with/betterleaks.md	betterleaks	MUST	security data	workflow	secret-and-personal-data-kept-out-of-output	true
-rule	commit-subject-never-a-placeholder	lefthook	blocks/implementations/lefthook/workflow/with/version-control.md	version-control	MUST		workflow	commit-subject-says-what-changed	true
 rule	messages-through-lingui-macros	lingui	blocks/implementations/lingui/lingui.md		MUST	ux		messages-take-named-parameters	true
 rule	source-catalog-current-in-the-check	lingui	blocks/implementations/lingui/lingui.md		MUST	ux		i18n-missing-key-fails-the-check	true
 rule	module-level-messages-are-descriptors	lingui	blocks/implementations/lingui/lingui.md		MUST			module-level-text-holds-the-message	true
@@ -1835,7 +1836,6 @@ rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/vu
 rule	yaml-failures-become-one-coded-error	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	errors		parse-failure-lists-every-problem	true
 rule	yaml-written-without-folding	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	data			true
 rule	yaml-only-at-the-edge	yaml-js	blocks/implementations/yaml-js/architecture/yaml-js.md		MUST	security	architecture	outside-value-untyped-until-parsed	true
-rule	config-file-header-names-its-schema	yaml-js	blocks/implementations/yaml-js/with/config-file.md	config-file	SHOULD	ux		config-file-points-editors-at-the-schema	true
 rule	yamllint-rules-set-as-errors	yamllint	blocks/implementations/yamllint/yamllint.md		MUST			rule-held-by-a-tool-where-one-can	true
 rule	schema-never-brands	zod	blocks/implementations/zod/zod.md		MUST	data		invariant-value-is-a-branded-type	true
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/zod.md		MUST	data		own-shape-strict-other-shape-tolerant	true

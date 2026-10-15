@@ -5,7 +5,7 @@
 ## Answers
 
 ### failure-answered-by-its-code → expected-failure-is-part-of-the-contract · MUST
-A failure of a request is answered from what failed: an expected error with the answer its code maps to, carrying its code and details; a refusal the framework raises before the operation runs — a refused input, an unknown route, method or tool — as the caller's failure of that kind, a refused input naming the path of each field it refused; and any other failure as an internal error.
+A failure of a request is answered from what failed: an expected error with the answer its code maps to, carrying its code and details; a refusal the framework raises before the operation runs — a refused input, an unknown operation — as the caller's failure of that kind, a refused input naming the path of each field it refused; and any other failure as an internal error.
 
 | Why | Tags |
 |---|---|
@@ -37,7 +37,7 @@ An error the code of a request raises carries a code, never a status or an answe
 ## Requirements for implementation
 
 ### framework-passes-every-failure-to-one-handler · MUST
-The server framework passes every failure of a request — a route's or a tool's, a refused input, an unknown route, method or tool — to one handler the program registers, and answers none of them in a shape of its own.
+The server framework passes every failure of a request — an operation's, a refused input, an unknown operation — to one handler the program registers, and answers none of them in a shape of its own.
 
 | Why | Tags |
 |---|---|
