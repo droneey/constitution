@@ -5,7 +5,7 @@
 ## Wiring
 
 ### composition-root-wires-everything · MUST
-The composition root chooses every concrete implementation, builds every adapter and stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place. A unit receives its dependencies typed by their contracts — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention.
+The composition root chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place. A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention.
 
 | Why | Tags |
 |---|---|

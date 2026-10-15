@@ -331,7 +331,7 @@ rule	domain-logs-nothing	core	blocks/core/architecture/domain.md		MUST		architec
 rule	entity-rule-lives-beside-the-entity	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	business-value-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST	data	architecture		true
 rule	contexts-duplicate-rather-than-share	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
-rule	use-case-only-with-business-logic	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
+rule	operation-has-a-use-case	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	command-loads-through-its-write-port	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	command-returns-nothing	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	query-and-command-apart	core	blocks/core/architecture/domain.md		MUST		architecture		true
@@ -356,6 +356,7 @@ rule	shared-piece-placed-by-meaning	core	blocks/core/architecture/layers.md		SHO
 rule	vendor-client-lives-in-libs	core	blocks/core/architecture/layers.md		SHOULD		architecture		true
 rule	protocol-between-artefacts-lives-in-shared	core	blocks/core/architecture/layers.md		SHOULD		architecture		true
 rule	delivery-unit-beside-what-it-serves	core	blocks/core/architecture/layers.md		SHOULD		architecture		true
+rule	binding-unit-calls-only-use-cases	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	delivery-unit-stays-thin	core	blocks/core/architecture/layers.md		SHOULD		architecture		true
 rule	module-has-the-one-form	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	behaviour-lives-in-a-feature	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
@@ -884,7 +885,7 @@ rule	component-in-its-own-folder	ui	blocks/domains/ui/architecture/ui.md		MUST		
 rule	vendored-component-placed-by-its-home	ui	blocks/domains/ui/architecture/ui.md		MUST	ux	architecture		true
 rule	store-never-replaces-a-drilled-prop	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
 rule	providers-compose-the-ui-application	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	composition-root-wires-everything	true
-rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/ui.md		SHOULD		architecture		true
+rule	binding-unit-composes-its-operation	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture	binding-unit-calls-only-use-cases	true
 rule	binding-unit-imports-nothing-of-the-ui	ui	blocks/domains/ui/architecture/ui.md		MUST		architecture		true
 rule	data-result-is-union-by-status	ui	blocks/domains/ui/with/remote-data.md	remote-data	MUST	ux		illegal-state-unrepresentable	true
 rule	unloaded-data-has-no-stand-in	ui	blocks/domains/ui/with/remote-data.md	remote-data	MUST	data		absence-shown-by-the-type	true
@@ -1418,7 +1419,7 @@ rule	handler-and-effect-failures-handled-where-they-happen	_react	blocks/impleme
 rule	hidden-state-kept-by-activity	_react	blocks/implementations/_react/_react.md		SHOULD	ux			true
 rule	controllable-props-named-value-default-change	_react	blocks/implementations/_react/_react.md		SHOULD	ux		stateful-component-controllable-or-not	true
 rule	component-effects-in-its-hooks-file	_react	blocks/implementations/_react/architecture/_react.md		MUST		architecture	effects-held-only-by-the-edge	true
-rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/architecture/_react.md		SHOULD		architecture	binding-unit-composes-its-operation	true
+rule	binding-unit-is-a-hook	_react	blocks/implementations/_react/architecture/_react.md		MUST		architecture	binding-unit-composes-its-operation	true
 rule	adapter-is-a-factory-or-module-object	_react	blocks/implementations/_react/architecture/_react.md		SHOULD		architecture	adapter-built-by-factory-object-or-class	true
 rule	react-imported-by-the-ui-and-binding-units	_react	blocks/implementations/_react/architecture/_react.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	data-failures-rendered-as-state	_react	blocks/implementations/_react/with/remote-data.md	remote-data	MUST	errors ux		data-result-is-union-by-status	true
@@ -1721,8 +1722,8 @@ rule	query-signal-reaches-the-request	tanstack-query	blocks/implementations/tans
 rule	input-query-keyed-on-debounced-value	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	ux performance		input-driven-requests-debounced	true
 rule	stream-folded-into-cache-per-frame	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data performance		fast-source-updates-once-per-frame	true
 rule	write-pending-until-its-refresh-lands	tanstack-query	blocks/implementations/tanstack-query/tanstack-query.md		SHOULD	data			true
-rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD	data	architecture	binding-unit-composes-its-operation	true
-rule	query-functions-call-the-handed-adapter	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		SHOULD		architecture	binding-unit-composes-its-operation	true
+rule	query-hooks-only-in-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	data	architecture	binding-unit-composes-its-operation	true
+rule	query-functions-call-the-handed-use-case	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST		architecture	binding-unit-composes-its-operation	true
 rule	key-factory-in-cache-utils	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	data	architecture	cache-key-built-by-its-features-factory	true
 rule	keys-only-from-the-key-factory	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST	data	architecture	cache-key-built-by-its-features-factory	true
 rule	query-library-home-is-the-binding-units	tanstack-query	blocks/implementations/tanstack-query/architecture/tanstack-query.md		MUST		architecture	layer-imports-dependencies-by-its-role	true

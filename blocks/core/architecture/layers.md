@@ -49,7 +49,7 @@ The composition root is imported only by entry files and by specs.
 | the root knows every concrete choice, and code that imports it can no longer be tested with fakes. | [] |
 
 ### adapter-imported-only-by-the-root · MUST
-An adapter is imported only by the composition root and by the surface of a package that offers it to its consumers, each through the adapter's own surface, and by specs; a use case, a binding unit, a delivery unit or a composition module receives it through its port.
+An adapter is imported only by the composition root and by the surface of a package that offers it to its consumers, each through the adapter's own surface, and by specs; a use case or a composition module receives it through its port, and a binding or delivery unit receives the use case built over it.
 
 | Why | Tags |
 |---|---|
@@ -149,6 +149,13 @@ A delivery unit that serves one feature’s operations lives in that feature’s
 | Why | Tags |
 |---|---|
 | a unit lives with the reason it changes. | [] |
+
+### binding-unit-calls-only-use-cases · MUST
+A binding unit, and a delivery unit that binds several operations itself, calls each operation's use case and never a port of the domain it serves; a port of its own concern — the identifier it makes for a command, the events it reports — comes from the root as the use case does.
+
+| Why | Tags |
+|---|---|
+| the interface then reaches the domain at one door per operation, and which store or service answers stays the root's choice, hidden from every interface. | [] |
 
 ### delivery-unit-stays-thin · SHOULD
 A delivery unit — a screen, a command, a handler, a tool function — parses its input, calls the operations whose results it presents, and presents them; it holds no business logic, and what an operation reports reaches it as a returned value, never as output printed along the way.

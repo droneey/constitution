@@ -24,7 +24,7 @@ A route declares its document metadata in `head`.
 | the metadata changes with the route that owns it. | [ux] |
 
 ### services-reach-loaders-through-router-context → composition-root-wires-everything · MUST
-Every service the providers build — the adapters, the cache client, analytics, the configuration — reaches loaders and guards through the router's context.
+Every service the providers build — the use cases, the cache client, analytics, the configuration — reaches loaders and guards through the router's context.
 
 | Why | Tags |
 |---|---|

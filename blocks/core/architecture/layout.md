@@ -35,7 +35,7 @@ features/<f>/
 │   ├── entities/          business types and enumerations
 │   ├── value-objects/     values with an invariant
 │   ├── contracts/         ports; a data port is repositories/{queries,commands}/<entity>.repository
-│   ├── use-cases/         {queries,commands}/<op>/, only for an operation with business logic
+│   ├── use-cases/         {queries,commands}/<op>/, one for each operation, reads included
 │   └── errors/            the feature's expected failures
 ├── adapters/<system>/     this feature's contracts over one outside system
 ├── app/                   binding units: use-cases/{queries,commands}/<op>/, and role folders of the vocabulary

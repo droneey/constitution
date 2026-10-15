@@ -13,12 +13,12 @@ A component file calls no effect hook: its effects live in hooks in `<name>.hook
 
 ## Binding units
 
-### binding-unit-is-a-hook → binding-unit-composes-its-operation · SHOULD
-An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its adapter from the providers' context and calls the use-case, or the port when there is none. A plain `<op>.ts` exists only for a caller outside React — a loader, a guard — and not before one exists.
+### binding-unit-is-a-hook → binding-unit-composes-its-operation · MUST
+An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its use case from the providers' context and calls it. A plain `<op>.ts` exists only for a caller outside React — a loader, a guard — and not before one exists.
 
 | Why | Tags |
 |---|---|
-| a hook is the framework's reactive unit; the adapter comes from the composition root, so a spec hands it another. | [] |
+| a hook is the framework's reactive unit; the use case comes from the composition root, so a spec hands it another. | [] |
 
 ## Adapters
 

@@ -137,14 +137,14 @@ A deep component never reads a store to spare a prop its path; the state stays i
 ## Binding units
 
 ### providers-compose-the-ui-application → composition-root-wires-everything · MUST
-The providers are the application's composition root: they build the configuration, each adapter from its dependencies and each stateful client — a cache, a store — and hand them to the binding units. No adapter imports a provider or a shared instance.
+The providers are the application's composition root: they build the configuration, each adapter from its dependencies, each use case from its ports and each stateful client — a cache, a store — and hand the use cases and the clients to the binding units. No adapter imports a provider or a shared instance.
 
 | Why | Tags |
 |---|---|
-| every concrete choice is made in one place, and a test hands the same binding unit a different adapter or cache without touching it. | [] |
+| every concrete choice is made in one place, and a test hands the same binding unit a different use case or cache without touching it. | [] |
 
-### binding-unit-composes-its-operation · SHOULD
-A binding unit binds one operation: it takes its adapter from the providers and calls the use case, or the port where there is none.
+### binding-unit-composes-its-operation → binding-unit-calls-only-use-cases · MUST
+A binding unit binds one operation: it takes the operation's use case from the providers and calls it.
 
 | Why | Tags |
 |---|---|

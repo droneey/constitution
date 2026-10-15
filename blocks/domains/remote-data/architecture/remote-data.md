@@ -21,7 +21,7 @@ Data another system owns has no second model in the program: the program keeps n
 ## Keys and refreshes
 
 ### cache-key-built-by-its-features-factory → fact-has-one-source · MUST
-A cache key is built only by its feature's one key factory, from the port's parameters, never written by hand.
+A cache key is built only by its feature's one key factory, from the operation's parameters, never written by hand.
 
 | Why | Tags |
 |---|---|

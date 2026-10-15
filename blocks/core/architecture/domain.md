@@ -7,7 +7,7 @@
 - **Ubiquitous language.** Names match the business, mirrored from the people who own it and kept in the project's glossary.
 - **A feature is a bounded context.** One word may mean different things in two features.
 - **Ports and adapters.** A port names what the domain needs, in the domain's words; an adapter implements it over one outside system.
-- **Entities, value objects, use cases.** Business types with identity; small values that guard an invariant; the operations that carry business rules. Their form is the language's.
+- **Entities, value objects, use cases.** Business types with identity; small values that guard an invariant; every operation a feature offers, and the business rules it carries. Their form is the language's.
 - **Domain events.** A domain event records, in the past tense, what happened, in the domain's words.
 
 ## Where rules live
@@ -49,12 +49,12 @@ Across bounded contexts a model is duplicated by default and shared by exception
 
 ## Use cases
 
-### use-case-only-with-business-logic · SHOULD
-A use case exists only when its operation carries business logic; without any, its binding unit calls the port directly.
+### operation-has-a-use-case · MUST
+Every operation a feature offers, a read included, has its use case in the domain, however thin: a query's may only ask its port, and the rules it gains later go there.
 
 | Why | Tags |
 |---|---|
-| a use case that only passes a call through adds a place to read without hiding anything. | [] |
+| the domain then lists everything the feature does, in the same form for every interface that offers it, and a rule added to a read reaches every interface without touching their bindings. | [] |
 
 ### command-loads-through-its-write-port · SHOULD
 A command loads what it changes — the entity, or the aggregate whose invariants it keeps — through its own port of the write side, and decides only on what it loaded and on its input.

@@ -36,7 +36,7 @@
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
-| The program's tree | ADR-0187 – ADR-0190, ADR-0194 |
+| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 
 ---
@@ -1230,3 +1230,10 @@
 - **Decision.** The top-level `contracts/` goes. A port two or more features need in the same words lifts to the kernel's `contracts/`, beside its types, value objects and errors, so the kernel is laid out as a domain is; its implementations stay in the top-level `adapters/`. A port one feature needs stays in that feature's `domain/contracts/`, and a port each context words its own way stays with each.
 - **Rejected.** A top-level `contracts/`: its path does not say it belongs to the domain, and it is one more layer to learn. `shared/domain/contracts/`: `shared/` is plumbing without business. A port lifted as soon as two features talk to each other: DDD keeps the shared kernel small, and a feature that needs an answer from another words its own port.
 - **Why.** DDD's shared kernel is the part of the model contexts share, the contracts between them included; a shared port is part of the domain and lives where the domain's shared part lives. The config file's port and its joined type are no shared port — no feature reads the file — so they live in the domain of the composition module that splits the file, and the kernel stays small.
+
+## ADR-0195 — Every operation has a use case, and an interface calls only use cases
+**Date:** 2026-10-15 · **Status:** Accepted
+
+- **Decision.** Every operation a feature offers, a read included, has its use case in the domain, however thin. The root builds each use case with its ports and hands it to the binding units; a binding unit, and a delivery unit that binds an operation itself, calls the use case and never a port. A query library keeps the cache, its keys, freshness and optimistic updates in the binding unit and calls the use case in its query function.
+- **Rejected.** A use case only for an operation with business logic, the binding unit calling the port of a plain read (the rule this replaces): the domain then hides what the feature does behind the interfaces, a rule added to a read has to be added in every interface's binding, and a shared package across programs offers ports instead of operations.
+- **Why.** Hexagonal architecture gives the application one driving port per operation, reads included, and counts an adapter that calls a repository past it as a violation; vertical slices give each request its own handler; CQRS keeps the query side thin but still a handler. A one-line use case is the price of that one door. `module-is-deep` names the one door a part offers for each of its operations among its exceptions, so a thin use case is not a forwarder to remove; the root builds the use cases, and a binding unit's own concerns — the identifier it makes for a command, the events it reports — still come through ports.
