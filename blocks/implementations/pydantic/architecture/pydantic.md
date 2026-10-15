@@ -1,7 +1,7 @@
 # pydantic
 
 ### pydantic-home-is-the-edge-and-shared-parsing → layer-imports-dependencies-by-its-role · MUST
-pydantic's home is the edge — an adapter's wire models, the code under `libs/` that parses, the settings under `root/` — the request and response models of the delivery units in `app/` and `composition/`, and `shared/`, where code parses; no other folder imports it. `kernel/`, `contracts/` and a feature's `domain/` hold frozen dataclasses.
+pydantic's home is the edge — an adapter's wire models, the code under `libs/` that parses, the settings under `root/` — the request and response models of the delivery units in `app/` and `composition/`, and `shared/`, where code parses; no other folder imports it. `kernel/` and a feature's `domain/` hold frozen dataclasses.
 
 | Why | Tags |
 |---|---|

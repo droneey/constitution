@@ -2,7 +2,7 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; composition; a feature's application layer; its domain; the contracts; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
+The import rules of this chapter together are the layer matrix; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; composition; a feature's application layer; its domain; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
 
 ## Direction
 
@@ -13,8 +13,8 @@ An import points inward, toward stability, in the order this chapter opens with;
 |---|---|
 | an outward import lets a volatile detail break a stable rule. | [] |
 
-### domain-imports-only-itself-the-kernel-and-top-level-contracts · MUST
-Of the program's code, the domain imports only itself, the kernel and the top-level `contracts/`; of the language's standard library, only what holds no effect; no framework, and no library.
+### domain-imports-only-itself-and-the-kernel · MUST
+Of the program's code, the domain imports only itself and the kernel, the kernel's contracts included; of the language's standard library, only what holds no effect; no framework, and no library.
 
 | Why | Tags |
 |---|---|
@@ -77,21 +77,21 @@ The kernel imports only itself, the data files its values are read from, and the
 | everything depends on the kernel, so it depends on nothing that changes. | [] |
 
 ### libs-import-no-application-code · MUST
-A lib imports no code of the application — no feature, nor the kernel, shared, contracts, adapters, integrations or the root — and knows nothing of the repository that uses it.
+A lib imports no code of the application — no feature, nor the kernel, shared, adapters, integrations or the root — and knows nothing of the repository that uses it.
 
 | Why | Tags |
 |---|---|
 | a lib could be published tomorrow, and one import of the application ties it to this program for good. | [] |
 
 ### shared-imports-no-feature-adapter-contract-or-root · MUST
-Shared plumbing imports no feature, adapter or contract, and not the root.
+Shared plumbing imports no feature, adapter or contract, the kernel's included, and not the root.
 
 | Why | Tags |
 |---|---|
 | plumbing that knows a feature is part of that feature. | [] |
 
 ### layer-imports-dependencies-by-its-role · MUST
-Each folder of the tree imports installed dependencies by its role: the domain, the kernel and the contracts import none; the edge imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
+Each folder of the tree imports installed dependencies by its role: the domain and the kernel import none; the edge imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
 
 | Why | Tags |
 |---|---|
@@ -107,7 +107,7 @@ Code lives in the layer that owns its reason to change, beside its consumer when
 | code placed by its reason to change is found where it is needed and moves only when that reason moves. | [] |
 
 ### contract-lifts-on-its-second-feature · MUST
-A contract belongs to the feature that needs it; when a second feature needs it in the same words — a clock, a mailer — it lifts to the top-level `contracts/`, never sideways into one of them, and a port each context words its own way stays with each context.
+A contract belongs to the feature that needs it; when a second feature needs it in the same words — a clock, a mailer — it lifts to the kernel's `contracts/`, never sideways into one of them, and a port each context words its own way stays with each context.
 
 | Why | Tags |
 |---|---|

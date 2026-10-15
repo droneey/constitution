@@ -36,7 +36,7 @@
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
-| The program's tree | ADR-0187 – ADR-0190 |
+| The program's tree | ADR-0187 – ADR-0190, ADR-0194 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 
 ---
@@ -1223,3 +1223,10 @@
 - **Decision.** The names an import or a re-export uses only as types go in an `import type` or `export type` of their own, never marked `type` inside braces beside values — Biome's `separatedType` for both imports and exports. No `namespace` or `module` block is written, an ambient one included: a library is typed by `declare module '<name>'`, globals by `declare global`, and a `namespace` appears only inside it to merge into one a library or the runtime declares, under a suppression.
 - **Rejected.** The inline `type` marker TypeScript allows by default: a reader can no longer see from the line whether it vanishes at run time. `declare namespace` for a library's or the runtime's types: it types a global no import names.
 - **Why.** The presets already held both choices; the rules had been written looser and contradicted them.
+
+## ADR-0194 — The kernel is the shared domain, and the ports features share live in it
+**Date:** 2026-10-15 · **Status:** Accepted
+
+- **Decision.** The top-level `contracts/` goes. A port two or more features need in the same words lifts to the kernel's `contracts/`, beside its types, value objects and errors, so the kernel is laid out as a domain is; its implementations stay in the top-level `adapters/`. A port one feature needs stays in that feature's `domain/contracts/`, and a port each context words its own way stays with each.
+- **Rejected.** A top-level `contracts/`: its path does not say it belongs to the domain, and it is one more layer to learn. `shared/domain/contracts/`: `shared/` is plumbing without business. A port lifted as soon as two features talk to each other: DDD keeps the shared kernel small, and a feature that needs an answer from another words its own port.
+- **Why.** DDD's shared kernel is the part of the model contexts share, the contracts between them included; a shared port is part of the domain and lives where the domain's shared part lives. The config file's port and its joined type are no shared port — no feature reads the file — so they live in the domain of the composition module that splits the file, and the kernel stays small.

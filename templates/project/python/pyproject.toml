@@ -113,7 +113,7 @@ source_modules = ["*.contracts"]
 forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
-name = "domain-imports-only-itself-the-kernel-and-top-level-contracts"
+name = "domain-imports-only-itself-and-the-kernel"
 type = "forbidden"
 source_modules = ["*.features.*.domain"]
 forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.integrations", "*.libs", "*.root", "*.shared"]

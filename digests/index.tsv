@@ -337,7 +337,7 @@ rule	command-returns-nothing	core	blocks/core/architecture/domain.md		SHOULD		ar
 rule	query-and-command-apart	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	pipeline-stage-never-calls-a-stage	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	import-points-inward	core	blocks/core/architecture/layers.md		MUST		architecture		true
-rule	domain-imports-only-itself-the-kernel-and-top-level-contracts	core	blocks/core/architecture/layers.md		MUST		architecture		true
+rule	domain-imports-only-itself-and-the-kernel	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	feature-never-imports-a-feature	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	composition-module-never-imports-another	core	blocks/core/architecture/layers.md		MUST		architecture		true
 rule	effects-held-only-by-the-edge	core	blocks/core/architecture/layers.md		MUST		architecture		true
@@ -582,7 +582,7 @@ rule	ambiguous-messages-carry-context	i18n	blocks/domains/i18n/messages.md		SHOU
 rule	pseudo-locale-runs-in-development	i18n	blocks/domains/i18n/messages.md		SHOULD	ux			true
 rule	i18n-messages-in-messageformat	i18n	blocks/domains/i18n/messages.md		MUST	ux			true
 rule	i18n-missing-key-fails-the-check	i18n	blocks/domains/i18n/messages.md		SHOULD	ux			true
-rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md		MUST		architecture	domain-imports-only-itself-the-kernel-and-top-level-contracts	true
+rule	domain-returns-codes-not-text	i18n	blocks/domains/i18n/architecture/i18n.md		MUST		architecture	domain-imports-only-itself-and-the-kernel	true
 rule	layout-mirrors-right-to-left	i18n	blocks/domains/i18n/with/ui.md	ui	MUST	ux a11y			true
 rule	language-offered-in-its-own-name	i18n	blocks/domains/i18n/with/ui.md	ui	SHOULD	ux			true
 rule	model-pinned-to-a-snapshot	language-model	blocks/domains/language-model/language-model.md		MUST				true

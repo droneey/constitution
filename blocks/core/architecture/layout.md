@@ -22,9 +22,9 @@ src/
 ├── composition/<m>/       modules laid out as features: what several features make together, and the
 │                          delivery units that compose them; each named after what it assembles
 ├── features/<f>/          bounded contexts, blind to each other
-├── contracts/             ports two or more features need
-├── adapters/<system>/     adapters implementing those shared ports
-├── kernel/                shared business vocabulary: pure, small, stable
+├── kernel/                the shared domain: the vocabulary and the ports two or more features need,
+│                          in role folders as a domain's: pure, small, stable
+├── adapters/<system>/     adapters implementing the kernel's ports
 ├── shared/                application plumbing without business, used by two or more features
 ├── libs/                  code that knows nothing of the product: primitives, vendor clients; publishable
 ├── integrations/<host>/   the package's integration into a host framework, an entry of its own
@@ -47,7 +47,7 @@ A surface is the file the language resolves when a folder is imported. A binding
 ## The vocabulary
 
 - Layers: `root`, `features`, `composition`, `adapters`, `kernel`, `shared`, `libs`, `integrations`, `entrypoints`, `domain`, `app`.
-- Roles: `contracts` (ports, at the top of the source or in a domain), `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `steps`, `models` (wire and stored shapes inside adapters), `providers` (framework providers and the instances they wire).
+- Roles: `contracts` (ports, in a feature's domain or in the kernel), `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `steps`, `models` (wire and stored shapes inside adapters), `providers` (framework providers and the instances they wire).
 - Suffixes: `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is no repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`.
 
 The language fixes the spelling. Each block names its own folders and suffixes, and a project adds its own the same way.
