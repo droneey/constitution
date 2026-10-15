@@ -148,6 +148,7 @@ rule	new-kind-added-as-a-member	core	blocks/core/code.md		MUST				true
 rule	code-reads-plainly	core	blocks/core/code.md		SHOULD				true
 rule	code-never-commented-out	core	blocks/core/code.md		MUST				true
 rule	dead-code-deleted	core	blocks/core/code.md		MUST				true
+rule	feature-flag-retired-once-settled	core	blocks/core/code.md		SHOULD				true
 rule	comment-explains-why	core	blocks/core/comments.md		SHOULD				true
 rule	export-documented-only-where-not-obvious	core	blocks/core/comments.md		SHOULD				true
 rule	todo-names-its-issue	core	blocks/core/comments.md		SHOULD				true
@@ -185,8 +186,10 @@ rule	shared-resource-has-one-writer	core	blocks/core/effects.md		MUST				true
 rule	diagnostics-written-through-a-logger	core	blocks/core/effects.md		MUST	security			true
 rule	configuration-parsed-once-at-start	core	blocks/core/effects.md		MUST	security			true
 rule	one-artefact-serves-every-environment	core	blocks/core/effects.md		MUST	security			true
+rule	behaviour-never-keyed-on-the-environments-name	core	blocks/core/effects.md		SHOULD				true
 rule	failure-is-expected-or-defect	core	blocks/core/errors.md		MUST	errors			true
 rule	expected-failure-is-part-of-the-contract	core	blocks/core/errors.md		SHOULD	errors			true
+rule	failure-names-only-reachable-steps	core	blocks/core/errors.md		MUST	errors			true
 rule	failure-told-apart-by-code	core	blocks/core/errors.md		MUST	errors			true
 rule	parse-failure-lists-every-problem	core	blocks/core/errors.md		SHOULD	errors			true
 rule	catch-handles-only-what-it-recognises	core	blocks/core/errors.md		MUST	errors			true
@@ -229,6 +232,7 @@ rule	business-name-free-of-vendor-and-storage	core	blocks/core/names.md		SHOULD	
 rule	literal-with-a-meaning-is-named	core	blocks/core/names.md		SHOULD				true
 rule	name-case-by-kind	core	blocks/core/names.md		SHOULD				true
 rule	collection-name-plural	core	blocks/core/names.md		SHOULD				true
+rule	type-name-singular	core	blocks/core/names.md		SHOULD				true
 rule	event-name-in-past-tense	core	blocks/core/names.md		SHOULD				true
 rule	value-name-carries-its-unit	core	blocks/core/names.md		SHOULD				true
 rule	boolean-name-is-a-positive-predicate	core	blocks/core/names.md		SHOULD				true
@@ -330,6 +334,7 @@ rule	business-rule-lives-in-the-domain	core	blocks/core/architecture/domain.md		
 rule	domain-logs-nothing	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	entity-rule-lives-beside-the-entity	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	business-value-lives-in-the-domain	core	blocks/core/architecture/domain.md		MUST	data	architecture		true
+rule	feature-cut-where-the-language-changes	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	contexts-duplicate-rather-than-share	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
 rule	operation-has-a-use-case	core	blocks/core/architecture/domain.md		MUST		architecture		true
 rule	command-loads-through-its-write-port	core	blocks/core/architecture/domain.md		SHOULD		architecture		true
@@ -698,6 +703,7 @@ rule	log-level-has-one-meaning	observability	blocks/domains/observability/logs.m
 rule	log-output-structured-in-production	observability	blocks/domains/observability/logs.md		SHOULD				true
 rule	metric-labels-bounded	observability	blocks/domains/observability/metrics.md		MUST	performance			true
 rule	served-request-measured-by-rate-errors-and-duration	observability	blocks/domains/observability/metrics.md		SHOULD	performance			true
+rule	duration-recorded-as-a-distribution	observability	blocks/domains/observability/metrics.md		SHOULD	performance			true
 rule	alert-fires-on-what-users-feel	observability	blocks/domains/observability/metrics.md		SHOULD	errors			true
 rule	trace-id-taken-only-from-a-trusted-caller	observability	blocks/domains/observability/traces.md		SHOULD	security			true
 rule	trace-context-propagated-onward	observability	blocks/domains/observability/traces.md		SHOULD				true
@@ -720,6 +726,8 @@ rule	applied-migration-never-edited	owned-data	blocks/domains/owned-data/migrati
 rule	migration-compatible-with-the-running-release	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	migration-applied-once-before-its-release	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	migration-holds-no-long-lock	owned-data	blocks/domains/owned-data/migrations.md		SHOULD	data performance			true
+rule	feature-owns-its-stored-records	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture		true
+rule	feature-records-in-a-namespace-of-their-own	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	data security	architecture		true
 rule	aggregate-changed-only-through-its-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture		true
 rule	independent-entity-is-its-own-aggregate	owned-data	blocks/domains/owned-data/architecture/owned-data.md		SHOULD	data	architecture		true
 rule	command-repository-per-aggregate-root	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture	data-port-one-per-entity-and-side	true
@@ -800,6 +808,7 @@ rule	wcag-aa-conformance	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	accessibility-statement-published	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	native-semantics-first	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	every-control-has-an-accessible-name	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
+rule	non-text-content-has-a-text-alternative	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	visible-label-in-accessible-name	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
 rule	headings-in-order	ui	blocks/domains/ui/accessibility.md		SHOULD	a11y			true
 rule	control-operable-by-every-input	ui	blocks/domains/ui/accessibility.md		MUST	a11y			true
@@ -832,6 +841,7 @@ rule	component-sizes-to-its-container	ui	blocks/domains/ui/components.md		SHOULD
 rule	size-change-keeps-the-users-state	ui	blocks/domains/ui/components.md		SHOULD	ux data			true
 rule	button-names-its-result	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	long-lists-virtualised	ui	blocks/domains/ui/components.md		SHOULD	performance			true
+rule	drag-shows-grab-hold-and-targets	ui	blocks/domains/ui/components.md		SHOULD	ux			true
 rule	tokens-single-source-of-appearance	ui	blocks/domains/ui/components.md		MUST	ux			true
 rule	state-is-not-a-variant	ui	blocks/domains/ui/components.md		MUST	a11y ux			true
 rule	ui-primitives-keep-keyboard-and-focus	ui	blocks/domains/ui/components.md		MUST	a11y			true
@@ -856,6 +866,7 @@ rule	view-state-kept-in-the-navigation-state	ui	blocks/domains/ui/screens.md		MU
 rule	passing-state-kept-in-its-component	ui	blocks/domains/ui/screens.md		SHOULD				true
 rule	loading-never-replaces-shown-content	ui	blocks/domains/ui/screens.md		SHOULD	ux			true
 rule	late-content-reserves-its-space	ui	blocks/domains/ui/screens.md		SHOULD	ux performance			true
+rule	long-work-shows-its-progress	ui	blocks/domains/ui/screens.md		SHOULD	ux			true
 rule	interaction-answered-before-its-work	ui	blocks/domains/ui/screens.md		SHOULD	performance ux			true
 rule	fast-source-updates-once-per-frame	ui	blocks/domains/ui/screens.md		SHOULD	performance			true
 rule	screen-spec-proves-states-and-interactions	ui	blocks/domains/ui/tests.md		SHOULD	ux testing		spec-proves-one-boundary	true
@@ -922,6 +933,7 @@ rule	commit-type-matches-the-diff	version-control	blocks/domains/version-control
 rule	commit-body-empty-and-footer-only-trailers	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow		true
 rule	commit-checked-by-the-hooks	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	testing	workflow		true
 rule	branch-named-type-issue-name	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow		true
+rule	merged-branch-deleted	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD		workflow		true
 rule	changes-reach-main-line-through-review	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow		true
 rule	change-request-lands-as-one-commit	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow		true
 rule	change-request-reviewable-in-one-sitting	version-control	blocks/domains/version-control/workflow/version-control.md		SHOULD		workflow	change-limited-to-its-task	true
@@ -944,14 +956,14 @@ rule	workspace-tool-links-units-from-the-working-tree	workspace	blocks/domains/w
 rule	workspace-units-placed-by-reach	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-in-one-language-is-its-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-in-several-languages-holds-a-package-per-language	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
-rule	program-with-its-own-root-is-a-product	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	package-has-at-most-one-root	true
+rule	program-with-its-own-root-is-an-app	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	package-has-at-most-one-root	true
 rule	business-shared-across-languages-lives-in-one-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-offers-everything-through-its-one-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-named-after-its-folder	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
-rule	shared-part-appears-with-its-second-product	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	code-placed-by-its-reason-to-change	true
-rule	product-units-blind-to-each-other	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	feature-never-imports-a-feature	true
+rule	shared-part-appears-with-its-second-app	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	code-placed-by-its-reason-to-change	true
+rule	app-units-blind-to-each-other	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	feature-never-imports-a-feature	true
 rule	units-import-toward-libs	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	import-points-inward	true
-rule	products-owning-their-data-share-only-contracts	workspace	blocks/domains/workspace/architecture/with/owned-data.md	owned-data	MUST		architecture		true
+rule	programs-owning-their-data-share-only-contracts	workspace	blocks/domains/workspace/architecture/with/owned-data.md	owned-data	MUST		architecture		true
 rule	bundle-within-its-size-budget	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
 rule	hashed-file-immutable-and-its-pointers-revalidated	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
 rule	runtime-configuration-served-beside-bundle	browser	blocks/contexts/platforms/browser/browser.md		MUST	security		one-artefact-serves-every-environment	true
@@ -1533,7 +1545,7 @@ rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/hy
 rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		property-tested-where-it-pays	true
 rule	ci-profile-left-to-hypothesis	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		flaky-test-fixed-never-retried	true
 rule	contract-named-after-its-rule	import-linter	blocks/implementations/import-linter/import-linter.md		SHOULD				true
-rule	units-blind-by-an-independence-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST		architecture	product-units-blind-to-each-other	true
+rule	units-blind-by-an-independence-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST		architecture	app-units-blind-to-each-other	true
 rule	units-ordered-by-a-layers-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST		architecture	units-import-toward-libs	true
 rule	production-set-marked-in-the-entries	knip	blocks/implementations/knip/knip.md		MUST			dead-code-deleted	true
 rule	optional-peer-ignored-in-production	knip	blocks/implementations/knip/with/distribution.md	distribution	MUST				true

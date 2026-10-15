@@ -3,7 +3,7 @@
 > The globs of a Bun workspace laid out by the workspace's tree.
 
 ### workspaces-globbed-by-the-tree · SHOULD
-`workspaces` lists the globs `packages/*`, `packages/*/typescript`, `libs/*` and `libs/*/typescript`, and the path of the package of `shared/`.
+`workspaces` lists the globs `apps/*`, `shared/*` and `libs/*`, and each of them with `/typescript` after it.
 
 | Why | Tags |
 |---|---|

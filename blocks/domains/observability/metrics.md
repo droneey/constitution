@@ -20,6 +20,13 @@ Every kind of request or task the program serves is measured by its rate, its fa
 |---|---|
 | these three measures show a service's health at a glance, and an alert on them fires before users report a fault. | [performance] |
 
+### duration-recorded-as-a-distribution · SHOULD
+A duration is recorded as a histogram whose bucket bounds the project sets around its latency bounds, and is read by its percentiles — p50, p95, p99 — never by its average alone.
+
+| Why | Tags |
+|---|---|
+| an average hides the slow tail, and an alert on it stays silent while one user in a hundred waits. | [performance] |
+
 ### alert-fires-on-what-users-feel · SHOULD
 An alert fires on what the program's users feel — the error rate and the duration of what it serves, past a bound the project sets — rather than on a cause such as a busy processor.
 

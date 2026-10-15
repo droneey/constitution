@@ -36,7 +36,7 @@
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
-| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195 |
+| The program's tree | ADR-0187 – ADR-0190, ADR-0194 – ADR-0196 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 
 ---
@@ -1237,3 +1237,21 @@
 - **Decision.** Every operation a feature offers, a read included, has its use case in the domain, however thin. The root builds each use case with its ports and hands it to the binding units; a binding unit, and a delivery unit that binds an operation itself, calls the use case and never a port. A query library keeps the cache, its keys, freshness and optimistic updates in the binding unit and calls the use case in its query function.
 - **Rejected.** A use case only for an operation with business logic, the binding unit calling the port of a plain read (the rule this replaces): the domain then hides what the feature does behind the interfaces, a rule added to a read has to be added in every interface's binding, and a shared package across programs offers ports instead of operations.
 - **Why.** Hexagonal architecture gives the application one driving port per operation, reads included, and counts an adapter that calls a repository past it as a violation; vertical slices give each request its own handler; CQRS keeps the query side thin but still a handler. A one-line use case is the price of that one door. `module-is-deep` names the one door a part offers for each of its operations among its exceptions, so a thin use case is not a forwarder to remove; the root builds the use cases, and a binding unit's own concerns — the identifier it makes for a command, the events it reports — still come through ports.
+
+## ADR-0196 — What the 2026 expert audit and the second church review changed
+**Date:** 2026-10-15 · **Status:** Accepted
+
+- **Decision.**
+  - A feature owns its stored records, in a namespace of their own, and is cut where the business's language changes.
+  - A record and the event that announces it to another part land together, so a reaction in its own transaction is driven from the record, through an outbox.
+  - The root wires by hand where the framework brings no container.
+  - A workspace's programs live in `apps/`, each part shared by two of them in `shared/<name>/` as a unit of its own, and code that knows nothing of the product in `libs/<name>/`.
+  - The church review adds: durations read by their percentiles, no branch on the environment's name, long work that shows its progress, charts with a text alternative, drag feedback, property generators built on the fixture, singular type names, merged branches deleted, failures that name only reachable steps, and feature flags retired once settled.
+- **Rejected.**
+  - `packages/` for the programs: Turborepo means libraries by it.
+  - One `shared` package: every program then rebuilds on every shared change.
+  - A use case moved into `app/`: `domain/` would no longer be the part programs share across hosts.
+  - Surfaces dropped from role folders, and pure libraries let into the domain: both kept stricter for now, to be revisited when their cost shows.
+  - One repository for a simple feature in place of the split by side: the split is interface segregation and keeps one tree, and CQRS's warnings concern separate models, which the split does not make.
+  - Business metrics of the critical scenarios: deferred.
+- **Why.** Each change follows the consensus of 2024–2026 sources the audit cites — Evans and Vernon, Jovanović and Spring Modulith, Microsoft, Seemann, Nx and Turborepo, the Google SRE books — or a church rule our form lacked; each rejection keeps a stricter choice the owner made.

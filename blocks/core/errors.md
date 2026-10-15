@@ -18,6 +18,13 @@ An expected failure is an error of the program’s own — never one of the fram
 |---|---|
 | a failure that is part of the contract is handled by design, and a framework’s error carries no code of the program’s. | [errors] |
 
+### failure-names-only-reachable-steps · MUST
+The next step a failure names — an operation to call, a command to run, a value to send — exists, is open to the one the failure reaches with the rights they hold, and accepts what it names.
+
+| Why | Tags |
+|---|---|
+| whoever reads a failure — a person, a script, a model — follows its advice literally, and a step the schema refuses or a registration hid sends them round a loop the program built. | [errors] |
+
 ### failure-told-apart-by-code · MUST
 A failure is told apart by its type or its code, never by its message.
 

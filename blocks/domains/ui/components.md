@@ -117,6 +117,13 @@ A list whose length the product does not bound renders only the rows in view and
 |---|---|
 | a list that mounts every row at once grows slower with every item, and a long one freezes the device. | [performance] |
 
+### drag-shows-grab-hold-and-targets · SHOULD
+An item that can be dragged shows that it can be grabbed; while it is held, it shows that it is held, and every place that accepts it is marked.
+
+| Why | Tags |
+|---|---|
+| without these marks a user cannot tell what moves, that it is moving, or where it may land. | [ux] |
+
 ## Appearance
 
 ### tokens-single-source-of-appearance · MUST

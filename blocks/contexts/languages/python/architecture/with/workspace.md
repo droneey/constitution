@@ -5,7 +5,7 @@
 ## Workspace
 
 ### unit-names-spelled-under-the-scope → unit-named-after-its-folder · SHOULD
-A product is the distribution `<scope>-<name>`, imported as `<scope>_<name>`; `shared/` is `<scope>-shared`, imported as `<scope>_shared`; a unit of `libs/` is `<scope>-libs-<name>`, imported as `<scope>_libs_<name>`.
+A program is the distribution `<scope>-<name>`, imported as `<scope>_<name>`; a part of `shared/` is `<scope>-shared-<name>`, imported as `<scope>_shared_<name>`; a unit of `libs/` is `<scope>-libs-<name>`, imported as `<scope>_libs_<name>`.
 
 | Why | Tags |
 |---|---|

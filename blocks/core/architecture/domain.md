@@ -27,11 +27,11 @@ The domain, its use cases included, logs nothing: it returns a result or a failu
 | a domain that logs would decide what an operator is told, which is its caller’s to know. | [] |
 
 ### entity-rule-lives-beside-the-entity · SHOULD
-What concerns one entity alone — a predicate, a derived value, a transition of its state — is a pure function in that entity’s file, never a method and never repeated in a use case or a screen.
+What concerns one entity alone — a predicate, a derived value, a transition of its state — is a pure function in that entity’s file, never a method and never repeated in a use case, a binding unit or a delivery unit.
 
 | Why | Tags |
 |---|---|
-| a rule about one entity written once is changed once. | [] |
+| data alone crosses a cache, an address and storage as it is, while a method is lost there; and a rule about one entity written once beside it is changed once. | [] |
 
 ### business-value-lives-in-the-domain · MUST
 A business value with an invariant — an email address, an amount in its currency, a percentage — is a value object of the domain, or of the kernel when features share it, never a mechanism of a boundary.
@@ -39,6 +39,15 @@ A business value with an invariant — an email address, an amount in its curren
 | Why | Tags |
 |---|---|
 | the invariant has one home, in the layer that owns its meaning. | [data] |
+
+## Contexts
+
+### feature-cut-where-the-language-changes · SHOULD
+A feature is cut where the business's language and model change — one meaning per word, one model — never per delivery unit, kind of stored record or entity; two features that must share a model to say what they do are one feature.
+
+| Why | Tags |
+|---|---|
+| a context cut finer than its model duplicates that model and translates between its copies on every call. | [] |
 
 ### contexts-duplicate-rather-than-share · SHOULD
 Across bounded contexts a model is duplicated by default and shared by exception; a fact or a rule of the business is never duplicated: a context that needs another’s entity keeps its own narrow view of it, such as a reference by identifier, and the shared kernel holds only what is universal and stable.

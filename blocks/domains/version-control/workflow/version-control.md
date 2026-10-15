@@ -41,6 +41,13 @@ A branch is named `feature/`, `fix/` or `hotfix/`, then `<issue>-<name>`: the is
 |---|---|
 | the name ties the branch to its issue and tells the release automation which version to bump. | [] |
 
+### merged-branch-deleted · SHOULD
+A branch is deleted once its change request is merged; the host deletes it on merge where it can.
+
+| Why | Tags |
+|---|---|
+| a merged branch left behind invites a push that no longer reaches the main line, and the list of branches stops saying what is in flight. | [] |
+
 ## Change requests
 
 ### changes-reach-main-line-through-review · MUST

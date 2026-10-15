@@ -91,7 +91,7 @@ An operation that may be repeated is idempotent: a key is minted once per intent
 | networks retry and users click twice; an idempotent operation turns a repeat into no change. | [data] |
 
 ### write-lands-whole · MUST
-A write that changes several things — records, files, a record and the message about it — lands whole or not at all, through one transaction, a finished temporary file renamed into place, or an outbox; one that cannot, such as a change to systems outside, is idempotent, so a rerun completes what a stop left half done.
+A write that changes several things — records, files, a record and the event or message that announces it to another part — lands whole or not at all, through one transaction, a finished temporary file renamed into place, or an outbox; one that cannot, such as a change to systems outside, is idempotent, so a rerun completes what a stop left half done.
 
 | Why | Tags |
 |---|---|
@@ -147,3 +147,10 @@ One artefact of a program a host of the project runs or serves — a server, a s
 | Why | Tags |
 |---|---|
 | the artefact that was tested is then the one that runs, and nothing that belongs to one environment ships inside it. | [security] |
+
+### behaviour-never-keyed-on-the-environments-name · SHOULD
+The program's code never branches on the name of the environment it runs in — `production`, `staging`, `development`; what differs between environments is a setting named for what it changes — a log level, an address, a sandbox for a payment provider — declared in the configuration, by which the program also chooses an implementation.
+
+| Why | Tags |
+|---|---|
+| a branch on the name runs code in one environment that no other runs, so what one environment proves says nothing of the next, while a named setting can be turned on wherever it is needed. | [] |

@@ -46,7 +46,7 @@ Edge cases are chosen by risk and by the partitions of the input — empty input
 | bugs live at the edges, and choosing them by risk spends cases where a bug is likely. | [testing] |
 
 ### property-tested-where-it-pays · SHOULD
-A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function — with its cases in the spec of its unit, and a counterexample it finds is kept as a fixed case.
+A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
 
 | Why | Tags |
 |---|---|
@@ -90,11 +90,11 @@ A case holds no branch, loop or conditional expression, and its expected value i
 | logic in a case can be as wrong as the code it checks. | [testing] |
 
 ### fixture-builds-a-valid-default · SHOULD
-A fixture is a factory that returns a valid value and takes overrides; a case overrides only the fields its condition is about.
+A fixture is a factory that returns a valid value and takes overrides; a case overrides only the fields its condition is about, and a property test's generator is built on it, so each draw is valid unless the case is about invalid input.
 
 | Why | Tags |
 |---|---|
-| a case that states only what it is about shows its cause next to its effect. | [testing] |
+| a case that states only what it is about shows its cause next to its effect, and one definition of a valid value serves the cases and the draws, so no draw is wasted on input the unit refuses. | [testing] |
 
 ### snapshot-readable-by-eye · SHOULD
 No snapshot holds a structure a reader cannot check by eye; a generated format is compared with a golden file a reader can read.

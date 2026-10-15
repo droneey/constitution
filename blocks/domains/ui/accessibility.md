@@ -28,11 +28,18 @@ Native semantic elements come first; roles and states are added only where no na
 | a native element brings its role and keyboard for free; a wrong role is worse than none. | [a11y] |
 
 ### every-control-has-an-accessible-name · MUST
-Every control and field has an accessible name. A field has a visible label — a placeholder is only an example — and a hint where its format is not obvious; an icon-only control is named; a meaningful image has alternative text, and a decorative one is hidden.
+Every control and field has an accessible name. A field has a visible label — a placeholder is only an example — and a hint where its format is not obvious; an icon-only control is named.
 
 | Why | Tags |
 |---|---|
 | a screen reader announces a control by its name; without one, it says only "button". | [a11y] |
+
+### non-text-content-has-a-text-alternative · MUST
+A meaningful image has alternative text, a chart or a diagram one that states what it shows — its data as a table or its finding in a sentence — and a decorative image is hidden from assistive technology.
+
+| Why | Tags |
+|---|---|
+| a person who cannot see the image gets what it says, and a one-word label on a chart says nothing of its data. | [a11y] |
 
 ### visible-label-in-accessible-name · MUST
 A control's accessible name contains its visible label, word for word, best at its start.

@@ -78,6 +78,13 @@ Content that arrives after the screen is drawn — data, an image, an embed, a n
 |---|---|
 | a layout that jumps when content lands makes the user lose their place or press what slid under their finger. | [ux, performance] |
 
+### long-work-shows-its-progress · SHOULD
+A screen whose work a user waits on past a bound the project sets names what it is doing and shows how far it has come — the share done, the current step or the time left — wherever the program knows it.
+
+| Why | Tags |
+|---|---|
+| a wait with no name and no progress looks like a hang, and the user leaves or starts the work again. | [ux] |
+
 ## Response
 
 ### interaction-answered-before-its-work · SHOULD

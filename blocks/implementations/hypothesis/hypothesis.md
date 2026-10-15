@@ -14,7 +14,7 @@ governs: []
 > Draws the inputs of a property test and shrinks a failing one to its smallest form. Outside CI it remembers the inputs that failed in `.hypothesis/`, which is ignored; under `CI` it loads its own profile `ci`.
 
 ### property-written-with-given → property-tested-where-it-pays · SHOULD
-A property test is a case of its unit's spec decorated with `@given`, its inputs drawn by strategies built from the types and the invariant it proves.
+A property test is a case of its unit's spec decorated with `@given`, its inputs drawn by strategies built on the unit's fixture, narrowed by the invariant it proves.
 
 | Why | Tags |
 |---|---|

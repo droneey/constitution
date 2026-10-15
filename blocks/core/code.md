@@ -57,3 +57,9 @@ No file, dependency, export, parameter, variable or label is unused — save a p
 |---|---|
 | dead code is read, kept and feared by people who cannot know it does nothing. | [] |
 
+### feature-flag-retired-once-settled · SHOULD
+A feature flag is a setting with an issue that names when it goes; once it serves one value everywhere, it is removed with the branch it no longer takes.
+
+| Why | Tags |
+|---|---|
+| a flag that serves one value everywhere is a branch that never runs, and it hides from every tool because it is still read. | [] |

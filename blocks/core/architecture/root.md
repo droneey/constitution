@@ -5,11 +5,11 @@
 ## Wiring
 
 ### composition-root-wires-everything · MUST
-The composition root chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place. A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention.
+The composition root chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place. A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention; where the framework brings no container, the root wires by hand, with no container library.
 
 | Why | Tags |
 |---|---|
-| one place that names every concrete choice makes the program’s shape readable and every choice replaceable. | [] |
+| one place that names every concrete choice makes the program’s shape readable and every choice replaceable; a container library the framework does not impose adds only indirection. | [] |
 
 ### package-has-at-most-one-root · MUST
 A package holds at most one composition root, and a library holds none. A program that wires itself apart — on another framework or runtime, or built as an artefact of its own — is a package of its own, and what two such programs run lives in a package with no root; artefacts that start the one root in different ways are entries of one package.

@@ -83,6 +83,13 @@ A collection's name is plural and an item's singular, destructured names include
 |---|---|
 | the name alone tells a list from one of its elements. | [] |
 
+### type-name-singular · SHOULD
+A type's name, an enumeration's included, is singular unless its value is a collection: it names one value of the type — `OrderStatus`, not `OrderStatuses`.
+
+| Why | Tags |
+|---|---|
+| the type names one value; a plural name reads as a list where it holds one. | [] |
+
 ### event-name-in-past-tense · SHOULD
 An event's name says what happened, in the past tense: `OrderPlaced`, not `PlaceOrder`.
 

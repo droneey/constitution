@@ -75,7 +75,7 @@ Under a unit, the same shape two levels deeper:
 
 ```yaml
 packages:
-  packages/web:
+  apps/web:
     implementations: [react-dom]
     overrides:
       - rule: data-view-shows-every-state
