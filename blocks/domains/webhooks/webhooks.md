@@ -1,17 +1,18 @@
 ---
-id: standard-webhooks
-summary: Standard Webhooks' headers, signatures and disabled endpoints.
+id: webhooks
+summary: Webhooks the program sends and receives, and their format.
 requires: [remote-service]
 extends: null
 abstract: false
 languages: []
-dictionary: [Standard Webhooks, webhook-id, webhook-timestamp, webhook-signature]
+dictionary: []
 governs: ["**"]
 ---
+# Webhooks
 
-# Standard Webhooks
+> HTTP requests one system posts to another when something happens there. Its rules bind the webhooks the program sends, in Standard Webhooks' format — their headers, their signed content, an endpoint disabled — and, in `with/http-server.md`, those it receives from any sender: verified, processed once and acknowledged once recorded; a program that only sends serves no HTTP.
 
-> The format of a webhook the program sends, and, over HTTP, of one it receives: the specification's headers, its signed content and its signatures.
+## Sending
 
 ### sent-webhook-carries-the-standard-headers → sent-push-signed-with-a-delivery-id · MUST
 A webhook the program sends carries its delivery identifier in `webhook-id`, the same on every retry, the time it was sent in `webhook-timestamp` as whole seconds since the epoch, and in `webhook-signature` its signature over `<id>.<timestamp>.<body>`, written `v1,` and the base64 of an HMAC-SHA256 or `v1a,` and the base64 of an Ed25519 signature; while a secret rotates, the header lists the old and the new signature, separated by a space. The body sent is the very bytes signed.

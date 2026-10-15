@@ -17,11 +17,12 @@ block	open-source	domain	A public repository: its licence, its policies and its 
 block	owned-data	domain	Data the program decides on: aggregates, migrations and backups.	consistency.md migrations.md architecture/owned-data.md workflow/owned-data.md				false				**
 block	privacy	domain	Personal data: minimised, consented, kept, exported and erased.	consent.md opt-out.md	ui			false				**
 block	remote-data	domain	Data another system owns: its cache, keys, reads and refreshes.	architecture/remote-data.md	access-control ui architecture/access-control	remote-service		false				**
-block	remote-service	domain	Another system the program calls, hears from or pushes to.	calls.md outbound.md streams.md tests.md architecture/remote-service.md	http-server			false				**
+block	remote-service	domain	Another system the program calls, hears from or pushes to.	calls.md outbound.md streams.md tests.md architecture/remote-service.md				false				**
 block	rest-api	domain	An HTTP API of resources: methods, statuses, answers and contract.	answers.md contract.md wire.md		http-server	_api	false			_api	**
 block	ui	domain	Screens of declarative components: props, state, forms, accessibility.	accessibility.md components.md forms.md screens.md tests.md architecture/ui.md	remote-data remote-service architecture/access-control architecture/remote-data			false				**
 block	untrusted-client	domain	Code that runs where its user can read and change it.					false				**
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	workflow/version-control.md				false				**
+block	webhooks	domain	Webhooks the program sends and receives, and their format.		http-server	remote-service		false				**
 block	workspace	domain	Several units in one repository: their folders, imports and links.	architecture/workspace.md	architecture/owned-data			false				**
 block	browser	platform	Delivery, defences, storage and lifecycle of code in a browser tab.	architecture/browser.md	design-system i18n privacy server ui architecture/server architecture/ui	untrusted-client		false				**
 block	cli	platform	Commands, flags, streams, exit codes and help of a command line.	architecture/cli.md	config-file convergence			false				**
@@ -72,7 +73,6 @@ block	react-native	implementation	React on a device — host components, virtual
 block	renovate	implementation	Dependency updates proposed by a bot.	workflow/renovate.md		git		false				renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.		fastapi pytest	python		false		python		pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	architecture/shadcn.md		react-dom tailwind		false				components.json **/libs/ui/components/**
-block	standard-webhooks	implementation	Standard Webhooks' headers, signatures and disabled endpoints.		http-server	remote-service		false				**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	architecture/storybook.md		_react		false				**/*.stories.tsx .storybook/**
 block	structlog	implementation	structlog renders the records of Python's logging as events.	architecture/structlog.md		python observability		false				**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test workspace	typescript		false		typescript		stryker.config.mjs
@@ -804,9 +804,6 @@ rule	transport-failures-mapped-once	remote-service	blocks/domains/remote-service
 rule	transport-mapper-takes-each-features-codes	remote-service	blocks/domains/remote-service/architecture/remote-service.md		SHOULD		architecture		true
 rule	stream-returned-as-a-sequence-of-domain-events	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST	data	architecture	contract-knows-no-vendor	true
 rule	one-transport-instance-per-system	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST		architecture	composition-root-wires-everything	true
-rule	webhook-verified-before-it-is-acted-on	remote-service	blocks/domains/remote-service/with/http-server.md	http-server	MUST	security			true
-rule	webhook-delivery-processed-once	remote-service	blocks/domains/remote-service/with/http-server.md	http-server	MUST	data		operation-idempotent-by-design	true
-rule	webhook-acknowledged-once-recorded	remote-service	blocks/domains/remote-service/with/http-server.md	http-server	SHOULD	performance			true
 rule	resource-path-names-nouns	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD				true
 rule	partial-update-by-merge-patch	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD	data			true
 rule	rest-method-and-status-mean-what-http-registers	rest-api	blocks/domains/rest-api/answers.md		MUST	errors data			true
@@ -960,6 +957,11 @@ rule	working-notes-stay-out-of-history	version-control	blocks/domains/version-co
 rule	agent-never-merges	version-control	blocks/domains/version-control/workflow/version-control.md		MUST		workflow	person-decides-what-is-committed-or-shipped	true
 rule	agent-never-pushes-to-the-main-line	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	person-decides-what-is-committed-or-shipped	true
 rule	agent-never-force-pushes	version-control	blocks/domains/version-control/workflow/version-control.md		MUST	security	workflow	agent-asks-before-an-irreversible-action	true
+rule	sent-webhook-carries-the-standard-headers	webhooks	blocks/domains/webhooks/webhooks.md		MUST	security		sent-push-signed-with-a-delivery-id	true
+rule	endpoint-answering-gone-disabled-at-once	webhooks	blocks/domains/webhooks/webhooks.md		MUST	errors		failed-push-retried-then-held	true
+rule	webhook-verified-before-it-is-acted-on	webhooks	blocks/domains/webhooks/with/http-server.md	http-server	MUST	security			true
+rule	webhook-delivery-processed-once	webhooks	blocks/domains/webhooks/with/http-server.md	http-server	MUST	data		operation-idempotent-by-design	true
+rule	webhook-acknowledged-once-recorded	webhooks	blocks/domains/webhooks/with/http-server.md	http-server	SHOULD	performance			true
 rule	root-and-internal-units-private	workspace	blocks/domains/workspace/workspace.md		MUST	security			true
 rule	root-holds-only-the-workspace	workspace	blocks/domains/workspace/workspace.md		SHOULD				true
 rule	root-holds-one-workspace-per-language	workspace	blocks/domains/workspace/workspace.md		SHOULD				true
@@ -1710,10 +1712,6 @@ rule	parts-marked-by-data-slot	shadcn	blocks/implementations/shadcn/shadcn.md		S
 rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	ux		vendored-component-adapted-in-the-change-that-installs-it	true
 rule	shadcn-text-passed-by-props	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	ux		primitives-take-text-by-props	true
 rule	shadcn-source-added-into-the-kit	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	ux	architecture	vendored-component-placed-by-its-home	true
-rule	sent-webhook-carries-the-standard-headers	standard-webhooks	blocks/implementations/standard-webhooks/standard-webhooks.md		MUST	security		sent-push-signed-with-a-delivery-id	true
-rule	endpoint-answering-gone-disabled-at-once	standard-webhooks	blocks/implementations/standard-webhooks/standard-webhooks.md		MUST	errors		failed-push-retried-then-held	true
-rule	received-webhook-verified-from-the-standard-headers	standard-webhooks	blocks/implementations/standard-webhooks/with/http-server.md	http-server	MUST	security		webhook-verified-before-it-is-acted-on	true
-rule	received-webhook-known-by-its-webhook-id	standard-webhooks	blocks/implementations/standard-webhooks/with/http-server.md	http-server	MUST	data		webhook-delivery-processed-once	true
 rule	story-for-every-kit-state	storybook	blocks/implementations/storybook/storybook.md		SHOULD	ux testing			true
 rule	stories-render-from-fixtures	storybook	blocks/implementations/storybook/storybook.md		SHOULD				true
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/storybook.md		MUST	testing		logic-fully-covered	true
