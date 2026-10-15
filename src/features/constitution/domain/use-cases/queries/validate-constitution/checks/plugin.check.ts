@@ -33,6 +33,7 @@ enum SkillField {
 
 enum Template {
   Project = 'templates/PROJECT.md',
+  Decisions = 'templates/DECISIONS.md',
   Block = 'templates/block.md',
   Config = 'templates/constitution.yaml',
 }

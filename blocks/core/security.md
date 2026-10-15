@@ -1,6 +1,6 @@
 # Security
 
-> Governs secrets, credentials, cryptography, and outside input: its size, its matching, and where it is run, rebuilt or followed.
+> Governs secrets, credentials, cryptography, and outside input: its size, its matching, the work done on it, and where it is run, rebuilt or followed.
 
 ## Secrets
 
@@ -75,6 +75,13 @@ A pattern matched against outside input runs in time linear in its length: a reg
 | Why | Tags |
 |---|---|
 | a backtracking pattern turns one crafted string into minutes of work, and one request takes the program down. | [security, performance] |
+
+### work-on-outside-sized-input-grows-at-most-n-log-n · MUST
+Work over input whose size someone outside the program chooses — a client, a file, a remote system — grows no faster than n log n in time and n in memory; an algorithm that grows faster runs only on a count the program caps low enough for that growth, and the code names the cap beside it.
+
+| Why | Tags |
+|---|---|
+| a nested loop over a list a client sends is instant on test data and takes the program down on a large one, the same denial a backtracking pattern causes. | [security, performance] |
 
 ### outside-input-reaches-interpreters-as-parameters · MUST
 Input from outside — a model’s output included — reaches a query, a shell command, markup, a template or a log line only through that interpreter’s parameters or its encoder — or, where the input is itself markup to render, a sanitiser that keeps only the elements, attributes and schemes allowed.

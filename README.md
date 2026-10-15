@@ -18,7 +18,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis, and beside each axis's parts the bindings that say which setting holds which rule |
-| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
+| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
 | `tools` | Programs the release archive carries: `mutation-check`, which mutates only the lines a change touches; for Python, `mutmut-check`, its twin over mutmut, and `python-check`, which holds the lengths of functions and files, where a relative import may reach and where a package may be imported — each a member of the repository's uv workspace with its own specs |
 | `.claude-plugin` | The plugin and marketplace manifests |
 | `src` | The tooling that keeps the blocks sound |
@@ -97,7 +97,7 @@ At the hand-back, a third hook holds the gate. When the project names a `check` 
 
 Both are run by the user, never by the model on its own:
 
-- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about units when there are several, and interviews the owner for `PROJECT.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write, lists every `partly` and `no` answer of the proposed blocks with the rule that stands in, and writes only after the owner's yes, never over a file without asking.
+- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about units when there are several, and interviews the owner for `PROJECT.md` and the first entries of `DECISIONS.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write, lists every `partly` and `no` answer of the proposed blocks with the rule that stands in, and writes only after the owner's yes, never over a file without asking.
 - **`/constitution:amend [rule-slug]`** adds, changes or removes an override: a rule the index holds, a level below its current one, a reason, an optional end date and a scope — the whole repository or one unit. It shows the exact change to `constitution.yaml` and writes it only after the owner's yes for that override.
 
 The model may run one more itself, as the hand-back reminder suggests:

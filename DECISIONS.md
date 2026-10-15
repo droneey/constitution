@@ -37,6 +37,7 @@
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
 | The program's tree | ADR-0187 – ADR-0190 |
+| A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 
 ---
 
@@ -1201,3 +1202,24 @@
 - **Decision.** Business that programs in different languages run lives first in one package in a language every target runs, compiled for each through generated bindings; then in the service they call; a copy per language, held by the schema and the conformance cases of `shared/`, is the last resort. Products that own their data apart share only contracts and wire shapes.
 - **Rejected.** The service first: it puts every client behind the network even where one compiled core would serve them all. A business package shared by services deployed on their own: it ties their releases into one program deployed in pieces.
 - **Why.** Business written once cannot drift between languages or between services.
+
+## ADR-0191 — Every project keeps a decision log, for real alternatives only
+**Date:** 2026-10-15 · **Status:** Accepted
+
+- **Decision.** A choice between real alternatives that a later reader could propose again is recorded, at MUST, in the project's `DECISIONS.md` by the change that makes it: what was chosen, what was rejected and why, and its date. A choice the code, a rule or the commit already explains has no entry. `DECISIONS.md` joins the project's files, and `ratify` writes it from a template.
+- **Rejected.** The record anywhere in the repository, at SHOULD: nobody knows where to look, so the choice is argued again. A record of every change: the log fills with what the history already says, and the entries that matter drown in it.
+- **Why.** A decision is worth writing down when someone would otherwise propose the rejected option again; the test keeps the log short enough to be read.
+
+## ADR-0192 — Work over input someone outside sizes grows at most n log n
+**Date:** 2026-10-15 · **Status:** Accepted
+
+- **Decision.** Work over input whose size someone outside the program chooses — a client, a file, a remote system — grows no faster than n log n in time and n in memory; a faster-growing algorithm runs only on a count the program caps low enough for that growth, and the code names the cap. It stands in security's chapter on outside input, beside the linear-time match. A size limit on the input alone does not license a quadratic loop over it.
+- **Rejected.** One ceiling of complexity for all code: what is fast enough depends on the size of the data, and a quadratic loop over ten fixed items harms nobody.
+- **Why.** Growth matters where the size is someone else's choice: there a slow algorithm is a denial of service, like a backtracking pattern.
+
+## ADR-0193 — TypeScript separates type imports and writes no namespace
+**Date:** 2026-10-15 · **Status:** Accepted
+
+- **Decision.** The names an import or a re-export uses only as types go in an `import type` or `export type` of their own, never marked `type` inside braces beside values — Biome's `separatedType` for both imports and exports. No `namespace` or `module` block is written, an ambient one included: a library is typed by `declare module '<name>'`, globals by `declare global`, and a `namespace` appears only inside it to merge into one a library or the runtime declares, under a suppression.
+- **Rejected.** The inline `type` marker TypeScript allows by default: a reader can no longer see from the line whether it vanishes at run time. `declare namespace` for a library's or the runtime's types: it types a global no import names.
+- **Why.** The presets already held both choices; the rules had been written looser and contradicted them.

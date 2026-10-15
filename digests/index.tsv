@@ -103,7 +103,7 @@ chapter	core	layout.md	a file or a folder: its kind, name, size and purpose; rea
 chapter	core	names.md	a name in the code.
 chapter	core	placement.md	where a rule goes: its layer, its axis and its chapter.
 chapter	core	relations.md	how a unit is built, holds state, and depends on, calls or extends another.
-chapter	core	security.md	secrets, credentials, cryptography, and outside input: its size, its matching, and where it is run, rebuilt or followed.
+chapter	core	security.md	secrets, credentials, cryptography, and outside input: its size, its matching, the work done on it, and where it is run, rebuilt or followed.
 chapter	core	tests.md	specs, cases, fakes, fixtures and the test gates.
 chapter	core	tools.md	the tools that hold the rules, and their findings.
 chapter	core	types.md	a value and its type.
@@ -137,7 +137,7 @@ rule	change-moves-a-file-never-rewrites-it	core	blocks/core/changes.md		MUST				
 rule	tidying-shipped-before-the-behaviour	core	blocks/core/changes.md		SHOULD				true
 rule	tidying-keeps-the-specs-of-its-boundaries	core	blocks/core/changes.md		SHOULD	testing			true
 rule	format-changed-in-steps	core	blocks/core/changes.md		MUST	data			true
-rule	choice-between-alternatives-recorded	core	blocks/core/changes.md		SHOULD				true
+rule	choice-between-alternatives-recorded	core	blocks/core/changes.md		MUST				true
 rule	change-to-a-trust-boundary-names-its-threats	core	blocks/core/changes.md		SHOULD	security			true
 rule	change-handed-back-with-a-passing-check	core	blocks/core/changes.md		MUST	testing			true
 rule	change-seen-working-before-hand-back	core	blocks/core/changes.md		SHOULD	testing			true
@@ -254,6 +254,7 @@ rule	credential-short-lived	core	blocks/core/security.md		SHOULD	security			true
 rule	process-runs-with-only-the-rights-its-job-needs	core	blocks/core/security.md		MUST	security			true
 rule	outside-input-bounded-before-it-is-parsed	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-matched-in-linear-time	core	blocks/core/security.md		MUST	security performance			true
+rule	work-on-outside-sized-input-grows-at-most-n-log-n	core	blocks/core/security.md		MUST	security performance			true
 rule	outside-input-reaches-interpreters-as-parameters	core	blocks/core/security.md		MUST	security			true
 rule	outside-path-confined-to-its-root	core	blocks/core/security.md		MUST	security			true
 rule	outside-identifier-normalised-before-comparison	core	blocks/core/security.md		MUST	security			true
@@ -1285,7 +1286,7 @@ rule	type-parameter-starts-with-t	typescript	blocks/contexts/languages/typescrip
 rule	parameter-object-has-a-named-type	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	return-type-no-wider-than-returned	typescript	blocks/contexts/languages/typescript/typescript.md		SHOULD				true
 rule	package-is-an-es-module	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
-rule	namespace-never-declares-code	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
+rule	namespace-never-written	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	type-only-import-written-as-import-type	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	alias-declared-in-package-imports	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true
 rule	hash-alias-for-the-source-root	typescript	blocks/contexts/languages/typescript/typescript.md		MUST				true

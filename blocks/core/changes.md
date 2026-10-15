@@ -46,8 +46,8 @@ A change to a format that is stored or that others read — a schema, a file, a 
 |---|---|
 | data written before the change and readers deployed before it outlive the change, and a format switched in one step breaks them. | [data] |
 
-### choice-between-alternatives-recorded · SHOULD
-A choice between real alternatives that a later reader could propose again is recorded in the repository, with what was rejected and why, in the change that makes it.
+### choice-between-alternatives-recorded · MUST
+A choice between real alternatives that a later reader could propose again — a store, a framework, a protocol, a boundary, a design turned down — is recorded in the project's `DECISIONS.md` by the change that makes it: what was chosen, what was rejected and why, and its date; a choice the code, a rule or the commit already explains — a version bump, a fix, a rename, a tool's default kept — is not.
 
 | Why | Tags |
 |---|---|

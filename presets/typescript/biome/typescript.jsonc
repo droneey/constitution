@@ -81,7 +81,12 @@
         "noNamespace": "error",
         "useReadonlyClassProperties": "error",
         "useUnifiedTypeSignatures": "error",
-        "useExportType": "error",
+        "useExportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
         "useAsConstAssertion": "error",
         "useConsistentArrayType": "error",
         "useConsistentTypeDefinitions": "error",

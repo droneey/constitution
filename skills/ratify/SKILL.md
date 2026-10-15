@@ -1,6 +1,6 @@
 ---
 name: ratify
-description: Put a repository under the droneey constitution — look at its code, propose the blocks it follows, and interview the owner, then write constitution.yaml and PROJECT.md after the owner's yes. Use when the owner asks to ratify, adopt or set up the constitution in a repository.
+description: Put a repository under the droneey constitution — look at its code, propose the blocks it follows, and interview the owner, then write constitution.yaml, PROJECT.md and DECISIONS.md after the owner's yes. Use when the owner asks to ratify, adopt or set up the constitution in a repository.
 disable-model-invocation: true
 ---
 
@@ -22,6 +22,7 @@ The project folder holds:
 
 - **`constitution.yaml`** at the repository root: the blocks the repository follows, its units, the one command that runs its checks, and its overrides. The session-start hook reads it and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
+- **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
 - **A local block** under `./rules/implementations/<id>.md` for each library the owner wants rules for that the plugin has no block for.
 
 The repository root is the folder, going up from the project folder, that holds `.git`. Core is always active and is never listed.
@@ -32,7 +33,7 @@ Work in this order, and keep the owner in the loop: propose, let them confirm or
 
 ### 1. Check what is there
 
-If `constitution.yaml` or `PROJECT.md` is already at the root, say so and ask whether to replace it. With a no, leave that file alone: do not write it and skip its part of the work. Either way, build the proposal from the repository and the owner, not from files already there.
+If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, say so and ask whether to replace it. If decisions are kept elsewhere — `docs/adr/`, `docs/decisions/` — say so and ask whether to move them into `DECISIONS.md` or leave them and write none. With a no, leave that file alone: do not write it and skip its part of the work. Either way, build the proposal from the repository and the owner, not from files already there.
 
 ### 2. Show what the plugin offers
 
@@ -104,6 +105,7 @@ Ask one or two questions at a time, in the order of the sections of `${CLAUDE_PL
 - **Critical scenarios.** Which journeys must never break — the ones a user would leave over? Each one gets an end-to-end test.
 - **Glossary.** Which words does the business use, and what does each mean here?
 - **Non-functional notes.** Any hard constraint on scale, offline use, devices, compliance, performance or the systems it depends on?
+- **Decisions.** Which choices between real alternatives has the project already made — a store, a framework, a boundary — what was turned down, and why? These become the first entries of `DECISIONS.md`, not part of `PROJECT.md`.
 
 Use the owner's own words: the glossary seeds the language of the code. Keep it high-level — when an answer drifts into how a feature works or how to build it, keep its essence and steer back. What stays unanswered is left out: drop the section, and never write `TODO` or a promise about the future. A short file that is true beats a complete one that is not.
 
@@ -116,6 +118,7 @@ Use the owner's own words: the glossary seeds the language of the code. Keep it 
 Show the owner everything you will write:
 - `constitution.yaml` exactly as it will be written;
 - `PROJECT.md` in full;
+- `DECISIONS.md` in full, when it will be written;
 - each local block in full.
 
 Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the plugin's, from their cards under `${CLAUDE_PLUGIN_ROOT}/blocks/`, and each local block's — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
@@ -124,6 +127,7 @@ Write only after the owner's yes, and only the files the owner agreed to.
 
 - **`constitution.yaml`** is `${CLAUDE_PLUGIN_ROOT}/templates/constitution.yaml` with `<installed version>` replaced by the installed version above and `<check command>` by the check command, and each `[]` or `{}` replaced where there is something to list. Keep every key, in the template's order. The hook reads a fixed subset of YAML: a list is a flow list `[a, b]` that may go on over indented lines until its `]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
 - **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
+- **`DECISIONS.md`** is `${CLAUDE_PLUGIN_ROOT}/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
 
 ### 9. See what a session will receive
 

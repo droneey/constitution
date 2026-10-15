@@ -308,6 +308,7 @@ describe('pluginCheck', () => {
 
   it.each([
     'templates/PROJECT.md',
+    'templates/DECISIONS.md',
     'templates/block.md',
     'templates/constitution.yaml',
   ])('should report the template %s when it is missing', (path) => {

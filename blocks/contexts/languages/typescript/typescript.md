@@ -70,15 +70,15 @@ Every package is an ES module: its `package.json` sets `"type": "module"`, and n
 |---|---|
 | one module system gives every import one meaning and one resolution in the program, its specs and its tools; CommonJS brings a second loader whose interop changes what an import returns. | [] |
 
-### namespace-never-declares-code · MUST
-Code is grouped by modules, never by a `namespace` or `module` block; a `declare namespace` only describes the types of a library or of the runtime.
+### namespace-never-written · MUST
+No `namespace` or `module` block is written, an ambient one included: a library's types are described by `declare module '<name>'` and the program's globals by `declare global`, save a `namespace` inside it that merges into one a library or the runtime declares, such as `NodeJS.ProcessEnv`, under a suppression that names it.
 
 | Why | Tags |
 |---|---|
-| a namespace is an older second way to group what a module already groups, and one that holds values compiles to an object no import rule can see into. | [] |
+| a namespace is an older second way to group what a module already groups; one that holds values compiles to an object no import rule can see into, and a declared one types a global that no import names, so no reader can trace it to its source. | [] |
 
 ### type-only-import-written-as-import-type · MUST
-An import or a re-export whose every name is used only as a type is written `import type` or `export type`; a name marked `type` inside the braces stands only beside names used as values.
+The names an import or a re-export uses only as types are written in an `import type` or `export type` of their own, apart from the names used as values; no name is marked `type` inside the braces.
 
 | Why | Tags |
 |---|---|
