@@ -73,11 +73,11 @@ In Bash, a function declares every variable it sets as `local`.
 ## Errors
 
 ### script-stops-on-a-failed-command → catch-handles-only-what-it-recognises · MUST
-A Bash script runs under `set -euo pipefail`, and `shopt -s inherit_errexit` where its Bash is 4.4 or later, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command.
+A Bash script runs under `set -euo pipefail`, and `shopt -s inherit_errexit` where its Bash is 4.4 or later, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command; a function called as a condition — of an `if`, a `while` or an and-or list — checks its commands' results itself.
 
 | Why | Tags |
 |---|---|
-| by default the shell carries on after a failed command, a failed stage of a pipe or an unset variable, so the next command runs on a result that never came, as `rm -rf "$dir/"` does with an empty `dir`. | [errors] |
+| by default the shell carries on after a failed command, a failed stage of a pipe or an unset variable, so the next command runs on a result that never came, as `rm -rf "$dir/"` does with an empty `dir`; errexit does not fire inside a function called as a condition. | [errors] |
 
 ### command-substitution-assigned-apart-from-its-declaration → catch-handles-only-what-it-recognises · MUST
 A variable assigned from a command substitution is declared — by `local`, `export` or `declare` — on a line of its own before it: `local out` then `out="$(command)"`.
@@ -131,6 +131,15 @@ A script exports no variable its commands do not read.
 | Why | Tags |
 |---|---|
 | every command a script runs inherits what it exported, and every command those start. | [security] |
+
+## Tools
+
+### script-passes-a-shell-analyser → rule-held-by-a-tool-where-one-can · MUST
+Every script, and every shell command another file holds, passes a static analyser of shell — one that knows its quoting, its word splitting and the pitfalls of errexit — at its strictest severity.
+
+| Why | Tags |
+|---|---|
+| most rules of this block — quoting, raw reads, a declaration apart from its substitution — are findings such an analyser reports, and a command embedded in another file otherwise grows unchecked. | [errors, security] |
 
 ## Layout
 

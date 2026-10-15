@@ -58,11 +58,11 @@ A component that holds a value can be driven from outside or left to itself thro
 ## Props
 
 ### boolean-props-prefixed → boolean-name-is-a-positive-predicate · MUST
-A boolean prop a component of the program's own introduces starts with `is` for a state, `has` for a presence, `can` for a permission, `with` for an opt-in part that carries no content of the caller — `withDivider` — or `should` for a policy, never a bare, mixed or negated name.
+Every boolean prop of a component of the program's own — one it hands on to a native element or to an outside library included — starts with `is` for a state, `has` for a presence, `can` for a permission, `with` for an opt-in part that carries no content of the caller — `withDivider` — or `should` for a policy, never a bare, mixed or negated name; the component maps it to the name the element or the library takes where it hands it on — `isDisabled` handed on as `disabled` — and an outside library's own component is used under that library's names.
 
 | Why | Tags |
 |---|---|
-| the prefix says what kind of switch a prop is, so a reader knows its effect from the call site. | [] |
+| the prefix says what kind of switch a prop is, so a reader knows its effect from the call site, and mapping it at the one place it meets an element or a library keeps every call site of the program in one naming. | [] |
 
 ### event-props-named-on-event → concept-has-one-word · MUST
 A callback prop is named `on<Event>` for the event it answers, never an action verb, a `handle` name or a bare past tense such as `submitted`.

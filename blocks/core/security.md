@@ -1,6 +1,6 @@
 # Security
 
-> Governs secrets, credentials, cryptography, and outside input: its size, its matching, the work done on it, and where it is run, rebuilt or followed.
+> Governs secrets, credentials, cryptography, outside input — its size, its matching, the work done on it, and where it is run, rebuilt or followed — and the vulnerabilities found in what was released.
 
 ## Secrets
 
@@ -141,9 +141,32 @@ A cryptographic algorithm, mode and key size are ones current guidance approves 
 |---|---|
 | a vetted library still offers broken algorithms, and data protected by one is open to whoever reads it later. | [security] |
 
+### key-agreement-hybrid-with-post-quantum · MUST
+A key agreement the program sets up — a TLS connection, an encrypted channel, a sealed envelope — uses a hybrid exchange with a post-quantum algorithm, such as X25519MLKEM768, wherever both sides support one.
+
+| Why | Tags |
+|---|---|
+| traffic recorded today is decrypted once a quantum computer can break the classical exchange, NIST deprecates that exchange by 2030, and the hybrid keeps the classical half's strength should the new algorithm fall. | [security] |
+
 ### security-primitive-from-a-vetted-library · MUST
 A security primitive comes from the platform or a vetted library: a token, a nonce or an identifier that guards access from a cryptographic random source, a password stored only by a password-hashing function, a secret compared in constant time; the project writes no cryptography of its own.
 
 | Why | Tags |
 |---|---|
 | a home-made primitive fails silently, and an attacker finds it first. | [security] |
+
+## Vulnerabilities
+
+### vulnerability-reported-privately · MUST
+A program released to others names, where its users and finders look — its readme, its manifest, its site — where a vulnerability in it is reported privately.
+
+| Why | Tags |
+|---|---|
+| a finder with no private channel reports in public, and the users learn last; the EU's Cyber Resilience Act asks every product with digital elements for that contact. | [security] |
+
+### exploited-vulnerability-and-severe-incident-reported-in-time · MUST
+An actively exploited vulnerability in a released version, and a severe incident that affects its security, are reported to the authority within the times the law that binds the product sets — under the EU Cyber Resilience Act an early warning within 24 hours, a notification within 72 — and the users it reaches are told of it and of what to do.
+
+| Why | Tags |
+|---|---|
+| the deadline runs from when the maker learns of it, a report late is a breach of its own, and the law binds an application from a store as much as a package from a registry. | [security] |

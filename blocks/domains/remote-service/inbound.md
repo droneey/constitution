@@ -5,11 +5,11 @@
 ## Webhooks
 
 ### webhook-verified-before-it-is-acted-on · MUST
-A webhook the program receives is acted on only after its signature is verified, with the sender's secret or public key, over its raw body and, where the sender signs one, its timestamp, which falls within a window the project sets; from a sender that signs nothing, the program acts only on what it reads back from the sender itself.
+A webhook the program receives is acted on only after its signature — any one of the signatures it carries — is verified, with the sender's secret or public key, over its raw body and, where the sender signs one, its timestamp, which falls within a window the project sets; from a sender that signs nothing, the program acts only on what it reads back from the sender itself.
 
 | Why | Tags |
 |---|---|
-| anyone who finds the address can post to it, a delivery whose timestamp the signature does not cover is replayed with a fresh one, and what the program reads back from the sender is the sender's word. | [security] |
+| anyone who finds the address can post to it, a delivery whose timestamp the signature does not cover is replayed with a fresh one, a sender rotating its secret signs with both for a while, and what the program reads back from the sender is the sender's word. | [security] |
 
 ### webhook-delivery-processed-once → operation-idempotent-by-design · MUST
 A webhook delivery is processed once: a delivery seen before — known by an identifier the signature covers, or by the signature itself where the sender signs no timestamp — is acknowledged and not acted on again, and what was seen is kept for as long as the sender may redeliver, then dropped.

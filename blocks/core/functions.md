@@ -28,7 +28,7 @@ A function that answers depends only on its input and on the dependencies it is 
 ## Size and flow
 
 ### function-within-its-limits · MUST
-A function holds at most 100 lines and a cognitive complexity of at most 10. A function whose body is one data literal it returns — a table, a drawing — may lift the line limit by a suppression that says so; test code — a spec, a fake, a contract suite, fixtures — and a generated file have no line limit.
+A function holds at most 100 lines and a cognitive complexity of at most 15. A function whose body is one data literal it returns — a table, a drawing — may lift the line limit by a suppression that says so; test code — a spec, a fake, a contract suite, fixtures — and a generated file have no line limit.
 
 | Why | Tags |
 |---|---|

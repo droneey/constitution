@@ -149,6 +149,13 @@ A `finally` block never leaves by `return`, `break`, `continue` or `throw`.
 |---|---|
 | a jump out of `finally` replaces the failure in flight, so the error vanishes without any `catch` having recognised it. | [errors] |
 
+### expected-failure-named-by-a-throws-tag → expected-failure-is-part-of-the-contract · SHOULD
+A function that throws an expected failure names its type in a `@throws` tag of its JSDoc — `@throws {@link OrderNotFoundError} when no order has the id` — beside the one named type of its failures.
+
+| Why | Tags |
+|---|---|
+| TypeScript has no checked exceptions, so no signature can say what a function throws and no compiler holds it; the tag is where the editor shows it to every caller. | [errors] |
+
 ## Effects
 
 ### cancellation-by-abort-signal → outside-call-can-be-cancelled · SHOULD

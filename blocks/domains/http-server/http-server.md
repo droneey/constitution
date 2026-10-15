@@ -96,3 +96,12 @@ The server bounds how long it waits for a request's headers, for its body and on
 | Why | Tags |
 |---|---|
 | a client that sends a byte at a time otherwise holds a connection for ever, and a few hundred of them take the server down. | [security, performance] |
+
+## Disclosure
+
+### vulnerability-contact-served-as-security-txt → vulnerability-reported-privately · MUST
+A program that serves HTTP to the public under a domain of its own serves `/.well-known/security.txt`, as RFC 9116 sets out, with the contact for a vulnerability, the policy it follows and the file's expiry.
+
+| Why | Tags |
+|---|---|
+| finders and their tools look for the contact there first, and the expiry keeps a stale address from being trusted. | [security] |

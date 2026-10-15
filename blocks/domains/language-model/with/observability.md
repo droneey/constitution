@@ -14,8 +14,8 @@ The text of prompts and outputs reaches logs, traces and metrics only through a 
 ## Spans
 
 ### model-call-span-carries-model-tokens-and-stop → unit-of-work-opens-a-span · SHOULD
-Every model call is a span carrying the model requested and the model that answered, the tokens in, cached and out, and the reason the output stopped, named as OpenTelemetry's GenAI conventions name them.
+Every model call is a span carrying the model requested and the model that answered, the tokens in, cached and out, and the reason the output stopped, named as the version of OpenTelemetry's GenAI conventions the project pins names them.
 
 | Why | Tags |
 |---|---|
-| cost, latency and a change of behaviour are traced to a model and a prompt only through these fields. | [performance] |
+| cost, latency and a change of behaviour are traced to a model and a prompt only through these fields, and conventions still in development rename them between versions. | [performance] |

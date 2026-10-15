@@ -34,10 +34,10 @@ No `mock.module` and no `spyOn` over a real module.
 
 | Why | Tags |
 |---|---|
-| `bun test` takes every spec file under the folder it starts in, so only an ignored pattern keeps the integration and end-to-end specs out of the unit specs, their sandbox and their coverage gate. | [] |
+| `bun test` takes every spec file under the folder it starts in, so only an ignored pattern keeps the integration and end-to-end specs out of the unit specs and their sandbox. | [] |
 
 ### coverage-gate-on-loaded-files → logic-fully-covered · MUST
-Bun's coverage gate fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions.
+Bun's coverage gate fails when the lines or functions of a file a spec loads fall below 100 percent, outside core's exclusions, the integration run's coverage of the code over an engine merged with the unit run's.
 
 | Why | Tags |
 |---|---|

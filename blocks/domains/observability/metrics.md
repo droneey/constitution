@@ -27,9 +27,16 @@ A duration is recorded as a histogram whose bucket bounds the project sets aroun
 |---|---|
 | an average hides the slow tail, and an alert on it stays silent while one user in a hundred waits. | [performance] |
 
-### alert-fires-on-what-users-feel · SHOULD
-An alert fires on what the program's users feel — the error rate and the duration of what it serves, past a bound the project sets — rather than on a cause such as a busy processor.
+### served-work-has-a-service-level-objective · SHOULD
+Every kind of request or task the program serves that its users depend on has a service level objective: an indicator measured where users feel it — the share of good answers, the share served within a duration — a target and a window, recorded in the repository.
 
 | Why | Tags |
 |---|---|
-| an alert on a cause wakes someone for what nobody noticed and stays silent for a failure with a cause nobody listed. | [errors] |
+| a target and its window say how much failure users can bear, so the budget it leaves decides between shipping and fixing, and an alert can measure what is left of it. | [performance] |
+
+### alert-fires-on-what-users-feel · SHOULD
+An alert on the health of the work the program serves fires on what its users feel: on the rate at which an objective's error budget burns, over a long and a short window together, never on a single sample past a fixed bound nor on a cause such as a busy processor.
+
+| Why | Tags |
+|---|---|
+| an alert on a cause wakes someone for what nobody noticed and stays silent for a failure with a cause nobody listed, and one on a fixed bound fires on every short spike and misses a slow burn that spends the budget all the same. | [errors] |

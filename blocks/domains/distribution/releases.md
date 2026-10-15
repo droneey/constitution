@@ -58,17 +58,3 @@ Every release ships a software bill of materials, in SPDX or CycloneDX, listing 
 | Why | Tags |
 |---|---|
 | a user learns from it whether a newly published vulnerability reaches them, and the EU's Cyber Resilience Act asks the maker to keep one with the technical documentation. | [security] |
-
-### vulnerability-reported-privately · MUST
-A distributed unit names, in its manifest or its readme, where a vulnerability in it is reported privately.
-
-| Why | Tags |
-|---|---|
-| a finder with no private channel reports in public, and the users learn last. | [security] |
-
-### exploited-vulnerability-reported-in-time · MUST
-An actively exploited vulnerability in a released version is reported to the authority within the times the law that binds the product sets, such as the EU Cyber Resilience Act's 24 hours for an early warning.
-
-| Why | Tags |
-|---|---|
-| the deadline runs from when the maker learns of it, and a report late is a breach of its own. | [security] |

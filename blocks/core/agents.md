@@ -91,11 +91,18 @@ An agent never widens its own limits: it changes no permission setting, hook, in
 | an agent steered by what it reads would otherwise remove the very limit that stops it, and every other rule of this chapter would hold only until then. | [security] |
 
 ### agent-extension-vetted-as-a-dependency · SHOULD
-A server, plugin or skill that extends an agent is a dependency, vetted as one and pinned to a version; a remote one whose version cannot be pinned has its tool definitions pinned, and a change to them is reviewed before use.
+A server, plugin or skill that extends an agent is a dependency, vetted as one before it is added.
 
 | Why | Tags |
 |---|---|
 | an extension runs with the agent’s rights over the code, the secrets and the network. | [security] |
+
+### agent-extension-pinned · MUST
+A server, plugin or skill that extends an agent is pinned to an exact version or digest, never run as `@latest` or from a moving branch; a remote one whose version cannot be pinned has its tool definitions pinned, and a definition that changed is withheld until a person has reviewed it.
+
+| Why | Tags |
+|---|---|
+| an extension that was clean for fifteen versions turned malicious in its sixteenth, and an agent runs whatever its next release brings with the agent's rights, which no other download the project fetches is trusted with unpinned. | [security] |
 
 ## Delegating and knowing
 

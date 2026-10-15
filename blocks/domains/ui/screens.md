@@ -71,6 +71,13 @@ Content a screen already shows stays in place while it reloads or the screen mov
 |---|---|
 | content that blinks to a placeholder on every refresh reads as a failure, and the user loses their place. | [ux] |
 
+### loading-indicator-delayed-and-held · SHOULD
+A loading indicator appears only once a load outlasts a delay the project sets, and once shown stays for a minimum the project sets, so a fast load shows none and a slow one never flashes.
+
+| Why | Tags |
+|---|---|
+| below about a second a wait needs no sign, and an indicator that flashes for a moment reads as a glitch and makes the screen feel slower than it is. | [ux] |
+
 ### late-content-reserves-its-space · SHOULD
 Content that arrives after the screen is drawn — data, an image, an embed, a notice — has its space reserved before it arrives, by its indicator or its declared size, so nothing already shown moves.
 

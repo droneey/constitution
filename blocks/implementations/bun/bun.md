@@ -29,7 +29,7 @@ governs: ["bunfig.toml", "package.json"]
 |---|---|
 | an install script runs with the developer's rights; listing each package keeps that a decision, not a default. | [] |
 
-### release-age-set-for-installs → new-release-adopted-after-a-cooldown · SHOULD
+### release-age-set-for-installs → new-release-adopted-after-a-cooldown · MUST
 `minimumReleaseAge` under `[install]` in `bunfig.toml` sets the cooldown for new releases, and `minimumReleaseAgeExcludes` holds the exemptions, each with any new dependency it brings.
 
 | Why | Tags |

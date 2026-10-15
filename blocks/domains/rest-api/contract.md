@@ -12,11 +12,11 @@ The contract of a REST API is an OpenAPI document of version 3.1 or later, with 
 | callers, generated clients and checks all read one machine-readable contract, and a server that drifts from it fails a spec, not a caller. | [testing] |
 
 ### version-named-once-by-its-major · SHOULD
-A breaking version is a new major, named in the one place the API chose once — a prefix of its paths or one version parameter — and a request names its version explicitly.
+Every path begins with the API's major from its first release — `/v1/orders` — and nowhere else names it; a new major comes only with a breaking change.
 
 | Why | Tags |
 |---|---|
-| minor versions in addresses and two schemes in one API leave callers unsure what they get. | [] |
+| a version in the path shows in every log, cache key, route and link, and one scheme for every API leaves no caller unsure what it gets; versions kept for breaking changes alone stay few. | [] |
 
 ### retired-field-marked-deprecated-in-the-openapi-document → retired-operation-announced-before-removal · MUST
 A field being retired is marked `deprecated` in the OpenAPI document, naming its replacement and its removal date.

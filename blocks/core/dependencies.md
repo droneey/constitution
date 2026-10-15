@@ -32,12 +32,12 @@ Production code imports no dependency that only builds, tests or lints.
 |---|---|
 | a tool imported by the program ships with it, and its next release changes the program without anyone choosing it. | [] |
 
-### dependency-resolved-from-its-declared-registry · MUST
-A private dependency resolves only from the registry the project names for it, never from a public one.
+### dependency-installed-only-from-a-registry · MUST
+A package a package manager installs, a transitive one included, comes only from a registry — a private one only from the registry the project names for it — never from a source repository, an archive's address or a path outside the repository.
 
 | Why | Tags |
 |---|---|
-| a private name that is free on a public registry is installed from whoever claims it there. | [security] |
+| a private name that is free on a public registry is installed from whoever claims it there, and a dependency from a repository, an address or a path has no release date for the cooldown and no provenance, and runs code as it installs even where install scripts are off. | [security] |
 
 ## Choosing and using
 
@@ -48,12 +48,12 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 |---|---|
 | each dependency runs with the project’s rights, and these signs mark most malicious packages. | [security] |
 
-### new-release-adopted-after-a-cooldown · SHOULD
-A new release of a dependency is adopted only after a cooldown the project sets; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
+### new-release-adopted-after-a-cooldown · MUST
+A new release of a dependency is adopted only after a cooldown of at least seven days; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
 
 | Why | Tags |
 |---|---|
-| most hijacked releases are found and pulled within days. | [security] |
+| most hijacked releases are found and pulled within a week, and the major package managers now hold a cooldown of their own, so none is left outside the rule. | [security] |
 
 ### dependency-provenance-verified · SHOULD
 A dependency whose registry publishes provenance or signatures is installed only once they verify, and a version that lost what its earlier versions carried is refused.

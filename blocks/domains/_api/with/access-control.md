@@ -14,8 +14,8 @@ A handle is checked against the caller on every request, and an expired or unkno
 ## Hidden objects
 
 ### hidden-object-answered-as-not-found · SHOULD
-An object the caller may not see is answered as not found, as if it did not exist; refused access is kept for an operation the caller may not perform on an object it does see.
+An object the caller may not see is answered as not found, as if it did not exist, or, where the contract says so, every identifier the caller has no right to is refused alike, the right checked before the object is looked up; refused access is otherwise kept for an operation the caller may not perform on an object it does see.
 
 | Why | Tags |
 |---|---|
-| a refusal on a guessed identifier confirms that the object exists. | [security] |
+| a refusal given only to objects that exist confirms that the object exists, and either answer given alike to all hides it. | [security] |

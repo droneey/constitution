@@ -29,6 +29,15 @@ A document writes raw HTML only for what Markdown has no syntax for, such as `<d
 |---|---|
 | raw HTML is noise in the plain text people and agents read, and a renderer that strips it loses the content inside. | [] |
 
+## Tools
+
+### document-passes-a-markdown-linter → rule-held-by-a-tool-where-one-can · MUST
+Every Markdown document passes a linter of CommonMark and GitHub Flavored Markdown — its headings, links, images and code blocks — at its strictest severity.
+
+| Why | Tags |
+|---|---|
+| the rules on headings, alternative text and code blocks are findings such a linter reports, and held by prose alone they break as soon as nobody reads closely. | [] |
+
 ## Layout
 
 ### markdown-file-ends-in-md → format-has-one-extension · SHOULD

@@ -25,7 +25,7 @@ governs: ["**/tests/**"]
 | a warning nobody fails on is read by nobody, and a misspelt marker or option otherwise changes nothing without a word. | [] |
 
 ### coverage-gate-with-branches → logic-fully-covered · MUST
-`[tool.coverage]` measures branches, `branch = true`, and fails when the lines or branches of `src/` fall below 100 percent, `fail_under = 100`, outside core's exclusions, which `omit` lists.
+`[tool.coverage]` measures branches, `branch = true`, and fails when the lines or branches of `src/` fall below 100 percent, `fail_under = 100`, outside core's exclusions, which `omit` lists, the integration run's coverage combined with the unit run's.
 
 | Why | Tags |
 |---|---|

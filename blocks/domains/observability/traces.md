@@ -27,11 +27,18 @@ Every unit of work — a request served, a task run, a message handled, a call t
 |---|---|
 | a trace shows where the time of a request went only if each step it took is a span of it. | [] |
 
-## Content
-
-### span-attribute-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
-Span attributes, span events and metric exemplars pass the mask the logs pass, by the same words, before export; an address is recorded without its query and a database statement only with placeholders for its values.
+### event-in-a-unit-of-work-written-as-a-log · SHOULD
+An event or a failure inside a unit of work is written as a log record in its span's context, never through the span-event API.
 
 | Why | Tags |
 |---|---|
-| instrumentation records the full URL, the statement's text and an exception's message by default, so a mask on logs alone leaves the same secret in every trace. | [security, data] |
+| OpenTelemetry has deprecated span events, since an event is a log with a name: one written as a log passes the log pipe, its mask and its levels, and stays tied to its span by the trace and span ids it carries. | [] |
+
+## Content
+
+### span-attribute-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
+Span attributes and metric exemplars pass the mask the logs pass, by the same words, before export; an address is recorded without its query and a database statement only with placeholders for its values.
+
+| Why | Tags |
+|---|---|
+| instrumentation records the full URL and the statement's text by default, so a mask on logs alone leaves the same secret in every trace. | [security, data] |

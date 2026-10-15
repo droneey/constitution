@@ -5,7 +5,7 @@
 ## Statuses
 
 ### rest-method-and-status-mean-what-http-registers · MUST
-Methods and statuses mean what HTTP registers; a `DELETE` of something already gone answers `404`.
+Methods and statuses mean what HTTP registers; a `DELETE` of something already gone answers `204`, as the first one did, so a repeat after a lost answer reads as done.
 
 | Why | Tags |
 |---|---|

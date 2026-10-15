@@ -46,7 +46,7 @@ Edge cases are chosen by risk and by the partitions of the input — empty input
 | bugs live at the edges, and choosing them by risk spends cases where a bug is likely. | [testing] |
 
 ### property-tested-where-it-pays · SHOULD
-A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
+A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function, and a parser of outside input, which on any input returns a value or its declared failure and never throws anything else — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
 
 | Why | Tags |
 |---|---|
@@ -220,11 +220,11 @@ Each faked contract has one fake, shared by every spec that needs it.
 | one fake is kept in step with its real implementation once, not once per spec. | [testing] |
 
 ### effect-faked-never-mocked · SHOULD
-No spec mocks, patches or spies on a module of the program; an effect is replaced by the fake of its contract or, beneath the code that speaks to an outside system, by a transport that serves captured responses.
+No spec mocks, patches or spies on a module of the program; an effect is replaced by the fake of its contract or, beneath the code that speaks to an outside system whose engine no spec can run in its sandbox, by a transport that serves captured responses.
 
 | Why | Tags |
 |---|---|
-| a mocked module replaces the code the spec claims to test and breaks when the module moves. | [testing] |
+| a mocked module replaces the code the spec claims to test and breaks when the module moves, and an engine the sandbox can run proves the code over it better than any capture of its answers. | [testing] |
 
 ### integration-spec-runs-the-real-engine · SHOULD
 Each implementation of a contract over an outside system whose engine can run in the sandbox is proven against that engine there — by the contract suite where it has one — with a case for each failure it maps.
@@ -250,15 +250,15 @@ Every spec passes.
 | a spec left failing proves nothing from then on. | [testing] |
 
 ### logic-fully-covered · MUST
-Logic — all production code but the entry files, the file that wires the program, generated files, declarations and vendored code — is covered at 100 percent of lines and functions, and of branches where the runner measures them, by the unit specs of its boundaries alone; integration and end-to-end specs count toward no coverage. A line no behaviour reaches is a missing case or dead code.
+Logic — all production code but the entry files, the file that wires the program, generated files, declarations and vendored code — is covered at 100 percent of lines and functions, and of branches where the runner measures them, by the specs of its boundaries: the unit specs and, for an implementation of a contract over an outside system whose engine runs in the sandbox, its integration specs as well; end-to-end specs count toward no coverage. A line no behaviour reaches is a missing case or dead code.
 
 | Why | Tags |
 |---|---|
-| specs of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code. | [testing] |
+| specs of behaviour at the boundaries reach every line a caller can reach, so the gate costs nothing extra and catches dead code; the code over a real engine is reached on that engine, never through a driver faked only to cover its lines. | [testing] |
 
 ### every-mutant-killed · MUST
-Mutation testing measures the specs, and every mutant of the logic is killed; a mutant no behaviour can tell apart is marked in the code as equivalent, with its reason.
+Mutation testing measures the specs, and every mutant of the logic a change touches — its changed lines, its new files and the files whose specs it changes — is killed; a mutant no behaviour can tell apart, and one in code no caller relies on — a log call, the text of a diagnostic — is left out by the tool's configuration or marked in the code with its reason.
 
 | Why | Tags |
 |---|---|
-| a suite that lets mutants live is weaker than its coverage says. | [testing] |
+| a suite that lets mutants live is weaker than its coverage says, and a case written only to kill a mutant no caller would notice proves no plausible bug and binds the spec to the code's wording. | [testing] |

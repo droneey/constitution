@@ -93,6 +93,13 @@ A person's request to correct their personal data corrects it, within the time t
 |---|---|
 | data the person knows is wrong goes on deciding about them until someone fixes it. | [data] |
 
+### objection-honoured · MUST
+A person's objection to a processing based on the program's legitimate interest stops it unless the inventory records grounds that override theirs, and an objection to direct marketing always stops it, within the time the law of the region sets.
+
+| Why | Tags |
+|---|---|
+| the GDPR gives a person the right to object to what the program does on its own interest, and an absolute one against marketing, so a processing that goes on after either is unlawful. | [data] |
+
 ## Breaches
 
 ### personal-data-breach-notified-in-time · MUST

@@ -29,8 +29,8 @@ A package builds with `uv_build`, required in `[build-system]` with a floor and 
 |---|---|
 | a new minor of the backend may build a different package from the same files; the cap makes that an update someone reviews. | [] |
 
-### exclude-newer-sets-the-cooldown → new-release-adopted-after-a-cooldown · SHOULD
-`exclude-newer = "3 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
+### exclude-newer-sets-the-cooldown → new-release-adopted-after-a-cooldown · MUST
+`exclude-newer = "7 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
 
 | Why | Tags |
 |---|---|

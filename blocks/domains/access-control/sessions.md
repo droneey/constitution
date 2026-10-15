@@ -38,3 +38,10 @@ A session ends after a time without activity and after a time since sign-in, bot
 | Why | Tags |
 |---|---|
 | a session with no end works for ever for whoever finds an unlocked device or a stolen token. | [security] |
+
+### sessions-listed-and-ended-by-their-owner · SHOULD
+A person can see their active sessions and, after proving a factor again, end any or all of them; an administrator can end a person's sessions.
+
+| Why | Tags |
+|---|---|
+| a person who lost a device or sees a sign-in they never made can otherwise only wait for the session to expire. | [security] |

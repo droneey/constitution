@@ -25,12 +25,19 @@ Attempts at signing in, at a one-time code and at a recovery token are limited p
 |---|---|
 | an unlimited attempt lets an attacker try passwords, or all of a short code's values, until one works. | [security] |
 
-### phishing-resistant-factor-offered · SHOULD
+### sign-in-takes-more-than-a-password · MUST
+An account signs in with a passkey, or with a password and a second factor.
+
+| Why | Tags |
+|---|---|
+| a password alone falls to the reuse and the phishing that take most accounts, and NIST and OWASP ASVS ask for more than one factor wherever personal data is held. | [security] |
+
+### phishing-resistant-factor-offered · MUST
 A person can sign in with a phishing-resistant factor, such as a passkey.
 
 | Why | Tags |
 |---|---|
-| a passkey cannot be typed into a fake page, which defeats the attack that steals most accounts. | [security] |
+| a passkey cannot be typed into a fake page, which defeats the attack that steals most accounts, and NIST's guidance of 2025 makes offering one a duty. | [security] |
 
 ### privileged-account-signs-in-with-a-phishing-resistant-factor · MUST
 An account with privileges over other accounts, the program's settings or other people's data signs in only with a phishing-resistant factor; where sign-in goes through an outside provider, the program checks that factor in the ID token's `acr` or `amr`, and asks for one of its own where the provider asserts neither.
@@ -39,21 +46,21 @@ An account with privileges over other accounts, the program's settings or other 
 |---|---|
 | an administrator's account is the one an attacker phishes first, and one taken gives everything at once. | [security] |
 
-### account-existence-never-revealed · MUST
-Sign-in, sign-up and recovery answer the same way whether an account exists or not.
+### account-existence-never-revealed · SHOULD
+Sign-in and recovery answer the same way whether an account exists or not, and sign-up tells that an address is taken only in a message sent to that address.
 
 | Why | Tags |
 |---|---|
-| an answer that differs tells an attacker which addresses to attack. | [security] |
+| an answer that differs tells an attacker which addresses to attack; OWASP ASVS asks for this only at its highest level, and a sign-in that asks for the identifier first gives some of it away, so a product may weigh it against the flow its users need. | [security] |
 
 ## Tokens
 
 ### token-verified-before-it-is-trusted · MUST
-A token a caller presents is trusted only after its signature, by the algorithm the program expects, and its issuer, audience and expiry are checked; a token that names another algorithm or none is refused.
+A token a caller presents is trusted only after its signature, by the algorithm the program expects, and its type, issuer, audience and expiry are checked; a token that names another algorithm or none is refused.
 
 | Why | Tags |
 |---|---|
-| a token whose claims go unchecked is accepted from another issuer, for another service or after it expired, and one that chooses its own algorithm signs itself. | [security] |
+| a token whose claims go unchecked is accepted from another issuer, for another service or after it expired, an ID token is passed off as an access token where the audiences match, and one that chooses its own algorithm signs itself. | [security] |
 
 ### caller-token-never-forwarded · MUST
 A token a caller presents is never sent on to another system; a call onward carries the program's own credential for that system, or a token issued for that system by an exchange that keeps the caller's identity.
@@ -72,11 +79,18 @@ A refresh token the program issues to a public client is either rotated on every
 ## Records
 
 ### security-event-recorded · MUST
-A security event — a sign-in, a failed sign-in, a sign-out, a change of credentials, a grant or revocation of rights, a refused access — is recorded with who, what, when and from where.
+A security event — a sign-in, a failed sign-in, a sign-out, a change of credentials, a grant or revocation of rights, a refused access — is recorded with who, what, when and from where, and leaves the program for a store the program cannot change or delete.
 
 | Why | Tags |
 |---|---|
-| an attack shows itself only in the events it leaves, and an event nobody recorded cannot be investigated. | [security] |
+| an attack shows itself only in the events it leaves, an event nobody recorded cannot be investigated, and a record an intruder can erase, or that nobody watches, shows the attack only once it is over. | [security] |
+
+### security-event-alerted · SHOULD
+A run of failed sign-ins or refused accesses past a bound the project sets raises an alert to whoever answers for the system's security.
+
+| Why | Tags |
+|---|---|
+| an attack guessing passwords or probing rights shows as a run of refusals long before it succeeds, and a record nobody is told about is read only after the harm. | [security] |
 
 ## Passwords
 

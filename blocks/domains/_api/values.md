@@ -5,7 +5,7 @@
 ## JSON
 
 ### instant-sent-as-rfc-3339 → instant-is-an-exact-time · MUST
-In JSON, an instant on the wire is an RFC 3339 `date-time` with its offset, `Z` for UTC; a date without a time is a `full-date`, a duration an ISO 8601 duration, and a time a person set in a place a local `date-time` with its IANA zone, never an instant.
+In JSON, an instant on the wire is an RFC 3339 `date-time` with its offset, `Z` for UTC; a date without a time is a `full-date`, a duration an ISO 8601 duration, and a time a person set in a place travels as RFC 9557's local `date-time` with its IANA zone in brackets, `2026-10-15T10:00:00+03:00[Europe/Kyiv]`, or as a local `date-time` and a separate zone field the contract declares, never as an instant alone.
 
 | Why | Tags |
 |---|---|

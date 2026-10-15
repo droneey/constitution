@@ -13,8 +13,8 @@ governs: ["renovate.json"]
 
 > The bot that proposes dependency updates.
 
-### update-cooldown-configured → new-release-adopted-after-a-cooldown · SHOULD
-A minimum release age of some days holds back every update. Renovate proposes a fix for a known vulnerability at once, past that age, so the update it proposes carries the package manager's exemption for the package, with its advisory.
+### update-cooldown-configured → new-release-adopted-after-a-cooldown · MUST
+A minimum release age of at least seven days holds back every update. Renovate proposes a fix for a known vulnerability at once, past that age, so the update it proposes carries the package manager's exemption for the package, with its advisory.
 
 | Why | Tags |
 |---|---|

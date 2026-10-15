@@ -15,7 +15,7 @@ governs: ["**"]
 ## Primitives
 
 ### primitive-passes-its-element-through · SHOULD
-A primitive accepts its element's own props and reference, except a boolean of the element it replaces with a prefixed one of its own, such as `isDisabled` for `disabled`, and merges its own props and handlers with the caller's.
+A primitive accepts its element's own props and reference, its booleans under the prefixed names the program's props take — `isDisabled`, mapped to `disabled` where it reaches the element — and merges its own props and handlers with the caller's.
 
 | Why | Tags |
 |---|---|
