@@ -11,6 +11,13 @@ The contract of a REST API is an OpenAPI document of version 3.1 or later, with 
 |---|---|
 | callers, generated clients and checks all read one machine-readable contract, and a server that drifts from it fails a spec, not a caller. | [testing] |
 
+### answer-enumeration-a-string-of-known-values → answer-enumeration-extensible-in-the-contract · MUST
+An enumeration in an answer is declared in the OpenAPI document as a string whose known values it lists, never as a closed `enum`.
+
+| Why | Tags |
+|---|---|
+| a generator and a validator read a JSON Schema `enum` as closed, so the first value added fails every client built before it. | [] |
+
 ### version-named-once-by-its-major · SHOULD
 Every path begins with the API's major from its first release — `/v1/orders` — and nowhere else names it; a new major comes only with a breaking change.
 

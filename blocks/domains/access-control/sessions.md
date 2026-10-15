@@ -12,21 +12,21 @@ A session gets a new identifier at sign-in and whenever its rights rise, and the
 | an identifier planted before sign-in otherwise becomes, at sign-in, a session the attacker already holds. | [security] |
 
 ### session-ended-on-the-server-at-sign-out · MUST
-A session ends on the server at sign-out: its identifier and its refresh token are refused from then on, whatever copy of them survives on a client.
+A session ends on the server at sign-out: its identifier, and its refresh tokens where it issues them, are refused from then on, whatever copy of them survives on a client.
 
 | Why | Tags |
 |---|---|
 | a sign-out that only forgets the token on the client leaves a stolen copy working. | [security] |
 
 ### sessions-ended-when-credentials-change · MUST
-A change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions and revoke its refresh tokens.
+A change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions and revoke its refresh tokens, where it issues them.
 
 | Why | Tags |
 |---|---|
 | the person who changes a credential is often shutting out someone who took the old one, and a session left open keeps them in. | [security] |
 
 ### access-change-reaches-every-session-and-token · MUST
-A disabled or deleted account loses its sessions, its refresh tokens and its keys at once; a revoked right is read from the store by every session and key the server keeps on the next request that needs it, and left out of every token issued after it; an access token checked without the store lives only minutes.
+A disabled or deleted account loses its sessions, its refresh tokens where it issues them, and its keys at once; a revoked right is read from the store by every session and key the server keeps on the next request that needs it, and left out of every token issued after it; an access token checked without the store lives only minutes.
 
 | Why | Tags |
 |---|---|

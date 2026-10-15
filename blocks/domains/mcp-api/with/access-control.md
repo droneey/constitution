@@ -5,18 +5,11 @@
 ## Tokens
 
 ### tool-server-accepts-only-tokens-issued-for-it → token-verified-before-it-is-trusted · MUST
-A tool server that authorises callers by token accepts only a token whose audience is the server's own canonical URI, and answers `401` to any other.
+A tool server that authorises callers by token accepts only a token whose audience is the server's own canonical URI, and refuses any other.
 
 | Why | Tags |
 |---|---|
 | a token issued for another service and accepted here lets whoever holds it reach this server too. | [security] |
-
-### tool-server-announces-its-authorization-server · MUST
-A tool server that uses MCP's authorization publishes its Protected Resource Metadata (RFC 9728), answers a missing or invalid token with `401` and a `WWW-Authenticate` naming it, and a token short of a scope with `403`, `error="insufficient_scope"` and the scopes required.
-
-| Why | Tags |
-|---|---|
-| a client learns where to sign in, and which scope to ask for, only from these answers. | [security] |
 
 ## Proxies
 

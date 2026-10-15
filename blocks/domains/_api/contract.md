@@ -28,11 +28,11 @@ A request sets only the fields its operation's declared shape lets a caller set;
 | a caller who adds `role: admin` to a body otherwise grants it to themselves. | [security] |
 
 ### answer-enumeration-extensible-in-the-contract → enumeration-others-read-declared-extensible · MUST
-An enumeration in an answer is declared in the contract as a string whose known values it lists, never a closed `enum`.
+An enumeration in an answer is declared open in the contract — its known values listed, its readers told to expect others.
 
 | Why | Tags |
 |---|---|
-| a generated or validating client fails on a value outside a closed `enum`, so the first value added breaks every client built before it. | [] |
+| a client generated from the contract, or one that checks answers by it, fails on a value outside a closed set, so the first value added breaks every client built before it. | [] |
 
 ## Effects
 

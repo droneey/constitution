@@ -5,17 +5,17 @@
 ## Types
 
 ### yaml-read-by-a-yaml-1-2-loader → reader-resolves-scalars-by-the-core-schema · SHOULD
-Code that parses YAML reads it by YAML 1.2's core schema — ruamel.yaml's `YAML(typ='safe', pure=True)`, with the timestamp tag constructed as text — never by PyYAML, whose resolver follows YAML 1.1.
+Code that parses YAML reads it by YAML 1.2's core schema, with the timestamp tag constructed as text, never by a loader whose resolver follows YAML 1.1.
 
 | Why | Tags |
 |---|---|
-| PyYAML's `safe_load` reads `no` as false and `1:20` as 80, and a loader that keeps its timestamps reads a date as a `date`, so the program reads what the writer never meant. | [data] |
+| a resolver of YAML 1.1 reads `no` as false and `1:20` as 80, and a loader that keeps its timestamps reads a date as a `date`, so the program reads what the writer never meant. | [data] |
 
 
 ## Security
 
 ### yaml-from-outside-loaded-by-a-safe-loader-only → outside-yaml-loaded-by-a-safe-loader · MUST
-Code that loads YAML from outside the program uses a safe loader — `YAML(typ='safe')` — and never a full or an unsafe one.
+Code that loads YAML from outside the program uses a safe loader, which builds only plain values, and never a full or an unsafe one.
 
 | Why | Tags |
 |---|---|
@@ -23,7 +23,7 @@ Code that loads YAML from outside the program uses a safe loader — `YAML(typ='
 
 
 ### yaml-from-outside-refused-with-an-alias → alias-expansion-bounded · MUST
-Code that loads YAML from outside the program refuses a document that holds an alias — an `AliasEvent` among its parser's events — before it loads it.
+Code that loads YAML from outside the program refuses a document that holds an alias, found among its parser's events, before it loads it.
 
 | Why | Tags |
 |---|---|

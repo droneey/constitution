@@ -28,7 +28,7 @@ A distributed unit ships its licence file, and the licence notices of the code o
 ## Entries
 
 ### integration-is-an-entry-with-an-optional-framework · SHOULD
-A distributed package's integration into a host framework is an entry of its own, and the framework is an optional peer of the package.
+A distributed package's integration into a host framework is an entry of its own, and the framework is an optional dependency of the package.
 
 | Why | Tags |
 |---|---|

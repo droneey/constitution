@@ -152,7 +152,7 @@ Awaited work across a process boundary that its client does not bound itself run
 | a scope cancels everything awaited inside it once the deadline passes and raises at its edge, so one deadline covers a whole exchange of calls. | [errors, performance] |
 
 ### cancellation-always-re-raised → async-work-awaited-or-held-by-a-scope · MUST
-A clause that catches `asyncio.CancelledError`, or a base class of it, re-raises it once its cleanup is done.
+A clause that catches `asyncio.CancelledError`, or the cancellation exception of the async library the project uses, or a base class of either, re-raises it once its cleanup is done.
 
 | Why | Tags |
 |---|---|

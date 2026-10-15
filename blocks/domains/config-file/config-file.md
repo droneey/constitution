@@ -10,7 +10,7 @@ governs: ["**"]
 ---
 # Config file
 
-> A file its user writes and the program reads to know what to do — its configuration, a declaration of the state it should reach: its shape is the program's and parsed strictly, its secrets are references, and editors get its schema.
+> A file its user writes and the program reads to know what to do — its configuration, a declaration of the state it should reach: its shape is the program's and parsed strictly, its secrets are references, and editors get its schema where its format has one they read.
 
 ## Shape
 
@@ -63,7 +63,7 @@ Every reference the config file makes is resolved when the config file is read �
 ## Schema
 
 ### published-schema-generated-from-code → generated-file-never-edited · MUST
-The schema published for editors is generated from the program's schema of the config file, never written by hand.
+Where the config file's format has a schema editors read — JSON Schema for JSON, YAML and TOML — the schema published for editors is generated from the program's schema of the config file, never written by hand.
 
 | Why | Tags |
 |---|---|
@@ -77,7 +77,7 @@ The copy of the published schema kept in the repository is compared by a spec wi
 | a stale copy is what editors fetch, and only a spec notices that the code's schema moved on without it. | [testing, data] |
 
 ### config-file-points-editors-at-the-schema · SHOULD
-The config file points editors at the published schema.
+The config file points editors at its published schema, where its format has one.
 
 | Why | Tags |
 |---|---|
@@ -99,8 +99,8 @@ The schema library offers unions selected by a discriminant field, with an error
 |---|---|
 | without it, a section's forms cannot each be checked by their own schema and reported as such. | [data, errors] |
 
-### schema-library-generates-json-schema · MUST
-The schema library generates a JSON Schema from the program's schema.
+### schema-library-generates-the-editors-schema · MUST
+The schema library generates, from the program's schema, the schema editors read for the config file's format, where it has one — JSON Schema for JSON, YAML and TOML.
 
 | Why | Tags |
 |---|---|

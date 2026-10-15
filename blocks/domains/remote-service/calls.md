@@ -5,7 +5,7 @@
 ## Addresses from callers
 
 ### address-from-a-caller-reached-only-if-public → outside-address-followed-only-from-an-allowlist · MUST
-An address a caller gives for the program to reach — a webhook, a file to fetch, a link to preview — is reached only on a host of an allowlist where the program can know its hosts, with no redirect followed past these checks, and only when the address the host resolves to, checked as the connection opens, is public — not private, loopback, link-local, unspecified, shared, reserved, or an IPv4 address mapped into IPv6.
+An address a caller gives for the program to reach — a callback to notify, a file to fetch, a link to preview — is reached only on a host of an allowlist where the program can know its hosts, with no redirect followed past these checks, and only when the address the host resolves to, checked as the connection opens, is public — not private, loopback, link-local, unspecified, shared, reserved, or an IPv4 address mapped into IPv6.
 
 | Why | Tags |
 |---|---|

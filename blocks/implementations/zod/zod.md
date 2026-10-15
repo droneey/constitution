@@ -54,4 +54,4 @@ A schema uses Zod 4's forms — `z.enum`, `z.strictObject` and `z.looseObject`, 
 |---|---|---|
 | `schema-library-rejects-unknown-keys` | `z.strictObject` | yes |
 | `schema-library-selects-unions-by-a-discriminant` | `z.discriminatedUnion` | yes |
-| `schema-library-generates-json-schema` | `z.toJSONSchema` | yes |
+| `schema-library-generates-the-editors-schema` | `z.toJSONSchema` | yes |

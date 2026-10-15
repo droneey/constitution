@@ -17,9 +17,9 @@ block	open-source	domain	A public repository: its licence, its policies and its 
 block	owned-data	domain	Data the program decides on: aggregates, migrations and backups.	consistency.md migrations.md architecture/owned-data.md workflow/owned-data.md				false				**
 block	privacy	domain	Personal data: minimised, consented, kept, exported and erased.	consent.md opt-out.md	ui			false				**
 block	remote-data	domain	Data another system owns: its cache, keys, reads and refreshes.	architecture/remote-data.md	access-control ui architecture/access-control	remote-service		false				**
-block	remote-service	domain	Another system the program calls, hears from or pushes to.	calls.md inbound.md outbound.md streams.md tests.md architecture/remote-service.md				false				**
+block	remote-service	domain	Another system the program calls, hears from or pushes to.	calls.md outbound.md streams.md tests.md architecture/remote-service.md	http-server			false				**
 block	rest-api	domain	An HTTP API of resources: methods, statuses, answers and contract.	answers.md contract.md wire.md		http-server	_api	false			_api	**
-block	ui	domain	Screens, components, forms and accessibility of any interface.	accessibility.md components.md forms.md screens.md tests.md architecture/ui.md	remote-data remote-service architecture/access-control architecture/remote-data			false				**
+block	ui	domain	Screens of declarative components: props, state, forms, accessibility.	accessibility.md components.md forms.md screens.md tests.md architecture/ui.md	remote-data remote-service architecture/access-control architecture/remote-data			false				**
 block	untrusted-client	domain	Code that runs where its user can read and change it.					false				**
 block	version-control	domain	Changes checked, history and releases kept, and what agents may do.	workflow/version-control.md				false				**
 block	workspace	domain	Several units in one repository: their folders, imports and links.	architecture/workspace.md	architecture/owned-data			false				**
@@ -72,6 +72,7 @@ block	react-native	implementation	React on a device — host components, virtual
 block	renovate	implementation	Dependency updates proposed by a bot.	workflow/renovate.md		git		false				renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.		fastapi pytest	python		false		python		pyproject.toml ruff.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	architecture/shadcn.md		react-dom tailwind		false				components.json **/libs/ui/components/**
+block	standard-webhooks	implementation	Standard Webhooks' headers, signatures and disabled endpoints.		http-server	remote-service		false				**
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	architecture/storybook.md		_react		false				**/*.stories.tsx .storybook/**
 block	structlog	implementation	structlog renders the records of Python's logging as events.	architecture/structlog.md		python observability		false				**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test workspace	typescript		false		typescript		stryker.config.mjs
@@ -494,7 +495,7 @@ rule	published-schema-copy-checked-by-a-spec	config-file	blocks/domains/config-f
 rule	config-file-points-editors-at-the-schema	config-file	blocks/domains/config-file/config-file.md		SHOULD	ux			true
 rule	schema-library-rejects-unknown-keys	config-file	blocks/domains/config-file/config-file.md		MUST	data			true
 rule	schema-library-selects-unions-by-a-discriminant	config-file	blocks/domains/config-file/config-file.md		MUST	data errors			true
-rule	schema-library-generates-json-schema	config-file	blocks/domains/config-file/config-file.md		MUST	data			true
+rule	schema-library-generates-the-editors-schema	config-file	blocks/domains/config-file/config-file.md		MUST	data			true
 rule	config-file-type-declared-with-its-port	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	code-placed-by-its-reason-to-change	true
 rule	config-file-parsed-by-its-adapter	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	feature-blind-to-the-config-file	config-file	blocks/domains/config-file/architecture/config-file.md		MUST		architecture	feature-asks-another-through-its-own-contract	true
@@ -659,11 +660,11 @@ rule	long-tool-call-answered-with-a-task	mcp-api	blocks/domains/mcp-api/interact
 rule	request-state-verified-when-it-returns	mcp-api	blocks/domains/mcp-api/interaction.md		MUST	security		outside-value-untyped-until-parsed	true
 rule	tool-list-pinned-by-a-spec	mcp-api	blocks/domains/mcp-api/tests.md		MUST	testing		contract-published-machine-readable	true
 rule	tool-server-accepts-only-tokens-issued-for-it	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security		token-verified-before-it-is-trusted	true
-rule	tool-server-announces-its-authorization-server	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	proxy-server-asks-consent-per-client	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	caller-shaped-result-cached-privately	mcp-api	blocks/domains/mcp-api/with/access-control.md	access-control	MUST	security			true
 rule	tool-server-refuses-a-foreign-origin	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	MUST	security		state-changing-request-refused-from-other-origins	true
 rule	local-tool-server-reachable-only-from-its-machine	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	SHOULD	security			true
+rule	tool-server-announces-its-authorization-server	mcp-api	blocks/domains/mcp-api/with/http-server.md	http-server	MUST	security			true
 rule	broker-rights-scoped-to-own-channels	messaging	blocks/domains/messaging/messaging.md		MUST	security		credential-has-least-privilege	true
 rule	broker-reached-over-verified-tls	messaging	blocks/domains/messaging/messaging.md		MUST	security			true
 rule	message-processed-once-per-consumer	messaging	blocks/domains/messaging/consuming.md		MUST	data		operation-idempotent-by-design	true
@@ -793,11 +794,8 @@ rule	calls-to-a-failing-system-cut-off-by-a-breaker	remote-service	blocks/domain
 rule	call-runs-over-verified-tls	remote-service	blocks/domains/remote-service/calls.md		MUST	security			true
 rule	transport-sets-a-timeout-and-cancels	remote-service	blocks/domains/remote-service/calls.md		MUST	errors performance			true
 rule	transport-tells-failures-apart	remote-service	blocks/domains/remote-service/calls.md		MUST	errors			true
-rule	webhook-verified-before-it-is-acted-on	remote-service	blocks/domains/remote-service/inbound.md		MUST	security			true
-rule	webhook-delivery-processed-once	remote-service	blocks/domains/remote-service/inbound.md		MUST	data		operation-idempotent-by-design	true
-rule	webhook-acknowledged-once-recorded	remote-service	blocks/domains/remote-service/inbound.md		SHOULD	performance			true
-rule	sent-webhook-signed-with-a-delivery-id	remote-service	blocks/domains/remote-service/outbound.md		MUST	security			true
-rule	failed-webhook-retried-then-held	remote-service	blocks/domains/remote-service/outbound.md		MUST	errors		failure-retried-only-when-transient	true
+rule	sent-push-signed-with-a-delivery-id	remote-service	blocks/domains/remote-service/outbound.md		MUST	security			true
+rule	failed-push-retried-then-held	remote-service	blocks/domains/remote-service/outbound.md		MUST	errors		failure-retried-only-when-transient	true
 rule	stream-cut-before-its-terminal-event-fails	remote-service	blocks/domains/remote-service/streams.md		MUST	errors data		failure-is-expected-or-defect	true
 rule	remote-system-proven-by-captured-responses	remote-service	blocks/domains/remote-service/tests.md		SHOULD	testing			true
 rule	captured-response-verified-against-its-system	remote-service	blocks/domains/remote-service/tests.md		SHOULD	testing			true
@@ -806,6 +804,9 @@ rule	transport-failures-mapped-once	remote-service	blocks/domains/remote-service
 rule	transport-mapper-takes-each-features-codes	remote-service	blocks/domains/remote-service/architecture/remote-service.md		SHOULD		architecture		true
 rule	stream-returned-as-a-sequence-of-domain-events	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST	data	architecture	contract-knows-no-vendor	true
 rule	one-transport-instance-per-system	remote-service	blocks/domains/remote-service/architecture/remote-service.md		MUST		architecture	composition-root-wires-everything	true
+rule	webhook-verified-before-it-is-acted-on	remote-service	blocks/domains/remote-service/with/http-server.md	http-server	MUST	security			true
+rule	webhook-delivery-processed-once	remote-service	blocks/domains/remote-service/with/http-server.md	http-server	MUST	data		operation-idempotent-by-design	true
+rule	webhook-acknowledged-once-recorded	remote-service	blocks/domains/remote-service/with/http-server.md	http-server	SHOULD	performance			true
 rule	resource-path-names-nouns	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD				true
 rule	partial-update-by-merge-patch	rest-api	blocks/domains/rest-api/rest-api.md		SHOULD	data			true
 rule	rest-method-and-status-mean-what-http-registers	rest-api	blocks/domains/rest-api/answers.md		MUST	errors data			true
@@ -814,6 +815,7 @@ rule	update-guarded-by-if-match	rest-api	blocks/domains/rest-api/answers.md		MUS
 rule	long-operation-answered-202-with-its-status	rest-api	blocks/domains/rest-api/answers.md		SHOULD			long-operation-answered-with-a-handle	true
 rule	answer-top-level-is-an-object	rest-api	blocks/domains/rest-api/answers.md		MUST				true
 rule	contract-published-as-openapi	rest-api	blocks/domains/rest-api/contract.md		MUST	testing		contract-published-machine-readable	true
+rule	answer-enumeration-a-string-of-known-values	rest-api	blocks/domains/rest-api/contract.md		MUST	data		answer-enumeration-extensible-in-the-contract	true
 rule	version-named-once-by-its-major	rest-api	blocks/domains/rest-api/contract.md		SHOULD				true
 rule	retired-field-marked-deprecated-in-the-openapi-document	rest-api	blocks/domains/rest-api/contract.md		MUST			retired-operation-announced-before-removal	true
 rule	idempotency-key-carried-by-its-header	rest-api	blocks/domains/rest-api/wire.md		SHOULD	data security		write-takes-an-idempotency-key	true
@@ -1708,6 +1710,10 @@ rule	parts-marked-by-data-slot	shadcn	blocks/implementations/shadcn/shadcn.md		S
 rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	ux		vendored-component-adapted-in-the-change-that-installs-it	true
 rule	shadcn-text-passed-by-props	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	ux		primitives-take-text-by-props	true
 rule	shadcn-source-added-into-the-kit	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	ux	architecture	vendored-component-placed-by-its-home	true
+rule	sent-webhook-carries-the-standard-headers	standard-webhooks	blocks/implementations/standard-webhooks/standard-webhooks.md		MUST	security		sent-push-signed-with-a-delivery-id	true
+rule	endpoint-answering-gone-disabled-at-once	standard-webhooks	blocks/implementations/standard-webhooks/standard-webhooks.md		MUST	errors		failed-push-retried-then-held	true
+rule	received-webhook-verified-from-the-standard-headers	standard-webhooks	blocks/implementations/standard-webhooks/with/http-server.md	http-server	MUST	security		webhook-verified-before-it-is-acted-on	true
+rule	received-webhook-known-by-its-webhook-id	standard-webhooks	blocks/implementations/standard-webhooks/with/http-server.md	http-server	MUST	data		webhook-delivery-processed-once	true
 rule	story-for-every-kit-state	storybook	blocks/implementations/storybook/storybook.md		SHOULD	ux testing			true
 rule	stories-render-from-fixtures	storybook	blocks/implementations/storybook/storybook.md		SHOULD				true
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/storybook.md		MUST	testing		logic-fully-covered	true
@@ -1865,7 +1871,7 @@ answer	nestjs	framework-passes-every-failure-to-one-handler	yes
 answer	nestjs	framework-parses-a-request-before-its-handler	yes
 answer	pydantic	schema-library-rejects-unknown-keys	yes
 answer	pydantic	schema-library-selects-unions-by-a-discriminant	yes
-answer	pydantic	schema-library-generates-json-schema	yes
+answer	pydantic	schema-library-generates-the-editors-schema	yes
 answer	shadcn	ui-primitives-keep-keyboard-and-focus	yes
 answer	shadcn	ui-primitives-unstyled	yes
 answer	tailwind	ui-styling-restricted-to-tokens	yes
@@ -1880,4 +1886,4 @@ answer	uv	workspace-tool-links-units-from-the-working-tree	yes
 answer	uv	publishing-tool-supports-run-identity-and-provenance	partly
 answer	zod	schema-library-rejects-unknown-keys	yes
 answer	zod	schema-library-selects-unions-by-a-discriminant	yes
-answer	zod	schema-library-generates-json-schema	yes
+answer	zod	schema-library-generates-the-editors-schema	yes

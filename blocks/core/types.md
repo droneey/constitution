@@ -12,7 +12,7 @@ A value with distinct stages is a union keyed by its stage, never a bag of optio
 | a state the type cannot express is a state no code has to handle and no test has to find. | [] |
 
 ### closed-set-branched-exhaustively · MUST
-A branch over a closed set — a union or an enumeration the logic decides on member by member — names every member, and the type checker proves it exhaustive; no default branch absorbs the rest.
+A branch over a closed set — a union or an enumeration the logic decides on member by member — names every member; where the language has a type checker, it proves the branch exhaustive and no default branch absorbs the rest, and otherwise its default branch fails as a defect.
 
 | Why | Tags |
 |---|---|

@@ -5,7 +5,7 @@
 ## Sign-in
 
 ### sign-in-through-a-provider-uses-code-with-pkce · MUST
-A sign-in through an outside identity provider uses the authorization code flow with PKCE and a `redirect_uri` the provider matches exactly, checks the `iss` of the answer against the provider it asked where it trusts more than one (RFC 9207), and with OpenID Connect checks the `nonce` in the ID token; never the implicit flow or a password the user hands to the program for the provider.
+A sign-in through an outside OAuth 2.0 or OpenID Connect provider uses the authorization code flow with PKCE and a `redirect_uri` the provider matches exactly, checks the `iss` of the answer against the provider it asked where it trusts more than one (RFC 9207), and with OpenID Connect checks the `nonce` in the ID token; never the implicit flow or a password the user hands to the program for the provider.
 
 | Why | Tags |
 |---|---|
@@ -40,7 +40,7 @@ A person can sign in with a phishing-resistant factor, such as a passkey.
 | a passkey cannot be typed into a fake page, which defeats the attack that steals most accounts, and NIST's guidance of 2025 makes offering one a duty. | [security] |
 
 ### privileged-account-signs-in-with-a-phishing-resistant-factor · MUST
-An account with privileges over other accounts, the program's settings or other people's data signs in only with a phishing-resistant factor; where sign-in goes through an outside provider, the program checks that factor in the ID token's `acr` or `amr`, and asks for one of its own where the provider asserts neither.
+An account with privileges over other accounts, the program's settings or other people's data signs in only with a phishing-resistant factor; where sign-in goes through an outside provider, the program reads that factor from the assertion the provider makes of it — in OpenID Connect, the ID token's `acr` or `amr` — and asks for one of its own where the provider asserts none.
 
 | Why | Tags |
 |---|---|
@@ -56,11 +56,11 @@ Sign-in and recovery answer the same way whether an account exists or not, and s
 ## Tokens
 
 ### token-verified-before-it-is-trusted · MUST
-A token a caller presents is trusted only after its signature, by the algorithm the program expects, and its type, issuer, audience and expiry are checked; a token that names another algorithm or none is refused.
+A token a caller presents is trusted only after it is checked. A self-contained token is checked by its signature, by the algorithm the program expects, and by its type, issuer, audience and expiry; one that names another algorithm or none is refused. An opaque token is checked with its issuer, which reports it active, and by the audience and expiry the issuer reports for it.
 
 | Why | Tags |
 |---|---|
-| a token whose claims go unchecked is accepted from another issuer, for another service or after it expired, an ID token is passed off as an access token where the audiences match, and one that chooses its own algorithm signs itself. | [security] |
+| a token whose claims go unchecked is accepted from another issuer, for another service or after it expired, an ID token is passed off as an access token where the audiences match, and one that chooses its own algorithm signs itself; an opaque token says nothing by itself, so only its issuer knows whether it was revoked and for whom it was issued. | [security] |
 
 ### caller-token-never-forwarded · MUST
 A token a caller presents is never sent on to another system; a call onward carries the program's own credential for that system, or a token issued for that system by an exchange that keeps the caller's identity.

@@ -21,7 +21,7 @@ A version a run publishes carries provenance the registry records, where the reg
 ## Requirements for implementation
 
 ### publishing-tool-supports-run-identity-and-provenance · MUST
-The publishing tool publishes by an identity issued to the run, records provenance, and needs no stored token.
+Where the registry offers them, the publishing tool publishes by an identity issued to the run, with no stored token, and records provenance.
 
 | Why | Tags |
 |---|---|
