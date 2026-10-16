@@ -42,7 +42,7 @@ A component with a second region, an optional part that carries the caller's con
 | a component with a prop per region grows a prop for every new need; a compound grows by composition. | [ux] |
 
 ### props-drilled-at-most-two-levels · SHOULD
-A prop passed unchanged through more than two levels calls for composition or a nearer component that loads the data itself.
+A prop passed unchanged through more than two levels calls for composition or a nearer widget that loads the data itself.
 
 | Why | Tags |
 |---|---|
