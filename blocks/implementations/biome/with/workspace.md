@@ -3,7 +3,7 @@
 > The configuration of each package of a workspace.
 
 ### configuration-per-unit-at-the-root → unit-checked-by-its-own-tools · MUST
-A package with parts of its own has its configuration in the repository's root, `biome.<name>.jsonc` — `<name>` the package's whole path from the root with its slashes as hyphens, `biome.apps-web.jsonc` — which extends the shared parts and its own, and `biome.json` leaves that folder out of `files.includes`.
+A package with parts of its own has its configuration in the repository's root, `biome.<name>.jsonc` — `<name>` the package's whole path from the root with its slashes as hyphens, `biome.products-web.jsonc` — which extends the shared parts and its own, and `biome.json` leaves that folder out of `files.includes`.
 
 | Why | Tags |
 |---|---|

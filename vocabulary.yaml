@@ -33,8 +33,10 @@ architecture:
     - integrations/
     - jobs/
     - kernel/
+    - languages/
     - libs/
     - models/
+    - products/
     - providers/
     - queries/
     - repositories/

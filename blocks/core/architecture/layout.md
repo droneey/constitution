@@ -4,7 +4,7 @@
 
 ## The trees
 
-A package keeps each folder below only when it has a file to hold. A delivery unit lives in the feature or the composition module it serves, and the root registers it.
+A package keeps each folder below only when it has a file to hold. A delivery unit lives in the feature or the composition module it serves, and the root registers it. At every level, `shared/` holds what two or more of its neighbours need and the level gives no other home: beside the languages of one purpose, what they need written in none of them; in a source, the plumbing several features use.
 
 ```
 <package>/
@@ -13,6 +13,10 @@ A package keeps each folder below only when it has a file to hold. A delivery un
 ├── tests/<kind>/          suites that drive the built package, one folder per kind: tests/e2e/
 ├── docs/                  writing for readers outside the code
 └── <kind>/<member>/       content the package ships as it is, one folder per kind, members of one shape
+
+<name>/                    code of one purpose in several languages, from its second language on
+├── languages/<language>/  one package for each language, each with the tree above
+└── shared/                what the languages need, written in none of them: schema/, conformance/
 
 src/
 ├── main.*                 the entry of a program: builds the root and runs it
@@ -74,6 +78,13 @@ A package’s root holds its manifest, its source, the suites that drive the bui
 | Why | Tags |
 |---|---|
 | a reader who knows one repository finds the way in every other, and a file has one obvious place. | [] |
+
+### code-in-several-languages-holds-a-package-per-language · SHOULD
+Code that serves one purpose in several languages holds `languages/<language>/`, one package for each language with the tree in its `src/`, and beside it `shared/`, what the languages need written in none of them, laid out by meaning — `schema/`, `conformance/`; `languages/` appears with the second language and `shared/` with its first file, and until then the code is the package itself.
+
+| Why | Tags |
+|---|---|
+| the code is found in one folder whatever its languages, `languages/` says at a glance that its children serve one purpose written several times, and what no language owns is written once beside the packages that read it. | [] |
 
 ### feature-laid-out-by-its-tree · SHOULD
 A feature, and a module of composition, holds its layers, its specs and its surface and nothing else, and its domain holds only the role folders of the tree.

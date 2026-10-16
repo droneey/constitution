@@ -10,7 +10,7 @@ governs: ["**"]
 ---
 # Workspace
 
-> A repository that holds several units — the programs, the parts two or more of them share, and what knows nothing of them — each one package, or one package for each of its languages. This domain places the units, sets the direction of the imports between them, and links and checks their packages from the working tree.
+> A repository that holds several units — the products it releases, the parts two or more of them share, and what knows nothing of the product — each one package, or one package for each of its languages. This domain places the units, sets the direction of the imports between them, and links and checks their packages from the working tree.
 
 ## The root
 
@@ -70,14 +70,14 @@ The units of a workspace form no cycle, neither in the dependencies their manife
 ## Shared files
 
 ### file-lives-once-across-units → fact-has-one-source · MUST
-A file several units need lives once in the repository; a unit that needs it at run time takes it from there in its build, and no copy of it is committed.
+A file several packages need lives once in the repository; a package that needs it at run time takes it from there in its build, and no copy of it is committed.
 
 | Why | Tags |
 |---|---|
 | one source means a fix is made once and reaches every unit, and a committed copy becomes a second original that drifts from the one reviewed. | [] |
 
 ### shared-data-parsed-by-each-reader → outside-value-untyped-until-parsed · MUST
-Data in no language that several units read — a schema, a table of cases — is parsed by each unit that reads it, at its edge.
+Data in no language that several packages read — a schema, a table of cases — is parsed by each package that reads it, at its edge.
 
 | Why | Tags |
 |---|---|

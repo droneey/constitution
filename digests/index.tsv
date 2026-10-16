@@ -371,6 +371,7 @@ rule	delivery-unit-stays-thin	core	blocks/core/architecture/layers.md		SHOULD		a
 rule	module-has-the-one-form	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	behaviour-lives-in-a-feature	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	package-laid-out-by-the-tree	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
+rule	code-in-several-languages-holds-a-package-per-language	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	feature-laid-out-by-its-tree	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	failures-live-with-their-contract	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
 rule	pipeline-stages-live-under-steps	core	blocks/core/architecture/layout.md		SHOULD		architecture		true
@@ -974,14 +975,12 @@ rule	shared-data-parsed-by-each-reader	workspace	blocks/domains/workspace/worksp
 rule	unit-checked-by-its-own-tools	workspace	blocks/domains/workspace/workspace.md		MUST			rule-held-by-a-tool-where-one-can	true
 rule	workspace-tool-links-units-from-the-working-tree	workspace	blocks/domains/workspace/workspace.md		SHOULD	testing			true
 rule	workspace-units-placed-by-reach	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
-rule	unit-in-one-language-is-its-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
-rule	unit-in-several-languages-holds-a-package-per-language	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
-rule	program-with-its-own-root-is-an-app	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	package-has-at-most-one-root	true
+rule	program-with-its-own-root-is-a-product	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	package-has-at-most-one-root	true
 rule	business-shared-across-languages-lives-in-one-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-offers-everything-through-its-one-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-named-after-its-folder	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
-rule	shared-part-appears-with-its-second-app	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	code-placed-by-its-reason-to-change	true
-rule	app-units-blind-to-each-other	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	feature-never-imports-a-feature	true
+rule	shared-part-appears-with-its-second-product	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	code-placed-by-its-reason-to-change	true
+rule	products-blind-to-each-other	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	feature-never-imports-a-feature	true
 rule	units-import-toward-libs	workspace	blocks/domains/workspace/architecture/workspace.md		MUST		architecture	import-points-inward	true
 rule	programs-owning-their-data-share-only-contracts	workspace	blocks/domains/workspace/architecture/with/owned-data.md	owned-data	MUST		architecture		true
 rule	bundle-within-its-size-budget	browser	blocks/contexts/platforms/browser/browser.md		SHOULD	performance			true
@@ -1570,7 +1569,7 @@ rule	property-written-with-given	hypothesis	blocks/implementations/hypothesis/hy
 rule	counterexample-kept-by-example	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		property-tested-where-it-pays	true
 rule	ci-profile-left-to-hypothesis	hypothesis	blocks/implementations/hypothesis/hypothesis.md		SHOULD	testing		flaky-test-fixed-never-retried	true
 rule	contract-named-after-its-rule	import-linter	blocks/implementations/import-linter/import-linter.md		SHOULD				true
-rule	units-blind-by-an-independence-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST		architecture	app-units-blind-to-each-other	true
+rule	units-blind-by-an-independence-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST		architecture	products-blind-to-each-other	true
 rule	units-ordered-by-a-layers-contract	import-linter	blocks/implementations/import-linter/architecture/with/workspace.md	workspace	MUST		architecture	units-import-toward-libs	true
 rule	production-set-marked-in-the-entries	knip	blocks/implementations/knip/knip.md		MUST			dead-code-deleted	true
 rule	optional-peer-ignored-in-production	knip	blocks/implementations/knip/with/distribution.md	distribution	MUST				true

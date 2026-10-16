@@ -36,7 +36,7 @@
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
-| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195 |
+| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195, ADR-0199 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
 
@@ -1313,3 +1313,20 @@
   - A `ruamel-yaml` block for the Python loader: deferred until a Python project reads YAML; its rules, `YAML(typ='safe', pure=True)` and the timestamp tag as text, wait for it.
   - The JSON Schema spelling of an open enumeration in `mcp-api`: a client reads a tool's output schema from the server it calls, so a value added changes the schema it checks against at once.
 - **Why.** A rule holds one meaning only where its words belong to its layer: a protocol's names in a domain bind every program of that domain to a protocol it may not speak, and a vendor's format in a domain binds it to that vendor. Standard Webhooks is no vendor's format but an open specification of the webhook, so the `webhooks` domain may name it; it supports every clause that names it, the disabling of an endpoint that answers `410` included, so none of them is the owner's choice alone.
+
+## ADR-0199 — A workspace holds its products, and one job in several languages holds `languages/` and `shared/`
+**Date:** 2026-10-16 · **Status:** Accepted
+
+- **Decision.**
+  - A workspace holds `products/<name>/`, what the repository releases — a program or a package others install — blind to each other; `shared/<name>/`, what two or more products need; and `libs/<name>/`, what knows nothing of the product. A unit is placed by its role in its repository: `eros` is a product of the kit and a unit of `libs/` in a repository whose product it serves. This replaces `apps/` of ADR-0196, ADR-0187's `packages/`.
+  - At every level `shared/` holds what two or more of its neighbours need and the level gives no other home: products in a workspace, languages beside one purpose, features in a source.
+  - Code that serves one purpose in several languages holds `languages/<language>/`, one package per language, and `shared/`, what they need written in none of them; `languages/` appears with the second language. The rule moves from `workspace` to core's architecture, since a repository of one such product has the same shape. This replaces the per-language folders at the unit's root of ADR-0150.
+- **Rejected.**
+  - `apps/` beside `packages/`, as Turborepo lays them out: it splits what the repository releases by being run or being imported, which ADR-0150 already rejected, and a library that is the repository's product would sit with the parts it does not need.
+  - One folder for every importable unit, without `libs/`, as Turborepo and Nx do with tags: the boundary of what knows nothing of the product would then hold only by a tag a reader cannot see in the path.
+  - Flat siblings per language, `eros-typescript/` and `eros-python/`: uv and Cargo refuse `libs/*` once it matches a folder without their manifest, and a prefix does a folder's job.
+  - A top level by language, as protobuf and Arrow have: it spreads one product over a root per language.
+  - A nested workspace per product: Bun ignores a workspace inside a package and uv refuses one.
+  - Language folders at the unit's root beside a source named by its content, as sentry-conventions has: `languages/` names the axis of its children as `products/` does, and `shared/` means what two or more neighbours need at every level.
+  - `data/` for the source in no language, from the final review of #289: a word of no role, a catch-all in waiting.
+- **Why.** Every level holds its units and what two or more of them need, with `libs/` where code knows nothing of the product, so a reader who knows one level knows them all, and a folder says who may use what it holds before it is opened.
