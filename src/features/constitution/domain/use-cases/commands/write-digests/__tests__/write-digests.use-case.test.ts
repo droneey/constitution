@@ -4,7 +4,7 @@ import { createFakeDigestWriter } from '../../../../../__tests__/digest-writer.f
 import { writeDigests } from '../write-digests.use-case';
 
 describe('writeDigests', () => {
-  it('should write the index and the core part to their paths when given digests', () => {
+  it('should write the index, the core part and the format to their paths when given digests', () => {
     // Arrange
     const writer = createFakeDigestWriter();
     const digests = {
@@ -22,6 +22,7 @@ describe('writeDigests', () => {
     // Assert
     expect(writer.written).toStrictEqual({
       'digests/core.md': '# Core\n',
+      'digests/format': '1\n',
       'digests/index.tsv': '# header\n',
     });
   });

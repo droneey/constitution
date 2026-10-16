@@ -1,5 +1,9 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
+import type { Files } from './constitution.fixtures';
 import {
   browserAppContext,
   cliContext,
@@ -24,13 +28,17 @@ import {
   outputOf,
   removeSessions,
   runHook,
+  stateFolderOf,
   warningsOf,
 } from './hook.fixtures';
 import {
+  archiveOf,
   Breakage,
   corePartOfBytes,
   createPluginRoot,
   createRealPluginRoot,
+  LINK,
+  linkArchive,
   removePluginRoots,
 } from './plugin-root.fixtures';
 import type { ProjectLayout } from './project.fixtures';
@@ -126,11 +134,26 @@ interface EventCase {
   name: string;
 }
 
+interface NoticeCase {
+  // a file the archive is built without
+  breakage?: Breakage | undefined;
+  condition: string;
+  // the project's link points to a folder that does not exist
+  dangling?: boolean | undefined;
+  // the project's own files, where .droneey/constitution may be a folder
+  files?: Files | undefined;
+  // the text of digests/format, or undefined for the default archive's
+  format?: string | undefined;
+  notice: (archive: string) => readonly string[];
+  // no archive is linked into the project
+  unlinked?: boolean | undefined;
+}
+
 interface FailureCase {
   breakage?: Breakage;
   condition: string;
   layout: ProjectLayout;
-  stderr: (paths: { plugin: string; project: string }) => string;
+  stderr: (paths: { archive: string; project: string }) => string;
 }
 
 interface AxesView {
@@ -242,6 +265,9 @@ const axesConfigOf = (input: { axes: string; packages?: string }): string =>
     axes: input.axes,
     domains: '[ui, version-control]',
   });
+
+// Where the hook finds the archive the project pins.
+const archiveIn = (project: string): string => join(project, LINK);
 
 let root = '';
 
@@ -563,7 +589,7 @@ describe('session-start hook', () => {
     expect(context).toBe(
       unparsedContext({
         line,
-        root,
+        root: archiveIn(project),
       }),
     );
   });
@@ -681,6 +707,10 @@ describe('session-start hook', () => {
         'sub/deep/.keep': '',
       },
     });
+    linkArchive({
+      archive: archiveOf(root),
+      project: join(project, 'sub'),
+    });
 
     // Act
     const facts = factsOf(
@@ -735,7 +765,7 @@ describe('session-start hook', () => {
       event: HookEvent.Startup,
       facts: [
         'constitution.yaml pins 0.9.0; 3 blocks are active.',
-        'constitution.yaml pins 0.9.0 while the installed plugin is 1.0.0; this digest follows 1.0.0.',
+        'constitution.yaml pins 0.9.0 while .droneey/constitution holds 1.0.0; this digest follows 1.0.0.',
       ],
       version: '0.9.0',
     },
@@ -1568,7 +1598,7 @@ describe('session-start hook', () => {
       );
 
       // Assert
-      expect(printed).toBe(context(root));
+      expect(printed).toBe(context(archiveIn(project)));
     },
   );
 
@@ -1678,7 +1708,7 @@ describe('session-start hook', () => {
       expect(output).toStrictEqual({
         context: coreOnlyContext({
           pin: shown,
-          root,
+          root: archiveIn(project),
         }),
         event: 'SubagentStart',
       });
@@ -1845,25 +1875,180 @@ describe('session-start hook', () => {
     expect(output.event).toBe(name);
   });
 
+  it.each<NoticeCase>([
+    {
+      condition: 'the project holds no archive',
+      notice: (archive): readonly string[] => [
+        `The droneey constitution is not installed in this repository: ${archive} does not exist, so no rules are given.`,
+        'Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.',
+      ],
+      unlinked: true,
+    },
+    {
+      condition: "the project's archive link points nowhere",
+      dangling: true,
+      notice: (archive): readonly string[] => [
+        `The droneey constitution is not installed in this repository: ${archive} does not exist, so no rules are given.`,
+        'Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.',
+      ],
+    },
+    ...[
+      {
+        condition: 'the archive is a working tree whose digests are not generated',
+        files: {
+          '.droneey/constitution/blocks/core/core.md': '# Core\n',
+        },
+      },
+      {
+        breakage: Breakage.DigestFormat,
+        condition: 'the archive holds blocks and digests without a format',
+      },
+    ].map((ungenerated: Omit<NoticeCase, 'notice'>) => ({
+      ...ungenerated,
+      notice: (archive: string): readonly string[] => [
+        `The droneey constitution in ${archive} has blocks but no generated digests, so no rules are given.`,
+        'Tell the user to run bun run digests:write in that working tree.',
+      ],
+    })),
+    ...[
+      {
+        condition:
+          'the archive is a release from before the digests, with neither blocks nor digests',
+        files: {
+          '.droneey/constitution/presets/common/.keep': '',
+        },
+      },
+      {
+        condition: 'the digest format is empty',
+        format: '\n',
+      },
+      {
+        condition: 'the digest format is not a number',
+        format: '1.0\n',
+      },
+      {
+        condition: 'the digest format is older than the oldest the plugin reads',
+        format: '0\n',
+      },
+    ].map((older: Omit<NoticeCase, 'notice'>) => ({
+      ...older,
+      notice: (archive: string): readonly string[] => [
+        `The droneey constitution in ${archive} is older than digest format 1, the oldest this plugin reads, so no rules are given.`,
+        'Tell the user to raise the constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.',
+      ],
+    })),
+    {
+      condition: 'the digest format is newer than the plugin reads',
+      format: '2\n',
+      notice: (archive): readonly string[] => [
+        `The droneey constitution in ${archive} has digest format 2, newer than this plugin reads, so no rules are given.`,
+        'Tell the user to update the constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.',
+      ],
+    },
+  ])(
+    'should give only the reason and save no state when $condition',
+    ({ breakage, dangling, files, format, notice, unlinked }) => {
+      // Arrange
+      const plugin =
+        breakage === undefined && format === undefined
+          ? root
+          : createPluginRoot({
+              ...(breakage === undefined
+                ? {}
+                : {
+                    breakage,
+                  }),
+              ...(format === undefined
+                ? {}
+                : {
+                    format,
+                  }),
+            });
+      const project = createProject({
+        ...CLI,
+        files: {
+          ...CLI.files,
+          ...files,
+        },
+      });
+      const session = newSession();
+
+      if (dangling === true) {
+        linkArchive({
+          archive: join(project, 'gone'),
+          project,
+        });
+      }
+
+      // Act
+      const run = runHook({
+        event: HookEvent.Startup,
+        project,
+        root: plugin,
+        session,
+        unlinked,
+      });
+
+      // Assert
+      expect({
+        context: contextOf(run),
+        exitCode: run.exitCode,
+        saved: existsSync(stateFolderOf(session)),
+        stderr: run.stderr,
+      }).toStrictEqual({
+        context: `${notice(archiveIn(project)).join('\n')}\n`,
+        exitCode: 0,
+        saved: false,
+        stderr: '',
+      });
+    },
+  );
+
+  it('should give the digest when the digest format is the newest the plugin reads', () => {
+    // Arrange
+    const plugin = createPluginRoot({
+      format: '1\n',
+    });
+    const project = createProject(CLI);
+
+    // Act
+    const facts = factsOf(
+      contextOf(
+        runHook({
+          event: HookEvent.Subagent,
+          project,
+          root: plugin,
+        }),
+      ),
+    );
+
+    // Assert
+    expect(facts).toStrictEqual([
+      'constitution.yaml pins 1.0.0; 9 blocks are active.',
+    ]);
+  });
+
   it.each<FailureCase>([
     {
       breakage: Breakage.DigestIndex,
-      condition: 'the plugin root lacks digests/index.tsv',
+      condition: 'the archive lacks digests/index.tsv',
       layout: CLI,
-      stderr: ({ plugin }): string =>
-        `constitution hook: cannot read ${plugin}/digests/index.tsv\n`,
+      stderr: ({ archive }): string =>
+        `constitution hook: cannot read ${archive}/digests/index.tsv\n`,
     },
     {
       breakage: Breakage.DigestCore,
-      condition: 'the plugin root lacks digests/core.md',
+      condition: 'the archive lacks digests/core.md',
       layout: CLI,
-      stderr: ({ plugin }): string => `constitution hook: cannot read ${plugin}/digests/core.md\n`,
+      stderr: ({ archive }): string =>
+        `constitution hook: cannot read ${archive}/digests/core.md\n`,
     },
     {
       breakage: Breakage.Version,
-      condition: "the plugin's package.json has no version",
+      condition: "the archive's package.json has no version",
       layout: CLI,
-      stderr: ({ plugin }): string => `constitution hook: ${plugin}/package.json has no version\n`,
+      stderr: ({ archive }): string =>
+        `constitution hook: ${archive}/package.json has no version\n`,
     },
     {
       breakage: Breakage.Resolve,
@@ -1906,7 +2091,7 @@ describe('session-start hook', () => {
       expect(run).toStrictEqual<HookRun>({
         exitCode: 1,
         stderr: stderr({
-          plugin,
+          archive: archiveIn(project),
           project,
         }),
         stdout: '',

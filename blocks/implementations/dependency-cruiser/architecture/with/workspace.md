@@ -4,7 +4,7 @@
 
 ### imports-between-units-held-at-the-root → units-import-toward-libs · MUST
 
-The root's configuration extends the part `workspace.mjs`, which holds the imports between the units of `products/`, `shared/` and `libs/`.
+The root's configuration extends the part `workspace.mjs`, which holds the imports between the units of `apps/`, `shared/` and `libs/`.
 
 | Why | Tags |
 |---|---|

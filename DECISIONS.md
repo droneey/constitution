@@ -40,7 +40,7 @@
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
 | What a tool holds and what review holds | ADR-0200 – ADR-0202 |
-| The plugin's release | ADR-0203 |
+| The plugin and the project's rules | ADR-0203 |
 
 ---
 
@@ -95,8 +95,7 @@
 
 **Date:** 2026-09-25 · **Status:** Accepted
 
-- **Decision.** `constitution.yaml` pins a released version; until 1.0.0 it pins the current 0.x one. The plugin delivers the rules of its installed version and says so when the pin differs.
-- **Rejected.** Delivering the rules of the pinned line, deferred until a need arises.
+- **Decision.** `constitution.yaml` pins a released version; until 1.0.0 it pins the current 0.x one.
 
 ## ADR-0013 — Rules: one format, global slugs
 
@@ -865,7 +864,6 @@
 - **Decision.** The `package` domain is removed and its meaning split three ways. Core's anatomy lays out every package (ADR-0157): an application keeps the application's tree whether or not it is distributed, and a package others import has the same tree without `root/` and `entrypoints/`, offers its entries and nothing else (`package-entries-curated`) and knows nothing of those that use it. The `workspace` domain holds a repository of several units, with the roles and the direction they have inside a program: the products in `packages/<name>/`, never importing one another; what two or more of them need in `shared/`, laid out by meaning like a program's `shared/` — `contracts/`, `kinds/` — a part appearing when a second product needs it; what knows nothing of the product in `libs/<name>/`; imports from `packages/` to `shared/` to `libs/` and never back; and a root that holds only the workspace and its tools' configuration. A unit in one language is the package itself; a unit in several holds `shared/`, its data in no language laid out by meaning (`schema/`, `conformance/`), and one package for each language in `<language>/`, the language's folder appearing with the second language (`unit-is-one-package-per-language`); `shared/` and a unit of `libs/` take the same form. Whatever a unit offers — its core, its wire shapes, its integrations into host frameworks — is a module of its one package per language, an integration in `integrations/<framework>/`. A unit is imported by its name, which follows its folder under the repository's scope (`unit-named-after-its-folder`): in TypeScript `@<scope>/<name>`, `@<scope>/shared`, `@<scope>/libs-<name>`, an integration the subpath `@<scope>/<name>/<framework>`, and `#/` inside a package; in Python the distributions `<scope>-<name>`, `<scope>-shared` and `<scope>-libs-<name>`, imported as `<scope>_<name>`, `<scope>_shared` and `<scope>_libs_<name>`, an integration installed by the extra of its framework. dependency-cruiser and import-linter hold the direction by the folder an import resolves to, so a wrong name never hides a wrong direction. In TypeScript every package keeps `#/` with its `paths` mirror (ADR-0069) and is a project of its own: `composite`, its declarations and `.tsbuildinfo` emitted into its ignored `.tsc-cache/`, and the packages it imports in `references` (`unit-compiled-by-its-own-options`, `unit-built-as-a-composite-project`); an importer is checked against the imported package's declarations, so neither its `paths` nor an option it turns off, such as `allowImportingTsExtensions`, reaches the imported package's source. Bun resolves each file's `#/` by the `tsconfig.json` of its own package, so the packages run from source. Data in no language that several packages read is parsed by each at its edge, and its specs read the file itself by its path (ADR-0159). The `distribution` domain holds a package others install from a registry, one whose code they import or an application such as a command-line tool: what it ships, its versions, its deprecations and its publishing; `versions-follow-semver` moves with it unchanged. `constitution.yaml`'s `apps:` is renamed `packages:`, and every package, those of `shared/` and `libs/` included, gets its blocks there; a path below a package may get blocks of its own. dependency-cruiser holds the direction from the root's configuration (`product-units-blind-to-each-other`, `units-import-toward-libs`), counting a unit's folder as the unit whatever its languages, and refuses a relative import into another unit's folder by its `local` type without `aliased-workspace`; import-linter holds it with an `independence` contract and a `layers` contract over the import packages the project names, in the root's `pyproject.toml`.
 - **Rejected.**
   - One `package` domain mixing a package's tree, the workspace and publishing, which bound a repository of applications that publishes nothing to publishing rules and left a distributed application without its tree.
-  - A folder `apps/` beside `packages/`, which splits the products by a property, being run or being imported, that a package can change without moving.
   - A unit per shared need, `shared/<name>/`, which scatters what the product shares over many manifests while one unit with a part per need is found in one place.
   - A product split into several packages of one language — `core`, `wire`, `nestjs` — each with its manifest, which made the tools and the rules tell a group of packages from a unit and gave a consumer three installs for one product; its parts are modules of one package, and an integration an entry of it (owner).
   - `#/` only in applications, a package another imports reaching its own files by relative path: it split one alias rule into two, and still left the importer's compiler options reaching the imported source, so an importer with `allowImportingTsExtensions` off failed on the shared package's `./x.ts`.
@@ -1446,23 +1444,23 @@
   - The JSON Schema spelling of an open enumeration in `mcp-api`: a client reads a tool's output schema from the server it calls, so a value added changes the schema it checks against at once.
 - **Why.** A rule holds one meaning only where its words belong to its layer: a protocol's names in a domain bind every program of that domain to a protocol it may not speak, and a vendor's format in a domain binds it to that vendor. Standard Webhooks is no vendor's format but an open specification of the webhook, so the `webhooks` domain may name it; it supports every clause that names it, the disabling of an endpoint that answers `410` included, so none of them is the owner's choice alone.
 
-## ADR-0199 — A workspace holds its products, and one job in several languages holds `languages/` and `shared/`
+## ADR-0199 — A workspace holds its apps, and one job in several languages holds `languages/` and `shared/`
 
 **Date:** 2026-10-16 · **Status:** Accepted
 
 - **Decision.**
-  - A workspace holds `products/<name>/`, what the repository releases — a program or a package others install — blind to each other; `shared/<name>/`, what two or more products need; and `libs/<name>/`, what knows nothing of the product. A unit is placed by its role in its repository: `eros` is a product of the kit and a unit of `libs/` in a repository whose product it serves. This replaces `apps/` of ADR-0196, ADR-0187's `packages/`.
-  - At every level `shared/` holds what two or more of its neighbours need and the level gives no other home: products in a workspace, languages beside one purpose, features in a source.
+  - A workspace holds `apps/<name>/`, the programs, each with its own root and blind to each other; `shared/<name>/`, what two or more apps need; and `libs/<name>/`, what knows nothing of the product. A library the repository releases — eros and logus in the kit — is a unit of `libs/`, named `libs-<name>` like any other; units of `libs/` may import each other, never in a cycle.
+  - At every level `shared/` holds what two or more of its neighbours need and the level gives no other home: apps in a workspace, languages beside one purpose, features in a source.
   - Code that serves one purpose in several languages holds `languages/<language>/`, one package per language, and `shared/`, what they need written in none of them; `languages/` appears with the second language. The rule moves from `workspace` to core's architecture, since a repository of one such product has the same shape. This replaces the per-language folders at the unit's root of ADR-0150.
 - **Rejected.**
-  - `apps/` beside `packages/`, as Turborepo lays them out: it splits what the repository releases by being run or being imported, which ADR-0150 already rejected, and a library that is the repository's product would sit with the parts it does not need.
+  - `products/` for what the repository releases, programs and libraries alike: once a released library lives in `libs/`, it held only programs, and releasing a library would move its folder. `packages/` for the programs: core calls every unit a package (ADR-0196).
   - One folder for every importable unit, without `libs/`, as Turborepo and Nx do with tags: the boundary of what knows nothing of the product would then hold only by a tag a reader cannot see in the path.
   - Flat siblings per language, `eros-typescript/` and `eros-python/`: uv and Cargo refuse `libs/*` once it matches a folder without their manifest, and a prefix does a folder's job.
   - A top level by language, as protobuf and Arrow have: it spreads one product over a root per language.
   - A nested workspace per product: Bun ignores a workspace inside a package and uv refuses one.
-  - Language folders at the unit's root beside a source named by its content, as sentry-conventions has: `languages/` names the axis of its children as `products/` does, and `shared/` means what two or more neighbours need at every level.
+  - Language folders at the unit's root beside a source named by its content, as sentry-conventions has: `languages/` names the axis of its children as `apps/` does, and `shared/` means what two or more neighbours need at every level.
   - `data/` for the source in no language, from the final review of #289: a word of no role, a catch-all in waiting.
-- **Why.** Every level holds its units and what two or more of them need, with `libs/` where code knows nothing of the product, so a reader who knows one level knows them all, and a folder says who may use what it holds before it is opened.
+- **Why.** `apps/` is the word Turborepo and Nx use for programs and services, so a reader from either knows it on sight. Every level holds its units and what two or more of them need, with `libs/` where code knows nothing of the product, so a reader who knows one level knows them all, and a folder says who may use what it holds before it is opened.
 
 ## ADR-0200 — Tools hold what breaks in silence; review holds where a file lives and what it is called
 
@@ -1508,13 +1506,16 @@
 - **Rejected.** Seven days, which the audit of ADR-0197 proposed: it holds back for a week every release the projects need today, while most hijacked releases are pulled within a day or two; the owner may raise it again when a project needs the margin.
 - **Why.** Three days catch the hijacked releases found at once and keep the tools current; the cooldown stays a MUST, so no install skips it.
 
-## ADR-0203 — The plugin installs from its release archive
+## ADR-0203 — The plugin is the engine; the rules come from the project's archive
 
 **Date:** 2026-10-16 · **Status:** Accepted
 
-- **Decision.** The marketplace serves the plugin as an `archive` source: the release's `constitution-plugin.zip`, pinned by its sha256. The release generates the digests into that zip, and a publish step run on the published release commits the archive's address and sha256 to main. `digests/` is ignored by git; the check holds the digests' limits on a copy generated in memory and refuses a committed one. The release is opened with the repository's token, since an action of the built-in token starts no other workflow.
+- **Decision.** The plugin holds only the engine — hooks, skills, agents — and is served as a `github` source at its release tag, which each release commit writes. The rules come from the release the project pins: `constitution.tar.gz`, installed by mise and linked as `.droneey/constitution/`, carries `blocks/`, the `digests/` the release generates, `presets/`, `templates/`, `package.json` for its version, and `digests/format`. The hooks read the digests there, so each repository reads exactly the release its pin names. The plugin reads format N and N−1: a newer format asks for a plugin update, an older one for a higher pin, a missing archive for `mise install`. `digests/` is ignored by git, and the check holds their limits on a copy generated in memory.
 - **Rejected.**
-  - Committed digests: a generated file changed with every block, with its diffs and merge conflicts, and a check that only compares a copy with its regeneration.
-  - A release-time commit of the digests to the tag alone: the tag would point at a commit main does not hold, and the github source still clones the whole repository.
-  - The npm source: it needs a registry package and a publish token for a plugin under a private licence, and every user an npm client.
-- **Why.** A GitHub release already hosts the archive mise installs; Claude Code's archive source follows GitHub's redirect and checks the sha256, both proved on version 2.1.287; and the zip holds only what the plugin reads.
+  - The plugin from a release zip, its sha256 committed to main by a publish step: the rules would follow whichever plugin a machine has, not the project's pin, and each release would need a second commit, a token that starts workflows and a skip for it.
+  - A separate marketplace repository: one more repository released in step, and the rules still follow the machine's plugin.
+  - A dist branch with the built plugin: a second, generated history main never merges.
+  - `releases/latest`: pre-releases, the only releases before 1.0, never reach it, and an archive's sha256 cannot follow a URL whose file changes.
+  - Committed digests: a generated file that changes with every block, with its diffs and conflicts.
+  - The plugin delivering the rules of its installed version (ADR-0010's former delivery): two repositories on one machine would read one release whatever they pin.
+- **Why.** Projects already pin one release through mise for their presets; reading the rules from the same archive makes that pin the single source, and the plugin's only contract with a release is the digest format.

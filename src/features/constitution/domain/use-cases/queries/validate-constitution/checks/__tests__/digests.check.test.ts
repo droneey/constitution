@@ -6,7 +6,7 @@ import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { digestsCheck } from '../digests.check';
 
 const COMMITTED =
-  'is generated when the plugin is released and ignored by git; run git rm --cached on it';
+  'is generated into the release archive and ignored by git; run git rm --cached on it';
 
 describe('digestsCheck', () => {
   it('should find nothing when the tree holds no digest', () => {

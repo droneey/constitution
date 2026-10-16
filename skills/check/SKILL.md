@@ -39,7 +39,7 @@ Dispatch the `constitution:reviewer` agent once, through the Agent tool, with:
 
 - the project root;
 - the files, each with the blocks that govern it;
-- the rule files to read: core's files and, for each block named, its files from the `active` lines;
+- the rule files to read: core's files and, for each block named, its files from the `active` lines — paths under the project's `.droneey/constitution/`, the release it pins, but for a local block's, which start with `./`;
 - the lens, when given: it reviews only the rules tagged with it;
 - the overrides from the digest, so a lowered rule is judged at its lowered level.
 

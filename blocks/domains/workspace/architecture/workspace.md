@@ -6,19 +6,19 @@
 
 ### workspace-units-placed-by-reach · SHOULD
 
-A workspace holds its units in three places at its root, with the roles and the direction they have inside a program: `products/<name>/`, what the repository releases — a program or a package others install; `shared/<name>/`, each part two or more products need, a unit of its own; and `libs/<name>/`, what knows nothing of the product. A unit is placed by its role in this repository: a library is a unit of `products/` where the repository releases it, and of `libs/` where it is built only for the repository's product.
+A workspace holds its units in three places at its root, with the roles and the direction they have inside a program: `apps/<name>/`, the programs, each with its root; `shared/<name>/`, each part two or more apps need, a unit of its own; and `libs/<name>/`, what knows nothing of the product, a library the repository releases included.
 
 | Why | Tags |
 |---|---|
-| a unit's folder says who may use it before it is opened, and the direction of the imports follows from the folders as it does between `features/`, `shared/` and `libs/`; a program and a package others install are both what the repository releases, and neither is imported by another product. | [] |
+| a unit's folder says who may use it before it is opened, and the direction of the imports follows from the folders as it does between `features/`, `shared/` and `libs/`; a library knows nothing of the product whether or not the repository releases it, so releasing it moves no folder. | [] |
 
-### program-with-its-own-root-is-a-product → package-has-at-most-one-root · MUST
+### program-with-its-own-root-is-an-app → package-has-at-most-one-root · MUST
 
-A program with a root of its own is a unit of `products/`, never of `shared/` or `libs/`.
+A program with a root of its own is a unit of `apps/`, never of `shared/` or `libs/`.
 
 | Why | Tags |
 |---|---|
-| each program then wires one tree of its own, released and changed apart from the others, and what the products share holds no wiring of its own. | [] |
+| each program then wires one tree of its own, released and changed apart from the others, and what the apps share holds no wiring of its own. | [] |
 
 ### business-shared-across-languages-lives-in-one-package · SHOULD
 
@@ -38,7 +38,7 @@ Whatever a unit offers — its core, its wire shapes, its integrations into host
 
 ### unit-named-after-its-folder · SHOULD
 
-A unit is imported by its name, which follows its folder under the repository's scope: a product by its own name, in each of its languages; a part of `shared/` as `shared-<name>`; a unit of `libs/` as `libs-<name>`.
+A unit is imported by its name, which follows its folder under the repository's scope: an app by its own name, in each of its languages; a part of `shared/` as `shared-<name>`; a unit of `libs/` as `libs-<name>`, a library the repository releases included.
 
 | Why | Tags |
 |---|---|
@@ -46,9 +46,9 @@ A unit is imported by its name, which follows its folder under the repository's 
 
 ## Shared
 
-### shared-part-appears-with-its-second-product → code-placed-by-its-reason-to-change · MUST
+### shared-part-appears-with-its-second-app → code-placed-by-its-reason-to-change · MUST
 
-A part of `shared/` appears when a second product needs it, and returns to its product when only one still does; until then it lives with its one product.
+A part of `shared/` appears when a second app needs it, and returns to its app when only one still does; until then it lives with its one app.
 
 | Why | Tags |
 |---|---|
@@ -56,9 +56,9 @@ A part of `shared/` appears when a second product needs it, and returns to its p
 
 ## Direction
 
-### products-blind-to-each-other → feature-never-imports-a-feature · MUST
+### apps-blind-to-each-other → feature-never-imports-a-feature · MUST
 
-A unit of `products/` never imports another.
+A unit of `apps/` never imports another.
 
 | Why | Tags |
 |---|---|
@@ -66,7 +66,7 @@ A unit of `products/` never imports another.
 
 ### units-import-toward-libs → import-points-inward · MUST
 
-Imports between units point from `products/` to `shared/` to `libs/`: a unit of `shared/` imports no unit of `products/`, and a unit of `libs/` none of `products/` and nothing of `shared/`.
+Imports between units point from `apps/` to `shared/` to `libs/`: a unit of `shared/` imports no unit of `apps/`, and a unit of `libs/` none of `apps/` and nothing of `shared/`, while it may import another of `libs/`.
 
 | Why | Tags |
 |---|---|

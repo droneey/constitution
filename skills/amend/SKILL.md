@@ -25,10 +25,10 @@ Handle one override at a time. When the owner asks for several, go through these
 
 ### 1. The rule
 
-Take the slug from the arguments above, or ask for it. Look it up in the index, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, tags, axis — empty for the base — parent, whether its level is stated:
+Take the slug from the arguments above, or ask for it. Look it up in the index of the release the project installed in `.droneey/constitution/`, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, tags, axis — empty for the base — parent, whether its level is stated:
 
 ```bash
-grep "^rule$(printf '\t')<slug>$(printf '\t')" "${CLAUDE_PLUGIN_ROOT}/digests/index.tsv"
+grep "^rule$(printf '\t')<slug>$(printf '\t')" "<repository root>/.droneey/constitution/digests/index.tsv"
 ```
 
 - Found: show the owner its block, its current level and its statement, read from its file. Then find the rules that carry it out and state no level of their own — lines whose parent is this slug and whose stated field is `false`, and theirs in turn: an override lowers them too, so name them to the owner.
@@ -75,7 +75,7 @@ Under a unit, the same shape two levels deeper:
 
 ```yaml
 packages:
-  products/web:
+  apps/web:
     implementations: [react-dom]
     overrides:
       - rule: data-view-shows-every-state

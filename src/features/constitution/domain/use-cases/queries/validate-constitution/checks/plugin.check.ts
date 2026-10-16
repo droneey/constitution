@@ -7,7 +7,6 @@ import type {
   HooksManifest,
   ManifestRead,
   MarketplaceManifest,
-  MarketplacePlugin,
   Skill,
 } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
@@ -22,9 +21,6 @@ type Unread = Exclude<
 const PLUGIN_FILE = /\$\{CLAUDE_PLUGIN_ROOT\}\/([^"'\s]+)/g;
 const GITHUB_URL = 'https://github.com/';
 const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
-const RELEASE_DOWNLOAD = '/releases/download/';
-const PLUGIN_ARCHIVE = '/constitution-plugin.zip';
-const SHA256 = /^[0-9a-f]{64}$/;
 const RELATIVE_PREFIX = './';
 // Claude Code scans it whether or not the manifest lists it.
 const DEFAULT_SKILLS = 'skills/';
@@ -251,32 +247,6 @@ const checkPlugin = (
       };
 };
 
-// A github source names the repository at a tag; an archive source, the zip a
-// release of the repository attaches, pinned by its digest.
-const isReleased = (input: { plugin: MarketplacePlugin; repo: string }): boolean => {
-  const { plugin, repo } = input;
-
-  if (plugin.repo !== undefined) {
-    return (
-      plugin.repo === repo &&
-      // Stryker disable next-line StringLiteral: no text in place of a missing ref is a release tag
-      RELEASE_TAG.test(plugin.ref ?? '')
-    );
-  }
-
-  const prefix = `${GITHUB_URL}${repo}${RELEASE_DOWNLOAD}`;
-  // Stryker disable next-line StringLiteral: no text in place of a missing url starts with the prefix
-  const url = plugin.url ?? '';
-
-  return (
-    url.startsWith(prefix) &&
-    url.endsWith(PLUGIN_ARCHIVE) &&
-    RELEASE_TAG.test(url.slice(prefix.length, -PLUGIN_ARCHIVE.length)) &&
-    // Stryker disable next-line StringLiteral: no text in place of a missing digest is 64 hex digits
-    SHA256.test(plugin.sha256 ?? '')
-  );
-};
-
 const checkMarketplace = (input: {
   pluginName: string | undefined;
   read: ManifestRead<MarketplaceManifest> | undefined;
@@ -306,15 +276,14 @@ const checkMarketplace = (input: {
     (plugin) =>
       plugin.name === input.pluginName &&
       repo !== undefined &&
-      isReleased({
-        plugin,
-        repo,
-      }),
+      plugin.repo === repo &&
+      // Stryker disable next-line StringLiteral: no text in place of a missing ref is a release tag
+      RELEASE_TAG.test(plugin.ref ?? ''),
   )
     ? []
     : [
         {
-          message: `does not list the plugin "${input.pluginName ?? ''}" from the GitHub repository its manifest names (${repo ?? 'none'}) at a release tag v<major>.<minor>.<patch>: at that tag, or as that release's constitution-plugin.zip with its sha256`,
+          message: `does not list the plugin "${input.pluginName ?? ''}" from the GitHub repository its manifest names (${repo ?? 'none'}) at a release tag v<major>.<minor>.<patch>`,
           path: DocumentPath.Marketplace,
         },
       ];

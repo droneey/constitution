@@ -10,7 +10,7 @@ import { pluginCheck } from '../plugin.check';
 const PLUGIN = '.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';
 const UNSERVED = (repo: string): string =>
-  `does not list the plugin "constitution" from the GitHub repository its manifest names (${repo}) at a release tag v<major>.<minor>.<patch>: at that tag, or as that release's constitution-plugin.zip with its sha256`;
+  `does not list the plugin "constitution" from the GitHub repository its manifest names (${repo}) at a release tag v<major>.<minor>.<patch>`;
 const listed = (source: unknown): string =>
   JSON.stringify({
     name: 'droneey',
@@ -25,14 +25,6 @@ const GITHUB = {
   repo: 'droneey/constitution',
   source: 'github',
 };
-const DIGEST = 'a'.repeat(64);
-const RELEASES = 'https://github.com/droneey/constitution/releases/download';
-const archived = (input: { sha256: string | undefined; url: string | undefined }): string =>
-  listed({
-    sha256: input.sha256,
-    source: 'archive',
-    url: input.url,
-  });
 const HOOKS = 'hooks/hooks.json';
 const LISTING_SKILLS =
   '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./skills/"]}';
@@ -92,7 +84,7 @@ describe('pluginCheck', () => {
         },
         {
           message:
-            'does not list the plugin "" from the GitHub repository its manifest names (none) at a release tag v<major>.<minor>.<patch>: at that tag, or as that release\'s constitution-plugin.zip with its sha256',
+            'does not list the plugin "" from the GitHub repository its manifest names (none) at a release tag v<major>.<minor>.<patch>',
           path: MARKETPLACE,
         },
       ]);
@@ -425,22 +417,6 @@ describe('pluginCheck', () => {
         },
       ],
       files: withFiles({
-        '.claude-plugin/plugin.json': '{"name":"constitution"}',
-        [MARKETPLACE]: archived({
-          sha256: DIGEST,
-          url: 'https://github.com/undefined/releases/download/v1.0.0/constitution-plugin.zip',
-        }),
-      }),
-      name: 'listed as a release archive of the repository "undefined" while the plugin manifest names none',
-    },
-    {
-      expected: [
-        {
-          message: UNSERVED('none'),
-          path: MARKETPLACE,
-        },
-      ],
-      files: withFiles({
         '.claude-plugin/plugin.json':
           '{"name":"constitution","repository":"https://gitlab.com/droneey/constitution"}',
         [MARKETPLACE]: listed({
@@ -484,84 +460,6 @@ describe('pluginCheck', () => {
       }),
       name: 'listing another plugin beside it',
     },
-    {
-      expected: [],
-      files: withFiles({
-        [MARKETPLACE]: archived({
-          sha256: DIGEST,
-          url: `${RELEASES}/v10.10.10/constitution-plugin.zip`,
-        }),
-      }),
-      name: "serving the plugin as its release's archive",
-    },
-    ...[
-      {
-        name: "another repository's release archive",
-        url: 'https://github.com/someone/constitution/releases/download/v1.0.0/constitution-plugin.zip',
-      },
-      {
-        name: 'the archive of a pre-release tag',
-        url: `${RELEASES}/v1.0.0-rc.1/constitution-plugin.zip`,
-      },
-      {
-        name: 'another file of the release',
-        url: `${RELEASES}/v1.0.0/constitution-plugin.tgz`,
-      },
-      {
-        name: 'no url',
-        url: undefined,
-      },
-    ].map(({ name, url }) => ({
-      expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
-      ],
-      files: withFiles({
-        [MARKETPLACE]: archived({
-          sha256: DIGEST,
-          url,
-        }),
-      }),
-      name: `serving the plugin from ${name}`,
-    })),
-    ...[
-      {
-        name: 'a digest of 63 digits',
-        sha256: 'a'.repeat(63),
-      },
-      {
-        name: 'a digest with a letter before it',
-        sha256: `x${DIGEST}`,
-      },
-      {
-        name: 'a digest with a digit after it',
-        sha256: `${DIGEST}0`,
-      },
-      {
-        name: 'an uppercase digest',
-        sha256: 'A'.repeat(64),
-      },
-      {
-        name: 'no digest',
-        sha256: undefined,
-      },
-    ].map(({ name, sha256 }) => ({
-      expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
-      ],
-      files: withFiles({
-        [MARKETPLACE]: archived({
-          sha256,
-          url: `${RELEASES}/v1.0.0/constitution-plugin.zip`,
-        }),
-      }),
-      name: `serving the release archive with ${name}`,
-    })),
   ])('should check the marketplace when it is $name', ({ expected, files }) => {
     // Arrange
     const input = checkInputOf(files);

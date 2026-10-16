@@ -5,7 +5,7 @@ import type { Check, CheckInput } from '../check.types';
 
 const DIGESTS = 'digests/';
 
-// The digests are generated when the plugin is released, never committed: the
+// The digests are generated into the release archive, never committed: the
 // check holds their limits on a copy generated in memory, and refuses a file
 // git tracks under digests/.
 const digestsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => [
@@ -19,7 +19,7 @@ const digestsCheck: Check = ({ byId, constitution }: CheckInput): readonly Findi
     .filter((path) => path.startsWith(DIGESTS))
     .map((path) => ({
       message:
-        'is generated when the plugin is released and ignored by git; run git rm --cached on it',
+        'is generated into the release archive and ignored by git; run git rm --cached on it',
       path,
     })),
 ];

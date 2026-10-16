@@ -34,6 +34,7 @@ core:
   code-reads-plainly:
     - noNestedTernary
   dead-code-deleted:
+    - noParametersOnlyUsedInRecursion
     - noUnreachable
     - noUnusedFunctionParameters
     - noUnusedImports
@@ -53,6 +54,7 @@ core:
   deprecated-form-never-used:
     - noDeprecatedImports
   thrown-value-is-an-error:
+    - usePromiseRejectErrors
     - useThrowOnlyError
   catch-handles-only-what-it-recognises:
     - catch-handles-only-what-it-recognises.grit
@@ -93,6 +95,11 @@ lingui:
 playwright:
   actions-never-forced:
     - noPlaywrightForceOption
+  diagnostics-written-through-a-logger:
+    - noPlaywrightPagePause
+  locators-by-role-label-text:
+    - noPlaywrightElementHandle
+    - noPlaywrightEval
   waits-through-locators-and-assertions:
     - noPlaywrightNetworkidle
     - noPlaywrightWaitForNavigation
@@ -103,6 +110,10 @@ playwright:
 react-dom:
   dangerously-set-inner-html-never-used:
     - noDangerouslySetInnerHtml
+  deprecated-form-never-used:
+    - noObsoleteTags
+  native-html-elements-first:
+    - noMisplacedListElements
   aria-attributes-as-the-dom-spells-them:
     - noUnknownAttribute
   jsx-controls-named:
@@ -152,6 +163,8 @@ react-native:
   style-colour-read-from-tokens:
     - noReactNativeLiteralColors
 tailwind:
+  component-reads-only-semantic-and-common-tokens:
+    - noTailwindRawColors
   screen-sized-classes-never-used:
     - screen-sized-classes-never-used.grit
   mobile-first-breakpoints:
@@ -210,6 +223,8 @@ typescript:
     - useEnumInitializers
   exhaustive-branching-over-unions:
     - useExhaustiveSwitchCases
+  finally-never-leaves-by-a-jump:
+    - noUnsafeFinally
   identifier-case-by-kind:
     - useNamingConvention
   any-never-written:

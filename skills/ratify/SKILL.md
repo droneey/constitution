@@ -6,13 +6,17 @@ disable-model-invocation: true
 
 # Ratify the constitution in this repository
 
-Installed constitution plugin:
+Installed constitution plugin, which brings the hooks and these skills:
 
 !`sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${CLAUDE_PLUGIN_ROOT}/package.json"`
 
-Blocks the plugin offers, by layer — `- <layer> <id>: <summary> Requires: <ids>. Extends: <base>.`:
+The constitution release installed in this project, in `.droneey/constitution/` — the rules come from it, never from the plugin:
 
-!`sed -e '/^block[[:cntrl:]]/!d' -e '/^block[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]]core[[:cntrl:]]/d' -e 's/^block[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\).*/- \2 \1: \3 Requires: \4. Extends: \5./' -e 's/ Requires: \.//' -e 's/ Extends: \.$//' "${CLAUDE_PLUGIN_ROOT}/digests/index.tsv"`
+!`sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${CLAUDE_PROJECT_DIR}/.droneey/constitution/package.json" 2>/dev/null || echo "(not installed)"`
+
+Blocks it offers, by layer — `- <layer> <id>: <summary> Requires: <ids>. Extends: <base>.`:
+
+!`sed -e '/^block[[:cntrl:]]/!d' -e '/^block[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]]core[[:cntrl:]]/d' -e 's/^block[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\).*/- \2 \1: \3 Requires: \4. Extends: \5./' -e 's/ Requires: \.//' -e 's/ Extends: \.$//' "${CLAUDE_PROJECT_DIR}/.droneey/constitution/digests/index.tsv" 2>/dev/null || echo "(not installed)"`
 
 The project folder holds:
 
@@ -33,11 +37,13 @@ Work in this order, and keep the owner in the loop: propose, let them confirm or
 
 ### 1. Check what is there
 
+If the release above reads `(not installed)`, or the block list does, the project has no constitution to read yet. Propose to install it first: in `mise.toml`, the tool `"github:droneey/constitution" = { version = "<plugin version>", asset_pattern = "constitution.tar.gz", strip_components = 0 }` and the `postinstall` hooks `mkdir -p .droneey` and `ln -sfn "$(mise where github:droneey/constitution)" .droneey/constitution`, with the installed plugin's version above; and `/.droneey` in `.gitignore`. After the owner's yes, write them, run `mise install`, and ask the owner to run `/constitution:ratify` again, which then reads the release's blocks. Stop here until then.
+
 If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, say so and ask whether to replace it. If decisions are kept elsewhere — `docs/adr/`, `docs/decisions/` — say so and ask whether to move them into `DECISIONS.md` or leave them and write none. With a no, leave that file alone: do not write it and skip its part of the work. Either way, build the proposal from the repository and the owner, not from files already there.
 
 ### 2. Show what the plugin offers
 
-Tell the owner the installed version and the blocks above, grouped by layer, in a few lines. If the list is empty, the plugin offers no blocks yet: every layer key stays `[]`, and only local blocks can be listed.
+Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only local blocks can be listed.
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
@@ -61,7 +67,7 @@ The owner confirms or corrects each key. A block the owner drops is dropped; a b
 
 **A library with no block.** When the repository relies on a framework, library or tool the list does not offer, ask the owner which they want:
 
-- **a local block** — you write `./rules/implementations/<id>.md` from `${CLAUDE_PLUGIN_ROOT}/templates/block.md`, and list its path under `implementations`;
+- **a local block** — you write `./rules/implementations/<id>.md` from `.droneey/constitution/templates/block.md`, and list its path under `implementations`;
 - **nothing** — it is left out. Using a tool the constitution has no block for is not a departure.
 
 For a local block, fill the template's placeholders from the repository and the owner:
@@ -70,7 +76,7 @@ For a local block, fill the template's placeholders from the repository and the 
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names an abstract constitution base it inherits, an id that starts with `_`, or stays `null` — a constitution block it builds on goes under `requires`;
 - `languages` lists, for a tool, the language blocks whose files it reads — constitution ids or local language blocks — and stays `[]` for a tool of any language and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern;
-- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `${CLAUDE_PLUGIN_ROOT}/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the local block covers the part it misses; `no` — it cannot meet the rule, and a rule of the local block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
+- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the local block covers the part it misses; `no` — it cannot meet the rule, and a rule of the local block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the template's format, with a slug no `rule` line of the index holds. Drop the placeholder rule when there is none.
 
 A local block is a draft until a person reviews it; say so.
@@ -81,11 +87,11 @@ A local block is a draft until a person reviews it; say so.
 
 ### 5. Ask about units
 
-When the repository holds several units — the products of a workspace, the code they share, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `products/`, `shared/` or `libs/`:
+When the repository holds several units — the apps of a workspace, the code they share, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `apps/`, `shared/` or `libs/`:
 
 ```yaml
 packages:
-  products/web:
+  apps/web:
     domains: [ui, untrusted-client, remote-service]
     platforms: [browser]
     implementations: [react-dom]
@@ -95,7 +101,7 @@ A path is relative to the root, two spaces in; its keys are `axes`, `domains`, `
 
 ### 6. Interview for PROJECT.md
 
-Ask one or two questions at a time, in the order of the sections of `${CLAUDE_PLUGIN_ROOT}/templates/PROJECT.md`, and use each answer to sharpen the next question. Where the repository already says something — a README, a package description — propose it and let the owner confirm or correct it.
+Ask one or two questions at a time, in the order of the sections of `.droneey/constitution/templates/PROJECT.md`, and use each answer to sharpen the next question. Where the repository already says something — a README, a package description — propose it and let the owner confirm or correct it.
 
 - **One-liner.** In one sentence, what is this product and who is it for?
 - **Context and users.** Who uses it, and what problem does it solve for them? Are there distinct roles?
@@ -122,13 +128,13 @@ Show the owner everything you will write:
 - `DECISIONS.md` in full, when it will be written;
 - each local block in full.
 
-Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the plugin's, from their cards under `${CLAUDE_PLUGIN_ROOT}/blocks/`, and each local block's — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
+Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the release's, from their cards under `.droneey/constitution/blocks/`, and each local block's — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
 
 Write only after the owner's yes, and only the files the owner agreed to.
 
-- **`constitution.yaml`** is `${CLAUDE_PLUGIN_ROOT}/templates/constitution.yaml` with `<installed version>` replaced by the installed version above and `<check command>` by the check command, and each `[]` or `{}` replaced where there is something to list. Keep every key, in the template's order. The hook reads a fixed subset of YAML: a list is a flow list `[a, b]` that may go on over indented lines until its `]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
+- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<installed version>` replaced by the version of the release installed above and `<check command>` by the check command, and each `[]` or `{}` replaced where there is something to list. Keep every key, in the template's order. The hook reads a fixed subset of YAML: a list is a flow list `[a, b]` that may go on over indented lines until its `]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
 - **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
-- **`DECISIONS.md`** is `${CLAUDE_PLUGIN_ROOT}/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
+- **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
 
 ### 9. See what a session will receive
 

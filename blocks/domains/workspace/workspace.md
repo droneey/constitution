@@ -11,7 +11,7 @@ governs: ["**"]
 
 # Workspace
 
-> A repository that holds several units — the products it releases, the parts two or more of them share, and what knows nothing of the product — each one package, or one package for each of its languages. This domain places the units, sets the direction of the imports between them, and links and checks their packages from the working tree.
+> A repository that holds several units — its programs, the parts two or more of them share, and what knows nothing of the product — each one package, or one package for each of its languages. This domain places the units, sets the direction of the imports between them, and links and checks their packages from the working tree.
 
 ## The root
 

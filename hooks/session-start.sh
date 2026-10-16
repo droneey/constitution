@@ -48,9 +48,42 @@ while :; do
 done
 [ -n "${project}" ] || exit 0
 
-index="${root}/digests/index.tsv"
-core="${root}/digests/core.md"
-manifest="${root}/package.json"
+# The rules come from the release the project pins, which mise unpacks and
+# links here; the plugin brings only the hooks that read them.
+archive="${project}/.droneey/constitution"
+event="${event:-SessionStart}"
+
+# The digest formats this plugin reads: the newest and the one before it, once
+# there is one.
+newest_format=1
+oldest_format=1
+
+# A project whose digests this plugin cannot read gets the reason alone.
+notice() {
+  printf 'notice\t%s\t%s\n' "$1" "$2" |
+    CONSTITUTION_ROOT="${archive}" CONSTITUTION_EVENT="${event}" CONSTITUTION_OLDEST="${oldest_format}" \
+      awk -f "${lib}/json.awk" -f "${lib}/digest.awk" 2>/dev/null || fail 'cannot build the digest'
+  exit 0
+}
+
+[ -d "${archive}" ] || notice missing ''
+# A release carries its blocks with a format, or, before format 1, neither; a
+# working tree linked in its place has blocks, and a format once digests:write runs.
+[ -f "${archive}/digests/format" ] || [ ! -d "${archive}/blocks" ] || notice ungenerated ''
+format=''
+if [ -f "${archive}/digests/format" ] && [ -r "${archive}/digests/format" ]; then
+  format="$(sed -n 1p "${archive}/digests/format")" || fail "cannot read ${archive}/digests/format"
+fi
+# No format, or no number, is an archive older than the first format.
+case "${format}" in
+  '' | *[!0-9]*) format=0 ;;
+esac
+[ "${format}" -le "${newest_format}" ] || notice newer "${format}"
+[ "${format}" -ge "${oldest_format}" ] || notice older "${format}"
+
+index="${archive}/digests/index.tsv"
+core="${archive}/digests/core.md"
+manifest="${archive}/package.json"
 config="${project}/constitution.yaml"
 for file in "${index}" "${core}" "${manifest}"; do
   [ -f "${file}" ] && [ -r "${file}" ] || fail "cannot read ${file}"
@@ -60,7 +93,6 @@ installed="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "
 [ -n "${installed}" ] || fail "${manifest} has no version"
 today="$(date +%Y-%m-%d)" || fail 'cannot read the date'
 
-event="${event:-SessionStart}"
 startup=''
 if [ "${event}" = SessionStart ] && [ "${origin}" = startup ]; then
   startup=1
@@ -97,7 +129,7 @@ done <<EOF
 ${records}
 EOF
 
-export CONSTITUTION_ROOT="${root}" CONSTITUTION_PROJECT="${project}" \
+export CONSTITUTION_ROOT="${archive}" CONSTITUTION_PROJECT="${project}" \
   CONSTITUTION_INDEX="${index}" CONSTITUTION_CORE="${core}" \
   CONSTITUTION_INSTALLED="${installed}" CONSTITUTION_TODAY="${today}" \
   CONSTITUTION_EVENT="${event}" CONSTITUTION_STARTUP="${startup}"

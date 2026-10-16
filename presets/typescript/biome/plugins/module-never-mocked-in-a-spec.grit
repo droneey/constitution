@@ -1,7 +1,11 @@
 language js
 
 or {
-  `mock.module($_, $_)` as $call where {
+  or {
+    `mock.module($_, $_)`,
+    `vi.mock($...)`,
+    `jest.mock($...)`
+  } as $call where {
     register_diagnostic(span=$call, message="Fake an effect through its port, not by replacing a module", severity="error")
   },
   or {

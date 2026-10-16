@@ -25,7 +25,7 @@ A case compares with `toStrictEqual`, never `toEqual`, `toMatchObject`, `expect.
 
 ### module-never-mocked-in-a-spec → effect-faked-never-mocked · SHOULD
 
-No `mock.module` and no `spyOn` over a real module.
+No `mock.module`, in any of its spellings — `vi.mock`, `jest.mock` — and no `spyOn` over a real module.
 
 | Why | Tags |
 |---|---|

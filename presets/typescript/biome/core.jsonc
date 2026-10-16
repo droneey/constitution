@@ -9,6 +9,7 @@
         "noFocusedTests": "error",
         "noDebugger": "error",
         "noDeprecatedImports": "error",
+        "noParametersOnlyUsedInRecursion": "error",
       },
       "style": {
         "useFilenamingConvention": {
@@ -70,6 +71,7 @@
       "nursery": {
         "noConditionalExpect": "error",
         "useExpect": "error",
+        "usePromiseRejectErrors": "error",
       },
     },
   },

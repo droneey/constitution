@@ -45,6 +45,8 @@
         "noNonScalableViewport": "error",
         "useControlLabel": "error",
         "noInvalidFileInputAccept": "error",
+        "noMisplacedListElements": "error",
+        "noObsoleteTags": "error",
       },
     },
   },

@@ -83,8 +83,6 @@ describe('loadConstitution', () => {
               name: 'constitution',
               ref: 'v1.0.0',
               repo: 'droneey/constitution',
-              sha256: undefined,
-              url: undefined,
             },
           ],
         },

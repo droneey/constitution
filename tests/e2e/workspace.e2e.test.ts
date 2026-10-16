@@ -114,7 +114,7 @@ describe('a workspace on the presets', () => {
         '--config=./bunfig.integration.toml',
         'test',
       ],
-      folder: 'products/web',
+      folder: 'apps/web',
       program: 'bun',
     });
 
@@ -204,8 +204,8 @@ describe('a workspace on the presets', () => {
     const { passed } = runTool(folder, {
       args: [
         'check',
-        '--config-path=biome.products-api.jsonc',
-        'products/api',
+        '--config-path=biome.apps-api.jsonc',
+        'apps/api',
       ],
       program: 'biome',
     });
@@ -226,7 +226,7 @@ describe('a workspace on the presets', () => {
     // Act
     const { output } = runTool(folder, {
       args: [
-        'products',
+        'apps',
         'shared',
         'libs',
         '--config',
@@ -265,14 +265,14 @@ describe('a workspace on the presets', () => {
     // Arrange
     const folder = workspace({
       ...cruisers,
-      'products/web/package.json': manifestOf({
+      'apps/web/package.json': manifestOf({
         dependencies: [
           '@shop/shared-orders',
           'x-api',
         ],
         name: '@shop/web',
       }),
-      'products/web/src/features/labels/app/fetch-label.ts':
+      'apps/web/src/features/labels/app/fetch-label.ts':
         "import { get } from 'x-api';\n\nexport const fetchLabel = get;\n",
     });
 
@@ -283,7 +283,7 @@ describe('a workspace on the presets', () => {
         '--config',
         '.dependency-cruiser.mjs',
       ],
-      folder: 'products/web',
+      folder: 'apps/web',
       program: 'depcruise',
     });
 
@@ -314,9 +314,9 @@ describe('a workspace on the presets', () => {
   it('should report the home a part gives when an adapter of a Python package imports structlog', () => {
     // Arrange
     const folder = workspace({
-      'products/reports/src/shop_reports/adapters/__init__.py': '',
-      'products/reports/src/shop_reports/adapters/log/__init__.py': '',
-      'products/reports/src/shop_reports/adapters/log/log_adapter.py': 'import structlog\n',
+      'apps/reports/src/shop_reports/adapters/__init__.py': '',
+      'apps/reports/src/shop_reports/adapters/log/__init__.py': '',
+      'apps/reports/src/shop_reports/adapters/log/log_adapter.py': 'import structlog\n',
     });
 
     // Act
@@ -324,7 +324,7 @@ describe('a workspace on the presets', () => {
       args: [
         'src',
       ],
-      folder: 'products/reports',
+      folder: 'apps/reports',
       program: uvBinary('python-check'),
     });
 
@@ -335,17 +335,17 @@ describe('a workspace on the presets', () => {
   it('should mutate the changed line of a unit when the mutation check runs from its folder', () => {
     // Arrange
     const folder = workspace({
-      'products/web/bunfig.mutation.toml':
+      'apps/web/bunfig.mutation.toml':
         '[test]\nroot = "./src"\npathIgnorePatterns = ["**/main.test.*"]\ncoverage = false\n',
-      'products/web/stryker.config.mjs': STRYKER,
+      'apps/web/stryker.config.mjs': STRYKER,
     });
 
     commitBase(folder);
     write({
       files: {
-        'products/web/src/features/labels/app/label.ts':
+        'apps/web/src/features/labels/app/label.ts':
           "import { describeOrder, type OrderId } from '@shop/shared-orders';\n\nexport const label = (id: OrderId): string => `Ordered ${describeOrder({ id, total: 0 })}`;\n",
-        'products/web/src/features/labels/app/__tests__/label.test.ts':
+        'apps/web/src/features/labels/app/__tests__/label.test.ts':
           "import { expect, it } from 'bun:test';\n\nimport type { OrderId } from '@shop/shared-orders';\n\nimport { label } from '../label';\n\nit('should name the order when an order is labelled', () => {\n  // Act\n  const text = label('a' as OrderId);\n\n  // Assert\n  expect(text).toBe('Ordered order:a');\n});\n",
       },
       folder,
@@ -356,7 +356,7 @@ describe('a workspace on the presets', () => {
       args: [
         join(REPOSITORY, 'tools', 'mutation-check', 'src', 'main.ts'),
       ],
-      folder: 'products/web',
+      folder: 'apps/web',
       program: 'bun',
     });
 

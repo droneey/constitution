@@ -12,20 +12,13 @@ jobs:
       contents: write
     with:
       prerelease: true
+      # The archive a project pins: the rules, the digests the plugin's hooks
+      # read, the presets, the templates and the built tools.
       assets-command: >-
         npx --yes bun@1.4.3 install --production --frozen-lockfile
         && npx --yes bun@1.4.3 run build
-        && tar -czf constitution.tar.gz presets templates
+        && npx --yes bun@1.4.3 run digests:write
+        && tar -czf constitution.tar.gz package.json blocks digests presets templates
         tools/mutation-check/dist tools/python-check/dist tools/mutmut-check/dist
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
-        && npx --yes bun@1.4.3 run digests:write
-        && zip -qrX constitution-plugin.zip .claude-plugin/plugin.json package.json LICENSE.md
-        agents blocks digests hooks skills templates
-        && sha256sum constitution-plugin.zip > constitution-plugin.zip.sha256
-      assets: >-
-        constitution.tar.gz constitution.tar.gz.sha256
-        constitution-plugin.zip constitution-plugin.zip.sha256
-    # A release opened with GITHUB_TOKEN starts no other workflow; cd-publish
-    # waits for this one's release event.
-    secrets:
-      token: ${{ secrets.GH_TOKEN }}
+      assets: constitution.tar.gz constitution.tar.gz.sha256

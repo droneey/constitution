@@ -2,9 +2,9 @@
 
 > The contracts between the Python units of a workspace, in the root `pyproject.toml`.
 
-### units-blind-by-an-independence-contract → products-blind-to-each-other · MUST
+### units-blind-by-an-independence-contract → apps-blind-to-each-other · MUST
 
-`[tool.importlinter]` of the root `pyproject.toml` names the import package of every unit in `root_packages`, and an `independence` contract lists those of the units of `products/`.
+`[tool.importlinter]` of the root `pyproject.toml` names the import package of every unit in `root_packages`, and an `independence` contract lists those of the units of `apps/`.
 
 | Why | Tags |
 |---|---|
@@ -12,7 +12,7 @@
 
 ### units-ordered-by-a-layers-contract → units-import-toward-libs · MUST
 
-A `layers` contract of the same section orders the import packages from the units of `products/`, separated by `|`, above those of `shared/` and then those of `libs/`, each separated by `:`.
+A `layers` contract of the same section orders the import packages from the units of `apps/`, separated by `|`, above those of `shared/` and then those of `libs/`, each separated by `:`.
 
 | Why | Tags |
 |---|---|

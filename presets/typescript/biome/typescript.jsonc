@@ -24,6 +24,9 @@
         "noDuplicateEnumValues": "error",
         "noConstEnum": "error",
       },
+      "correctness": {
+        "noUnsafeFinally": "error",
+      },
       "style": {
         "useNamingConvention": {
           "level": "error",

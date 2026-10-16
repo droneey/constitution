@@ -81,6 +81,25 @@ function print_json(   k) {
   printf "\"}}\n"
 }
 
+# The digests this plugin cannot read, or their absence, leave only the reason.
+function notice(kind, found,   archive) {
+  archive = ENVIRON["CONSTITUTION_ROOT"]
+  if (kind == "missing") {
+    head("The droneey constitution is not installed in this repository: " archive " does not exist, so no rules are given.")
+    head("Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.")
+  } else if (kind == "ungenerated") {
+    head("The droneey constitution in " archive " has blocks but no generated digests, so no rules are given.")
+    head("Tell the user to run bun run digests:write in that working tree.")
+  } else if (kind == "older") {
+    head("The droneey constitution in " archive " is older than digest format " ENVIRON["CONSTITUTION_OLDEST"] ", the oldest this plugin reads, so no rules are given.")
+    head("Tell the user to raise the constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.")
+  } else {
+    head("The droneey constitution in " archive " has digest format " found ", newer than this plugin reads, so no rules are given.")
+    head("Tell the user to update the constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.")
+  }
+}
+
+$1 == "notice" { notice_kind = $2; notice_found = $3 }
 $1 == "error" { failed = $2 }
 $1 == "core" { COREFILES[++ncorefiles] = text(1) }
 $1 == "pin" { pin = text(1) }
@@ -89,14 +108,19 @@ $1 == "warning" { WARNING[++nwarnings] = text(1) }
 $1 == "index" { INDEX[++nindex] = text(1) }
 
 END {
+  if (notice_kind != "") {
+    notice(notice_kind, notice_found)
+    print_json()
+    exit
+  }
   installed = ENVIRON["CONSTITUTION_INSTALLED"]
-  head("The droneey constitution plugin " installed " supplies this repository's rules. Block files live under " ENVIRON["CONSTITUTION_ROOT"] ".")
+  head("The droneey constitution " installed " supplies this repository's rules. Block files live under " ENVIRON["CONSTITUTION_ROOT"] ".")
   if (failed != "") {
     head("constitution.yaml does not parse at line " failed "; only core applies.")
     core()
   } else {
     head("constitution.yaml pins " (pin == "" ? "no version" : pin) "; " count (count == 1 ? " block is" : " blocks are") " active.")
-    if (ENVIRON["CONSTITUTION_STARTUP"] != "" && pin != "" && pin != installed) head("constitution.yaml pins " pin " while the installed plugin is " installed "; this digest follows " installed ".")
+    if (ENVIRON["CONSTITUTION_STARTUP"] != "" && pin != "" && pin != installed) head("constitution.yaml pins " pin " while .droneey/constitution holds " installed "; this digest follows " installed ".")
     warnings()
     core()
     index_lines()

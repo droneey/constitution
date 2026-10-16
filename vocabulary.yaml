@@ -21,6 +21,7 @@ architecture:
   folders:
     - adapters/
     - app/
+    - apps/
     - commands/
     - components/
     - consumers/
@@ -36,7 +37,6 @@ architecture:
     - languages/
     - libs/
     - models/
-    - products/
     - providers/
     - queries/
     - repositories/

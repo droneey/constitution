@@ -32,6 +32,11 @@ const TEST_PARTS = [
   'typescript/bun-test',
 ];
 
+const signInSpec = (step: string): string =>
+  `import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  ${step}\n  await expect(page.getByRole('heading')).toBeVisible();\n});\n`;
+
+const SIX_SUITES_DEEP = `import { describe, expect, test } from 'bun:test';\n\n${"describe('orders', () => {\n".repeat(6)}test('should add totals when two are given', () => {\n  expect(1).toBe(1);\n});\n${'});\n'.repeat(6)}`;
+
 // Biome turns on the React and Tailwind rules only for a manifest that lists
 // their libraries.
 const MANIFEST = JSON.stringify({
@@ -121,6 +126,22 @@ describe('the Biome preset', () => {
       files: {
         'src/__tests__/order.test.ts':
           "import { mock } from 'bun:test';\n\nmock.module('./order', () => ({}));\n",
+      },
+      message: 'Fake an effect through its port',
+    },
+    {
+      condition: "a spec replaces a module through vi's object",
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { vi } from 'bun:test';\n\nvi.mock('./order', () => ({}));\n",
+      },
+      message: 'Fake an effect through its port',
+    },
+    {
+      condition: "a spec replaces a module through jest's object",
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { jest } from 'bun:test';\n\njest.mock('./order');\n",
       },
       message: 'Fake an effect through its port',
     },
@@ -321,6 +342,13 @@ describe('the Biome preset', () => {
       condition: 'an object type has a string literal property',
       files: {
         'src/features/orders/domain/opened.ts': "export interface Opened {\n  status: 'open';\n}\n",
+      },
+    },
+    {
+      condition: "a spec builds a fake function through vi's object",
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { expect, test, vi } from 'bun:test';\n\ntest('should call the loader when asked', () => {\n  const load = vi.fn();\n\n  load();\n\n  expect(load).toHaveBeenCalledTimes(1);\n});\n",
       },
     },
   ])('should report no plugin finding when $condition', ({ files }) => {
@@ -733,6 +761,13 @@ describe("the parts of Biome's base", () => {
         'src/__tests__/main.test.ts': functionWithBodyOf(150),
       },
       rule: 'noExcessiveLinesPerFunction',
+    },
+    {
+      condition: 'a spec nests six suites, a rule the test domain turns on below an error',
+      files: {
+        'src/__tests__/order.test.ts': SIX_SUITES_DEEP,
+      },
+      rule: 'noExcessiveNestedTestSuites',
     },
   ])('should not report $rule when $condition', ({ files, rule }) => {
     // Arrange
@@ -1625,6 +1660,211 @@ describe('the Biome part that needs each setting', () => {
       isReported: true,
       parts: BASE_PARTS,
       rule: 'noImpliedEval',
+    },
+    {
+      condition: 'a parameter is only handed on to the recursive call',
+      files: {
+        'src/main.ts':
+          'export const depth = (level: number, label: string): number =>\n  level > 0 ? depth(level - 1, label) : 0;\n',
+      },
+      isReported: true,
+      parts: BASE_PARTS,
+      rule: 'noParametersOnlyUsedInRecursion',
+    },
+    {
+      condition: 'every parameter is read outside the recursive call',
+      files: {
+        'src/main.ts':
+          'export const depth = (level: number): number => (level > 0 ? depth(level - 1) : 0);\n',
+      },
+      isReported: false,
+      parts: BASE_PARTS,
+      rule: 'noParametersOnlyUsedInRecursion',
+    },
+    {
+      condition: 'a promise is rejected with a string',
+      files: {
+        'src/main.ts': "export const fail = (): Promise<never> => Promise.reject('broken');\n",
+      },
+      isReported: true,
+      parts: BASE_PARTS,
+      rule: 'usePromiseRejectErrors',
+    },
+    {
+      condition: 'a promise is rejected with an error',
+      files: {
+        'src/main.ts':
+          "export const fail = (): Promise<never> => Promise.reject(new Error('broken'));\n",
+      },
+      isReported: false,
+      parts: BASE_PARTS,
+      rule: 'usePromiseRejectErrors',
+    },
+    {
+      condition: 'a finally block returns',
+      files: {
+        'src/main.ts':
+          'export const settle = (): number => {\n  try {\n    return 1;\n  } finally {\n    return 2;\n  }\n};\n',
+      },
+      isReported: true,
+      parts: BASE_PARTS,
+      rule: 'noUnsafeFinally',
+    },
+    {
+      condition: 'a finally block only releases',
+      files: {
+        'src/main.ts':
+          'export const settle = (): number => {\n  try {\n    return 1;\n  } finally {\n    globalThis.focus();\n  }\n};\n',
+      },
+      isReported: false,
+      parts: BASE_PARTS,
+      rule: 'noUnsafeFinally',
+    },
+    {
+      condition: 'a component renders an obsolete element',
+      files: {
+        'src/panel.tsx': component('<center>Orders</center>'),
+      },
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/react-dom',
+      ],
+      rule: 'noObsoleteTags',
+    },
+    {
+      condition: 'a component renders a current element',
+      files: {
+        'src/panel.tsx': component('<p>Orders</p>'),
+      },
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/react-dom',
+      ],
+      rule: 'noObsoleteTags',
+    },
+    {
+      condition: 'a list item sits outside a list',
+      files: {
+        'src/panel.tsx': component('<div><li>Orders</li></div>'),
+      },
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/react-dom',
+      ],
+      rule: 'noMisplacedListElements',
+    },
+    {
+      condition: 'a list item sits in a list',
+      files: {
+        'src/panel.tsx': component('<ul><li>Orders</li></ul>'),
+      },
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/react-dom',
+      ],
+      rule: 'noMisplacedListElements',
+    },
+    {
+      condition: "a class names a colour of Tailwind's default palette",
+      files: {
+        'src/panel.tsx': component("<p className='text-pink-500'>Orders</p>"),
+      },
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/tailwind',
+      ],
+      rule: 'noTailwindRawColors',
+    },
+    {
+      condition: "a class names a colour of the design system's tokens",
+      files: {
+        'src/panel.tsx': component("<p className='text-muted'>Orders</p>"),
+      },
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/tailwind',
+      ],
+      rule: 'noTailwindRawColors',
+    },
+    {
+      condition: 'a spec pauses the page',
+      files: {
+        'tests/e2e/sign-in.e2e.test.ts': signInSpec('await page.pause();'),
+      },
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/playwright',
+      ],
+      rule: 'noPlaywrightPagePause',
+    },
+    {
+      condition: 'a spec finds elements through locators',
+      files: {
+        'tests/e2e/sign-in.e2e.test.ts': signInSpec("await page.getByRole('button').click();"),
+      },
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/playwright',
+      ],
+      rule: 'noPlaywrightPagePause',
+    },
+    {
+      condition: 'a spec takes an element handle',
+      files: {
+        'tests/e2e/sign-in.e2e.test.ts': signInSpec("await page.$('h1');"),
+      },
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/playwright',
+      ],
+      rule: 'noPlaywrightElementHandle',
+    },
+    {
+      condition: 'a spec finds elements through locators',
+      files: {
+        'tests/e2e/sign-in.e2e.test.ts': signInSpec("await page.getByRole('button').click();"),
+      },
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/playwright',
+      ],
+      rule: 'noPlaywrightElementHandle',
+    },
+    {
+      condition: 'a spec evaluates a selector on the page',
+      files: {
+        'tests/e2e/sign-in.e2e.test.ts': signInSpec(
+          "await page.$eval('h1', (heading) => heading.textContent);",
+        ),
+      },
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/playwright',
+      ],
+      rule: 'noPlaywrightEval',
+    },
+    {
+      condition: 'a spec finds elements through locators',
+      files: {
+        'tests/e2e/sign-in.e2e.test.ts': signInSpec("await page.getByRole('button').click();"),
+      },
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/playwright',
+      ],
+      rule: 'noPlaywrightEval',
     },
   ])(
     'should report $rule $isReported when $condition and a project extends $parts',
@@ -2609,7 +2849,7 @@ describe('the Biome architecture parts', () => {
     },
     {
       code: "export const load = (): Promise<Response> => fetch('/orders');\n",
-      file: 'products/web/src/features/orders/domain/entities/order.entity.ts',
+      file: 'apps/web/src/features/orders/domain/entities/order.entity.ts',
       isReported: true,
     },
     {
@@ -2944,7 +3184,7 @@ describe('the Biome base where a rule allows what a setting caught', () => {
     {
       condition: 'a file of end-to-end specs in a package of a workspace runs past 500 lines',
       files: {
-        'products/web/tests/e2e/long.ts': fileOfLines(505),
+        'apps/web/tests/e2e/long.ts': fileOfLines(505),
       },
       rule: 'noExcessiveLinesPerFile',
     },

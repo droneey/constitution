@@ -10,6 +10,7 @@
     "rules": {
       "nursery": {
         "noTailwindArbitraryValue": "error",
+        "noTailwindRawColors": "error",
         "noUndeclaredClasses": "off",
       },
     },

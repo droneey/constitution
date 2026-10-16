@@ -6,7 +6,7 @@
 
 ### unit-package-named-under-the-scope → unit-named-after-its-folder · SHOULD
 
-A program is `@<scope>/<name>`, a part of `shared/` is `@<scope>/shared-<name>`, and a unit of `libs/` is `@<scope>/libs-<name>`; an integration is the subpath of its framework, `@<scope>/<name>/<framework>`.
+An app is `@<scope>/<name>`, a part of `shared/` is `@<scope>/shared-<name>`, and a unit of `libs/` is `@<scope>/libs-<name>`; an integration is the subpath of its framework, `@<scope>/<name>/<framework>`.
 
 | Why | Tags |
 |---|---|

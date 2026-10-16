@@ -4,6 +4,8 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { archiveOf, linkArchive } from './plugin-root.fixtures';
+
 enum HookEvent {
   Startup = 'startup',
   Resume = 'resume',
@@ -14,6 +16,8 @@ enum HookEvent {
 
 // Folders are relative to the project root.
 interface HookCall {
+  // the archive linked into the project, the plugin root's by default
+  archive?: string | undefined;
   cwd?: string | undefined;
   event: HookEvent;
   nonUtf8Byte?: boolean | undefined;
@@ -25,6 +29,8 @@ interface HookCall {
   session?: string | undefined;
   // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
+  // no archive is linked into the project
+  unlinked?: boolean | undefined;
 }
 
 interface HookRun {
@@ -130,6 +136,13 @@ const createFakeClock = (): string => {
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
   const clock = createFakeClock();
+
+  if (call.unlinked !== true) {
+    linkArchive({
+      archive: call.archive ?? archiveOf(call.root),
+      project: call.project,
+    });
+  }
   const hookRun = spawnSync(
     SHELL,
     [

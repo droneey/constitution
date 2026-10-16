@@ -11,11 +11,7 @@ concurrency:
 
 jobs:
   version:
-    # The release commit and the publish commit are this workflow's and
-    # cd-publish's own; neither is a change to release.
-    if: >-
-      !startsWith(github.event.head_commit.message, 'chore: Release v')
-      && !startsWith(github.event.head_commit.message, 'chore: Publish v')
+    if: "!startsWith(github.event.head_commit.message, 'chore: Release v')"
     uses: droneey/.github/.github/workflows/cd-version.yaml@b1df2c9432a507a8c2ff15d19ecf524c6ad9ddf0 # v2.6.0
     permissions:
       contents: write
@@ -24,5 +20,6 @@ jobs:
       version-command: >-
         npm version --no-git-tag-version "$VERSION"
         && sed -i "s/^version: .*/version: $VERSION/" constitution.yaml
+        && sed -i "s/\"ref\": \"v[0-9.]*\"/\"ref\": \"v$VERSION\"/" .claude-plugin/marketplace.json
     secrets:
       token: ${{ secrets.GH_TOKEN }}

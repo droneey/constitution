@@ -62,16 +62,16 @@ const WELL_FORMED = {
   }),
 };
 
-// A workspace of six units, one of them a product whose TypeScript package
+// A workspace of six units, one of them a library whose TypeScript package
 // sits beside its data in no language, each package linked by its name as a
 // package manager links it, with the workspace's architecture part.
 const UNITS: Readonly<Record<string, string>> = {
-  admin: 'products/admin',
-  eros: 'products/eros/languages/typescript',
+  admin: 'apps/admin',
+  eros: 'libs/eros/languages/typescript',
   'libs-smtp': 'libs/smtp',
   'shared-messages': 'shared/messages',
   'shared-money': 'shared/money',
-  web: 'products/web',
+  web: 'apps/web',
 };
 
 const workspaceProject = (files: Readonly<Record<string, string>>) => ({
@@ -107,16 +107,16 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
     'typescript/architecture/workspace',
   ],
   roots: [
-    'products',
+    'apps',
     'shared',
     'libs',
     'scripts',
   ],
   workspaces: [
-    'products/*',
-    'products/*/languages/typescript',
+    'apps/*',
     'shared/*',
     'libs/*',
+    'libs/*/languages/typescript',
   ],
 });
 
@@ -1228,24 +1228,24 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'a product imports another by its name',
+      condition: 'an app imports another by its name',
       files: {
-        'products/web/src/orders.ts': importing({
+        'apps/web/src/orders.ts': importing({
           from: '@shop/admin',
           name: 'unit',
         }),
       },
-      rule: 'products-blind-to-each-other',
+      rule: 'apps-blind-to-each-other',
     },
     {
-      condition: 'a unit of shared imports a product by its name',
+      condition: 'a unit of shared imports an app by its name',
       files: {
         'shared/messages/src/messages.ts': importing({
           from: '@shop/web',
           name: 'unit',
         }),
       },
-      rule: 'shared-knows-no-product',
+      rule: 'shared-knows-no-app',
     },
     {
       condition: 'a unit of libs imports a unit of shared by its name',
@@ -1258,9 +1258,9 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'libs-know-no-product',
     },
     {
-      condition: 'a product imports a unit by a path into its folder',
+      condition: 'an app imports a unit by a path into its folder',
       files: {
-        'products/web/src/orders.ts': importing({
+        'apps/web/src/orders.ts': importing({
           from: '../../../shared/messages/src/index',
           name: 'unit',
         }),
@@ -1278,10 +1278,10 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'units-imported-by-name',
     },
     {
-      condition: 'the package of a product in several languages imports another unit by a path',
+      condition: 'the package of a library in several languages imports another unit by a path',
       files: {
-        'products/eros/languages/typescript/src/filter.ts': importing({
-          from: '../../../../admin/src/index',
+        'libs/eros/languages/typescript/src/filter.ts': importing({
+          from: '../../../../smtp/src/index',
           name: 'unit',
         }),
       },
@@ -1291,7 +1291,7 @@ describe('the dependency-cruiser layer set', () => {
       condition: 'a script of the root imports a unit by a path into its folder',
       files: {
         'scripts/release.ts': importing({
-          from: '../products/web/src/index',
+          from: '../apps/web/src/index',
           name: 'unit',
         }),
       },
@@ -1311,12 +1311,16 @@ describe('the dependency-cruiser layer set', () => {
   it('should report no violation when the units of a workspace import downward by name', () => {
     // Arrange
     const project = workspaceProject({
-      'products/eros/shared/schema/kinds.yaml': '- validation\n',
-      'products/eros/languages/typescript/src/kinds.ts':
+      'libs/eros/shared/schema/kinds.yaml': '- validation\n',
+      'libs/eros/languages/typescript/src/kinds.ts':
         "import kinds from '../../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
-      'products/web/src/orders.ts':
+      'apps/web/src/orders.ts':
         "import { unit } from '@shop/shared-messages';\nimport { unit as smtp } from '@shop/libs-smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
-      'products/web/src/line.ts': exported('line'),
+      'apps/web/src/line.ts': exported('line'),
+      'libs/eros/languages/typescript/src/send.ts': importing({
+        from: '@shop/libs-smtp',
+        name: 'unit',
+      }),
       'scripts/release.ts': importing({
         from: '@shop/web',
         name: 'unit',
