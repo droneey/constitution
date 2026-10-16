@@ -13,25 +13,25 @@ governs: ["src/routes/__root.tsx", "src/router.tsx", "src/root/routes/__root.tsx
 
 > The application shell around the router, in SPA mode. It has no `main` file: its entry files are the router's file, whose `getRouter` the framework calls, and `src/client.tsx` where the program hydrates itself — the entry file the other blocks name, where a polyfill loads — beside the root route, `__root.tsx`. The archive's `tanstack-start` parts keep the entry files out of mutation and give them to the unused-code check as entries; on the architecture axis the root route stays out of mutation too. A project adds the entry files to its coverage exclusions.
 
-### caching-set-in-route-rules → hashed-file-immutable-and-its-pointers-revalidated · SHOULD
+### caching-set-where-the-files-are-served → hashed-file-immutable-and-its-pointers-revalidated · SHOULD
 
-Nitro's `routeRules` set the caching headers: `immutable` with a year's `max-age` on the hashed assets, and `no-cache` on the documents and the runtime configuration.
-
-| Why | Tags |
-|---|---|
-| the server that serves the files then says how long each may be kept, in the same configuration as the program's other headers. | [performance] |
-
-### content-security-policy-set-in-route-rules → document-served-with-a-strict-content-security-policy · MUST
-
-Nitro's `routeRules` set the Content Security Policy on every document, beside the caching rules, and the policy allows the shell's inline scripts by hash; a test reads the policy the server sends.
+What serves the files sets the caching headers — Nitro's `routeRules` where Start's server serves them, the host's configuration file in the repository where a static host serves the SPA's shell and assets: `immutable` with a year's `max-age` on the hashed assets, and `no-cache` on the documents and the runtime configuration.
 
 | Why | Tags |
 |---|---|
-| the policy then lives in one configuration with the program, not in a proxy nobody here sees, and a test proves it is sent. | [security] |
+| whatever serves the files then says how long each may be kept, in the same configuration as the program's other headers. | [performance] |
 
-### security-headers-set-in-route-rules · SHOULD
+### content-security-policy-set-where-documents-are-served → document-served-with-a-strict-content-security-policy · MUST
 
-Nitro's `routeRules` set the other security headers on every document — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy`, `Permissions-Policy` and `Reporting-Endpoints` — beside the Content Security Policy, and a test reads the headers the server sends.
+What serves the documents sets the Content Security Policy on every one, beside the caching rules — Nitro's `routeRules` where Start's server serves them, the host's configuration file in the repository where a static host does — and the policy allows the shell's inline scripts by hash; a test reads the policy that is sent.
+
+| Why | Tags |
+|---|---|
+| the policy then lives in the repository with the program, not in a proxy nobody here sees, and a test proves it is sent; Start's request middleware never reaches a shell a static host serves. | [security] |
+
+### security-headers-set-where-documents-are-served · SHOULD
+
+What serves the documents sets the other security headers on every one, as it sets the policy — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy`, `Permissions-Policy` and `Reporting-Endpoints` — beside the Content Security Policy, and a test reads the headers that are sent.
 
 | Why | Tags |
 |---|---|

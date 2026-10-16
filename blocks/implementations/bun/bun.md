@@ -33,7 +33,7 @@ governs: ["bunfig.toml", "package.json"]
 
 ### release-age-set-for-installs → new-release-adopted-after-a-cooldown · MUST
 
-`minimumReleaseAge = 604800` — seven days, in seconds — under `[install]` in `bunfig.toml` sets the cooldown for new releases, and `minimumReleaseAgeExcludes` holds the exemptions, each with any new dependency it brings.
+`minimumReleaseAge = 259200` — three days, in seconds — under `[install]` in `bunfig.toml` sets the cooldown for new releases, and `minimumReleaseAgeExcludes` holds the exemptions, each with any new dependency it brings.
 
 | Why | Tags |
 |---|---|

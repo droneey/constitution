@@ -16,7 +16,7 @@ The root's `[tool.uv.workspace]` lists every Python package of the repository in
 
 | Why | Tags |
 |---|---|
-| uv 0.12 installs each listed package from the working tree and resolves one version of every dependency for all of them, and refuses a workspace nested in a package. | [] |
+| uv 0.13 installs each listed package from the working tree and resolves one version of every dependency for all of them, and refuses a workspace nested in a package. | [] |
 
 ### one-lock-for-the-workspace → dependency-has-one-version-across-units · MUST
 
@@ -32,4 +32,4 @@ A Python package takes the data it needs at run time from a file outside its pro
 
 | Why | Tags |
 |---|---|
-| uv_build 0.12 refuses a path outside the project in `source-include` and in `data`, ignores an absolute one, and follows a file symlink, writing the file's content into the sdist and the wheel, so the sdist builds alone; a checkout without symbolic links holds the link's path as text, which the spec then fails to parse. | [data] |
+| uv_build 0.13 refuses a path outside the project in `source-include` and in `data`, ignores an absolute one, and follows a file symlink, writing the file's content into the sdist and the wheel, so the sdist builds alone; a checkout without symbolic links holds the link's path as text, which the spec then fails to parse. | [data] |

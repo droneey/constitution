@@ -25,7 +25,7 @@ governs: ["pyproject.toml", "uv.lock"]
 
 ### uv-build-backend-capped · SHOULD
 
-A package builds with `uv_build`, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.12,<0.13`.
+A package builds with `uv_build`, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.13,<0.14`.
 
 | Why | Tags |
 |---|---|
@@ -33,19 +33,19 @@ A package builds with `uv_build`, required in `[build-system]` with a floor and 
 
 ### exclude-newer-sets-the-cooldown → new-release-adopted-after-a-cooldown · MUST
 
-`exclude-newer = "7 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
+`exclude-newer = "3 days"` under `[tool.uv]` sets the cooldown for new releases, and `exclude-newer-package` holds the exemptions.
 
 | Why | Tags |
 |---|---|
 | the resolver then holds the cooldown on every lock, not only the bot. | [] |
 
-### sources-name-only-the-workspace-or-an-index → dependency-installed-only-from-a-registry · MUST
+### sources-stay-in-the-repository-or-an-index → dependency-installed-only-from-a-registry · MUST
 
-A dependency is named by its name and range alone, never by an address, `name @ <url>`, and `[tool.uv.sources]` gives it only `{ workspace = true }` or `{ index = "<name>" }` of an index marked `explicit = true`.
+A dependency is named by its name and range alone, never by an address, `name @ <url>`, and `[tool.uv.sources]` gives it only `{ workspace = true }`, `{ path = "<a wheel or archive inside the repository>" }` or `{ index = "<name>" }` of an index marked `explicit = true`.
 
 | Why | Tags |
 |---|---|
-| `no-build = true` refuses a source tree from a repository or a path once uv installs it, but a wheel named by its address installs, with no release date for the cooldown to hold. | [security] |
+| a wheel named by its address installs with no release date for the cooldown to hold, and `no-build = true` refuses a source tree from a repository or a path, so a path names a built archive the repository holds. | [security] |
 
 ### sdists-never-built → install-scripts-run-only-for-listed-dependencies · MUST
 

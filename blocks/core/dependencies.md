@@ -56,11 +56,11 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 
 ### new-release-adopted-after-a-cooldown · MUST
 
-A new release of a dependency is adopted only after a cooldown of at least seven days; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
+A new release of a dependency is adopted only after a cooldown of at least three days; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
 
 | Why | Tags |
 |---|---|
-| most hijacked releases are found and pulled within a week, and the major package managers now hold a cooldown of their own, so none is left outside the rule. | [security] |
+| most hijacked releases are found and pulled within a day or two, and the major package managers now hold a cooldown of their own, so none is left outside the rule. | [security] |
 
 ### dependency-provenance-verified · SHOULD
 

@@ -31,7 +31,9 @@ export default {
     ...shellcheck.ignoreBinaries,
     ...shfmt.ignoreBinaries,
     'mkfifo',
+    'renovate-config-validator',
     'stryker',
+    'yamllint',
   ],
   ignoreDependencies: [
     ...stryker.ignoreDependencies,

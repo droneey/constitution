@@ -9,9 +9,7 @@ export default {
         'peer',
       ],
       specifierTypes: [
-        'file',
         'git',
-        'link',
         'url',
       ],
       isBanned: true,

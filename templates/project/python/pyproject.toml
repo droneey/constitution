@@ -7,7 +7,7 @@ dependencies = []
 
 # uv: the build backend
 [build-system]
-requires = ["uv_build>=0.12,<0.13"]
+requires = ["uv_build>=0.13,<0.14"]
 build-backend = "uv_build"
 
 # uv: the tools, pinned exactly
@@ -16,21 +16,21 @@ dev = [
   "anyio==4.15.1",
   "complexipy==8.0.1",
   "deptry==0.25.1",
-  "hypothesis==6.168.5",
+  "hypothesis==6.169.0",
   "import-linter==2.15",
   "mutmut==3.8.0",
   "pytest==9.1.1",
   "pytest-cov==7.1.0",
   "pytest-randomly==5.0.0",
   "pytest-timeout==2.4.0",
-  "ruff==0.16.9",
-  "ty==0.0.84",
+  "ruff==0.17.0",
+  "ty==0.0.86",
   "vulture==2.16",
 ]
 
 # uv: installs
 [tool.uv]
-exclude-newer = "7 days"
+exclude-newer = "3 days"
 no-build = true
 python-downloads = "never"
 python-preference = "only-system"

@@ -8,7 +8,7 @@ The root `package.json` declares every TypeScript package of the repository in `
 
 | Why | Tags |
 |---|---|
-| Bun 1.4.2 links a package from the working tree only when the root's `workspaces` lists it, and ignores a `workspaces` field in a package, so the packages it names are never linked. | [] |
+| Bun 1.4.3 links a package from the working tree only when the root's `workspaces` lists it, and ignores a `workspaces` field in a package, so the packages it names are never linked. | [] |
 
 ### own-units-at-workspace-version → workspace-tool-links-units-from-the-working-tree · SHOULD
 
@@ -24,4 +24,4 @@ A TypeScript package imports the data it needs at run time from its single sourc
 
 | Why | Tags |
 |---|---|
-| Bun 1.4.2 parses a YAML or JSON file at import and writes its content into the bundle, so the built package runs without the file, while a published source would import a file its consumer never installs. | [] |
+| Bun 1.4.3 parses a YAML or JSON file at import and writes its content into the bundle, so the built package runs without the file, while a published source would import a file its consumer never installs. | [] |

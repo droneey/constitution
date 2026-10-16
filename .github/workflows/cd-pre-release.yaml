@@ -13,8 +13,8 @@ jobs:
     with:
       prerelease: true
       assets-command: >-
-        npx --yes bun@1.4.2 install --production --frozen-lockfile
-        && npx --yes bun@1.4.2 run build
+        npx --yes bun@1.4.3 install --production --frozen-lockfile
+        && npx --yes bun@1.4.3 run build
         && tar -czf constitution.tar.gz presets templates
         tools/mutation-check/dist tools/python-check/dist tools/mutmut-check/dist
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256

@@ -74,12 +74,6 @@ describe('the syncpack core part', () => {
     {
       specifier: 'https://example.com/library-1.0.0.tgz',
     },
-    {
-      specifier: 'file:../../../outside',
-    },
-    {
-      specifier: 'link:../outside',
-    },
   ])('should report IsBanned when a dependency comes from $specifier', ({ specifier }) => {
     // Arrange
     const repository = [
@@ -100,6 +94,35 @@ describe('the syncpack core part', () => {
       'IsBanned',
     ]);
   });
+
+  it.each([
+    {
+      specifier: 'file:./.droneey/kit/eros/languages/typescript',
+    },
+    {
+      specifier: 'link:./vendor/library',
+    },
+  ])(
+    'should report nothing when a dependency comes from $specifier inside the repository',
+    ({ specifier }) => {
+      // Arrange
+      const repository = [
+        {
+          dependencies: {
+            library: specifier,
+          },
+          name: 'a',
+          version: '1.0.0',
+        },
+      ];
+
+      // Act
+      const found = versionIssues(repository);
+
+      // Assert
+      expect(found).toStrictEqual([]);
+    },
+  );
 
   it('should report nothing when a dependency comes from the registry under an alias', () => {
     // Arrange

@@ -20,6 +20,12 @@ license.override = ["MIT"]
 reason = "deps.dev reports no licence for is-core-module; its package.json declares MIT"
 
 [[PackageOverrides]]
+name = "caniuse-lite"
+ecosystem = "npm"
+license.override = ["CC-BY-4.0"]
+reason = "deps.dev indexes caniuse-lite's frequent releases days late and reports no licence until then; its package.json declares CC-BY-4.0"
+
+[[PackageOverrides]]
 name = "colorama"
 ecosystem = "PyPI"
 license.override = ["BSD-3-Clause"]

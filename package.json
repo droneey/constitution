@@ -41,21 +41,23 @@
     "dependencies:check": "for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. deptry src || exit 1; done",
     "shell:check": "shellcheck hooks/*.sh hooks/lib/*.sh && shfmt -d hooks",
     "markdown:check": "rumdl check . && rumdl fmt --check .",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run markdown:check"
+    "yaml:check": "yamllint --strict .",
+    "renovate:check": "renovate-config-validator --strict",
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
   },
   "dependencies": {
     "@stryker-mutator/api": "^10.0.0",
-    "yaml": "^2.8.1",
-    "zod": "^4.1.13"
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@stryker-mutator/core": "10.0.0",
-    "@swc/core": "1.16.2",
-    "@types/bun": "1.4.2",
-    "@types/node": "26.5.0",
+    "@swc/core": "1.16.18",
+    "@types/bun": "1.4.3",
+    "@types/node": "26.6.5",
     "dclint": "3.1.0",
-    "dependency-cruiser": "18.4.0",
+    "dependency-cruiser": "18.6.0",
     "knip": "6.41.0",
     "syncpack": "15.3.3",
     "typescript": "7.0.2"

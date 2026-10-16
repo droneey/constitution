@@ -1799,9 +1799,9 @@ rule	error-retry-resets-the-failed-read	tanstack-router	blocks/implementations/t
 rule	route-tree-committed	tanstack-router	blocks/implementations/tanstack-router/with/version-control.md	version-control	SHOULD			generated-files-not-committed	true
 rule	guard-reaches-features-outside-react	tanstack-router	blocks/implementations/tanstack-router/architecture/with/access-control.md	access-control	MUST	security	architecture	screen-guarded-through-the-session-owners-surface	true
 rule	guards-in-before-load	tanstack-router	blocks/implementations/tanstack-router/architecture/with/access-control.md	access-control	MUST	security	architecture	screen-guarded-through-the-session-owners-surface	true
-rule	caching-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	performance		hashed-file-immutable-and-its-pointers-revalidated	true
-rule	content-security-policy-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		MUST	security		document-served-with-a-strict-content-security-policy	true
-rule	security-headers-set-in-route-rules	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	security			true
+rule	caching-set-where-the-files-are-served	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	performance		hashed-file-immutable-and-its-pointers-revalidated	true
+rule	content-security-policy-set-where-documents-are-served	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		MUST	security		document-served-with-a-strict-content-security-policy	true
+rule	security-headers-set-where-documents-are-served	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		SHOULD	security			true
 rule	runtime-config-from-one-server-function	tanstack-start	blocks/implementations/tanstack-start/tanstack-start.md		MUST	security		runtime-configuration-served-beside-bundle	true
 rule	spa-mode-without-server-logic	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST	security	architecture	rendering-server-only-delivers	true
 rule	root-route-builds-the-document	tanstack-start	blocks/implementations/tanstack-start/architecture/tanstack-start.md		MUST		architecture	composition-root-wires-everything	true
@@ -1826,7 +1826,7 @@ rule	deprecated-calls-fail-the-types	ty	blocks/implementations/ty/ty.md		MUST			
 rule	uv-is-the-only-python-package-manager	uv	blocks/implementations/uv/uv.md		MUST	security		dependencies-locked-by-one-lockfile	true
 rule	uv-build-backend-capped	uv	blocks/implementations/uv/uv.md		SHOULD				true
 rule	exclude-newer-sets-the-cooldown	uv	blocks/implementations/uv/uv.md		MUST	security		new-release-adopted-after-a-cooldown	true
-rule	sources-name-only-the-workspace-or-an-index	uv	blocks/implementations/uv/uv.md		MUST	security		dependency-installed-only-from-a-registry	true
+rule	sources-stay-in-the-repository-or-an-index	uv	blocks/implementations/uv/uv.md		MUST	security		dependency-installed-only-from-a-registry	true
 rule	sdists-never-built	uv	blocks/implementations/uv/uv.md		MUST	security		install-scripts-run-only-for-listed-dependencies	true
 rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/uv.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	files-shipped-named-in-pyproject	uv	blocks/implementations/uv/with/distribution.md	distribution	MUST	security		distributed-unit-ships-only-what-its-manifest-names	true

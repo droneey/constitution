@@ -1,0 +1,13 @@
+extends: .droneey/constitution/presets/yaml/yamllint/self.yaml
+
+# .gitignore's paths, the environment uv builds and the lockfiles mise writes
+ignore: |
+  /.droneey/
+  /.mise/locks/
+  /.venv/
+  /local/
+  node_modules/
+  dist/
+  coverage/
+  .stryker-tmp/
+  mutants/

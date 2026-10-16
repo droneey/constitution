@@ -8,4 +8,4 @@
 
 | Why | Tags |
 |---|---|
-| uv 0.12 refuses a folder a glob matches without a `pyproject.toml`, another language's package included, unless `exclude` names it, so a glob of `products/*` would take every product of another language with it, and `exclude`, whose `*` crosses a slash, can drop a language's folder by mistake. | [] |
+| uv 0.13 refuses a folder a glob matches without a `pyproject.toml`, another language's package included, unless `exclude` names it, so a glob of `products/*` would take every product of another language with it, and `exclude`, whose `*` crosses a slash, can drop a language's folder by mistake. | [] |
