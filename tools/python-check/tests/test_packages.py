@@ -7,7 +7,12 @@ from python_check.packages import package_findings
 from python_check.settings import Settings
 
 SETTINGS = Settings(
-  homes={'pydantic': ('edge', 'shared'), 'structlog': ('root',), 'orm': ('domain',)},
+  homes={
+    'fastapi': ('edge', 'app'),
+    'orm': ('domain',),
+    'pydantic': ('edge', 'shared'),
+    'structlog': ('root',),
+  },
   units=frozenset({'shop_libs_money'}),
 )
 
@@ -46,7 +51,26 @@ def _findings(*, importer: str, statement: str) -> tuple[Finding, ...]:
       'from fastapi import APIRouter',
       id='an integration into a host framework',
     ),
-    pytest.param('src/shop/api/orders_api.py', 'import fastapi', id='the delivery layer'),
+    pytest.param(
+      'src/shop/features/orders/app/use_cases/queries/list_orders/list_orders_api.py',
+      'from fastapi import APIRouter',
+      id="a home that names a feature's application layer",
+    ),
+    pytest.param(
+      'src/shop/composition/checkout/app/use_cases/commands/pay/pay_api.py',
+      'import fastapi',
+      id="a home that names a composition module's application layer",
+    ),
+    pytest.param(
+      'src/shop/composition/checkout/adapters/mail/mail_adapter.py',
+      'import smtplib',
+      id="an effect in a composition module's adapter",
+    ),
+    pytest.param(
+      'src/shop/composition/checkout/app/use_cases/commands/pay/pay_api.py',
+      'from asyncio import sleep',
+      id='a binding unit of a composition module schedules its own work',
+    ),
     pytest.param('src/shop/main.py', 'import uvicorn', id='the entry file'),
     pytest.param('src/shop/__main__.py', 'import uvicorn', id='the module entry file'),
     pytest.param(
@@ -59,7 +83,9 @@ def _findings(*, importer: str, statement: str) -> tuple[Finding, ...]:
       'import pydantic',
       id='a home that names an inner folder',
     ),
-    pytest.param('src/shop/api/orders_api.py', 'import pydantic', id='a home that names the edge'),
+    pytest.param(
+      'src/shop/adapters/mail/mail_adapter.py', 'import pydantic', id='a home that names the edge'
+    ),
     pytest.param('src/shop/root/logging.py', 'import structlog', id='a home inside the edge'),
     pytest.param('tests/test_orders.py', 'import pytest', id='a file outside the source root'),
     pytest.param(
@@ -126,10 +152,43 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
       id='a package in the kernel',
     ),
     pytest.param(
+      'src/shop/kernel/contracts/mail_port.py',
+      'import attrs',
+      'kernel/contracts imports no package, and attrs is one',
+      id='a package in a port the kernel shares',
+    ),
+    pytest.param(
       'src/shop/contracts/mail/mail_port.py',
       'import attrs',
-      'contracts/mail imports no package, and attrs is one',
-      id='a package in a shared contract',
+      'attrs has no home in contracts/mail; a package without one is imported at the edge',
+      id='a package in a top-level folder the tree does not name',
+    ),
+    pytest.param(
+      'src/shop/composition/checkout/domain/totals/total.py',
+      'import attrs',
+      'composition/checkout/domain/totals imports no package, and attrs is one',
+      id="a package in a composition module's domain",
+    ),
+    pytest.param(
+      'src/shop/composition/checkout/domain/totals/total.py',
+      'import time',
+      (
+        'composition/checkout/domain/totals holds no effect, and time is one; '
+        'it reaches it through a port'
+      ),
+      id="an effect in a composition module's domain",
+    ),
+    pytest.param(
+      'src/shop/api/orders_api.py',
+      'import fastapi',
+      'fastapi is imported in api, outside its home: edge, app',
+      id='a top-level folder the tree does not name, which is no part of the edge',
+    ),
+    pytest.param(
+      'src/shop/shared/app/web.py',
+      'import fastapi',
+      'fastapi is imported in shared/app, outside its home: edge, app',
+      id='a home that names a layer, matched only where the layer is',
     ),
     pytest.param(
       APP,
@@ -339,9 +398,12 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
       id='an adapter reads the environment',
     ),
     pytest.param(
-      'src/shop/cli/orders_cli.py',
+      'src/shop/features/orders/app/use_cases/commands/sync/sync_cli.py',
       'from os import getenv',
-      'cli reads the environment through os.getenv; only the root reads it',
+      (
+        'features/orders/app/use_cases/commands/sync holds no effect, and os is one; '
+        'it reaches it through a port'
+      ),
       id='a delivery unit imports a read of the environment',
     ),
     pytest.param(

@@ -7,8 +7,7 @@ export default {
       comment: 'nestjs-imported-by-modules-and-providers',
       from: {
         path: [
-          '^src/features/[^/]+/app/',
-          '^src/composition/',
+          '^src/(features|composition)/[^/]+/app/',
           '/providers/',
         ],
       },

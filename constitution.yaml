@@ -25,7 +25,6 @@ implementations:
   - lefthook
   - betterleaks
   - mise
-  - ls-lint
   - knip
   - osv-scanner
   - uv

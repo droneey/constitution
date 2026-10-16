@@ -1,7 +1,6 @@
 import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
 import betterleaks from './.droneey/constitution/presets/typescript/knip/betterleaks.mjs';
 import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
-import lsLint from './.droneey/constitution/presets/typescript/knip/ls-lint.mjs';
 import mise from './.droneey/constitution/presets/typescript/knip/mise.mjs';
 import osvScanner from './.droneey/constitution/presets/typescript/knip/osv-scanner.mjs';
 import stryker from './.droneey/constitution/presets/typescript/knip/stryker.mjs';
@@ -21,7 +20,6 @@ export default {
   ],
   ignoreBinaries: [
     ...betterleaks.ignoreBinaries,
-    ...lsLint.ignoreBinaries,
     ...mise.ignoreBinaries,
     ...osvScanner.ignoreBinaries,
     ...uv.ignoreBinaries,

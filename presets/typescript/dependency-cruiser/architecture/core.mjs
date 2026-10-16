@@ -2,13 +2,11 @@ const SPECS = [
   '(^|/)__tests__/',
   '^tests/',
 ];
-const MODULE_LAYERS = 'features|contracts|adapters|shared|libs|composition|integrations';
-const LAYERS =
-  'root|features|composition|contracts|adapters|kernel|shared|libs|integrations|entrypoints';
-// Every role folder the blocks' vocabularies name, which no delivery layer is.
-const ROLES =
-  'use-cases|entities|value-objects|repositories|errors|constants|types|utils|models|providers|components|widgets|sinks|steps|queries|commands|ui|assets';
-const ENTRY = '^src/main\\.[^/]+$';
+// The layers whose modules are reached through their surfaces.
+const MODULE_LAYERS = 'features|adapters|shared|libs|composition|integrations';
+// An entry file: the program's main, or another file its framework fixes at the top of the source,
+// beside the package's surface; the tree holds no other file there.
+const ENTRY = '^src/(?!index\\.)[^/]+\\.[^/]+$';
 // A data file in no language, which imports nothing.
 const DATA = '\\.(?:json|ya?ml)$';
 const ENTRIES = [
@@ -17,24 +15,17 @@ const ENTRIES = [
 ];
 const ADAPTERS = [
   '^src/adapters/',
-  '^src/features/[^/]+/adapters/',
+  '^src/(?:features|composition)/[^/]+/adapters/',
 ];
 const ROOT = [
   ...ENTRIES,
   '^src/root/',
-];
-// The delivery layer: a top-level folder, or file, that is no layer or role folder of the tree,
-// whatever name its block gives it.
-const DELIVERY = [
-  `^src/(?!(?:${LAYERS}|${ROLES}|__tests__)/)[^/]+/`,
-  '^src/(?!(?:main|index)\\.)[^/]+\\.[^/]+$',
 ];
 // The package's surface, which may offer an adapter to the package's consumers.
 const PACKAGE_SURFACE = '^src/index\\.[^/]+$';
 const EDGE = [
   ...ADAPTERS,
   ...ROOT,
-  ...DELIVERY,
   '^src/(libs|integrations)/',
 ];
 const IO =
@@ -53,7 +44,7 @@ const ROOT_CALLERS = [
   ...SPECS,
 ];
 
-export { ADAPTERS, DELIVERY, EDGE, PACKAGE_SURFACE, PACKAGES, ROOT, ROOT_CALLERS, SPECS };
+export { ADAPTERS, EDGE, PACKAGE_SURFACE, PACKAGES, ROOT, ROOT_CALLERS, SPECS };
 
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
@@ -107,7 +98,7 @@ export default {
       },
     },
     {
-      name: 'domain-reaches-only-itself-kernel-and-contracts',
+      name: 'domain-reaches-only-itself-and-the-kernel',
       severity: 'error',
       from: {
         path: '^src/features/([^/]+)/domain/',
@@ -120,16 +111,7 @@ export default {
         pathNot: [
           '^src/features/$1/domain/',
           '^src/kernel/',
-          '^src/contracts/',
         ],
-      },
-    },
-    {
-      name: 'feature-root-reached-only-through-its-layers',
-      severity: 'error',
-      from: {},
-      to: {
-        path: '^src/features/[^/]+/(?!(?:domain|app|adapters|__tests__)/|index\\.[^/]+$)',
       },
     },
     {
@@ -157,20 +139,21 @@ export default {
       },
       to: {
         path: [
-          '^src/(features|kernel|shared|contracts|adapters|root|composition|integrations|entrypoints)/',
+          '^src/(features|kernel|shared|adapters|root|composition|integrations|entrypoints)/',
           ENTRY,
         ],
       },
     },
     {
-      name: 'shared-knows-no-feature-or-root',
+      name: 'shared-knows-no-feature-adapter-contract-or-root',
       severity: 'error',
       from: {
         path: '^src/shared/',
       },
       to: {
         path: [
-          '^src/(features|contracts|adapters|root|composition|integrations|entrypoints)/',
+          '^src/(features|adapters|root|composition|integrations|entrypoints)/',
+          '^src/kernel/contracts/',
           ENTRY,
         ],
       },
@@ -226,6 +209,17 @@ export default {
       },
     },
     {
+      name: 'composition-module-never-imports-another',
+      severity: 'error',
+      from: {
+        path: '^src/composition/([^/]+)/',
+      },
+      to: {
+        path: '^src/composition/',
+        pathNot: '^src/composition/$1/',
+      },
+    },
+    {
       name: 'features-know-no-composition',
       severity: 'error',
       from: {
@@ -259,8 +253,8 @@ export default {
         path: `^src/(${MODULE_LAYERS})/[^/]+/`,
         pathNot: [
           `^src/(${MODULE_LAYERS})/[^/]+/index\\.[^/]+$`,
-          // The root reaches a feature's adapter through the adapter's own surface.
-          '^src/features/[^/]+/adapters/[^/]+/index\\.[^/]+$',
+          // The root reaches a module's adapter through the adapter's own surface.
+          '^src/(features|composition)/[^/]+/adapters/[^/]+/index\\.[^/]+$',
         ],
       },
     },
@@ -289,22 +283,22 @@ export default {
       name: 'domain-role-reached-through-its-surface',
       severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/(?!domain/)',
+        path: '^src/(features|composition)/([^/]+)/(?!domain/)',
       },
       to: {
-        path: '^src/features/$1/domain/[^/]+/',
-        pathNot: '^src/features/$1/domain/.*/index\\.[^/]+$',
+        path: '^src/$1/$2/domain/[^/]+/',
+        pathNot: '^src/$1/$2/domain/.*/index\\.[^/]+$',
       },
     },
     {
       name: 'domain-role-reaches-a-sibling-through-its-surface',
       severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/domain/([^/]+)/',
+        path: '^src/(features|composition)/([^/]+)/domain/([^/]+)/',
       },
       to: {
-        path: '^src/features/$1/domain/(?!$2/)[^/]+/',
-        pathNot: '^src/features/$1/domain/.*/index\\.[^/]+$',
+        path: '^src/$1/$2/domain/(?!$3/)[^/]+/',
+        pathNot: '^src/$1/$2/domain/.*/index\\.[^/]+$',
       },
     },
     {
@@ -335,16 +329,6 @@ export default {
       },
     },
     {
-      name: 'delivery-reached-only-from-the-edge',
-      severity: 'error',
-      from: {
-        path: '^src/(features|kernel|contracts|shared|libs|composition|adapters)/',
-      },
-      to: {
-        path: DELIVERY,
-      },
-    },
-    {
       name: 'layer-folder-never-a-target',
       severity: 'error',
       from: {},
@@ -352,25 +336,7 @@ export default {
         path: [
           '^src/index\\.[^/]+$',
           '^src/(features|libs|adapters|integrations|kernel|shared|composition)/index\\.[^/]+$',
-          '^src/features/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
-        ],
-      },
-    },
-    {
-      name: 'contract-knows-only-itself-and-kernel',
-      severity: 'error',
-      from: {
-        path: '^src/contracts/([^/]+)/',
-        pathNot: SPECS,
-      },
-      to: {
-        dependencyTypesNot: [
-          'core',
-        ],
-        pathNot: [
-          '^src/contracts/$1/',
-          '^src/contracts/[^/]+/index\\.[^/]+$',
-          '^src/kernel/',
+          '^src/(features|composition)/[^/]+/(domain|app|adapters)/index\\.[^/]+$',
         ],
       },
     },
@@ -389,11 +355,11 @@ export default {
       name: 'feature-adapters-blind-to-each-other',
       severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/adapters/([^/]+)/',
+        path: '^src/(features|composition)/([^/]+)/adapters/([^/]+)/',
       },
       to: {
         path: ADAPTERS,
-        pathNot: '^src/features/$1/adapters/$2/',
+        pathNot: '^src/$1/$2/adapters/$3/',
       },
     },
     {
@@ -404,11 +370,27 @@ export default {
       },
       to: {
         path: [
-          '^src/features/[^/]+/app/',
+          '^src/(features|composition)/[^/]+/app/',
+          '^src/(root|entrypoints)/',
+          ENTRY,
+        ],
+      },
+    },
+    {
+      // Composition implements a feature's contract through another feature's surface; no other adapter reaches one.
+      name: 'adapters-outside-composition-know-no-feature-or-composition',
+      severity: 'error',
+      from: {
+        path: [
+          '^src/adapters/',
+          '^src/features/[^/]+/adapters/',
+        ],
+      },
+      to: {
+        path: [
           // A feature's surface offers its binding units, which an adapter never calls.
           '^src/features/[^/]+/index\\.[^/]+$',
-          '^src/(root|composition|entrypoints)/',
-          ENTRY,
+          '^src/composition/',
         ],
       },
     },
@@ -421,11 +403,30 @@ export default {
           '^src/root/',
           ...SPECS,
           // The surface of a package offers its adapters to its consumers.
-          '^src/index\\.[^/]+$',
+          PACKAGE_SURFACE,
         ],
       },
       to: {
         path: ADAPTERS,
+      },
+    },
+    {
+      name: 'binding-units-reach-no-port',
+      severity: 'error',
+      from: {
+        path: '^src/(features|composition)/([^/]+)/app/',
+        pathNot: SPECS,
+      },
+      to: {
+        path: '^src/$1/$2/domain/contracts/',
+      },
+    },
+    {
+      name: 'root-wires-without-a-container-library',
+      severity: 'error',
+      from: {},
+      to: {
+        path: 'node_modules/(?:inversify|tsyringe|awilix|typedi|typed-inject|brandi)/',
       },
     },
     {

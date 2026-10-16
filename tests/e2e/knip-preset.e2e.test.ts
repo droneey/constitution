@@ -95,10 +95,6 @@ describe('the knip preset', () => {
       part: 'typescript/betterleaks',
     },
     {
-      binary: 'ls-lint',
-      part: 'typescript/ls-lint',
-    },
-    {
       binary: 'mise',
       part: 'typescript/mise',
     },

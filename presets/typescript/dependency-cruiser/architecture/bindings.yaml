@@ -1,24 +1,12 @@
 analytics:
   event-sent-only-by-delivery-units:
     - features-never-track
-_api:
-  adapter-imports-only-its-owners-domain-and-shared-layers:
-    - adapters-know-no-handlers
-  import-points-inward:
-    - handlers-reached-only-from-entries
-messaging:
-  adapter-imports-only-its-owners-domain-and-shared-layers:
-    - adapters-know-no-consumers-or-jobs
-  import-points-inward:
-    - consumers-and-jobs-reached-only-from-entries
-cli:
-  adapter-imports-only-its-owners-domain-and-shared-layers:
-    - adapters-know-no-commands
-  import-points-inward:
-    - commands-reached-only-from-entries
 bun:
   effects-held-only-by-the-edge:
     - bun-effects-reached-only-from-the-edge
+bunli:
+  bunli-imported-by-commands:
+    - bunli-imported-by-commands
 _react:
   react-imported-by-the-ui-and-binding-units:
     - react-imported-by-the-ui-and-binding-units
@@ -39,21 +27,26 @@ core:
   adapter-imports-only-its-owners-domain-and-shared-layers:
     - adapters-blind-to-each-other
     - adapters-know-no-caller
+    - adapters-outside-composition-know-no-feature-or-composition
     - feature-adapters-blind-to-each-other
+  binding-unit-calls-only-use-cases:
+    - binding-units-reach-no-port
+  composition-module-never-imports-another:
+    - composition-module-never-imports-another
+  composition-root-wires-everything:
+    - root-wires-without-a-container-library
   contract-knows-no-vendor:
-    - contract-knows-only-itself-and-kernel
+    - domain-reaches-only-itself-and-the-kernel
+    - kernel-reaches-only-itself
   import-points-inward:
     - adapters-know-no-caller
-    - delivery-reached-only-from-the-edge
-    - domain-reaches-only-itself-kernel-and-contracts
+    - domain-reaches-only-itself-and-the-kernel
     - features-know-no-composition
     - kernel-reaches-only-itself
     - libs-know-no-application
-    - shared-knows-no-feature-or-root
+    - shared-knows-no-feature-adapter-contract-or-root
   domain-imports-only-itself-and-the-kernel:
-    - domain-reaches-only-itself-kernel-and-contracts
-  feature-laid-out-by-its-tree:
-    - feature-root-reached-only-through-its-layers
+    - domain-reaches-only-itself-and-the-kernel
   feature-never-imports-a-feature:
     - feature-never-imports-a-feature
   module-files-import-each-other-directly:
@@ -78,12 +71,10 @@ core:
   root-imported-only-by-entries:
     - root-reached-only-from-entries
   shared-imports-no-feature-adapter-contract-or-root:
-    - shared-knows-no-feature-or-root
+    - shared-knows-no-feature-adapter-contract-or-root
 expo:
-  adapter-imports-only-its-owners-domain-and-shared-layers:
-    - adapters-know-no-routes
-  import-points-inward:
-    - routes-reached-only-from-expo-router
+  ui-never-touches-navigation:
+    - ui-imports-no-expo-router
 lingui:
   lingui-only-where-text-is-rendered:
     - lingui-only-where-text-is-rendered
@@ -105,10 +96,9 @@ tanstack-query:
     - query-library-home-is-the-binding-units
     - query-library-only-in-its-home
 tanstack-router:
-  adapter-imports-only-its-owners-domain-and-shared-layers:
-    - adapters-know-no-routes
-  root-imported-only-by-entries:
-    - root-reached-only-from-entries
+  router-primitives-only-in-the-root:
+    - router-primitives-only-in-the-root
+    - router-only-in-its-home
 ui:
   binding-unit-composes-its-operation:
     - binding-units-reach-no-adapter-or-ui
@@ -116,8 +106,6 @@ ui:
     - components-take-data-and-callbacks
   component-never-imports-a-widget:
     - components-never-import-widgets
-  feature-laid-out-by-its-tree:
-    - feature-root-reached-only-through-its-layers
   ui-layer-imports-only-what-its-feature-offers:
     - ui-reaches-no-mechanism
 yaml-js:
@@ -131,10 +119,10 @@ workspace:
     - root-imports-units-by-name
     - units-imported-by-name
   products-blind-to-each-other:
-    - product-units-blind-to-each-other
+    - products-blind-to-each-other
   units-import-toward-libs:
     - libs-know-no-product
-    - shared-knows-no-product-unit
+    - shared-knows-no-product
 ky:
   ky-home-is-the-edge-and-its-failure-mapper:
     - ky-home-is-the-edge-and-its-failure-mapper

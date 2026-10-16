@@ -1,3 +1,4 @@
+// A domain, its use cases among it, and an adapter send no event; a delivery unit of app/ or ui/ does.
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
   forbidden: [
@@ -5,12 +6,13 @@ export default {
       name: 'features-never-track',
       severity: 'error',
       from: {
-        path: '^src/features/',
+        path: '^src/(features|composition)/[^/]+/(domain|adapters)/',
       },
       to: {
         path: [
           '/sinks/',
-          '^src/(contracts|adapters)/analytics/',
+          '^src/adapters/analytics/',
+          '^src/kernel/contracts/analytics',
         ],
       },
     },

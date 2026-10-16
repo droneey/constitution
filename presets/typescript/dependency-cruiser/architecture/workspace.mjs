@@ -1,3 +1,4 @@
+// A unit is a folder of products/, shared/ or libs/; a product's own shared/ data stays inside it.
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
   forbidden: [
@@ -5,10 +6,10 @@ export default {
       name: 'units-imported-by-name',
       severity: 'error',
       from: {
-        path: '^((?:packages|libs)/[^/]+|shared)/',
+        path: '^((?:products|shared|libs)/[^/]+)/',
       },
       to: {
-        path: '^(?:packages|shared|libs)/',
+        path: '^(?:products|shared|libs)/',
         pathNot: '^$1/',
         dependencyTypes: [
           'local',
@@ -22,10 +23,10 @@ export default {
       name: 'root-imports-units-by-name',
       severity: 'error',
       from: {
-        pathNot: '^(?:packages|shared|libs)/',
+        pathNot: '^(?:products|shared|libs)/',
       },
       to: {
-        path: '^(?:packages|shared|libs)/',
+        path: '^(?:products|shared|libs)/',
         dependencyTypes: [
           'local',
         ],
@@ -35,24 +36,24 @@ export default {
       },
     },
     {
-      name: 'product-units-blind-to-each-other',
+      name: 'products-blind-to-each-other',
       severity: 'error',
       from: {
-        path: '^packages/([^/]+)/',
+        path: '^products/([^/]+)/',
       },
       to: {
-        path: '^packages/',
-        pathNot: '^packages/$1/',
+        path: '^products/',
+        pathNot: '^products/$1/',
       },
     },
     {
-      name: 'shared-knows-no-product-unit',
+      name: 'shared-knows-no-product',
       severity: 'error',
       from: {
         path: '^shared/',
       },
       to: {
-        path: '^packages/',
+        path: '^products/',
       },
     },
     {
@@ -62,7 +63,7 @@ export default {
         path: '^libs/',
       },
       to: {
-        path: '^(?:packages|shared)/',
+        path: '^(?:products|shared)/',
       },
     },
   ],

@@ -364,15 +364,61 @@ describe('the python template', () => {
       task: 'architecture:check',
     },
     {
-      condition: 'a shared port imports a vendor client of libs',
+      condition: 'a port the kernel shares imports a vendor client of libs',
       changes: {
-        'src/shop/contracts/__init__.py': '',
-        'src/shop/contracts/mail/__init__.py': 'from shop.libs.smtp import CLIENT\n',
+        'src/shop/kernel/__init__.py': '',
+        'src/shop/kernel/contracts/__init__.py': 'from shop.libs.smtp import CLIENT\n',
         'src/shop/libs/__init__.py': '',
         'src/shop/libs/smtp/__init__.py': 'CLIENT = 1\n',
       },
-      finding: 'contract-knows-no-vendor BROKEN',
+      finding: 'kernel-imports-only-itself BROKEN',
       task: 'architecture:check',
+    },
+    {
+      condition: 'shared plumbing imports a port the kernel shares',
+      changes: {
+        'src/shop/kernel/__init__.py': '',
+        'src/shop/kernel/contracts/__init__.py': 'MAILER = 1\n',
+        'src/shop/shared/__init__.py': '',
+        'src/shop/shared/mail/__init__.py': 'from shop.kernel.contracts import MAILER\n',
+      },
+      finding: 'shared-imports-no-feature-adapter-contract-or-root BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: "a binding unit imports a port of its feature's domain",
+      changes: {
+        ...FEATURE,
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_api.py':
+          'from shop.features.orders.domain.contracts import ORDERS\n',
+        'src/shop/features/orders/domain/__init__.py': '',
+        'src/shop/features/orders/domain/contracts/__init__.py': 'ORDERS = 1\n',
+      },
+      finding: 'binding-unit-calls-only-use-cases BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: 'a module of composition imports another',
+      changes: {
+        'src/shop/composition/__init__.py': '',
+        'src/shop/composition/billing/__init__.py':
+          'from shop.composition.checkout import CHECKOUT\n',
+        'src/shop/composition/checkout/__init__.py': 'CHECKOUT = 1\n',
+      },
+      finding: 'composition-module-never-imports-another BROKEN',
+      task: 'architecture:check',
+    },
+    {
+      condition: "a module of composition's domain imports a package",
+      changes: {
+        'src/shop/composition/__init__.py': '',
+        'src/shop/composition/checkout/__init__.py': '',
+        'src/shop/composition/checkout/domain/__init__.py': '',
+        'src/shop/composition/checkout/domain/cart_entity.py': 'import attrs\n',
+      },
+      finding: 'composition/checkout/domain imports no package, and attrs is one',
+      task: 'code:check',
     },
     {
       condition: 'a feature imports the composition above it',
@@ -564,6 +610,35 @@ describe('the python template', () => {
         ),
         'src/shop/features/orders/adapters/__init__.py': '',
         'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+      },
+      task: 'architecture:check',
+    },
+    {
+      condition:
+        "a feature's delivery unit declares a FastAPI router and a composition module's adapter sends mail",
+      changes: {
+        ...FEATURE,
+        'src/shop/composition/__init__.py': '',
+        'src/shop/composition/checkout/__init__.py': '',
+        'src/shop/composition/checkout/adapters/__init__.py': '',
+        'src/shop/composition/checkout/adapters/mail/__init__.py': '',
+        'src/shop/composition/checkout/adapters/mail/mail_adapter.py': 'import smtplib\n',
+        'src/shop/features/orders/app/__init__.py': '',
+        'src/shop/features/orders/app/orders_api.py': 'from fastapi import APIRouter\n',
+      },
+      task: 'code:check',
+    },
+    {
+      condition:
+        "the root reaches a composition module's adapter through the adapter's own surface",
+      changes: {
+        'src/shop/composition/__init__.py': '',
+        'src/shop/composition/checkout/__init__.py': '',
+        'src/shop/composition/checkout/adapters/__init__.py': '',
+        'src/shop/composition/checkout/adapters/mail/__init__.py': 'ADAPTER = 1\n',
+        'src/shop/root/__init__.py': '',
+        'src/shop/root/wiring.py':
+          'from shop.composition.checkout.adapters.mail import ADAPTER\n\nWIRED = ADAPTER\n',
       },
       task: 'architecture:check',
     },

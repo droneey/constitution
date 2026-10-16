@@ -9,6 +9,7 @@ extend-select = [
   "D",
   "DTZ",
   "INP",
+  "N999",
   "S110",
   "S112",
   "SLF",

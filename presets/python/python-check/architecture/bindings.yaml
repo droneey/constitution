@@ -1,3 +1,9 @@
+fastapi:
+  fastapi-imported-by-delivery-units:
+    - fastapi
+fastmcp:
+  fastmcp-imported-by-delivery-units:
+    - fastmcp
 httpx2:
   httpx2-home-is-the-edge-and-its-failure-mapper:
     - httpx2

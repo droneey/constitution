@@ -8,8 +8,7 @@ export default {
       from: {
         path: [
           '/ui/',
-          '^src/features/[^/]+/app/',
-          '^src/composition/',
+          '^src/(features|composition)/[^/]+/app/',
         ],
       },
       to: {

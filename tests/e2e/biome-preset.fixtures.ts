@@ -63,7 +63,6 @@ const PARTS: readonly string[] = [
   'typescript/_react',
   'typescript/architecture/core',
   'typescript/architecture/typescript',
-  'typescript/architecture/_react',
 ];
 
 const writeFiles = (folder: string, files: Readonly<Record<string, string>>): void => {

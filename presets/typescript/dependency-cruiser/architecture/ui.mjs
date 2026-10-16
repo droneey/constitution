@@ -2,14 +2,6 @@
 export default {
   forbidden: [
     {
-      name: 'feature-root-reached-only-through-its-layers',
-      severity: 'error',
-      from: {},
-      to: {
-        path: '^src/features/[^/]+/(?!(?:domain|app|adapters|ui|__tests__)/|index\\.[^/]+$)',
-      },
-    },
-    {
       name: 'components-take-data-and-callbacks',
       severity: 'error',
       from: {
@@ -17,8 +9,8 @@ export default {
       },
       to: {
         path: [
-          '^src/features/[^/]+/(app|adapters)/',
-          '^src/(contracts|adapters)/',
+          '^src/(features|composition)/[^/]+/(app|adapters)/',
+          '^src/(kernel/contracts|adapters)/',
         ],
       },
     },
@@ -26,12 +18,12 @@ export default {
       name: 'ui-reaches-no-mechanism',
       severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/ui/',
+        path: '^src/(features|composition)/([^/]+)/ui/',
       },
       to: {
         path: [
-          '^src/features/$1/(adapters|domain/contracts|domain/use-cases)/',
-          '^src/(contracts|adapters)/',
+          '^src/$1/$2/(adapters|domain/contracts|domain/use-cases)/',
+          '^src/(kernel/contracts|adapters)/',
         ],
       },
     },
@@ -49,11 +41,11 @@ export default {
       name: 'binding-units-reach-no-adapter-or-ui',
       severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/app/use-cases/',
+        path: '^src/(features|composition)/[^/]+/app/use-cases/',
       },
       to: {
         path: [
-          '^src/features/[^/]+/(adapters|ui)/',
+          '^src/(features|composition)/[^/]+/(adapters|ui)/',
           '^src/adapters/',
         ],
       },

@@ -5,48 +5,17 @@ from enum import StrEnum
 from pathlib import Path
 
 from python_check.findings import Finding
-from python_check.imports import import_root_of
+from python_check.imports import import_root_of, in_feature_form
 from python_check.settings import Settings
 
-FEATURES = 'features'
 ROOT = 'root'
 ENTRYPOINTS = 'entrypoints'
-LAYERS = frozenset(
-  {
-    'adapters',
-    'composition',
-    'contracts',
-    ENTRYPOINTS,
-    FEATURES,
-    'integrations',
-    'kernel',
-    'libs',
-    ROOT,
-    'shared',
-  }
-)
-# Every role folder the blocks' vocabularies name, which no delivery layer is.
-ROLES = frozenset(
-  {
-    'commands',
-    'components',
-    'constants',
-    'entities',
-    'errors',
-    'models',
-    'providers',
-    'queries',
-    'repositories',
-    'sinks',
-    'steps',
-    'types',
-    'use_cases',
-    'utils',
-    'value_objects',
-  }
-)
-PURE = frozenset({'contracts', 'kernel'})
-EDGE = frozenset({'adapters', 'integrations', 'libs', ROOT})
+DOMAIN = 'domain'
+ADAPTERS = 'adapters'
+APP = 'app'
+# The kernel, the ports it shares among it, is pure, and so is a domain.
+PURE = frozenset({'kernel'})
+EDGE = frozenset({ADAPTERS, 'integrations', 'libs', ROOT})
 ENTRIES = frozenset({'__main__', 'main'})
 # The word a home names the whole edge by.
 EDGE_HOME = 'edge'
@@ -164,18 +133,24 @@ def _is_entry(*, folders: tuple[str, ...], stem: str) -> bool:
   )
 
 
-# A file's role by its folders inside the import package: a feature's layer is
-# its third folder, and a top-level folder that is no layer is the delivery layer.
-def role_of(*, folders: tuple[str, ...], stem: str) -> Role:
-  top = folders[:1]
-  layer = folders[2:3] if top == (FEATURES,) else ()
+# The layers a file sits in, by its folders inside the import package: its
+# top-level folder and, in a feature or a module of composition, that module's
+# layer, its third folder.
+def layers_of(folders: tuple[str, ...]) -> tuple[str, ...]:
+  return (*folders[:1], *folders[2:3]) if in_feature_form(folders) else folders[:1]
 
-  if top and (top[0] in PURE or layer == ('domain',)):
+
+# A file's role by its layers; a top-level folder the tree does not name is no
+# part of the edge.
+def role_of(*, folders: tuple[str, ...], stem: str) -> Role:
+  layers = layers_of(folders)
+
+  if layers and (layers[0] in PURE or layers[1:] == (DOMAIN,)):
     return Role.PURE
 
   if (
-    (top and (top[0] in EDGE or top[0] not in LAYERS | ROLES))
-    or layer == ('adapters',)
+    (layers and layers[0] in EDGE)
+    or layers[1:] == (ADAPTERS,)
     or _is_entry(folders=folders, stem=stem)
   ):
     return Role.EDGE
@@ -224,7 +199,7 @@ def _effect(node: ast.AST, *, effects: frozenset[str]) -> str | None:
 
 
 def _binding(folders: tuple[str, ...]) -> bool:
-  return folders[:1] == (FEATURES,) and folders[2:3] == ('app',)
+  return layers_of(folders)[1:] == (APP,)
 
 
 def _message(*, home: tuple[str, ...] | None, package: str, role: Role, where: str) -> str | None:
@@ -242,7 +217,8 @@ def _message(*, home: tuple[str, ...] | None, package: str, role: Role, where: s
 
 
 def _in_home(*, folders: tuple[str, ...], home: tuple[str, ...], role: Role) -> bool:
-  return any(folder in folders or (folder == EDGE_HOME and role is Role.EDGE) for folder in home)
+  layers = layers_of(folders)
+  return any(folder in layers or (folder == EDGE_HOME and role is Role.EDGE) for folder in home)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

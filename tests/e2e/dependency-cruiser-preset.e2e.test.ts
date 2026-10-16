@@ -13,9 +13,13 @@ const WELL_FORMED = {
     from: '../../libs/smtp',
     name: 'smtp',
   }),
-  'src/contracts/mail/index.ts': "export type { Mail } from './mail.port';\n",
-  'src/contracts/mail/mail.port.ts':
-    "import type { Money } from '../../kernel/values';\nexport interface Mail { cost: Money }\n",
+  'src/composition/checkout/app/use-cases/queries/cart/cart.ts':
+    "import type { Mail } from '../../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
+  'src/composition/checkout/index.ts':
+    "export { cart } from './app/use-cases/queries/cart/cart';\n",
+  'src/kernel/contracts/index.ts': "export type { Mail } from './mail.port';\n",
+  'src/kernel/contracts/mail.port.ts':
+    "import type { Money } from '../values';\nexport interface Mail { cost: Money }\n",
   'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
     "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
   'src/features/orders/adapters/api/index.ts': "export { order } from './order.adapter';\n",
@@ -32,7 +36,7 @@ const WELL_FORMED = {
     name: 'countOrders',
   }),
   'src/features/orders/domain/use-cases/queries/count-orders/count-orders.use-case.ts':
-    "import type { Mail } from '../../../../../../contracts/mail';\nexport const countOrders = (mail: Mail): Mail => mail;\n",
+    "import type { Mail } from '../../../../../../kernel/contracts';\nexport const countOrders = (mail: Mail): Mail => mail;\n",
   'src/features/orders/domain/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
@@ -50,7 +54,7 @@ const WELL_FORMED = {
     name: 'wiring',
   }),
   'src/root/wiring.ts':
-    "import { sendMail } from '../adapters/mail';\nimport { listOrders } from '../features/orders';\nimport { order } from '../features/orders/adapters/api';\nexport const wiring = [sendMail, listOrders, order];\n",
+    "import { sendMail } from '../adapters/mail';\nimport { cart } from '../composition/checkout';\nimport { listOrders } from '../features/orders';\nimport { order } from '../features/orders/adapters/api';\nexport const wiring = [sendMail, cart, listOrders, order];\n",
   'src/shared/format/index.ts': "export { format } from './format';\n",
   'src/shared/format/format.ts': importing({
     from: '../../kernel/values',
@@ -58,15 +62,16 @@ const WELL_FORMED = {
   }),
 };
 
-// A workspace of five units, one of them a product whose TypeScript package
+// A workspace of six units, one of them a product whose TypeScript package
 // sits beside its data in no language, each package linked by its name as a
 // package manager links it, with the workspace's architecture part.
 const UNITS: Readonly<Record<string, string>> = {
-  admin: 'packages/admin',
-  eros: 'packages/eros/typescript',
+  admin: 'products/admin',
+  eros: 'products/eros/languages/typescript',
   'libs-smtp': 'libs/smtp',
-  shared: 'shared',
-  web: 'packages/web',
+  'shared-messages': 'shared/messages',
+  'shared-money': 'shared/money',
+  web: 'products/web',
 };
 
 const workspaceProject = (files: Readonly<Record<string, string>>) => ({
@@ -102,15 +107,15 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
     'typescript/architecture/workspace',
   ],
   roots: [
-    'packages',
+    'products',
     'shared',
     'libs',
     'scripts',
   ],
   workspaces: [
-    'packages/*',
-    'packages/*/typescript',
-    'shared',
+    'products/*',
+    'products/*/languages/typescript',
+    'shared/*',
     'libs/*',
   ],
 });
@@ -144,18 +149,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      rule: 'domain-reaches-only-itself-kernel-and-contracts',
-    },
-    {
-      condition: 'a feature imports a delivery folder no block names',
-      files: {
-        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
-          from: '../../../../../../reports/orders.report',
-          name: 'report',
-        }),
-        'src/reports/orders.report.ts': exported('report'),
-      },
-      rule: 'delivery-reached-only-from-the-edge',
+      rule: 'domain-reaches-only-itself-and-the-kernel',
     },
     {
       condition: 'shared code reads a file through the runtime',
@@ -220,7 +214,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/libs/smtp/index.ts': exported('smtp'),
       },
-      rule: 'domain-reaches-only-itself-kernel-and-contracts',
+      rule: 'domain-reaches-only-itself-and-the-kernel',
     },
     {
       condition: 'the kernel imports shared code',
@@ -253,7 +247,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'orders',
         }),
       },
-      rule: 'shared-knows-no-feature-or-root',
+      rule: 'shared-knows-no-feature-adapter-contract-or-root',
     },
     {
       condition: 'a feature imports the composition root',
@@ -267,15 +261,26 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'root-reached-only-from-entries',
     },
     {
-      condition: 'a router file imports the composition root',
+      condition: 'a module of composition imports the composition root',
       files: {
-        'src/root/wiring.ts': exported('wiring'),
-        'src/router.tsx': importing({
-          from: './root/wiring',
+        'src/composition/checkout/app/check-out.ts': importing({
+          from: '../../../root/wiring',
           name: 'wiring',
         }),
+        'src/root/wiring.ts': exported('wiring'),
       },
       rule: 'root-reached-only-from-entries',
+    },
+    {
+      condition: 'code imports an entry file its framework fixes at the top of the source',
+      files: {
+        'src/client.tsx': exported('hydrate'),
+        'src/shared/format/format.ts': importing({
+          from: '../../client',
+          name: 'hydrate',
+        }),
+      },
+      rule: 'entry-never-imported',
     },
     {
       condition: 'code imports the entry',
@@ -399,15 +404,79 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'layer-folder-never-a-target',
     },
     {
-      condition: 'a contract imports an adapter',
+      condition: 'a port the kernel shares imports an adapter',
       files: {
         'src/adapters/mail/index.ts': exported('sendMail'),
-        'src/contracts/mail/mail.port.ts': importing({
+        'src/kernel/contracts/mail.port.ts': importing({
           from: '../../adapters/mail',
           name: 'sendMail',
         }),
       },
-      rule: 'contract-knows-only-itself-and-kernel',
+      rule: 'kernel-reaches-only-itself',
+    },
+    {
+      condition: 'shared code imports a port the kernel shares',
+      files: {
+        'src/kernel/contracts/index.ts': exported('mail'),
+        'src/shared/format/format.ts': importing({
+          from: '../../kernel/contracts',
+          name: 'mail',
+        }),
+      },
+      rule: 'shared-knows-no-feature-adapter-contract-or-root',
+    },
+    {
+      condition: 'a module of composition imports another',
+      files: {
+        'src/composition/cart/index.ts': exported('cart'),
+        'src/composition/checkout/app/check-out.ts': importing({
+          from: '../../cart',
+          name: 'cart',
+        }),
+      },
+      rule: 'composition-module-never-imports-another',
+    },
+    {
+      condition: "a binding unit imports a port of its feature's domain",
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+          "import type { OrderQueryRepository } from '../../../../domain/contracts';\nexport type Uses = OrderQueryRepository;\n",
+        'src/features/orders/domain/contracts/index.ts':
+          'export interface OrderQueryRepository { list(): number }\n',
+      },
+      rule: 'binding-units-reach-no-port',
+    },
+    {
+      condition: "a binding unit of composition imports a port of the module's domain",
+      files: {
+        'src/composition/checkout/app/check-out.ts': importing({
+          from: '../domain/contracts',
+          name: 'payments',
+        }),
+        'src/composition/checkout/domain/contracts/index.ts': exported('payments'),
+      },
+      rule: 'binding-units-reach-no-port',
+    },
+    {
+      condition: 'the root wires through a container library',
+      files: {
+        'src/root/wiring.ts': importing({
+          from: 'inversify',
+          name: 'value',
+        }),
+      },
+      rule: 'root-wires-without-a-container-library',
+    },
+    {
+      condition: "a module of composition's adapter imports another module's adapter",
+      files: {
+        'src/composition/checkout/adapters/mail/mail.adapter.ts': importing({
+          from: '../../../../features/orders/adapters/api',
+          name: 'order',
+        }),
+        'src/features/orders/adapters/api/index.ts': exported('order'),
+      },
+      rule: 'feature-adapters-blind-to-each-other',
     },
     {
       condition: 'a feature imports the composition above it',
@@ -473,7 +542,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/features/orders/index.ts': exported('listOrders'),
       },
-      rule: 'adapters-know-no-caller',
+      rule: 'adapters-outside-composition-know-no-feature-or-composition',
     },
     {
       condition: "a feature's surface offers its adapter",
@@ -514,18 +583,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'fetchOrders',
         }),
       },
-      rule: 'shared-knows-no-feature-or-root',
-    },
-    {
-      condition: "a module loose at a feature's root is imported",
-      files: {
-        'src/features/orders/app/use-cases/queries/list/list.use-case.ts': importing({
-          from: '../../../../utils',
-          name: 'format',
-        }),
-        'src/features/orders/utils.ts': exported('format'),
-      },
-      rule: 'feature-root-reached-only-through-its-layers',
+      rule: 'shared-knows-no-feature-adapter-contract-or-root',
     },
     {
       condition: 'a write reaches a read through a surface that joins both',
@@ -617,139 +675,61 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'feature-adapters-blind-to-each-other',
     },
     {
-      condition: 'an adapter imports a screen',
+      condition: 'an adapter imports a route of the root',
       files: {
         'src/adapters/api/index.ts': importing({
-          from: '../../routes/orders',
-          name: 'OrdersScreen',
+          from: '../../root/routes/orders',
+          name: 'route',
         }),
-        'src/routes/orders.tsx': exported('OrdersScreen'),
+        'src/root/routes/orders.tsx': exported('route'),
       },
       parts: [
         'typescript/architecture/tanstack-router',
         'typescript/architecture/core',
       ],
-      rule: 'adapters-know-no-routes',
+      rule: 'adapters-know-no-caller',
     },
     {
-      condition: 'an adapter imports a mobile screen',
+      condition: 'a screen imports Expo Router',
       files: {
-        'src/adapters/api/index.ts': importing({
-          from: '../../routes/orders',
-          name: 'OrdersScreen',
-        }),
-        'src/routes/orders.tsx': exported('OrdersScreen'),
-      },
-      parts: [
-        'typescript/architecture/expo',
-        'typescript/architecture/core',
-      ],
-      rule: 'adapters-know-no-routes',
-    },
-    {
-      condition: 'a shared module imports a mobile screen',
-      files: {
-        'src/routes/orders.tsx': exported('OrdersScreen'),
-        'src/shared/navigation/index.ts': importing({
-          from: '../../routes/orders',
-          name: 'OrdersScreen',
+        'src/composition/orders/ui/screens/orders-screen/orders-screen.tsx': importing({
+          from: 'expo-router',
+          name: 'value',
         }),
       },
       parts: [
         'typescript/architecture/expo',
         'typescript/architecture/core',
       ],
-      rule: 'routes-reached-only-from-expo-router',
+      rule: 'ui-imports-no-expo-router',
     },
     {
-      condition: 'a shared module imports a handler',
+      condition: 'a helper beside a command imports bunli',
       files: {
-        'src/api/orders.controller.ts': exported('OrdersController'),
-        'src/shared/jobs/index.ts': importing({
-          from: '../../api/orders.controller',
-          name: 'OrdersController',
+        'src/features/orders/app/helpers/tool.ts': importing({
+          from: '@bunli/core',
+          name: 'value',
         }),
       },
       parts: [
-        'typescript/architecture/_api',
+        'typescript/architecture/bunli',
         'typescript/architecture/core',
       ],
-      rule: 'handlers-reached-only-from-entries',
+      rule: 'not-in-allowed',
     },
     {
-      condition: 'a feature imports a consumer',
+      condition: "a module of composition's domain imports React",
       files: {
-        'src/consumers/order-placed.consumer.ts': exported('onOrderPlaced'),
-        'src/features/orders/app/order.use-case.ts': importing({
-          from: '../../../consumers/order-placed.consumer',
-          name: 'onOrderPlaced',
+        'src/composition/checkout/domain/entities/cart.entity.ts': importing({
+          from: 'react',
+          name: 'value',
         }),
       },
       parts: [
-        'typescript/architecture/messaging',
+        'typescript/architecture/_react',
         'typescript/architecture/core',
       ],
-      rule: 'consumers-and-jobs-reached-only-from-entries',
-    },
-    {
-      condition: 'an adapter imports a job',
-      files: {
-        'src/adapters/smtp/index.ts': importing({
-          from: '../../jobs/digest.job',
-          name: 'sendDigest',
-        }),
-        'src/jobs/digest.job.ts': exported('sendDigest'),
-      },
-      parts: [
-        'typescript/architecture/messaging',
-        'typescript/architecture/core',
-      ],
-      rule: 'adapters-know-no-consumers-or-jobs',
-    },
-    {
-      condition: 'an adapter imports a handler',
-      files: {
-        'src/adapters/smtp/index.ts': importing({
-          from: '../../api/orders.controller',
-          name: 'OrdersController',
-        }),
-        'src/api/orders.controller.ts': exported('OrdersController'),
-      },
-      parts: [
-        'typescript/architecture/_api',
-        'typescript/architecture/core',
-      ],
-      rule: 'adapters-know-no-handlers',
-    },
-    {
-      condition: 'a shared module imports a command',
-      files: {
-        'src/cli/sync.cli.ts': exported('sync'),
-        'src/shared/jobs/index.ts': importing({
-          from: '../../cli/sync.cli',
-          name: 'sync',
-        }),
-      },
-      parts: [
-        'typescript/architecture/cli',
-        'typescript/architecture/core',
-      ],
-      rule: 'commands-reached-only-from-entries',
-    },
-    {
-      condition: 'an adapter imports a command',
-      files: {
-        'src/adapters/api/index.ts': importing({
-          from: '../../cli/sync.cli',
-          name: 'sync',
-        }),
-        'src/cli/sync.cli.ts': exported('sync'),
-      },
-      parts: [
-        'typescript/architecture/cli',
-        'typescript/architecture/core',
-      ],
-      rule: 'adapters-know-no-commands',
+      rule: 'not-in-allowed',
     },
     {
       condition: 'a component imports a package no block gives a home there',
@@ -891,9 +871,9 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'router-only-in-its-home',
     },
     {
-      condition: 'a screen’s piece imports a router primitive',
+      condition: 'a widget imports a router primitive',
       files: {
-        'src/routes/orders/-components/order-list.tsx': importing({
+        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
           from: '@tanstack/react-router',
           name: 'value',
         }),
@@ -905,13 +885,13 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'router-only-in-its-home',
     },
     {
-      condition: 'a feature imports the analytics contract',
+      condition: "a use case of a feature's domain sends an event through a sink",
       files: {
-        'src/contracts/analytics/index.ts': exported('track'),
-        'src/features/orders/app/order.use-case.ts': importing({
-          from: '../../../contracts/analytics',
+        'src/features/orders/domain/use-cases/commands/place/place.use-case.ts': importing({
+          from: '../../../../../../shared/sinks',
           name: 'track',
         }),
+        'src/shared/sinks/index.ts': exported('track'),
       },
       parts: [
         'typescript/architecture/analytics',
@@ -1050,34 +1030,19 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'router-only-in-its-home',
     },
     {
-      condition: 'a feature imports a screen',
+      condition: 'a widget imports a route of the root',
       files: {
         'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
-          from: '../../../../../routes/orders',
+          from: '../../../../../root/routes/orders',
           name: 'route',
         }),
-        'src/routes/orders.tsx': exported('route'),
+        'src/root/routes/orders.tsx': exported('route'),
       },
       parts: [
         'typescript/architecture/tanstack-router',
         'typescript/architecture/core',
       ],
-      rule: 'routes-reached-only-from-the-router',
-    },
-    {
-      condition: 'a route piece imports its route file',
-      files: {
-        'src/routes/orders/-components/orders-table.tsx': importing({
-          from: '../index',
-          name: 'route',
-        }),
-        'src/routes/orders/index.tsx': exported('route'),
-      },
-      parts: [
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/core',
-      ],
-      rule: 'route-pieces-never-import-route-files',
+      rule: 'root-reached-only-from-entries',
     },
   ])(
     'should report $rule when $condition and a project extends that part',
@@ -1157,7 +1122,20 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/features/orders/domain/entities/index.ts': 'export type Order = { id: string };\n',
         'src/features/orders/ui/widgets/orders.tsx':
-          "import type { Order } from '../../domain/entities';\nimport { value } from '@tanstack/react-router';\nexport const orders: Order[] = [];\nexport const link = value;\n",
+          "import type { Order } from '../../domain/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
+        'src/shared/sinks/index.ts': exported('track'),
+        'src/features/orders/app/use-cases/commands/sync-orders/sync-orders.cli.ts': importing({
+          from: '@bunli/core',
+          name: 'value',
+        }),
+        'src/composition/checkout/ui/screens/cart-screen/cart-screen.tsx':
+          "import { useMemo } from 'react';\nimport { value } from '@lingui/core';\nexport const screen = [useMemo, value];\n",
+        'src/composition/checkout/app/use-cases/queries/cart/cart.hooks.ts':
+          "import { value } from '@tanstack/react-query';\nexport const cart = value;\n",
+        'src/client.tsx': importing({
+          from: 'kit',
+          name: 'value',
+        }),
         'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
           "import { value } from '@tanstack/react-query';\nimport { useMemo } from 'react';\nexport const listOrders = [value, useMemo];\n",
         'src/features/orders/ui/components/order-card.tsx':
@@ -1181,16 +1159,17 @@ describe('the dependency-cruiser layer set', () => {
         'src/adapters/files/index.ts':
           "import { readFile } from 'node:fs/promises';\nexport const readOrders = readFile;\n",
         'src/root/wiring.ts': exported('wiring'),
-        'src/routes/__root.tsx': importing({
-          from: '../root/wiring',
+        'src/root/routes/__root.tsx': importing({
+          from: '../wiring',
           name: 'wiring',
         }),
-        'src/routes/orders/index.tsx':
+        'src/root/routes/orders/index.tsx':
           "import { value } from '@tanstack/react-router';\nimport { value as kit } from 'kit';\nexport const route = [value, kit];\n",
       },
       parts: [
         'typescript/architecture/ui',
         'typescript/architecture/_react',
+        'typescript/architecture/bunli',
         'typescript/architecture/tanstack-router',
         'typescript/architecture/analytics',
         'typescript/architecture/lingui',
@@ -1212,60 +1191,60 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'a unit of packages imports another by its name',
+      condition: 'a product imports another by its name',
       files: {
-        'packages/web/src/orders.ts': importing({
+        'products/web/src/orders.ts': importing({
           from: '@shop/admin',
           name: 'unit',
         }),
       },
-      rule: 'product-units-blind-to-each-other',
+      rule: 'products-blind-to-each-other',
     },
     {
-      condition: 'shared imports a unit of packages by its name',
+      condition: 'a unit of shared imports a product by its name',
       files: {
-        'shared/src/messages.ts': importing({
+        'shared/messages/src/messages.ts': importing({
           from: '@shop/web',
           name: 'unit',
         }),
       },
-      rule: 'shared-knows-no-product-unit',
+      rule: 'shared-knows-no-product',
     },
     {
-      condition: 'a unit of libs imports shared by its name',
+      condition: 'a unit of libs imports a unit of shared by its name',
       files: {
         'libs/smtp/src/send.ts': importing({
-          from: '@shop/shared',
+          from: '@shop/shared-messages',
           name: 'unit',
         }),
       },
       rule: 'libs-know-no-product',
     },
     {
-      condition: 'a unit imports another by a path into its folder',
+      condition: 'a product imports a unit by a path into its folder',
       files: {
-        'packages/web/src/orders.ts': importing({
-          from: '../../../shared/src/index',
+        'products/web/src/orders.ts': importing({
+          from: '../../../shared/messages/src/index',
           name: 'unit',
         }),
       },
       rule: 'units-imported-by-name',
     },
     {
-      condition: 'shared imports a unit by a path into its folder',
+      condition: 'a unit of shared imports another by a path into its folder',
       files: {
-        'shared/src/messages.ts': importing({
-          from: '../../libs/smtp/src/index',
+        'shared/messages/src/messages.ts': importing({
+          from: '../../money/src/index',
           name: 'unit',
         }),
       },
       rule: 'units-imported-by-name',
     },
     {
-      condition: 'the package of a unit in several languages imports another unit by a path',
+      condition: 'the package of a product in several languages imports another unit by a path',
       files: {
-        'packages/eros/typescript/src/filter.ts': importing({
-          from: '../../../admin/src/index',
+        'products/eros/languages/typescript/src/filter.ts': importing({
+          from: '../../../../admin/src/index',
           name: 'unit',
         }),
       },
@@ -1275,7 +1254,7 @@ describe('the dependency-cruiser layer set', () => {
       condition: 'a script of the root imports a unit by a path into its folder',
       files: {
         'scripts/release.ts': importing({
-          from: '../packages/web/src/index',
+          from: '../products/web/src/index',
           name: 'unit',
         }),
       },
@@ -1295,18 +1274,18 @@ describe('the dependency-cruiser layer set', () => {
   it('should report no violation when the units of a workspace import downward by name', () => {
     // Arrange
     const project = workspaceProject({
-      'packages/eros/shared/schema/kinds.yaml': '- validation\n',
-      'packages/eros/typescript/src/kinds.ts':
-        "import kinds from '../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
-      'packages/web/src/orders.ts':
-        "import { unit } from '@shop/shared';\nimport { unit as smtp } from '@shop/libs-smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
-      'packages/web/src/line.ts': exported('line'),
+      'products/eros/shared/schema/kinds.yaml': '- validation\n',
+      'products/eros/languages/typescript/src/kinds.ts':
+        "import kinds from '../../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
+      'products/web/src/orders.ts':
+        "import { unit } from '@shop/shared-messages';\nimport { unit as smtp } from '@shop/libs-smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
+      'products/web/src/line.ts': exported('line'),
       'scripts/release.ts': importing({
         from: '@shop/web',
         name: 'unit',
       }),
-      'shared/src/messages.ts': importing({
-        from: '@shop/libs-smtp',
+      'shared/messages/src/messages.ts': importing({
+        from: '@shop/shared-money',
         name: 'unit',
       }),
     });
@@ -1393,6 +1372,7 @@ describe("the parts of dependency-cruiser's base", () => {
     // Arrange
     const project = {
       files,
+      parts: [],
       roots: [
         '.',
       ],
@@ -1455,6 +1435,7 @@ describe("the parts of dependency-cruiser's base", () => {
     // Arrange
     const project = {
       files,
+      parts: [],
       roots: [
         '.',
       ],

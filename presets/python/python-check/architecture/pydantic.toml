@@ -1,4 +1,4 @@
-# pydantic: the edge, and shared/ where it parses
+# pydantic: the edge, the request and response models of app/, and shared/ where it parses
 [homes]
-pydantic = ["edge", "shared"]
+pydantic = ["edge", "app", "shared"]
 pydantic_settings = ["edge", "shared"]

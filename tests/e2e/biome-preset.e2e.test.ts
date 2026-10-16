@@ -149,14 +149,6 @@ describe('the Biome preset', () => {
       message: 'Leave memoisation to the React Compiler',
     },
     {
-      condition: 'a component calls an effect',
-      files: {
-        'src/Panel.tsx':
-          "import { useEffect } from 'react';\n\nexport function Panel(): null {\n  useEffect(() => {\n    globalThis.focus();\n  }, []);\n  return null;\n}\n",
-      },
-      message: 'Call an effect from a hook',
-    },
-    {
       condition: 'a type is taken from an as-const array',
       files: {
         'src/features/orders/domain/order-status.ts':
@@ -1838,57 +1830,6 @@ describe('the Biome css part', () => {
   );
 });
 
-describe('the Biome tanstack-query part', () => {
-  it.each([
-    {
-      condition: 'a query writes its key inline',
-      isReported: true,
-      source:
-        "export const read = (id: string) => useQuery({ queryKey: ['orders', id], queryFn });\n",
-    },
-    {
-      condition: 'the query client writes a key inline',
-      isReported: true,
-      source: "export const reset = () => client.setQueryData(['orders'], []);\n",
-    },
-    {
-      condition: 'the query client reads a key inline',
-      isReported: true,
-      source: "export const cached = () => client.getQueryData(['orders']);\n",
-    },
-    {
-      condition: 'the query client reads a key from the factory',
-      isReported: false,
-      source: 'export const cached = (id: string) => client.getQueryData(orderKeys.detail(id));\n',
-    },
-    {
-      condition: 'a query takes its key from the factory',
-      isReported: false,
-      source:
-        'export const read = (id: string) => useQuery({ queryKey: orderKeys.detail(id), queryFn });\n',
-    },
-  ])('should report an inline key $isReported when $condition', ({ isReported, source }) => {
-    // Arrange
-    const project = {
-      files: {
-        'src/features/orders/orders.hooks.ts': source,
-      },
-      parts: [
-        ...BASE_PARTS,
-        'typescript/architecture/tanstack-query',
-      ],
-    };
-
-    // Act
-    const { plugins } = lintFindings(project);
-
-    // Assert
-    expect(plugins.some((finding) => finding.startsWith('Take the key from the key factory'))).toBe(
-      isReported,
-    );
-  });
-});
-
 describe('the Biome browser part', () => {
   it.each([
     {
@@ -2524,6 +2465,36 @@ describe('the Biome architecture parts', () => {
       file: 'src/adapters/clock/clock.adapter.ts',
       isReported: false,
     },
+    {
+      code: "export const load = (): Promise<Response> => fetch('/orders');\n",
+      file: 'src/features/orders/ui/widgets/orders-widget/orders-widget.ts',
+      isReported: true,
+    },
+    {
+      code: "export const load = (): Promise<Response> => fetch('/mail');\n",
+      file: 'src/kernel/contracts/mail.port.ts',
+      isReported: true,
+    },
+    {
+      code: "export const load = (): Promise<Response> => fetch('/payments');\n",
+      file: 'src/composition/checkout/adapters/payments/payments.adapter.ts',
+      isReported: false,
+    },
+    {
+      code: "export const load = (): Promise<Response> => fetch('/orders');\n",
+      file: 'products/web/src/features/orders/domain/entities/order.entity.ts',
+      isReported: true,
+    },
+    {
+      code: "export const load = (): Promise<Response> => fetch('/messages');\n",
+      file: 'shared/messages/src/adapters/http/http.adapter.ts',
+      isReported: false,
+    },
+    {
+      code: "export const mount = (): HTMLElement | null => document.getElementById('app');\n",
+      file: 'src/client.ts',
+      isReported: false,
+    },
   ])(
     'should report an effect reached through a global $isReported in $file when a project extends the core part',
     ({ code, file, isReported }) => {
@@ -2589,6 +2560,14 @@ describe('the Biome architecture parts', () => {
     {
       file: 'src/features/orders/app/use-cases/poll-orders.use-case.ts',
       isReported: false,
+    },
+    {
+      file: 'src/composition/checkout/app/use-cases/queries/cart/cart.hooks.ts',
+      isReported: false,
+    },
+    {
+      file: 'src/features/orders/ui/widgets/orders-widget/orders-widget.ts',
+      isReported: true,
     },
   ])(
     'should report a timer $isReported in $file when a project extends the typescript part',

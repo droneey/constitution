@@ -16,7 +16,6 @@
         "!**/src/root/**",
         "!**/main.*",
         "!**/entrypoints/*/main.*",
-        "!**/src/router.tsx",
         "!**/__tests__/**",
         "!**/*.test.ts",
         "!**/*.test.tsx",

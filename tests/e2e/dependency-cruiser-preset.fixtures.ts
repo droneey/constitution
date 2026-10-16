@@ -58,6 +58,9 @@ const BASE_PARTS = [
 // apart: `kit` declared, `devtool` a development dependency, `ghost` installed
 // but never declared, `legacy` deprecated.
 const INSTALLED: Readonly<Record<string, Installed>> = {
+  '@bunli/core': {
+    declaration: Declaration.Production,
+  },
   '@lingui/core': {
     declaration: Declaration.Production,
   },
@@ -70,8 +73,14 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   devtool: {
     declaration: Declaration.Development,
   },
+  'expo-router': {
+    declaration: Declaration.Production,
+  },
   ghost: {
     declaration: Declaration.None,
+  },
+  inversify: {
+    declaration: Declaration.Production,
   },
   kit: {
     declaration: Declaration.Production,

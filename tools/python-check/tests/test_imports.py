@@ -105,7 +105,17 @@ def _findings(*, folder: Path, importer: str, statement: str) -> tuple[Finding, 
     pytest.param(
       'src/shop/root/wiring.py',
       'from shop.libs.tabula.sheet import Sheet',
-      id='an absolute import past a surface from another layer, which the contracts hold',
+      id='an absolute import past a surface, which the contracts hold',
+    ),
+    pytest.param(
+      'src/shop/libs/money/amount.py',
+      'from shop.libs.tabula.sheet import Sheet',
+      id="an absolute import past a sibling module's surface, which the contracts hold",
+    ),
+    pytest.param(
+      'src/shop/composition/checkout/app/checkout_cli.py',
+      'from ..domain.totals import Total',
+      id='a relative import inside one module of composition',
     ),
     pytest.param(
       'tests/test_orders.py',
@@ -163,64 +173,31 @@ def test_should_find_nothing_when_an_import_stays_in_its_module(
       id='a relative import from the package root into a folder',
     ),
     pytest.param(
-      'src/shop/features/orders/adapters/sql/orders_repository.py',
-      'from ...domain.entities.order_entity import Order',
-      (
-        'a relative import reaches past the surface of features/orders/domain/entities; '
-        'import that folder'
-      ),
-      id="a relative import past a domain role folder's surface",
-    ),
-    pytest.param(
-      'src/shop/kernel/money/currency.py',
-      'from ..dates.calendar import Calendar',
-      'a relative import reaches past the surface of kernel/dates; import that folder',
-      id="a relative import past another kernel module's surface",
-    ),
-    pytest.param(
-      'src/shop/libs/money/amount.py',
-      'from shop.libs.tabula.sheet import Sheet',
-      'an import reaches past the surface of shop.libs.tabula; import shop.libs.tabula',
-      id="an absolute import past a sibling module's surface",
-    ),
-    pytest.param(
-      'src/shop/libs/tabula/cells/cell.py',
-      'from .. import Workbook',
-      (
-        "a relative import reaches its own module's surface, libs/tabula; "
-        'import the file that declares it'
-      ),
-      id="a relative import of its own module's surface",
-    ),
-    pytest.param(
-      'src/shop/features/orders/domain/entities/order_entity.py',
-      'from ... import Order',
-      (
-        "a relative import reaches its own module's surface, features/orders; "
-        'import the file that declares it'
-      ),
-      id="a relative import of its own feature's surface",
-    ),
-    pytest.param(
-      'src/shop/libs/tabula/sheet.py',
-      'from shop.libs.tabula import Sheet',
-      (
-        "an import reaches its own module's surface, shop.libs.tabula; "
-        'import the file that declares it'
-      ),
-      id="an absolute import of its own module's surface",
-    ),
-    pytest.param(
       'src/shop/kernel/money.py',
       'from ... import other',
       'a relative import climbs out of the import package',
       id='a relative import past the import package',
     ),
     pytest.param(
+      'src/shop/composition/billing/app/billing_cli.py',
+      'from ...checkout import Checkout',
+      'a relative import leaves its module, composition/billing; import it by its absolute path',
+      id='a relative import into another module of composition',
+    ),
+    pytest.param(
+      'src/shop/composition/billing/app/billing_cli.py',
+      'from shop.composition.billing.domain import Bill',
+      (
+        'a module imports itself by its absolute path, '
+        'shop.composition.billing.domain; import it relatively'
+      ),
+      id='a module of composition importing itself by its absolute path',
+    ),
+    pytest.param(
       'src/shop/features/orders/domain/entities/order_entity.py',
       'from shop.features.orders.adapters.sql.orders_repository import OrdersRepository',
       (
-        'a feature imports itself by its absolute path, '
+        'a module imports itself by its absolute path, '
         'shop.features.orders.adapters.sql.orders_repository; import it relatively'
       ),
       id='a feature importing itself by its absolute path',
@@ -228,7 +205,7 @@ def test_should_find_nothing_when_an_import_stays_in_its_module(
     pytest.param(
       'src/shop/features/orders/domain/entities/order_entity.py',
       'import shop.features.orders',
-      'a feature imports itself by its absolute path, shop.features.orders; import it relatively',
+      'a module imports itself by its absolute path, shop.features.orders; import it relatively',
       id='a feature importing its own surface by its absolute path',
     ),
   ],
@@ -250,23 +227,28 @@ def test_should_report_an_import_when_it_crosses_the_border_of_its_module(
   assert findings == (Finding(path=tmp_path / importer, line=1, message=message),)
 
 
-def test_should_report_the_name_past_a_surface_when_an_import_names_several(
+def test_should_report_the_name_of_its_own_module_when_an_import_names_several(
   tmp_path: Path,
 ) -> None:
   # Arrange
-  statement = 'import json, shop.libs.tabula.sheet'
+  statement = 'import json, shop.features.orders.domain'
 
   # Act
   findings = _findings(
-    folder=tmp_path, importer='src/shop/libs/money/amount.py', statement=statement
+    folder=tmp_path,
+    importer='src/shop/features/orders/adapters/sql/orders_repository.py',
+    statement=statement,
   )
 
   # Assert
   assert findings == (
     Finding(
-      path=tmp_path / 'src/shop/libs/money/amount.py',
+      path=tmp_path / 'src/shop/features/orders/adapters/sql/orders_repository.py',
       line=1,
-      message='an import reaches past the surface of shop.libs.tabula; import shop.libs.tabula',
+      message=(
+        'a module imports itself by its absolute path, shop.features.orders.domain; '
+        'import it relatively'
+      ),
     ),
   )
 

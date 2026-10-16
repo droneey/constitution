@@ -37,6 +37,8 @@ fastapi:
   path-parameters-read-by-the-handler:
     - FAST
 python:
+  module-named-in-snake-case:
+    - N999
   instant-is-an-aware-datetime:
     - DTZ
   except-never-only-passes:

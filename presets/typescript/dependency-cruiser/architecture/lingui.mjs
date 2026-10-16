@@ -1,4 +1,4 @@
-import { DELIVERY, ROOT, SPECS } from './core.mjs';
+import { ROOT, SPECS } from './core.mjs';
 
 const MESSAGES = [
   'node_modules/@lingui/',
@@ -7,7 +7,6 @@ const MESSAGES = [
 // A UI's components and widgets outside libs/, the screens, root/ and the catalogs themselves.
 const HOME = [
   '^src/(?!libs/).*/ui/',
-  ...DELIVERY,
   ...ROOT,
   '/locales/',
   ...SPECS,

@@ -92,25 +92,19 @@ ancestors = ["<package>"]
 name = "kernel-imports-only-itself"
 type = "forbidden"
 source_modules = ["*.kernel"]
-forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "libs-import-no-application-code"
 type = "forbidden"
 source_modules = ["*.libs"]
-forbidden_modules = ["*.adapters", "*.composition", "*.contracts", "*.entrypoints", "*.features", "*.integrations", "*.kernel", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.kernel", "*.root", "*.shared"]
 
 [[tool.importlinter.contracts]]
 name = "shared-imports-no-feature-adapter-contract-or-root"
 type = "forbidden"
 source_modules = ["*.shared"]
-forbidden_modules = ["*.adapters", "*.contracts", "*.features", "*.integrations", "*.root"]
-
-[[tool.importlinter.contracts]]
-name = "contract-knows-no-vendor"
-type = "forbidden"
-source_modules = ["*.contracts"]
-forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.features", "*.integrations", "*.kernel.contracts", "*.root"]
 
 [[tool.importlinter.contracts]]
 name = "domain-imports-only-itself-and-the-kernel"
@@ -122,13 +116,13 @@ forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features
 # python-check refuses an effect imported below the edge; this contract follows the imports through a lib.
 name = "effects-held-only-by-the-edge"
 type = "forbidden"
-source_modules = ["*.composition", "*.contracts", "*.features.*.app", "*.features.*.domain", "*.kernel", "*.shared"]
+source_modules = ["*.composition.*.app", "*.composition.*.domain", "*.features.*.app", "*.features.*.domain", "*.kernel", "*.shared"]
 forbidden_modules = ["ctypes", "curses", "dbm", "fcntl", "fileinput", "ftplib", "getpass", "glob", "grp", "imaplib", "mmap", "multiprocessing", "os", "platform", "poplib", "pty", "pwd", "random", "resource", "runpy", "secrets", "select", "selectors", "shelve", "shutil", "signal", "smtplib", "socket", "socketserver", "sqlite3", "ssl", "subprocess", "syslog", "tempfile", "termios", "time", "tty", "webbrowser", "wsgiref", "xmlrpc"]
 
 [[tool.importlinter.contracts]]
 name = "domain-imports-no-logging"
 type = "forbidden"
-source_modules = ["*.features.*.domain"]
+source_modules = ["*.composition.*.domain", "*.features.*.domain"]
 forbidden_modules = ["logging"]
 allow_indirect_imports = true
 
@@ -137,10 +131,23 @@ name = "feature-never-imports-a-feature"
 type = "independence"
 modules = ["*.features.*"]
 
+# a binding unit receives the use case the root built over the port, never the port
+[[tool.importlinter.contracts]]
+name = "binding-unit-calls-only-use-cases"
+type = "forbidden"
+source_modules = ["*.composition.*.app", "*.features.*.app"]
+forbidden_modules = ["*.composition.*.domain.contracts", "*.features.*.domain.contracts"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "composition-module-never-imports-another"
+type = "independence"
+modules = ["*.composition.*"]
+
 [[tool.importlinter.contracts]]
 name = "adapter-imports-only-its-owners-domain-and-shared-layers"
 type = "independence"
-modules = ["*.adapters.*", "*.features.*.adapters.*"]
+modules = ["*.adapters.*", "*.composition.*.adapters.*", "*.features.*.adapters.*"]
 
 [[tool.importlinter.contracts]]
 name = "adapter-imports-only-its-owners-domain-and-shared-layers"
@@ -154,6 +161,13 @@ type = "forbidden"
 source_modules = ["*.adapters"]
 forbidden_modules = ["*.features"]
 
+# composition implements a feature's contract through another feature's surface
+[[tool.importlinter.contracts]]
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
+type = "forbidden"
+source_modules = ["*.composition.*.adapters"]
+forbidden_modules = ["*.composition.*.app", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.root"]
+
 [[tool.importlinter.contracts]]
 name = "root-imported-only-by-entries"
 type = "protected"
@@ -164,8 +178,8 @@ allowed_importers = ["*.main", "*.entrypoints.*.main"]
 [[tool.importlinter.contracts]]
 name = "adapter-imported-only-by-the-root"
 type = "protected"
-protected_modules = ["*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
-allowed_importers = ["*", "*.root", "*.root.**", "*.adapters", "*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+protected_modules = ["*.adapters", "*.adapters.**", "*.composition.*.adapters", "*.composition.*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+allowed_importers = ["*", "*.root", "*.root.**", "*.adapters", "*.adapters.**", "*.composition.*.adapters", "*.composition.*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
 as_packages = false
 
 [[tool.importlinter.contracts]]
@@ -205,7 +219,7 @@ modules = ["*.integrations.*"]
 [[tool.importlinter.contracts]]
 name = "import-points-inward"
 type = "forbidden"
-source_modules = ["*.adapters", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
+source_modules = ["*.adapters", "*.features", "*.kernel", "*.libs", "*.shared"]
 forbidden_modules = ["*.composition"]
 
 [[tool.importlinter.contracts]]
@@ -225,7 +239,7 @@ forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
 name = "surface-only-on-a-module-or-one-kind"
 type = "forbidden"
 source_modules = ["**"]
-forbidden_modules = ["<package>", "*.adapters", "*.composition", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["<package>", "*.adapters", "*.composition", "*.composition.*.adapters", "*.composition.*.app", "*.composition.*.domain", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.kernel", "*.libs", "*.shared"]
 as_packages = false
 allow_indirect_imports = true
 
@@ -247,12 +261,9 @@ name = "module-reached-only-through-its-surface"
 type = "protected"
 protected_modules = ["*.composition.*.*"]
 allowed_importers = ["*.composition.*"]
-
-[[tool.importlinter.contracts]]
-name = "module-reached-only-through-its-surface"
-type = "protected"
-protected_modules = ["*.contracts.*.*"]
-allowed_importers = ["*.contracts.*"]
+# the root and the package's surface reach a composition module's adapter through the adapter's own surface
+ignore_imports = ["*.root -> *.composition.*.adapters.*", "*.root.** -> *.composition.*.adapters.*", "* -> *.composition.*.adapters.*"]
+unmatched_ignore_imports_alerting = "none"
 
 [[tool.importlinter.contracts]]
 name = "module-reached-only-through-its-surface"
@@ -275,30 +286,11 @@ type = "protected"
 protected_modules = ["*.shared.*.*"]
 allowed_importers = ["*.shared.*"]
 
-# cli: the commands reached only from the entries
-[[tool.importlinter.contracts]]
-name = "import-points-inward"
-type = "forbidden"
-source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
-forbidden_modules = ["*.cli"]
-
-# api: the handlers reached only from the entries
-[[tool.importlinter.contracts]]
-name = "import-points-inward"
-type = "forbidden"
-source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
-forbidden_modules = ["*.api"]
-
-# consumers and jobs: messaging's delivery, reached only from the entries
-[[tool.importlinter.contracts]]
-name = "import-points-inward"
-type = "forbidden"
-source_modules = ["*.adapters", "*.composition", "*.contracts", "*.features", "*.kernel", "*.libs", "*.shared"]
-forbidden_modules = ["*.consumers", "*.jobs"]
-
 # python-check: the home of each block's package
 [tool.python-check]
 extend = [
+  ".droneey/constitution/presets/python/python-check/architecture/fastapi.toml",
+  ".droneey/constitution/presets/python/python-check/architecture/fastmcp.toml",
   ".droneey/constitution/presets/python/python-check/architecture/httpx2.toml",
   ".droneey/constitution/presets/python/python-check/architecture/pydantic.toml",
   ".droneey/constitution/presets/python/python-check/architecture/structlog.toml",

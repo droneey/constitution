@@ -34,13 +34,12 @@
     "architecture:check": "depcruise src tests tools --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. vulture || exit 1; done",
     "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/core.txt)\" --no-ignore .",
-    "names:check": "ls-lint --config .droneey/constitution/presets/common/ls-lint/self.yaml --config .droneey/constitution/presets/common/ls-lint/core.yaml --config .droneey/constitution/presets/common/ls-lint/yaml.yaml --config .droneey/constitution/presets/typescript/ls-lint/typescript.yaml --config .droneey/constitution/presets/common/ls-lint/bun.yaml --config .droneey/constitution/presets/common/ls-lint/git.yaml --config .droneey/constitution/presets/common/ls-lint/mise.yaml --config .droneey/constitution/presets/common/ls-lint/uv.yaml --config .droneey/constitution/presets/common/ls-lint/ruff.yaml --config .droneey/constitution/presets/common/ls-lint/complexipy.yaml --config .droneey/constitution/presets/common/ls-lint/stryker.yaml --config .droneey/constitution/presets/typescript/ls-lint/architecture/core.yaml --config .ls-lint.yaml",
     "format:check": "uv run --locked ruff format --check tools",
     "format:fix": "uv run --locked ruff format tools",
     "code:check": "uv run --locked python-check tools/python-check/src tools/python-check/tests tools/mutmut-check/src tools/mutmut-check/tests",
     "complexity:check": "uv run --locked complexipy tools/python-check tools/mutmut-check",
     "dependencies:check": "for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. deptry src || exit 1; done",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run names:check && bun run unused:check && bun run dependencies:check && bun run audit:check"
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check"
   },
   "dependencies": {
     "@stryker-mutator/api": "^10.0.0",

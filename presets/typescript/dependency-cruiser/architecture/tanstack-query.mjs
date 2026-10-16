@@ -1,8 +1,7 @@
 import { ROOT, SPECS } from './core.mjs';
 
 const HOME = [
-  '^src/features/[^/]+/app/',
-  '^src/composition/',
+  '^src/(features|composition)/[^/]+/app/',
   ...ROOT,
   ...SPECS,
 ];

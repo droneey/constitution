@@ -2,7 +2,6 @@ import { join } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { miseBinary } from './mise.fixtures';
 import { uvBinary } from './uv.fixtures';
 import {
   commitBase,
@@ -55,24 +54,6 @@ const CRUISER_PARTS = [
   'architecture/core',
 ];
 
-const LS_LINT = miseBinary('ls-lint');
-const LS_LINT_PARTS: Readonly<Record<string, readonly string[]>> = {
-  python: [
-    'common/ls-lint/self',
-    'common/ls-lint/core',
-    'common/ls-lint/uv',
-    'python/ls-lint/python',
-    'python/ls-lint/architecture/core',
-  ],
-  typescript: [
-    'common/ls-lint/self',
-    'common/ls-lint/core',
-    'common/ls-lint/bun',
-    'typescript/ls-lint/typescript',
-    'typescript/ls-lint/architecture/core',
-  ],
-};
-
 const depthOf = (folder: string): number => folder.split('/').length;
 
 const cruisers = Object.fromEntries(
@@ -84,12 +65,6 @@ const cruisers = Object.fromEntries(
     }),
   ]),
 );
-
-const lsLintArgs = (input: { folder: string; language: string }): string[] =>
-  (LS_LINT_PARTS[input.language] ?? []).flatMap((part) => [
-    '--config',
-    `${'../'.repeat(depthOf(input.folder))}.droneey/constitution/presets/${part}.yaml`,
-  ]);
 
 const STRYKER = `import bunTest from '../../${PRESETS}/stryker/bun-test.mjs';
 import core from '../../${PRESETS}/stryker/core.mjs';
@@ -135,7 +110,7 @@ describe('a workspace on the presets', () => {
       args: [
         'test',
       ],
-      folder: 'packages/web',
+      folder: 'products/web',
       program: 'bun',
     });
 
@@ -225,8 +200,8 @@ describe('a workspace on the presets', () => {
     const { passed } = runTool(folder, {
       args: [
         'check',
-        '--config-path=biome.packages-api.jsonc',
-        'packages/api',
+        '--config-path=biome.products-api.jsonc',
+        'products/api',
       ],
       program: 'biome',
     });
@@ -240,14 +215,14 @@ describe('a workspace on the presets', () => {
     const folder = workspace({
       '.dependency-cruiser.mjs': DEPENDENCY_CRUISER,
       'libs/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
-      'shared/src/kernel/constants/price.constants.ts':
-        "import { ZERO } from '../../../../libs/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
+      'shared/orders/src/kernel/constants/price.constants.ts':
+        "import { ZERO } from '../../../../../libs/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
     });
 
     // Act
     const { output } = runTool(folder, {
       args: [
-        'packages',
+        'products',
         'shared',
         'libs',
         '--config',
@@ -286,14 +261,14 @@ describe('a workspace on the presets', () => {
     // Arrange
     const folder = workspace({
       ...cruisers,
-      'packages/web/package.json': manifestOf({
+      'products/web/package.json': manifestOf({
         dependencies: [
-          '@shop/shared',
+          '@shop/shared-orders',
           'x-api',
         ],
         name: '@shop/web',
       }),
-      'packages/web/src/features/labels/app/fetch-label.ts':
+      'products/web/src/features/labels/app/fetch-label.ts':
         "import { get } from 'x-api';\n\nexport const fetchLabel = get;\n",
     });
 
@@ -304,40 +279,12 @@ describe('a workspace on the presets', () => {
         '--config',
         '.dependency-cruiser.mjs',
       ],
-      folder: 'packages/web',
+      folder: 'products/web',
       program: 'depcruise',
     });
 
     // Assert
     expect(output).toContain('not-in-allowed: src/features/labels/app/fetch-label.ts');
-  });
-
-  it('should pass names when ls-lint checks each package from its folder by its language parts', () => {
-    // Arrange
-    const folder = workspace();
-    const packages = [
-      ...Object.values(UNITS).map((unit) => ({
-        folder: unit,
-        language: 'typescript',
-      })),
-      ...PYTHON_PACKAGES.map((unit) => ({
-        folder: unit,
-        language: 'python',
-      })),
-    ];
-
-    // Act
-    const runs = packages.map((unit) => ({
-      unit: unit.folder,
-      ...runTool(folder, {
-        args: lsLintArgs(unit),
-        folder: unit.folder,
-        program: LS_LINT,
-      }),
-    }));
-
-    // Assert
-    expect(runs.filter(({ passed }) => !passed)).toStrictEqual([]);
   });
 
   it('should find nothing when python-check reads each Python package from its folder', () => {
@@ -363,9 +310,9 @@ describe('a workspace on the presets', () => {
   it('should report the home a part gives when an adapter of a Python package imports structlog', () => {
     // Arrange
     const folder = workspace({
-      'packages/reports/src/shop_reports/adapters/__init__.py': '',
-      'packages/reports/src/shop_reports/adapters/log/__init__.py': '',
-      'packages/reports/src/shop_reports/adapters/log/log_adapter.py': 'import structlog\n',
+      'products/reports/src/shop_reports/adapters/__init__.py': '',
+      'products/reports/src/shop_reports/adapters/log/__init__.py': '',
+      'products/reports/src/shop_reports/adapters/log/log_adapter.py': 'import structlog\n',
     });
 
     // Act
@@ -373,7 +320,7 @@ describe('a workspace on the presets', () => {
       args: [
         'src',
       ],
-      folder: 'packages/reports',
+      folder: 'products/reports',
       program: uvBinary('python-check'),
     });
 
@@ -384,18 +331,18 @@ describe('a workspace on the presets', () => {
   it('should mutate the changed line of a unit when the mutation check runs from its folder', () => {
     // Arrange
     const folder = workspace({
-      'packages/web/bunfig.mutation.toml':
+      'products/web/bunfig.mutation.toml':
         '[test]\nroot = "./src"\npathIgnorePatterns = ["**/main.test.*"]\ncoverage = false\n',
-      'packages/web/stryker.config.mjs': STRYKER,
+      'products/web/stryker.config.mjs': STRYKER,
     });
 
     commitBase(folder);
     write({
       files: {
-        'packages/web/src/features/labels/app/label.ts':
-          "import { describeOrder, type OrderId } from '@shop/shared';\n\nexport const label = (id: OrderId): string => `Ordered ${describeOrder({ id, total: 0 })}`;\n",
-        'packages/web/src/features/labels/app/__tests__/label.test.ts':
-          "import { expect, it } from 'bun:test';\n\nimport type { OrderId } from '@shop/shared';\n\nimport { label } from '../label';\n\nit('should name the order when an order is labelled', () => {\n  // Act\n  const text = label('a' as OrderId);\n\n  // Assert\n  expect(text).toBe('Ordered order:a');\n});\n",
+        'products/web/src/features/labels/app/label.ts':
+          "import { describeOrder, type OrderId } from '@shop/shared-orders';\n\nexport const label = (id: OrderId): string => `Ordered ${describeOrder({ id, total: 0 })}`;\n",
+        'products/web/src/features/labels/app/__tests__/label.test.ts':
+          "import { expect, it } from 'bun:test';\n\nimport type { OrderId } from '@shop/shared-orders';\n\nimport { label } from '../label';\n\nit('should name the order when an order is labelled', () => {\n  // Act\n  const text = label('a' as OrderId);\n\n  // Assert\n  expect(text).toBe('Ordered order:a');\n});\n",
       },
       folder,
     });
@@ -405,7 +352,7 @@ describe('a workspace on the presets', () => {
       args: [
         join(REPOSITORY, 'tools', 'mutation-check', 'src', 'main.ts'),
       ],
-      folder: 'packages/web',
+      folder: 'products/web',
       program: 'bun',
     });
 

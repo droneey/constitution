@@ -6,9 +6,10 @@ from pathlib import Path
 from python_check.findings import Finding
 
 SOURCE_ROOT = 'src'
-FEATURES = 'features'
-DOMAIN = 'domain'
-MODULE_LAYERS = frozenset({'adapters', 'composition', 'contracts', 'kernel', 'libs', 'shared'})
+# The layers whose modules take a feature's form, each module a folder of its own.
+FEATURE_FORM = frozenset({'composition', 'features'})
+# A module of that form is its layer's folder and its own: features/<f>, composition/<m>.
+MODULE_DEPTH = 2
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -36,60 +37,20 @@ def import_root_of(path: Path) -> ImportRoot | None:
   )
 
 
-# A module is a feature, or outside features/ a top-level folder of the import
-# package; a file that sits in the package itself belongs to its root, ().
+def in_feature_form(folder: tuple[str, ...]) -> bool:
+  return bool(folder) and folder[0] in FEATURE_FORM
+
+
+# A module is a feature or a module of composition, elsewhere a top-level folder
+# of the import package; a file that sits in the package itself belongs to its root, ().
 def module_of(folder: tuple[str, ...]) -> tuple[str, ...]:
-  return folder[: 2 if folder[:1] == (FEATURES,) else 1]
+  return folder[: MODULE_DEPTH if in_feature_form(folder) else 1]
 
 
 # The folder a target lies in: itself when it names a folder, else the folder
 # of the file or of the name it names.
 def target_folder(*, root: ImportRoot, target: tuple[str, ...]) -> tuple[str, ...]:
   return target if root.folder.joinpath(*target).is_dir() else target[:-1]
-
-
-# The folder whose surface the rest of its layer reaches it through: a role
-# folder of a feature's domain, or a module of a layer; () for any other folder.
-def unit_of(folder: tuple[str, ...]) -> tuple[str, ...]:
-  if folder[:1] == (FEATURES,) and folder[2:3] == (DOMAIN,) and len(folder) >= 4:
-    return folder[:4]
-
-  if len(folder) >= 2 and folder[0] in MODULE_LAYERS:
-    return folder[:2]
-
-  return ()
-
-
-# The unit whose surface an import reaches past, when it names a file or a
-# folder inside a unit other than the importer's own.
-def _surface_passed(
-  *,
-  importer: tuple[str, ...],
-  root: ImportRoot,
-  target: tuple[str, ...],
-) -> tuple[str, ...] | None:
-  unit = unit_of(target_folder(root=root, target=target))
-
-  if unit and len(target) > len(unit) and unit_of(importer) != unit:
-    return unit
-
-  return None
-
-
-# The surfaces of the importer's own module: its feature, or the module of a
-# layer it sits in.
-def _own_surfaces(package: tuple[str, ...]) -> tuple[tuple[str, ...], ...]:
-  if package[:1] == (FEATURES,):
-    return (package[:2],)
-
-  return (package[:2],) if len(package) >= 2 and package[0] in MODULE_LAYERS else ()
-
-
-# A target that names neither a folder nor a module names what a surface offers.
-def _names_a_surface_member(*, root: ImportRoot, target: tuple[str, ...]) -> bool:
-  path = root.folder.joinpath(*target)
-  module = path.with_suffix('.py')  # pragma: no mutate -- macOS reads any case of it
-  return not path.is_dir() and not module.is_file()
 
 
 def _relative_targets(
@@ -135,25 +96,6 @@ def _relative_findings(
         line=node.lineno,
         message=f'a relative import leaves its module, {name}; import it by its absolute path',
       )
-    elif target[:-1] in _own_surfaces(root.package) and _names_a_surface_member(
-      root=root, target=target
-    ):
-      yield Finding(
-        path=path,
-        line=node.lineno,
-        message=(
-          f"a relative import reaches its own module's surface, {'/'.join(target[:-1])}; "
-          'import the file that declares it'
-        ),
-      )
-    elif (unit := _surface_passed(importer=root.package, root=root, target=target)) is not None:
-      yield Finding(
-        path=path,
-        line=node.lineno,
-        message=(
-          f'a relative import reaches past the surface of {"/".join(unit)}; import that folder'
-        ),
-      )
 
 
 def _absolute_names(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]:
@@ -179,29 +121,11 @@ def _absolute_findings(
     if target[0] != root.folder.name:
       continue
 
-    if module[:1] == (FEATURES,) and module_of(target_folder(root=root, target=inner)) == module:
+    if in_feature_form(module) and module_of(target_folder(root=root, target=inner)) == module:
       yield Finding(
         path=path,
         line=node.lineno,
-        message=f'a feature imports itself by its absolute path, {name}; import it relatively',
-      )
-    elif inner in _own_surfaces(root.package):
-      yield Finding(
-        path=path,
-        line=node.lineno,
-        message=(
-          f"an import reaches its own module's surface, {name}; import the file that declares it"
-        ),
-      )
-    elif (
-      inner[:1] == root.package[:1]
-      and (unit := _surface_passed(importer=root.package, root=root, target=inner)) is not None
-    ):
-      surface = '.'.join((root.folder.name, *unit))
-      yield Finding(
-        path=path,
-        line=node.lineno,
-        message=f'an import reaches past the surface of {surface}; import {surface}',
+        message=f'a module imports itself by its absolute path, {name}; import it relatively',
       )
 
 

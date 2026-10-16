@@ -53,7 +53,7 @@ A block refers, through its front matter, only to the layers above it and, among
 
 A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
 - the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css`, `python` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
-- the tool folder is the tool's block — `biome`, `dependency-cruiser`, `ls-lint`, `tsc` for the compiler;
+- the tool folder is the tool's block — `biome`, `dependency-cruiser`, `knip`, `tsc` for the compiler;
 - a part of the base sits at the tool's root, and a part of an optional axis in `architecture/` or `workflow/`, the axis whose rules it holds, so a project that leaves an axis out leaves out its parts;
 - a part is named after the block its settings need, the one without which they mean nothing: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s; settings that need no block beyond the tool sit in `core` when they hold a rule of core and in `self` when they are the tool's own; GritQL rules are `plugins/<rule-slug>.grit` beside the parts of their axis.
 
