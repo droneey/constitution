@@ -10,7 +10,7 @@
 |---|---|
 | these are pytest's ways to leave a case unrun or let it fail. | [testing] |
 
-### flaky-mark-banned → failed-test-never-rerun · SHOULD
+### flaky-mark-banned → failed-test-never-retried-by-a-plugin · SHOULD
 
 The mark `flaky`, which the plugins that run a case again read, is banned.
 
@@ -34,7 +34,7 @@ The mark `flaky`, which the plugins that run a case again read, is banned.
 |---|---|
 | a spec that imports it runs on a second plugin beside anyio's. | [testing] |
 
-### specs-lift-only-assert-and-package-rules · SHOULD
+### specs-lift-only-assert-package-and-literal-rules · SHOULD
 
 The project's `extend-per-file-ignores` lifts only `S101`, `INP001` and `PLR2004` in `tests/**`: a case asserts with `assert`, `tests/` is no package, and a case's literals are its data.
 

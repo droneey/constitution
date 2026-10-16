@@ -17,7 +17,7 @@ The droneey constitution: the engineering rules every droneey repository is buil
 - **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis: the base at its root, and the optional `architecture` and `workflow` in a folder each.
 - **Validation** — the checks that keep every block sound and consistent with the others.
 - **Presets** — the tool configurations that hold the tool-checked rules, split into parts by scope, tool and axis, with the bindings that say which setting holds which rule.
-- **Delivery** — the digests generated from the blocks, the session-start hook that reads them, the skills that write a project's files, and the release archive that carries the presets and templates.
+- **Delivery** — the digests generated from the blocks, the session-start hook that reads them, the skills that write a project's files, and the release archives: `constitution.tar.gz`, which carries the presets and templates, and `constitution-plugin.zip`, the plugin with the digests generated for its release.
 
 ## Core entities and relationships
 

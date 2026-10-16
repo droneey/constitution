@@ -11,7 +11,9 @@ const marketplaceModel = z.looseObject({
           z.looseObject({
             ref: z.string().optional(),
             repo: z.string().optional(),
+            sha256: z.string().optional(),
             source: z.string().min(1),
+            url: z.string().optional(),
           }),
         ]),
       }),

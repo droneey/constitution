@@ -16,7 +16,6 @@
           },
           "style": {
             "noParameterProperties": "off",
-            "useImportType": "off",
           },
         },
       },
@@ -25,7 +24,6 @@
       "includes": [
         "**/*.controller.ts",
         "**/*.provider.ts",
-        "**/*.service.ts",
         "**/*.filter.ts",
         "**/*.pipe.ts",
         "**/*.guard.ts",
@@ -35,6 +33,9 @@
         "rules": {
           "complexity": {
             "useMaxParams": "off",
+          },
+          "style": {
+            "useImportType": "off",
           },
         },
       },

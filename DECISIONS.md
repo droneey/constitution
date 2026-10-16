@@ -40,6 +40,7 @@
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
 | What a tool holds and what review holds | ADR-0200 – ADR-0202 |
+| The plugin's release | ADR-0203 |
 
 ---
 
@@ -218,7 +219,7 @@
 
 **Date:** 2026-09-27 · **Status:** Accepted
 
-- **Decision.** A project does not commit generated files by default; an application that commits some of them chooses which. The check verifies and never changes a tracked file: it generates, formats and rewrites nothing. This repository commits `digests/`, and its check compares them with their regeneration without writing them.
+- **Decision.** A project does not commit generated files by default; an application that commits some of them chooses which. The check verifies and never changes a tracked file: it generates, formats and rewrites nothing.
 - **Rejected.** Forbidding every committed generated file in projects; a check that regenerates what it checks.
 - **Why.** Which generated file is worth committing depends on the application, and a check that writes can pass by changing what it checks.
 
@@ -1485,7 +1486,7 @@
 - **Decision.**
   - A package others install is held by `isolatedDeclarations` in tsc's `distribution` part; its resolution under the runtimes that load it is left to review, since `nodenext` over the source refuses the folder imports `surface-imported-by-its-folders-path` requires.
   - Bun's coverage gate runs in a second configuration, `bunfig.integration.toml`, over the unit and the integration specs together, because Bun merges no coverage between runs and ADR-0197 counts the integration specs; the unit run keeps its network sandbox, and the unit specs run twice.
-  - Literals with a meaning are held by ruff's `PLR2004` and Biome's `noMagicNumbers`; cognitive complexity is 15 in Biome and complexipy; mutants of log calls and diagnostic text are left out by Stryker's ignorer and mutmut's `do_not_mutate_patterns`; a dependency from a source repository or an address is refused by syncpack's specifier types, while a `file:` or `link:` path — the kit's archive in `.droneey/`, for one — is left to review, which keeps it inside the repository; in Python, `sources-stay-in-the-repository-or-an-index` limits `[tool.uv.sources]` to the workspace, an archive inside the repository or a named index, and review holds it, as it does a git dependency that arrives only through a lockfile.
+  - Literals with a meaning are held by ruff's `PLR2004` and Biome's `noMagicNumbers`; cognitive complexity is 15 in Biome and complexipy; mutants of log calls and diagnostic text are left out by Stryker's ignorer; in Python, mutmut's `do_not_mutate_patterns` leaves out log calls and the text of a diagnostic is marked by its line's pragma, since ruff's `EM` puts the text on a line of its own before the `raise`, where a pattern over that line would also drop the error's data; a dependency from a source repository or an address is refused by syncpack's specifier types, while a `file:` or `link:` path — the kit's archive in `.droneey/`, for one — is left to review, which keeps it inside the repository; in Python, `sources-stay-in-the-repository-or-an-index` limits `[tool.uv.sources]` to the workspace, an archive inside the repository or a named index, and review holds it, as it does a git dependency that arrives only through a lockfile.
   - ShellCheck with an explicit `enable=` list, shfmt, rumdl and yamlfmt are blocks of their own; this repository checks its shell scripts and its Markdown with them.
   - Hooks are installed when the repository is set up, never by a package manager's install script (`hooks-installed-on-setup`, replacing `hooks-installed-with-dependencies`), so a project without mise keeps the rule.
   - An objection to analytics keeps Matomo's tracker off in the program itself (`matomo-objection-keeps-the-tracker-off`), since Matomo's `optUserOut` stores the objection in a cookie that `disableCookies` turns off.
@@ -1506,3 +1507,14 @@
 - **Decision.** A new release of a dependency is adopted after a cooldown of at least three days, in core and in its forms for Bun (`minimumReleaseAge = 259200`), uv (`exclude-newer = "3 days"`) and Renovate (a minimum release age of three days); the fix for a known vulnerability stays exempt by name.
 - **Rejected.** Seven days, which the audit of ADR-0197 proposed: it holds back for a week every release the projects need today, while most hijacked releases are pulled within a day or two; the owner may raise it again when a project needs the margin.
 - **Why.** Three days catch the hijacked releases found at once and keep the tools current; the cooldown stays a MUST, so no install skips it.
+
+## ADR-0203 — The plugin installs from its release archive
+
+**Date:** 2026-10-16 · **Status:** Accepted
+
+- **Decision.** The marketplace serves the plugin as an `archive` source: the release's `constitution-plugin.zip`, pinned by its sha256. The release generates the digests into that zip, and a publish step run on the published release commits the archive's address and sha256 to main. `digests/` is ignored by git; the check holds the digests' limits on a copy generated in memory and refuses a committed one. The release is opened with the repository's token, since an action of the built-in token starts no other workflow.
+- **Rejected.**
+  - Committed digests: a generated file changed with every block, with its diffs and merge conflicts, and a check that only compares a copy with its regeneration.
+  - A release-time commit of the digests to the tag alone: the tag would point at a commit main does not hold, and the github source still clones the whole repository.
+  - The npm source: it needs a registry package and a publish token for a plugin under a private licence, and every user an npm client.
+- **Why.** A GitHub release already hosts the archive mise installs; Claude Code's archive source follows GitHub's redirect and checks the sha256, both proved on version 2.1.287; and the zip holds only what the plugin reads.

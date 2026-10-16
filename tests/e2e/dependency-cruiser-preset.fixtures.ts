@@ -88,6 +88,9 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   ky: {
     declaration: Declaration.Production,
   },
+  pino: {
+    declaration: Declaration.Production,
+  },
   react: {
     declaration: Declaration.Production,
   },

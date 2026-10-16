@@ -1,6 +1,6 @@
 # python-check
 
-> A home in a part's `[homes]` names `edge`, the whole edge; a top-level folder by its name; or `domain`, `adapters` or `app`, that layer of every feature and module of composition.
+> `extend` of `[tool.python-check]` lists the parts of the release archive, `presets/python/python-check/architecture/<block>.toml`, each a `[homes]` table that gives its block's package the folders it is imported in; the project's own `[tool.python-check.homes]` comes last. A home names `edge`, the whole edge; a top-level folder by its name; or `domain`, `adapters` or `app`, that layer of every feature and module of composition. The units its `[tool.uv.sources]` links from the workspace are the repository's own code, never an installed dependency.
 
 ### relative-import-kept-in-its-module → relative-imports-stay-in-the-module · MUST
 

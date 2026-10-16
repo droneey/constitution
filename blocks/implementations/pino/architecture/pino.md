@@ -10,8 +10,16 @@
 
 ### code-logs-through-the-facade → root-alone-configures-logging · MUST
 
-Code logs through the program's logging facade, which `root/` implements over the pino instance or a child of it; only `root/` imports pino.
+Code logs through the program's logging facade, which `root/` implements over the pino instance or a child of it.
 
 | Why | Tags |
 |---|---|
-| no code below the root then depends on a logging library, and a spec configures the facade's sink instead of pino's. | [] |
+| a spec then configures the facade's sink instead of pino's. | [] |
+
+### only-the-root-imports-pino → root-alone-configures-logging · MUST
+
+pino's home is `root/`: no other folder imports it.
+
+| Why | Tags |
+|---|---|
+| no code below the root then depends on a logging library. | [] |

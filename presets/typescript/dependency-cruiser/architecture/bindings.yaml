@@ -82,6 +82,9 @@ lingui:
 nestjs:
   nestjs-imported-by-modules-and-providers:
     - nestjs-imported-by-modules-and-providers
+pino:
+  only-the-root-imports-pino:
+    - only-the-root-imports-pino
 react-native:
   react-native-imported-by-the-ui:
     - react-native-imported-by-the-ui
@@ -109,9 +112,11 @@ ui:
   ui-layer-imports-only-what-its-feature-offers:
     - ui-reaches-no-mechanism
 yaml-js:
-  yaml-only-at-the-edge:
-    - yaml-only-at-the-edge
+  yaml-home-is-the-parsing-adapter-and-lib:
+    - yaml-home-is-the-parsing-adapter-and-lib
 zod:
+  zod-home-is-the-edge-and-shared-parsing:
+    - zod-home-is-the-edge-and-shared-parsing
   zod-imported-by-forms:
     - zod-imported-by-forms
 workspace:
@@ -124,5 +129,5 @@ workspace:
     - libs-know-no-product
     - shared-knows-no-product
 ky:
-  ky-home-is-the-edge-and-its-failure-mapper:
-    - ky-home-is-the-edge-and-its-failure-mapper
+  ky-home-is-the-adapters-libs-root-and-its-failure-mapper:
+    - ky-home-is-the-adapters-libs-root-and-its-failure-mapper

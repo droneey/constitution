@@ -2889,6 +2889,54 @@ describe('the Biome architecture parts', () => {
       expect(rules.includes('useMaxParams')).toBe(isReported);
     },
   );
+
+  it.each([
+    {
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/nestjs',
+      ],
+      path: 'src/orders.controller.ts',
+    },
+    {
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/nestjs',
+        'typescript/architecture/nestjs',
+      ],
+      path: 'src/orders.adapter.ts',
+    },
+    {
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/nestjs',
+        'typescript/architecture/nestjs',
+      ],
+      path: 'src/place-order.use-case.ts',
+    },
+  ])(
+    'should report useImportType $isReported when $path imports a class only its constructor names and a project extends $parts',
+    ({ isReported, parts, path }) => {
+      // Arrange
+      const project = {
+        files: {
+          [path]:
+            "import { Clock } from './clock';\n\nexport class Orders {\n  public constructor(private readonly clock: Clock) {}\n}\n",
+          'src/clock.ts': 'export class Clock {}\n',
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('useImportType')).toBe(isReported);
+    },
+  );
 });
 
 describe('the Biome base where a rule allows what a setting caught', () => {

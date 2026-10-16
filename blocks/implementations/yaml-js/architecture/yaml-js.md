@@ -1,8 +1,8 @@
 # yaml-js
 
-### yaml-only-at-the-edge → outside-value-untyped-until-parsed · MUST
+### yaml-home-is-the-parsing-adapter-and-lib → layer-imports-dependencies-by-its-role · MUST
 
-The `yaml` package is imported only by the adapter or the `libs/` wrapper that parses.
+The `yaml` package's home is the adapters that parse YAML and the lib under `libs/` that wraps it; no other folder imports it.
 
 | Why | Tags |
 |---|---|

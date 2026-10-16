@@ -23,11 +23,11 @@ governs: ["**/*.tsx"]
 
 ### one-writer-of-the-head → browser-resources-have-one-writer · MUST
 
-Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, no effect writing to the document head, and no script tag inserted by hand.
+Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, no effect writing to the document head, and no script tag inserted by hand, save by the one module that wraps a third-party service, which appends its script once to the body.
 
 | Why | Tags |
 |---|---|
-| a library or an effect is a second writer of the head, and it and React overwrite each other; a hand-inserted script runs twice or too early. | [ux] |
+| a library or an effect is a second writer of the head, and it and React overwrite each other; a hand-inserted script runs twice or too early, unless the one module that wraps its service appends it once to the body, which leaves the head to React. | [ux] |
 
 ### aria-attributes-as-the-dom-spells-them · MUST
 

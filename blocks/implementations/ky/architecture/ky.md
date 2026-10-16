@@ -2,7 +2,7 @@
 
 ### one-ky-instance-per-system → one-transport-instance-per-system · MUST
 
-One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter imports it or uses ky's default export.
+One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter builds an instance or uses ky's default export.
 
 | Why | Tags |
 |---|---|
@@ -16,10 +16,10 @@ One ky instance per remote system is built by the composition root from the conf
 |---|---|
 | the domain handles its own errors, whatever client the transport uses. | [] |
 
-### ky-home-is-the-edge-and-its-failure-mapper → layer-imports-dependencies-by-its-role · MUST
+### ky-home-is-the-adapters-libs-root-and-its-failure-mapper → layer-imports-dependencies-by-its-role · MUST
 
-ky's home is the edge and the mapper of its failures in `shared/`; no other folder imports it.
+ky's home is the adapters, the client of a system under `libs/`, the mapper of its failures in `shared/` and `root/`, which builds the instances: no other folder imports it.
 
 | Why | Tags |
 |---|---|
-| the mapper turns ky's failures into the program's own in one place every adapter shares, and nothing else needs the library. | [] |
+| the network is an effect, and the code that reaches it is the code a spec replaces with a fake; the mapper turns ky's failures into the program's own in one place every adapter shares. | [] |

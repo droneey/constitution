@@ -19,4 +19,4 @@ The application's `package.json` declares `sideEffects` — `false`, or the file
 
 | Why | Tags |
 |---|---|
-| a surface re-exports a folder whole; without the declaration the bundler keeps every module it could reach. | [] |
+| a surface re-exports by name more than any one caller uses; without the declaration the bundler keeps every module a surface reaches. | [] |

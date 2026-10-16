@@ -1,5 +1,3 @@
-import { join } from 'node:path';
-
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import {
@@ -32,6 +30,7 @@ import {
   Breakage,
   corePartOfBytes,
   createPluginRoot,
+  createRealPluginRoot,
   removePluginRoots,
 } from './plugin-root.fixtures';
 import type { ProjectLayout } from './project.fixtures';
@@ -155,8 +154,6 @@ interface BlockListCase {
 
 const WARNINGS = '⚠️ Warnings';
 const BUDGET = 9400;
-// The real blocks and digests of this repository, read and never written.
-const REPOSITORY = join(import.meta.dir, '..', '..');
 const FOUND = configOf({
   domains: '[version-control]',
   implementations: '[git]',
@@ -1595,7 +1592,7 @@ describe('session-start hook', () => {
         runHook({
           project,
           event: HookEvent.Subagent,
-          root: REPOSITORY,
+          root: createRealPluginRoot(),
         }),
       );
 
@@ -1619,7 +1616,7 @@ describe('session-start hook', () => {
       runHook({
         project,
         event: HookEvent.Subagent,
-        root: REPOSITORY,
+        root: createRealPluginRoot(),
       }),
     );
 

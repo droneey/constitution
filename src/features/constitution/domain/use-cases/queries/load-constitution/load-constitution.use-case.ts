@@ -189,10 +189,6 @@ const documentsOf = (input: {
       tree: input.tree,
     }),
     decisions: textOf(DocumentPath.Decisions),
-    digests: {
-      core: textOf(DocumentPath.DigestCore),
-      index: textOf(DocumentPath.DigestIndex),
-    },
     hooks: hooks === undefined ? undefined : input.parser.hooks(hooks),
     marketplace: marketplace === undefined ? undefined : input.parser.marketplace(marketplace),
     plugin: plugin === undefined ? undefined : input.parser.plugin(plugin),

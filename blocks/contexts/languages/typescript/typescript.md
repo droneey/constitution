@@ -87,7 +87,7 @@ No `namespace` or `module` block is written, an ambient one included: a library'
 
 ### type-only-import-written-as-import-type · MUST
 
-The names an import or a re-export uses only as types are written in an `import type` or `export type` of their own, apart from the names used as values; no name is marked `type` inside the braces.
+The names an import or a re-export uses only as types are written in an `import type` or `export type` of their own, apart from the names used as values, save a class a framework reads from a decorator's metadata, which its block names; no name is marked `type` inside the braces.
 
 | Why | Tags |
 |---|---|

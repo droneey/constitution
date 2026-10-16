@@ -5,7 +5,7 @@ fastmcp:
   fastmcp-imported-by-delivery-units:
     - fastmcp
 httpx2:
-  httpx2-home-is-the-edge-and-its-failure-mapper:
+  httpx2-home-is-the-adapters-libs-root-and-its-failure-mapper:
     - httpx2
 pydantic:
   pydantic-home-is-the-edge-and-shared-parsing:

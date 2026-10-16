@@ -5,12 +5,46 @@ import type {
   HooksManifest,
   ManifestRead,
   MarketplaceManifest,
+  MarketplacePlugin,
   PluginManifest,
 } from '../../domain/entities';
 import type { HooksWire, MarketplaceWire, PluginWire } from './models';
 import { hooksModel, marketplaceModel, pluginModel } from './models';
 
 const GITHUB = 'github';
+const ARCHIVE = 'archive';
+
+type PluginSource = Omit<MarketplacePlugin, 'name'>;
+
+const NO_SOURCE: PluginSource = {
+  ref: undefined,
+  repo: undefined,
+  sha256: undefined,
+  url: undefined,
+};
+
+const sourceOf = (source: MarketplaceWire['plugins'][number]['source']): PluginSource => {
+  // Stryker disable next-line ConditionalExpression,StringLiteral,BlockStatement: a path has no source field either, so the test only narrows the type
+  if (typeof source === 'string') {
+    return NO_SOURCE;
+  }
+
+  if (source.source === GITHUB) {
+    return {
+      ...NO_SOURCE,
+      ref: source.ref,
+      repo: source.repo,
+    };
+  }
+
+  return source.source === ARCHIVE
+    ? {
+        ...NO_SOURCE,
+        sha256: source.sha256,
+        url: source.url,
+      }
+    : NO_SOURCE;
+};
 
 type JsonParsed =
   | {
@@ -91,20 +125,10 @@ const createJsonManifestParser = (): ManifestParser => ({
     readManifest({
       json,
       map: (wire: MarketplaceWire): MarketplaceManifest => ({
-        plugins: wire.plugins.map((plugin) =>
-          // Stryker disable next-line ConditionalExpression,StringLiteral: a path has no source field either, so the test only narrows the type
-          typeof plugin.source === 'string' || plugin.source.source !== GITHUB
-            ? {
-                name: plugin.name,
-                ref: undefined,
-                repo: undefined,
-              }
-            : {
-                name: plugin.name,
-                ref: plugin.source.ref,
-                repo: plugin.source.repo,
-              },
-        ),
+        plugins: wire.plugins.map((plugin) => ({
+          name: plugin.name,
+          ...sourceOf(plugin.source),
+        })),
       }),
       model: marketplaceModel,
     }),

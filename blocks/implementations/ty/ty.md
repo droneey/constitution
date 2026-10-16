@@ -11,7 +11,7 @@ governs: ["ty.toml"]
 
 # ty
 
-> The type checker checks the `types` role. It has no `extends`: its configuration file is the part `presets/python/ty/self.toml` of the constitution's release archive, taken whole, beside which ty reads no `[tool.ty]` of `pyproject.toml`. The part turns every rule into an error, fails the run on a warning and leaves `# type: ignore` unread; `presets/python/ty/bindings.yaml` says which setting holds which rule. ty is in beta: a release may add rules, and the part makes each an error at once.
+> The type checker checks the types of the program and its specs. It has no `extends`: its configuration file is the part `presets/python/ty/self.toml` of the constitution's release archive, taken whole, beside which ty reads no `[tool.ty]` of `pyproject.toml`. The part turns every rule into an error, fails the run on a warning and leaves `# type: ignore` unread; `presets/python/ty/bindings.yaml` says which setting holds which rule. ty is in beta: a release may add rules, and the part makes each an error at once.
 
 ### ty-is-the-type-gate → rule-held-by-a-tool-where-one-can · MUST
 

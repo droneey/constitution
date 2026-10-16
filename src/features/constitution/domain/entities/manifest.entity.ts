@@ -9,10 +9,13 @@ interface PluginManifest {
   readonly skills: readonly string[];
 }
 
+// A github source fills ref and repo, an archive source sha256 and url.
 interface MarketplacePlugin {
   readonly name: string;
   readonly ref: string | undefined;
   readonly repo: string | undefined;
+  readonly sha256: string | undefined;
+  readonly url: string | undefined;
 }
 
 interface MarketplaceManifest {

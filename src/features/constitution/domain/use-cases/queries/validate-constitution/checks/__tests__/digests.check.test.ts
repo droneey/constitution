@@ -1,64 +1,31 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, mainFile, without } from '../../../../../../__tests__/constitution.fixtures';
-import { GOLDEN_INDEX } from '../../../../../../__tests__/valid-digests.fixtures';
+import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
+import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { digestsCheck } from '../digests.check';
 
-const INDEX = 'digests/index.tsv';
-const CORE = 'digests/core.md';
+const COMMITTED =
+  'is generated when the plugin is released and ignored by git; run git rm --cached on it';
 
 describe('digestsCheck', () => {
-  it('should report the index as stale when it differs from its regeneration only by its last newline', () => {
+  it('should find nothing when the tree holds no digest', () => {
     // Arrange
-    const files = validFiles();
-    files[INDEX] = GOLDEN_INDEX.slice(0, -1);
-    const input = checkInputOf(files);
+    const input = checkInputOf(validFiles());
 
     // Act
     const findings = digestsCheck(input);
 
     // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: 'differs from its regeneration; run bun run digests:write',
-        path: INDEX,
-      },
-    ]);
+    expect(findings).toStrictEqual([]);
   });
 
-  it('should report both digests when they are missing', () => {
+  it('should report every file git holds under digests/, even the digests the generator writes', () => {
     // Arrange
-    const files = without({
-      files: without({
-        files: validFiles(),
-        path: INDEX,
-      }),
-      path: CORE,
-    });
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = digestsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: 'is missing; run bun run digests:write',
-        path: INDEX,
-      },
-      {
-        message: 'is missing; run bun run digests:write',
-        path: CORE,
-      },
-    ]);
-  });
-
-  it('should report a file under digests/ when the generator does not write it, even one named like a digest', () => {
-    // Arrange
-    const path = 'digests/archive/index.tsv';
     const files = validFiles();
-    files[path] = GOLDEN_INDEX;
+    files['digests/core.md'] = GOLDEN_CORE;
+    files['digests/index.tsv'] = GOLDEN_INDEX;
+    files['digests/archive/index.tsv'] = GOLDEN_INDEX;
     const input = checkInputOf(files);
 
     // Act
@@ -67,8 +34,16 @@ describe('digestsCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       {
-        message: 'is not a digest the generator writes; delete it',
-        path,
+        message: COMMITTED,
+        path: 'digests/archive/index.tsv',
+      },
+      {
+        message: COMMITTED,
+        path: 'digests/core.md',
+      },
+      {
+        message: COMMITTED,
+        path: 'digests/index.tsv',
       },
     ]);
   });
@@ -106,10 +81,6 @@ describe('digestsCheck', () => {
       {
         message: 'makes a core part of 3509 bytes; the digest holds at most 3500 of core',
         path: 'blocks/core/core.md',
-      },
-      {
-        message: 'differs from its regeneration; run bun run digests:write',
-        path: CORE,
       },
     ]);
   });

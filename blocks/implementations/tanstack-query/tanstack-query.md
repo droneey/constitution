@@ -39,11 +39,11 @@ Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flig
 
 ### invalidation-in-on-settled · SHOULD
 
-A write invalidates its keys in `onSettled`.
+A write invalidates its keys in `onSettled` and returns the invalidation's promise, so it stays pending until the fresh data lands.
 
 | Why | Tags |
 |---|---|
-| `onSettled` runs after success and failure alike, so the cache is refreshed either way. | [data] |
+| `onSettled` runs after success and failure alike, so the cache is refreshed either way, and a write that settled before its refresh would show the old data for a moment, as if it had failed. | [data] |
 
 ### query-retry-only-transient → failure-retried-only-when-transient · MUST
 
@@ -76,14 +76,6 @@ A stream's events reach the cache in batches, with at most one cache write per f
 | Why | Tags |
 |---|---|
 | a cache write per event redraws every subscriber on every event. | [data] |
-
-### write-pending-until-its-refresh-lands · SHOULD
-
-A mutation's `onSettled` returns the invalidation's promise, so the write stays pending until the fresh data lands.
-
-| Why | Tags |
-|---|---|
-| a write that settles before its refresh shows the old data for a moment, as if it had failed. | [data] |
 
 ## Requirements
 

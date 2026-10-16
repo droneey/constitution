@@ -9,7 +9,6 @@ coverageThreshold = { functions = 1.0, lines = 1.0 }
 coveragePathIgnorePatterns = [
   "**/__tests__/**",
   "**/main.*",
-  "**/entrypoints/*/main.*",
   "**/root/wiring.*",
   "**/root/root.module.*",
   "**/*.gen.*",

@@ -15,7 +15,7 @@ governs: ["**/Dockerfile", "**/*.Dockerfile", "**/.dockerignore", "**/compose.ya
 
 ### docker-files-linted-in-the-check · MUST
 
-Every Dockerfile and every Compose file of the repository is held by a linter, and any finding is a violation.
+Every Dockerfile, the scripts of its `RUN` steps included, and every Compose file of the repository is held by a linter, and any finding is a violation.
 
 | Why | Tags |
 |---|---|
@@ -57,7 +57,7 @@ A file from the network is downloaded in a `RUN` step that checks its checksum, 
 
 ### shell-steps-fail-on-any-error · MUST
 
-A `RUN` that pipes sets `-o pipefail` through `SHELL`, and every `RUN` script passes a shell linter.
+A `RUN` that pipes sets `-o pipefail` through `SHELL`.
 
 | Why | Tags |
 |---|---|

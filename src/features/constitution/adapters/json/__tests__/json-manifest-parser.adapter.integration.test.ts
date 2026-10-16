@@ -77,11 +77,11 @@ describe('createJsonManifestParser', () => {
     });
   });
 
-  it('should read the repository and ref of a GitHub source and neither of any other source when the marketplace is valid', () => {
+  it('should read the repository and ref of a GitHub source, the url and digest of an archive source and none of any other source when the marketplace is valid', () => {
     // Arrange
     const parser = createJsonManifestParser();
     const json =
-      '{"name":"droneey","plugins":[{"name":"constitution","source":{"source":"github","repo":"droneey/constitution","ref":"v1.0.0"}},{"name":"local","source":"./local"},{"name":"remote","source":{"source":"url","url":"https://example.com/remote.git","ref":"v2.0.0"}}]}';
+      '{"name":"droneey","plugins":[{"name":"constitution","source":{"source":"github","repo":"droneey/constitution","ref":"v1.0.0","url":"https://example.com/ignored.zip"}},{"name":"local","source":"./local"},{"name":"remote","source":{"source":"url","url":"https://example.com/remote.git","ref":"v2.0.0"}},{"name":"zipped","source":{"source":"archive","url":"https://example.com/zipped.zip","sha256":"abc","ref":"v3.0.0"}}]}';
 
     // Act
     const read = parser.marketplace(json);
@@ -95,16 +95,29 @@ describe('createJsonManifestParser', () => {
             name: 'constitution',
             ref: 'v1.0.0',
             repo: 'droneey/constitution',
+            sha256: undefined,
+            url: undefined,
           },
           {
             name: 'local',
             ref: undefined,
             repo: undefined,
+            sha256: undefined,
+            url: undefined,
           },
           {
             name: 'remote',
             ref: undefined,
             repo: undefined,
+            sha256: undefined,
+            url: undefined,
+          },
+          {
+            name: 'zipped',
+            ref: undefined,
+            repo: undefined,
+            sha256: 'abc',
+            url: 'https://example.com/zipped.zip',
           },
         ],
       },

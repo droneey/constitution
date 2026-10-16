@@ -95,6 +95,10 @@ describe('the knip preset', () => {
       part: 'typescript/betterleaks',
     },
     {
+      binary: 'hadolint',
+      part: 'typescript/hadolint',
+    },
+    {
       binary: 'mise',
       part: 'typescript/mise',
     },
@@ -117,6 +121,14 @@ describe('the knip preset', () => {
     {
       binary: 'uv',
       part: 'typescript/uv',
+    },
+    {
+      binary: 'yamlfmt',
+      part: 'typescript/yamlfmt',
+    },
+    {
+      binary: 'yamllint',
+      part: 'typescript/yamllint',
     },
     {
       binary: 'lefthook',

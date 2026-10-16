@@ -27,7 +27,7 @@ An equivalent mutant, and one in the text of a diagnostic no caller reads, is ma
 
 | Why | Tags |
 |---|---|
-| a log call's level and text are no behaviour a caller relies on, and mutmut makes no mutant of a line a pattern matches, nor of the rest of a statement that starts on it. | [] |
+| a log call's level and text are no behaviour a caller relies on, and mutmut makes no mutant of a line a pattern matches, nor of the rest of a statement that starts on it. The text of an error has no line a pattern can tell: the linter has it assigned to a variable before the `raise`, and a pattern over `raise` would leave out the error's other arguments too, so it takes the pragma. | [] |
 
 ### mutants-run-without-the-gates → every-mutant-killed · MUST
 

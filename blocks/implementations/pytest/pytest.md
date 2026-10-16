@@ -41,7 +41,7 @@ pytest-randomly is installed, so the cases are shuffled and the seed is reported
 |---|---|
 | pytest keeps the cases in the order it collects them, and the plugin, once installed, shuffles them with no setting. | [] |
 
-### failed-test-never-rerun → flaky-test-fixed-never-retried · SHOULD
+### failed-test-never-retried-by-a-plugin → flaky-test-fixed-never-retried · SHOULD
 
 No plugin that runs a case again — pytest-rerunfailures, flaky — is installed, and no case is marked `flaky`.
 

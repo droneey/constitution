@@ -27,7 +27,7 @@ The check extracts the source locale's catalog and fails when it differs from th
 
 | Why | Tags |
 |---|---|
-| a missing translation then fails before release, not on a user's screen. | [] |
+| a message missing from the committed catalog then fails before release, not on a user's screen, and a translation not yet made shows the source text, never a raw id. | [] |
 
 ### module-level-messages-are-descriptors → module-level-text-holds-the-message · MUST
 

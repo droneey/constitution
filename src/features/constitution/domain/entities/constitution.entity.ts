@@ -14,10 +14,6 @@ import type { VocabularyRead } from './vocabulary.entity';
 interface Documents {
   readonly agents: readonly Agent[];
   readonly decisions: string | undefined;
-  readonly digests: {
-    readonly core: string | undefined;
-    readonly index: string | undefined;
-  };
   readonly hooks: ManifestRead<HooksManifest> | undefined;
   readonly marketplace: ManifestRead<MarketplaceManifest> | undefined;
   readonly plugin: ManifestRead<PluginManifest> | undefined;

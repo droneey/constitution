@@ -940,7 +940,35 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/yaml-js',
         'typescript/architecture/core',
       ],
-      rule: 'yaml-only-at-the-edge',
+      rule: 'yaml-home-is-the-parsing-adapter-and-lib',
+    },
+    {
+      condition: 'an adapter imports the logging library',
+      files: {
+        'src/adapters/files/files.adapter.ts': importing({
+          from: 'pino',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/pino',
+        'typescript/architecture/core',
+      ],
+      rule: 'only-the-root-imports-pino',
+    },
+    {
+      condition: 'an integration imports the HTTP client',
+      files: {
+        'src/integrations/nestjs/client.ts': importing({
+          from: 'ky',
+          name: 'value',
+        }),
+      },
+      parts: [
+        'typescript/architecture/ky',
+        'typescript/architecture/core',
+      ],
+      rule: 'ky-home-is-the-adapters-libs-root-and-its-failure-mapper',
     },
     {
       condition: 'a component imports a widget',
@@ -1148,6 +1176,14 @@ describe('the dependency-cruiser layer set', () => {
           from: 'ky',
           name: 'value',
         }),
+        'src/shared/parse/parse.ts': importing({
+          from: 'zod',
+          name: 'value',
+        }),
+        'src/features/orders/app/models/order-request.model.ts': importing({
+          from: 'zod',
+          name: 'value',
+        }),
         'src/libs/ui/button.stories.tsx':
           "import { value } from 'devtool';\nimport { button } from './button';\nexport const stories = [value, button];\n",
         'src/libs/ui/button.tsx': exported('button'),
@@ -1178,6 +1214,7 @@ describe('the dependency-cruiser layer set', () => {
         'typescript/architecture/storybook',
         'typescript/architecture/yaml-js',
         'typescript/architecture/ky',
+        'typescript/architecture/zod',
         'typescript/architecture/core',
       ],
     };

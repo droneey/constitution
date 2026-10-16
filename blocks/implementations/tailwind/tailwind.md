@@ -15,7 +15,7 @@ governs: ["**/*.css", "**/*.variants.ts"]
 
 ### utilities-only-from-tokens → tokens-single-source-of-appearance · MUST
 
-The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary colour or size is written in a class; an arbitrary value that assigns a token's variable is allowed with a suppression that says why. The same holds for an arbitrary value of any other kind.
+The theme's tokens are one `@theme` block that holds `--*: initial`, which resets every default scale at once, and defines only the design system's tokens; any other `@theme` block is `inline`, so a utility exists only for a token. No arbitrary value of any kind — a colour, a size or any other — is written in a class, save one that assigns a token's variable, with a suppression that says why.
 
 | Why | Tags |
 |---|---|
@@ -73,7 +73,7 @@ The order of the layers is Tailwind's — `theme, base, components, utilities` �
 
 ### focus-shown-by-focusable-utility → focus-always-visible · MUST
 
-Focus is shown by the design system's `focusable` utility, which draws an outline, or `outline-hidden` beside a ring; only it removes an outline.
+Focus is shown by the design system's `focusable` utility, which draws an outline, or by a ring beside `outline-hidden`; no other class removes an outline.
 
 | Why | Tags |
 |---|---|

@@ -13,7 +13,7 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
-| `digests` | What the hook reads, generated from the blocks by `bun run digests:write` and committed: `index.tsv`, one record per block — with the languages its presets cover — rule and requirement answer, and `core.md`, core's part of the digest |
+| `digests` | What the hook reads, generated from the blocks by `bun run digests:write`, ignored by git and shipped in the plugin's release archive: `index.tsv`, one record per block — with the languages its presets cover — rule and requirement answer, and `core.md`, core's part of the digest |
 | `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
 | `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
@@ -117,7 +117,7 @@ claude plugin marketplace add droneey/constitution
 claude plugin install constitution@droneey
 ```
 
-The marketplace serves the plugin from the tag of its latest release: each release commit writes its tag into `.claude-plugin/marketplace.json`, so `claude plugin marketplace update` brings a release, never unreleased work on `main`.
+The marketplace serves the plugin from the archive of its latest release, `constitution-plugin.zip`, pinned by its sha256: the archive holds the plugin's files and the digests generated for that release, which no commit holds. When a release is published, `cd-publish.yaml` writes the archive's URL and digest into `.claude-plugin/marketplace.json` on `main`, so `claude plugin marketplace update` brings a release, never unreleased work on `main`.
 
 ## 🛠️ Development
 
@@ -125,14 +125,14 @@ The marketplace serves the plugin from the tag of its latest release: each relea
 mise trust && mise install   # bun, Python and uv, and the Python tools of the dev group
 bun install                  # installs the git hooks
 bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, the Python tools' own checks, blocks, secrets, names, unused code, vulnerabilities
-bun run digests:write        # regenerate digests/ after a change to a block
+bun run digests:write        # generate digests/, which git ignores, from the blocks
 bun run build                # build tools/mutation-check/dist/main.js and the Python tools' .pyz, as the release does
-claude --plugin-dir .        # a session on the working tree's plugin instead of the installed release
+bun run digests:write && claude --plugin-dir .   # a session on the working tree's plugin instead of the installed release
 ```
 
-The release commit writes the version into `package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand, and a session with `--plugin-dir .` runs the same version this repository pins.
+The hook reads the digests, which no commit holds, so a session with `--plugin-dir .` needs `bun run digests:write` first, and again after a change to a block. The release commit writes the version into `package.json` and `constitution.yaml` together, so neither is edited by hand, and a session with `--plugin-dir .` runs the same version this repository pins.
 
-The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
+The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks — and one from this repository's blocks, with the digests generated as a release generates them — and runs the real hook over fixture projects. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
 
@@ -149,9 +149,9 @@ The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and
 - a preset file that is not, at the tool's root or in `architecture/` or `workflow/`, a part named after a block or `self`, a plugin in `plugins/` named after a rule of that axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
 - a binding whose rule, part or setting does not hold, or whose rule sits on an axis its file's folder may not hold — the base's bindings hold rules of the base, an optional axis's those of its axis or of the base — or whose rule belongs to a block below its part; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
-- a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository at a release tag, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
+- a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository at a release tag or as that release's `constitution-plugin.zip` pinned by its sha256, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
-- a `digests/` file that is missing or differs from its regeneration, a file there the generator does not write, and a core part of the digest over 3,500 bytes.
+- a file git holds under `digests/`, which is generated, never committed, and a core part of the digest over 3,500 bytes, measured on digests generated in memory; `digests:write` fails on the same limit.
 
 It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.
 
@@ -162,8 +162,9 @@ After the findings it prints advice that does not fail the check: rules of sibli
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
 | `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of the archive's tools, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
-| `cd-version.yaml` | push to `main` | Calls `droneey/.github`: bumps `package.json` from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, packs `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
+| `cd-version.yaml` | push to `main`, but for the release and publish commits | Calls `droneey/.github`: bumps `package.json` and `constitution.yaml` from the merged branch prefix and pushes the `vX.Y.Z` tag |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, packs `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, generates the digests and packs the plugin — its manifest, `package.json`, `agents/`, `blocks/`, `digests/`, `hooks/`, `skills/` and `templates/` — into `constitution-plugin.zip` with its checksum, and opens the pre-release with its changelog |
+| `cd-publish.yaml` | release published, pre-releases included | Checks the release's `constitution-plugin.zip` against its checksum and commits to `main` the marketplace entry that serves it: an `archive` source with its URL and sha256 |
 
 ## 🛠️ Changing it
 

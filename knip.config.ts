@@ -8,6 +8,7 @@ import shellcheck from './.droneey/constitution/presets/typescript/knip/shellche
 import shfmt from './.droneey/constitution/presets/typescript/knip/shfmt.mjs';
 import stryker from './.droneey/constitution/presets/typescript/knip/stryker.mjs';
 import uv from './.droneey/constitution/presets/typescript/knip/uv.mjs';
+import yamllint from './.droneey/constitution/presets/typescript/knip/yamllint.mjs';
 
 export default {
   entry: [
@@ -30,10 +31,10 @@ export default {
     ...rumdl.ignoreBinaries,
     ...shellcheck.ignoreBinaries,
     ...shfmt.ignoreBinaries,
+    ...yamllint.ignoreBinaries,
     'mkfifo',
     'renovate-config-validator',
     'stryker',
-    'yamllint',
   ],
   ignoreDependencies: [
     ...stryker.ignoreDependencies,

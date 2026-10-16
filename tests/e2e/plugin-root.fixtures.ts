@@ -73,17 +73,17 @@ const copyHook = (root: string): void => {
 
 // The digests come from this repository's own generator, so the hook reads what
 // a release ships.
-const writeDigestsOf = (input: { files: Readonly<Files>; root: string }): void => {
+const writeDigestsOf = (input: { root: string; tree: FileTree }): void => {
   const prepared = prepareDigests({
     bindingsParser: createYamlBindingsParser(),
     frontMatterParser: createYamlFrontMatterParser(),
     manifestParser: createJsonManifestParser(),
-    tree: createFileTree(input.files),
+    tree: input.tree,
     vocabularyParser: createYamlVocabularyParser(),
   });
 
   if (prepared.status === 'refused' || prepared.digests.findings.length > 0) {
-    throw new Error('The fixture constitution does not generate its digests');
+    throw new Error('The constitution does not generate its digests');
   }
 
   writeDigests({
@@ -105,8 +105,8 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
     root,
   });
   writeDigestsOf({
-    files,
     root,
+    tree: createFileTree(files),
   });
   copyHook(root);
   writeFileSync(
@@ -137,6 +137,25 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
   return root;
 };
 
+// The plugin root a release of this repository ships, as far as the hook reads
+// it: the digests generated from the real blocks, never committed, beside the
+// hook and the manifest.
+const createRealPluginRoot = (): string => {
+  const root = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
+
+  created.push(root);
+  writeDigestsOf({
+    root,
+    tree: createNodeFileSystem({
+      root: REPOSITORY,
+    }),
+  });
+  copyHook(root);
+  copyFileSync(join(REPOSITORY, 'package.json'), join(root, 'package.json'));
+
+  return root;
+};
+
 const removeFolder = (path: string): void => {
   rmSync(path, {
     force: true,
@@ -162,4 +181,12 @@ const removePluginRoots = (): void => {
   }
 };
 
-export { Breakage, corePartOfBytes, createPluginRoot, INSTALLED, removeFolder, removePluginRoots };
+export {
+  Breakage,
+  corePartOfBytes,
+  createPluginRoot,
+  createRealPluginRoot,
+  INSTALLED,
+  removeFolder,
+  removePluginRoots,
+};

@@ -90,7 +90,7 @@ describe('validateConstitution', () => {
     });
   });
 
-  it("should give the advice beside the stale index when an added rule says nearly what a sibling block's does", () => {
+  it("should give the advice without a finding when an added rule says nearly what a sibling block's does", () => {
     // Arrange
     const files = validFiles();
     files[UI] = `${textOf({
@@ -107,12 +107,7 @@ describe('validateConstitution', () => {
       advice: [
         'similar rules: i18n-plurals-by-cldr (i18n) and screens-plurals-by-cldr (ui)',
       ],
-      findings: [
-        {
-          message: 'differs from its regeneration; run bun run digests:write',
-          path: 'digests/index.tsv',
-        },
-      ],
+      findings: [],
     });
   });
 });

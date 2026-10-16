@@ -1,6 +1,5 @@
 import type { Files } from './constitution.fixtures';
 import { blockFiles, mainFile, rule } from './constitution.fixtures';
-import { digestFiles } from './valid-digests.fixtures';
 
 const pluginFiles = (): Files => ({
   '.claude-plugin/marketplace.json': JSON.stringify({
@@ -226,7 +225,6 @@ const implementationFiles = (): Files => ({
 
 const validFiles = (): Files => ({
   ...pluginFiles(),
-  ...digestFiles(),
   ...upperFiles(),
   ...contextFiles(),
   ...implementationFiles(),

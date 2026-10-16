@@ -1,3 +1,3 @@
 # pytest
 
-> Core's tree adds to core's exclusions from coverage the entry file of each artifact, `**/entrypoints/*/main.py`, and the wiring file, `**/root/wiring.py`.
+> Core's tree adds to core's exclusions from coverage the wiring file, `**/root/wiring.py`; their `**/main.py` already leaves out the entry file of each artefact.

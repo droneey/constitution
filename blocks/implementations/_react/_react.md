@@ -79,9 +79,9 @@ A component is named in PascalCase.
 |---|---|
 | React renders a lower-case name as an element of the platform, never as the component. | [] |
 
-### nothing-rendered-as-null → absence-shown-by-the-type · MUST
+### nothing-rendered-as-null → undefined-is-the-only-absence · MUST
 
-A component that renders nothing returns `null` and says so in its return type, `ReactElement | null`, or renders the `null` branch of a conditional, or is given inline as a value — `{ hr: () => null }`; with a ref object that holds `null` as React's types demand — `useRef<T>(null)`, `RefObject<T | null>` — these are the places internal code writes it.
+Internal code writes `null` only where React's types demand it: a component that renders nothing returns it, typed `ReactElement | null`; the empty branch of a conditional; an inline component such as `{ hr: () => null }`; and a ref object, `useRef<T>(null)` or `RefObject<T | null>`.
 
 | Why | Tags |
 |---|---|

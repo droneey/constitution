@@ -6,7 +6,6 @@ import type { Finding } from '#/kernel/types';
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
 import { loadedOf, mainFile, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { paraglideCard } from '../../../../../__tests__/templates.fixtures';
-import { GOLDEN_CORE, GOLDEN_INDEX } from '../../../../../__tests__/valid-digests.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { BlockFileRole } from '../../../../entities';
 
@@ -38,10 +37,6 @@ describe('loadConstitution', () => {
         documents: {
           agents: [],
           decisions: undefined,
-          digests: {
-            core: undefined,
-            index: undefined,
-          },
           hooks: undefined,
           marketplace: undefined,
           plugin: undefined,
@@ -60,7 +55,7 @@ describe('loadConstitution', () => {
     });
   });
 
-  it('should parse the plugin documents and the vocabulary and keep the README, the log and the digests as text when every document exists', () => {
+  it('should parse the plugin documents and the vocabulary and keep the README and the log as text when every document exists', () => {
     // Arrange
     const files = validFiles();
 
@@ -74,10 +69,6 @@ describe('loadConstitution', () => {
         files,
         path: 'DECISIONS.md',
       }),
-      digests: {
-        core: GOLDEN_CORE,
-        index: GOLDEN_INDEX,
-      },
       hooks: {
         status: 'parsed',
         value: {
@@ -92,6 +83,8 @@ describe('loadConstitution', () => {
               name: 'constitution',
               ref: 'v1.0.0',
               repo: 'droneey/constitution',
+              sha256: undefined,
+              url: undefined,
             },
           ],
         },

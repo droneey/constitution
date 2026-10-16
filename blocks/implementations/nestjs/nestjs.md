@@ -21,9 +21,9 @@ The compiler and the build keep what Nest's injector reads: `experimentalDecorat
 |---|---|
 | Nest finds a provider by the type its constructor names, which only decorator metadata carries; without it the injector passes `undefined` and the program fails at its first request. | [errors] |
 
-### injected-classes-imported-as-values · MUST
+### injected-classes-imported-as-values → type-only-import-written-as-import-type · MUST
 
-A class a decorated constructor names is imported as a value, never with `import type`, and no lint rule that asks for the type import runs on the program.
+A class a decorated constructor names is imported as a value, never with `import type`; the lint rule that asks for the type import is lifted only in the files of the classes the injector builds.
 
 | Why | Tags |
 |---|---|
@@ -65,6 +65,5 @@ The program throws the error kit's errors, never `HttpException` or one of its s
 
 | Requirement | How | Met |
 |---|---|---|
-| `composition-root-wires-everything` | the modules' `providers` are where the program is wired: the root module names each feature's module in its `imports`, each provider binds a token to its implementation with `useClass` or `useFactory` (`contracts-injected-by-token`), and the injector follows only those declarations; a provider takes its dependencies through its constructor (`providers-injected-through-the-constructor`), never asks the injector for one (`injector-never-asked-for-a-dependency`), and no module of the program is global (`global-module-never-declared`) | yes |
 | `framework-passes-every-failure-to-one-handler` | a global exception filter whose `@Catch()` names no class receives every exception, the `NotFoundException` of an unknown route or method and the `BadRequestException` of a malformed body included | yes |
 | `framework-parses-a-request-before-its-handler` | a pipe, global or bound to a parameter, parses it before the controller's method runs, and the error it throws reaches the filter | yes |

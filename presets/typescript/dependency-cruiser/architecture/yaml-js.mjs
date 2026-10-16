@@ -4,12 +4,12 @@ import { ADAPTERS, SPECS } from './core.mjs';
 export default {
   forbidden: [
     {
-      name: 'yaml-only-at-the-edge',
+      name: 'yaml-home-is-the-parsing-adapter-and-lib',
       severity: 'error',
       from: {
         pathNot: [
           ...ADAPTERS,
-          '^src/libs/yaml/',
+          '^src/libs/',
           ...SPECS,
         ],
       },

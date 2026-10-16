@@ -15,5 +15,19 @@
         },
       },
     },
+    {
+      "includes": [
+        "**/*.adapter.ts",
+        "**/*.repository.ts",
+        "**/*.sink.ts",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useImportType": "off",
+          },
+        },
+      },
+    },
   ],
 }

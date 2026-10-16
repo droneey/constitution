@@ -142,7 +142,7 @@ A surface re-exports by name what callers may use: no declaration, no logic, no 
 
 ### surface-offers-operations-not-mechanisms · SHOULD
 
-A feature’s surface offers its operations and their presentation — use cases, binding units, entities — never its mechanisms: its adapters, mappers, wire models.
+A feature’s surface offers its operations and their presentation — use cases, binding units, entities — and, as types, the contracts it asks another feature to answer, which composition implements; never its mechanisms: its adapters, mappers, wire models.
 
 | Why | Tags |
 |---|---|

@@ -1,7 +1,7 @@
 _react:
   render-is-pure:
     - noReactPropAssignments
-  undefined-is-the-only-absence:
+  nothing-rendered-as-null:
     - nothing-rendered-as-null.grit
   function-components-only:
     - useReactFunctionComponents

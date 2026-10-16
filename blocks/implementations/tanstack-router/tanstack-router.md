@@ -23,7 +23,7 @@ A layout is a pathless `_name/route.tsx` that renders `<Outlet/>`, never an `ind
 
 ### tanstack-router-file-names-kept → file-name-in-its-owners-case · MUST
 
-A route keeps the names TanStack Router builds its tree from: `__root.tsx`, a pathless layout `_auth.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
+A route keeps the names TanStack Router builds its tree from: `__root.tsx`, a pathless layout `_auth/route.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
 
 | Why | Tags |
 |---|---|

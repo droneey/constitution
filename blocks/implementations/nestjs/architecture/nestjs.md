@@ -40,11 +40,27 @@ No provider, controller or guard takes `ModuleRef` and calls its `get` or `resol
 
 ### global-module-never-declared → composition-root-wires-everything · MUST
 
-No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — an adapter, its own feature's included — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
+No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module.
 
 | Why | Tags |
 |---|---|
-| a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; a library's, imported by the root alone, is wiring the root shows, as a logger is; and a feature's module that imports another feature's ties the two features as an import of code would. | [] |
+| a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; a library's, imported by the root alone, is wiring the root shows, as a logger is. | [] |
+
+### feature-module-imports-only-its-own-shared-and-libs → feature-never-imports-a-feature · MUST
+
+A feature's module imports only modules of its own feature, of `shared/` and of `libs/`. A module that joins features lives in `composition/`, and the root's module imports it.
+
+| Why | Tags |
+|---|---|
+| a feature's module that imports another feature's ties the two features as an import of code would. | [] |
+
+### feature-module-takes-its-adapters-from-the-root → composition-root-wires-everything · MUST
+
+What a feature's module takes from elsewhere — an adapter, its own feature's included — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import.
+
+| Why | Tags |
+|---|---|
+| the root's module then names every concrete adapter, and a spec passes a fake in its place. | [] |
 
 ### contracts-injected-by-token → composition-root-wires-everything · MUST
 
