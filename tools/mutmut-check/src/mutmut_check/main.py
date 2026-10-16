@@ -1,10 +1,13 @@
 import shutil
 import subprocess
 import sys
-from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from mutmut_check.gate import Completed, Workspace, check, python_sources
+
+if TYPE_CHECKING:
+  from collections.abc import Sequence
 
 MUTANTS = Path('mutants')
 

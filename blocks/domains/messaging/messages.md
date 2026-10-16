@@ -5,6 +5,7 @@
 ## Identity
 
 ### message-carries-a-stable-id-type-source-and-time → operation-idempotent-by-design · MUST
+
 A message carries an identifier its publisher mints once per occurrence and keeps across every retry, its type, its source and the time of what it records — in CloudEvents' names where the broker leaves the choice.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ A message carries an identifier its publisher mints once per occurrence and keep
 | a consumer tells a redelivery from a new message only by an identifier that survives every retry, and one the broker mints anew on each send defeats every check of duplicates. | [data] |
 
 ### message-carries-its-correlation-and-causation · SHOULD
+
 A message carries the correlation identifier of the work that began its chain and, as its causation identifier, the identifier of the message or request that caused it.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A message carries the correlation identifier of the work that began its chain an
 ## Contract
 
 ### message-contract-published-machine-readable · MUST
+
 A message another program sends or reads — its channel, its type and the schema of each version — is declared in a document a machine reads, such as AsyncAPI, kept in the repository, and a spec checks every message the program sends against it.
 
 | Why | Tags |
@@ -28,6 +31,7 @@ A message another program sends or reads — its channel, its type and the schem
 | publishers and consumers deploy apart and read one contract, and a publisher that drifts from it fails a spec, not a consumer in production. | [] |
 
 ### message-type-changed-only-by-addition → format-changed-in-steps · MUST
+
 A message type another program reads changes only by addition — a new optional field; a removal, a rename or a change of meaning is a new version of the type, published beside the old one until no consumer reads it; a check against the last released schema fails on any other change.
 
 | Why | Tags |
@@ -37,6 +41,7 @@ A message type another program reads changes only by addition — a new optional
 ## Content
 
 ### message-carries-only-its-declared-fields · MUST
+
 A message carries only the fields its type declares — the identifiers and the facts of what happened — never an entity or a stored record serialised whole.
 
 | Why | Tags |
@@ -44,6 +49,7 @@ A message carries only the fields its type declares — the identifiers and the 
 | a record sent whole sends every field later added to it to every subscriber, and ties each of them to the publisher's storage. | [data, security] |
 
 ### message-carries-no-secret-and-only-needed-personal-data → secret-and-personal-data-kept-out-of-output · MUST
+
 A message carries no secret — a password, a token, a key — and no personal data its consumers do not need, which they otherwise reach by an identifier.
 
 | Why | Tags |

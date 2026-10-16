@@ -52,6 +52,7 @@ A block refers, through its front matter, only to the layers above it and, among
 ## 🧰 Presets
 
 A project takes its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `presets/`, `templates/` and the built `tools/`. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
+
 - the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css`, `python` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
 - the tool folder is the tool's block — `biome`, `dependency-cruiser`, `knip`, `tsc` for the compiler;
 - a part of the base sits at the tool's root, and a part of an optional axis in `architecture/` or `workflow/`, the axis whose rules it holds, so a project that leaves an axis out leaves out its parts;
@@ -134,6 +135,7 @@ The release commit writes the version into `package.json`, `constitution.yaml` a
 The end-to-end spec in `tests/e2e/` builds a plugin root from fixture blocks and runs the real hook over fixture projects. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
+
 - a file outside a block folder, a stray file inside one — anything but the card, a chapter and a `with/` file at its root or in `architecture/` or `workflow/` — or two blocks with one id;
 - a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty, and a `languages` entry that is no language block;
 - a `requires` that points down, or sideways where the layer allows no peer, an `extends` of anything but an abstract implementation, a `with/` file named after a block below its own layer, and a cycle between implementations;

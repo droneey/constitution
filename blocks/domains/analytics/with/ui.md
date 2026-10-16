@@ -5,6 +5,7 @@
 ## Page views
 
 ### page-view-named-by-route-template · MUST
+
 A page view names its screen by the template of its address — `/chats/:id` — never by the address with its identifiers or query values.
 
 | Why | Tags |

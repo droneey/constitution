@@ -5,6 +5,7 @@
 ## Screens
 
 ### layout-mirrors-right-to-left · MUST
+
 In a locale written right to left, a screen's layout mirrors — what starts on the left starts on the right, and an icon that points along the reading direction turns — while numbers, media controls and logos keep their direction.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ In a locale written right to left, a screen's layout mirrors — what starts on 
 | a layout that runs against the reading direction makes a right-to-left reader read every screen backwards. | [ux, a11y] |
 
 ### language-offered-in-its-own-name · SHOULD
+
 A language is offered in its own name and script — "Українська", "Deutsch" — never by a flag.
 
 | Why | Tags |

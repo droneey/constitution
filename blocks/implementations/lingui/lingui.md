@@ -14,6 +14,7 @@ governs: ["lingui.config.ts", "**/locales/**"]
 > Messages as ICU catalogs, one per locale.
 
 ### messages-through-lingui-macros → messages-take-named-parameters · MUST
+
 Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as ICU messages; never concatenation or an id built by hand.
 
 | Why | Tags |
@@ -21,6 +22,7 @@ Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as I
 | the macros extract every message into the catalog, with its parameters and plural forms intact. | [] |
 
 ### source-catalog-current-in-the-check → i18n-missing-key-fails-the-check · MUST
+
 The check extracts the source locale's catalog and fails when it differs from the one committed; a translation another locale lacks falls back to its source message.
 
 | Why | Tags |
@@ -28,6 +30,7 @@ The check extracts the source locale's catalog and fails when it differs from th
 | a missing translation then fails before release, not on a user's screen. | [] |
 
 ### module-level-messages-are-descriptors → module-level-text-holds-the-message · MUST
+
 Text defined outside a render — an option list, an enum's labels — is a `msg` descriptor rendered later.
 
 | Why | Tags |

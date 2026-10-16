@@ -63,6 +63,64 @@ describe('the syncpack typescript part', () => {
   });
 });
 
+describe('the syncpack core part', () => {
+  it.each([
+    {
+      specifier: 'github:owner/library',
+    },
+    {
+      specifier: 'git+https://github.com/owner/library.git',
+    },
+    {
+      specifier: 'https://example.com/library-1.0.0.tgz',
+    },
+    {
+      specifier: 'file:../../../outside',
+    },
+    {
+      specifier: 'link:../outside',
+    },
+  ])('should report IsBanned when a dependency comes from $specifier', ({ specifier }) => {
+    // Arrange
+    const repository = [
+      {
+        dependencies: {
+          library: specifier,
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    ];
+
+    // Act
+    const found = versionIssues(repository);
+
+    // Assert
+    expect(found).toStrictEqual([
+      'IsBanned',
+    ]);
+  });
+
+  it('should report nothing when a dependency comes from the registry under an alias', () => {
+    // Arrange
+    const repository = [
+      {
+        dependencies: {
+          library: 'npm:zod@^4.1.0',
+        },
+        name: 'a',
+        version: '1.0.0',
+      },
+    ];
+
+    // Act
+    const found = versionIssues(repository);
+
+    // Assert
+    expect(found).toStrictEqual([]);
+  });
+});
+
 describe('the syncpack self part', () => {
   it('should leave the scripts in the order the author chose when a manifest is formatted', () => {
     // Arrange

@@ -5,6 +5,7 @@
 ## Models
 
 ### spec-replaces-the-model → test-runs-in-a-sandbox · MUST
+
 A spec replaces the model with scripted or recorded answers, and an eval that calls a real model runs apart, by a command of its own, never among the specs.
 
 | Why | Tags |

@@ -5,6 +5,7 @@
 ## Cookies
 
 ### session-cookie-closed-to-script · MUST
+
 A session the server keeps for a caller signed in from a browser travels in a cookie set `HttpOnly`, `Secure` and `SameSite=Lax` or `Strict`, named `__Host-` — with `Path=/` and no `Domain` — when the program's own tier sets it, or `__Secure-` with the narrowest `Domain` when a sign-in service on a sibling host does.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A session the server keeps for a caller signed in from a browser travels in a co
 ## Authentication
 
 ### refused-request-answered-401-or-403 · MUST
+
 A request without valid credentials is answered `401` with a `WWW-Authenticate` challenge, save a page a browser navigates to, which is sent to sign in; one with valid credentials that lack the right is answered `403` where the caller may know the object exists.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A request without valid credentials is answered `401` with a `WWW-Authenticate` 
 | a client tells a missing sign-in from a missing right by the status alone: the challenge says how to sign in, and a `401` to a signed-in caller only sends it to sign in again. | [security] |
 
 ### sign-in-refused-from-other-origins → state-changing-request-refused-from-other-origins · MUST
+
 A request that signs a person in with what they typed is refused from another origin by the same check; the answer of an outside identity provider, which its `state`, PKCE and `nonce` guard, is not.
 
 | Why | Tags |

@@ -3,6 +3,7 @@
 > The schema of the config file, published for its editors.
 
 ### json-schema-from-zod → published-schema-generated-from-code · MUST
+
 The published JSON Schema is built by `z.toJSONSchema` from the config file's schema.
 
 | Why | Tags |

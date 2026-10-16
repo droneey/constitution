@@ -3,6 +3,7 @@
 > Which tool publishes the units a Bun repository distributes.
 
 ### units-published-by-npm → version-published-with-provenance · MUST
+
 npm publishes a distributed unit, never `bun publish`.
 
 | Why | Tags |

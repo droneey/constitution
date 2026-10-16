@@ -5,6 +5,7 @@
 ## Root
 
 ### served-configuration-read-at-boot → root-alone-reads-the-environment · MUST
+
 In the tab, the configuration provider reads the configuration served beside the bundle as the program's environment, once, before the program starts.
 
 | Why | Tags |

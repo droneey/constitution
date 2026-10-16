@@ -3,6 +3,7 @@
 > Messages in React components.
 
 ### components-take-t-from-use-lingui · MUST
+
 A component takes `t` from `useLingui`, never the global one.
 
 | Why | Tags |

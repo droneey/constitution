@@ -3,7 +3,8 @@
 > Specs that render Lingui's macros.
 
 ### macros-expanded-by-the-test-preload · MUST
-`bunfig.toml` preloads `src/__tests__/lingui.fixtures.ts`, a plugin that expands the macros with the transform the build uses and compiles a catalog a spec imports.
+
+`bunfig.toml` and `bunfig.integration.toml` both preload `src/__tests__/lingui.fixtures.ts`, a plugin that expands the macros with the transform the build uses and compiles a catalog a spec imports.
 
 | Why | Tags |
 |---|---|

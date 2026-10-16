@@ -5,6 +5,7 @@
 ## Code
 
 ### class-used-is-declared · MUST
+
 Every class a component's markup names is declared, by a stylesheet of the program or by its styling library.
 
 | Why | Tags |

@@ -14,6 +14,7 @@ governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.contr
 > Builds an HTTP server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
 
 ### nestjs-keeps-decorator-metadata · MUST
+
 The compiler and the build keep what Nest's injector reads: `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig.json`, and, where swc builds the program, `legacyDecorator` and `decoratorMetadata` in `.swcrc`.
 
 | Why | Tags |
@@ -21,6 +22,7 @@ The compiler and the build keep what Nest's injector reads: `experimentalDecorat
 | Nest finds a provider by the type its constructor names, which only decorator metadata carries; without it the injector passes `undefined` and the program fails at its first request. | [errors] |
 
 ### injected-classes-imported-as-values · MUST
+
 A class a decorated constructor names is imported as a value, never with `import type`, and no lint rule that asks for the type import runs on the program.
 
 | Why | Tags |
@@ -28,6 +30,7 @@ A class a decorated constructor names is imported as a value, never with `import
 | the metadata of a class imported as a type is `Object`, which the injector cannot resolve, and the compiler reports nothing. | [errors] |
 
 ### decorated-constructor-takes-every-dependency → function-takes-at-most-three-positions · SHOULD
+
 A constructor the injector calls takes one parameter for each dependency, however many: the injector imposes its signature, so the limit of three positions leaves it out, and the linter's limit is lifted in the files that hold such classes.
 
 | Why | Tags |
@@ -35,6 +38,7 @@ A constructor the injector calls takes one parameter for each dependency, howeve
 | the injector resolves each parameter by its type, so dependencies gathered into one object would no longer be injected; a class with too many is split by its responsibilities, not by its signature. | [] |
 
 ### framework-filled-fields-marked-definite → compiler-is-the-type-gate · MUST
+
 A field of a class the framework fills — a body, a query or the parameters of a request — has no initializer and is marked definite: `name!: string`, or `name?: string` when it may be absent.
 
 | Why | Tags |
@@ -42,6 +46,7 @@ A field of a class the framework fills — a body, a query or the parameters of 
 | the framework assigns these fields after it builds the object, and `!` says so to `strictPropertyInitialization`, which still refuses any other field left unset. | [] |
 
 ### nest-exceptions-answered-by-their-kind → failure-answered-by-its-code · MUST
+
 An `HttpException` Nest throws before a controller runs — the `NotFoundException` of an unknown route or method, the `BadRequestException` of a malformed body — is answered as the kind its status maps to.
 
 | Why | Tags |
@@ -49,6 +54,7 @@ An `HttpException` Nest throws before a controller runs — the `NotFoundExcepti
 | Nest throws these with no code of the error kit, so their answer takes its kind from their status, and the caller learns what to correct. | [errors] |
 
 ### program-throws-no-http-exception → error-carries-a-code-never-a-status · MUST
+
 The program throws the error kit's errors, never `HttpException` or one of its subclasses.
 
 | Why | Tags |

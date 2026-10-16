@@ -5,6 +5,7 @@
 ## Failures
 
 ### one-error-handler-registered-by-the-root → last-resort-handler-one-per-entry · MUST
+
 The composition root registers one handler on each server framework it mounts, and that handler answers every failure of every request the framework serves; no operation catches a failure to answer it itself.
 
 | Why | Tags |

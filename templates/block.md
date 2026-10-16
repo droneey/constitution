@@ -14,6 +14,7 @@ governs: []
 <What the library does in this repository, in one or two sentences.>
 
 ### <rule-slug> · MUST
+
 <The rule, in one or two sentences.>
 
 | Why | Tags |

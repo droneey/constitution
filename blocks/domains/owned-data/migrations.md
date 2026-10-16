@@ -5,6 +5,7 @@
 ## Changes to the schema
 
 ### schema-changed-only-by-a-migration · MUST
+
 The schema of a store the program owns changes only by a migration kept in the repository and applied in order, never by hand and never by a sync from the program's models at start.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ The schema of a store the program owns changes only by a migration kept in the r
 | a change made by hand or by a sync exists in one store and in no history, so the next environment differs and nobody can say how. | [data] |
 
 ### applied-migration-never-edited · MUST
+
 A migration applied to any shared store is never edited or removed; a correction is a new migration.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A migration applied to any shared store is never edited or removed; a correction
 ## Compatibility
 
 ### migration-compatible-with-the-running-release → format-changed-in-steps · MUST
+
 A migration keeps the schema usable by the release that runs while it is applied: a breaking change is split into expand, migrate and contract, each shipped apart.
 
 | Why | Tags |
@@ -30,6 +33,7 @@ A migration keeps the schema usable by the release that runs while it is applied
 ## Running
 
 ### migration-applied-once-before-its-release · MUST
+
 A migration of a store several instances share is applied once, by one run before the release that needs it starts, never by each instance as it boots.
 
 | Why | Tags |
@@ -37,6 +41,7 @@ A migration of a store several instances share is applied once, by one run befor
 | instances booting together race to apply one migration, and a release that starts before its schema fails its first requests. | [data] |
 
 ### migration-holds-no-long-lock · SHOULD
+
 A migration on a store in use sets a lock timeout, builds an index without blocking writes where the engine can, and leaves a backfill to a run of its own in bounded batches.
 
 | Why | Tags |

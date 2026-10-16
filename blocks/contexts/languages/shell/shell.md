@@ -16,6 +16,7 @@ governs: ["**/*.sh", "**/*.bash"]
 ## Code
 
 ### script-only-glues-commands · SHOULD
+
 A script runs commands and passes their results along; logic of its own — parsing structured data, computing over records, branching on many cases — is written in the program's language.
 
 | Why | Tags |
@@ -23,6 +24,7 @@ A script runs commands and passes their results along; logic of its own — pars
 | the shell has no types and no data structures beyond arrays, so logic written in it grows bugs that nothing catches. | [] |
 
 ### expansion-double-quoted · MUST
+
 Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(date +%s)"`, `"${paths[@]}"` — save the left side inside `[[ ]]`, and inside `(( ))`; the right side of `==`, `!=` or `=~` in `[[ ]]` is quoted unless it is meant as a pattern.
 
 | Why | Tags |
@@ -30,6 +32,7 @@ Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(
 | an unquoted expansion is split on spaces and expanded as a glob, so a file name with a space or a star becomes several arguments or other files. | [] |
 
 ### list-held-in-an-array · SHOULD
+
 In Bash, a list of words — files, arguments, flags — is held in an array and expanded as `"${list[@]}"`, never in a string split on spaces; below Bash 4.4, an array that may be empty is expanded as `${list[@]+"${list[@]}"}`, which `set -u` accepts.
 
 | Why | Tags |
@@ -37,6 +40,7 @@ In Bash, a list of words — files, arguments, flags — is held in an array and
 | a string split on spaces breaks every item that holds one, while an array keeps each item whole. | [] |
 
 ### line-read-raw · SHOULD
+
 A line is read by `IFS= read -r`.
 
 | Why | Tags |
@@ -46,6 +50,7 @@ A line is read by `IFS= read -r`.
 ## Names
 
 ### shell-name-case-by-kind → name-case-by-kind · SHOULD
+
 A function and a variable are lower_snake_case; a constant and an environment variable are UPPER_SNAKE_CASE.
 
 | Why | Tags |
@@ -55,6 +60,7 @@ A function and a variable are lower_snake_case; a constant and an environment va
 ## Functions
 
 ### script-logic-in-a-main-function · SHOULD
+
 A script that defines functions runs its logic in a function `main`, called on its last line as `main "$@"`.
 
 | Why | Tags |
@@ -64,6 +70,7 @@ A script that defines functions runs its logic in a function `main`, called on i
 ## Relations
 
 ### function-variable-declared-local → state-never-global-and-mutable · MUST
+
 In Bash, a function declares every variable it sets as `local`.
 
 | Why | Tags |
@@ -73,6 +80,7 @@ In Bash, a function declares every variable it sets as `local`.
 ## Errors
 
 ### script-stops-on-a-failed-command → catch-handles-only-what-it-recognises · MUST
+
 A Bash script runs under `set -euo pipefail`, and `shopt -s inherit_errexit` where its Bash is 4.4 or later, and a POSIX sh script under `set -eu`, with `-o pipefail` where its shells have it, set before its first command; a function called as a condition — of an `if`, a `while` or an and-or list — checks its commands' results itself.
 
 | Why | Tags |
@@ -80,6 +88,7 @@ A Bash script runs under `set -euo pipefail`, and `shopt -s inherit_errexit` whe
 | by default the shell carries on after a failed command, a failed stage of a pipe or an unset variable, so the next command runs on a result that never came, as `rm -rf "$dir/"` does with an empty `dir`; errexit does not fire inside a function called as a condition. | [errors] |
 
 ### command-substitution-assigned-apart-from-its-declaration → catch-handles-only-what-it-recognises · MUST
+
 A variable assigned from a command substitution is declared — by `local`, `export` or `declare` — on a line of its own before it: `local out` then `out="$(command)"`.
 
 | Why | Tags |
@@ -89,6 +98,7 @@ A variable assigned from a command substitution is declared — by `local`, `exp
 ## Effects
 
 ### temporary-file-removed-by-an-exit-trap → resource-released-on-every-path · MUST
+
 A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT` — in POSIX sh also on `HUP`, `INT` and `TERM`, by a handler that exits — set right after it is made.
 
 | Why | Tags |
@@ -96,6 +106,7 @@ A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT`
 | a fixed name collides with other runs and can be planted by another user, and only the trap removes the file when the script fails or is interrupted. | [security] |
 
 ### script-diagnostics-on-standard-error → diagnostics-written-through-a-logger · MUST
+
 A script writes its diagnostics and errors through one function of its own that prints to standard error — `log() { printf '%s\n' "$*" >&2; }` — and only its output to standard output.
 
 | Why | Tags |
@@ -105,6 +116,7 @@ A script writes its diagnostics and errors through one function of its own that 
 ## Security
 
 ### outside-input-passed-as-an-argument → outside-input-reaches-interpreters-as-parameters · MUST
+
 Input from outside reaches a command only as a quoted argument, after `--` where the command takes options, never through `eval`, `sh -c` or a command line built as a string.
 
 | Why | Tags |
@@ -112,6 +124,7 @@ Input from outside reaches a command only as a quoted argument, after `--` where
 | text joined into a command line is parsed as shell, so whoever wrote it runs commands, and a value that starts with `-` is read as an option. | [security] |
 
 ### xtrace-never-ships → secret-and-personal-data-kept-out-of-output · MUST
+
 A committed script never turns on `set -x`.
 
 | Why | Tags |
@@ -119,6 +132,7 @@ A committed script never turns on `set -x`.
 | the trace prints every command with its expanded arguments, secrets included, into logs that others read. | [security] |
 
 ### secret-set-only-for-the-command-that-reads-it → child-process-environment-built-for-it · MUST
+
 A script reads a secret it received into a variable it does not export and unsets the name it came by — `token="$TOKEN"; unset TOKEN` — and passes the secret only to the one command that reads it: `TOKEN="$token" command`, or on its standard input.
 
 | Why | Tags |
@@ -126,6 +140,7 @@ A script reads a secret it received into a variable it does not export and unset
 | every command a script runs inherits what it exported, so a secret exported once reaches every tool, and every tool those start. | [security] |
 
 ### variable-exported-only-for-the-commands-that-read-it → child-process-environment-built-for-it · MUST
+
 A script exports no variable its commands do not read.
 
 | Why | Tags |
@@ -135,6 +150,7 @@ A script exports no variable its commands do not read.
 ## Tools
 
 ### script-passes-a-shell-analyser → rule-held-by-a-tool-where-one-can · MUST
+
 Every script, and every shell command another file holds, passes a static analyser of shell — one that knows its quoting, its word splitting and the pitfalls of errexit — at its strictest severity.
 
 | Why | Tags |
@@ -144,6 +160,7 @@ Every script, and every shell command another file holds, passes a static analys
 ## Layout
 
 ### executable-script-names-its-shell · MUST
+
 An executable script names the shell it is written for on its first line: `#!/usr/bin/env bash`, or `#!/bin/sh` for one written to POSIX alone.
 
 | Why | Tags |
@@ -151,6 +168,7 @@ An executable script names the shell it is written for on its first line: `#!/us
 | a script run by another shell than its own fails on the first construct that shell lacks, often silently, and `env` finds the Bash the project pins rather than an older one of the system. | [] |
 
 ### shell-file-ends-in-sh → format-has-one-extension · SHOULD
+
 A shell file ends in `.sh`; a command installed on a user's path under its own name is built or linked from such a file.
 
 | Why | Tags |

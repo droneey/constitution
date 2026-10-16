@@ -5,6 +5,7 @@
 ## Releases
 
 ### requires-python-raised-in-a-minor-or-a-major → runtime-floor-never-raised-in-a-patch · MUST
+
 A published package raises its `requires-python` floor in a minor or a major release, never in a patch, since its installers skip a release whose `requires-python` the consumer's Python misses.
 
 | Why | Tags |

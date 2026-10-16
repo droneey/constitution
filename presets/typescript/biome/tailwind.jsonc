@@ -9,17 +9,7 @@
   "linter": {
     "rules": {
       "nursery": {
-        "noTailwindArbitraryValue": {
-          "level": "error",
-          "options": {
-            "functions": [
-              "cva",
-              "cn",
-              "clsx",
-              "twMerge",
-            ],
-          },
-        },
+        "noTailwindArbitraryValue": "error",
         "noUndeclaredClasses": "off",
       },
     },

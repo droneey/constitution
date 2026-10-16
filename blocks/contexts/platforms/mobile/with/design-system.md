@@ -5,6 +5,7 @@
 ## Design system
 
 ### increased-contrast-mode-follows-the-system → theme-follows-system-until-chosen · MUST
+
 Until the user chooses one in the app, the theme's increased-contrast mode follows the system's contrast setting — Increase Contrast on iOS, the contrast settings on Android — read when the app starts and again when the setting changes.
 
 | Why | Tags |

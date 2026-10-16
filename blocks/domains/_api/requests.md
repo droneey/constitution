@@ -5,6 +5,7 @@
 ## Handles
 
 ### call-handle-random-and-never-a-credential · MUST
+
 A handle that relates one request to the next — one an operation minted, a task's — is unguessable, and never authenticates the caller by itself.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A handle that relates one request to the next — one an operation minted, a tas
 ## Cancellation
 
 ### abandoned-request-stops-its-work → outside-call-can-be-cancelled · SHOULD
+
 A request its caller cancels or abandons — by a cancel message or a closed connection — stops its work and the calls it made, and sends nothing more.
 
 | Why | Tags |
@@ -23,6 +25,7 @@ A request its caller cancels or abandons — by a cancel message or a closed con
 ## Long work
 
 ### long-operation-answered-with-a-handle · SHOULD
+
 An operation that may outlast a request answers at once with a handle the caller follows for its state and its result, never holding the request open until it ends.
 
 | Why | Tags |

@@ -3,7 +3,8 @@
 > Specs that render into a DOM `bun test` does not have.
 
 ### dom-registered-before-the-sandbox → network-refused-by-the-test-preload · MUST
-`bunfig.toml` preloads `src/__tests__/dom.fixtures.ts`, which registers happy-dom's globals, before the sandbox fixture.
+
+Both of Bun's test configurations preload `src/__tests__/dom.fixtures.ts`, which registers happy-dom's globals, `bunfig.toml` before the sandbox fixture.
 
 | Why | Tags |
 |---|---|

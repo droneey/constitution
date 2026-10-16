@@ -5,6 +5,7 @@
 ## Outbox
 
 ### change-and-its-message-written-through-an-outbox → write-lands-whole · MUST
+
 A message about a change to owned data is written to an outbox in the store, in the transaction of the change, and sent by a relay after the commit — never published inside the transaction or from a hook after it.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ A message about a change to owned data is written to an outbox in the store, in 
 | a message published inside the transaction announces a change that may roll back, and one published after the commit is lost when the process stops between the two. | [data] |
 
 ### outbox-relayed-in-commit-order-per-key · MUST
+
 The relay of an outbox sends the messages of one ordering key in the order they were committed, marks a message sent only once the broker confirmed it, and resumes from the first unsent after a stop.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ The relay of an outbox sends the messages of one ordering key in the order they 
 ## Inbox
 
 ### processed-message-recorded-with-its-effect → write-lands-whole · MUST
+
 A consumer whose effect is a change to owned data records the message's identifier in the transaction of that change, under a constraint unique per consumer and identifier, so a redelivery finds it and a concurrent copy fails on it.
 
 | Why | Tags |
@@ -30,6 +33,7 @@ A consumer whose effect is a change to owned data records the message's identifi
 ## Queues in the store
 
 ### stored-queue-claims-in-one-conditional-write → write-on-read-data-is-conditional · MUST
+
 A queue kept in the program's own store claims each message in one conditional write — a row lock that skips claimed rows, or an update conditional on its state — with a lease that returns it when it expires, never by a read and a later write of its status.
 
 | Why | Tags |

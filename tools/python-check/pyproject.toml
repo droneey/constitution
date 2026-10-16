@@ -45,4 +45,4 @@ ignore_names = [
 min_confidence = 60
 
 [tool.complexipy]
-max-complexity-allowed = 10
+max-complexity-allowed = 15

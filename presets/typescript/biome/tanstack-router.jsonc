@@ -3,6 +3,7 @@
     {
       "includes": [
         "**/src/root/routes/**",
+        "**/src/root/routeTree.gen.ts",
       ],
       "linter": {
         "rules": {

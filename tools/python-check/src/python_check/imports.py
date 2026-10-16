@@ -1,9 +1,12 @@
 import ast
-from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from python_check.findings import Finding
+
+if TYPE_CHECKING:
+  from collections.abc import Iterator
 
 SOURCE_ROOT = 'src'
 # The layers whose modules take a feature's form, each module a folder of its own.

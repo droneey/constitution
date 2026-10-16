@@ -5,6 +5,7 @@
 ## Identity
 
 ### provider-sign-in-runs-in-the-systems-browser → sign-in-through-a-provider-uses-code-with-pkce · MUST
+
 Sign-in through an outside identity provider runs in the system's authentication session — ASWebAuthenticationSession on iOS, Custom Tabs on Android — never in a WebView the app embeds.
 
 | Why | Tags |

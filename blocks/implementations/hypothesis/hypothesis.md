@@ -14,6 +14,7 @@ governs: []
 > Draws the inputs of a property test and shrinks a failing one to its smallest form. Outside CI it remembers the inputs that failed in `.hypothesis/`, which is ignored; under `CI` it loads its own profile `ci`.
 
 ### property-written-with-given → property-tested-where-it-pays · SHOULD
+
 A property test is a case of its unit's spec decorated with `@given`, its inputs drawn by strategies built on the unit's fixture, narrowed by the invariant it proves.
 
 | Why | Tags |
@@ -21,6 +22,7 @@ A property test is a case of its unit's spec decorated with `@given`, its inputs
 | a property beside the unit's other cases runs and fails with them, and a strategy built from the invariant draws the inputs that can break it. | [testing] |
 
 ### counterexample-kept-by-example → property-tested-where-it-pays · SHOULD
+
 A counterexample Hypothesis finds is kept as an `@example(...)` on its property.
 
 | Why | Tags |
@@ -28,6 +30,7 @@ A counterexample Hypothesis finds is kept as an `@example(...)` on its property.
 | an explicit example runs first on every run, whatever the strategies draw. | [testing] |
 
 ### ci-profile-left-to-hypothesis → flaky-test-fixed-never-retried · SHOULD
+
 Under `CI`, Hypothesis's own profile `ci` runs — `derandomize=True`, `database=None` — and the project registers no profile of that name and loads no other.
 
 | Why | Tags |

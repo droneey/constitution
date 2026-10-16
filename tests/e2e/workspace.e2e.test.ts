@@ -74,7 +74,10 @@ export default {
   ...self,
   ...bunTest,
   ...core,
-  plugins: ['${join(REPOSITORY, 'tools', 'mutation-check', 'src', 'runner.ts')}'],
+  plugins: [
+    '${join(REPOSITORY, 'tools', 'mutation-check', 'src', 'runner.ts')}',
+    '${join(REPOSITORY, 'tools', 'mutation-check', 'src', 'ignorers.ts')}',
+  ],
 };
 `;
 
@@ -108,6 +111,7 @@ describe('a workspace on the presets', () => {
     // Act
     const { passed } = runTool(folder, {
       args: [
+        '--config=./bunfig.integration.toml',
         'test',
       ],
       folder: 'products/web',

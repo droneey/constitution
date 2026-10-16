@@ -5,6 +5,7 @@
 ## Entry points
 
 ### entry-point-declares-its-access · MUST
+
 Every entry point — a route, an endpoint, a command, a tool — declares its access where it is defined, at the boundary.
 
 | Why | Tags |

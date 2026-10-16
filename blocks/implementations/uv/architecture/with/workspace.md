@@ -3,6 +3,7 @@
 > The members of a uv workspace laid out by the workspace's tree.
 
 ### uv-workspace-globbed-by-the-tree · SHOULD
+
 `members` lists the globs `products/*/languages/python`, `shared/*/languages/python` and `libs/*/languages/python`, which match only Python packages, and the path of each unit in Python alone, `products/<name>`, `shared/<name>` or `libs/<name>`.
 
 | Why | Tags |

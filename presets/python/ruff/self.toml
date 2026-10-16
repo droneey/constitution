@@ -8,7 +8,6 @@ quote-style = "single"
 [lint]
 ignore = [
   "PLR09",
-  "PLR2004",
 ]
 select = [
   "A",
@@ -38,8 +37,3 @@ select = [
   "UP",
   "W",
 ]
-
-[lint.flake8-quotes]
-docstring-quotes = "double"
-inline-quotes = "single"
-multiline-quotes = "double"

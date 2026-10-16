@@ -8,6 +8,7 @@ languages: []
 dictionary: []
 governs: ["**"]
 ---
+
 # Convergence
 
 > A program that reads one config file its user writes and moves the world toward it: it validates the file, renders what it implies, plans the changes and applies them, and a second run changes nothing.

@@ -5,6 +5,7 @@
 ## Pinning
 
 ### dependencies-locked-by-one-lockfile · MUST
+
 The dependencies of a language are managed by one package manager and pinned by one lockfile, kept in the repository and always matching its manifests.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ The dependencies of a language are managed by one package manager and pinned by 
 | two package managers resolve differently, and a lockfile that drifts from its manifests installs versions nobody reviewed. | [security] |
 
 ### download-pinned-by-version-and-checksum · MUST
+
 A file or a reusable step the program, its build or its pipeline fetches outside a package manager — a binary, an archive, an image, a step of another repository — is pinned to a version and checked against its checksum or digest before it is used; a commit's full hash counts as a digest.
 
 | Why | Tags |
@@ -19,6 +21,7 @@ A file or a reusable step the program, its build or its pipeline fetches outside
 | an unverified download runs whatever its address serves that day. | [security] |
 
 ### tool-pinned-exactly-by-the-repository · MUST
+
 A dependency that builds, tests or lints, and the runtime it runs on, is pinned to one exact version in a file of the repository, never installed globally; the build backend a package's manifest requires, which whoever builds the package resolves, is capped below its next minor instead.
 
 | Why | Tags |
@@ -26,6 +29,7 @@ A dependency that builds, tests or lints, and the runtime it runs on, is pinned 
 | a tool installed globally runs in another version on every machine, and its new version changes what the check reports. | [security] |
 
 ### production-code-imports-no-tool · MUST
+
 Production code imports no dependency that only builds, tests or lints.
 
 | Why | Tags |
@@ -33,6 +37,7 @@ Production code imports no dependency that only builds, tests or lints.
 | a tool imported by the program ships with it, and its next release changes the program without anyone choosing it. | [] |
 
 ### dependency-installed-only-from-a-registry · MUST
+
 A package a package manager installs, a transitive one included, comes only from a registry — a private one only from the registry the project names for it — never from a source repository, an archive's address or a path outside the repository.
 
 | Why | Tags |
@@ -42,6 +47,7 @@ A package a package manager installs, a transitive one included, comes only from
 ## Choosing and using
 
 ### new-dependency-vetted · SHOULD
+
 A new dependency is a decision: it needs a reason it cannot be a few lines of the project’s own, its name is confirmed in the registry as the intended project rather than taken from generated code, and it is checked against the signs of a malicious package — a name one typo from a popular one, a recent first release or change of owner, few downloads, no source repository, obfuscated code.
 
 | Why | Tags |
@@ -49,6 +55,7 @@ A new dependency is a decision: it needs a reason it cannot be a few lines of th
 | each dependency runs with the project’s rights, and these signs mark most malicious packages. | [security] |
 
 ### new-release-adopted-after-a-cooldown · MUST
+
 A new release of a dependency is adopted only after a cooldown of at least seven days; a fix for a known vulnerability that cannot wait is exempted by name, with its advisory beside the exemption, which leaves at the next update.
 
 | Why | Tags |
@@ -56,6 +63,7 @@ A new release of a dependency is adopted only after a cooldown of at least seven
 | most hijacked releases are found and pulled within a week, and the major package managers now hold a cooldown of their own, so none is left outside the rule. | [security] |
 
 ### dependency-provenance-verified · SHOULD
+
 A dependency whose registry publishes provenance or signatures is installed only once they verify, and a version that lost what its earlier versions carried is refused.
 
 | Why | Tags |
@@ -63,6 +71,7 @@ A dependency whose registry publishes provenance or signatures is installed only
 | a hijacked release is published from somewhere else than the project's own pipeline, and the missing provenance is the sign. | [security] |
 
 ### dependency-reached-through-its-public-entry · MUST
+
 A dependency is reached only through the entries it publishes, never through its internal paths.
 
 | Why | Tags |
@@ -70,6 +79,7 @@ A dependency is reached only through the entries it publishes, never through its
 | internal paths change between releases without notice. | [] |
 
 ### install-scripts-run-only-for-listed-dependencies · MUST
+
 A dependency’s install scripts run only when it is listed by name as allowed to run them.
 
 | Why | Tags |
@@ -79,6 +89,7 @@ A dependency’s install scripts run only when it is listed by name as allowed t
 ## Health
 
 ### dependency-free-of-known-vulnerabilities · MUST
+
 No dependency, development ones included, has a known vulnerability of any severity, save one a person accepted by name, with its advisory, why it does not reach the program or why no fix exists yet, and a date to review it.
 
 | Why | Tags |
@@ -86,6 +97,7 @@ No dependency, development ones included, has a known vulnerability of any sever
 | a vulnerability found before release is fixed before release, and one that cannot be is a decision someone signed and will revisit. | [security] |
 
 ### dependency-licence-on-the-allowlist · MUST
+
 Every dependency the program ships or loads at run time has a licence on the project’s allowlist; a tool that only builds, tests or checks it may stay off the list, named with its reason.
 
 | Why | Tags |
@@ -93,6 +105,7 @@ Every dependency the program ships or loads at run time has a licence on the pro
 | a licence the project cannot honour is an obligation it took on without knowing. | [security] |
 
 ### deprecated-dependency-replaced · SHOULD
+
 A dependency deprecated as a whole is replaced — by its successor, another package or the project’s own code.
 
 | Why | Tags |

@@ -11,6 +11,7 @@ import {
   createYamlFrontMatterParser,
   createYamlVocabularyParser,
 } from '#/features/constitution/adapters/yaml';
+import { compareText } from '#/kernel/utils';
 
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
@@ -36,7 +37,7 @@ const LIBRARY = 'hooks/lib';
 const created: string[] = [];
 
 const createFileTree = (files: Readonly<Files>): FileTree => ({
-  list: (): readonly string[] => Object.keys(files).toSorted(),
+  list: (): readonly string[] => Object.keys(files).toSorted(compareText),
   read: (path: string): string => {
     const text = files[path];
 

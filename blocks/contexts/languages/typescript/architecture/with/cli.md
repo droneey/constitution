@@ -5,6 +5,7 @@
 ## Layers
 
 ### command-file-named-with-the-cli-suffix → command-is-its-operations-binding-unit · MUST
+
 A command's file is named `<op>.cli.ts`, after the operation it runs.
 
 | Why | Tags |

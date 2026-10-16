@@ -1,10 +1,13 @@
-import io
 import sys
-from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from mutmut_check.gate import Completed, Workspace
+
+if TYPE_CHECKING:
+  import io
+  from collections.abc import Mapping, Sequence
 
 MUTMUT: tuple[str, ...] = (sys.executable, '-m', 'mutmut')
 DIFF: tuple[str, ...] = (

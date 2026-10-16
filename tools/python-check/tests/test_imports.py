@@ -1,10 +1,13 @@
 import ast
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from python_check.findings import Finding
 from python_check.imports import import_findings
 from source_fixtures import write_files
+
+if TYPE_CHECKING:
+  from pathlib import Path
 
 # The folders of a package laid out as core's tree lays it out.
 TREE = {

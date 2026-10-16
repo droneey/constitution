@@ -5,6 +5,7 @@
 ## Layers
 
 ### device-capability-reached-through-a-port → effects-held-only-by-the-edge · MUST
+
 Permissions, notifications, background work, secure storage and sensors are reached through adapters behind ports, never from a screen or the domain.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ Permissions, notifications, background work, secure storage and sensors are reac
 ## Layout
 
 ### app-extension-is-an-entrypoint → package-laid-out-by-the-tree · SHOULD
+
 An app extension — a widget, a share or notification extension, a watch app — that starts the program's own root is an entry under `entrypoints/`, which composes features through their surfaces; one written in another language, or wiring itself apart, is a package of its own.
 
 | Why | Tags |

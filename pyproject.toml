@@ -3,7 +3,7 @@ dev = [
   "anyio==4.15.1",
   "complexipy==8.0.1",
   "deptry==0.25.1",
-  "hypothesis==6.168.3",
+  "hypothesis==6.168.5",
   "import-linter==2.15",
   "mutmut==3.8.0",
   "mutmut-check",
@@ -19,7 +19,7 @@ dev = [
 ]
 
 [tool.uv]
-exclude-newer = "3 days"
+exclude-newer = "7 days"
 no-build = true
 python-downloads = "never"
 python-preference = "only-system"
@@ -33,9 +33,11 @@ members = ["tools/mutmut-check", "tools/python-check"]
 
 [tool.ruff]
 extend = ".droneey/constitution/presets/python/ruff/pytest.toml"
+target-version = "py314"
 
 [tool.ruff.lint.extend-per-file-ignores]
 "tools/*/tests/**" = [
   "INP001",
+  "PLR2004",
   "S101",
 ]

@@ -14,6 +14,7 @@ governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 > The project's only cache of server data.
 
 ### query-for-reads-mutation-for-writes · SHOULD
+
 A read goes through `useQuery`, or `useSuspenseQuery` where the read suspends, and a write through `useMutation`.
 
 | Why | Tags |
@@ -21,6 +22,7 @@ A read goes through `useQuery`, or `useSuspenseQuery` where the read suspends, a
 | the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. | [data] |
 
 ### query-result-returned-as-status-union → data-result-is-union-by-status · MUST
+
 What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. Or the read suspends — `useSuspenseQuery` — and the boundary above it handles the pending and failed states. The error type is registered once for the cache, and no default is invented.
 
 | Why | Tags |
@@ -28,6 +30,7 @@ What wraps a query or a mutation returns Query's own result narrowed by its `sta
 | consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". | [data] |
 
 ### optimism-in-the-mutation-lifecycle → overlapping-writes-keep-each-others-results · MUST
+
 Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight and writes values built by the program's own factories; `onError` restores the snapshot and reapplies the mutations on the key still pending; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
 
 | Why | Tags |
@@ -35,6 +38,7 @@ Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flig
 | this is the order that survives concurrent writes; any shortcut shows data the server refused, or loses another write's success. | [ux] |
 
 ### invalidation-in-on-settled · SHOULD
+
 A write invalidates its keys in `onSettled`.
 
 | Why | Tags |
@@ -42,6 +46,7 @@ A write invalidates its keys in `onSettled`.
 | `onSettled` runs after success and failure alike, so the cache is refreshed either way. | [data] |
 
 ### query-retry-only-transient → failure-retried-only-when-transient · MUST
+
 The client's `retry` is a predicate on the error's transience, with a limit — never the default three retries on every error — and `false` where the transport already retries; a mutation retries only when it is idempotent.
 
 | Why | Tags |
@@ -49,6 +54,7 @@ The client's `retry` is a predicate on the error's transience, with a limit — 
 | retrying a failure that will not change delays the error the user needs to see. | [] |
 
 ### query-signal-reaches-the-request → outside-call-can-be-cancelled · SHOULD
+
 `queryFn` passes Query's abort signal to the operation it calls, down to the request, so a screen that is left cancels its read.
 
 | Why | Tags |
@@ -56,6 +62,7 @@ The client's `retry` is a predicate on the error's transience, with a limit — 
 | a read nobody waits for still costs the network and the server. | [] |
 
 ### input-query-keyed-on-debounced-value → input-driven-requests-debounced · SHOULD
+
 A query driven by typing is keyed on the debounced or deferred value, and keeps the previous result as its placeholder.
 
 | Why | Tags |
@@ -63,6 +70,7 @@ A query driven by typing is keyed on the debounced or deferred value, and keeps 
 | a query per keystroke floods the server, and a blank list between keystrokes flickers. | [] |
 
 ### stream-folded-into-cache-per-frame → fast-source-updates-once-per-frame · SHOULD
+
 A stream's events reach the cache in batches, with at most one cache write per frame.
 
 | Why | Tags |
@@ -70,6 +78,7 @@ A stream's events reach the cache in batches, with at most one cache write per f
 | a cache write per event redraws every subscriber on every event. | [data] |
 
 ### write-pending-until-its-refresh-lands · SHOULD
+
 A mutation's `onSettled` returns the invalidation's promise, so the write stays pending until the fresh data lands.
 
 | Why | Tags |

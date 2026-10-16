@@ -1,13 +1,16 @@
 import ast
-from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import TextIO
+from typing import TYPE_CHECKING, TextIO
 
 from python_check.findings import Finding, render
 from python_check.imports import import_findings
 from python_check.lines import line_findings
 from python_check.packages import package_findings
-from python_check.settings import Settings
+
+if TYPE_CHECKING:
+  from collections.abc import Iterator, Sequence
+
+  from python_check.settings import Settings
 
 USAGE = 'usage: python-check <path>...\n'
 SKIPPED = '__pycache__'

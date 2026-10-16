@@ -3,6 +3,7 @@
 > The mutation configuration of each package of a workspace.
 
 ### stryker-configuration-per-unit → unit-checked-by-its-own-tools · MUST
+
 In a workspace, each package with code its specs run has its own `stryker.config.mjs` in its folder.
 
 | Why | Tags |

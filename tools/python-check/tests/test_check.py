@@ -1,9 +1,12 @@
 import io
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from python_check.check import run
 from python_check.settings import Settings
 from source_fixtures import function_of, python, write_files
+
+if TYPE_CHECKING:
+  from pathlib import Path
 
 
 def _run(*, folder: Path, arguments: list[str]) -> tuple[int, str]:

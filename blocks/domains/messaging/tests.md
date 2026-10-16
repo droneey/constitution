@@ -5,6 +5,7 @@
 ## Delivery
 
 ### redelivery-and-reordering-have-cases → edge-cases-chosen-by-risk · SHOULD
+
 A consumer has a case that delivers one message twice and checks that its effect happened once, and, where order matters, a case that delivers two messages of one key out of order.
 
 | Why | Tags |

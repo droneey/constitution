@@ -25,7 +25,7 @@ Read the whole file before judging a line of it, and the files it imports when a
 
 One finding per line, nothing else:
 
-```
+```text
 <path>:<line> — <slug> — <what is wrong> — <the fix>
 ```
 

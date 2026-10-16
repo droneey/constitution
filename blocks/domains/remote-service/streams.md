@@ -5,6 +5,7 @@
 ## Ends
 
 ### stream-cut-before-its-terminal-event-fails → failure-is-expected-or-defect · MUST
+
 A stream that ends without its terminal event fails with an expected failure of its own type, never ends as complete.
 
 | Why | Tags |

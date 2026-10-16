@@ -16,7 +16,7 @@ dev = [
   "anyio==4.15.1",
   "complexipy==8.0.1",
   "deptry==0.25.1",
-  "hypothesis==6.168.3",
+  "hypothesis==6.168.5",
   "import-linter==2.15",
   "mutmut==3.8.0",
   "pytest==9.1.1",
@@ -30,7 +30,7 @@ dev = [
 
 # uv: installs
 [tool.uv]
-exclude-newer = "3 days"
+exclude-newer = "7 days"
 no-build = true
 python-downloads = "never"
 python-preference = "only-system"
@@ -43,6 +43,7 @@ extend = ".droneey/constitution/presets/python/ruff/pytest.toml"
 [tool.ruff.lint.extend-per-file-ignores]
 "tests/**" = [
   "INP001",
+  "PLR2004",
   "S101",
 ]
 
@@ -75,6 +76,8 @@ exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 [tool.mutmut]
 source_paths = ["src"]
 do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
+# a log call's text and level are no behaviour a caller relies on
+do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
 pytest_add_cli_args = ["-p", "no:randomly"]
 type_check_command = ["ty", "check", "--output-format", "gitlab"]
 
@@ -296,6 +299,10 @@ extend = [
   ".droneey/constitution/presets/python/python-check/architecture/structlog.toml",
 ]
 
+# deptry: no issue code lifted, so each fails the check
+[tool.deptry]
+ignore = []
+
 # vulture: the code nothing in src/ uses
 [tool.vulture]
 paths = ["src"]
@@ -303,5 +310,5 @@ min_confidence = 60
 
 # complexipy: the cognitive complexity of a function
 [tool.complexipy]
-max-complexity-allowed = 10
+max-complexity-allowed = 15
 

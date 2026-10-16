@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkCommitMessage } from './lefthook-preset.fixtures';
+import {
+  checkBranch,
+  checkCommitMessage,
+  partJobs,
+  shellCheckRun,
+} from './lefthook-preset.fixtures';
 
 describe('the commit message hook', () => {
   it.each([
@@ -84,6 +89,64 @@ describe('the commit message hook', () => {
     expect(check).toStrictEqual({
       exitCode: 1,
       output,
+    });
+  });
+});
+
+describe('the branch name hook', () => {
+  it.each([
+    'feature/288-give-every-rule-of-core-one-home',
+    'fix/12-keep-the-trailers',
+    'hotfix/7-pin-the-hook',
+  ])('should accept "%s" when it names its type, issue and subject', (branch) => {
+    // Act
+    const check = checkBranch(branch);
+
+    // Assert
+    expect(check).toStrictEqual({
+      exitCode: 0,
+      output: '',
+    });
+  });
+
+  it('should accept a commit when HEAD is detached, as in a rebase or a bisect', () => {
+    // Act
+    const check = checkBranch(undefined);
+
+    // Assert
+    expect(check).toStrictEqual({
+      exitCode: 0,
+      output: '',
+    });
+  });
+
+  it.each([
+    'main',
+    'feature/give-every-rule-one-home',
+    'docs/12-explain-the-presets',
+  ])('should reject "%s" when it lacks a type, an issue or a subject', (branch) => {
+    // Act
+    const check = checkBranch(branch);
+
+    // Assert
+    expect(check).toStrictEqual({
+      exitCode: 1,
+      output: `Branch '${branch}' must match: (feature|fix|hotfix)/{id}-{name}`,
+    });
+  });
+});
+
+describe('the commands of the hook parts', () => {
+  it.each([
+    ...partJobs(),
+  ])('should pass ShellCheck for $job of the $part part', ({ run }) => {
+    // Act
+    const check = shellCheckRun(run);
+
+    // Assert
+    expect(check).toStrictEqual({
+      exitCode: 0,
+      output: '',
     });
   });
 });

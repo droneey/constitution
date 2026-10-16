@@ -5,6 +5,7 @@
 ## Confirmation
 
 ### publish-done-only-once-the-broker-confirms · MUST
+
 A publish is done only once the broker confirms it holds the message durably — a publisher confirm, an acknowledgement of every in-sync replica — and one not confirmed within its timeout fails, never passes as sent.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A publish is done only once the broker confirms it holds the message durably —
 ## Order
 
 ### ordered-messages-share-an-ordering-key · MUST
+
 Messages whose order matters — the changes of one entity — are published with that entity's identifier as their ordering key — a partition key, a message group, a session — and no consumer counts on an order across keys.
 
 | Why | Tags |

@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>droneey/.github"
+    "github>droneey/.github#v2.6.0"
   ]
 }

@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [TanStack Start, createServerFn, Nitro]
-governs: ["src/routes/__root.tsx", "src/router.tsx", "src/root/routes/__root.tsx", "src/root/router.tsx"]
+governs: ["src/routes/__root.tsx", "src/router.tsx", "src/root/routes/__root.tsx", "src/root/router.tsx", "src/client.tsx"]
 ---
 
 # TanStack Start
@@ -14,6 +14,7 @@ governs: ["src/routes/__root.tsx", "src/router.tsx", "src/root/routes/__root.tsx
 > The application shell around the router, in SPA mode. It has no `main` file: its entry files are the router's file, whose `getRouter` the framework calls, and `src/client.tsx` where the program hydrates itself — the entry file the other blocks name, where a polyfill loads — beside the root route, `__root.tsx`. The archive's `tanstack-start` parts keep the entry files out of mutation and give them to the unused-code check as entries; on the architecture axis the root route stays out of mutation too. A project adds the entry files to its coverage exclusions.
 
 ### caching-set-in-route-rules → hashed-file-immutable-and-its-pointers-revalidated · SHOULD
+
 Nitro's `routeRules` set the caching headers: `immutable` with a year's `max-age` on the hashed assets, and `no-cache` on the documents and the runtime configuration.
 
 | Why | Tags |
@@ -21,6 +22,7 @@ Nitro's `routeRules` set the caching headers: `immutable` with a year's `max-age
 | the server that serves the files then says how long each may be kept, in the same configuration as the program's other headers. | [performance] |
 
 ### content-security-policy-set-in-route-rules → document-served-with-a-strict-content-security-policy · MUST
+
 Nitro's `routeRules` set the Content Security Policy on every document, beside the caching rules, and the policy allows the shell's inline scripts by hash; a test reads the policy the server sends.
 
 | Why | Tags |
@@ -28,6 +30,7 @@ Nitro's `routeRules` set the Content Security Policy on every document, beside t
 | the policy then lives in one configuration with the program, not in a proxy nobody here sees, and a test proves it is sent. | [security] |
 
 ### security-headers-set-in-route-rules · SHOULD
+
 Nitro's `routeRules` set the other security headers on every document — `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy`, `Permissions-Policy` and `Reporting-Endpoints` — beside the Content Security Policy, and a test reads the headers the server sends.
 
 | Why | Tags |
@@ -35,6 +38,7 @@ Nitro's `routeRules` set the other security headers on every document — `Stric
 | one place for every header keeps them from drifting apart, and the test covers them all. | [security] |
 
 ### runtime-config-from-one-server-function → runtime-configuration-served-beside-bundle · MUST
+
 One server function serves the public projection of the configuration parsed at start; the root route loads it once, before anything reads configuration.
 
 | Why | Tags |

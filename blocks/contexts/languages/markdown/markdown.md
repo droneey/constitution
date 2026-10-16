@@ -16,6 +16,7 @@ governs: ["**/*.md", "**/*.markdown", "**/*.mdown"]
 ## Code
 
 ### document-written-in-commonmark-and-gfm · SHOULD
+
 A document uses CommonMark and the extensions of GitHub Flavored Markdown — tables, task lists, strikethrough, autolinks — and another renderer's syntax only in a site that renderer builds.
 
 | Why | Tags |
@@ -23,6 +24,7 @@ A document uses CommonMark and the extensions of GitHub Flavored Markdown — ta
 | a document is read in the forge, in editors and by agents, and syntax only one renderer knows shows as stray marks everywhere else. | [] |
 
 ### raw-html-only-where-markdown-has-no-form · SHOULD
+
 A document writes raw HTML only for what Markdown has no syntax for, such as `<details>` or `<kbd>`; an agent's instruction file may also hold the tags its agent reads, such as `<example>`.
 
 | Why | Tags |
@@ -32,6 +34,7 @@ A document writes raw HTML only for what Markdown has no syntax for, such as `<d
 ## Tools
 
 ### document-passes-a-markdown-linter → rule-held-by-a-tool-where-one-can · MUST
+
 Every Markdown document passes a linter of CommonMark and GitHub Flavored Markdown — its headings, links, images and code blocks — at its strictest severity.
 
 | Why | Tags |
@@ -41,6 +44,7 @@ Every Markdown document passes a linter of CommonMark and GitHub Flavored Markdo
 ## Layout
 
 ### markdown-file-ends-in-md → format-has-one-extension · SHOULD
+
 A Markdown file ends in `.md`, never `.markdown` or `.mdown`.
 
 | Why | Tags |
@@ -50,6 +54,7 @@ A Markdown file ends in `.md`, never `.markdown` or `.mdown`.
 ## Headings
 
 ### document-has-one-title-heading · MUST
+
 A document read as a page has one first-level heading, its title, before any other heading; a file only a tool or an agent reads, or whose form a tool generates, needs none.
 
 | Why | Tags |
@@ -57,6 +62,7 @@ A document read as a page has one first-level heading, its title, before any oth
 | renderers, outlines and readers take the first-level heading as the document's name, and with two the document has no one name. | [] |
 
 ### heading-level-never-skipped · MUST
+
 A heading is at most one level deeper than the heading before it: a `###` follows a `##` or any deeper heading, never a `#` — save in a file whose heading levels a tool or a schema fixes.
 
 | Why | Tags |
@@ -64,6 +70,7 @@ A heading is at most one level deeper than the heading before it: a `###` follow
 | the levels are the document's outline, which a reader, a screen reader and a table of contents follow, and a skipped level reads as a missing section. | [] |
 
 ### heading-unique-among-its-siblings · SHOULD
+
 No two headings under one parent heading share their text.
 
 | Why | Tags |
@@ -71,6 +78,7 @@ No two headings under one parent heading share their text.
 | two sibling headings with one name read alike in the outline and the table of contents, and a reader cannot tell which part each opens. | [] |
 
 ### heading-never-faked-by-emphasis · SHOULD
+
 A line that titles a section is a heading, never a paragraph of bold or italic text.
 
 | Why | Tags |
@@ -80,6 +88,7 @@ A line that titles a section is a heading, never a paragraph of bold or italic t
 ## Links and images
 
 ### repository-link-is-a-path · SHOULD
+
 A link to a file of the same repository is a path, relative to the document or to the repository's root, never a full URL on the forge.
 
 | Why | Tags |
@@ -87,6 +96,7 @@ A link to a file of the same repository is a path, relative to the document or t
 | a path works on every branch, fork, clone and mirror, while a full URL points at one branch on one host and goes stale with it. | [] |
 
 ### repository-link-resolves · MUST
+
 A link to a file of the repository leads to a file that exists, and its fragment to a heading that exists in that file.
 
 | Why | Tags |
@@ -94,6 +104,7 @@ A link to a file of the repository leads to a file that exists, and its fragment
 | a broken link sends the reader nowhere just when they need the page, and a moved file or a renamed heading breaks links far from the change. | [] |
 
 ### link-text-names-its-target · SHOULD
+
 A link's text says where it leads, never `here`, `this`, `link` or the bare address.
 
 | Why | Tags |
@@ -101,6 +112,7 @@ A link's text says where it leads, never `here`, `this`, `link` or the bare addr
 | readers scan links, and a screen reader lists them out of their sentence, where `here` tells nothing. | [a11y] |
 
 ### image-has-alt-text · MUST
+
 An image carries alt text that says what it shows, or empty alt text where it only decorates.
 
 | Why | Tags |
@@ -110,6 +122,7 @@ An image carries alt text that says what it shows, or empty alt text where it on
 ## Code blocks
 
 ### code-block-names-its-language · SHOULD
+
 A code block is fenced, and its info string names its language: `ts`, `sh`, `text` for plain output.
 
 | Why | Tags |

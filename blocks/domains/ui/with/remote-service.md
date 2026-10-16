@@ -5,6 +5,7 @@
 ## Reads
 
 ### input-driven-requests-debounced · SHOULD
+
 A request driven by typing is sent once the typing pauses, for a pause the project sets, never on every keystroke.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A request driven by typing is sent once the typing pauses, for a pause the proje
 ## Forms
 
 ### remote-field-error-shown-on-its-field · SHOULD
+
 A form shows each field error the remote system returns on the field it names.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A form shows each field error the remote system returns on the field it names.
 | the user sees the remote system's refusal where they can fix it. | [ux] |
 
 ### user-input-survives-connection-loss · SHOULD
+
 Input the user entered survives a request that times out or loses its connection, and is sent again without being typed again.
 
 | Why | Tags |
@@ -30,6 +33,7 @@ Input the user entered survives a request that times out or loses its connection
 ## Specs
 
 ### ui-specs-replace-the-transport → effect-faked-never-mocked · MUST
+
 A screen's spec, and the spec of what reads or writes its data, run the real code down to the transport and replace the transport with captured responses; a fake of a business operation serves only a screen that shows nothing the remote system gives.
 
 | Why | Tags |

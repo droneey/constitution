@@ -1,4 +1,4 @@
-# betterleaks 1.8.1's own prefilter with bun.lock added, as a prefilter here
+# betterleaks 1.9.0's own prefilter with bun.lock added, as a prefilter here
 # replaces the default one; drop it once betterleaks/betterleaks#370 ships.
 prefilter = '''
 matchesAny(attributes["path"], [

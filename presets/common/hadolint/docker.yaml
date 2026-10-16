@@ -1,3 +1,4 @@
 failure-threshold: style
+# DL3010 asks for ADD to unpack a local archive, which files-copied-never-added forbids.
 ignored:
   - DL3010

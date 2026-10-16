@@ -1,6 +1,7 @@
 # httpx2
 
 ### one-client-per-system-built-by-the-root → one-transport-instance-per-system · MUST
+
 `root/` builds one `AsyncClient` per remote system from the settings — base URL, headers, credentials, timeout — opens it for the program's lifespan, and passes it to the factories of that system's adapters; no adapter builds a client.
 
 | Why | Tags |
@@ -8,6 +9,7 @@
 | every adapter speaks to the system the same way, and a spec passes them a client over a mock transport. | [] |
 
 ### httpx2-errors-mapped-in-the-adapter → transport-failures-mapped-once · MUST
+
 `HTTPStatusError`, `TimeoutException` and `TransportError` are mapped to domain errors in the adapter, through the shared mapper.
 
 | Why | Tags |
@@ -15,6 +17,7 @@
 | the domain handles its own errors, whatever client the transport uses. | [] |
 
 ### retries-written-in-the-adapter · SHOULD
+
 The adapter retries its calls, not the client.
 
 | Why | Tags |
@@ -22,6 +25,7 @@ The adapter retries its calls, not the client.
 | the adapter knows which of its calls repeat safely, while the transport's own retries know no status, no backoff and no method. | [errors] |
 
 ### httpx2-home-is-the-edge-and-its-failure-mapper → layer-imports-dependencies-by-its-role · MUST
+
 httpx2's home is the adapters, the client of a system under `libs/`, the mapper of its failures in `shared/` and `root/`, which builds the clients: no other folder imports it.
 
 | Why | Tags |

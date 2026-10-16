@@ -5,6 +5,7 @@
 ## Contributions
 
 ### outside-change-runs-without-secrets → credential-has-least-privilege · MUST
+
 A contribution from outside the repository runs in CI with no secret, a read-only token and no cache it can write; a run that needs more waits for a maintainer's approval of that change.
 
 | Why | Tags |

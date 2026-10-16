@@ -5,6 +5,7 @@
 ## Files
 
 ### nestjs-files-in-the-tree → package-laid-out-by-the-tree · SHOULD
+
 The root's module, `root/root.module.ts`, is the program's wiring file and imports the modules of features and of composition; a feature's module is `<feature>.module.ts` in its `app/`, and a composition module's is `<name>.module.ts` in `composition/<name>/app/`. A controller is `<name>.controller.ts` in the `app/` of the feature it serves alone, or of the composition module whose features it composes. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role. A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `.interceptor` files, and its surface.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ The root's module, `root/root.module.ts`, is the program's wiring file and impor
 ## Wiring
 
 ### adapter-is-an-injectable-class → adapter-built-by-factory-object-or-class · SHOULD
+
 An adapter is an `@Injectable()` class, a provider like any other: it takes its dependencies through its constructor (`providers-injected-through-the-constructor`) and is bound in a module (`contracts-injected-by-token`).
 
 | Why | Tags |
@@ -21,6 +23,7 @@ An adapter is an `@Injectable()` class, a provider like any other: it takes its 
 | every other part a NestJS program wires is an injectable class, so an adapter in the same form is declared, bound and replaced in a spec as any of them is. | [testing] |
 
 ### providers-injected-through-the-constructor → composition-root-wires-everything · MUST
+
 A provider takes its dependencies as `private readonly` parameters of its constructor, and a module's providers are its wiring; a provider never builds a dependency or reaches a global.
 
 | Why | Tags |
@@ -28,6 +31,7 @@ A provider takes its dependencies as `private readonly` parameters of its constr
 | a dependency the constructor names is one the injector replaces in a spec; one taken from elsewhere is fixed for good. | [testing] |
 
 ### injector-never-asked-for-a-dependency → composition-root-wires-everything · MUST
+
 No provider, controller or guard takes `ModuleRef` and calls its `get` or `resolve`, or takes `DiscoveryService` to find providers by scanning.
 
 | Why | Tags |
@@ -35,6 +39,7 @@ No provider, controller or guard takes `ModuleRef` and calls its `get` or `resol
 | a dependency asked for at run time appears in no constructor and no module, so neither a reader nor a spec sees it until it fails. | [testing] |
 
 ### global-module-never-declared → composition-root-wires-everything · MUST
+
 No module the program writes is `@Global()`, and a global module a library ships — a logger's, say — is imported only by the root's module. A feature's module imports only modules of its own feature, of `shared/` and of `libs/`; what it takes from elsewhere — an adapter, its own feature's included — the root's module passes in, the feature's module being a dynamic module whose static method takes the modules to import. A module that joins features lives in `composition/`, and the root's module imports it.
 
 | Why | Tags |
@@ -42,6 +47,7 @@ No module the program writes is `@Global()`, and a global module a library ships
 | a global module's providers reach every module unannounced, so a module's imports no longer show what it depends on; a library's, imported by the root alone, is wiring the root shows, as a logger is; and a feature's module that imports another feature's ties the two features as an import of code would. | [] |
 
 ### contracts-injected-by-token → composition-root-wires-everything · MUST
+
 A dependency that stands for a contract is injected by a token — an abstract class, or a `Symbol` named by `@Inject` — and bound to its implementation with `useClass` or `useFactory` in a module's `providers`; a constructor never names a concrete adapter class.
 
 | Why | Tags |
@@ -49,6 +55,7 @@ A dependency that stands for a contract is injected by a token — an abstract c
 | a module's `providers` then name every concrete choice, and a spec replaces one by binding the same token to a fake. | [testing] |
 
 ### error-kit-mapped-by-one-exception-filter → one-error-handler-registered-by-the-root · MUST
+
 The handler is one exception filter whose `@Catch()` names no class, registered globally by the root; no controller or method binds a filter of its own with `@UseFilters`.
 
 | Why | Tags |
@@ -58,8 +65,9 @@ The handler is one exception filter whose `@Catch()` names no class, registered 
 ## Packages
 
 ### nestjs-imported-by-modules-and-providers → layer-imports-dependencies-by-its-role · MUST
-NestJS's home reaches past the edge into `app/` and `composition/`, which hold the modules, controllers and injectable use-cases, and into every `providers/` folder.
+
+NestJS's home reaches past the edge into the `app/` of features and of composition modules, which hold the modules and controllers, and into every `providers/` folder, whose providers build the use cases of the domain.
 
 | Why | Tags |
 |---|---|
-| the injector's decorators are written on the classes these folders hold; the domain, which they never reach, stays free of the framework. | [] |
+| the injector's decorators are written on the classes these folders hold; the domain, its use cases included, stays free of the framework, and a provider's factory builds each use case over its ports. | [] |

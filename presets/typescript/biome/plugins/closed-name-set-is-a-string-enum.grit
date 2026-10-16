@@ -1,7 +1,11 @@
 language js
 
 or {
-  TsIndexedAccessType(object_type=TsParenthesizedType(ty=TsTypeofType()), index_type=$index) as $set where {
+  TsIndexedAccessType(object_type=$object, index_type=$index) as $set where {
+    $object <: or {
+      TsParenthesizedType(ty=TsTypeofType()),
+      TsTypeofType()
+    },
     $index <: or {
       TsNumberType(),
       TsTypeOperatorType()
@@ -15,7 +19,7 @@ or {
       `Pick<$_, $_>`,
       `Exclude<$_, $_>`,
       `Extract<$_, $_>`
-    } ,
+    },
     register_diagnostic(span=$union, message="A closed set of named values is a string enum, not a union of string literals", severity="error")
   }
 }

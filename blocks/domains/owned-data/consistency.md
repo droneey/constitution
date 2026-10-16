@@ -5,6 +5,7 @@
 ## Concurrent changes
 
 ### stored-record-carries-its-version → write-on-read-data-is-conditional · MUST
+
 A stored record that a write decides on from a read made in an earlier request carries a version the store checks on that write, and a write made on an older version is refused as a conflict.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A stored record that a write decides on from a read made in an earlier request c
 ## Invariants
 
 ### invariant-also-held-by-the-store · SHOULD
+
 An invariant the store can express — a uniqueness, a reference, a required value, a range — is also declared in the store as a constraint, beside the check in the code.
 
 | Why | Tags |
@@ -23,6 +25,7 @@ An invariant the store can express — a uniqueness, a reference, a required val
 ## Backups
 
 ### owned-data-backed-up · MUST
+
 Owned data is backed up, often enough to lose no more than the recovery point the project sets, into a place a fault or an attacker of the store cannot reach.
 
 | Why | Tags |
@@ -30,6 +33,7 @@ Owned data is backed up, often enough to lose no more than the recovery point th
 | owned data has no other copy, and a backup in reach of what destroyed the store goes with it. | [data] |
 
 ### owned-data-encrypted-at-rest · MUST
+
 Owned data and its backups are encrypted at rest, with keys kept apart from them.
 
 | Why | Tags |
@@ -37,6 +41,7 @@ Owned data and its backups are encrypted at rest, with keys kept apart from them
 | a disk, a snapshot or a backup that leaves the store's control is unreadable without its key. | [data, security] |
 
 ### backup-restored-on-a-schedule · SHOULD
+
 A backup is restored on a schedule into a place apart and checked.
 
 | Why | Tags |
@@ -46,6 +51,7 @@ A backup is restored on a schedule into a place apart and checked.
 ## Connections
 
 ### store-reached-over-verified-tls · MUST
+
 A connection to a store the program owns that crosses a network runs over TLS — the program's own, or that of a proxy on its host that verifies for it — which verifies the server's certificate and its name, and never turns the verification off.
 
 | Why | Tags |

@@ -1,0 +1,17 @@
+extends = ".droneey/constitution/presets/markdown/rumdl/core.toml"
+
+[global]
+# The digests are written by digests:write, whose output the check compares.
+exclude = [
+  "digests/**",
+]
+
+# The archive's entries, repeated since this table replaces its own.
+[per-file-ignores]
+"**/AGENTS.md" = ["MD033"]
+"**/CLAUDE.md" = ["MD033"]
+"**/SKILL.md" = ["MD033"]
+# A block's format fixes its levels: rules are H3 under the title or an H2 chapter.
+"blocks/**/*.md" = ["MD001"]
+# The template shows that format, its placeholders in angle brackets.
+"templates/block.md" = ["MD001", "MD033"]

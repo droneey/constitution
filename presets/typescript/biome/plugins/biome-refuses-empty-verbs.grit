@@ -11,7 +11,7 @@ or {
   $function <: not within or {
     `new Proxy($...)`,
     `const $_: ProxyHandler<$_> = $_`
-  } ,
+  },
   $name <: or {
     `handle`,
     `process`,

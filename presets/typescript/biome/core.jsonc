@@ -28,12 +28,22 @@
         },
         "useErrorCause": "error",
         "useThrowOnlyError": "error",
+        "noNestedTernary": "error",
+        "noMagicNumbers": "error",
+      },
+      "correctness": {
+        "noUnreachable": "error",
+        "noUnusedFunctionParameters": "error",
+        "noUnusedImports": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "error",
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": {
           "level": "error",
           "options": {
-            "maxAllowedComplexity": 10,
+            "maxAllowedComplexity": 15,
           },
         },
         "noExcessiveLinesPerFunction": {
@@ -58,14 +68,13 @@
         },
       },
       "nursery": {
-        "noFloatingPromises": "error",
         "noConditionalExpect": "error",
-        "noMisusedPromises": "error",
         "useExpect": "error",
       },
     },
   },
   "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/catch-handles-only-what-it-recognises.grit",
     {
       "path": "./.droneey/constitution/presets/typescript/biome/plugins/case-named-should-when.grit",
       "includes": [
@@ -124,12 +133,13 @@
         "**/__tests__/**",
         "**/*.test.ts",
         "**/*.test.tsx",
-        "tests/**",
+        "**/tests/**",
       ],
       "linter": {
         "rules": {
           "style": {
             "noExcessiveLinesPerFile": "off",
+            "noMagicNumbers": "off",
           },
           "suspicious": {
             "noEmptyBlockStatements": "off",

@@ -2,10 +2,20 @@ language js
 
 or {
   `$_.innerHTML = $_`,
+  `$_.innerHTML += $_`,
   `$_.outerHTML = $_`,
-  `$_.insertAdjacentHTML($_, $_)`,
-  `document.write($_)`,
-  `document.writeln($_)`
+  `$_.outerHTML += $_`,
+  `$_.srcdoc = $_`,
+  `$_.srcdoc += $_`,
+  `$_.setAttribute($name, $_)` where { $name <: r"['\"]srcdoc['\"]" },
+  JsxAttribute(name=$name) where { $name <: r"srcDoc" },
+  `$_.insertAdjacentHTML($...)`,
+  `$_.setHTMLUnsafe($...)`,
+  `$_.parseHTMLUnsafe($...)`,
+  `$_.parseFromString($...)`,
+  `$_.createContextualFragment($...)`,
+  `document.write($...)`,
+  `document.writeln($...)`
 } as $injection where {
-  register_diagnostic(span=$injection, message="Render markup through a sanitising renderer, never as raw HTML", severity="error")
+  register_diagnostic(span=$injection, message="Render markup through the element interfaces or a sanitising renderer, never as raw HTML", severity="error")
 }

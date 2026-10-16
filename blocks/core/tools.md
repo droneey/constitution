@@ -5,6 +5,7 @@
 ## Tools
 
 ### rule-held-by-a-tool-where-one-can · MUST
+
 A rule a tool can hold, at a cost its gain repays, is held by one, configured to fail on a violation; prose carries what no tool can express and what a check would cost more to keep than the review it replaces, which a decision records.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ A rule a tool can hold, at a cost its gain repays, is held by one, configured to
 | a rule held only by prose is broken as soon as nobody reads it, and a tool never tires. | [] |
 
 ### one-formatter-per-language · MUST
+
 One formatter formats the files of each language, and a file it would change fails the check.
 
 | Why | Tags |
@@ -19,6 +21,7 @@ One formatter formats the files of each language, and a file it would change fai
 | a formatter ends every argument about layout, and two formatters undo each other’s work. | [] |
 
 ### one-check-runs-every-tool · MUST
+
 One check runs every tool that holds a rule and fails on any violation.
 
 | Why | Tags |
@@ -28,6 +31,7 @@ One check runs every tool that holds a rule and fails on any violation.
 ## Findings
 
 ### suppression-states-its-reason · MUST
+
 A suppression — of a lint rule, a type error, a mutant, a deliberately ignored failure — carries its reason beside it.
 
 | Why | Tags |
@@ -35,6 +39,7 @@ A suppression — of a lint rule, a type error, a mutant, a deliberately ignored
 | the next reader must know whether the exception still holds, and a bare suppression cannot be judged. | [] |
 
 ### suppression-silences-one-finding · MUST
+
 A suppression silences one finding: it sits on the finding’s line or the line above, or names the finding, and names the one rule it silences wherever the tool can name one; a suppression that silences nothing is removed.
 
 | Why | Tags |
@@ -42,6 +47,7 @@ A suppression silences one finding: it sits on the finding’s line or the line 
 | a narrow suppression can be judged where it stands; a broad one silences rules and lines nobody meant to. | [] |
 
 ### check-never-weakened-to-pass · MUST
+
 A failing check is made to pass by fixing its cause, never by changing a test’s expectation, skipping a test, adding a suppression, special-casing a test input or loosening a tool’s configuration, unless that change is the task, another rule asks for it, or a person consented to it by name.
 
 | Why | Tags |

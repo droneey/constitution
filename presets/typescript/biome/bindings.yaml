@@ -31,9 +31,17 @@ bun-test:
   strict-matcher-only:
     - strict-matcher-only.grit
 core:
-  async-work-awaited-or-held-by-a-scope:
-    - noFloatingPromises
-    - noMisusedPromises
+  code-reads-plainly:
+    - noNestedTernary
+  dead-code-deleted:
+    - noUnreachable
+    - noUnusedFunctionParameters
+    - noUnusedImports
+    - noUnusedLabels
+    - noUnusedPrivateClassMembers
+    - noUnusedVariables
+  literal-with-a-meaning-is-named:
+    - noMagicNumbers
   function-takes-at-most-three-positions:
     - useMaxParams
   case-named-should-when:
@@ -47,6 +55,7 @@ core:
   thrown-value-is-an-error:
     - useThrowOnlyError
   catch-handles-only-what-it-recognises:
+    - catch-handles-only-what-it-recognises.grit
     - noEmptyBlockStatements
   file-within-500-lines:
     - noExcessiveLinesPerFile
@@ -130,6 +139,8 @@ react-dom:
     - useImageSize
   jsx-viewport-never-blocks-zoom:
     - noNonScalableViewport
+  language-declared-by-lang:
+    - useHtmlLang
 self:
   biome-refuses-empty-names:
     - biome-refuses-empty-names.grit
@@ -162,6 +173,23 @@ testing-library:
   queries-by-role-label-text:
     - queries-by-role-label-text.grit
 typescript:
+  async-work-awaited-or-held-by-a-scope:
+    - noFloatingPromises
+    - noMisusedPromises
+  promise-awaited-returned-or-handed-to-a-scope:
+    - noFloatingPromises
+    - noMisusedPromises
+    - noVoid
+  code-never-run-from-a-string:
+    - noGlobalEval
+    - noImpliedEval
+  package-is-an-es-module:
+    - noCommonJs
+  type-only-import-written-as-import-type:
+    - useExportType
+    - useImportType
+  namespace-never-written:
+    - noNamespace
   scoped-resource-held-by-using:
     - useDisposables
   date-and-time-are-temporal-values:

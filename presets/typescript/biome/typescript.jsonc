@@ -93,9 +93,14 @@
         "useConsistentEnumValueType": "error",
         "useConsistentMethodSignatures": "error",
         "noDefaultExport": "error",
+        "noCommonJs": "error",
       },
       "complexity": {
         "noUselessUndefined": "error",
+        "noVoid": "error",
+      },
+      "security": {
+        "noGlobalEval": "error",
       },
       "nursery": {
         "noUnsafeTypeAssertion": "error",
@@ -106,6 +111,9 @@
         "noUnsafePlusOperands": "error",
         "noBaseToString": "error",
         "noMisleadingReturnType": "error",
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "noImpliedEval": "error",
       },
     },
   },
@@ -178,6 +186,7 @@
           },
           "style": {
             "noDefaultExport": "off",
+            "useNamingConvention": "off",
           },
         },
       },

@@ -70,9 +70,7 @@
       },
       "style": {
         "noParameterAssign": "error",
-        "noNestedTernary": "error",
         "useNumberNamespace": "error",
-        "noMagicNumbers": "error",
         "useBlockStatements": "error",
         "noUselessElse": "error",
         "useCollapsedElseIf": "error",
@@ -84,7 +82,6 @@
         "useAtIndex": "error",
         "useTrimStartEnd": "error",
         "noSubstr": "error",
-        "noCommonJs": "error",
         "noDoneCallback": "error",
         "noExportedImports": "error",
         "useNumericSeparators": "error",
@@ -123,7 +120,6 @@
         "noUselessLoneBlockStatements": "error",
         "noUselessLabel": "error",
         "noExtraBooleanCast": "error",
-        "noVoid": "error",
         "noUselessStringConcat": "error",
         "noImplicitCoercions": "error",
         "noForEach": "error",
@@ -152,7 +148,6 @@
         "useRegexpTest": "error",
         "noUselessTypeConversion": "error",
         "noEmptyObjectKeys": "error",
-        "noImpliedEval": "error",
         "noExtendNative": "error",
         "noLoopFunc": "error",
         "noNegationInEqualityCheck": "error",
@@ -172,9 +167,6 @@
       ],
       "linter": {
         "rules": {
-          "style": {
-            "noMagicNumbers": "off",
-          },
           "complexity": {
             "noStaticOnlyClass": "off",
           },

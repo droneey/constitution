@@ -5,6 +5,7 @@
 ## Context
 
 ### trace-id-taken-only-from-a-trusted-caller · SHOULD
+
 A unit of work continues the trace id its caller sent in the W3C Trace Context only when that caller is one of the program's own systems; for any other it starts a new one, linked to the context it was sent.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ A unit of work continues the trace id its caller sent in the W3C Trace Context o
 | a trace id taken from anyone lets an outsider tie their requests into the program's traces or flood one trace with records. | [security] |
 
 ### trace-context-propagated-onward · SHOULD
+
 A call to another system carries the trace context of the work that made it, in the W3C Trace Context headers.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A call to another system carries the trace context of the work that made it, in 
 ## Spans
 
 ### unit-of-work-opens-a-span · SHOULD
+
 Every unit of work — a request served, a task run, a message handled, a call to another system — runs in a span named after its operation, which records its outcome.
 
 | Why | Tags |
@@ -28,6 +31,7 @@ Every unit of work — a request served, a task run, a message handled, a call t
 | a trace shows where the time of a request went only if each step it took is a span of it. | [] |
 
 ### event-in-a-unit-of-work-written-as-a-log · SHOULD
+
 An event or a failure inside a unit of work is written as a log record in its span's context, never through the span-event API.
 
 | Why | Tags |
@@ -37,6 +41,7 @@ An event or a failure inside a unit of work is written as a log record in its sp
 ## Content
 
 ### span-attribute-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
+
 Span attributes and metric exemplars pass the mask the logs pass, by the same words, before export; an address is recorded without its query and a database statement only with placeholders for its values.
 
 | Why | Tags |

@@ -5,6 +5,7 @@
 ## Design system
 
 ### primitive-passes-attributes-and-class → primitive-passes-its-element-through · SHOULD
+
 In the browser, a primitive passes its element's native attributes and its class through, its own class merged with the caller's.
 
 | Why | Tags |

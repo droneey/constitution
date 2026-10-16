@@ -1,4 +1,4 @@
-Required Notice: Copyright Dmytro Kurovskyi (https://kurovskyi.dev)
+Required Notice: Copyright Dmytro Kurovskyi (<https://kurovskyi.dev>)
 
 # PolyForm Internal Use License 1.0.0
 
@@ -10,7 +10,7 @@ In order to get any license under these terms, you must agree to them as both st
 
 ## Copyright License
 
-The licensor grants you a copyright license for the software to do everything you might do with the software that would otherwise infringe the licensor's copyright in it for any permitted purpose.  However, you may only make changes or new works based on the software according to [Changes and New Works License](#changes-and-new-works-license), and you may not distribute the software.
+The licensor grants you a copyright license for the software to do everything you might do with the software that would otherwise infringe the licensor's copyright in it for any permitted purpose. However, you may only make changes or new works based on the software according to [Changes and New Works License](#changes-and-new-works-license), and you may not distribute the software.
 
 ## Changes and New Works License
 
@@ -30,7 +30,7 @@ Use of the software for the internal business operations of you and your company
 
 ## No Other Rights
 
-These terms do not allow you to sublicense or transfer any of your licenses to anyone else, or prevent the licensor from granting licenses to anyone else.  These terms do not imply any other licenses.
+These terms do not allow you to sublicense or transfer any of your licenses to anyone else, or prevent the licensor from granting licenses to anyone else. These terms do not imply any other licenses.
 
 ## Patent Defense
 
@@ -38,7 +38,7 @@ If you make any written claim that the software infringes or contributes to infr
 
 ## Violations
 
-The first time you are notified in writing that you have violated any of these terms, or done anything with the software not covered by your licenses, your licenses can nonetheless continue if you come into full compliance with these terms, and take practical steps to correct past violations, within 32 days of receiving notice.  Otherwise, all your licenses end immediately.
+The first time you are notified in writing that you have violated any of these terms, or done anything with the software not covered by your licenses, your licenses can nonetheless continue if you come into full compliance with these terms, and take practical steps to correct past violations, within 32 days of receiving notice. Otherwise, all your licenses end immediately.
 
 ## No Liability
 
@@ -50,7 +50,7 @@ The **licensor** is the individual or entity offering these terms, and the **sof
 
 **You** refers to the individual or entity agreeing to these terms.
 
-**Your company** is any legal entity, sole proprietorship, or other kind of organization that you work for, plus all organizations that have control over, are under the control of, or are under common control with that organization.  **Control** means ownership of substantially all the assets of an entity, or the power to direct its management and policies by vote, contract, or otherwise.  Control can be direct or indirect.
+**Your company** is any legal entity, sole proprietorship, or other kind of organization that you work for, plus all organizations that have control over, are under the control of, or are under common control with that organization. **Control** means ownership of substantially all the assets of an entity, or the power to direct its management and policies by vote, contract, or otherwise. Control can be direct or indirect.
 
 **Your licenses** are all the licenses granted to you for the software under these terms.
 

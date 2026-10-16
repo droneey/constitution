@@ -5,6 +5,7 @@
 ## Values
 
 ### values-formatted-by-the-active-locale · MUST
+
 Numbers, dates, times, amounts and lists are formatted by the active locale, which every formatter is given; none is left to the runtime's locale.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ Numbers, dates, times, amounts and lists are formatted by the active locale, whi
 | `1,000.50` and `1.000,50` are one number to different readers, and the runtime's locale differs between the server, the client and a spec. | [ux] |
 
 ### entered-value-parsed-by-the-active-locale · SHOULD
+
 A number, a date or an amount its user types is parsed by the active locale's rules, the same that format it.
 
 | Why | Tags |
@@ -19,6 +21,7 @@ A number, a date or an amount its user types is parsed by the active locale's ru
 | a user in a locale that writes `1,5` otherwise enters fifteen, or nothing, where they meant one and a half. | [ux, data] |
 
 ### instant-shown-in-the-readers-zone → instant-is-an-exact-time · MUST
+
 An instant is shown in the reader's time zone, with the zone named where a reader could take it for another; a time bound to a place — a departure, an opening hour — is shown in that place's zone, and names it.
 
 | Why | Tags |
@@ -26,6 +29,7 @@ An instant is shown in the reader's time zone, with the zone named where a reade
 | an instant shown in the server's zone names a different hour to every reader elsewhere. | [] |
 
 ### currency-from-the-amount · MUST
+
 An amount is shown in its own currency, which travels with the amount; the locale changes only how it is written.
 
 | Why | Tags |
@@ -33,6 +37,7 @@ An amount is shown in its own currency, which travels with the amount; the local
 | a price formatted in the reader's currency shows €10 as $10, a different sum of money. | [data, ux] |
 
 ### text-sorted-by-the-locale · SHOULD
+
 Text a person reads in order — names, options, titles — is sorted by the active locale's collation, never by code point.
 
 | Why | Tags |

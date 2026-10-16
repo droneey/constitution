@@ -4,4 +4,6 @@ pre-commit:
     - name: ruff
       glob: "*.{py,pyi}"
       stage_fixed: true
-      run: uv run ruff check --fix --force-exclude {staged_files} && uv run ruff format --force-exclude {staged_files}
+      run: >-
+        uv run --locked ruff check --fix --force-exclude {staged_files}
+        && uv run --locked ruff format --force-exclude {staged_files}

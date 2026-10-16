@@ -374,6 +374,24 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
       id='a timer in a composition module',
     ),
     pytest.param(
+      APP,
+      'import datetime as dt, json as j; STAMP = dt.datetime.now()',
+      (
+        'features/orders/app/use_cases holds no effect, and datetime.datetime.now is one; '
+        'it reaches it through a port'
+      ),
+      id='the clock read through a module imported under another name',
+    ),
+    pytest.param(
+      APP,
+      'import json as j; from datetime import datetime as moment; STAMP = moment.now()',
+      (
+        'features/orders/app/use_cases holds no effect, and datetime.datetime.now is one; '
+        'it reaches it through a port'
+      ),
+      id='the clock read through a class imported under another name',
+    ),
+    pytest.param(
       DOMAIN,
       'HERE = Path.cwd()',
       (

@@ -5,6 +5,7 @@
 ## Privacy
 
 ### permission-narrowed-to-its-purpose → personal-data-collected-only-for-its-purpose · MUST
+
 The app asks for the narrowest permission that serves a feature — approximate location over precise, the photos the person picks over the whole library, while in use over always — and declares no permission it never requests.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ The app asks for the narrowest permission that serves a feature — approximate 
 | each permission opens personal data, and the narrowest one opens only what the purpose needs. | [data, security] |
 
 ### store-privacy-declarations-follow-the-inventory → privacy-notice-follows-the-inventory · MUST
+
 The app's privacy declarations to its stores — Apple's privacy manifest and privacy details, Google Play's data safety section — follow the inventory of personal data, its SDKs' collection included, and change with it.
 
 | Why | Tags |
@@ -19,6 +21,7 @@ The app's privacy declarations to its stores — Apple's privacy manifest and pr
 | the stores show these declarations to people before they install, and a declaration that misses what an SDK collects misleads them. | [data] |
 
 ### account-deletion-started-in-the-app → personal-data-erased-on-request · MUST
+
 An app in which a person can create an account lets them start that account's deletion inside the app, and from a web page its store listing links.
 
 | Why | Tags |
@@ -28,6 +31,7 @@ An app in which a person can create an account lets them start that account's de
 ## Consent
 
 ### cross-app-tracking-waits-for-the-systems-prompt → processing-waits-for-its-consent · MUST
+
 On iOS, tracking a person across other companies' apps and websites, the advertising identifier included, starts only after they allow it in the App Tracking Transparency prompt.
 
 | Why | Tags |

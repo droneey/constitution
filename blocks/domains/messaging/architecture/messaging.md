@@ -5,6 +5,7 @@
 ## The broker
 
 ### publisher-is-a-port-in-the-domains-words → contract-knows-no-vendor · MUST
+
 Code outside the edge publishes through a port that takes the feature's own events and commands, and the broker's client, its channels and its wire shape live only in the port's adapter.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ Code outside the edge publishes through a port that takes the feature's own even
 ## Delivery units
 
 ### consumers-and-jobs-beside-the-work-they-run → delivery-unit-beside-what-it-serves · SHOULD
+
 A consumer, one `.consumer` file per message type, lives in `consumers/` of the application layer of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in `jobs/` the same way.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A consumer, one `.consumer` file per message type, lives in `consumers/` of the 
 | a consumer changes with the work it starts, and the root's registration still lists every way work enters the program. | [] |
 
 ### message-handler-stays-thin → delivery-unit-stays-thin · SHOULD
+
 A consumer or a job parses its message or its tick, calls one operation of the feature that owns the work and returns its outcome for settlement; it holds no business rule and decides no retry.
 
 | Why | Tags |

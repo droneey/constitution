@@ -19,6 +19,7 @@ export default {
   ],
   plugins: [
     './tools/mutation-check/src/runner.ts',
+    './tools/mutation-check/src/ignorers.ts',
   ],
   mutate: [
     ...core.mutate,

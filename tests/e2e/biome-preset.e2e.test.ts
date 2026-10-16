@@ -167,6 +167,39 @@ describe('the Biome preset', () => {
         'A closed set of named values is a string enum, not a type taken from an as-const array',
     },
     {
+      condition: 'a type is taken from an as-const array without parentheses',
+      files: {
+        'src/features/orders/domain/order-status.ts':
+          "const STATUSES = ['open', 'closed'] as const;\n\nexport type OrderStatus = typeof STATUSES[number];\n",
+      },
+      message:
+        'A closed set of named values is a string enum, not a type taken from an as-const array',
+    },
+    {
+      condition: "a spec spies on a module through jest's object",
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { jest } from 'bun:test';\n\nimport * as orders from '../orders';\n\njest.spyOn(orders, 'load');\n",
+      },
+      message: 'Fake an effect through its port',
+    },
+    {
+      condition: 'a catch holds only a comment',
+      files: {
+        'src/features/orders/app/load.ts':
+          'export const load = (): void => {\n  try {\n    globalThis.focus();\n  } catch {\n    // ignore\n  }\n};\n',
+      },
+      message: 'A catch with no statement is empty',
+    },
+    {
+      condition: 'a concurrent case is left to do',
+      files: {
+        'src/__tests__/order.test.ts':
+          "import { test } from 'bun:test';\n\ntest.concurrent.todo('should add totals when both are set');\n",
+      },
+      message: 'Write the case so it runs every time',
+    },
+    {
       condition: 'a type is a union of string literals',
       files: {
         'src/features/orders/domain/order-status.ts':
@@ -242,6 +275,20 @@ describe('the Biome preset', () => {
       files: {
         'src/libs/list/list.utils.ts':
           'export const firstOf = (items: readonly string[]): string | undefined => {\n  const value = items.at(0);\n  return value;\n};\n',
+      },
+    },
+    {
+      condition: "a workspace's libs name a value by an empty word",
+      files: {
+        'libs/list/languages/typescript/src/list.utils.ts':
+          'export const firstOf = (items: readonly string[]): string | undefined => {\n  const value = items.at(0);\n  return value;\n};\n',
+      },
+    },
+    {
+      condition: 'a value is printed with a replacer of null',
+      files: {
+        'src/features/orders/domain/print.ts':
+          'export const print = (order: object): string => JSON.stringify(order, null, 2);\n',
       },
     },
     {
@@ -1618,11 +1665,6 @@ describe('the Biome css part', () => {
       rule: 'noImportantStyles',
     },
     {
-      condition: 'a stylesheet writes a hexadecimal colour',
-      css: '@layer components {\n  .card {\n    color: #102030;\n  }\n}\n',
-      rule: 'noHexColors',
-    },
-    {
       condition: 'a selector holds four classes',
       css: '@layer components {\n  .card .title .label .icon {\n    color: var(--color-text);\n  }\n}\n',
       rule: 'noExcessiveSelectorClasses',
@@ -1846,6 +1888,31 @@ describe('the Biome browser part', () => {
       condition: 'markup is written into the document',
       source: 'export const show = (markup: string): void => {\n  document.write(markup);\n};\n',
     },
+    {
+      condition: 'markup is appended to innerHTML',
+      source:
+        'export const show = (panel: Element, markup: string): void => {\n  panel.innerHTML += markup;\n};\n',
+    },
+    {
+      condition: "markup is set as a frame's document",
+      source:
+        "export const show = (frame: Element, markup: string): void => {\n  frame.setAttribute('srcdoc', markup);\n};\n",
+    },
+    {
+      condition: 'markup is set without the sanitiser',
+      source:
+        'export const show = (panel: Element, markup: string): void => {\n  panel.setHTMLUnsafe(markup);\n};\n',
+    },
+    {
+      condition: 'markup is parsed into a document',
+      source:
+        "export const show = (parser: DOMParser, markup: string): Document =>\n  parser.parseFromString(markup, 'text/html');\n",
+    },
+    {
+      condition: 'markup is parsed into a fragment',
+      source:
+        'export const show = (range: Range, markup: string): DocumentFragment =>\n  range.createContextualFragment(markup);\n',
+    },
   ])('should report raw HTML when $condition', ({ source }) => {
     // Arrange
     const project = {
@@ -1863,9 +1930,69 @@ describe('the Biome browser part', () => {
 
     // Assert
     expect(
-      plugins.some((finding) => finding.startsWith('Render markup through a sanitising renderer')),
+      plugins.some((finding) =>
+        finding.startsWith('Render markup through the element interfaces or a sanitising renderer'),
+      ),
     ).toBe(true);
   });
+
+  it('should report no plugin finding when text is set through the element interfaces', () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/ui/show.ts':
+          'export const show = (panel: Element, label: string): void => {\n  panel.textContent = label;\n};\n',
+      },
+      parts: [
+        ...BASE_PARTS,
+        'typescript/browser',
+      ],
+    };
+
+    // Act
+    const { plugins } = lintFindings(project);
+
+    // Assert
+    expect(plugins).toStrictEqual([]);
+  });
+});
+
+describe('the Biome design-system part', () => {
+  it.each([
+    {
+      isReported: true,
+      parts: [
+        ...BASE_PARTS,
+        'css/css',
+        'css/design-system',
+      ],
+    },
+    {
+      isReported: false,
+      parts: [
+        ...BASE_PARTS,
+        'css/css',
+      ],
+    },
+  ])(
+    'should report noHexColors $isReported when a theme writes a hexadecimal colour and a project extends $parts',
+    ({ isReported, parts }) => {
+      // Arrange
+      const project = {
+        files: {
+          'src/theme.css':
+            '@layer base;\n\n@layer base {\n  :root {\n    --color-text: #102030;\n  }\n}\n',
+        },
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noHexColors')).toBe(isReported);
+    },
+  );
 });
 
 describe('the Biome framework parts', () => {
@@ -2762,4 +2889,77 @@ describe('the Biome architecture parts', () => {
       expect(rules.includes('useMaxParams')).toBe(isReported);
     },
   );
+});
+
+describe('the Biome base where a rule allows what a setting caught', () => {
+  it.each([
+    {
+      condition: 'a file of end-to-end specs in a package of a workspace runs past 500 lines',
+      files: {
+        'products/web/tests/e2e/long.ts': fileOfLines(505),
+      },
+      rule: 'noExcessiveLinesPerFile',
+    },
+    {
+      condition: "a declaration file merges into the runtime's names",
+      files: {
+        'src/env.d.ts':
+          '// biome-ignore lint/style/noNamespace: the runtime declares its environment in this namespace\ndeclare global {\n  namespace NodeJS {\n    interface ProcessEnv {\n      PORT?: string;\n    }\n  }\n}\n\nexport {};\n',
+      },
+      rule: 'useNamingConvention',
+    },
+    {
+      condition: 'the router names a route by its parameter',
+      files: {
+        'src/root/routes/$orderId.tsx': 'export const orderId = 1;\n',
+        'src/root/routeTree.gen.ts': 'export const routeTree = 1;\n',
+      },
+      rule: 'useFilenamingConvention',
+    },
+  ])('should report no $rule when $condition', ({ files, rule }) => {
+    // Arrange
+    const project = {
+      files,
+      parts: [
+        ...BASE_PARTS,
+        'typescript/tanstack-router',
+      ],
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).not.toContain(rule);
+  });
+
+  it.each([
+    {
+      condition: 'code is run from a string',
+      files: {
+        'src/main.ts': 'export const run = (code: string): unknown => eval(code);\n',
+      },
+      rule: 'noGlobalEval',
+    },
+    {
+      condition: 'code follows a return',
+      files: {
+        'src/main.ts':
+          "export const label = (): string => {\n  return 'open';\n  globalThis.focus();\n};\n",
+      },
+      rule: 'noUnreachable',
+    },
+  ])('should report $rule when $condition', ({ files, rule }) => {
+    // Arrange
+    const project = {
+      files,
+      parts: BASE_PARTS,
+    };
+
+    // Act
+    const { rules } = lintFindings(project);
+
+    // Assert
+    expect(rules).toContain(rule);
+  });
 });

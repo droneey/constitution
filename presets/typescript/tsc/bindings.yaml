@@ -1,6 +1,9 @@
 browser:
   runtime-configuration-served-beside-bundle:
     - types
+distribution:
+  package-export-typed-explicitly:
+    - isolatedDeclarations
 core:
   dead-code-deleted:
     - allowUnreachableCode
@@ -31,3 +34,9 @@ self:
     - noImplicitOverride
   undefined-is-the-only-absence:
     - exactOptionalPropertyTypes
+  type-only-import-written-as-import-type:
+    - verbatimModuleSyntax
+  absent-optional-field-left-out:
+    - exactOptionalPropertyTypes
+  caught-value-recognised-before-use:
+    - strict

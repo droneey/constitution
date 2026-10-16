@@ -158,6 +158,7 @@ const STARLETTE_EXCEPTION = python(
   'def refuse() -> None:',
   '  raise HTTPException(status_code=404)',
 );
+const BARE_NUMBER = python('def is_bulk(count: int) -> bool:', '  return count > 12');
 const FOUR_SPACES = python('def total(prices: list[int]) -> int:', '    return sum(prices)');
 const longCall = (width: number): string => {
   const head = 'TOTAL = sum(';
@@ -225,6 +226,12 @@ describe('the ruff preset', () => {
       condition: 'a function takes four positional parameters',
       part: 'core',
       source: FOUR_POSITIONAL,
+    },
+    {
+      code: 'PLR2004',
+      condition: 'a comparison names a bare number',
+      part: 'core',
+      source: BARE_NUMBER,
     },
     {
       code: 'ANN001',

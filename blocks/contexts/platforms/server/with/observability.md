@@ -5,6 +5,7 @@
 ## Effects
 
 ### server-signals-flushed-before-exit → program-stops-cleanly · MUST
+
 A server told to stop flushes the log records, spans and metrics it holds in buffers before it exits, within its stop bound.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A server told to stop flushes the log records, spans and metrics it holds in buf
 ## Observability
 
 ### server-signal-names-its-copy → signal-carries-the-service-identity · SHOULD
+
 Every log record and span of a server, and the resource its metrics are sent under, carry beside the service's identity the identity of the copy that sent them, as OpenTelemetry's resource conventions name it: `service.instance.id`.
 
 | Why | Tags |

@@ -5,6 +5,7 @@
 ## User interface
 
 ### component-reaches-no-io-global → presentational-component-performs-no-io · MUST
+
 No file in a `components/` folder calls `fetch`, or any other input or output the runtime offers every module without an import.
 
 | Why | Tags |

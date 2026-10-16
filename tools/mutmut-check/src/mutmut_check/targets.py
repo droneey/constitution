@@ -1,8 +1,11 @@
 import ast
 import re
-from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  from collections.abc import Callable, Iterator, Mapping
 
 SOURCE_ROOT = Path('src')
 SPEC = re.compile(r'^test_(?P<name>[a-z0-9_]+)\.py$')

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 export LC_ALL=C
 set -o pipefail
 unset CDPATH

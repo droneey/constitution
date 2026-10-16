@@ -11,6 +11,8 @@ languages:
   - typescript
   - python
   - yaml
+  - shell
+  - markdown
 implementations:
   - bun
   - bun-test
@@ -36,6 +38,9 @@ implementations:
   - vulture
   - complexipy
   - python-check
+  - shellcheck
+  - shfmt
+  - rumdl
 packages: {}
 check: bun run check
 overrides:

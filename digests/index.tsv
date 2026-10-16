@@ -71,7 +71,10 @@ block	react-dom	implementation	React in the browser — the DOM, the document, l
 block	react-native	implementation	React on a device — host components, virtualised lists, modules.	architecture/react-native.md		mobile	_react	false			_react	**/*.tsx
 block	renovate	implementation	Dependency updates proposed by a bot.	workflow/renovate.md		git		false				renovate.json
 block	ruff	implementation	Formats and lints Python, with its rule families chosen by name.		fastapi pytest	python		false		python		pyproject.toml ruff.toml
+block	rumdl	implementation	rumdl lints and formats Markdown.			markdown		false		markdown		.rumdl.toml
 block	shadcn	implementation	UI kit from shadcn source on Base UI primitives, adapted on arrival.	architecture/shadcn.md		react-dom tailwind		false				components.json **/libs/ui/components/**
+block	shellcheck	implementation	ShellCheck analyses shell scripts and the commands files hold.			shell		false		shell		.shellcheckrc
+block	shfmt	implementation	shfmt formats shell scripts.			shell		false		shell		
 block	storybook	implementation	Storybook — a story for every state of a UI kit component.	architecture/storybook.md		_react		false				**/*.stories.tsx .storybook/**
 block	structlog	implementation	structlog renders the records of Python's logging as events.	architecture/structlog.md		python observability		false				**/root/**
 block	stryker	implementation	Stryker measures the tests by the mutants they kill.		bun-test workspace	typescript		false		typescript		stryker.config.mjs
@@ -80,7 +83,7 @@ block	tailwind	implementation	Styling with Tailwind — tokens, variant maps and
 block	tanstack-form	implementation	Forms with TanStack Form — one form state, schema validation.	architecture/tanstack-form.md		_react		false				**/*.tsx
 block	tanstack-query	implementation	Server data in the TanStack Query cache — keys, queries, mutations.	architecture/tanstack-query.md	architecture/access-control	_react remote-data		false				**/*.hooks.ts **/root/providers/** **/cache.utils.ts
 block	tanstack-router	implementation	File routes registering screens — URL state, layouts, guards, links.	architecture/tanstack-router.md	tanstack-query version-control architecture/access-control	react-dom		false				src/routes/** src/router.tsx src/root/routes/** src/root/router.tsx
-block	tanstack-start	implementation	The TanStack app shell — SPA mode, the document, runtime config.	architecture/tanstack-start.md		tanstack-router server		false				src/routes/__root.tsx src/router.tsx src/root/routes/__root.tsx src/root/router.tsx
+block	tanstack-start	implementation	The TanStack app shell — SPA mode, the document, runtime config.	architecture/tanstack-start.md		tanstack-router server		false				src/routes/__root.tsx src/router.tsx src/root/routes/__root.tsx src/root/router.tsx src/client.tsx
 block	testing-library	implementation	Testing Library — specs that use the UI the way a person does.		react-dom remote-data remote-service	_react		false				**/__tests__/**/*.test.tsx
 block	ts-reset	implementation	Types an application's parsed and fetched values as unknown.			typescript		false				src/reset.d.ts
 block	tsc	implementation	The TypeScript compiler checks the types.		bun-test workspace	typescript		false		typescript		tsconfig.json tsconfig.src.json tsconfig.test.json
@@ -89,6 +92,7 @@ block	uv	implementation	uv as Python's package manager, resolver and build backe
 block	vite	implementation	Vite builds and serves the bundle.		browser	typescript		false				vite.config.ts vite.*.config.ts
 block	vulture	implementation	vulture finds the Python code nothing uses.			python		false		python		
 block	yaml-js	implementation	The yaml package reads and writes YAML.	architecture/yaml-js.md		typescript		false				**/adapters/**
+block	yamlfmt	implementation	yamlfmt formats YAML files.			yaml		false		yaml		.yamlfmt.yaml
 block	yamllint	implementation	yamllint holds the style of YAML files.			yaml		false		yaml		.yamllint.yaml
 block	zod	implementation	zod parses untrusted input into the program's types.		config-file architecture/ui	typescript		false				**/models/** **/adapters/**
 chapter	core	agents.md	a person or an agent at work on the repository.
@@ -1497,14 +1501,11 @@ rule	bunli-command-from-a-factory	bunli	blocks/implementations/bunli/architectur
 rule	bunli-handler-through-the-error-handler	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST	errors	architecture	last-resort-handler-one-per-entry	true
 rule	bunli-configured-inline	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST		architecture	composition-root-wires-everything	true
 rule	bunli-imported-by-commands	bunli	blocks/implementations/bunli/architecture/bunli.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
-rule	cognitive-complexity-held-at-fifteen	complexipy	blocks/implementations/complexipy/complexipy.md		MUST			function-within-its-limits	true
+rule	complexity-snapshot-never-kept	complexipy	blocks/implementations/complexipy/complexipy.md		MUST			function-within-its-limits	true
 rule	dclint-rules-set-as-errors	dclint	blocks/implementations/dclint/dclint.md		MUST			docker-files-linted-in-the-check	true
 rule	dclint-suppression-names-rule-and-reason	dclint	blocks/implementations/dclint/dclint.md		MUST			suppression-silences-one-finding	true
 rule	cruiser-configuration-per-unit	dependency-cruiser	blocks/implementations/dependency-cruiser/with/workspace.md	workspace	MUST			unit-checked-by-its-own-tools	true
 rule	imports-between-units-held-at-the-root	dependency-cruiser	blocks/implementations/dependency-cruiser/architecture/with/workspace.md	workspace	MUST		architecture	units-import-toward-libs	true
-rule	unused-dependency-fails	deptry	blocks/implementations/deptry/deptry.md		MUST	security		dead-code-deleted	true
-rule	dev-tool-never-imported-by-the-program	deptry	blocks/implementations/deptry/deptry.md		MUST			production-code-imports-no-tool	true
-rule	spec-modules-unreachable-from-src	deptry	blocks/implementations/deptry/deptry.md		MUST	testing		test-code-never-reached-from-production	true
 rule	docker-files-linted-in-the-check	docker	blocks/implementations/docker/docker.md		MUST				true
 rule	images-pinned-by-version-and-digest	docker	blocks/implementations/docker/docker.md		MUST	security		download-pinned-by-version-and-checksum	true
 rule	files-copied-never-added	docker	blocks/implementations/docker/docker.md		MUST	security			true
@@ -1579,7 +1580,7 @@ rule	one-ky-instance-per-system	ky	blocks/implementations/ky/architecture/ky.md	
 rule	ky-errors-mapped-in-the-adapter	ky	blocks/implementations/ky/architecture/ky.md		MUST	errors	architecture	transport-failures-mapped-once	true
 rule	ky-home-is-the-edge-and-its-failure-mapper	ky	blocks/implementations/ky/architecture/ky.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	hooks-from-the-shared-preset	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD	security	workflow		true
-rule	hooks-installed-with-dependencies	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD		workflow		true
+rule	hooks-installed-on-setup	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		SHOULD		workflow		true
 rule	hooks-never-bypassed	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	testing	workflow	commit-checked-by-the-hooks	true
 rule	hook-rewrites-only-staged-files	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST	security	workflow	commit-holds-only-its-task-files	true
 rule	commit-subject-never-a-placeholder	lefthook	blocks/implementations/lefthook/workflow/lefthook.md		MUST		workflow	commit-subject-says-what-changed	true
@@ -1596,12 +1597,14 @@ rule	matomo-tracks-no-personal-data	matomo	blocks/implementations/matomo/matomo.
 rule	matomo-data-layer-seeded-before-container	matomo	blocks/implementations/matomo/matomo.md		MUST	performance			true
 rule	matomo-only-in-its-sink	matomo	blocks/implementations/matomo/architecture/matomo.md		MUST		architecture	sinks-behind-one-contract	true
 rule	matomo-waits-for-consent	matomo	blocks/implementations/matomo/with/privacy.md	privacy	MUST	security data		processing-waits-for-its-consent	true
+rule	matomo-objection-keeps-the-tracker-off	matomo	blocks/implementations/matomo/with/privacy.md	privacy	MUST	data		objection-honoured	true
 rule	toolchain-pinned-in-mise-toml	mise	blocks/implementations/mise/mise.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	toolchain-downloads-verified-by-the-lock	mise	blocks/implementations/mise/mise.md		MUST	security		download-pinned-by-version-and-checksum	true
 rule	shared-configuration-archive-installed-by-mise	mise	blocks/implementations/mise/mise.md		SHOULD	security			true
 rule	archive-hook-installs-the-commit-hooks	mise	blocks/implementations/mise/workflow/mise.md		SHOULD	security	workflow		true
 rule	personal-toolchain-overrides-ignored	mise	blocks/implementations/mise/with/version-control.md	version-control	MUST	security		machine-local-files-ignored	true
 rule	equivalent-mutant-marked-by-pragma	mutmut	blocks/implementations/mutmut/mutmut.md		MUST			suppression-silences-one-finding	true
+rule	log-calls-left-out-by-pattern	mutmut	blocks/implementations/mutmut/mutmut.md		MUST	testing		every-mutant-killed	true
 rule	mutants-run-without-the-gates	mutmut	blocks/implementations/mutmut/mutmut.md		MUST	testing		every-mutant-killed	true
 rule	spec-finds-files-by-searching-up	mutmut	blocks/implementations/mutmut/mutmut.md		MUST	testing		every-mutant-killed	true
 rule	nestjs-keeps-decorator-metadata	nestjs	blocks/implementations/nestjs/nestjs.md		MUST	errors			true
@@ -1689,6 +1692,7 @@ rule	style-colour-read-from-tokens	react-native	blocks/implementations/react-nat
 rule	react-native-imported-from-its-entry	react-native	blocks/implementations/react-native/react-native.md		MUST			dependency-reached-through-its-public-entry	true
 rule	react-native-imported-by-the-ui	react-native	blocks/implementations/react-native/architecture/react-native.md		MUST		architecture	layer-imports-dependencies-by-its-role	true
 rule	update-cooldown-configured	renovate	blocks/implementations/renovate/renovate.md		MUST	security		new-release-adopted-after-a-cooldown	true
+rule	step-pins-updated-by-hash-and-version	renovate	blocks/implementations/renovate/renovate.md		MUST	security		download-pinned-by-version-and-checksum	true
 rule	dependencies-updated-by-the-bot	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	security	workflow		true
 rule	updates-from-the-shared-preset	renovate	blocks/implementations/renovate/workflow/renovate.md		SHOULD	security	workflow		true
 rule	update-commits-in-the-commit-format	renovate	blocks/implementations/renovate/workflow/renovate.md		MUST		workflow	commit-header-type-and-subject	true
@@ -1703,12 +1707,19 @@ rule	flaky-mark-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SH
 rule	unittest-mock-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing		module-never-patched-in-a-spec	true
 rule	pytest-asyncio-banned	ruff	blocks/implementations/ruff/with/pytest.md	pytest	MUST	testing errors		async-specs-by-anyio	true
 rule	specs-lift-only-assert-and-package-rules	ruff	blocks/implementations/ruff/with/pytest.md	pytest	SHOULD	testing			true
+rule	rumdl-fmt-is-the-formatter	rumdl	blocks/implementations/rumdl/rumdl.md		MUST			one-formatter-per-language	true
+rule	rule-lists-extended-never-replaced	rumdl	blocks/implementations/rumdl/rumdl.md		MUST				true
+rule	rumdl-suppression-names-rule-and-reason	rumdl	blocks/implementations/rumdl/rumdl.md		MUST			suppression-silences-one-finding	true
 rule	complex-widgets-on-base-ui	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	a11y ux		complex-pattern-built-on-accessible-primitives	true
 rule	polymorphism-through-render	shadcn	blocks/implementations/shadcn/shadcn.md		SHOULD				true
 rule	parts-marked-by-data-slot	shadcn	blocks/implementations/shadcn/shadcn.md		SHOULD	ux			true
 rule	shadcn-source-adapted-on-arrival	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	ux		vendored-component-adapted-in-the-change-that-installs-it	true
 rule	shadcn-text-passed-by-props	shadcn	blocks/implementations/shadcn/shadcn.md		MUST	ux		primitives-take-text-by-props	true
 rule	shadcn-source-added-into-the-kit	shadcn	blocks/implementations/shadcn/architecture/shadcn.md		MUST	ux	architecture	vendored-component-placed-by-its-home	true
+rule	optional-checks-enabled-by-name	shellcheck	blocks/implementations/shellcheck/shellcheck.md		MUST				true
+rule	embedded-command-reaches-shellcheck	shellcheck	blocks/implementations/shellcheck/shellcheck.md		MUST	errors security		script-passes-a-shell-analyser	true
+rule	shellcheck-directive-names-code-and-reason	shellcheck	blocks/implementations/shellcheck/shellcheck.md		MUST			suppression-silences-one-finding	true
+rule	shfmt-is-the-formatter	shfmt	blocks/implementations/shfmt/shfmt.md		MUST			one-formatter-per-language	true
 rule	story-for-every-kit-state	storybook	blocks/implementations/storybook/storybook.md		SHOULD	ux testing			true
 rule	stories-render-from-fixtures	storybook	blocks/implementations/storybook/storybook.md		SHOULD				true
 rule	stories-outside-coverage	storybook	blocks/implementations/storybook/storybook.md		MUST	testing		logic-fully-covered	true
@@ -1725,6 +1736,7 @@ rule	fields-passed-in-extra	structlog	blocks/implementations/structlog/structlog
 rule	structlog-configured-by-the-root	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST		architecture	root-alone-configures-logging	true
 rule	only-the-root-imports-structlog	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST		architecture	root-alone-configures-logging	true
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/stryker.md		MUST			suppression-silences-one-finding	true
+rule	diagnostic-mutants-left-out-by-the-ignorer	stryker	blocks/implementations/stryker/stryker.md		MUST	testing		every-mutant-killed	true
 rule	stryker-runs-the-archive-runner	stryker	blocks/implementations/stryker/with/bun-test.md	bun-test	MUST	testing		every-mutant-killed	true
 rule	stryker-configuration-per-unit	stryker	blocks/implementations/stryker/with/workspace.md	workspace	MUST			unit-checked-by-its-own-tools	true
 rule	syncpack-holds-versions-and-field-order	syncpack	blocks/implementations/syncpack/syncpack.md		MUST				true
@@ -1814,6 +1826,7 @@ rule	deprecated-calls-fail-the-types	ty	blocks/implementations/ty/ty.md		MUST			
 rule	uv-is-the-only-python-package-manager	uv	blocks/implementations/uv/uv.md		MUST	security		dependencies-locked-by-one-lockfile	true
 rule	uv-build-backend-capped	uv	blocks/implementations/uv/uv.md		SHOULD				true
 rule	exclude-newer-sets-the-cooldown	uv	blocks/implementations/uv/uv.md		MUST	security		new-release-adopted-after-a-cooldown	true
+rule	sources-name-only-the-workspace-or-an-index	uv	blocks/implementations/uv/uv.md		MUST	security		dependency-installed-only-from-a-registry	true
 rule	sdists-never-built	uv	blocks/implementations/uv/uv.md		MUST	security		install-scripts-run-only-for-listed-dependencies	true
 rule	python-never-downloaded-by-uv	uv	blocks/implementations/uv/uv.md		MUST	security		tool-pinned-exactly-by-the-repository	true
 rule	files-shipped-named-in-pyproject	uv	blocks/implementations/uv/with/distribution.md	distribution	MUST	security		distributed-unit-ships-only-what-its-manifest-names	true
@@ -1827,11 +1840,11 @@ rule	manifest-declares-side-effects	vite	blocks/implementations/vite/vite.md		SH
 rule	build-env-holds-only-build-facts	vite	blocks/implementations/vite/with/browser.md	browser	MUST	security		runtime-configuration-served-beside-bundle	true
 rule	process-env-never-read-in-the-bundle	vite	blocks/implementations/vite/with/browser.md	browser	MUST	security		runtime-configuration-served-beside-bundle	true
 rule	each-entry-has-a-size-budget	vite	blocks/implementations/vite/with/browser.md	browser	SHOULD	performance		bundle-within-its-size-budget	true
-rule	unused-code-reported-from-sixty	vulture	blocks/implementations/vulture/vulture.md		MUST			dead-code-deleted	true
 rule	ignored-names-state-their-reasons	vulture	blocks/implementations/vulture/vulture.md		MUST			suppression-states-its-reason	true
 rule	yaml-failures-become-one-coded-error	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	errors		parse-failure-lists-every-problem	true
 rule	yaml-written-without-folding	yaml-js	blocks/implementations/yaml-js/yaml-js.md		SHOULD	data			true
 rule	yaml-only-at-the-edge	yaml-js	blocks/implementations/yaml-js/architecture/yaml-js.md		MUST	security	architecture	outside-value-untyped-until-parsed	true
+rule	yamlfmt-is-the-formatter	yamlfmt	blocks/implementations/yamlfmt/yamlfmt.md		MUST			one-formatter-per-language	true
 rule	yamllint-rules-set-as-errors	yamllint	blocks/implementations/yamllint/yamllint.md		MUST			rule-held-by-a-tool-where-one-can	true
 rule	schema-never-brands	zod	blocks/implementations/zod/zod.md		MUST	data		invariant-value-is-a-branded-type	true
 rule	strict-objects-for-owned-documents	zod	blocks/implementations/zod/zod.md		MUST	data		own-shape-strict-other-shape-tolerant	true

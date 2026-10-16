@@ -5,6 +5,7 @@
 ## Requirements for implementation
 
 ### cache-undoes-only-the-failed-writes-change · MUST
+
 The cache lets a write change its entries before the write runs, and undoes that write's own change alone when it fails — by rendering pending writes from their inputs, or by restoring and reapplying the writes still pending.
 
 | Why | Tags |
@@ -12,6 +13,7 @@ The cache lets a write change its entries before the write runs, and undoes that
 | an optimistic change with no restore leaves the program showing what the remote system refused. | [data] |
 
 ### cache-exposes-the-input-of-pending-writes · MUST
+
 The cache gives the input of every write still pending.
 
 | Why | Tags |

@@ -128,10 +128,11 @@ const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string
     '',
   ].join('\n');
 
-const bunfig = readFileSync(join(TEMPLATES, 'bun', 'bunfig.toml'), 'utf8').replace(
-  'coveragePathIgnorePatterns = [\n',
-  'coveragePathIgnorePatterns = [\n  "../**",\n',
-);
+const bunfig = readFileSync(join(TEMPLATES, 'bun', 'bunfig.toml'), 'utf8');
+const bunfigIntegration = readFileSync(
+  join(TEMPLATES, 'bun', 'bunfig.integration.toml'),
+  'utf8',
+).replace('coveragePathIgnorePatterns = [\n', 'coveragePathIgnorePatterns = [\n  "../**",\n');
 const sandbox = readFileSync(
   join(TEMPLATES, 'bun', 'src', '__tests__', 'sandbox.fixtures.ts'),
   'utf8',
@@ -166,6 +167,7 @@ const EROS: Files = {
   'products/eros/shared/conformance/cases.yaml': '- code: validation.email\n  status: 422\n',
   'products/eros/shared/schema/kinds.yaml': '- validation\n- not-found\n',
   'products/eros/languages/typescript/bunfig.toml': bunfig,
+  'products/eros/languages/typescript/bunfig.integration.toml': bunfigIntegration,
   'products/eros/languages/typescript/src/__tests__/sandbox.fixtures.ts': sandbox,
   'products/eros/languages/typescript/package.json': manifestOf({
     exports: {
@@ -370,6 +372,7 @@ const REPORTS: Files = {
 // A browser application whose specs are checked by a configuration of their own.
 const WEB: Files = {
   'products/web/bunfig.toml': bunfig,
+  'products/web/bunfig.integration.toml': bunfigIntegration,
   'products/web/package.json': manifestOf({
     dependencies: [
       '@shop/shared-orders',
@@ -468,6 +471,7 @@ const API_AND_SHARED: Files = {
     references: [],
   }),
   'products/api/bunfig.toml': bunfig,
+  'products/api/bunfig.integration.toml': bunfigIntegration,
   'products/api/package.json': manifestOf({
     dependencies: [
       '@shop/libs-money',
@@ -526,6 +530,7 @@ export const totalLine = (order: Totalled): string => \`\${describeOrder(order)}
     ],
   }),
   'shared/orders/bunfig.toml': bunfig,
+  'shared/orders/bunfig.integration.toml': bunfigIntegration,
   'shared/orders/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',

@@ -24,6 +24,7 @@ Hold it to the rules of the project's domains and language and their requirement
 ## The project's files
 
 At the repository's root:
+
 - `constitution.yaml`: `version`, the constitution's version the project follows; `axes`, the optional axes it follows; the blocks by layer; `packages`, the blocks of each package; `check`, the command of the one check; `overrides`.
 - `PROJECT.md`: the product and its users, entities, boundaries, critical scenarios and glossary.
 - `DECISIONS.md`: the choices between real alternatives, each with what was rejected and why.

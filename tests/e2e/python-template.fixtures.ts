@@ -2,6 +2,8 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { delimiter, join } from 'node:path';
 
+import { z } from 'zod';
+
 import type { Files } from './python-project.fixtures';
 import { inPythonProject, REPOSITORY, writeFiles } from './python-project.fixtures';
 import { ENVIRONMENT } from './uv.fixtures';
@@ -12,6 +14,7 @@ interface Run {
 }
 
 const TEMPLATES = join(REPOSITORY, 'templates', 'project', 'python');
+const PRESETS = join(REPOSITORY, 'presets', 'python');
 const GIT_IDENTITY = [
   '-c',
   'user.name=Constitution',
@@ -21,12 +24,14 @@ const GIT_IDENTITY = [
 
 const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
+const PYPROJECT = readFileSync(join(TEMPLATES, 'pyproject.toml'), 'utf8')
+  .replace('<name>', 'shop')
+  .replaceAll('<package>', 'shop');
+
 // The template's files as a project copies them, its package named shop.
 const TEMPLATE_FILES: Files = {
   '.gitignore': `${readFileSync(join(TEMPLATES, '.gitignore'), 'utf8')}/.droneey\n`,
-  'pyproject.toml': readFileSync(join(TEMPLATES, 'pyproject.toml'), 'utf8')
-    .replace('<name>', 'shop')
-    .replaceAll('<package>', 'shop'),
+  'pyproject.toml': PYPROJECT,
   'tests/conftest.py': readFileSync(join(TEMPLATES, 'tests', 'conftest.py'), 'utf8'),
 };
 
@@ -195,4 +200,17 @@ const runTask = (input: { changes: Files; task: string }): Run =>
     ],
   });
 
-export { python, runTask };
+// The tables of [tool] in a pyproject.toml.
+const SETTINGS = z.object({
+  tool: z.record(z.string(), z.unknown()),
+});
+
+// A tool's table in the template, and in the tool's part, which the template
+// carries since the tool reads no file but the project's.
+const templateTable = (tool: string): unknown =>
+  SETTINGS.parse(Bun.TOML.parse(PYPROJECT)).tool[tool];
+
+const partTable = (tool: string): unknown =>
+  SETTINGS.parse(Bun.TOML.parse(readFileSync(join(PRESETS, tool, 'core.toml'), 'utf8'))).tool[tool];
+
+export { partTable, python, runTask, templateTable };

@@ -5,6 +5,7 @@
 ## Layout
 
 ### module-styles-offered-by-a-stylesheet-surface → module-reached-only-through-its-surface · MUST
+
 A module that ships styles offers them through a stylesheet surface, `index.css`, beside its script surface: the entry stylesheet imports that surface by path, and inside the module the surface imports its parts.
 
 | Why | Tags |

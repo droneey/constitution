@@ -2,11 +2,15 @@ import ast
 import sys
 from dataclasses import dataclass
 from enum import StrEnum
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from python_check.findings import Finding
 from python_check.imports import import_root_of, in_feature_form
-from python_check.settings import Settings
+
+if TYPE_CHECKING:
+  from pathlib import Path
+
+  from python_check.settings import Settings
 
 ROOT = 'root'
 ENTRYPOINTS = 'entrypoints'
@@ -17,6 +21,8 @@ APP = 'app'
 PURE = frozenset({'kernel'})
 EDGE = frozenset({ADAPTERS, 'integrations', 'libs', ROOT})
 ENTRIES = frozenset({'__main__', 'main'})
+# The folders of an entry file of its own: entrypoints/<name>/main.py.
+ENTRY_DEPTH = 2
 # The word a home names the whole edge by.
 EDGE_HOME = 'edge'
 OWN = frozenset({'__future__', *sys.stdlib_module_names})
@@ -129,7 +135,7 @@ class Role(StrEnum):
 
 def _is_entry(*, folders: tuple[str, ...], stem: str) -> bool:
   return (not folders and stem in ENTRIES) or (
-    folders[:1] == (ENTRYPOINTS,) and len(folders) == 2 and stem == 'main'
+    folders[:1] == (ENTRYPOINTS,) and len(folders) == ENTRY_DEPTH and stem == 'main'
   )
 
 
@@ -168,25 +174,46 @@ def _packages(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]:
       return ()
 
 
-def _dotted(node: ast.expr) -> str | None:
+type Aliases = dict[str, str]
+
+
+# The names an import binds under another name, each with the dotted name it
+# stands for: `import datetime as dt` binds dt, `from datetime import datetime as moment` moment.
+def _aliased(node: ast.AST) -> tuple[tuple[str, str], ...]:
+  match node:
+    case ast.Import(names=names):
+      return tuple((alias.asname, alias.name) for alias in names if alias.asname is not None)
+    case ast.ImportFrom(level=0, module=str(module), names=names):
+      return tuple(
+        (alias.asname, f'{module}.{alias.name}') for alias in names if alias.asname is not None
+      )
+    case _:
+      return ()
+
+
+def _aliases_of(tree: ast.Module) -> Aliases:
+  return dict(pair for node in ast.walk(tree) for pair in _aliased(node))
+
+
+def _dotted(node: ast.expr, *, aliases: Aliases) -> str | None:
   match node:
     case ast.Name(id=name):
-      return name
+      return aliases.get(name, name)
     case ast.Attribute(value=value, attr=attr):
-      base = _dotted(value)
+      base = _dotted(value, aliases=aliases)
       return None if base is None else f'{base}.{attr}'  # pragma: no mutate -- rootless: no effect
     case _:  # pragma: no mutate -- without it the match falls through to None
       return None
 
 
-def _named(node: ast.AST) -> tuple[str, ...]:
+def _named(node: ast.AST, *, aliases: Aliases) -> tuple[str, ...]:
   match node:
     case ast.Import():
       return tuple(alias.name for alias in node.names)
     case ast.ImportFrom(level=0, module=str(module)):
       return (module, *(f'{module}.{alias.name}' for alias in node.names))
     case ast.Attribute():
-      name = _dotted(node)
+      name = _dotted(node, aliases=aliases)
       return () if name is None else (name, f'{DATETIME}.{name}')
     case ast.Call(func=ast.Name(id=name)):
       return (name,)
@@ -194,8 +221,8 @@ def _named(node: ast.AST) -> tuple[str, ...]:
       return ()
 
 
-def _effect(node: ast.AST, *, effects: frozenset[str]) -> str | None:
-  return next((name for name in _named(node) if name in effects), None)
+def _effect(node: ast.AST, *, aliases: Aliases, effects: frozenset[str]) -> str | None:
+  return next((name for name in _named(node, aliases=aliases) if name in effects), None)
 
 
 def _binding(folders: tuple[str, ...]) -> bool:
@@ -267,6 +294,7 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     for package in _packages(node)
     if (message := _package_message(importer=importer, package=package)) is not None
   )
+  aliases = _aliases_of(tree)
   effects_here = EFFECT_NAMES if _binding(root.package) else EFFECT_NAMES | TIMERS
   effects = tuple(
     Finding(
@@ -277,7 +305,7 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     for node in ast.walk(tree)
     if importer.role is not Role.EDGE
     and isinstance(node, ast.Import | ast.ImportFrom | ast.Attribute | ast.Call)
-    and (name := _effect(node, effects=effects_here)) is not None
+    and (name := _effect(node, aliases=aliases, effects=effects_here)) is not None
   )
 
   environment = tuple(
@@ -291,7 +319,10 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     and root.package[:1] != (ROOT,)
     and not _is_entry(folders=root.package, stem=path.stem)
     and isinstance(node, ast.Import | ast.ImportFrom | ast.Attribute)
-    and (name := next((name for name in _named(node) if name in ENVIRONMENT), None)) is not None
+    and (
+      name := next((name for name in _named(node, aliases=aliases) if name in ENVIRONMENT), None)
+    )
+    is not None
   )
 
   return packages + effects + environment

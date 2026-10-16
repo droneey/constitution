@@ -4,6 +4,9 @@ pre-commit:
     - name: validate-branch
       run: |
         BRANCH=$(git branch --show-current)
+        if [ -z "$BRANCH" ]; then
+          exit 0
+        fi
         if ! echo "$BRANCH" | grep -qE '^(feature|fix|hotfix)/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*$'; then
           echo "Branch '$BRANCH' must match: (feature|fix|hotfix)/{id}-{name}"
           exit 1

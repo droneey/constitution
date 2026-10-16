@@ -5,6 +5,7 @@
 ## Context
 
 ### message-carries-its-creators-trace-context → trace-context-propagated-onward · SHOULD
+
 A message carries the W3C Trace Context of the work that created it in its headers or metadata — stored beside it in the outbox, where it travels through one — so its handling's span links to that trace, not the relay's.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A message carries the W3C Trace Context of the work that created it in its heade
 ## Spans
 
 ### handled-message-spanned-and-linked → unit-of-work-opens-a-span · SHOULD
+
 Handling a message runs in a consumer span named after its operation and destination, linked to the context the message carries, with the attributes OpenTelemetry's messaging conventions name — the system, the destination and the message's identifier.
 
 | Why | Tags |
@@ -23,6 +25,7 @@ Handling a message runs in a consumer span named after its operation and destina
 ## Measures
 
 ### stalled-message-work-alerted · SHOULD
+
 Every consumer is measured by its lag — the age of its oldest waiting message and their count; lag past a bound the project sets, a message arriving in dead letters, and a scheduled run that fails or never runs each alert the operators.
 
 | Why | Tags |

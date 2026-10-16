@@ -5,6 +5,7 @@
 ## Releases
 
 ### engines-floor-raised-only-in-a-major → runtime-floor-never-raised-in-a-patch · MUST
+
 A package others install raises the floor of `engines` only in a major release.
 
 | Why | Tags |

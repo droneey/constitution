@@ -1,7 +1,10 @@
-from collections.abc import Mapping
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from mutmut_check.targets import Changes
+
+if TYPE_CHECKING:
+  from collections.abc import Mapping
 
 
 def python(*lines: str) -> str:

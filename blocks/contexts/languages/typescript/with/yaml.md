@@ -5,6 +5,7 @@
 ## Types
 
 ### yaml-parsed-by-the-core-schema → reader-resolves-scalars-by-the-core-schema · SHOULD
+
 Code that parses YAML sets its parser to YAML 1.2's core schema.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ Code that parses YAML sets its parser to YAML 1.2's core schema.
 ## Security
 
 ### yaml-from-outside-parsed-with-no-custom-tags → outside-yaml-loaded-by-a-safe-loader · MUST
+
 Code that parses YAML from outside the program gives its parser no custom tags.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ Code that parses YAML from outside the program gives its parser no custom tags.
 | a custom tag builds the object the sender names, and the file is the sender's to write. | [security] |
 
 ### yaml-from-outside-parsed-with-an-alias-bound → alias-expansion-bounded · MUST
+
 Code that parses YAML from outside the program sets a bound on the aliases its parser expands.
 
 | Why | Tags |

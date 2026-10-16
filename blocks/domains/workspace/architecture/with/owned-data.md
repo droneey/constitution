@@ -5,6 +5,7 @@
 ## Shared
 
 ### programs-owning-their-data-share-only-contracts · MUST
+
 Programs that own their data apart — services deployed on their own — share through the parts of `shared/` only contracts and wire shapes, never business rules.
 
 | Why | Tags |

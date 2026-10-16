@@ -1,7 +1,9 @@
+import { compareText } from '#/kernel/utils';
+
 import type { FileTree } from '../domain/contracts';
 
 const createFakeFileTree = (files: Readonly<Record<string, string>>): FileTree => ({
-  list: (): readonly string[] => Object.keys(files).toSorted(),
+  list: (): readonly string[] => Object.keys(files).toSorted(compareText),
   read: (path: string): string => {
     const text = files[path];
 

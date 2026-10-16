@@ -3,6 +3,7 @@
 > The build that expands Lingui's macros.
 
 ### macros-expanded-by-the-lingui-plugin · MUST
+
 The build expands the macros through Lingui's own plugin, `lingui({ macroTransform: true })`, never through another plugin's Babel options.
 
 | Why | Tags |

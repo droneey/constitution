@@ -1,6 +1,7 @@
 # mise
 
 ### archive-hook-installs-the-commit-hooks · SHOULD
+
 The `postinstall` hook of the shared configuration's archive also installs the commit hooks, never a package manager's install script.
 
 | Why | Tags |

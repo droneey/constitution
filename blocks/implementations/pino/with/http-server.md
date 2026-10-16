@@ -3,6 +3,7 @@
 > The request logger of an HTTP server that logs with pino.
 
 ### request-logger-takes-the-instance · MUST
+
 pino-http takes the program's instance as `logger`.
 
 | Why | Tags |

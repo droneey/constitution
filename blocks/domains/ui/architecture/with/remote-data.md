@@ -5,6 +5,7 @@
 ## Writes
 
 ### write-invalidates-in-its-binding-unit · SHOULD
+
 After a write, the write's binding unit says what to reload, through the feature's key factory.
 
 | Why | Tags |

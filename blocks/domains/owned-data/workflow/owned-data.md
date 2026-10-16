@@ -5,6 +5,7 @@
 ## Checks
 
 ### migrations-applied-in-ci-from-the-last-release · SHOULD
+
 A check applies the migrations to the store's real engine, starting from the schema of the last release.
 
 | Why | Tags |

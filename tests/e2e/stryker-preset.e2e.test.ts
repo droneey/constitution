@@ -53,4 +53,23 @@ describe('the Stryker preset', () => {
     },
     STRYKER_RUN_MS,
   );
+
+  it(
+    'should pass the run when only a log call and the text of an error go unproved',
+    () => {
+      // Arrange
+      const source = `const logger = { info: (message: string, fields: object): void => {} };\n\nexport const total = (price: number, tax: number): number => {\n  if (price < 0) {\n    throw new Error('A price is never negative');\n  }\n  logger.info('Totalled', { price });\n  return price + tax;\n};\n`;
+      const spec = `import { expect, test } from 'bun:test';\n\nimport { total } from '../order.utils';\n\ntest('should add the tax when both are set', () => {\n  expect(total(10, 2)).toBe(12);\n});\n\ntest('should refuse a negative price', () => {\n  expect(() => total(-1, 2)).toThrow();\n});\n\ntest('should take a zero price', () => {\n  expect(total(0, 2)).toBe(2);\n});\n`;
+
+      // Act
+      const mutation = mutationOf(spec, source);
+
+      // Assert
+      expect(mutation).toStrictEqual({
+        passed: true,
+        survivors: 0,
+      });
+    },
+    STRYKER_RUN_MS,
+  );
 });

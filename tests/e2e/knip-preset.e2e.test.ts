@@ -103,6 +103,18 @@ describe('the knip preset', () => {
       part: 'typescript/osv-scanner',
     },
     {
+      binary: 'rumdl',
+      part: 'typescript/rumdl',
+    },
+    {
+      binary: 'shellcheck',
+      part: 'typescript/shellcheck',
+    },
+    {
+      binary: 'shfmt',
+      part: 'typescript/shfmt',
+    },
+    {
       binary: 'uv',
       part: 'typescript/uv',
     },

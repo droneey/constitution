@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { python, runTask } from './python-template.fixtures';
+import { partTable, python, runTask, templateTable } from './python-template.fixtures';
 
 // A run of the check, mutmut's above all, takes seconds, not milliseconds.
 const RUN_MS = 60_000;
@@ -74,6 +74,21 @@ const spec = (...body: readonly string[]): string =>
   );
 
 describe('the python template', () => {
+  it.each([
+    'complexipy',
+    'deptry',
+    'vulture',
+  ])("should carry the settings of %s's part, which reads no file but the project's", (tool) => {
+    // Arrange
+    const part = partTable(tool);
+
+    // Act
+    const template = templateTable(tool);
+
+    // Assert
+    expect(template).toStrictEqual(part);
+  });
+
   it(
     'should pass the whole check when the specs kill every mutant of a changed function',
     () => {
@@ -148,7 +163,7 @@ describe('the python template', () => {
       task: 'code:check',
     },
     {
-      condition: "a function's cognitive complexity passes 10",
+      condition: "a function's cognitive complexity passes 15",
       changes: {
         'src/shop/kernel.py': TANGLED,
       },
@@ -641,6 +656,26 @@ describe('the python template', () => {
           'from shop.composition.checkout.adapters.mail import ADAPTER\n\nWIRED = ADAPTER\n',
       },
       task: 'architecture:check',
+    },
+    {
+      condition: "a changed function's log call is left unmutated",
+      changes: {
+        'src/shop/orders.py': python(
+          'import logging',
+          '',
+          'logger = logging.getLogger(__name__)',
+          '',
+          '',
+          'def total(prices: list[int], *, discount: int) -> int:',
+          "  logger.info('totalling %d prices', len(prices))",
+          '  return max(sum(prices) - discount, 0)',
+          '',
+          '',
+          'async def totals(baskets: list[list[int]]) -> list[int]:',
+          '  return [total(basket, discount=0) for basket in baskets]',
+        ),
+      },
+      task: 'mutation:check',
     },
     {
       condition: 'the only mutants of a new line are marked equivalent',

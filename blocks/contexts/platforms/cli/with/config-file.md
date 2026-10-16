@@ -5,6 +5,7 @@
 ## Config file
 
 ### init-writes-the-config-file-from-a-template · SHOULD
+
 An `init` command writes one config file from a template, at the path the program reads by default.
 
 | Why | Tags |

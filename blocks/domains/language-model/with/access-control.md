@@ -5,6 +5,7 @@
 ## Retrieval
 
 ### retrieval-scoped-to-the-callers-rights → object-access-checked-against-the-caller · MUST
+
 A search that finds documents for a model is limited, inside the search itself and before ranking, to those the person it acts for may read; no document is left for the model to withhold.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A search that finds documents for a model is limited, inside the search itself a
 ## Caches
 
 ### answer-cache-keyed-by-the-callers-rights → object-access-checked-against-the-caller · MUST
+
 A cache of model answers is keyed by what shaped the answer — the prompt, the model and the caller's rights or tenant — and never serves one caller's answer to another with other rights.
 
 | Why | Tags |

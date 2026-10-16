@@ -6,7 +6,7 @@
 
 A package keeps each folder below only when it has a file to hold. A delivery unit lives in the feature or the composition module it serves, and the root registers it. At every level, `shared/` holds what two or more of its neighbours need and the level gives no other home: beside the languages of one purpose, what they need written in none of them; in a source, the plumbing several features use.
 
-```
+```text
 <package>/
 ├── <manifest>             the manifest, the lockfile, and the files tools look up at the root
 ├── src/                   the source: the module tree below
@@ -59,6 +59,7 @@ The language fixes the spelling. Each block names its own folders and suffixes, 
 ## Form
 
 ### module-has-the-one-form · SHOULD
+
 Every module, at any depth — the source of a package others import, a feature, a module of composition, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the layers or role folders it needs and modules of this same form.
 
 | Why | Tags |
@@ -66,6 +67,7 @@ Every module, at any depth — the source of a package others import, a feature,
 | a reader who knows one module knows them all, and a role folder means the same thing wherever it appears. | [] |
 
 ### behaviour-lives-in-a-feature · SHOULD
+
 Behaviour — what a package does — lives in a feature with its layers; vocabulary — types, constants, kinds — lives in the kernel and in role folders, and utils hold only pure helpers with no meaning of the product.
 
 | Why | Tags |
@@ -73,6 +75,7 @@ Behaviour — what a package does — lives in a feature with its layers; vocabu
 | behaviour found only in features is found with its domain, its adapters and its binding units around it. | [] |
 
 ### package-laid-out-by-the-tree · SHOULD
+
 A package’s root holds its manifest, its source, the suites that drive the built package and, where the language's runner expects one, the tree of specs that mirrors the source, the writing for readers outside the code, one folder per kind of content it ships as is, and the files tools look up there; its source holds only the folders of the tree and role folders.
 
 | Why | Tags |
@@ -80,6 +83,7 @@ A package’s root holds its manifest, its source, the suites that drive the bui
 | a reader who knows one repository finds the way in every other, and a file has one obvious place. | [] |
 
 ### code-in-several-languages-holds-a-package-per-language · SHOULD
+
 Code that serves one purpose in several languages holds `languages/<language>/`, one package for each language with the tree in its `src/`, and beside it `shared/`, what the languages need written in none of them, laid out by meaning — `schema/`, `conformance/`; `languages/` appears with the second language and `shared/` with its first file, and until then the code is the package itself.
 
 | Why | Tags |
@@ -87,6 +91,7 @@ Code that serves one purpose in several languages holds `languages/<language>/`,
 | the code is found in one folder whatever its languages, `languages/` says at a glance that its children serve one purpose written several times, and what no language owns is written once beside the packages that read it. | [] |
 
 ### feature-laid-out-by-its-tree · SHOULD
+
 A feature, and a module of composition, holds its layers, its specs and its surface and nothing else, and its domain holds only the role folders of the tree.
 
 | Why | Tags |
@@ -94,6 +99,7 @@ A feature, and a module of composition, holds its layers, its specs and its surf
 | a use case, a port or an adapter is found in the same place in every feature, and a loose file belongs to no layer the rules see. | [] |
 
 ### failures-live-with-their-contract · SHOULD
+
 Failures every feature shares, and the base error every error the application declares extends, live in the kernel’s errors, a feature’s in its domain’s errors.
 
 | Why | Tags |
@@ -101,6 +107,7 @@ Failures every feature shares, and the base error every error the application de
 | a failure declared where its contract lives is found with it. | [] |
 
 ### pipeline-stages-live-under-steps · SHOULD
+
 A pipeline’s stages live in its steps folder, in the order the use case calls them.
 
 | Why | Tags |
@@ -110,6 +117,7 @@ A pipeline’s stages live in its steps folder, in the order the use case calls 
 ## Surfaces
 
 ### module-reached-only-through-its-surface · MUST
+
 A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else; the composition root, and the surface of a package that offers it, reach a feature's adapter through that adapter's own surface.
 
 | Why | Tags |
@@ -117,6 +125,7 @@ A module, and any other folder with a surface, is reached from outside only thro
 | whatever a module exposes, a caller eventually depends on. | [] |
 
 ### module-files-import-each-other-directly · MUST
+
 Inside a module, a file imports a file of its own folder directly and anything else of the module through the surface of the role folder or module that holds it, and never the surface of its own module.
 
 | Why | Tags |
@@ -124,6 +133,7 @@ Inside a module, a file imports a file of its own folder directly and anything e
 | a file that imports its own surface imports itself, and that is where cycles begin. | [] |
 
 ### surface-only-re-exports · MUST
+
 A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
 
 | Why | Tags |
@@ -131,6 +141,7 @@ A surface re-exports by name what callers may use: no declaration, no logic, no 
 | a surface that declares or computes becomes a room of its own, and a wildcard offers internals nobody chose to offer. | [] |
 
 ### surface-offers-operations-not-mechanisms · SHOULD
+
 A feature’s surface offers its operations and their presentation — use cases, binding units, entities — never its mechanisms: its adapters, mappers, wire models.
 
 | Why | Tags |
@@ -138,6 +149,7 @@ A feature’s surface offers its operations and their presentation — use cases
 | a caller that reaches a mechanism depends on how the feature works rather than on what it does. | [] |
 
 ### surface-only-on-a-module-or-one-kind · MUST
+
 A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target — save `root/`, whose surface the entry files import — and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
 
 | Why | Tags |
@@ -147,6 +159,7 @@ A module has a surface, its door, and so does a role folder, whose members are o
 ## Names
 
 ### folder-takes-its-layer-or-role-name · SHOULD
+
 A folder whose purpose a layer or a role of the active vocabulary names takes that name; layer names are fixed words, whatever their grammatical number.
 
 | Why | Tags |
@@ -154,6 +167,7 @@ A folder whose purpose a layer or a role of the active vocabulary names takes th
 | a folder named by the vocabulary tells its place in the tree before it is opened. | [] |
 
 ### file-carries-its-role-suffix · MUST
+
 A file carries its role’s suffix, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
 
 | Why | Tags |
@@ -161,6 +175,7 @@ A file carries its role’s suffix, whatever its folder; a surface, an entry, a 
 | the name tells the role before the file is opened, and a tool can check it. | [] |
 
 ### data-port-named-by-entity-and-side · SHOULD
+
 A data port is named after its entity and its side: `<Entity>QueryRepository` for reads, `<Entity>CommandRepository` for writes.
 
 | Why | Tags |

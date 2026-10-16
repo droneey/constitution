@@ -5,6 +5,7 @@
 ## Dependencies
 
 ### stylesheet-feature-beyond-the-target-behind-supports → feature-beyond-the-target-detected-first · SHOULD
+
 A feature of CSS the declared target does not cover is used only behind `@supports`, with a fallback, or with a polyfill the program loads.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A feature of CSS the declared target does not cover is used only behind `@suppor
 ## Viewport
 
 ### viewport-size-in-small-viewport-units · MUST
+
 A size taken from the viewport leaves out what the browser draws over it: a height is in `svh`, or in `dvh` where content must follow the toolbars as they slide, never in `vh`; a full width is `100%` of its containing block, never `100vw`.
 
 | Why | Tags |

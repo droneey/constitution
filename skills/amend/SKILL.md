@@ -75,7 +75,7 @@ Under a unit, the same shape two levels deeper:
 
 ```yaml
 packages:
-  apps/web:
+  products/web:
     implementations: [react-dom]
     overrides:
       - rule: data-view-shows-every-state
@@ -84,6 +84,7 @@ packages:
 ```
 
 The hook reads a fixed subset of YAML, so keep this form exactly:
+
 - `- rule:` opens an override, and `level:`, `reason:` and `until:` sit two spaces deeper than its `-`; omit `until:` when there is no date;
 - the reason is double-quoted, with a `"` or `\` inside it written as `\"` or `\\`;
 - `overrides: []` becomes `overrides:` with the entries below it; when the last top-level override goes, write `overrides: []` again; when the last override of a unit goes, remove its `overrides:` line;

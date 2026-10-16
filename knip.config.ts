@@ -3,6 +3,9 @@ import betterleaks from './.droneey/constitution/presets/typescript/knip/betterl
 import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
 import mise from './.droneey/constitution/presets/typescript/knip/mise.mjs';
 import osvScanner from './.droneey/constitution/presets/typescript/knip/osv-scanner.mjs';
+import rumdl from './.droneey/constitution/presets/typescript/knip/rumdl.mjs';
+import shellcheck from './.droneey/constitution/presets/typescript/knip/shellcheck.mjs';
+import shfmt from './.droneey/constitution/presets/typescript/knip/shfmt.mjs';
 import stryker from './.droneey/constitution/presets/typescript/knip/stryker.mjs';
 import uv from './.droneey/constitution/presets/typescript/knip/uv.mjs';
 
@@ -12,6 +15,7 @@ export default {
     ...architecture.entry,
     'tools/mutation-check/src/main.ts!',
     'tools/mutation-check/src/runner.ts!',
+    'tools/mutation-check/src/ignorers.ts!',
   ],
   project: [
     ...core.project,
@@ -23,6 +27,9 @@ export default {
     ...mise.ignoreBinaries,
     ...osvScanner.ignoreBinaries,
     ...uv.ignoreBinaries,
+    ...rumdl.ignoreBinaries,
+    ...shellcheck.ignoreBinaries,
+    ...shfmt.ignoreBinaries,
     'mkfifo',
     'stryker',
   ],

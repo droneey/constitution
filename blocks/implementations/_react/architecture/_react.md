@@ -5,6 +5,7 @@
 ## State and effects
 
 ### component-effects-in-its-hooks-file → effects-held-only-by-the-edge · MUST
+
 A component file calls no effect hook: its effects live in hooks in `<name>.hooks.ts` beside it, and input or output goes only through binding units.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ A component file calls no effect hook: its effects live in hooks in `<name>.hook
 ## Binding units
 
 ### binding-unit-is-a-hook → binding-unit-composes-its-operation · MUST
+
 An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its use case from the providers' context and calls it. A plain `<op>.ts` exists only for a caller outside React — a loader, a guard — and not before one exists.
 
 | Why | Tags |
@@ -23,6 +25,7 @@ An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its use case 
 ## Adapters
 
 ### adapter-is-a-factory-or-module-object → adapter-built-by-factory-object-or-class · SHOULD
+
 An adapter is a factory function that takes its dependencies and returns the adapter, or a module object where it has no dependency and no state; never a class.
 
 | Why | Tags |
@@ -32,7 +35,8 @@ An adapter is a factory function that takes its dependencies and returns the ada
 ## Packages
 
 ### react-imported-by-the-ui-and-binding-units → layer-imports-dependencies-by-its-role · MUST
-React's home reaches past the edge into a UI's screens, components and widgets and the binding units of `app/` and `composition/`, which are hooks.
+
+React's home reaches past the edge into a UI's screens, components and widgets and into the binding units, which are hooks, of the `app/` of features and of composition modules.
 
 | Why | Tags |
 |---|---|

@@ -6,6 +6,7 @@ bun-test:
 core:
   every-mutant-killed:
     - break
+    - ignorers
     - mutate
 storybook:
   every-mutant-killed:

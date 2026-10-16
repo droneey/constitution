@@ -5,6 +5,7 @@
 ## What is asked
 
 ### consent-asked-only-where-the-law-requires-it · SHOULD
+
 Consent is asked only for a processing the law of the region the product serves subjects to it — storing on or reading from the device what the service the person asked for does not need, tracking across sites, advertising — unless the product chooses to ask for more; what that law allows without consent runs without asking.
 
 | Why | Tags |
@@ -14,6 +15,7 @@ Consent is asked only for a processing the law of the region the product serves 
 ## Before consent
 
 ### processing-waits-for-its-consent · MUST
+
 A processing that needs consent does not begin before the person consents to its purpose: nothing is stored on or read from their device for it, no identifier is set, and no request reaches its third party — an embedded video, a map, a chat widget, a social button or an advertising pixel loads only after it.
 
 | Why | Tags |
@@ -21,6 +23,7 @@ A processing that needs consent does not begin before the person consents to its
 | a product that tracks first and asks later has already taken the choice from the person. | [security, data] |
 
 ### declined-consent-costs-nothing-else · MUST
+
 Declining consent changes nothing in the product beyond the processing declined.
 
 | Why | Tags |
@@ -30,6 +33,7 @@ Declining consent changes nothing in the product beyond the processing declined.
 ## Asking
 
 ### refusal-as-easy-as-consent · MUST
+
 Refusing takes no more steps than consenting, where consent is first asked.
 
 | Why | Tags |
@@ -37,6 +41,7 @@ Refusing takes no more steps than consenting, where consent is first asked.
 | a refusal hidden behind a second step is consent taken, not given. | [security, ux] |
 
 ### consent-given-per-purpose-never-preselected · MUST
+
 Consent is given for each purpose on its own, and no purpose is preselected.
 
 | Why | Tags |
@@ -46,6 +51,7 @@ Consent is given for each purpose on its own, and no purpose is preselected.
 ## Record and withdrawal
 
 ### consent-withdrawn-as-easily-as-given · MUST
+
 Consent can be withdrawn at any time, as easily as it was given, and the processing it allowed stops at once.
 
 | Why | Tags |
@@ -53,6 +59,7 @@ Consent can be withdrawn at any time, as easily as it was given, and the process
 | consent that cannot be taken back as easily was never freely given. | [security, ux] |
 
 ### consent-choice-recorded · MUST
+
 Each choice — a consent, a refusal, a withdrawal — is recorded with its time and its purposes.
 
 | Why | Tags |
@@ -60,6 +67,7 @@ Each choice — a consent, a refusal, a withdrawal — is recorded with its time
 | the record is the only proof the choice was the person's, and the law asks for it. | [security, data] |
 
 ### refusal-respected-for-the-set-period · SHOULD
+
 A recorded refusal is not asked about again for the period the project sets — six months in France, by the CNIL's guidance — unless the purposes change.
 
 | Why | Tags |

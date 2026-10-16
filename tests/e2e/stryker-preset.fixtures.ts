@@ -11,7 +11,7 @@ interface Mutation {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const STRYKER = join(REPOSITORY, 'node_modules', '.bin', 'stryker');
 
-// The runner's source stands in for the archive's build, which the check makes later.
+// The sources of the runner and the ignorer stand in for the archive's build, which the check makes later.
 const CONFIG = `import bunTest from './.droneey/constitution/presets/typescript/stryker/bun-test.mjs';
 import core from './.droneey/constitution/presets/typescript/stryker/core.mjs';
 import mise from './.droneey/constitution/presets/typescript/stryker/mise.mjs';
@@ -24,6 +24,7 @@ export default {
   ...core,
   plugins: [
     '${join(REPOSITORY, 'tools', 'mutation-check', 'src', 'runner.ts')}',
+    '${join(REPOSITORY, 'tools', 'mutation-check', 'src', 'ignorers.ts')}',
   ],
 };
 `;
@@ -32,7 +33,9 @@ const SURVIVED = /\[Survived\]/g;
 
 // The project reaches Stryker's plugins and the specs' runner through this
 // repository's node_modules.
-const mutationOf = (spec: string): Mutation => {
+const TOTAL = 'export const total = (price: number, tax: number): number => price + tax;\n';
+
+const mutationOf = (spec: string, source = TOTAL): Mutation => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
   const files = {
     'bunfig.mutation.toml': readFileSync(
@@ -44,8 +47,7 @@ const mutationOf = (spec: string): Mutation => {
       type: 'module',
     }),
     'src/__tests__/order.utils.test.ts': spec,
-    'src/order.utils.ts':
-      'export const total = (price: number, tax: number): number => price + tax;\n',
+    'src/order.utils.ts': source,
     'stryker.config.mjs': CONFIG,
   };
 

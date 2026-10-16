@@ -5,6 +5,7 @@
 ## Layers
 
 ### command-module-named-with-the-cli-suffix → command-is-its-operations-binding-unit · MUST
+
 A command's module is named `<op>_cli.py`, after the operation it runs.
 
 | Why | Tags |

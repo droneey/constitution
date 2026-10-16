@@ -1,3 +1,6 @@
+core:
+  dependency-installed-only-from-a-registry:
+    - versionGroups
 bun:
   own-units-at-workspace-version:
     - versionGroups

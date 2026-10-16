@@ -3,6 +3,7 @@
 > Specs of a NestJS program that run on Bun.
 
 ### decorator-options-where-bun-reads · MUST
+
 `experimentalDecorators` and `emitDecoratorMetadata` are written in the `tsconfig.json` of the folder `bun test` runs from — a unit's own when its specs run from its folder — and not only in a part it extends.
 
 | Why | Tags |

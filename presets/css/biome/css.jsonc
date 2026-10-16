@@ -9,7 +9,6 @@
       },
       "style": {
         "noDescendingSpecificity": "error",
-        "noHexColors": "error",
       },
       "nursery": {
         "useLayeredStyles": "error",

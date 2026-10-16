@@ -30,6 +30,8 @@ const UNUSED_LABEL =
   'export const first = (): number => {\n  outer: for (const n of [1]) {\n    return n;\n  }\n  return 0;\n};\n';
 const PARAMETER_DECORATOR =
   'const Inject = (): ParameterDecorator => () => undefined;\nexport class Orders {\n  public constructor(@Inject() public readonly source: object) {}\n}\n';
+const EXPORT_UNTYPED = 'export const sum = (a: number, b: number) => a + b;\n';
+const EXPORT_TYPED = 'export const sum = (a: number, b: number): number => a + b;\n';
 
 describe('the tsconfig preset', () => {
   it.each([
@@ -210,6 +212,15 @@ describe('the tsconfig preset', () => {
         'bun',
       ],
     },
+    {
+      condition: "a distributed package's export leaves its type to inference",
+      main: EXPORT_UNTYPED,
+      parts: [
+        'self',
+        'core',
+        'distribution',
+      ],
+    },
   ])('should fail the type check of $parts when $condition', ({ main, parts }) => {
     // Arrange
     const project = {
@@ -269,6 +280,15 @@ describe('the tsconfig preset', () => {
         'core',
         'bun',
         'nestjs',
+      ],
+    },
+    {
+      condition: "a distributed package's export writes its type",
+      main: EXPORT_TYPED,
+      parts: [
+        'self',
+        'core',
+        'distribution',
       ],
     },
   ])('should pass the type check of $parts when $condition', ({ main, parts }) => {

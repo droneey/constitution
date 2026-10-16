@@ -1,8 +1,11 @@
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from python_check.settings import Settings, SettingsError, settings_of
 from source_fixtures import write_files
+
+if TYPE_CHECKING:
+  from pathlib import Path
 
 
 def test_should_give_no_home_when_the_folder_has_no_pyproject(tmp_path: Path) -> None:

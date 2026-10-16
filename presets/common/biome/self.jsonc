@@ -1,5 +1,6 @@
 {
   "files": {
+    "ignoreUnknown": true,
     "includes": [
       "**",
       "!**/.droneey",
@@ -54,11 +55,6 @@
         "useSimpleNumberKeys": "error",
       },
       "correctness": {
-        "noUnusedFunctionParameters": "error",
-        "noUnusedImports": "error",
-        "noUnusedLabels": "error",
-        "noUnusedPrivateClassMembers": "error",
-        "noUnusedVariables": "error",
         "useParseIntRadix": "error",
       },
       "performance": {

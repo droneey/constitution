@@ -1,6 +1,7 @@
 # TanStack Query
 
 ### query-hooks-only-in-binding-units → binding-unit-composes-its-operation · MUST
+
 `useQuery`, `useSuspenseQuery` and `useMutation` are called only in binding units; no screen, widget or component calls any of them directly.
 
 | Why | Tags |
@@ -8,6 +9,7 @@
 | each operation is then bound once, with its keys, its use case and its union by status, and no component can reach the cache around them. | [data] |
 
 ### query-functions-call-the-handed-use-case → binding-unit-composes-its-operation · MUST
+
 `queryFn` and `mutationFn` call the use case the providers hand to the binding unit.
 
 | Why | Tags |
@@ -15,13 +17,15 @@
 | the use case knows nothing of the cache: what the operation does is the domain's and the same for every interface, how its result lives in the interface is the query library's, and the use case stays the composition root's choice, so a spec hands in another. | [] |
 
 ### key-factory-in-cache-utils → cache-key-built-by-its-features-factory · MUST
-Each feature's key factory lives in its `app/utils/cache.utils.ts`.
+
+Each feature's key factory, and each composition module's, lives in its `app/utils/cache.utils.ts`.
 
 | Why | Tags |
 |---|---|
 | every binding unit of the feature takes its keys from one known module, so a read and the invalidation that refreshes it build the same key. | [] |
 
 ### keys-only-from-the-key-factory → cache-key-built-by-its-features-factory · MUST
+
 Outside the key factory's `cache.utils.ts`, no key array is written inline — as a `queryKey`, or to the query client's `getQueryData`, `getQueryState` or `setQueryData`; every key comes from the factory.
 
 | Why | Tags |
@@ -29,6 +33,7 @@ Outside the key factory's `cache.utils.ts`, no key array is written inline — a
 | these are the places a key is written, and an inline one drifts from the factory's, so an invalidation misses it. | [data] |
 
 ### query-library-home-is-the-binding-units → layer-imports-dependencies-by-its-role · MUST
+
 The query library's home is the binding units of `app/` and `composition/`, and `root/`, which builds the client; no other folder imports it — no component, adapter or code of `libs/`.
 
 | Why | Tags |
@@ -36,6 +41,7 @@ The query library's home is the binding units of `app/` and `composition/`, and 
 | caching belongs to the binding units: a component that queries can no longer be shown with plain data, an adapter that caches holds a second cache, and a library that caches takes the application's data into code every program shares. | [] |
 
 ### read-declared-once-as-query-options → cache-key-built-by-its-features-factory · MUST
+
 Each read is declared once as `queryOptions`, beside the key factory in `cache.utils.ts`, taking its use case as input; the hook, the loader and the guard all use it. A `queryFn` is written only there, inside the read's `queryOptions`.
 
 | Why | Tags |
@@ -43,6 +49,7 @@ Each read is declared once as `queryOptions`, beside the key factory in `cache.u
 | one declaration keeps the key, the function and the options of a read the same wherever it runs. | [] |
 
 ### query-client-built-by-the-root → composition-root-wires-everything · MUST
+
 `new QueryClient` is written only in `root/`, in the program's entry files and in specs.
 
 | Why | Tags |

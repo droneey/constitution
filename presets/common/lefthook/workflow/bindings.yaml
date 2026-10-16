@@ -12,3 +12,18 @@ version-control:
     - commit-message
   commit-subject-never-a-placeholder:
     - commit-message
+biome:
+  hook-rewrites-only-staged-files:
+    - stage_fixed
+rumdl:
+  hook-rewrites-only-staged-files:
+    - stage_fixed
+ruff:
+  hook-rewrites-only-staged-files:
+    - stage_fixed
+shfmt:
+  hook-rewrites-only-staged-files:
+    - stage_fixed
+yamlfmt:
+  hook-rewrites-only-staged-files:
+    - stage_fixed

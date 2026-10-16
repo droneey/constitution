@@ -73,7 +73,7 @@
       "path": "./.droneey/constitution/presets/typescript/biome/plugins/biome-refuses-empty-names.grit",
       "includes": [
         "**",
-        "!**/src/libs/**",
+        "!**/libs/**",
       ],
     },
   ],

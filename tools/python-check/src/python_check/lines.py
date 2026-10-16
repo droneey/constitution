@@ -1,8 +1,11 @@
 import ast
 import re
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from python_check.findings import Finding
+
+if TYPE_CHECKING:
+  from pathlib import Path
 
 FUNCTION_LINES = 100
 FILE_LINES = 500

@@ -7,6 +7,9 @@ check="$(awk -F '\t' '$1 == "check" { print $2; exit }' "${state}/active.tsv" 2>
 command="$(field command)" || exit 0
 # The check is a whole command of the line: first, or after && or ;.
 case "${command}" in
-  "${check}" | "${check} "* | "${check};"* | *"&& ${check}" | *"&& ${check} "* | *"&& ${check};"* | *"; ${check}" | *"; ${check} "* | *"; ${check};"*) record checked "$(fingerprint)" ;;
+  "${check}" | "${check} "* | "${check};"* | *"&& ${check}" | *"&& ${check} "* | *"&& ${check};"* | *"; ${check}" | *"; ${check} "* | *"; ${check};"*)
+    checked="$(fingerprint)"
+    record checked "${checked}"
+    ;;
 esac
 exit 0

@@ -43,12 +43,11 @@ Tell the owner the installed version and the blocks above, grouped by layer, in 
 
 Every block holds at its root its base — what holds for any team, always followed — and may add two optional axes, a folder each: `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
 
-
 Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
 
 Propose, for each of the four keys, the blocks from the list above that the repository matches, each with the evidence that made you pick it:
 
-```
+```text
 implementations: biome — biome.json at the root and @biomejs/biome in devDependencies
 ```
 
@@ -66,6 +65,7 @@ The owner confirms or corrects each key. A block the owner drops is dropped; a b
 - **nothing** — it is left out. Using a tool the constitution has no block for is not a departure.
 
 For a local block, fill the template's placeholders from the repository and the owner:
+
 - `id` is the file name without `.md`, and must not be an id from the list above;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names an abstract constitution base it inherits, an id that starts with `_`, or stays `null` — a constitution block it builds on goes under `requires`;
@@ -81,11 +81,11 @@ A local block is a draft until a person reviews it; say so.
 
 ### 5. Ask about units
 
-When the repository holds several units — the applications and packages of a workspace, the code they share, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `apps/`, `shared/` or `libs/`:
+When the repository holds several units — the products of a workspace, the code they share, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `products/`, `shared/` or `libs/`:
 
 ```yaml
 packages:
-  apps/web:
+  products/web:
     domains: [ui, untrusted-client, remote-service]
     platforms: [browser]
     implementations: [react-dom]
@@ -116,6 +116,7 @@ Use the owner's own words: the glossary seeds the language of the code. Keep it 
 ### 8. Summarise, then write
 
 Show the owner everything you will write:
+
 - `constitution.yaml` exactly as it will be written;
 - `PROJECT.md` in full;
 - `DECISIONS.md` in full, when it will be written;

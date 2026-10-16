@@ -27,7 +27,7 @@
     "test": "bun run test:unit && bun run test:e2e && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. pytest --cov || exit 1; done",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
-    "build": "bun build --target=bun --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist && bun build --target=bun ./tools/mutation-check/src/runner.ts --outdir tools/mutation-check/dist && mkdir -p tools/python-check/dist tools/mutmut-check/dist && python3 -m zipapp tools/python-check/src -m python_check.main:main -o tools/python-check/dist/python-check.pyz && python3 -m zipapp tools/mutmut-check/src -m mutmut_check.main:main -o tools/mutmut-check/dist/mutmut-check.pyz",
+    "build": "bun build --target=bun --packages=external ./tools/mutation-check/src/main.ts --outdir tools/mutation-check/dist && bun build --target=bun ./tools/mutation-check/src/runner.ts ./tools/mutation-check/src/ignorers.ts --outdir tools/mutation-check/dist && mkdir -p tools/python-check/dist tools/mutmut-check/dist && python3 -m zipapp tools/python-check/src -m python_check.main:main -o tools/python-check/dist/python-check.pyz && python3 -m zipapp tools/mutmut-check/src -m mutmut_check.main:main -o tools/mutmut-check/dist/mutmut-check.pyz",
     "mutation:check": "bun tools/mutation-check/src/main.ts && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. mutmut-check || exit 1; done",
     "mutation:all": "bun tools/mutation-check/src/main.ts all && for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. mutmut-check all || exit 1; done",
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
@@ -39,7 +39,9 @@
     "code:check": "uv run --locked python-check tools/python-check/src tools/python-check/tests tools/mutmut-check/src tools/mutmut-check/tests",
     "complexity:check": "uv run --locked complexipy tools/python-check tools/mutmut-check",
     "dependencies:check": "for package in tools/python-check tools/mutmut-check; do uv run --locked --directory \"$package\" --project ../.. deptry src || exit 1; done",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check"
+    "shell:check": "shellcheck hooks/*.sh hooks/lib/*.sh && shfmt -d hooks",
+    "markdown:check": "rumdl check . && rumdl fmt --check .",
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run test && bun run mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run markdown:check"
   },
   "dependencies": {
     "@stryker-mutator/api": "^10.0.0",
@@ -47,14 +49,14 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.13",
+    "@biomejs/biome": "2.5.15",
     "@stryker-mutator/core": "10.0.0",
     "@swc/core": "1.16.2",
     "@types/bun": "1.4.2",
     "@types/node": "26.5.0",
     "dclint": "3.1.0",
     "dependency-cruiser": "18.4.0",
-    "knip": "6.38.0",
+    "knip": "6.41.0",
     "syncpack": "15.3.3",
     "typescript": "7.0.2"
   },
