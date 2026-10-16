@@ -103,15 +103,6 @@ An identifier's brand is set only where the identifier is minted — its factory
 ### invariant-value-is-a-branded-type → invariant-value-is-plain-immutable-data · MUST
 A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the value's error when the invariant fails, narrowed by `is<Name>`, and, where it is an object, compared by `equals<Name>`, never by `===`.
 
-```ts
-type Email = string & { readonly [brand]: 'Email' };
-const isEmail = (text: string): text is Email => EMAIL.test(text);
-const createEmail = (text: string): Email => {
-  if (!isEmail(text)) throw new InvalidEmailError(text);
-  return text;
-};
-```
-
 | Why | Tags |
 |---|---|
 | the brand is reachable only through the check, and the value stays plain data every boundary can carry. | [] |

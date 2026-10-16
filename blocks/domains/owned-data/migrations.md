@@ -20,7 +20,7 @@ A migration applied to any shared store is never edited or removed; a correction
 
 ## Compatibility
 
-### migration-compatible-with-the-running-release · MUST
+### migration-compatible-with-the-running-release → format-changed-in-steps · MUST
 A migration keeps the schema usable by the release that runs while it is applied: a breaking change is split into expand, migrate and contract, each shipped apart.
 
 | Why | Tags |

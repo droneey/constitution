@@ -5,7 +5,7 @@
 ## The broker
 
 ### publisher-is-a-port-in-the-domains-words → contract-knows-no-vendor · MUST
-Code inside the edge publishes through a port that takes the feature's own events and commands, and the broker's client, its channels and its wire shape live only in the port's adapter.
+Code outside the edge publishes through a port that takes the feature's own events and commands, and the broker's client, its channels and its wire shape live only in the port's adapter.
 
 | Why | Tags |
 |---|---|

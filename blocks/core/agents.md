@@ -33,7 +33,7 @@ The project’s permission settings for agents, deny rules included, live in the
 | settings kept with the project give every person’s agent the same limits. | [security] |
 
 ### agent-asks-before-a-consequential-change · MUST
-An agent asks before it adds a dependency or a layer, or changes the entry a package publishes, a database schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
+An agent asks before it adds a dependency or a package, or changes the entry a package publishes, a database schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
 
 | Why | Tags |
 |---|---|

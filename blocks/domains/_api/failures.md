@@ -19,7 +19,7 @@ A failure that is neither an expected error nor a refusal of the caller's input 
 | an unexpected failure's message and trace tell an attacker how the program works and which of its parts broke. | [errors, security] |
 
 ### failure-answer-names-its-occurrence · SHOULD
-Every failure answer, a masked one included, carries an identifier of its occurrence — the trace id, or the problem document's `instance` — that finds its record in the program's logs.
+Every failure answer, a masked one included, carries an identifier of its occurrence, such as its trace id, that finds its record in the program's logs.
 
 | Why | Tags |
 |---|---|

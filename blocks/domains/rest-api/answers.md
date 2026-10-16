@@ -12,7 +12,7 @@ Methods and statuses mean what HTTP registers; a `DELETE` of something already g
 | clients, proxies, caches and retrying libraries act on the method and the status alone: they repeat a `PUT` or a `DELETE` on their own, and a failure sent as `200` is cached, counted as a success and never retried. | [errors, data] |
 
 ### failure-answered-as-a-problem-document → failure-answered-by-its-code · MUST
-A failure of a REST operation carries the status its code or kind maps to — `500` for an internal one — and a body of RFC 9457, `application/problem+json`, whose `type` names its code and which carries the code as a member of its own; a refused input lists each field it refused by its JSON Pointer.
+A failure of a REST operation carries the status its code or kind maps to — `500` for an internal one — and a body of RFC 9457, `application/problem+json`, whose `type` names its code and which carries the code as a member of its own and, where it names its occurrence, names it in its `instance`; a refused input lists each field it refused by its JSON Pointer.
 
 | Why | Tags |
 |---|---|

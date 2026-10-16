@@ -19,7 +19,7 @@ Each fact — a value, a rule of the business, a piece of state — has one home
 | two copies of one fact drift apart, and the program is then wrong in one of them. | [data] |
 
 ### structure-appears-by-symptom · SHOULD
-A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it; code that only looks alike waits for its third occurrence before it is joined. A unit a second consumer needs lifts by its placement, and a new member of an open set by its registration, without waiting.
+A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it; code that only looks alike waits for its third occurrence before it is joined; a new member of an open set is registered at once, without waiting.
 
 | Why | Tags |
 |---|---|

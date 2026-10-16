@@ -737,7 +737,7 @@ rule	backup-restored-on-a-schedule	owned-data	blocks/domains/owned-data/consiste
 rule	store-reached-over-verified-tls	owned-data	blocks/domains/owned-data/consistency.md		MUST	security			true
 rule	schema-changed-only-by-a-migration	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	applied-migration-never-edited	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
-rule	migration-compatible-with-the-running-release	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
+rule	migration-compatible-with-the-running-release	owned-data	blocks/domains/owned-data/migrations.md		MUST	data		format-changed-in-steps	true
 rule	migration-applied-once-before-its-release	owned-data	blocks/domains/owned-data/migrations.md		MUST	data			true
 rule	migration-holds-no-long-lock	owned-data	blocks/domains/owned-data/migrations.md		SHOULD	data performance			true
 rule	feature-owns-its-stored-records	owned-data	blocks/domains/owned-data/architecture/owned-data.md		MUST	data	architecture		true
@@ -971,7 +971,7 @@ rule	unit-reached-only-through-its-entries	workspace	blocks/domains/workspace/wo
 rule	units-form-no-dependency-cycle	workspace	blocks/domains/workspace/workspace.md		MUST			module-imports-form-no-cycle	true
 rule	file-lives-once-across-units	workspace	blocks/domains/workspace/workspace.md		MUST	data		fact-has-one-source	true
 rule	shared-data-parsed-by-each-reader	workspace	blocks/domains/workspace/workspace.md		MUST	data security		outside-value-untyped-until-parsed	true
-rule	unit-checked-by-its-own-parts	workspace	blocks/domains/workspace/workspace.md		MUST			rule-held-by-a-tool-where-one-can	true
+rule	unit-checked-by-its-own-tools	workspace	blocks/domains/workspace/workspace.md		MUST			rule-held-by-a-tool-where-one-can	true
 rule	workspace-tool-links-units-from-the-working-tree	workspace	blocks/domains/workspace/workspace.md		SHOULD	testing			true
 rule	workspace-units-placed-by-reach	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
 rule	unit-in-one-language-is-its-package	workspace	blocks/domains/workspace/architecture/workspace.md		SHOULD		architecture		true
@@ -1410,7 +1410,7 @@ rule	text-sorted-by-a-collator-of-the-active-locale	typescript	blocks/contexts/l
 rule	package-script-kept-short	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	SHOULD				true
 rule	package-script-expansion-double-quoted	typescript	blocks/contexts/languages/typescript/with/shell.md	shell	MUST			expansion-double-quoted	true
 rule	root-manifest-private	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST	security		root-and-internal-units-private	true
-rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
+rule	unit-compiled-by-its-own-options	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	MUST			unit-checked-by-its-own-tools	true
 rule	own-unit-linked-from-the-working-tree	typescript	blocks/contexts/languages/typescript/with/workspace.md	workspace	SHOULD	testing		workspace-tool-links-units-from-the-working-tree	true
 rule	yaml-parsed-by-the-core-schema	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	SHOULD	data		reader-resolves-scalars-by-the-core-schema	true
 rule	yaml-from-outside-parsed-with-no-custom-tags	typescript	blocks/contexts/languages/typescript/with/yaml.md	yaml	MUST	security		outside-yaml-loaded-by-a-safe-loader	true
@@ -1468,7 +1468,7 @@ rule	biome-rules-set-as-errors	biome	blocks/implementations/biome/biome.md		MUST
 rule	biome-refuses-empty-names	biome	blocks/implementations/biome/biome.md		SHOULD			name-never-an-empty-word	true
 rule	biome-refuses-empty-verbs	biome	blocks/implementations/biome/biome.md		SHOULD			function-name-has-a-concrete-verb	true
 rule	project-grit-rules-scoped	biome	blocks/implementations/biome/biome.md		SHOULD				true
-rule	configuration-per-unit-at-the-root	biome	blocks/implementations/biome/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
+rule	configuration-per-unit-at-the-root	biome	blocks/implementations/biome/with/workspace.md	workspace	MUST			unit-checked-by-its-own-tools	true
 rule	bun-is-the-only-package-manager	bun	blocks/implementations/bun/bun.md		MUST	security		dependencies-locked-by-one-lockfile	true
 rule	trusted-dependencies-listed-by-name	bun	blocks/implementations/bun/bun.md		MUST	security		install-scripts-run-only-for-listed-dependencies	true
 rule	release-age-set-for-installs	bun	blocks/implementations/bun/bun.md		MUST	security		new-release-adopted-after-a-cooldown	true
@@ -1489,7 +1489,7 @@ rule	failed-test-never-retried	bun-test	blocks/implementations/bun-test/bun-test
 rule	test-order-randomized	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		case-independent-of-order	true
 rule	spec-never-sleeps	bun-test	blocks/implementations/bun-test/bun-test.md		SHOULD	testing		test-never-sleeps-a-fixed-time	true
 rule	network-refused-by-the-test-preload	bun-test	blocks/implementations/bun-test/bun-test.md		MUST	testing		unit-spec-refuses-the-network	true
-rule	coverage-gate-on-the-unit-alone	bun-test	blocks/implementations/bun-test/with/workspace.md	workspace	MUST	testing		unit-checked-by-its-own-parts	true
+rule	coverage-gate-on-the-unit-alone	bun-test	blocks/implementations/bun-test/with/workspace.md	workspace	MUST	testing		unit-checked-by-its-own-tools	true
 rule	bunli-spec-with-fake-terminal	bunli	blocks/implementations/bunli/bunli.md		SHOULD	testing		command-tested-through-its-command-line	true
 rule	bunli-flags-declared-by-schema	bunli	blocks/implementations/bunli/bunli.md		MUST	security		outside-value-untyped-until-parsed	true
 rule	bunli-handler-exits-by-the-map	bunli	blocks/implementations/bunli/bunli.md		MUST	errors ux		exit-codes-from-one-map	true
@@ -1502,7 +1502,7 @@ rule	bunli-imported-by-commands	bunli	blocks/implementations/bunli/architecture/
 rule	cognitive-complexity-held-at-fifteen	complexipy	blocks/implementations/complexipy/complexipy.md		MUST			function-within-its-limits	true
 rule	dclint-rules-set-as-errors	dclint	blocks/implementations/dclint/dclint.md		MUST			docker-files-linted-in-the-check	true
 rule	dclint-suppression-names-rule-and-reason	dclint	blocks/implementations/dclint/dclint.md		MUST			suppression-silences-one-finding	true
-rule	cruiser-configuration-per-unit	dependency-cruiser	blocks/implementations/dependency-cruiser/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
+rule	cruiser-configuration-per-unit	dependency-cruiser	blocks/implementations/dependency-cruiser/with/workspace.md	workspace	MUST			unit-checked-by-its-own-tools	true
 rule	imports-between-units-held-at-the-root	dependency-cruiser	blocks/implementations/dependency-cruiser/architecture/with/workspace.md	workspace	MUST		architecture	units-import-toward-libs	true
 rule	unused-dependency-fails	deptry	blocks/implementations/deptry/deptry.md		MUST	security		dead-code-deleted	true
 rule	dev-tool-never-imported-by-the-program	deptry	blocks/implementations/deptry/deptry.md		MUST			production-code-imports-no-tool	true
@@ -1730,7 +1730,7 @@ rule	structlog-configured-by-the-root	structlog	blocks/implementations/structlog
 rule	only-the-root-imports-structlog	structlog	blocks/implementations/structlog/architecture/structlog.md		MUST		architecture	root-alone-configures-logging	true
 rule	equivalent-mutant-marked-on-its-line	stryker	blocks/implementations/stryker/stryker.md		MUST			suppression-silences-one-finding	true
 rule	stryker-runs-the-archive-runner	stryker	blocks/implementations/stryker/with/bun-test.md	bun-test	MUST	testing		every-mutant-killed	true
-rule	stryker-configuration-per-unit	stryker	blocks/implementations/stryker/with/workspace.md	workspace	MUST			unit-checked-by-its-own-parts	true
+rule	stryker-configuration-per-unit	stryker	blocks/implementations/stryker/with/workspace.md	workspace	MUST			unit-checked-by-its-own-tools	true
 rule	syncpack-holds-versions-and-field-order	syncpack	blocks/implementations/syncpack/syncpack.md		MUST				true
 rule	utilities-only-from-tokens	tailwind	blocks/implementations/tailwind/tailwind.md		MUST	ux		tokens-single-source-of-appearance	true
 rule	important-modifier-never-in-a-class-list	tailwind	blocks/implementations/tailwind/tailwind.md		MUST			declaration-never-important	true

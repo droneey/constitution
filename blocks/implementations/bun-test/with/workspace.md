@@ -2,7 +2,7 @@
 
 > The coverage gate of each package of a workspace.
 
-### coverage-gate-on-the-unit-alone → unit-checked-by-its-own-parts · MUST
+### coverage-gate-on-the-unit-alone → unit-checked-by-its-own-tools · MUST
 In a workspace, each package's `bunfig.toml` adds `"../**"` to `coveragePathIgnorePatterns`, so its gate counts only the package's own files, never those of a package it imports.
 
 | Why | Tags |

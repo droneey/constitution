@@ -85,12 +85,12 @@ Data in no language that several units read — a schema, a table of cases — i
 
 ## Checks
 
-### unit-checked-by-its-own-parts → rule-held-by-a-tool-where-one-can · MUST
+### unit-checked-by-its-own-tools → rule-held-by-a-tool-where-one-can · MUST
 In a workspace, the files of each package are checked by the tools of its own blocks with that package's configuration, and no package's checks reach another package's files.
 
 | Why | Tags |
 |---|---|
-| a part applied from the root either misses a package's paths, as one that names `src/` does, and passes in silence, or applies one package's parts to the others and changes their rules. | [] |
+| a tool's configuration applied from the root either misses a package's paths, as one that names `src/` does, and passes in silence, or applies one package's configuration to the others and changes their rules. | [] |
 
 ## Requirements for implementation
 

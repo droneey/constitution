@@ -19,7 +19,7 @@ A unit in one language is one package: its manifest and its `src/` sit in the un
 | a reader finds the package where the unit is, with no folder per language to cross. | [] |
 
 ### unit-in-several-languages-holds-a-package-per-language · SHOULD
-A unit in several languages holds `shared/`, its data in no language laid out by meaning — `schema/`, `conformance/` — and one folder per language, `<language>/`, each one package with the tree in its `src/`; the language folders appear with the second language.
+A unit in several languages holds `data/`, its data in no language laid out by meaning — `schema/`, `conformance/` — and one folder per language, `<language>/`, each one package with the tree in its `src/`; the language folders appear with the second language.
 
 | Why | Tags |
 |---|---|
@@ -33,11 +33,11 @@ A program with a root of its own is a unit of `apps/`, and every unit of `apps/`
 | each program then wires one tree of its own, released and changed apart from the others. | [] |
 
 ### business-shared-across-languages-lives-in-one-package · SHOULD
-Business that programs in different languages run lives first in one package, written in a language every one of them can run and compiled for each, reached through generated bindings — Rust through native bindings and WebAssembly, Kotlin Multiplatform; where no such language serves every target, it lives in the service they call, and a client keeps only what must work without it, shared through the schema and the conformance cases of the shared unit's language-free `shared/` folder.
+Business that programs in different languages run lives first in one package, written in a language every one of them can run and compiled for each, reached through generated bindings. Where no such language serves every target, it lives in the service they call. A client then keeps only what must work without the service, as a copy per language, held together by the schema and the conformance cases in the `data/` folder of the unit that holds those copies.
 
 | Why | Tags |
 |---|---|
-| business written once cannot drift between languages, and a copy per language is the last resort, held together by the cases every copy must pass. | [] |
+| business written once cannot drift between languages, as Rust compiled to native bindings and WebAssembly, or Kotlin Multiplatform, shows; a copy per language is the last resort, held together by the cases every copy must pass. | [] |
 
 ### unit-offers-everything-through-its-one-package · SHOULD
 Whatever a unit offers — its core, its wire shapes, its integrations into host frameworks — is a module or an entry of its one package per language, an integration in `integrations/<host>/`, never a package of its own.
