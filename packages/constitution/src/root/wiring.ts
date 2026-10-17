@@ -1,6 +1,5 @@
 import type {
   BindingsParser,
-  DigestWriter,
   FileTree,
   FrontMatterParser,
   ManifestParser,
@@ -25,7 +24,7 @@ interface Wiring {
   console: {
     write: (text: string) => void;
   };
-  fileSystem: FileTree & DigestWriter;
+  fileSystem: FileTree;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   repository: FileTree;

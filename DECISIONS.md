@@ -40,7 +40,7 @@
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
 | What a tool holds and what review holds | ADR-0200 – ADR-0202 |
-| The plugin and the project's rules | ADR-0203, ADR-0204 |
+| The plugin and the project's rules | ADR-0203 – ADR-0205 |
 
 ---
 
@@ -1450,7 +1450,7 @@
 
 - **Decision.**
   - A workspace holds `apps/<name>/`, what the repository deploys and runs itself and nobody installs, blind to each other; and `packages/<name>/`, every other unit: what its apps share, and the libraries, tools and configurations it releases. Imports go from `apps/` to `packages/` and never back; packages may import each other, never in a cycle. A unit is named after its folder, `@<scope>/<name>` or `<scope>-<name>`, and no two units share a name.
-  - Code that knows nothing of the product and is needed by more than one repository is released from a repository of libraries, the kit; until a second repository needs it, it lives in the `libs/` of the source that uses it — a rule of core, since it holds in a repository of one package too. The boundary of what knows nothing of the product is the repository's, and review holds it inside one (ADR-0200).
+  - Code that knows nothing of the product and is needed by more than one repository is released from a repository of libraries; until a second repository needs it, it lives in the `libs/` of the source that uses it — a rule of core, since it holds in a repository of one package too. The boundary of what knows nothing of the product is the repository's, and review holds it inside one (ADR-0200).
   - A package others import offers a further entry that serves no host framework, such as `testing`, as a file beside its surface that only re-exports, as `@angular/core/testing` and `hono/testing` do.
   - Code that serves one purpose in several languages holds `languages/<language>/`, one package per language, and `shared/`, what they need written in none of them; `languages/` appears with the second language. The rule lives in core's architecture, since a repository of one such product has the same shape. This replaces the per-language folders at the unit's root of ADR-0150.
 - **Rejected.**
@@ -1488,7 +1488,7 @@
 - **Decision.**
   - A package others install is held by `isolatedDeclarations` in tsc's `distribution` part; its resolution under the runtimes that load it is left to review, since `nodenext` over the source refuses the folder imports `surface-imported-by-its-folders-path` requires.
   - Bun's coverage gate runs in a second configuration, `bunfig.integration.toml`, over the unit and the integration specs together, because Bun merges no coverage between runs and ADR-0197 counts the integration specs; the unit run keeps its network sandbox, and the unit specs run twice.
-  - Literals with a meaning are held by ruff's `PLR2004` and Biome's `noMagicNumbers`; cognitive complexity is 15 in Biome and complexipy; mutants of log calls and diagnostic text are left out by Stryker's ignorer; in Python, mutmut's `do_not_mutate_patterns` leaves out log calls and the text of a diagnostic is marked by its line's pragma, since ruff's `EM` puts the text on a line of its own before the `raise`, where a pattern over that line would also drop the error's data; a dependency from a source repository or an address is refused by syncpack's specifier types, while a `file:` or `link:` path — the kit's archive in `.droneey/`, for one — is left to review, which keeps it inside the repository; in Python, `sources-stay-in-the-repository-or-an-index` limits `[tool.uv.sources]` to the workspace, an archive inside the repository or a named index, and review holds it, as it does a git dependency that arrives only through a lockfile.
+  - Literals with a meaning are held by ruff's `PLR2004` and Biome's `noMagicNumbers`; cognitive complexity is 15 in Biome and complexipy; mutants of log calls and diagnostic text are left out by Stryker's ignorer; in Python, mutmut's `do_not_mutate_patterns` leaves out log calls and the text of a diagnostic is marked by its line's pragma, since ruff's `EM` puts the text on a line of its own before the `raise`, where a pattern over that line would also drop the error's data; a dependency from a source repository or an address is refused by syncpack's specifier types, while a `file:` or `link:` path — a library's archive in `.droneey/`, for one — is left to review, which keeps it inside the repository; in Python, `sources-stay-in-the-repository-or-an-index` limits `[tool.uv.sources]` to the workspace, an archive inside the repository or a named index, and review holds it, as it does a git dependency that arrives only through a lockfile.
   - ShellCheck with an explicit `enable=` list, shfmt, rumdl and yamlfmt are blocks of their own; this repository checks its shell scripts and its Markdown with them.
   - Hooks are installed when the repository is set up, never by a package manager's install script (`hooks-installed-on-setup`, replacing `hooks-installed-with-dependencies`), so a project without mise keeps the rule.
   - An objection to analytics keeps Matomo's tracker off in the program itself (`matomo-objection-keeps-the-tracker-off`), since Matomo's `optUserOut` stores the objection in a cookie that `disableCookies` turns off.
@@ -1498,7 +1498,7 @@
   - Coverage read from the unit run alone, which leaves code reached only by integration specs uncovered; a merge of two runs' reports, which Bun cannot do.
   - Matomo's `optUserOut`, a cookie the cookieless setup never sets.
   - Request middleware for TanStack Start's headers, which a static shell never passes through; Nitro's `routeRules` alone, which a static host serving the SPA never reads.
-  - Every `file:` and `link:` dependency and every uv `path` source refused: no tool tells a path inside the repository from one outside it, and the kit is installed from an archive inside it.
+  - Every `file:` and `link:` dependency and every uv `path` source refused: no tool tells a path inside the repository from one outside it, and a library may be installed from an archive inside it.
   - A Biome plugin for the prefix of a boolean prop: a name, which review holds under ADR-0200.
 - **Why.** Each setting holds a rule the tool can check without guessing; where the tool could not hold it without breaking another rule or reaching past what it sees, review keeps it.
 
@@ -1540,3 +1540,17 @@
   - A manifest per pack with its name, version and the range of the constitution it fits: an arrow or a `requires` that resolves is the fit that matters, and a range would be a second source of it.
   - A pack that replaces or loosens a rule of the constitution: a pack tightens as any block does.
 - **Why.** The owner's model: a pack is only blocks, and the engine operates whatever packs a project connects. Reading packs where the hook already reads local blocks keeps the one engine, and a pack's author keeps the one check the constitution runs on itself.
+
+## ADR-0205 — The hook reads the blocks themselves, and a project's own blocks are a pack
+
+**Date:** 2026-10-17 · **Status:** Accepted
+
+- **Decision.**
+  - The hook reads every block from its Markdown at session start — the constitution's, then each pack's — as ADR-0204 has it read a pack: the card's front matter, the chapters and `with/` files by their folders, the rules by their headings, the Requirements rows, core's text from its card. It reads the whole constitution in about 50 ms and gives the same digest, line for line, and the same reminders as the index did. The release carries no generated `digests/`: `digests:write` goes, and a release names the form of its blocks in `package.json`'s `constitutionFormat`, which the plugin reads as it read `digests/format`, its own form and the one before it. This replaces the digests of ADR-0203.
+  - A project's own blocks are a pack: a folder shaped like the constitution, wherever the project keeps it, listed under `packs:`, its blocks listed by id. The local blocks — single files under `rules/`, listed by their paths in a layer's key — go, and with them the hook's code for them; a path in a layer's key is a warning that names the pack.
+  - `blocks:check` keeps the limit of core's card, which the hook gives whole in every digest: 3,500 bytes.
+- **Rejected.**
+  - Keeping the index for the constitution and Markdown for packs: two readers of one form, a build step in every release, and a working tree that shows its rules only after a command.
+  - Keeping local blocks beside packs: two mechanisms for one thing, the project's own blocks, one of them able to hold only a card.
+  - A fixed folder for a project's own pack: the project names its path, as it names any pack's.
+- **Why.** Measured on the 349 files of the constitution, reading the Markdown costs the session start nothing an index saves, so the index was a build step and a second form with no gain. One reader for every block — the constitution's, a shared pack's, the project's own — leaves one engine, and a block edited in a working tree reaches the next session as it is.

@@ -1,9 +1,9 @@
 export { abstractBlocksCheck } from './abstract-blocks.check';
 export { bindingsCheck } from './bindings.check';
 export { budgetCheck } from './budget.check';
+export { corePartCheck } from './core-part.check';
 export { cyclesCheck } from './cycles.check';
 export { decisionsCheck } from './decisions.check';
-export { digestsCheck } from './digests.check';
 export { frontMatterCheck } from './front-matter.check';
 export { linksCheck } from './links.check';
 export { ownedWordsCheck } from './owned-words.check';

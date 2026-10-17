@@ -1,21 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { blankInlineCode, inlineCodeSpans, withoutInlineCode } from '../inline-code.utils';
-
-describe('blankInlineCode', () => {
-  it('should blank every span to spaces of its length and keep its line breaks when a span wraps a line', () => {
-    // Arrange
-    const text = 'Use `a` and ``b`c``, `d\ne` too.';
-
-    // Act
-    const blanked = blankInlineCode(text);
-
-    // Assert
-    expect(blanked).toBe(
-      `Use ${' '.repeat(3)} and ${' '.repeat(7)}, ${' '.repeat(2)}\n${' '.repeat(2)} too.`,
-    );
-  });
-});
+import { inlineCodeSpans, withoutInlineCode } from '../inline-code.utils';
 
 describe('inlineCodeSpans', () => {
   it.each([
@@ -39,6 +24,13 @@ describe('inlineCodeSpans', () => {
       ],
       name: 'a lone backtick before a span in a later paragraph',
       text: 'Use a backtick `here.\n\nThen run `check` now.',
+    },
+    {
+      expected: [
+        'a ` b',
+      ],
+      name: 'a span of two backticks around a lone one',
+      text: 'Use ``a ` b`` here.',
     },
     {
       expected: [],

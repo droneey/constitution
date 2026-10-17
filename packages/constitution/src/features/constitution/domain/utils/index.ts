@@ -12,12 +12,11 @@ export { withoutCodeFences } from './code-fences.utils';
 export type { MarkdownDocument } from './front-matter.utils';
 export { splitFrontMatter } from './front-matter.utils';
 export {
-  blankInlineCode,
   inlineCodeSpans,
   withoutInlineCode,
 } from './inline-code.utils';
-export { resolveLink, targetFromRoot } from './link-paths.utils';
-export { localLinkTargets, rewriteLocalLinks } from './links.utils';
+export { resolveLink } from './link-paths.utils';
+export { localLinkTargets } from './links.utils';
 export {
   directoryOf,
   fileNameOf,

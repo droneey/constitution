@@ -89,7 +89,7 @@ const blockFiles = (
   };
 };
 
-// Core's part runs close to its 3,500 bytes, as the real one may.
+// Core's card runs close to its 3,500 bytes, as the real one may.
 const CORE_BODY = [
   '# Core',
   '',
@@ -102,18 +102,19 @@ const CORE_BODY = [
       length: 28,
     },
     (_, index) =>
-      `Paragraph ${String(index + 1).padStart(2, '0')} of core's part states one more principle in about one hundred and twenty bytes of text.`,
+      `Paragraph ${String(index + 1).padStart(2, '0')} of core's card states one more principle in about one hundred and twenty bytes of text.`,
   ).flatMap((paragraph) => [
     paragraph,
     '',
   ]),
 ].join('\n');
 
-const CORE_PART = `${CORE_BODY.trim()}\n`;
+// The digest gives core's card without its front matter and the blank lines around it.
+const CORE_TEXT = `${CORE_BODY.trim()}\n`;
 
-const coreFiles = (): Files =>
+const coreFiles = (body: string): Files =>
   blockFiles({
-    body: CORE_BODY,
+    body,
     dir: 'blocks/core',
     files: {
       'principles.md': section({
@@ -622,8 +623,9 @@ const syntheticFiles = (): Files =>
     ),
   );
 
-const constitutionFiles = (): Files => ({
-  ...coreFiles(),
+// A core body of the case's own sets how much of the budget core's text takes.
+const constitutionFiles = (coreBody: string = CORE_BODY): Files => ({
+  ...coreFiles(coreBody),
   ...domainFiles(),
   ...contextFiles(),
   ...implementationFiles(),
@@ -631,4 +633,4 @@ const constitutionFiles = (): Files => ({
 });
 
 export type { Files };
-export { CORE_PART, constitutionFiles };
+export { CORE_TEXT, constitutionFiles };

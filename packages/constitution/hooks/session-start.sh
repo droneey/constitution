@@ -53,12 +53,12 @@ done
 archive="${project}/.droneey/constitution"
 event="${event:-SessionStart}"
 
-# The digest formats this plugin reads: the newest and the one before it, once
-# there is one.
-newest_format=1
-oldest_format=1
+# The forms of the blocks this plugin reads: the newest and the one before it,
+# once there is one. A release names its form in its package.json.
+newest_format=2
+oldest_format=2
 
-# A project whose digests this plugin cannot read gets the reason alone.
+# A project whose constitution this plugin cannot read gets the reason alone.
 notice() {
   printf 'notice\t%s\t%s\n' "$1" "$2" |
     CONSTITUTION_ROOT="${archive}" CONSTITUTION_EVENT="${event}" CONSTITUTION_OLDEST="${oldest_format}" \
@@ -67,27 +67,14 @@ notice() {
 }
 
 [ -d "${archive}" ] || notice missing ''
-# A release carries its blocks with a format, or, before format 1, neither; a
-# working tree linked in its place has blocks, and a format once digests:write runs.
-[ -f "${archive}/digests/format" ] || [ ! -d "${archive}/blocks" ] || notice ungenerated ''
-format=''
-if [ -f "${archive}/digests/format" ] && [ -r "${archive}/digests/format" ]; then
-  format="$(sed -n 1p "${archive}/digests/format")" || fail "cannot read ${archive}/digests/format"
-fi
-# No format, or no number, is an archive older than the first format.
-case "${format}" in
-  '' | *[!0-9]*) format=0 ;;
-esac
-[ "${format}" -le "${newest_format}" ] || notice newer "${format}"
-[ "${format}" -ge "${oldest_format}" ] || notice older "${format}"
-
-index="${archive}/digests/index.tsv"
-core="${archive}/digests/core.md"
 manifest="${archive}/package.json"
 config="${project}/constitution.yaml"
-for file in "${index}" "${core}" "${manifest}"; do
-  [ -f "${file}" ] && [ -r "${file}" ] || fail "cannot read ${file}"
-done
+[ -f "${manifest}" ] && [ -r "${manifest}" ] || fail "cannot read ${manifest}"
+format="$(sed -n 's/.*"constitutionFormat"[[:space:]]*:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "${manifest}" | sed -n 1p)" || fail "cannot read ${manifest}"
+# No form named is a release older than the first form read from the blocks.
+[ -n "${format}" ] || format=0
+[ "${format}" -le "${newest_format}" ] || notice newer "${format}"
+[ "${format}" -ge "${oldest_format}" ] || notice older "${format}"
 
 installed="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${manifest}" | sed -n 1p)" || fail "cannot read ${manifest}"
 [ -n "${installed}" ] || fail "${manifest} has no version"
@@ -100,65 +87,41 @@ fi
 
 records="$(awk -f "${lib}/read-config.awk" "${config}" 2>/dev/null)" || fail "cannot read ${config}"
 
-# awk opens a local block only when it is a regular, readable file: getline
-# fails on a folder and blocks on a named pipe.
-tab="$(printf '\t')"
-files=''
-
-# A pack the project lists is a folder of blocks; awk reads each of its regular,
-# readable Markdown files under blocks/, in one order on every system.
-pack_files() {
-  pack_dir="${project}/${1#./}"
-  if [ ! -d "${pack_dir}/blocks" ]; then
-    files="${files}pack${tab}$1
-"
-    return
-  fi
-  pack_list="$(cd "${pack_dir}" && find blocks -type f -name '*.md' 2>/dev/null | LC_ALL=C sort)" || return
-  while IFS= read -r pack_rel; do
-    [ -n "${pack_rel}" ] && [ -r "${pack_dir}/${pack_rel}" ] || continue
-    files="${files}packfile${tab}$1${tab}${pack_rel}${tab}${pack_dir}/${pack_rel}
-"
-  done <<PACK
-${pack_list}
-PACK
+# The Markdown files of a folder of blocks, regular files only, since getline
+# blocks on a named pipe; a file awk cannot read is reported there.
+blocks_of() {
+  (cd "$1" 2>/dev/null && find blocks -type f -name '*.md' 2>/dev/null) |
+    CONSTITUTION_SOURCE="$2" CONSTITUTION_FOLDER="$1" awk -f "${lib}/order.awk" |
+    LC_ALL=C sort | cut -f 2-
 }
+
+tab="$(printf '\t')"
+files="$(blocks_of "${archive}" '')" || fail "cannot list the blocks of ${archive}"
+
+# A pack the project lists is a folder of blocks, read after the constitution's.
 while IFS= read -r record; do
   case "${record}" in
-    "item${tab}${tab}packs${tab}"*)
-      pack_files "${record#item"${tab}${tab}"packs"${tab}"}"
-      continue
-      ;;
-    "item${tab}"*) path="${record#item"${tab}"*"${tab}"*"${tab}"}" ;;
+    "item${tab}${tab}packs${tab}"*) pack="${record#item"${tab}${tab}"packs"${tab}"}" ;;
     *) continue ;;
   esac
-  case "${path}" in
-    ./*) ;;
-    *) continue ;;
-  esac
-  target="${project}/${path#./}"
-  if [ -f "${target}" ] && [ -r "${target}" ]; then
-    state='file'
-  elif [ -f "${target}" ]; then
-    state='unreadable'
-  elif [ -e "${target}" ] || [ -L "${target}" ]; then
-    state='other'
+  if [ -d "${project}/${pack#./}/blocks" ]; then
+    files="${files}
+$(blocks_of "${project}/${pack#./}" "${pack}")"
   else
-    continue
+    files="${files}
+pack${tab}${pack}"
   fi
-  files="${files}local${tab}${state}${tab}${path}
-"
-done <<EOF
+done <<RECORDS
 ${records}
-EOF
+RECORDS
 
 export CONSTITUTION_ROOT="${archive}" CONSTITUTION_PROJECT="${project}" \
-  CONSTITUTION_INDEX="${index}" CONSTITUTION_CORE="${core}" \
+  CONSTITUTION_CORE="${archive}/blocks/core/core.md" \
   CONSTITUTION_INSTALLED="${installed}" CONSTITUTION_TODAY="${today}" \
   CONSTITUTION_EVENT="${event}" CONSTITUTION_STARTUP="${startup}"
 
 resolved="$(printf '%s\n%s' "${records}" "${files}" |
-  awk -f "${lib}/local-blocks.awk" -f "${lib}/pack-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
+  awk -f "${lib}/blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
 output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/json.awk" -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
 
 # A state that cannot be written costs the reminders and the gate, never the digest.

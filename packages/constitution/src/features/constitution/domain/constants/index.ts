@@ -1,1 +1,1 @@
-export { BASE_PREFIX, DIGEST_FORMAT, DocumentPath } from './documents.constants';
+export { BASE_PREFIX, DocumentPath } from './documents.constants';

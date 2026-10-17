@@ -3,14 +3,13 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import type { Files } from './constitution.fixtures';
 import {
   browserAppContext,
   cliContext,
   coreOnlyContext,
   htmlSiteContext,
   libraryContext,
-  localBlocksContext,
+  packProjectContext,
   unparsedContext,
 } from './digests.fixtures';
 import type { HookRun } from './hook.fixtures';
@@ -34,7 +33,7 @@ import {
 import {
   archiveOf,
   Breakage,
-  corePartOfBytes,
+  coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
   LINK,
@@ -50,11 +49,10 @@ import {
   createProject,
   HTML_SITE,
   LIBRARY,
-  LOCAL_PROJECT,
-  localBlockFiles,
-  localPath,
-  PARAGLIDE,
-  paraglideFiles,
+  OWN_PACK,
+  PACK_PROJECT,
+  packBlockFiles,
+  packPath,
   RATIFIED,
   REAL_CLI,
   REAL_WEB_APP,
@@ -124,7 +122,7 @@ interface ReadCase {
 
 interface EdgeCase {
   condition: string;
-  corePart: number;
+  coreBody: number;
   domains: string;
   tail: readonly string[];
 }
@@ -135,15 +133,13 @@ interface EventCase {
 }
 
 interface NoticeCase {
-  // a file the archive is built without
+  // a field the archive's package.json is written without
   breakage?: Breakage | undefined;
   condition: string;
   // the project's link points to a folder that does not exist
   dangling?: boolean | undefined;
-  // the project's own files, where .droneey/constitution may be a folder
-  files?: Files | undefined;
-  // the text of digests/format, or undefined for the default archive's
-  format?: string | undefined;
+  // the archive's constitutionFormat, or undefined for the default archive's
+  format?: number | string | undefined;
   notice: (archive: string) => readonly string[];
   // no archive is linked into the project
   unlinked?: boolean | undefined;
@@ -746,14 +742,14 @@ describe('session-start hook', () => {
     // Assert
     expect({
       facts: factsOf(context),
-      local: blockListOf(context).filter((line) => line.includes('(local')),
+      pack: blockListOf(context).filter((line) => line.includes(`(${OWN_PACK})`)),
       warnings: warningsOf(context),
     }).toStrictEqual({
       facts: [
         'constitution.yaml pins 1.0.0; 7 blocks are active.',
       ],
-      local: [
-        '- paraglide (local, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
+      pack: [
+        '- paraglide (constitution): Paraglide messages, compiled per locale.',
       ],
       warnings: [],
     });
@@ -965,157 +961,79 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'a local block has no dictionary',
+      condition: 'a block is listed by its path',
       layout: {
         config: configOf({
-          domains: '[i18n]',
-          implementations: `[${PARAGLIDE}]`,
-        }),
-        files: paraglideFiles({
-          omit: 'dictionary',
-          requires: '[i18n]',
+          implementations: '[./rules/implementations/paraglide.md]',
         }),
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${PARAGLIDE} has no dictionary — fix its front matter`,
+        '- unknown: ./rules/implementations/paraglide.md is a path — put the block in a pack listed under packs: and name it by its id',
       ],
     },
     {
-      condition: 'a local block lies outside the repository',
+      condition: 'a block of the pack requires a block of the pack active only in an application',
       layout: {
         config: configOf({
-          implementations: '[../shared/paraglide.md]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- local-block: ../shared/paraglide.md is not inside the repository — name a file under ./rules/',
-      ],
-    },
-    {
-      condition: 'a local block requires a local block active only in an application',
-      layout: {
-        config: configOf({
-          packages: `\n  packages/x:\n    implementations: [${localPath('beta')}]`,
-          implementations: `[${localPath('alpha')}]`,
+          packages: '\n  packages/x:\n    implementations: [beta]',
+          implementations: '[alpha]',
+          packs: `[${OWN_PACK}]`,
         }),
         files: {
-          ...localBlockFiles({
+          ...packBlockFiles({
             fields: {
               requires: '[beta]',
             },
             id: 'alpha',
           }),
-          ...localBlockFiles({
+          ...packBlockFiles({
             id: 'beta',
           }),
         },
       },
       warnings: [
         WARNINGS,
-        `- missing: alpha needs beta — add ${localPath('beta')} to implementations`,
+        '- missing: alpha needs beta — add beta to implementations',
       ],
     },
     {
-      condition: 'a local tool names a language it does not require',
+      condition: "a block's card in the pack is a folder",
       layout: {
         config: configOf({
-          domains: '[ui, untrusted-client, unreliable-network, version-control]',
-          implementations: `[react-dom, git, betterleaks, ${localPath('lint-tool')}]`,
-          languages: '[typescript]',
-          platforms: '[browser]',
-        }),
-        files: localBlockFiles({
-          fields: {
-            languages: '[typescript]',
-          },
-          id: 'lint-tool',
-        }),
-      },
-      warnings: [],
-    },
-    {
-      condition: 'a local tool names a local language listed after it',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: `[git, ${localPath('mix-audit')}]`,
-          languages: `[${localPath('elixir', 'contexts/languages')}]`,
+          implementations: '[folder]',
+          packs: `[${OWN_PACK}]`,
         }),
         files: {
-          ...localBlockFiles({
-            fields: {
-              languages: '[elixir]',
-            },
-            id: 'mix-audit',
-          }),
-          ...localBlockFiles({
-            folder: 'contexts/languages',
-            id: 'elixir',
-          }),
-        },
-      },
-      warnings: [],
-    },
-    {
-      condition: "a local block's languages name blocks that are no language",
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: `[git, betterleaks, ${localPath('lint-tool')}, ${localPath('kit')}]`,
-          languages: '[typescript]',
-        }),
-        files: {
-          ...localBlockFiles({
-            fields: {
-              languages: '[typescript, ui, kit, kotlin]',
-            },
-            id: 'lint-tool',
-          }),
-          ...localBlockFiles({
-            id: 'kit',
-          }),
+          [`${packPath({
+            id: 'folder',
+          })}/.keep`]: '',
         },
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${localPath('lint-tool')} covers ui, which is not a language block — fix its front matter`,
-        `- local-block: ${localPath('lint-tool')} covers kit, which is not a language block — fix its front matter`,
-        `- local-block: ${localPath('lint-tool')} covers kotlin, which is not a language block — fix its front matter`,
+        '- unknown: folder is not a block — check the name',
       ],
     },
     {
-      condition: 'a local block path names a folder',
+      condition: "a block's card in the pack is a named pipe",
       layout: {
         config: configOf({
-          implementations: `[${localPath('folder')}]`,
+          implementations: '[pipe]',
+          packs: `[${OWN_PACK}]`,
         }),
         files: {
-          'rules/implementations/folder.md/.keep': '',
+          [`${OWN_PACK}/blocks/implementations/pipe/.keep`]: '',
         },
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('folder')} is not a file — name the block's .md file`,
-      ],
-    },
-    {
-      condition: 'a local block path names a named pipe',
-      layout: {
-        config: configOf({
-          implementations: `[${localPath('pipe')}]`,
-        }),
         namedPipes: [
-          'rules/implementations/pipe.md',
+          packPath({
+            id: 'pipe',
+          }),
         ],
-        files: {
-          'rules/implementations/.keep': '',
-        },
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${localPath('pipe')} is not a file — name the block's .md file`,
+        '- unknown: pipe is not a block — check the name',
       ],
     },
     {
@@ -1150,12 +1068,13 @@ describe('session-start hook', () => {
       layout: {
         config: configOf({
           domains: '[analytics, version-control]',
-          implementations: `[_react, tanstak-query, ui, ${PARAGLIDE}, matomo, git, react-dom]`,
+          implementations: '[_react, tanstak-query, ui, matomo, git, react-dom]',
           languages: '[typescript]',
           omit: ConfigKey.Packages,
           overrides: fourDataStatesOverride(
             '    level: MAY\n    reason: "later"\n    until: 2020-01-01',
           ),
+          packs: '[packs/gone]',
         }),
       },
       warnings: [
@@ -1165,7 +1084,7 @@ describe('session-start hook', () => {
         '- unknown: tanstak-query is not a block — check the name',
         '- wrong-key: ui is a domain — move it from implementations to domains',
         '- config: constitution.yaml has no packages key — add packages: {}',
-        `- local-block: ${PARAGLIDE} does not exist — create it or remove it from implementations`,
+        '- pack: packs/gone is not installed — run mise install, or check the path',
         '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
         '- override: four-data-states expired on 2020-01-01 — renew or remove it',
       ],
@@ -1230,12 +1149,13 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: "a local block's folder names a layer other than its key's",
+      condition: "a block of the pack lies in the folder of a layer other than its key's",
       layout: {
         config: configOf({
-          implementations: `[${localPath('kit', 'domains')}]`,
+          implementations: '[kit]',
+          packs: `[${OWN_PACK}]`,
         }),
-        files: localBlockFiles({
+        files: packBlockFiles({
           folder: 'domains',
           id: 'kit',
         }),
@@ -1246,190 +1166,121 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: "a local block's id is not its file's name",
+      condition: 'a block of the pack takes the id of a constitution block',
       layout: {
         config: configOf({
-          implementations: `[${localPath('kit')}]`,
+          domains: '[version-control]',
+          implementations: '[git]',
+          packs: `[${OWN_PACK}]`,
         }),
-        files: localBlockFiles({
-          fields: {
-            id: 'toolkit',
-          },
-          id: 'kit',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('kit')} has id toolkit — make it kit, the file's name`,
-      ],
-    },
-    {
-      condition: 'a local block takes the id of a constitution block',
-      layout: {
-        config: configOf({
-          implementations: `[${localPath('git')}]`,
-        }),
-        files: localBlockFiles({
+        files: packBlockFiles({
           id: 'git',
         }),
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${localPath('git')} repeats the constitution id git — rename it`,
+        `- pack: ${packPath({
+          id: 'git',
+        })} repeats the block git — the one read first is used`,
       ],
     },
     {
-      condition: 'a local block extends no constitution block',
+      condition:
+        'rules of the pack name a rule of the constitution and a rule of a block of the pack read after them',
       layout: {
         config: configOf({
-          implementations: `[${localPath('kit')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            extends: 'nothing',
-          },
-          id: 'kit',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('kit')} extends nothing, which is not a constitution block — fix its front matter`,
-      ],
-    },
-    {
-      condition: 'a local block extends a concrete constitution block',
-      layout: {
-        config: configOf({
-          domains: '[version-control]',
-          implementations: `[git, ${localPath('kit')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            extends: 'git',
-          },
-          id: 'kit',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('kit')} extends git, a concrete block; a block extends only an abstract base — require it instead`,
-      ],
-    },
-    {
-      condition: 'a local block requires no block',
-      layout: {
-        config: configOf({
-          implementations: `[${localPath('kit')}]`,
-        }),
-        files: localBlockFiles({
-          fields: {
-            requires: '[nothing]',
-          },
-          id: 'kit',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        `- local-block: ${localPath('kit')} requires nothing, which is not a block — fix its front matter`,
-      ],
-    },
-    {
-      condition: 'a local rule names a parent that is no rule',
-      layout: {
-        config: configOf({
-          implementations: `[${localPath('kit')}]`,
-        }),
-        files: localBlockFiles({
-          headings: [
-            '### kit-rule → no-such-rule · MUST',
-          ],
-          id: 'kit',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- local-block: kit-rule → no-such-rule: no-such-rule is an unknown rule — check the slug',
-      ],
-    },
-    {
-      condition: 'local rules name a rule of the constitution and a rule of a later local block',
-      layout: {
-        config: configOf({
-          implementations: `[${localPath('kit')}, ${localPath('base-kit')}]`,
+          implementations: '[kit, kit-base]',
+          packs: `[${OWN_PACK}]`,
         }),
         files: {
-          ...localBlockFiles({
+          ...packBlockFiles({
             headings: [
               '### kit-rule → secret-never-in-code',
               '### kit-child → base-rule · MUST',
             ],
             id: 'kit',
           }),
-          ...localBlockFiles({
+          ...packBlockFiles({
             headings: [
               '### base-rule · MUST',
             ],
-            id: 'base-kit',
+            id: 'kit-base',
           }),
         },
       },
       warnings: [],
     },
     {
-      condition: 'a local block path names no .md file',
+      condition: "a block's card in the pack has no front matter",
       layout: {
         config: configOf({
-          implementations: '[./rules/implementations/kit.txt]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        "- local-block: ./rules/implementations/kit.txt is not a block file — name the block's .md file",
-      ],
-    },
-    {
-      condition: 'a local block path is absolute',
-      layout: {
-        config: configOf({
-          implementations: '[/rules/kit.md]',
-        }),
-      },
-      warnings: [
-        WARNINGS,
-        '- local-block: /rules/kit.md is not inside the repository — name a file under ./rules/',
-      ],
-    },
-    {
-      condition: 'a local block has no front matter',
-      layout: {
-        config: configOf({
-          implementations: `[${localPath('kit')}]`,
+          implementations: '[kit]',
+          packs: `[${OWN_PACK}]`,
         }),
         files: {
-          'rules/implementations/kit.md': '# Kit\n',
+          [packPath({
+            id: 'kit',
+          })]: '# Kit\n',
         },
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${localPath('kit')} has no front matter — open it with the block's manifest between --- lines`,
+        `- pack: ${packPath({
+          id: 'kit',
+        })} has no front matter — the block is read without its card`,
       ],
     },
     {
-      condition: 'a local block cannot be read',
+      condition: "a block's card in the pack cannot be read",
       layout: {
         config: configOf({
-          implementations: `[${localPath('kit')}]`,
+          implementations: '[kit]',
+          packs: `[${OWN_PACK}]`,
         }),
-        files: localBlockFiles({
+        files: packBlockFiles({
           id: 'kit',
         }),
         unreadable: [
-          'rules/implementations/kit.md',
+          packPath({
+            id: 'kit',
+          }),
         ],
       },
       warnings: [
         WARNINGS,
-        `- local-block: ${localPath('kit')} cannot be read — make it readable`,
+        `- pack: ${packPath({
+          id: 'kit',
+        })} cannot be read — its rules are left out`,
+      ],
+    },
+    {
+      condition:
+        "a block's card in the pack requires and extends what is no block, and extends a concrete block",
+      layout: {
+        config: configOf({
+          implementations: '[kit, tool]',
+          packs: `[${OWN_PACK}]`,
+        }),
+        files: {
+          ...packBlockFiles({
+            id: 'kit',
+          }),
+          [packPath({
+            id: 'kit',
+          })]:
+            '---\nid: kit\nsummary: "Kit."\nrequires: [nothing-here]\nextends: ghost\nabstract: false\nlanguages: []\ndictionary: []\ngoverns: []\n---\n\n# Kit\n',
+          [packPath({
+            id: 'tool',
+          })]:
+            '---\nid: tool\nsummary: "Tool."\nrequires: []\nextends: git\nabstract: false\nlanguages: []\ndictionary: []\ngoverns: []\n---\n\n# Tool\n',
+        },
+      },
+      warnings: [
+        WARNINGS,
+        '- missing: git needs version-control — add version-control to domains',
+        '- pack: kit requires nothing-here, which is not a block — fix its front matter',
+        '- pack: kit extends ghost, which is not a block — fix its front matter',
+        '- pack: tool extends git, a concrete block; a block extends only an abstract base — require it instead',
       ],
     },
     {
@@ -1560,7 +1411,7 @@ describe('session-start hook', () => {
     {
       context: browserAppContext,
       layout: BROWSER_APP,
-      project: 'a browser application with a local block and an override',
+      project: 'a browser application with a block of its own pack and an override',
     },
     {
       context: cliContext,
@@ -1573,9 +1424,9 @@ describe('session-start hook', () => {
       project: 'a library whose package is an application with its override',
     },
     {
-      context: localBlocksContext,
-      layout: LOCAL_PROJECT,
-      project: 'one of local blocks, one of them in an application',
+      context: packProjectContext,
+      layout: PACK_PROJECT,
+      project: 'one with a pack of its own, one of its blocks in an application',
     },
     {
       context: htmlSiteContext,
@@ -1759,13 +1610,13 @@ describe('session-start hook', () => {
     expect(mustsOf(session)).toContain('four-data-states (SHOULD in web; MAY)');
   });
 
-  // Core's part sets how much room is left: the lines naming core's chapters
+  // Core's text sets how much room is left: the lines naming core's chapters
   // take 165 bytes, the gap and heading of the block list 42, the line under that
   // heading 85 and a synthetic domain's line 88.
   it.each<EdgeCase>([
     {
       condition: 'the last line of the block list ends on the budget, reserve kept',
-      corePart: 8820,
+      coreBody: 8820,
       domains: '[synthetic-001]',
       tail: [
         '- synthetic-001: Block synthetic-001 pads the digest to prove its byte budget holds up.',
@@ -1773,7 +1624,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the last line of the block list passes the budget by one byte',
-      corePart: 8821,
+      coreBody: 8821,
       domains: '[synthetic-001]',
       tail: [
         KEY,
@@ -1782,7 +1633,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list ends on the budget',
-      corePart: 8993,
+      coreBody: 8993,
       domains: '[synthetic-001]',
       tail: [
         '## Domains (blocks/domains/<id>/<id>.md)',
@@ -1791,17 +1642,17 @@ describe('session-start hook', () => {
     },
     {
       condition: 'the heading of the block list passes the budget by one byte',
-      corePart: 8994,
+      coreBody: 8994,
       domains: '[synthetic-001]',
       tail: [
         '',
         '3 more lines of the block list did not fit; constitution.yaml names every block.',
       ],
     },
-  ])('should cut where the budget ends when $condition', ({ corePart, domains, tail }) => {
+  ])('should cut where the budget ends when $condition', ({ coreBody, domains, tail }) => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(corePart),
+      coreBody: coreBodyOfBytes(coreBody),
     });
     const project = createProject({
       config: configOf({
@@ -1830,7 +1681,7 @@ describe('session-start hook', () => {
   it('should fill the budget to its last byte when the last line of the block list ends on it', () => {
     // Arrange
     const plugin = createPluginRoot({
-      corePart: corePartOfBytes(8820),
+      coreBody: coreBodyOfBytes(8820),
     });
     const project = createProject({
       config: configOf({
@@ -1894,60 +1745,36 @@ describe('session-start hook', () => {
     },
     ...[
       {
-        condition: 'the archive is a working tree whose digests are not generated',
-        files: {
-          '.droneey/constitution/blocks/core/core.md': '# Core\n',
-        },
-      },
-      {
-        breakage: Breakage.DigestFormat,
-        condition: 'the archive holds blocks and digests without a format',
-      },
-    ].map((ungenerated: Omit<NoticeCase, 'notice'>) => ({
-      ...ungenerated,
-      notice: (archive: string): readonly string[] => [
-        `The droneey constitution in ${archive} has blocks but no generated digests, so no rules are given.`,
-        'Tell the user to run bun run digests:write in that working tree.',
-      ],
-    })),
-    ...[
-      {
+        breakage: Breakage.Format,
         condition:
-          'the archive is a release from before the digests, with neither blocks nor digests',
-        files: {
-          '.droneey/constitution/presets/common/.keep': '',
-        },
+          'the archive is a release from before block format 2, whose package.json names none',
       },
       {
-        condition: 'the digest format is empty',
-        format: '\n',
+        condition: 'the block format is older than the oldest the plugin reads',
+        format: 1,
       },
       {
-        condition: 'the digest format is not a number',
-        format: '1.0\n',
-      },
-      {
-        condition: 'the digest format is older than the oldest the plugin reads',
-        format: '0\n',
+        condition: 'the block format is written as text',
+        format: '2',
       },
     ].map((older: Omit<NoticeCase, 'notice'>) => ({
       ...older,
       notice: (archive: string): readonly string[] => [
-        `The droneey constitution in ${archive} is older than digest format 1, the oldest this plugin reads, so no rules are given.`,
+        `The droneey constitution in ${archive} is older than block format 2, the oldest this plugin reads, so no rules are given.`,
         'Tell the user to raise the constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.',
       ],
     })),
     {
-      condition: 'the digest format is newer than the plugin reads',
-      format: '2\n',
+      condition: 'the block format is newer than the plugin reads',
+      format: 3,
       notice: (archive): readonly string[] => [
-        `The droneey constitution in ${archive} has digest format 2, newer than this plugin reads, so no rules are given.`,
+        `The droneey constitution in ${archive} has block format 3, newer than this plugin reads, so no rules are given.`,
         'Tell the user to update the constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.',
       ],
     },
   ])(
     'should give only the reason and save no state when $condition',
-    ({ breakage, dangling, files, format, notice, unlinked }) => {
+    ({ breakage, dangling, format, notice, unlinked }) => {
       // Arrange
       const plugin =
         breakage === undefined && format === undefined
@@ -1964,13 +1791,7 @@ describe('session-start hook', () => {
                     format,
                   }),
             });
-      const project = createProject({
-        ...CLI,
-        files: {
-          ...CLI.files,
-          ...files,
-        },
-      });
+      const project = createProject(CLI);
       const session = newSession();
 
       if (dangling === true) {
@@ -2004,10 +1825,10 @@ describe('session-start hook', () => {
     },
   );
 
-  it('should give the digest when the digest format is the newest the plugin reads', () => {
+  it('should give the digest when the block format is the newest the plugin reads', () => {
     // Arrange
     const plugin = createPluginRoot({
-      format: '1\n',
+      format: 2,
     });
     const project = createProject(CLI);
 
@@ -2030,18 +1851,16 @@ describe('session-start hook', () => {
 
   it.each<FailureCase>([
     {
-      breakage: Breakage.DigestIndex,
-      condition: 'the archive lacks digests/index.tsv',
+      breakage: Breakage.Manifest,
+      condition: 'the archive lacks package.json',
       layout: CLI,
-      stderr: ({ archive }): string =>
-        `constitution hook: cannot read ${archive}/digests/index.tsv\n`,
+      stderr: ({ archive }): string => `constitution hook: cannot read ${archive}/package.json\n`,
     },
     {
-      breakage: Breakage.DigestCore,
-      condition: 'the archive lacks digests/core.md',
+      breakage: Breakage.Core,
+      condition: "the archive lacks core's card",
       layout: CLI,
-      stderr: ({ archive }): string =>
-        `constitution hook: cannot read ${archive}/digests/core.md\n`,
+      stderr: (): string => 'constitution hook: cannot build the digest\n',
     },
     {
       breakage: Breakage.Version,

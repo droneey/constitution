@@ -1,12 +1,12 @@
-# Runs with local-blocks.awk. Scope 0 is the whole repository; scope s > 0 is
+# Runs after blocks.awk. Scope 0 is the whole repository; scope s > 0 is
 # application s, which holds scope 0's blocks and its own. Every order comes
-# from the index or from constitution.yaml, never from awk's iteration over an
-# array, which differs from one awk to the next.
+# from the blocks as the hook lists them or from constitution.yaml, never from
+# awk's iteration over an array, which differs from one awk to the next.
 
 BEGIN {
   FS = "\t"
   T = "\t"
-  CODES = "missing abstract unknown wrong-key config local-block pack not-met override"
+  CODES = "missing abstract unknown wrong-key config pack constitution not-met override"
   KEYS = "version axes domains platforms languages implementations packages check overrides"
   FIELDS = "id summary requires extends abstract languages dictionary governs"
   LAYERS = "domain platform language implementation"
@@ -36,46 +36,6 @@ BEGIN {
   FILL["packages"] = "write packages: {}"
   FILL["check"] = "name the command that runs every check, or write check: null"
   FILL["overrides"] = "write overrides: []"
-  read_index(ENVIRON["CONSTITUTION_INDEX"])
-}
-
-function read_index(path,   line, f, r) {
-  while ((r = (getline line < path)) > 0) {
-    if (substr(line, 1, 1) == "#") continue
-    split(line, f, "\t")
-    if (f[1] == "block") {
-      B[++nb] = f[2]
-      KNOWN[f[2]] = 1
-      LAYER[f[2]] = f[3]
-      SUMMARY[f[2]] = f[4]
-      CHAPTERS[f[2]] = f[5]
-      WITH[f[2]] = f[6]
-      REQUIRES[f[2]] = f[7]
-      ABSTRACT[f[2]] = f[9]
-      HEIRS[f[2]] = f[10]
-      ANCESTORS[f[2]] = f[12]
-      GOVERNS[f[2]] = f[13]
-    } else if (f[1] == "chapter") {
-      CGOVERNS[f[2], f[3]] = f[4]
-    } else if (f[1] == "rule") {
-      R[++nr] = f[2]
-      RULE[f[2]] = nr
-      RBLOCK[nr] = f[3]
-      RWITH[nr] = f[5]
-      RLEVEL[nr] = f[6]
-      RAXIS[nr] = f[8]
-      if (f[9] != "" && f[10] == "false") KIDS[f[9]] = KIDS[f[9]] " " f[2]
-    } else if (f[1] == "answer") {
-      ALIB[++nanswers] = f[2]
-      AREQ[nanswers] = f[3]
-      AMET[nanswers] = f[4]
-    }
-  }
-  if (r < 0) {
-    broken = 1
-    exit
-  }
-  close(path)
 }
 
 function text(k,   s) {
@@ -124,8 +84,8 @@ function heirs(id) {
 function declare(s, i,   name, key) {
   name = ITEXT[i]
   key = IKEY[i]
-  if (name ~ /^(\.\.?)?\//) {
-    local_block(s, i)
+  if (name ~ /\//) {
+    warn("unknown", name " is a path — put the block in a pack listed under packs: and name it by its id")
   } else if (!(name in KNOWN)) {
     warn("unknown", name " is not a block — check the name")
   } else if (LAYER[name] == "core") {
@@ -247,13 +207,11 @@ function needs(s, id, list,   n, a, k) {
   for (k = 1; k <= n; k++) {
     if (IN[s, a[k]]) continue
     if (a[k] in KNOWN) warn("missing", id where(s) " needs " a[k] " — add " ((ABSTRACT[a[k]] == "true") ? heirs(a[k]) : a[k]) " to " KEY_OF[LAYER[a[k]]])
-    else if (a[k] in LOCAL) warn("missing", id where(s) " needs " a[k] " — add " LOCAL_PATH[a[k]] " to " LOCAL_KEY[a[k]])
   }
 }
 
 function requires_of(s,   j, k) {
   for (j = 1; j <= nb; j++) if (IN[s, B[j]] && !(s > 0 && IN[0, B[j]])) needs(s, B[j], REQUIRES[B[j]])
-  for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == s) needs(s, LID[k], LREQUIRES[k])
 }
 
 function answers_of(s,   i, k) {
@@ -276,10 +234,6 @@ function active_count(   j, s, k, n) {
         break
       }
     }
-  }
-  for (k = 1; k <= nlocal; k++) {
-    if (!(LID[k] in COUNTED)) n++
-    COUNTED[LID[k]] = 1
   }
   return n
 }
@@ -309,10 +263,6 @@ function also(s, id,   out, n, a, k) {
   return (out == "") ? "" : " (" out ")"
 }
 
-function local_line(k) {
-  return "- " LID[k] " (local, " LPATH[k] "): " LSUMMARY[k]
-}
-
 function heading(layer) {
   print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
   if (!KEYED++) print "index" T "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>."
@@ -328,11 +278,6 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
       if (!lines++) heading(layer)
       print "index" T "- " id ((id in PACK) ? " (" PACK[id] ")" : "") ": " SUMMARY[id] also(0, id)
     }
-    for (k = 1; k <= nlocal; k++) {
-      if (LSCOPE[k] != 0 || LLAYER[k] != layer) continue
-      if (!lines++) heading(layer)
-      print "index" T local_line(k)
-    }
   }
   for (s = 1; s <= napps; s++) {
     lines = 0
@@ -347,11 +292,6 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
       }
       if (!lines++) print "index" T "## " APP[s]
       print "index" T "- " id " (" FOLDER[LAYER[id]] "): " SUMMARY[id] also(s, id)
-    }
-    for (k = 1; k <= nlocal; k++) {
-      if (LSCOPE[k] != s || IN[0, LID[k]]) continue
-      if (!lines++) print "index" T "## " APP[s]
-      print "index" T local_line(k)
     }
   }
 }
@@ -407,7 +347,6 @@ function print_active(   check, s, j, k) {
   for (s = 0; s <= napps; s++) {
     for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") inherit(s, B[j], B[j], GOVERNS[B[j]])
     for (j = 1; j <= nb; j++) if (IN[s, B[j]] && B[j] != "core") print "active" T s T APP[s] T B[j] T GOVERNED[s, B[j]] T files_of(s, B[j])
-    for (k = 1; k <= nlocal; k++) if (IN[s, LID[k]]) print "active" T s T APP[s] T LID[k] T LGOVERNS[k] T LPATH[k]
   }
 }
 
@@ -452,7 +391,6 @@ record == "item" {
   IKEY[nitems] = $3
   ITEXT[nitems] = text(3)
 }
-record == "local" { FILE_STATE[text(2)] = $2 }
 record == "override" {
   OAPP[++nover] = $2
   OLINE[nover] = $3
@@ -463,7 +401,6 @@ record == "override" {
 }
 
 END {
-  if (broken) exit 2
   if (failed != "") {
     all_axes()
     print_core()
@@ -471,16 +408,7 @@ END {
     exit
   }
   check_keys()
-  finish_packs()
-  for (i = 1; i <= nitems; i++) {
-    if (ITEXT[i] !~ /^\.\/.*\.md$/) continue
-    name = ITEXT[i]
-    sub(/^.*\//, "", name)
-    name = substr(name, 1, length(name) - 3)
-    LOCAL[name] = 1
-    LOCAL_PATH[name] = ITEXT[i]
-    LOCAL_KEY[name] = IKEY[i]
-  }
+  finish_blocks()
   if ("core" in KNOWN) IN[0, "core"] = 1
   axes_of(0)
   for (s = 1; s <= napps; s++) axes_of(s)
@@ -488,10 +416,8 @@ END {
   for (i = 1; i <= nitems; i++) if (IAPP[i] == "" && IKEY[i] != "axes" && IKEY[i] != "packs") declare(0, i)
   for (s = 1; s <= napps; s++) {
     for (j = 1; j <= nb; j++) if (IN[0, B[j]]) IN[s, B[j]] = 1
-    for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == 0) IN[s, LID[k]] = 1
     for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s] && IKEY[i] != "axes" && IKEY[i] != "packs") declare(s, i)
   }
-  check_local_parents()
   apply_overrides()
   for (s = 0; s <= napps; s++) {
     requires_of(s)

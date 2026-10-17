@@ -48,11 +48,31 @@ function warnings(   k, bytes) {
   if (k <= nwarnings) put("and " (nwarnings - k + 1) " more")
 }
 
-function core(   path, line, r, lines, k) {
+# Core's card without its front matter and the blank lines around its text.
+function core(   path, line, r, lines, k, read, front, started, blanks) {
   path = ENVIRON["CONSTITUTION_CORE"]
   lines = 0
+  read = 0
+  front = 0
+  started = 0
+  blanks = 0
   while ((r = (getline line < path)) > 0) {
+    sub(/\r$/, "", line)
+    if (!read++ && line == "---") {
+      front = 1
+      continue
+    }
+    if (front) {
+      if (line == "---") front = 0
+      continue
+    }
+    if (line == "") {
+      if (started) blanks++
+      continue
+    }
     if (!lines++) open_section()
+    for (; blanks > 0; blanks--) put("")
+    started = 1
     put(line)
   }
   if (r < 0) exit 2
@@ -81,20 +101,17 @@ function print_json(   k) {
   printf "\"}}\n"
 }
 
-# The digests this plugin cannot read, or their absence, leave only the reason.
+# A constitution this plugin cannot read, or its absence, leaves only the reason.
 function notice(kind, found,   archive) {
   archive = ENVIRON["CONSTITUTION_ROOT"]
   if (kind == "missing") {
     head("The droneey constitution is not installed in this repository: " archive " does not exist, so no rules are given.")
     head("Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.")
-  } else if (kind == "ungenerated") {
-    head("The droneey constitution in " archive " has blocks but no generated digests, so no rules are given.")
-    head("Tell the user to run bun run digests:write in that working tree.")
   } else if (kind == "older") {
-    head("The droneey constitution in " archive " is older than digest format " ENVIRON["CONSTITUTION_OLDEST"] ", the oldest this plugin reads, so no rules are given.")
+    head("The droneey constitution in " archive " is older than block format " ENVIRON["CONSTITUTION_OLDEST"] ", the oldest this plugin reads, so no rules are given.")
     head("Tell the user to raise the constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.")
   } else {
-    head("The droneey constitution in " archive " has digest format " found ", newer than this plugin reads, so no rules are given.")
+    head("The droneey constitution in " archive " has block format " found ", newer than this plugin reads, so no rules are given.")
     head("Tell the user to update the constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.")
   }
 }

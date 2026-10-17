@@ -12,13 +12,12 @@ jobs:
       contents: write
     with:
       prerelease: true
-      # The archive a project pins: the rules, the digests the plugin's hooks
-      # read, the presets, the templates and the built tools.
+      # The archive a project pins: the rules the plugin's hooks read, the
+      # presets, the templates and the built tools.
       assets-command: >-
         npx --yes bun@1.4.3 install --production --frozen-lockfile
         && npx --yes bun@1.4.3 run build
-        && npx --yes bun@1.4.3 run digests:write
         && tar -czf constitution.tar.gz -C packages/constitution
-        package.json blocks digests presets templates tools vocabulary.yaml
+        package.json blocks presets templates tools vocabulary.yaml
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
       assets: constitution.tar.gz constitution.tar.gz.sha256

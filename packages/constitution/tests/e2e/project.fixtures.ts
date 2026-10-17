@@ -32,8 +32,10 @@ enum Repository {
   None = 'none',
 }
 
+// packs, the one key a project may leave out, is written last and only when given.
 type Config = Partial<Record<ConfigKey, string>> & {
   omit?: ConfigKey;
+  packs?: string;
 };
 
 // Paths are relative to the project root; aboveConfig and links lie in the
@@ -74,6 +76,7 @@ const configOf = (config: Config): string =>
 
       return setting.startsWith('\n') ? `${key}:${setting}` : `${key}: ${setting}`;
     })
+    .concat(config.packs === undefined ? [] : `packs: ${config.packs}`)
     .join('\n')
     .concat('\n');
 
@@ -180,7 +183,7 @@ const removeProjects = (): void => {
   }
 };
 
-const localBlock = (input: {
+const packCard = (input: {
   fields: Readonly<Record<string, string>>;
   headings: readonly string[];
 }): string =>
@@ -189,63 +192,52 @@ const localBlock = (input: {
     ...Object.entries(input.fields).map(([key, field]) => `${key}: ${field}`),
     '---',
     '',
-    '# A local block',
+    '# A block of the pack',
     '',
     ...input.headings.flatMap((heading) => [
       heading,
-      'A rule of the local block.',
+      'A rule of the pack.',
       '',
     ]),
   ].join('\n');
 
+// The project's own pack, the folder /ratify writes its blocks to.
+const OWN_PACK = 'constitution';
 const IMPLEMENTATIONS = 'implementations';
 
-const rulesFolder = (folder: string): string => (folder === '' ? 'rules' : `rules/${folder}`);
+const packPath = (input: { folder?: string; id: string }): string =>
+  `${OWN_PACK}/blocks/${input.folder ?? IMPLEMENTATIONS}/${input.id}/${input.id}.md`;
 
-const localBlockFiles = (input: {
+const packBlockFiles = (input: {
   fields?: Readonly<Record<string, string>>;
   folder?: string;
   headings?: readonly string[];
   id: string;
-  omit?: string;
 }): Files => ({
-  [`${rulesFolder(input.folder ?? IMPLEMENTATIONS)}/${input.id}.md`]: localBlock({
-    fields: Object.fromEntries(
-      Object.entries({
-        id: input.id,
-        summary: `The local ${input.id} block.`,
-        requires: '[]',
-        extends: 'null',
-        abstract: 'false',
-        languages: '[]',
-        dictionary: '[]',
-        governs: '[]',
-        ...input.fields,
-      }).filter(([key]) => key !== input.omit),
-    ),
+  [packPath(input)]: packCard({
+    fields: {
+      id: input.id,
+      summary: `The pack's ${input.id} block.`,
+      requires: '[]',
+      extends: 'null',
+      abstract: 'false',
+      languages: '[]',
+      dictionary: '[]',
+      governs: '[]',
+      ...input.fields,
+    },
     headings: input.headings ?? [],
   }),
 });
 
-const localPath = (id: string, folder: string = IMPLEMENTATIONS): string =>
-  `./${rulesFolder(folder)}/${id}.md`;
-
-const PARAGLIDE = localPath('paraglide');
-
-const paraglideFiles = (input: { omit?: string; requires?: string }): Files =>
-  localBlockFiles({
-    fields: {
-      requires: input.requires ?? '[i18n, typescript]',
-      summary: 'Paraglide messages, compiled per locale.',
-      dictionary: '[Paraglide]',
-    },
-    id: 'paraglide',
-    ...(input.omit === undefined
-      ? {}
-      : {
-          omit: input.omit,
-        }),
-  });
+const PARAGLIDE_FILES: Files = packBlockFiles({
+  fields: {
+    requires: '[i18n, typescript]',
+    summary: 'Paraglide messages, compiled per locale.',
+    dictionary: '[Paraglide]',
+  },
+  id: 'paraglide',
+});
 
 // Modelled on the reference web application.
 const BROWSER_APP: ProjectLayout = {
@@ -257,7 +249,7 @@ const BROWSER_APP: ProjectLayout = {
     'platforms: [browser]',
     'languages: [typescript]',
     'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
-    `                  betterleaks, ${PARAGLIDE}]`,
+    '                  betterleaks, paraglide]',
     'packages: {}',
     'check: bun run check',
     'overrides:',
@@ -265,9 +257,10 @@ const BROWSER_APP: ProjectLayout = {
     '    level: SHOULD',
     '    reason: "Matomo runs without cookies until the consent banner ships"',
     '    until: 2999-12-31',
+    `packs: [${OWN_PACK}]`,
     '',
   ].join('\n'),
-  files: paraglideFiles({}),
+  files: PARAGLIDE_FILES,
 };
 
 // Modelled on nydra, with block sequences.
@@ -322,28 +315,31 @@ const HTML_SITE: ProjectLayout = {
   }),
 };
 
-// Local blocks of every kind of front matter: CRLF line ends, a quoted
+// A pack of blocks of every kind of front matter: CRLF line ends, a quoted
 // summary, block lists, a constitution host, an abstract constitution base and
 // one block in an application.
-const LOCAL_PROJECT: ProjectLayout = {
+const PACK_PROJECT: ProjectLayout = {
   config: [
     'version: 1.0.0',
     'axes: [architecture, workflow]',
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
-    `implementations: [react-dom, betterleaks, git, ${localPath('git-flow')}, ${localPath('lint-kit')}]`,
+    'implementations: [react-dom, betterleaks, git, git-flow, lint-kit]',
     'packages:',
     '  packages/web:',
     '    domains: [i18n]',
-    `    implementations: [${PARAGLIDE}, ${localPath('lint-kit')}]`,
+    '    implementations: [paraglide, lint-kit]',
     'check: bun run check',
     'overrides: []',
+    `packs: [${OWN_PACK}]`,
     '',
   ].join('\n'),
   files: {
-    ...paraglideFiles({}),
-    'rules/implementations/git-flow.md': [
+    ...PARAGLIDE_FILES,
+    [packPath({
+      id: 'git-flow',
+    })]: [
       '---',
       'id: git-flow',
       'summary: "Git flow: a branch per change, a tag per release."',
@@ -358,7 +354,9 @@ const LOCAL_PROJECT: ProjectLayout = {
       '---',
       '',
     ].join('\r\n'),
-    'rules/implementations/lint-kit.md': [
+    [packPath({
+      id: 'lint-kit',
+    })]: [
       '---',
       'id: lint-kit',
       "summary: 'Lints TypeScript the way this team likes.'",
@@ -392,8 +390,8 @@ const fromTemplate = (input: {
     readFileSync(join(TEMPLATES, input.name), 'utf8'),
   );
 
-// The files /ratify writes from the templates; the hook reads only a local
-// block's front matter, so only its placeholders are filled.
+// The files /ratify writes from the templates; only the placeholders of the
+// block's front matter are filled, and the project lists its own pack.
 const RATIFIED: ProjectLayout = {
   config: fromTemplate({
     fills: [
@@ -411,7 +409,7 @@ const RATIFIED: ProjectLayout = {
       ],
       [
         'implementations: []',
-        `implementations: [git, betterleaks, ${PARAGLIDE}]`,
+        'implementations: [git, betterleaks, paraglide]',
       ],
       [
         '<check command>',
@@ -419,9 +417,11 @@ const RATIFIED: ProjectLayout = {
       ],
     ],
     name: 'constitution.yaml',
-  }),
+  }).concat(`packs: [${OWN_PACK}]\n`),
   files: {
-    'rules/implementations/paraglide.md': fromTemplate({
+    [packPath({
+      id: 'paraglide',
+    })]: fromTemplate({
       fills: [
         [
           '<id>',
@@ -490,11 +490,10 @@ export {
   createProject,
   HTML_SITE,
   LIBRARY,
-  LOCAL_PROJECT,
-  localBlockFiles,
-  localPath,
-  PARAGLIDE,
-  paraglideFiles,
+  OWN_PACK,
+  PACK_PROJECT,
+  packBlockFiles,
+  packPath,
   RATIFIED,
   REAL_CLI,
   REAL_WEB_APP,

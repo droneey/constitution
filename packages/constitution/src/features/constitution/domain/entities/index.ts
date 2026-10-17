@@ -7,7 +7,6 @@ export type {
 export type { Block, BlockFile, FrontMatter } from './block.entity';
 export { BlockFileRole } from './block.entity';
 export type { Constitution, Documents } from './constitution.entity';
-export type { Digests } from './digests.entity';
 export type {
   FieldIssue,
   HooksManifest,

@@ -1,5 +1,6 @@
 import {
   copyFileSync,
+  cpSync,
   lstatSync,
   mkdirSync,
   mkdtempSync,
@@ -11,56 +12,33 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import type { FileTree } from '#/features/constitution';
-import { prepareDigests, writeDigests } from '#/features/constitution';
-import { createNodeFileSystem } from '#/features/constitution/adapters/file-system';
-import { createJsonManifestParser } from '#/features/constitution/adapters/json';
-import {
-  createYamlBindingsParser,
-  createYamlFrontMatterParser,
-  createYamlVocabularyParser,
-} from '#/features/constitution/adapters/yaml';
-import { compareText } from '#/kernel/utils';
-
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
 
-// A file the plugin root or the archive is built without, or the archive's
-// package.json's version.
+// A file the plugin root or the archive is built without, or a field the
+// archive's package.json is written without.
 enum Breakage {
-  DigestCore = 'digests/core.md',
-  DigestFormat = 'digests/format',
-  DigestIndex = 'digests/index.tsv',
+  Core = 'blocks/core/core.md',
+  Format = 'constitutionFormat',
+  Manifest = 'package.json',
   Resolve = 'hooks/lib/resolve.awk',
   Version = 'version',
 }
 
 interface PluginRootOptions {
   breakage?: Breakage;
-  corePart?: string;
-  // the text of digests/format
-  format?: string;
+  coreBody?: string;
+  // the archive's constitutionFormat, a number unless a case writes it as text
+  format?: number | string;
 }
 
 const INSTALLED = '1.0.0';
+const FORMAT = 2;
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const HOOKS = 'hooks';
 const LIBRARY = 'hooks/lib';
 
 const created: string[] = [];
-
-const createFileTree = (files: Readonly<Files>): FileTree => ({
-  list: (): readonly string[] => Object.keys(files).toSorted(compareText),
-  read: (path: string): string => {
-    const text = files[path];
-
-    if (text === undefined) {
-      throw new Error(`The fixture constitution has no file ${path}`);
-    }
-
-    return text;
-  },
-});
 
 const writeFiles = (input: { files: Readonly<Files>; root: string }): void => {
   for (const [path, text] of Object.entries(input.files)) {
@@ -84,30 +62,6 @@ const copyHook = (root: string): void => {
   }
 };
 
-// The digests come from this repository's own generator, so the hook reads what
-// a release ships.
-const writeDigestsOf = (input: { root: string; tree: FileTree }): void => {
-  const prepared = prepareDigests({
-    bindingsParser: createYamlBindingsParser(),
-    frontMatterParser: createYamlFrontMatterParser(),
-    manifestParser: createJsonManifestParser(),
-    repository: input.tree,
-    tree: input.tree,
-    vocabularyParser: createYamlVocabularyParser(),
-  });
-
-  if (prepared.status === 'refused' || prepared.digests.findings.length > 0) {
-    throw new Error('The constitution does not generate its digests');
-  }
-
-  writeDigests({
-    digests: prepared.digests,
-    writer: createNodeFileSystem({
-      root: input.root,
-    }),
-  });
-};
-
 const PLUGIN = 'plugin';
 const ARCHIVE = 'archive';
 const LINK = '.droneey/constitution';
@@ -116,7 +70,11 @@ const LINK = '.droneey/constitution';
 // which mise unpacks and links into the project.
 const archiveOf = (root: string): string => join(dirname(root), ARCHIVE);
 
-const writeManifest = (input: { folder: string; version: boolean }): void => {
+const writeManifest = (input: {
+  folder: string;
+  format: number | string | undefined;
+  version: boolean;
+}): void => {
   writeFileSync(
     join(input.folder, 'package.json'),
     `${JSON.stringify(
@@ -128,6 +86,11 @@ const writeManifest = (input: { folder: string; version: boolean }): void => {
               version: INSTALLED,
             }
           : {}),
+        ...(input.format === undefined
+          ? {}
+          : {
+              constitutionFormat: input.format,
+            }),
       },
       undefined,
       2,
@@ -136,59 +99,46 @@ const writeManifest = (input: { folder: string; version: boolean }): void => {
 };
 
 // The plugin brings the hooks; the archive beside it, the blocks and the
-// digests generated from them, as a release packs them.
+// manifest that names their format, as a release packs them.
 const createPluginRoot = (options: PluginRootOptions = {}): string => {
-  const { breakage, corePart, format } = options;
+  const { breakage, coreBody, format = FORMAT } = options;
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
   const archive = join(folder, ARCHIVE);
-  const files = constitutionFiles();
 
   created.push(folder);
   copyHook(root);
   writeManifest({
     folder: root,
+    format: undefined,
     version: true,
   });
   writeFiles({
-    files,
+    files: constitutionFiles(coreBody),
     root: archive,
   });
-  writeDigestsOf({
-    root: archive,
-    tree: createFileTree(files),
-  });
-  writeManifest({
-    folder: archive,
-    version: breakage !== Breakage.Version,
-  });
+
+  if (breakage !== Breakage.Manifest) {
+    writeManifest({
+      folder: archive,
+      format: breakage === Breakage.Format ? undefined : format,
+      version: breakage !== Breakage.Version,
+    });
+  }
 
   if (breakage === Breakage.Resolve) {
     rmSync(join(root, breakage));
   }
 
-  if (
-    breakage === Breakage.DigestCore ||
-    breakage === Breakage.DigestFormat ||
-    breakage === Breakage.DigestIndex
-  ) {
+  if (breakage === Breakage.Core) {
     rmSync(join(archive, breakage));
-  }
-
-  if (corePart !== undefined) {
-    writeFileSync(join(archive, 'digests', 'core.md'), corePart);
-  }
-
-  if (format !== undefined) {
-    writeFileSync(join(archive, Breakage.DigestFormat), format);
   }
 
   return root;
 };
 
 // The plugin root a release of this repository ships, as far as the hook reads
-// it, and the archive beside it: the digests generated from the real blocks,
-// never committed, and the manifest.
+// it, and the archive beside it: the real blocks and the manifest.
 const createRealPluginRoot = (): string => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
@@ -197,11 +147,8 @@ const createRealPluginRoot = (): string => {
   created.push(folder);
   copyHook(root);
   copyFileSync(join(REPOSITORY, 'package.json'), join(root, 'package.json'));
-  writeDigestsOf({
-    root: archive,
-    tree: createNodeFileSystem({
-      root: REPOSITORY,
-    }),
+  cpSync(join(REPOSITORY, 'blocks'), join(archive, 'blocks'), {
+    recursive: true,
   });
   copyFileSync(join(REPOSITORY, 'package.json'), join(archive, 'package.json'));
 
@@ -238,9 +185,9 @@ const removeFolder = (path: string): void => {
 
 const LINE_BYTES = 100;
 
-// A core part of exactly `bytes` bytes, in lines of at most 100 with their
-// newline, to put the budget's edge where a case needs it.
-const corePartOfBytes = (bytes: number): string =>
+// A body of core's card of exactly `bytes` bytes, in lines of at most 100 with
+// their newline, to put the budget's edge where a case needs it.
+const coreBodyOfBytes = (bytes: number): string =>
   Array.from(
     {
       length: Math.ceil(bytes / LINE_BYTES),
@@ -257,7 +204,7 @@ const removePluginRoots = (): void => {
 export {
   archiveOf,
   Breakage,
-  corePartOfBytes,
+  coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
   INSTALLED,

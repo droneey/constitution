@@ -17,15 +17,14 @@ The repository is a workspace of three packages: `packages/constitution`, the ru
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css`, `python` |
 | `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
-| `digests` | What the hook reads, generated from the blocks by `bun run digests:write`, ignored by git and shipped in the release archive: `index.tsv`, one record per block — with the languages its presets cover — rule and requirement answer, `core.md`, core's part of the digest, and `format`, the number of the digests' form |
 | `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
 | `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis, and beside each axis's parts the bindings that say which setting holds which rule |
-| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
+| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a block of a project's own pack; `project/<block>/`, a project's starter files |
 | `tools` | The programs the release archive carries, built by `bun run build` from the other packages and ignored by git: `mutation-check`, `mutmut-check` and `python-check` |
 | `.claude-plugin` | The plugin's manifest; the marketplace's sits at the repository's root |
-| `src` | The tooling that keeps the blocks sound: `blocks:check` and `digests:write`, which read the package and the repository's README and decision log |
+| `src` | The tooling that keeps the blocks sound: `blocks:check`, which reads the package and the repository's README and decision log, and checks a pack against the constitution with `--base` |
 | `tests/e2e` | The end-to-end specs of the presets, the templates and the hooks |
 | `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
 | `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
@@ -55,7 +54,7 @@ A block refers, through its front matter, only to the layers above it and, among
 
 ## 🧰 Presets
 
-A project takes its rules and its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `blocks/`, the `digests/` generated from them, `presets/`, `templates/`, `vocabulary.yaml`, the built `tools/` — the mutation and Python checks and `blocks-check` for packs — and `package.json`, whose version is the release's. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
+A project takes its rules and its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `blocks/`, `presets/`, `templates/`, `vocabulary.yaml`, the built `tools/` — the mutation and Python checks and `blocks-check` for packs — and `package.json`, whose version is the release's and whose `constitutionFormat` is the form of its blocks. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
 
 - the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css`, `python` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
 - the tool folder is the tool's block — `biome`, `dependency-cruiser`, `knip`, `tsc` for the compiler;
@@ -90,9 +89,9 @@ core:
 
 ## 🧭 What a session receives
 
-The hook finds the `constitution.yaml` of the repository a session works in, reads the digests of the release the project pins from its `.droneey/constitution/`, and gives the agent one digest, within Claude Code's 10,000-character cap: that release's version and where its block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each unit's blocks under its path, then the overrides. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
+The hook finds the `constitution.yaml` of the repository a session works in, reads the blocks of the release the project pins from its `.droneey/constitution/`, and those of the packs it lists, from their Markdown — every card's front matter, every chapter and `with/` file, every rule heading, about 50 ms for the whole constitution — and gives the agent one digest, within Claude Code's 10,000-character cap: that release's version and where its block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each unit's blocks under its path, then the overrides. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
 
-The plugin is the engine — its hooks, skills and agents — and the rules come from the project's archive, so every repository reads exactly the release its pin names, whatever plugin a machine has. The digests carry their form's number in `digests/format`; the plugin reads its own form and the one before it. Where it cannot read them, the digest holds only the reason: no `.droneey/constitution/` asks for `mise install`; a working tree linked there before `bun run digests:write`, for that command; an older form, for a higher pin in the project; a newer one, for an update of the plugin.
+The plugin is the engine — its hooks, skills and agents — and the rules come from the project's archive, so every repository reads exactly the release its pin names, whatever plugin a machine has. A release names the form of its blocks in `package.json`'s `constitutionFormat`; the plugin reads its own form and the one before it. Where it cannot read them, the digest holds only the reason: no `.droneey/constitution/` asks for `mise install`; an older form, for a higher pin in the project; a newer one, for an update of the plugin.
 
 At the start of a session it also saves the resolved active set outside the project, in `/tmp/droneey-constitution-<uid>/<session_id>/` — one place for the hooks and for the skills' commands, which a sandbox may give another `TMPDIR`: the project's root, its check command — none for `check: null` — and each active block with the globs it governs and its files. The later hooks and skills read it there and never resolve again; `clear` and `compact` start the session's reminders over.
 
@@ -109,7 +108,7 @@ implementations: [react-dom, matomo]
 packs: [.droneey/constitution-extra]
 ```
 
-The engine stays the constitution's. The hook reads a pack's Markdown at session start as it reads a local block: the card's front matter, the chapters and `with/` files by their folders, the rules by their headings, a rule's level from its parent where it states none. The digest lists a pack's block with its pack, and the reminders name its files there. A pack not installed, a block whose id is already taken and a rule that carries out an unknown rule are warnings. A project extends a pack's presets from their path, as it extends the constitution's. A pack tightens as any block does: its rules never replace or loosen the constitution's.
+The engine stays the constitution's. The hook reads a pack's Markdown at session start as it reads the constitution's: the card's front matter, the chapters and `with/` files by their folders, the rules by their headings, a rule's level from its parent where it states none. The digest lists a pack's block with its pack, and the reminders name its files there. A pack not installed, a block whose id is already taken and a rule that carries out an unknown rule are warnings. A project extends a pack's presets from their path, as it extends the constitution's. A pack tightens as any block does: its rules never replace or loosen the constitution's.
 
 A pack's author checks it with the constitution's own check, which the release archive carries: `bun .droneey/constitution/tools/constitution/dist/blocks-check.js --base .droneey/constitution`, run in the pack. Its blocks load beside the constitution's, so every arrow and `requires` resolves, and only the pack's findings are reported.
 
@@ -117,7 +116,7 @@ A pack's author checks it with the constitution's own check, which the release a
 
 Both are run by the user, never by the model on its own:
 
-- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft local block from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about units when there are several, and interviews the owner for `PROJECT.md` and the first entries of `DECISIONS.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write, lists every `partly` and `no` answer of the proposed blocks with the rule that stands in, and writes only after the owner's yes, never over a file without asking.
+- **`/constitution:ratify`** looks at the repository — manifests, lock files, folders, CI — and proposes the blocks for each key of `constitution.yaml`, each with its reason, from those the plugin offers. The owner confirms or corrects them; a library without a block becomes a draft block of the project's own pack from `templates/block.md`, or is left out. It finds the check command or asks for it — `check: null` when the repository has none — asks about units when there are several, and interviews the owner for `PROJECT.md` and the first entries of `DECISIONS.md` one or two questions at a time, leaving out what stays unanswered. It shows everything it will write, lists every `partly` and `no` answer of the proposed blocks with the rule that stands in, and writes only after the owner's yes, never over a file without asking.
 - **`/constitution:amend [rule-slug]`** adds, changes or removes an override: a rule the index holds, a level below its current one, a reason, an optional end date and a scope — the whole repository or one unit. It shows the exact change to `constitution.yaml` and writes it only after the owner's yes for that override.
 
 The model may run one more itself, as the hand-back reminder suggests:
@@ -159,14 +158,13 @@ postinstall = [
 mise trust && mise install   # bun, Python and uv, and the Python tools of the dev group
 bun install                  # installs the git hooks
 bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, the Python tools' own checks, blocks, secrets, names, unused code, vulnerabilities
-bun run digests:write        # write packages/constitution/digests/, which git ignores, from the blocks
 bun run build                # build the archive's tools into packages/constitution/tools/, as the release does
 claude --plugin-dir packages/constitution   # a session on the working tree's hooks and skills instead of the installed plugin's
 ```
 
-Here `.droneey/constitution` links to `packages/constitution`, so its sessions read the rules of the working tree: run `bun run digests:write` once, and again after a change to a block. To try unreleased rules in another project, run `bun run digests:write` here and point that project's `.droneey/constitution` at this working tree — `ln -sfn <this repository>/packages/constitution .droneey/constitution` — until its next `mise install` links the pinned release back. The release commit writes the version into `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand.
+Here `.droneey/constitution` links to `packages/constitution`, so its sessions read the rules of the working tree as they are. To try unreleased rules in another project, point that project's `.droneey/constitution` at this working tree — `ln -sfn <this repository>/packages/constitution .droneey/constitution` — until its next `mise install` links the pinned release back. The release commit writes the version into `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand.
 
-The end-to-end spec in `packages/constitution/tests/e2e/` builds a plugin root of the hooks, and beside it an archive from fixture blocks — and one from this repository's blocks, with the digests generated as a release generates them — links the archive into fixture projects as mise does, and runs the real hook over them. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
+The end-to-end spec in `packages/constitution/tests/e2e/` builds a plugin root of the hooks, and beside it an archive from fixture blocks — and one from this repository's blocks — links the archive into fixture projects as mise does, and runs the real hook over them. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
 
@@ -185,7 +183,7 @@ The end-to-end spec in `packages/constitution/tests/e2e/` builds a plugin root o
 - a file over 500 lines, and a link to a missing file;
 - a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository, at a release tag and from the folder that holds the manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
-- a file git holds under `digests/`, which is generated, never committed, and a core part of the digest over 3,500 bytes, measured on digests generated in memory; `digests:write` fails on the same limit.
+- a core card whose text, which the hook gives whole in every digest, passes 3,500 bytes.
 
 It checks the blocks across each other only once every block loads, so a broken block is reported once, not by every block that names it.
 
@@ -197,7 +195,7 @@ After the findings it prints advice that does not fail the check: rules of sibli
 |---|---|---|
 | `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of the archive's tools, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
 | `cd-version.yaml` | push to `main`, but for the release commit | Calls `droneey/.github`: bumps `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, generates the digests, packs `package.json`, `blocks/`, `digests/`, `presets/`, `templates/`, `vocabulary.yaml` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, packs `package.json`, `blocks/`, `presets/`, `templates/`, `vocabulary.yaml` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
 ## 🛠️ Changing it
 

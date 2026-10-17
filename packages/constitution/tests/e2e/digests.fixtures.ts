@@ -1,4 +1,4 @@
-import { CORE_PART } from './constitution.fixtures';
+import { CORE_TEXT } from './constitution.fixtures';
 import { INSTALLED } from './plugin-root.fixtures';
 
 const CORE_FILES = [
@@ -27,7 +27,7 @@ const contextWith = (input: {
       firstLine(input.root),
       ...input.facts,
     ].join('\n'),
-    `${CORE_PART}${CORE_FILES}`,
+    `${CORE_TEXT}${CORE_FILES}`,
     ...(input.body === undefined
       ? []
       : [
@@ -70,7 +70,7 @@ const browserAppContext = (root: string): string =>
       '- matomo: Matomo web analytics.',
       '- react-dom: React in the browser. (architecture)',
       '- tanstack-query: Server state in React. (architecture)',
-      '- paraglide (local, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
+      '- paraglide (constitution): Paraglide messages, compiled per locale.',
       '## Overrides',
       '- analytics-consent-first: SHOULD until 2999-12-31',
     ],
@@ -132,7 +132,7 @@ const libraryContext = (root: string): string =>
     root,
   });
 
-const localBlocksContext = (root: string): string =>
+const packProjectContext = (root: string): string =>
   contextWith({
     body: [
       DOMAINS,
@@ -151,11 +151,11 @@ const localBlocksContext = (root: string): string =>
       '- betterleaks: Finds secrets in commits.',
       '- git: Git as the version control. (workflow)',
       '- react-dom: React in the browser. (architecture)',
-      '- git-flow (local, ./rules/implementations/git-flow.md): Git flow: a branch per change, a tag per release.',
-      '- lint-kit (local, ./rules/implementations/lint-kit.md): Lints TypeScript the way this team likes.',
+      '- git-flow (constitution): Git flow: a branch per change, a tag per release.',
+      '- lint-kit (constitution): Lints TypeScript the way this team likes.',
       '## packages/web',
       '- i18n (domains): Text in the user language.',
-      '- paraglide (local, ./rules/implementations/paraglide.md): Paraglide messages, compiled per locale.',
+      '- paraglide (implementations): Paraglide messages, compiled per locale.',
     ],
     facts: [
       'constitution.yaml pins 1.0.0; 16 blocks are active.',
@@ -197,6 +197,6 @@ export {
   coreOnlyContext,
   htmlSiteContext,
   libraryContext,
-  localBlocksContext,
+  packProjectContext,
   unparsedContext,
 };

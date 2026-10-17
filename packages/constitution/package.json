@@ -22,7 +22,6 @@
     "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test",
     "test": "bun run test:unit && bun run test:e2e",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
-    "digests:write": "bun run ./src/entrypoints/digests-write/main.ts",
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
     "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
@@ -44,5 +43,6 @@
     "knip": "6.41.0",
     "syncpack": "15.3.3",
     "typescript": "7.0.2"
-  }
+  },
+  "constitutionFormat": 2
 }

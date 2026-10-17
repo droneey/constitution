@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -104,42 +104,6 @@ describe('createNodeFileSystem', () => {
 
     // Assert
     expect(text).toBe('---\nid: core\n---\n');
-  });
-
-  it('should create the folder and write the text when the digest is new', () => {
-    // Arrange
-    const fileSystem = createNodeFileSystem({
-      root,
-    });
-
-    // Act
-    fileSystem.write({
-      path: 'digests/index.tsv',
-      text: '# header\n',
-    });
-
-    // Assert
-    expect(readFileSync(join(root, 'digests/index.tsv'), 'utf8')).toBe('# header\n');
-  });
-
-  it('should replace the whole text when the digest already exists', () => {
-    // Arrange
-    write({
-      path: 'digests/core.md',
-      text: '# An older and longer core part\n',
-    });
-    const fileSystem = createNodeFileSystem({
-      root,
-    });
-
-    // Act
-    fileSystem.write({
-      path: 'digests/core.md',
-      text: '# Core\n',
-    });
-
-    // Assert
-    expect(readFileSync(join(root, 'digests/core.md'), 'utf8')).toBe('# Core\n');
   });
 });
 

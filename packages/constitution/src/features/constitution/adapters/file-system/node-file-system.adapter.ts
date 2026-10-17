@@ -1,10 +1,10 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { compareText } from '#/kernel/utils';
 
-import type { DigestWriter, FileTree } from '../../domain/contracts';
+import type { FileTree } from '../../domain/contracts';
 
 const BYTE_ORDER_MARK = '﻿';
 const GIT_FILES = [
@@ -27,9 +27,8 @@ const normalized = (text: string): string =>
   );
 
 // One adapter for the one system: the tree reads what git holds — an ignored
-// file is no part of the constitution, and CI sees only committed files — and
-// the writer puts the digests back beside it.
-const createNodeFileSystem = (input: { root: string }): FileTree & DigestWriter => ({
+// file is no part of the constitution, and CI sees only committed files.
+const createNodeFileSystem = (input: { root: string }): FileTree => ({
   list: (): readonly string[] =>
     [
       ...new Set(
@@ -42,14 +41,6 @@ const createNodeFileSystem = (input: { root: string }): FileTree & DigestWriter 
       .filter((path) => isFile(join(input.root, path)))
       .toSorted(compareText),
   read: (path: string): string => normalized(readFileSync(join(input.root, path), 'utf8')),
-  write: ({ path, text }: { path: string; text: string }): void => {
-    const target = join(input.root, path);
-
-    mkdirSync(dirname(target), {
-      recursive: true,
-    });
-    writeFileSync(target, text);
-  },
 });
 
 // The installed constitution a pack extends, as mise unpacks it: no repository

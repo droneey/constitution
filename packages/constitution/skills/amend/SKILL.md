@@ -25,14 +25,14 @@ Handle one override at a time. When the owner asks for several, go through these
 
 ### 1. The rule
 
-Take the slug from the arguments above, or ask for it. Look it up in the index of the release the project installed in `.droneey/constitution/`, where a rule's line is tab-separated — `rule`, slug, block, file, seam, level, tags, axis — empty for the base — parent, whether its level is stated:
+Take the slug from the arguments above, or ask for it. Look for its heading in the blocks of the release the project installed in `.droneey/constitution/` and of the packs `constitution.yaml` lists — `### <slug> · <LEVEL>`, or `### <slug> → <parent>` with its level after the parent or none:
 
 ```bash
-grep "^rule$(printf '\t')<slug>$(printf '\t')" "<repository root>/.droneey/constitution/digests/index.tsv"
+grep -rn "^### <slug> " "<repository root>/.droneey/constitution/blocks" <each pack's folder>/blocks
 ```
 
-- Found: show the owner its block, its current level and its statement, read from its file. Then find the rules that carry it out and state no level of their own — lines whose parent is this slug and whose stated field is `false`, and theirs in turn: an override lowers them too, so name them to the owner.
-- Not found: say so. When the owner describes the rule instead of naming it, search the rule lines for their words (`grep '^rule' … | grep -i '<word>'`) and offer the matches. Only a slug the index holds can be overridden; a rule of a local block is changed in the block's own file instead.
+- Found: show the owner its block, its current level and its statement, read from its file. Then find the rules that carry it out and state no level of their own — headings `### <their slug> → <slug>` with nothing after the parent — and theirs in turn: an override lowers them too, so name them to the owner.
+- Not found: say so. When the owner describes the rule instead of naming it, search the headings for their words (`grep -rn '^### ' … | grep -i '<word>'`) and offer the matches. Only a rule of a block can be overridden; a rule of the project's own pack is changed in the block's own file instead.
 
 ### 2. Add, change or remove
 

@@ -16,7 +16,7 @@ The constitution release installed in this project, in `.droneey/constitution/` 
 
 Blocks it offers, by layer — `- <layer> <id>: <summary> Requires: <ids>. Extends: <base>.`:
 
-!`sed -e '/^block[[:cntrl:]]/!d' -e '/^block[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]]core[[:cntrl:]]/d' -e 's/^block[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]][^[:cntrl:]]*[[:cntrl:]]\([^[:cntrl:]]*\)[[:cntrl:]]\([^[:cntrl:]]*\).*/- \2 \1: \3 Requires: \4. Extends: \5./' -e 's/ Requires: \.//' -e 's/ Extends: \.$//' "${CLAUDE_PROJECT_DIR}/.droneey/constitution/digests/index.tsv" 2>/dev/null || echo "(not installed)"`
+!`cd "${CLAUDE_PROJECT_DIR}/.droneey/constitution" 2>/dev/null && find blocks -path blocks/core -prune -o -name '*.md' -print | awk -F/ '$NF == $(NF-1) ".md"' | LC_ALL=C sort | xargs awk 'FNR == 1 { n = split(FILENAME, p, "/"); layer = (p[2] == "contexts") ? p[3] : p[2]; sub(/s$/, "", layer) } /^summary:/ { s = $0; sub(/^summary: *"?/, "", s); sub(/"$/, "", s) } /^requires:/ { r = $0; sub(/^requires: */, "", r); gsub(/[]["]/, "", r); gsub(/, */, " ", r) } /^extends:/ { e = $0; sub(/^extends: */, "", e); if (e == "null") e = ""; printf "- %s %s: %s Requires: %s. Extends: %s.\n", layer, p[n - 1], s, r, e }' | sed -e 's/ Requires: \.//' -e 's/ Extends: \.$//' || echo "(not installed)"`
 
 The project folder holds:
 
@@ -27,7 +27,7 @@ The project folder holds:
 - **`constitution.yaml`** at the repository root: the blocks the repository follows, its units, the one command that runs its checks, and its overrides. The session-start hook reads it and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
-- **A local block** under `./rules/implementations/<id>.md` for each library the owner wants rules for that the plugin has no block for.
+- **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the constitution — `constitution/` unless the owner names another — listed under `packs:`.
 
 The repository root is the folder, going up from the project folder, that holds `.git`. Core is always active and is never listed.
 
@@ -43,7 +43,7 @@ If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, s
 
 ### 2. Show what the plugin offers
 
-Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only local blocks can be listed. When the repository links packs — folders of blocks beside the constitution, such as `.droneey/constitution-extra` — list their paths under `packs:` and offer their blocks with the others, by id; leave `packs:` out when there are none.
+Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only the blocks of packs can be listed. When the repository links packs — folders of blocks beside the constitution, such as `.droneey/constitution-extra` — list their paths under `packs:` and offer their blocks with the others, by id; leave `packs:` out when there are none.
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
@@ -67,19 +67,19 @@ The owner confirms or corrects each key. A block the owner drops is dropped; a b
 
 **A library with no block.** When the repository relies on a framework, library or tool the list does not offer, ask the owner which they want:
 
-- **a local block** — you write `./rules/implementations/<id>.md` from `.droneey/constitution/templates/block.md`, and list its path under `implementations`;
+- **a block of the project's own pack** — you write `<pack>/blocks/implementations/<id>/<id>.md` from `.droneey/constitution/templates/block.md`, list the pack's folder under `packs:` and the block's id under `implementations`;
 - **nothing** — it is left out. Using a tool the constitution has no block for is not a departure.
 
-For a local block, fill the template's placeholders from the repository and the owner:
+For a block of the project's own pack, fill the template's placeholders from the repository and the owner:
 
-- `id` is the file name without `.md`, and must not be an id from the list above;
+- `id` is its folder's name and its file's name without `.md`, and must not be an id from the list above;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
-- `requires` names the blocks it needs — constitution ids or other local blocks; `extends` names an abstract constitution base it inherits, an id that starts with `_`, or stays `null` — a constitution block it builds on goes under `requires`;
-- `languages` lists, for a tool, the language blocks whose files it reads — constitution ids or local language blocks — and stays `[]` for a tool of any language and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern;
-- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the local block covers the part it misses; `no` — it cannot meet the rule, and a rule of the local block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
-- a **rule** is written only when the owner states one, in the template's format, with a slug no `rule` line of the index holds. Drop the placeholder rule when there is none.
+- `requires` names the blocks it needs — constitution ids or other blocks of the pack; `extends` names an abstract constitution base it inherits, an id that starts with `_`, or stays `null` — a constitution block it builds on goes under `requires`;
+- `languages` lists, for a tool, the language blocks whose files it reads — constitution ids or language blocks of the pack — and stays `[]` for a tool of any language and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern;
+- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
+- a **rule** is written only when the owner states one, in the template's format, with a slug no rule heading of the constitution's blocks holds. Drop the placeholder rule when there is none.
 
-A local block is a draft until a person reviews it; say so.
+A block of the project's own pack is a draft until a person reviews it; say so.
 
 ### 4. Find the check command
 
@@ -126,9 +126,9 @@ Show the owner everything you will write:
 - `constitution.yaml` exactly as it will be written;
 - `PROJECT.md` in full;
 - `DECISIONS.md` in full, when it will be written;
-- each local block in full.
+- each block of the project's own pack in full.
 
-Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the release's, from their cards under `.droneey/constitution/blocks/`, and each local block's — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
+Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the release's, from their cards under `.droneey/constitution/blocks/`, and each block of the project's own pack — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
 
 Write only after the owner's yes, and only the files the owner agreed to.
 
