@@ -193,7 +193,7 @@ After the findings it prints advice that does not fail the check: rules of sibli
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yaml` | pull request into `main` | Two jobs side by side: `check` — the project's one check, with the hook under mawk, the build of the archive's tools and the workflow lint; `hooks` — a matrix that runs `test:hooks`, the hook's specs alone, under gawk and under macOS's `/bin/bash` 3.2 and system awk |
+| `ci-check.yaml` | pull request into `main` | Two jobs side by side: `check` — the project's one check, with the hook under mawk, the build of the archive's tools and the workflow lint; `test:hooks` — a matrix that runs it, the hook's specs alone, under gawk and under macOS's `/bin/bash` 3.2 and system awk |
 | `cd-version.yaml` | push to `main`, but for the release commit | Calls `droneey/.github`: bumps `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag from the merged branch prefix and pushes the `vX.Y.Z` tag |
 | `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, packs `package.json`, `blocks/`, `presets/`, `templates/`, `vocabulary.yaml` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 

@@ -53,7 +53,7 @@ jobs:
   # The hook must run under every shell and awk a project may have: its specs
   # again under gawk, whose length() counts bytes under the hook's LC_ALL=C as
   # mawk's and BSD awk's do, and under the bash 3.2 and the awk macOS ships.
-  hooks:
+  test-hooks:
     strategy:
       fail-fast: false
       matrix:
@@ -64,7 +64,7 @@ jobs:
           - environment: macOS bash 3.2 and awk
             os: macos-latest
             shell: /bin/bash
-    name: hooks (${{ matrix.environment }})
+    name: test:hooks (${{ matrix.environment }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     permissions:
