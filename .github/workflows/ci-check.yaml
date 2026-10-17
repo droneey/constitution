@@ -13,6 +13,9 @@ permissions:
   contents: read
 
 jobs:
+  # The project's one check, the same command an agent runs before it hands a
+  # change back; Ubuntu's awk is mawk unless gawk is installed, so the hook's
+  # specs inside it run under mawk.
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -32,7 +35,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Ubuntu's awk is mawk unless gawk is installed; the hook must run under mawk.
       - name: Put mawk first as awk
         run: |
           mkdir -p "${RUNNER_TEMP}/mawk"
@@ -45,22 +47,25 @@ jobs:
       - name: Build
         run: bun run build
 
-      # The spec, again with gawk as awk: under the hook's LC_ALL=C its length()
-      # counts bytes, as mawk's and BSD awk's do.
-      - name: Run the hook under gawk
-        run: |
-          sudo apt-get update --quiet
-          sudo apt-get install --yes gawk
-          mkdir -p "${RUNNER_TEMP}/gawk"
-          ln -s "$(command -v gawk)" "${RUNNER_TEMP}/gawk/awk"
-          PATH="${RUNNER_TEMP}/gawk:${PATH}" bun run test
-
       - name: Lint the workflows
         run: actionlint -color
 
-  check-on-macos:
-    needs: check
-    runs-on: macos-latest
+  # The hook must run under every shell and awk a project may have: its specs
+  # again under gawk, whose length() counts bytes under the hook's LC_ALL=C as
+  # mawk's and BSD awk's do, and under the bash 3.2 and the awk macOS ships.
+  hooks:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: gawk
+            os: ubuntu-latest
+            shell: bash
+          - environment: macOS bash 3.2 and awk
+            os: macos-latest
+            shell: /bin/bash
+    name: hooks (${{ matrix.environment }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     permissions:
       contents: read
@@ -76,9 +81,16 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # The whole suite, since the coverage gate fails a run of one folder; the
-      # end-to-end spec runs the hook under /bin/bash 3.2 and the system awk.
-      - name: Run the hook under bash 3.2 and the system awk
+      - name: Put gawk first as awk
+        if: matrix.environment == 'gawk'
+        run: |
+          sudo apt-get update --quiet
+          sudo apt-get install --yes gawk
+          mkdir -p "${RUNNER_TEMP}/gawk"
+          ln -s "$(command -v gawk)" "${RUNNER_TEMP}/gawk/awk"
+          echo "${RUNNER_TEMP}/gawk" >> "${GITHUB_PATH}"
+
+      - name: Run the hook's specs
         env:
-          HOOK_SHELL: /bin/bash
-        run: bun run test
+          HOOK_SHELL: ${{ matrix.shell }}
+        run: bun run test:hooks

@@ -44,7 +44,7 @@ interface HookOutput {
   event: string;
 }
 
-// The macOS job sets HOOK_SHELL=/bin/bash to run the hook under bash 3.2.
+// CI's macOS entry of the hooks matrix sets HOOK_SHELL=/bin/bash to run the hook under bash 3.2.
 const SHELL: string = process.env['HOOK_SHELL'] ?? 'bash';
 const WARNINGS = '⚠️ Warnings';
 // A session carries the user's locale; the hook must not depend on it.

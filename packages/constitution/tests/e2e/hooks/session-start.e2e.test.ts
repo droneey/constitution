@@ -11,8 +11,8 @@ import {
   libraryContext,
   packProjectContext,
   unparsedContext,
-} from './digests.fixtures';
-import type { HookRun } from './hook.fixtures';
+} from '../digests.fixtures';
+import type { HookRun } from '../hook.fixtures';
 import {
   blockListOf,
   bytesAfterHeader,
@@ -29,7 +29,7 @@ import {
   runHook,
   stateFolderOf,
   warningsOf,
-} from './hook.fixtures';
+} from '../hook.fixtures';
 import {
   archiveOf,
   Breakage,
@@ -39,8 +39,8 @@ import {
   LINK,
   linkArchive,
   removePluginRoots,
-} from './plugin-root.fixtures';
-import type { ProjectLayout } from './project.fixtures';
+} from '../plugin-root.fixtures';
+import type { ProjectLayout } from '../project.fixtures';
 import {
   BROWSER_APP,
   CLI,
@@ -58,7 +58,7 @@ import {
   REAL_WEB_APP,
   Repository,
   removeProjects,
-} from './project.fixtures';
+} from '../project.fixtures';
 
 interface Place {
   cwd: string;

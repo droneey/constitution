@@ -10,9 +10,9 @@ import {
   removeSessions,
   runHook,
   runScript,
-} from './hook.fixtures';
-import { createPluginRoot, removePluginRoots } from './plugin-root.fixtures';
-import { configOf, createProject, removeProjects } from './project.fixtures';
+} from '../hook.fixtures';
+import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
+import { configOf, createProject, removeProjects } from '../project.fixtures';
 
 let root = '';
 

@@ -1,9 +1,8 @@
-# Runs before resolve.awk. The hook reads the blocks
-# from their Markdown: the constitution's, then those of each pack the project
-# lists under packs:. A "blockfile" record names the source — empty for the
-# constitution, the pack's path for a pack — the file's path inside it and the
-# file; the hook lists the files of a block in the order the constitution's
-# check loads them: the card, the chapters, then the seams.
+# Runs before resolve.awk. The hook reads the blocks from their Markdown: the
+# constitution's, then those of each pack the project lists under packs:. A
+# "blockfile" record names the source — empty for the constitution, the pack's
+# path for a pack — the file's path inside it and the file, in the order
+# order.awk gives.
 
 function unquote(v,   c, n) {
   c = substr(v, 1, 1)
@@ -12,8 +11,8 @@ function unquote(v,   c, n) {
   return v
 }
 
-# A list becomes words separated by one space, as the index writes lists.
-# A comma inside quotes, as in "*.{css,scss}", belongs to its item.
+# A flow list becomes its items separated by one space; a comma inside quotes,
+# as in "*.{css,scss}", belongs to its item.
 function front_matter_value(v,   inner, n, i, c, quote, item, out) {
   v = trim(v)
   if (v == "null" || v == "~") return ""
@@ -87,7 +86,6 @@ function block_layer(rel,   l) {
   return ""
 }
 
-# A row of a Requirements table: the rule it answers, how, and whether it is met.
 function requirement_row(id, line,   n, f, requirement, met) {
   n = split(line, f, "|")
   if (n < 5) return

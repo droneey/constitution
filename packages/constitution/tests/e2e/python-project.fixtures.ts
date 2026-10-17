@@ -49,7 +49,7 @@ const writeFiles = (folder: string, files: Files): void => {
 };
 
 // The constitution is linked where a project links it: its presets and
-// templates from the repository, and its tools, when the project runs them,
+// templates from this package, and its tools, when the project runs them,
 // built into the project's folder.
 const linkConstitution = (input: { folder: string; withTools: boolean }): void => {
   const { folder } = input;

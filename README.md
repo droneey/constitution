@@ -164,7 +164,7 @@ claude --plugin-dir packages/constitution   # a session on the working tree's ho
 
 Here `.droneey/constitution` links to `packages/constitution`, so its sessions read the rules of the working tree as they are. To try unreleased rules in another project, point that project's `.droneey/constitution` at this working tree — `ln -sfn <this repository>/packages/constitution .droneey/constitution` — until its next `mise install` links the pinned release back. The release commit writes the version into `packages/constitution/package.json` and its entry in `bun.lock`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand.
 
-The end-to-end spec in `packages/constitution/tests/e2e/` builds a plugin root of the hooks, and beside it an archive from fixture blocks — and one from this repository's blocks — links the archive into fixture projects as mise does, and runs the real hook over them. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
+The end-to-end spec in `packages/constitution/tests/e2e/` builds a plugin root of the hooks, and beside it an archive from fixture blocks — and one from this repository's blocks — links the archive into fixture projects as mise does, and runs the real hook over them. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `bun run test:hooks` runs the hook's specs alone, in `tests/e2e/hooks/`, and `HOOK_SHELL=/bin/bash bun run test:hooks` runs them under the bash 3.2 macOS ships. `check` runs `test` and `mutation:check` side by side with `bun run --parallel`, each line of their output led by its script's name.
 
 `blocks:check` loads every block and fails on:
 
@@ -193,7 +193,7 @@ After the findings it prints advice that does not fail the check: rules of sibli
 
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
-| `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of the archive's tools, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
+| `ci-check.yaml` | pull request into `main` | Two jobs side by side: `check` — the project's one check, with the hook under mawk, the build of the archive's tools and the workflow lint; `hooks` — a matrix that runs `test:hooks`, the hook's specs alone, under gawk and under macOS's `/bin/bash` 3.2 and system awk |
 | `cd-version.yaml` | push to `main`, but for the release commit | Calls `droneey/.github`: bumps `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag from the merged branch prefix and pushes the `vX.Y.Z` tag |
 | `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, packs `package.json`, `blocks/`, `presets/`, `templates/`, `vocabulary.yaml` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
