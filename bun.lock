@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@droneey/constitution",
+      "name": "@droneey/constitution-workspace",
       "devDependencies": {
         "@biomejs/biome": "2.5.15",
         "dependency-cruiser": "18.6.0",
