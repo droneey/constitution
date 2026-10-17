@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/locale-passed-to-every-intl-call.grit",
+  ],
+}

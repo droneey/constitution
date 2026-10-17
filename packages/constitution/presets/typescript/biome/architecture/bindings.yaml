@@ -1,0 +1,23 @@
+core:
+  effects-held-only-by-the-edge:
+    - effects-held-only-by-the-edge.grit
+    - noRestrictedGlobals
+  surface-only-re-exports:
+    - noReExportAll
+ui:
+  component-reaches-no-io-global:
+    - noRestrictedGlobals
+tanstack-query:
+  keys-only-from-the-key-factory:
+    - keys-only-from-the-key-factory.grit
+  query-client-built-by-the-root:
+    - query-client-built-by-the-root.grit
+  read-declared-once-as-query-options:
+    - read-declared-once-as-query-options.grit
+typescript:
+  process-env-read-only-under-root:
+    - noProcessEnv
+  surface-only-re-exports:
+    - surface-only-re-exports.grit
+  timer-set-only-by-the-edge-and-binding-units:
+    - timer-set-only-by-the-edge-and-binding-units.grit

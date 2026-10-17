@@ -1,0 +1,9 @@
+language js
+
+or {
+  `$schema.brand($...)`,
+  `$schema.brand<$brand>($...)`
+} where {
+  $schema <: r"z\..*",
+  register_diagnostic(span=$schema, message="Build the value through its create function, not a brand of the schema's own", severity="error")
+}

@@ -1,0 +1,24 @@
+# typescript: dependencies
+**/node_modules/
+
+# typescript: logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# typescript: build
+*.tgz
+*.lcov
+
+# typescript: auth
+.npmrc
+
+# typescript: caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# tsc: the declarations and build info of a unit's project
+.tsc-cache/

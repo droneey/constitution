@@ -1,0 +1,3 @@
+# Biome
+
+> The architecture parts read every file under `src/` outside the edge — adapters, those of a feature and of a composition module among them, `libs/`, `root/`, the entry files, `entrypoints/` and `integrations/` — for the effects reached through a global, and every such file outside the binding units of `app/` for a timer. They also narrow three GritQL rules of the base: the ones against `null` and against a closed set outside an enum to code outside adapters and wire models, and the one against empty names to code outside `libs/`, a source's or a workspace's. `noConsole` stays on everywhere: the logging facade `root/` implements, and a command's binding unit, write through the streams of the run that the root or the command's framework hands them.

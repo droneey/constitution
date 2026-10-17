@@ -1,0 +1,12 @@
+version: <installed version>
+
+axes:
+  - architecture
+  - workflow
+domains: []
+platforms: []
+languages: []
+implementations: []
+packages: {}
+check: <check command>
+overrides: []

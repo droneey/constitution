@@ -1,0 +1,6 @@
+nestjs:
+  every-mutant-killed:
+    - mutate
+tanstack-start:
+  every-mutant-killed:
+    - mutate

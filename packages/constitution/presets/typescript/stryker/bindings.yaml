@@ -1,0 +1,16 @@
+bun-test:
+  stryker-runs-the-archive-runner:
+    - coverageAnalysis
+    - plugins
+    - testRunner
+core:
+  every-mutant-killed:
+    - break
+    - ignorers
+    - mutate
+storybook:
+  every-mutant-killed:
+    - mutate
+tanstack-start:
+  every-mutant-killed:
+    - mutate

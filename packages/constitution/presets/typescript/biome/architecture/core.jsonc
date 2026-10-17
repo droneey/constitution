@@ -1,0 +1,80 @@
+{
+  "linter": {
+    "rules": {
+      "performance": {
+        "noReExportAll": "error",
+      },
+    },
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/__tests__/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "EventSource": "Outside the edge, the network reaches this code through a port.",
+                  "WebSocket": "Outside the edge, the network reaches this code through a port.",
+                  "XMLHttpRequest": "Outside the edge, the network reaches this code through a port.",
+                  "fetch": "Outside the edge, the network reaches this code through a port.",
+                  "indexedDB": "Outside the edge, storage reaches this code through a port.",
+                  "localStorage": "Outside the edge, storage reaches this code through a port.",
+                  "performance": "Outside the edge, the clock reaches this code through a port.",
+                  "process": "Outside the edge, the process, its streams and its arguments reach this code through a port.",
+                  "caches": "Outside the edge, input and output reach this code through a port.",
+                  "cookieStore": "Outside the edge, input and output reach this code through a port.",
+                  "document": "Outside the edge, input and output reach this code through a port.",
+                  "globalThis": "Outside the edge, input and output reach this code through a port.",
+                  "navigator": "Outside the edge, input and output reach this code through a port.",
+                  "self": "Outside the edge, input and output reach this code through a port.",
+                  "window": "Outside the edge, input and output reach this code through a port.",
+                  "sessionStorage": "Outside the edge, storage reaches this code through a port.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ],
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/effects-held-only-by-the-edge.grit",
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/__tests__/**",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/biome-refuses-empty-names.grit",
+      "includes": [
+        "**",
+        "!**/libs/**",
+      ],
+    },
+  ],
+}

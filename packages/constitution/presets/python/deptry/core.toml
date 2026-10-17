@@ -1,0 +1,3 @@
+# deptry: no issue code lifted, so each fails the check
+[tool.deptry]
+ignore = []

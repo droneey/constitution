@@ -1,0 +1,103 @@
+import type { Layer } from '#/kernel/constants';
+import type { Finding } from '#/kernel/types';
+
+import type { Block } from '../../../../entities';
+import type { BlocksById } from '../../../../utils';
+import type { Check, CheckInput } from '../check.types';
+import { requirableBy } from '../direction.utils';
+import { aBlock, blocksOf } from '../wording.utils';
+
+interface Subject {
+  block: Block;
+  byId: BlocksById;
+}
+
+const requireMessage = (
+  input: Subject & {
+    allowed: readonly Layer[];
+    id: string;
+  },
+): string | undefined => {
+  const target = input.byId.get(input.id);
+
+  if (input.id === 'core') {
+    return 'requires core, which is always active';
+  }
+
+  if (target === undefined) {
+    return `requires ${input.id}, which is not a block`;
+  }
+
+  if (target.id === input.block.id) {
+    return 'requires itself';
+  }
+
+  return input.allowed.includes(target.layer)
+    ? undefined
+    : `requires ${input.id}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} requires only ${blocksOf(input.allowed)}`;
+};
+
+const extendsMessage = (subject: Subject): string | undefined => {
+  const base = subject.block.frontMatter.extends;
+
+  if (base === undefined) {
+    return undefined;
+  }
+
+  const target = subject.byId.get(base);
+
+  if (target === undefined) {
+    return `extends ${base}, which is not a block`;
+  }
+
+  if (target.id === subject.block.id) {
+    return 'extends itself';
+  }
+
+  if (target.layer !== subject.block.layer) {
+    return `extends ${base}, ${aBlock(target.layer)}; a block extends only a base of its own layer`;
+  }
+
+  return target.frontMatter.abstract
+    ? undefined
+    : `extends ${base}, a concrete block; a block extends only an abstract base — require it instead`;
+};
+
+// A layer that requires or extends nothing leaves the fields empty; the
+// front-matter check reports a filled one, so this check skips those layers.
+const blockFindings = (subject: Subject): readonly Finding[] => {
+  const allowed = requirableBy(subject.block.layer);
+  const messages = [
+    ...(allowed.length === 0
+      ? []
+      : subject.block.frontMatter.requires.map((id) =>
+          requireMessage({
+            ...subject,
+            allowed,
+            id,
+          }),
+        )),
+    extendsMessage(subject),
+  ];
+
+  return messages.flatMap((message) =>
+    message === undefined
+      ? []
+      : [
+          {
+            message,
+            path: subject.block.path,
+          },
+        ],
+  );
+};
+
+const requiresCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] =>
+  constitution.blocks.flatMap((block) =>
+    blockFindings({
+      block,
+      byId,
+    }),
+  );
+
+export { requiresCheck };

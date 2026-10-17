@@ -1,0 +1,15 @@
+self:
+  async-work-awaited-or-held-by-a-scope:
+    - all
+  deprecated-calls-fail-the-types:
+    - all
+  typing-any-never-written:
+    - all
+  overrides-marked-by-decorator:
+    - all
+  ty-ignore-names-its-rule:
+    - all
+    - respect-type-ignore-comments
+  ty-is-the-type-gate:
+    - all
+    - error-on-warning

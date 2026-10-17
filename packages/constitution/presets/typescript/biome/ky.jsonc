@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/ky-body-parsed-by-schema.grit",
+  ],
+}

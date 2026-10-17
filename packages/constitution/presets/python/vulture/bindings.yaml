@@ -1,0 +1,4 @@
+core:
+  dead-code-deleted:
+    - min_confidence
+    - paths

@@ -1,0 +1,216 @@
+import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { delimiter, join } from 'node:path';
+
+import { z } from 'zod';
+
+import type { Files } from './python-project.fixtures';
+import { inPythonProject, REPOSITORY, writeFiles } from './python-project.fixtures';
+import { ENVIRONMENT } from './uv.fixtures';
+
+interface Run {
+  isClean: boolean;
+  output: string;
+}
+
+const TEMPLATES = join(REPOSITORY, 'templates', 'project', 'python');
+const PRESETS = join(REPOSITORY, 'presets', 'python');
+const GIT_IDENTITY = [
+  '-c',
+  'user.name=Constitution',
+  '-c',
+  'user.email=constitution@example.com',
+];
+
+const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
+
+const PYPROJECT = readFileSync(join(TEMPLATES, 'pyproject.toml'), 'utf8')
+  .replace('<name>', 'shop')
+  .replaceAll('<package>', 'shop');
+
+// The template's files as a project copies them, its package named shop.
+const TEMPLATE_FILES: Files = {
+  '.gitignore': `${readFileSync(join(TEMPLATES, '.gitignore'), 'utf8')}/.droneey\n`,
+  'pyproject.toml': PYPROJECT,
+  'tests/conftest.py': readFileSync(join(TEMPLATES, 'tests', 'conftest.py'), 'utf8'),
+};
+
+// A package that keeps every rule of the template: a surface, a module, an
+// async function, and specs that kill each of their mutants.
+const SHOP: Files = {
+  'src/shop/__init__.py': python(
+    'from .orders import total, totals',
+    '',
+    "__all__ = ['total', 'totals']",
+  ),
+  'src/shop/orders.py': python(
+    'def total(prices: list[int], *, discount: int) -> int:',
+    '  return max(sum(prices) - discount, 0)',
+    '',
+    '',
+    'async def totals(baskets: list[list[int]]) -> list[int]:',
+    '  return [total(basket, discount=0) for basket in baskets]',
+  ),
+  'tests/test_orders.py': python(
+    'from shop.orders import total, totals',
+    '',
+    '',
+    'def test_should_subtract_the_discount() -> None:',
+    '  # Arrange',
+    '  prices = [3, 4]',
+    '',
+    '  # Act',
+    '  result = total(prices, discount=2)',
+    '',
+    '  # Assert',
+    '  assert result == 5',
+    '',
+    '',
+    'def test_should_stop_at_zero_when_the_discount_is_larger() -> None:',
+    '  # Arrange',
+    '  prices = [1]',
+    '',
+    '  # Act',
+    '  result = total(prices, discount=2)',
+    '',
+    '  # Assert',
+    '  assert result == 0',
+    '',
+    '',
+    'async def test_should_total_each_basket() -> None:',
+    '  # Arrange',
+    '  baskets = [[1, 2], [3]]',
+    '',
+    '  # Act',
+    '  result = await totals(baskets)',
+    '',
+    '  # Assert',
+    '  assert result == [3, 3]',
+  ),
+};
+
+const git = (folder: string, args: readonly string[]): void => {
+  const running = spawnSync(
+    'git',
+    [
+      ...GIT_IDENTITY,
+      ...args,
+    ],
+    {
+      cwd: folder,
+      encoding: 'utf8',
+    },
+  );
+
+  if (running.status !== 0) {
+    throw new Error(`git ${args.join(' ')} failed: ${running.stderr}`);
+  }
+};
+
+// The project's base, the template with the shop package, is committed as
+// origin/main; the files a case changes are written over it. The package
+// stands in for its install by PYTHONPATH, and the tools are the repository's
+// own, pinned to the template's versions.
+const runInTemplate = (input: { changes: Files; command: readonly string[] }): Run =>
+  inPythonProject({
+    files: {
+      ...TEMPLATE_FILES,
+      ...SHOP,
+    },
+    run: (folder) => {
+      git(folder, [
+        'init',
+        '--quiet',
+      ]);
+      git(folder, [
+        'add',
+        '--all',
+      ]);
+      git(folder, [
+        'commit',
+        '--quiet',
+        '--message',
+        'base',
+      ]);
+      git(folder, [
+        'update-ref',
+        'refs/remotes/origin/main',
+        'HEAD',
+      ]);
+      writeFiles(folder, input.changes);
+
+      const environment = Object.fromEntries([
+        ...Object.entries(process.env).filter(([name]) => name !== 'CI'),
+        [
+          'PATH',
+          `${join(ENVIRONMENT, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
+        ],
+        [
+          'PYTHONPATH',
+          'src',
+        ],
+      ]);
+      const running = spawnSync(input.command[0] ?? '', input.command.slice(1), {
+        cwd: folder,
+        encoding: 'utf8',
+        env: environment,
+      });
+
+      return {
+        isClean: running.status === 0,
+        output: `${running.stdout}${running.stderr}`,
+      };
+    },
+    withTools: true,
+  });
+
+// The command of each area a project's check runs over the template's
+// configuration; the template prescribes none, so the specs name their own.
+const TASKS: Readonly<Record<string, string>> = {
+  'format:check': 'ruff format --check',
+  'lint:check': 'ruff check',
+  'type:check': 'ty check --config-file .droneey/constitution/presets/python/ty/self.toml',
+  'code:check': 'python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests',
+  'complexity:check': 'complexipy src tests',
+  'architecture:check': 'lint-imports --no-logo',
+  'dependencies:check': 'deptry src',
+  'unused:check': 'vulture',
+  'test:check': 'pytest --cov',
+  'mutation:check': 'python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz',
+};
+
+const commandOf = (task: string): string => {
+  const command = task === 'check' ? Object.values(TASKS).join(' && ') : TASKS[task];
+
+  if (command === undefined) {
+    throw new Error(`no command for ${task}`);
+  }
+
+  return command;
+};
+
+// One area of the check, or the whole of it, over the template.
+const runTask = (input: { changes: Files; task: string }): Run =>
+  runInTemplate({
+    changes: input.changes,
+    command: [
+      'sh',
+      '-c',
+      commandOf(input.task),
+    ],
+  });
+
+// The tables of [tool] in a pyproject.toml.
+const SETTINGS = z.object({
+  tool: z.record(z.string(), z.unknown()),
+});
+
+// A tool's table in the template, and in the tool's part, which the template
+// carries since the tool reads no file but the project's.
+const templateTable = (tool: string): unknown =>
+  SETTINGS.parse(Bun.TOML.parse(PYPROJECT)).tool[tool];
+
+const partTable = (tool: string): unknown =>
+  SETTINGS.parse(Bun.TOML.parse(readFileSync(join(PRESETS, tool, 'core.toml'), 'utf8'))).tool[tool];
+
+export { partTable, python, runTask, templateTable };

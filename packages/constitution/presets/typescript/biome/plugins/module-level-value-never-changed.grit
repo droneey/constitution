@@ -1,0 +1,15 @@
+language js
+
+or {
+  JsExport() as $s where { $s <: r"(?s)export\s+(?:let|var)\s.*" },
+  JsVariableStatement() as $s where {
+    $s <: r"(?s)(?:let|var)\s.*",
+    $s <: not within or {
+      JsFunctionBody(),
+      JsStaticInitializationBlockClassMember(),
+      JsBlockStatement()
+    }
+  }
+} where {
+  register_diagnostic(span=$s, message="Declare a module-level variable as const", severity="error")
+}

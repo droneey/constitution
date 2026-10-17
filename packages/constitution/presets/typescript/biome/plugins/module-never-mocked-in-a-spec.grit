@@ -1,0 +1,18 @@
+language js
+
+or {
+  or {
+    `mock.module($_, $_)`,
+    `vi.mock($...)`,
+    `jest.mock($...)`
+  } as $call where {
+    register_diagnostic(span=$call, message="Fake an effect through its port, not by replacing a module", severity="error")
+  },
+  or {
+    `spyOn($module, $_)`,
+    `$_.spyOn($module, $_)`
+  } as $spy where {
+    $program <: contains `import * as $module from $_`,
+    register_diagnostic(span=$spy, message="Fake an effect through its port, not by spying on a module", severity="error")
+  }
+}

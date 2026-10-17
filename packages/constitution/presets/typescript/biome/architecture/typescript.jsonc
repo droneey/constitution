@@ -1,0 +1,74 @@
+{
+  "linter": {
+    "rules": {
+      "style": {
+        "noProcessEnv": "error",
+      },
+    },
+  },
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/undefined-is-the-only-absence.grit",
+      "includes": [
+        "**",
+        "!**/adapters/**",
+        "!**/models/**",
+        "!**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/closed-name-set-is-a-string-enum.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/adapters/**",
+        "!**/models/**",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
+      "includes": [
+        "**/index.ts",
+        "**/index.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/timer-set-only-by-the-edge-and-binding-units.grit",
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/src/features/*/app/**",
+        "!**/src/composition/*/app/**",
+        "!**/__tests__/**",
+      ],
+    },
+  ],
+  "overrides": [
+    {
+      "includes": [
+        "**/root/**",
+        "**/main.*",
+        "**/entrypoints/*/main.*",
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off",
+          },
+        },
+      },
+    },
+  ],
+}

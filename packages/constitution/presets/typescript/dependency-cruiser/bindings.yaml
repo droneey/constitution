@@ -1,0 +1,13 @@
+core:
+  module-imports-form-no-cycle:
+    - no-circular
+  test-code-never-reached-from-production:
+    - no-test-code-in-production
+storybook:
+  production-code-imports-no-tool:
+    - no-development-dependency-in-production
+  stories-unreachable-from-production:
+    - stories-unreachable-from-production
+typescript:
+  production-code-imports-no-tool:
+    - no-development-dependency-in-production

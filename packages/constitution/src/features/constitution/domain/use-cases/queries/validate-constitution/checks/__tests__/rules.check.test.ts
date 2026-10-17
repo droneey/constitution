@@ -1,0 +1,569 @@
+import { describe, expect, it } from 'bun:test';
+
+import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { rulesCheck } from '../rules.check';
+
+const PRINCIPLES = 'blocks/core/principles.md';
+const WORKFLOW = 'blocks/core/workflow/workflow.md';
+const I18N = 'blocks/domains/i18n/plurals.md';
+const REMOTE_DATA = 'blocks/domains/remote-data/architecture/remote-data.md';
+const UI = 'blocks/domains/ui/screens.md';
+const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
+const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
+const TYPES = 'blocks/contexts/languages/typescript/types.md';
+const UNTITLED = 'blocks/core/untitled.md';
+const DELIVERY = 'blocks/contexts/platforms/browser/delivery.md';
+const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
+const TYPESCRIPT_WITH_BROWSER = 'blocks/contexts/languages/typescript/architecture/with/browser.md';
+
+describe('rulesCheck', () => {
+  it('should report every empty or malformed field when rules break the rule format', () => {
+    // Arrange
+    const files = validFiles();
+    files[PRINCIPLES] = [
+      '# Principles',
+      '',
+      '### not_Kebab · MUST',
+      '',
+      '| Why | Tags |',
+      '|---|---|',
+      '|  | [vibes, ux] |',
+      '',
+      rule({
+        slug: 'b',
+        tags: '[types]',
+      }),
+      rule({
+        slug: 'no-any-written',
+      }),
+      rule({
+        slug: 'key-no-longer-held',
+      }),
+      rule({
+        slug: 'c',
+        why: '',
+      }),
+    ].join('\n');
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: 'rule "not_Kebab" is not a kebab-case slug',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "not_Kebab" has no statement',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "not_Kebab" has no Why',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "not_Kebab" has the tag "vibes", which is not a lens',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "b" has the tag "types", which is not a lens',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "no-any-written" opens with "no-"; a slug says what holds',
+        path: PRINCIPLES,
+      },
+      {
+        message: 'rule "c" has no Why',
+        path: PRINCIPLES,
+      },
+    ]);
+  });
+
+  it('should report a rule when its slug is already defined in another file', () => {
+    // Arrange
+    const files = validFiles();
+    files[WORKFLOW] = `# Workflow\n\n${rule({
+      slug: 'dependencies-point-inward',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: `rule "dependencies-point-inward" is also defined in ${PRINCIPLES}`,
+        path: WORKFLOW,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      expected:
+        'rule "i18n-plurals-by-cldr" carries out "four-data-states" of ui, which its block may not refer to',
+      parent: 'four-data-states',
+    },
+    {
+      expected:
+        'rule "i18n-plurals-by-cldr" carries out a chain that comes back to it: i18n-plurals-by-cldr → i18n-plurals-by-cldr',
+      parent: 'i18n-plurals-by-cldr',
+    },
+    {
+      expected: 'rule "i18n-plurals-by-cldr" carries out "plurals-by-icu", which is not a rule',
+      parent: 'plurals-by-icu',
+    },
+  ])('should report "$expected" when a rule carries out $parent', ({ expected, parent }) => {
+    // Arrange
+    const files = validFiles();
+    files[I18N] = `# i18n\n\n${rule({
+      parent,
+      slug: 'i18n-plurals-by-cldr',
+      tags: '[ux]',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: I18N,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      expected:
+        'rule "portals-for-overlays" carries out "optimistic-writes-roll-back" of ui with remote-data, which its place does not reach',
+      parent: 'optimistic-writes-roll-back',
+    },
+    {
+      expected:
+        'rule "portals-for-overlays" carries out "i18n-plurals-by-cldr" of i18n, which its block may not refer to',
+      parent: 'i18n-plurals-by-cldr',
+    },
+  ])(
+    'should report "$expected" when a rule carries out a parent its place cannot reach',
+    ({ expected, parent }) => {
+      // Arrange
+      const files = validFiles();
+      files[PORTALS] = `# Portals\n\n${rule({
+        parent,
+        slug: 'portals-for-overlays',
+        statement: 'React DOM renders an overlay through a portal.',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: expected,
+          path: PORTALS,
+        },
+      ]);
+    },
+  );
+
+  it('should report each rule of a cycle and no rule that only leads into it when parents come back around', () => {
+    // Arrange
+    const files = validFiles();
+    files[PRINCIPLES] = [
+      '# Principles',
+      '',
+      rule({
+        parent: 'names-reveal-intent',
+        slug: 'dependencies-point-inward',
+      }),
+      rule({
+        parent: 'dependencies-point-inward',
+        slug: 'names-reveal-intent',
+      }),
+    ].join('\n');
+    files[UI] = `# UI\n\n${rule({
+      parent: 'names-reveal-intent',
+      slug: 'four-data-states',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "dependencies-point-inward" carries out a chain that comes back to it: dependencies-point-inward → names-reveal-intent → dependencies-point-inward',
+        path: PRINCIPLES,
+      },
+      {
+        message:
+          'rule "names-reveal-intent" carries out a chain that comes back to it: names-reveal-intent → dependencies-point-inward → names-reveal-intent',
+        path: PRINCIPLES,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      child: {
+        parent: 'dependencies-point-inward',
+        slug: 'portals-for-overlays',
+      },
+      condition: 'a rule on workflow carries out a MUST rule of the base',
+      parentLevel: 'MUST',
+    },
+    {
+      child: {
+        level: 'MUST',
+        parent: 'dependencies-point-inward',
+        slug: 'portals-for-overlays',
+      },
+      condition: 'a MUST rule carries out a SHOULD rule',
+      parentLevel: 'SHOULD',
+    },
+  ])('should accept a parent when $condition in another block', ({ child, parentLevel }) => {
+    // Arrange
+    const files = validFiles();
+    files[PRINCIPLES] = `# Principles\n\n${rule({
+      level: parentLevel,
+      slug: 'dependencies-point-inward',
+    })}`;
+    files[PORTALS] = `# Portals\n\n${rule(child)}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      child: {
+        file: I18N,
+        slug: 'i18n-plurals-by-cldr',
+      },
+      condition: 'a rule of the base carries out a workflow rule',
+      expected:
+        'rule "i18n-plurals-by-cldr" carries out "rules-bind" on workflow, which a rule on the base may not refer to',
+      parent: 'rules-bind',
+    },
+    {
+      child: {
+        file: REMOTE_DATA,
+        slug: 'reads-are-cancellable',
+      },
+      condition: 'an architecture rule carries out a workflow rule',
+      expected:
+        'rule "reads-are-cancellable" carries out "rules-bind" on workflow, which a rule on architecture may not refer to',
+      parent: 'rules-bind',
+    },
+  ])('should report the reference when $condition', ({ child, expected, parent }) => {
+    // Arrange
+    const files = validFiles();
+    files[child.file] = `# Chapter\n\n${rule({
+      parent,
+      slug: child.slug,
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: expected,
+        path: child.file,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: 'its parent states MUST',
+      parent: rule({
+        slug: 'four-data-states',
+      }),
+    },
+    {
+      condition: 'its parent carries out another at MUST',
+      parent: rule({
+        parent: 'dependencies-point-inward',
+        slug: 'four-data-states',
+      }),
+    },
+  ])('should report a rule that states a looser level when $condition', ({ parent }) => {
+    // Arrange
+    const files = validFiles();
+    files[UI] = `# UI\n\n${parent}`;
+    files[PORTALS] = `# Portals\n\n${rule({
+      level: 'SHOULD',
+      parent: 'four-data-states',
+      slug: 'portals-for-overlays',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "portals-for-overlays" is SHOULD while it carries out the MUST rule "four-data-states"; a rule is never looser than the rule it carries out',
+        path: PORTALS,
+      },
+    ]);
+  });
+
+  it('should report a rule that carries out another without a level', () => {
+    // Arrange
+    const files = validFiles();
+    files[PORTALS] = `# Portals\n\n${rule({
+      isLevelStated: false,
+      parent: 'four-data-states',
+      slug: 'portals-for-overlays',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "portals-for-overlays" carries out "four-data-states" without a level; a rule that carries out another states its own, never looser than it',
+        path: PORTALS,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: 'in another file on another axis',
+      file: WORKFLOW,
+      parent: 'dependencies-point-inward',
+      slug: 'rules-bind',
+    },
+    {
+      condition: 'in its seam with another block',
+      file: UI_WITH_REMOTE_DATA,
+      parent: 'four-data-states',
+      slug: 'optimistic-writes-roll-back',
+    },
+  ])(
+    'should report a rule that carries out a rule of its own block when it sits $condition',
+    ({ file, parent, slug }) => {
+      // Arrange
+      const files = validFiles();
+      files[file] = `# Chapter\n\n${rule({
+        parent,
+        slug,
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "${slug}" carries out "${parent}", a rule of its own block; a rule carries out only a rule of another block`,
+          path: file,
+        },
+      ]);
+    },
+  );
+
+  it.each<{
+    body: string;
+    condition: string;
+    section: string;
+  }>([
+    {
+      body: `# Types\n\n## Names\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+      condition: 'under a section named for another chapter',
+      section: 'Names',
+    },
+    {
+      body: `# Types\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+      condition: 'in a chapter file named for another chapter',
+      section: 'Types',
+    },
+    {
+      body: rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      }),
+      condition: 'under no section and no title',
+      section: 'no section',
+    },
+  ])(
+    'should report a rule of a language that carries out a rule of core $condition',
+    ({ body, section }) => {
+      // Arrange
+      const files = validFiles();
+      files[TYPES] = body;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "types-point-inward" sits under "${section}" while it carries out "dependencies-point-inward" of the chapter "Principles"; a rule of a language or a platform sits in the section named for its parent's chapter`,
+          path: TYPES,
+        },
+      ]);
+    },
+  );
+
+  it('should report a rule of a platform that carries out a rule of core under a section named for another chapter', () => {
+    // Arrange
+    const files = validFiles();
+    files[DELIVERY] = `# Delivery\n\n## Names\n\n${rule({
+      parent: 'dependencies-point-inward',
+      slug: 'delivery-points-inward',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "delivery-points-inward" sits under "Names" while it carries out "dependencies-point-inward" of the chapter "Principles"; a rule of a language or a platform sits in the section named for its parent\'s chapter',
+        path: DELIVERY,
+      },
+    ]);
+  });
+
+  it('should report a rule of a language whose parent sits in a file with no title', () => {
+    // Arrange
+    const files = validFiles();
+    files[UNTITLED] = rule({
+      slug: 'untitled-rule',
+    });
+    files[TYPES] = `# Types\n\n## Types\n\n${rule({
+      parent: 'untitled-rule',
+      slug: 'types-point-inward',
+    })}`;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message:
+          'rule "types-point-inward" sits under "Types" while it carries out "untitled-rule" of the chapter "untitled"; a rule of a language or a platform sits in the section named for its parent\'s chapter',
+        path: TYPES,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      browser: `# Browser\n\n## Render\n\n${rule({
+        slug: 'window-never-read-during-render',
+      })}`,
+      chapter: 'Render',
+      condition: 'the section its parent sits in',
+      section: 'Browser',
+    },
+    {
+      browser: `# Browser\n\n${rule({
+        slug: 'window-never-read-during-render',
+      })}`,
+      chapter: 'Browser',
+      condition: "the title of its parent's chapter file",
+      section: 'Render',
+    },
+  ])(
+    'should report a rule of a seam with a platform that sits elsewhere than $condition',
+    ({ browser, chapter, section }) => {
+      // Arrange
+      const files = validFiles();
+      files[BROWSER] = browser;
+      files[TYPESCRIPT_WITH_BROWSER] = `# TypeScript with browser\n\n## ${section}\n\n${rule({
+        parent: 'window-never-read-during-render',
+        slug: 'window-read-after-render',
+      })}`;
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = rulesCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        {
+          message: `rule "window-read-after-render" sits under "${section}" while it carries out "window-never-read-during-render" of the chapter "${chapter}"; a rule of a language or a platform sits in the section named for its parent's chapter`,
+          path: TYPESCRIPT_WITH_BROWSER,
+        },
+      ]);
+    },
+  );
+
+  it.each([
+    {
+      condition: "a rule of a language sits under its parent's chapter",
+      file: TYPES,
+      body: `# Types\n\n## Principles\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+    },
+    {
+      condition: "a rule of a language sits in a chapter file named for its parent's chapter",
+      file: TYPES,
+      body: `# Principles\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'types-point-inward',
+      })}`,
+    },
+    {
+      condition: 'a rule of a domain sits under a section of its own',
+      file: I18N,
+      body: `# Plurals\n\n## Forms\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'plurals-point-inward',
+      })}`,
+    },
+  ])('should report nothing when $condition', ({ body, file }) => {
+    // Arrange
+    const files = validFiles();
+    files[file] = body;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = rulesCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+});

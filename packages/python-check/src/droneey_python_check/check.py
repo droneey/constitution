@@ -1,0 +1,59 @@
+import ast
+from pathlib import Path
+from typing import TYPE_CHECKING, TextIO
+
+from droneey_python_check.findings import Finding, render
+from droneey_python_check.imports import import_findings
+from droneey_python_check.lines import line_findings
+from droneey_python_check.packages import package_findings
+
+if TYPE_CHECKING:
+  from collections.abc import Iterator, Sequence
+
+  from droneey_python_check.settings import Settings
+
+USAGE = 'usage: python-check <path>...\n'
+SKIPPED = '__pycache__'
+
+
+def python_files(path: Path) -> Iterator[Path]:
+  if path.is_file():
+    yield path
+    return
+
+  for file in sorted(path.rglob('*.py')):
+    if SKIPPED not in file.parts:
+      yield file
+
+
+def file_findings(*, path: Path, settings: Settings) -> tuple[Finding, ...]:
+  source = path.read_bytes()
+
+  try:
+    tree = ast.parse(source)
+  except SyntaxError as error:
+    line = error.lineno or 1  # pragma: no mutate -- ast.parse gives every SyntaxError its line
+    return (Finding(path=path, line=line, message=f'the file does not parse: {error.msg}'),)
+
+  return (
+    line_findings(path=path, tree=tree, source=source)
+    + import_findings(path=path, tree=tree)
+    + package_findings(path=path, settings=settings, tree=tree)
+  )
+
+
+def run(arguments: Sequence[str], *, output: TextIO, settings: Settings) -> int:
+  if not arguments:
+    output.write(USAGE)
+    return 2
+
+  findings = [
+    finding
+    for argument in arguments
+    for file in python_files(Path(argument))
+    for finding in file_findings(path=file, settings=settings)
+  ]
+
+  output.writelines(f'{render(finding)}\n' for finding in findings)
+
+  return 1 if findings else 0

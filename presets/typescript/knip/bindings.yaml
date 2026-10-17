@@ -1,8 +1,0 @@
-foundation:
-  core:
-    no-dead-code:
-      - entry
-      - project
-  tanstack-start:
-    no-dead-code:
-      - entry

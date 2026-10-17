@@ -1,0 +1,27 @@
+language js
+
+or {
+  JsImport(),
+  JsVariableStatement(),
+  JsVariableDeclarationClause(),
+  JsFunctionDeclaration(),
+  JsClassDeclaration(),
+  TsInterfaceDeclaration(),
+  TsTypeAliasDeclaration(),
+  TsEnumDeclaration(),
+  TsModuleDeclaration(),
+  TsExternalModuleDeclaration(),
+  TsDeclareFunctionDeclaration(),
+  JsExportDefaultDeclarationClause(),
+  JsExportDefaultExpressionClause(),
+  JsExpressionStatement(),
+  JsIfStatement(),
+  JsForStatement(),
+  JsForOfStatement(),
+  JsForInStatement(),
+  JsWhileStatement(),
+  JsTryStatement()
+} as $statement where {
+  $statement <: not within JsFunctionBody(),
+  register_diagnostic(span=$statement, message="A surface only re-exports by name: move this into a file of its own", severity="error")
+}

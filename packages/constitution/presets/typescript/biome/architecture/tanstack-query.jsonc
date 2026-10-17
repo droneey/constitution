@@ -1,0 +1,37 @@
+{
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/keys-only-from-the-key-factory.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/cache.utils.ts",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/query-client-built-by-the-root.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/src/root/**",
+        "!**/main.*",
+        "!**/entrypoints/*/main.*",
+        "!**/__tests__/**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/read-declared-once-as-query-options.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/cache.utils.ts",
+        "!**/src/root/**",
+        "!**/__tests__/**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+  ],
+}

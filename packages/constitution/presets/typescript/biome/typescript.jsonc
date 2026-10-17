@@ -1,0 +1,215 @@
+{
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedInterfaceMembers": {
+          "level": "on",
+          "options": {},
+        },
+      },
+    },
+  },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noDoubleEquals": {
+          "level": "error",
+          "options": {
+            "ignoreNull": false,
+          },
+        },
+        "noExplicitAny": "error",
+        "noTsIgnore": "error",
+        "noEvolvingTypes": "error",
+        "noDuplicateEnumValues": "error",
+        "noConstEnum": "error",
+      },
+      "correctness": {
+        "noUnsafeFinally": "error",
+      },
+      "style": {
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "conventions": [
+              {
+                "selector": {
+                  "kind": "typeParameter",
+                },
+                "match": "T([A-Z].*)?",
+                "formats": [
+                  "PascalCase",
+                ],
+              },
+            ],
+          },
+        },
+        "noNonNullAssertion": "error",
+        "useEnumInitializers": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "moment": "Use Temporal: date libraries wrap the Date it replaces",
+              "dayjs": "Use Temporal: date libraries wrap the Date it replaces",
+              "date-fns": "Use Temporal: date libraries wrap the Date it replaces",
+              "luxon": "Use Temporal: date libraries wrap the Date it replaces",
+            },
+            "patterns": [
+              {
+                "group": [
+                  "moment/**",
+                  "dayjs/**",
+                  "date-fns/**",
+                  "luxon/**",
+                ],
+                "message": "Use Temporal: date libraries wrap the Date it replaces",
+              },
+            ],
+          },
+        },
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+        "noParameterProperties": "error",
+        "useConsistentMemberAccessibility": {
+          "level": "error",
+          "options": {
+            "accessibility": "explicit",
+          },
+        },
+        "noNamespace": "error",
+        "useReadonlyClassProperties": "error",
+        "useUnifiedTypeSignatures": "error",
+        "useExportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+        "useAsConstAssertion": "error",
+        "useConsistentArrayType": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useConsistentEnumValueType": "error",
+        "useConsistentMethodSignatures": "error",
+        "noDefaultExport": "error",
+        "noCommonJs": "error",
+      },
+      "complexity": {
+        "noUselessUndefined": "error",
+        "noVoid": "error",
+      },
+      "security": {
+        "noGlobalEval": "error",
+      },
+      "nursery": {
+        "noUnsafeTypeAssertion": "error",
+        "useExhaustiveSwitchCases": "error",
+        "useNullishCoalescing": "error",
+        "useExplicitReturnType": "error",
+        "useDisposables": "error",
+        "noUnsafePlusOperands": "error",
+        "noBaseToString": "error",
+        "noMisleadingReturnType": "error",
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "noImpliedEval": "error",
+      },
+    },
+  },
+  "plugins": [
+    "./.droneey/constitution/presets/typescript/biome/plugins/type-names-undecorated.grit",
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/module-level-value-never-changed.grit",
+      "includes": [
+        "**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/undefined-is-the-only-absence.grit",
+      "includes": [
+        "**",
+        "!**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/plugins/closed-name-set-is-a-string-enum.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+  ],
+  "overrides": [
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/.*rc.ts",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useExplicitReturnType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+          },
+          "style": {
+            "noDefaultExport": "off",
+            "useNamingConvention": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentMemberAccessibility": "off",
+          },
+          "nursery": {
+            "useExplicitReturnType": "off",
+          },
+        },
+      },
+    },
+  ],
+}

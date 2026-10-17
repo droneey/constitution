@@ -1,0 +1,24 @@
+language js
+
+or {
+  `Date.now()`,
+  `Date()`,
+  `new Date()`,
+  `randomUUID($...)`,
+  `randomBytes($...)`,
+  `randomInt($...)`,
+  `randomFill($...)`,
+  `randomFillSync($...)`,
+  `generateKey($...)`,
+  `generateKeySync($...)`,
+  `generateKeyPair($...)`,
+  `generateKeyPairSync($...)`,
+  `generatePrime($...)`,
+  `crypto.subtle.generateKey($...)`,
+  `Math.random()`,
+  `crypto.randomUUID()`,
+  `crypto.getRandomValues($_)`,
+  `Temporal.Now.$method($...)`
+} as $call where {
+  register_diagnostic(span=$call, message="An effect outside the edge: the clock, randomness and identifiers reach this code through a port", severity="error")
+}

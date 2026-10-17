@@ -1,0 +1,7 @@
+core:
+  dead-code-deleted:
+    - ignore
+  production-code-imports-no-tool:
+    - ignore
+  test-code-never-reached-from-production:
+    - ignore

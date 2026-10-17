@@ -1,0 +1,45 @@
+extend = "core.toml"
+
+[lint]
+extend-ignore = [
+  "D1",
+]
+extend-select = [
+  "ANN",
+  "ASYNC",
+  "B006",
+  "B012",
+  "D",
+  "DTZ",
+  "E722",
+  "F403",
+  "G001",
+  "G002",
+  "G003",
+  "G004",
+  "INP",
+  "N",
+  "N999",
+  "PLW0602",
+  "PLW0603",
+  "RUF012",
+  "S110",
+  "S112",
+  "SIM115",
+  "SLF",
+  "TC",
+  "TID251",
+  "UP037",
+  "UP040",
+  "UP046",
+  "UP047",
+]
+
+[lint.flake8-bandit]
+check-typed-exception = true
+
+[lint.flake8-tidy-imports.banned-api]
+"sys.path".msg = "a module is imported as a member of an installed package"
+
+[lint.pydocstyle]
+convention = "google"

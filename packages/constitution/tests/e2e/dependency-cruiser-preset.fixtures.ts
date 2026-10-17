@@ -1,0 +1,232 @@
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+
+import { z } from 'zod';
+
+enum Declaration {
+  Production = 'production',
+  Development = 'development',
+  Both = 'both',
+  PeerAndDevelopment = 'peer-and-development',
+  None = 'none',
+}
+
+interface Installed {
+  declaration: Declaration;
+  deprecated?: string;
+}
+
+interface Project {
+  files: Readonly<Record<string, string>>;
+  // A link's path, then the folder it points to, as a package manager links a workspace's units.
+  links?: Readonly<Record<string, string>>;
+  parts?: readonly string[];
+  roots?: readonly string[];
+  workspaces?: readonly string[];
+}
+
+interface Cruise {
+  cruised: number;
+  violations: readonly string[];
+}
+
+const REPORT = z.object({
+  summary: z.object({
+    totalCruised: z.number(),
+    violations: z.array(
+      z.object({
+        rule: z.object({
+          name: z.string(),
+        }),
+      }),
+    ),
+  }),
+});
+
+const REPOSITORY = join(import.meta.dir, '..', '..');
+const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
+
+const BASE_PARTS = [
+  'typescript/self',
+  'typescript/core',
+  'typescript/typescript',
+];
+
+// The packages the blocks' rules name, and those the parts of the base tell
+// apart: `kit` declared, `devtool` a development dependency, `ghost` installed
+// but never declared, `legacy` deprecated.
+const INSTALLED: Readonly<Record<string, Installed>> = {
+  '@bunli/core': {
+    declaration: Declaration.Production,
+  },
+  '@lingui/core': {
+    declaration: Declaration.Production,
+  },
+  '@tanstack/react-query': {
+    declaration: Declaration.Production,
+  },
+  '@tanstack/react-router': {
+    declaration: Declaration.Production,
+  },
+  devtool: {
+    declaration: Declaration.Development,
+  },
+  'expo-router': {
+    declaration: Declaration.Production,
+  },
+  ghost: {
+    declaration: Declaration.None,
+  },
+  inversify: {
+    declaration: Declaration.Production,
+  },
+  kit: {
+    declaration: Declaration.Production,
+  },
+  ky: {
+    declaration: Declaration.Production,
+  },
+  pino: {
+    declaration: Declaration.Production,
+  },
+  react: {
+    declaration: Declaration.Production,
+  },
+  doubled: {
+    declaration: Declaration.Both,
+  },
+  configured: {
+    declaration: Declaration.PeerAndDevelopment,
+  },
+  legacy: {
+    declaration: Declaration.Production,
+    deprecated: 'use kit',
+  },
+  yaml: {
+    declaration: Declaration.Production,
+  },
+  zod: {
+    declaration: Declaration.Production,
+  },
+};
+
+const installedFiles = (): Readonly<Record<string, string>> =>
+  Object.fromEntries(
+    Object.entries(INSTALLED).flatMap(([name, { deprecated }]) => [
+      [
+        `node_modules/${name}/index.js`,
+        'export const value = 1;\n',
+      ],
+      [
+        `node_modules/${name}/package.json`,
+        JSON.stringify({
+          deprecated,
+          main: 'index.js',
+          name,
+          version: '1.0.0',
+        }),
+      ],
+    ]),
+  );
+
+const declared = (declarations: readonly Declaration[]): Readonly<Record<string, string>> =>
+  Object.fromEntries(
+    Object.entries(INSTALLED)
+      .filter(([, installed]) => declarations.includes(installed.declaration))
+      .map(([name]) => [
+        name,
+        '1.0.0',
+      ]),
+  );
+
+const configOf = (parts: readonly string[]): string =>
+  `export default {\n  extends: ${JSON.stringify(
+    [
+      ...parts,
+      ...BASE_PARTS,
+    ].map(
+      (part) => `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
+    ),
+  )},\n};\n`;
+
+const cruise = (project: Project): Cruise => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
+  const files = {
+    ...installedFiles(),
+    ...project.files,
+    '.dependency-cruiser.mjs': configOf(
+      project.parts ?? [
+        'typescript/architecture/core',
+      ],
+    ),
+    'package.json': JSON.stringify({
+      dependencies: declared([
+        Declaration.Production,
+        Declaration.Both,
+      ]),
+      devDependencies: declared([
+        Declaration.Development,
+        Declaration.Both,
+        Declaration.PeerAndDevelopment,
+      ]),
+      name: 'fixture',
+      peerDependencies: declared([
+        Declaration.PeerAndDevelopment,
+      ]),
+      type: 'module',
+      workspaces: project.workspaces,
+    }),
+  };
+
+  for (const [path, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(folder, path)), {
+      recursive: true,
+    });
+    writeFileSync(join(folder, path), text);
+  }
+
+  for (const [path, target] of Object.entries(project.links ?? {})) {
+    mkdirSync(dirname(join(folder, path)), {
+      recursive: true,
+    });
+    symlinkSync(join(folder, target), join(folder, path));
+  }
+
+  mkdirSync(join(folder, '.droneey'));
+  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+
+  const cruising = spawnSync(
+    DEPCRUISE,
+    [
+      ...(project.roots ?? [
+        'src',
+      ]),
+      '--config',
+      '.dependency-cruiser.mjs',
+      '--output-type',
+      'json',
+    ],
+    {
+      cwd: folder,
+      encoding: 'utf8',
+    },
+  );
+
+  rmSync(folder, {
+    force: true,
+    recursive: true,
+  });
+
+  const { summary } = REPORT.parse(JSON.parse(cruising.stdout));
+
+  return {
+    cruised: summary.totalCruised,
+    violations: [
+      ...new Set(summary.violations.map(({ rule }) => rule.name)),
+    ],
+  };
+};
+
+export { cruise };

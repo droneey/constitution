@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "incremental": true,
+    "strictPropertyInitialization": true
+  }
+}
