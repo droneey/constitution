@@ -4,10 +4,10 @@ import { dirname, join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import type { HookRun } from './hook.fixtures';
-import { HookEvent, newSession, removeSessions, runHook, runScript } from './hook.fixtures';
-import { createPluginRoot, removePluginRoots } from './plugin-root.fixtures';
-import { configOf, createProject, removeProjects } from './project.fixtures';
+import type { HookRun } from '../hook.fixtures';
+import { HookEvent, newSession, removeSessions, runHook, runScript } from '../hook.fixtures';
+import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
+import { configOf, createProject, removeProjects } from '../project.fixtures';
 
 enum StopEvent {
   Stop = 'Stop',

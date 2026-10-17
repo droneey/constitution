@@ -10,10 +10,10 @@ import {
   removeSessions,
   runHook,
   runScript,
-} from './hook.fixtures';
-import { checkPack, createPack, removePacks } from './packs.fixtures';
-import { createRealPluginRoot, removePluginRoots } from './plugin-root.fixtures';
-import { ConfigKey, configOf, createProject, removeProjects } from './project.fixtures';
+} from '../hook.fixtures';
+import { checkPack, createPack, removePacks } from '../packs.fixtures';
+import { createRealPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
+import { ConfigKey, configOf, createProject, removeProjects } from '../project.fixtures';
 
 let root = '';
 

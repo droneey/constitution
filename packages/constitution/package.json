@@ -20,6 +20,7 @@
   "scripts": {
     "test:unit": "CI=1 bun test",
     "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test",
+    "test:hooks": "CI=1 bun --config=./bunfig.e2e.toml test tests/e2e/hooks",
     "test": "bun run test:unit && bun run test:e2e",
     "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
     "mutation:check": "mutation-check",
