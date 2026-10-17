@@ -55,7 +55,7 @@ A block refers, through its front matter, only to the layers above it and, among
 
 ## 🧰 Presets
 
-A project takes its rules and its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `blocks/`, the `digests/` generated from them, `presets/`, `templates/`, the built `tools/` and `package.json`, whose version is the release's. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
+A project takes its rules and its tool configurations from the release archive, `constitution.tar.gz`, which mise installs pinned by version and links as `.droneey/constitution/`. It holds `blocks/`, the `digests/` generated from them, `presets/`, `templates/`, `vocabulary.yaml`, the built `tools/` — the mutation and Python checks and `blocks-check` for packs — and `package.json`, whose version is the release's. A preset is split into parts, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis:
 
 - the scope is the files the part reads: `common` for any language, or a language block — `typescript`, `css`, `python` — for that language's files alone; a tool lists the languages it covers in its block's `languages`, and a project takes the scopes of its active languages;
 - the tool folder is the tool's block — `biome`, `dependency-cruiser`, `knip`, `tsc` for the compiler;
@@ -99,6 +99,19 @@ At the start of a session it also saves the resolved active set outside the proj
 When the agent reads or edits a file, a second hook matches it against the `governs` globs of the active blocks — of its unit, when it lies under one. A domain and a platform govern every file of the unit that lists them, `**`, as core does: what they hold is an aspect or a kind of program, not a form of file. A language governs the files written in it, and a tool's block the files it configures; a block also governs what every active block that needs it governs, through `requires`, `extends` and an active `with/` seam. The hook tells the agent, once per block per context, which block governs the file, the block's files and its MUST rules — a rule an override lowered marked with its new level — in at most 300 bytes.
 
 At the hand-back, a third hook holds the gate. When the project names a `check` command and the tree changed since it last passed, the stop is blocked once, and the agent is told to run the command; a passing run — the command whole, first on its line or after `&&` or `;` — is recorded as it happens, and a failing one never counts. Then, when the changed files fall under a block's `governs` and `/check edits` did not review them, the user sees one line naming those blocks; nothing is blocked, and the agent spends nothing. A sub-agent meets only the first step. A project with `check: null` meets only the second.
+
+## 🧩 Packs
+
+A pack is a folder of blocks shaped like the constitution — `blocks/` and, when it has them, `presets/` and `templates/` — with no manifest and nothing generated. A project links it, as mise links the constitution, and lists it in `constitution.yaml`; its blocks are listed by id beside the constitution's:
+
+```yaml
+implementations: [react-dom, matomo]
+packs: [.droneey/constitution-extra]
+```
+
+The engine stays the constitution's. The hook reads a pack's Markdown at session start as it reads a local block: the card's front matter, the chapters and `with/` files by their folders, the rules by their headings, a rule's level from its parent where it states none. The digest lists a pack's block with its pack, and the reminders name its files there. A pack not installed, a block whose id is already taken and a rule that carries out an unknown rule are warnings. A project extends a pack's presets from their path, as it extends the constitution's. A pack tightens as any block does: its rules never replace or loosen the constitution's.
+
+A pack's author checks it with the constitution's own check, which the release archive carries: `bun .droneey/constitution/tools/constitution/dist/blocks-check.js --base .droneey/constitution`, run in the pack. Its blocks load beside the constitution's, so every arrow and `requires` resolves, and only the pack's findings are reported.
 
 ## ✍️ Skills
 
@@ -184,7 +197,7 @@ After the findings it prints advice that does not fail the check: rules of sibli
 |---|---|---|
 | `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of the archive's tools, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
 | `cd-version.yaml` | push to `main`, but for the release commit | Calls `droneey/.github`: bumps `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, generates the digests, packs `package.json`, `blocks/`, `digests/`, `presets/`, `templates/` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, generates the digests, packs `package.json`, `blocks/`, `digests/`, `presets/`, `templates/`, `vocabulary.yaml` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
 ## 🛠️ Changing it
 

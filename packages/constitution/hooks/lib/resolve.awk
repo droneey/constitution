@@ -6,7 +6,7 @@
 BEGIN {
   FS = "\t"
   T = "\t"
-  CODES = "missing abstract unknown wrong-key config local-block not-met override"
+  CODES = "missing abstract unknown wrong-key config local-block pack not-met override"
   KEYS = "version axes domains platforms languages implementations packages check overrides"
   FIELDS = "id summary requires extends abstract languages dictionary governs"
   LAYERS = "domain platform language implementation"
@@ -144,6 +144,8 @@ function check_keys(   n, a, k) {
     EXPECTED[a[k]] = 1
     if (!(a[k] in SEEN)) warn("config", "constitution.yaml has no " a[k] " key — add " ADD[a[k]])
   }
+  # packs is the one key a project may leave out: most follow no pack.
+  EXPECTED["packs"] = 1
   for (k = 1; k <= nkeys; k++) if (!(SEENKEY[k] in EXPECTED)) warn("config", "constitution.yaml has the unknown key " SEENKEY[k] " — remove it")
   for (k = 1; k <= nempty; k++) warn("config", (EAPP[k] == "" ? "constitution.yaml" : EAPP[k]) " leaves " EKEY[k] " empty — " FILL[EKEY[k]])
 }
@@ -324,7 +326,7 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
       id = B[j]
       if (LAYER[id] != layer || !IN[0, id]) continue
       if (!lines++) heading(layer)
-      print "index" T "- " id ": " SUMMARY[id] also(0, id)
+      print "index" T "- " id ((id in PACK) ? " (" PACK[id] ")" : "") ": " SUMMARY[id] also(0, id)
     }
     for (k = 1; k <= nlocal; k++) {
       if (LSCOPE[k] != 0 || LLAYER[k] != layer) continue
@@ -410,7 +412,7 @@ function print_active(   check, s, j, k) {
 }
 
 function files_of(s, id,   base, out, n, a, k) {
-  base = "blocks/" FOLDER[LAYER[id]] "/" id "/"
+  base = ((id in PACK) ? PACK[id] "/" : "") "blocks/" FOLDER[LAYER[id]] "/" id "/"
   out = base id ".md"
   n = split(chapters(s, id), a, " ")
   for (k = 1; k <= n; k++) out = out " " base a[k]
@@ -469,6 +471,7 @@ END {
     exit
   }
   check_keys()
+  finish_packs()
   for (i = 1; i <= nitems; i++) {
     if (ITEXT[i] !~ /^\.\/.*\.md$/) continue
     name = ITEXT[i]
@@ -482,11 +485,11 @@ END {
   axes_of(0)
   for (s = 1; s <= napps; s++) axes_of(s)
   print_core()
-  for (i = 1; i <= nitems; i++) if (IAPP[i] == "" && IKEY[i] != "axes") declare(0, i)
+  for (i = 1; i <= nitems; i++) if (IAPP[i] == "" && IKEY[i] != "axes" && IKEY[i] != "packs") declare(0, i)
   for (s = 1; s <= napps; s++) {
     for (j = 1; j <= nb; j++) if (IN[0, B[j]]) IN[s, B[j]] = 1
     for (k = 1; k <= nlocal; k++) if (LSCOPE[k] == 0) IN[s, LID[k]] = 1
-    for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s] && IKEY[i] != "axes") declare(s, i)
+    for (i = 1; i <= nitems; i++) if (IAPP[i] == APP[s] && IKEY[i] != "axes" && IKEY[i] != "packs") declare(s, i)
   }
   check_local_parents()
   apply_overrides()

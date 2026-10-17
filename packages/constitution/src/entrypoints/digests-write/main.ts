@@ -3,6 +3,7 @@ import type { Finding } from '#/kernel/types';
 import { createWiring } from '#/root';
 
 const wiring = createWiring({
+  base: undefined,
   root: process.cwd(),
 });
 const prepared = prepareDigests({

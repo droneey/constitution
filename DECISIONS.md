@@ -40,7 +40,7 @@
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
 | What a tool holds and what review holds | ADR-0200 – ADR-0202 |
-| The plugin and the project's rules | ADR-0203 |
+| The plugin and the project's rules | ADR-0203, ADR-0204 |
 
 ---
 
@@ -1523,3 +1523,20 @@
   - Committed digests: a generated file that changes with every block, with its diffs and conflicts.
   - The plugin delivering the rules of its installed version (ADR-0010's former delivery): two repositories on one machine would read one release whatever they pin.
 - **Why.** Projects already pin one release through mise for their presets; reading the rules from the same archive makes that pin the single source, and the plugin's only contract with a release is the digest format.
+
+## ADR-0204 — A pack is a folder of blocks the hook reads as it finds them
+
+**Date:** 2026-10-17 · **Status:** Accepted
+
+- **Decision.**
+  - A pack is a folder shaped like the constitution, `blocks/` and, when it has them, `presets/` and `templates/`, with no manifest and nothing generated. A project lists the packs it follows by their paths in `constitution.yaml`'s optional `packs:`, and their blocks by plain id beside the constitution's.
+  - The engine is the constitution's alone. At session start the hook reads each listed pack's Markdown as it reads a local block: a block's card for its front matter, its chapters and `with/` files by their folders, and its rules by their headings, a rule's level from its parent where it states none. A pack's block is listed with its pack and its files read from there. A pack that is not installed, a block whose id the constitution or an earlier pack already holds, and a rule that carries out an unknown rule are warnings, never the end of the digest.
+  - A pack's presets are extended by the project's own configuration, from their path, as the constitution's are.
+  - A pack tightens as any block does: its rules never replace or loosen the constitution's.
+  - Its author checks it with the constitution's own `blocks:check --base <constitution>`, which the release archive carries as `tools/constitution/dist/blocks-check.js` beside `vocabulary.yaml`: the pack's blocks load beside the constitution's, so every arrow and `requires` resolves, and only the pack's findings are reported. No project runs it.
+- **Rejected.**
+  - Digests generated in each pack's release, as the constitution's are: a pack would need a build step and its own release artifact, while the hook reads a handful of blocks as cheaply as it reads local ones.
+  - Digests generated in the project after each install: every project would need Bun, Python ones included, and a step the hook, which runs on bash and awk, cannot run itself.
+  - A manifest per pack with its name, version and the range of the constitution it fits: an arrow or a `requires` that resolves is the fit that matters, and a range would be a second source of it.
+  - A pack that replaces or loosens a rule of the constitution: a pack tightens as any block does.
+- **Why.** The owner's model: a pack is only blocks, and the engine operates whatever packs a project connects. Reading packs where the hook already reads local blocks keeps the one engine, and a pack's author keeps the one check the constitution runs on itself.

@@ -104,8 +104,31 @@ records="$(awk -f "${lib}/read-config.awk" "${config}" 2>/dev/null)" || fail "ca
 # fails on a folder and blocks on a named pipe.
 tab="$(printf '\t')"
 files=''
+
+# A pack the project lists is a folder of blocks; awk reads each of its regular,
+# readable Markdown files under blocks/, in one order on every system.
+pack_files() {
+  pack_dir="${project}/${1#./}"
+  if [ ! -d "${pack_dir}/blocks" ]; then
+    files="${files}pack${tab}$1
+"
+    return
+  fi
+  pack_list="$(cd "${pack_dir}" && find blocks -type f -name '*.md' 2>/dev/null | LC_ALL=C sort)" || return
+  while IFS= read -r pack_rel; do
+    [ -n "${pack_rel}" ] && [ -r "${pack_dir}/${pack_rel}" ] || continue
+    files="${files}packfile${tab}$1${tab}${pack_rel}${tab}${pack_dir}/${pack_rel}
+"
+  done <<PACK
+${pack_list}
+PACK
+}
 while IFS= read -r record; do
   case "${record}" in
+    "item${tab}${tab}packs${tab}"*)
+      pack_files "${record#item"${tab}${tab}"packs"${tab}"}"
+      continue
+      ;;
     "item${tab}"*) path="${record#item"${tab}"*"${tab}"*"${tab}"}" ;;
     *) continue ;;
   esac
@@ -135,7 +158,7 @@ export CONSTITUTION_ROOT="${archive}" CONSTITUTION_PROJECT="${project}" \
   CONSTITUTION_EVENT="${event}" CONSTITUTION_STARTUP="${startup}"
 
 resolved="$(printf '%s\n%s' "${records}" "${files}" |
-  awk -f "${lib}/local-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
+  awk -f "${lib}/local-blocks.awk" -f "${lib}/pack-blocks.awk" -f "${lib}/resolve.awk" 2>/dev/null)" || fail 'cannot build the digest'
 output="$(printf '%s\n' "${resolved}" | awk -f "${lib}/json.awk" -f "${lib}/digest.awk" 2>/dev/null)" || fail 'cannot build the digest'
 
 # A state that cannot be written costs the reminders and the gate, never the digest.

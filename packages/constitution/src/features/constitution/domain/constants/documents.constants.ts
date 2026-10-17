@@ -10,9 +10,13 @@ enum DocumentPath {
   Vocabulary = 'vocabulary.yaml',
 }
 
+// Where the blocks of the constitution a pack extends sit in the paths the
+// checks report, apart from the pack's own.
+const BASE_PREFIX = '(base)/';
+
 // The form of the digests the hooks read, raised whenever a hook of the
 // previous form would misread them; the hooks read this one and the one
 // before it.
 const DIGEST_FORMAT = 1;
 
-export { DIGEST_FORMAT, DocumentPath };
+export { BASE_PREFIX, DIGEST_FORMAT, DocumentPath };

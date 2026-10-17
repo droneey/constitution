@@ -7,6 +7,7 @@ import type {
   VocabularyParser,
 } from '#/features/constitution';
 import {
+  createNodeBaseTree,
   createNodeFileSystem,
   repositoryRootOf,
 } from '#/features/constitution/adapters/file-system';
@@ -18,6 +19,8 @@ import {
 } from '#/features/constitution/adapters/yaml';
 
 interface Wiring {
+  // The constitution a pack extends, when the tree is a pack.
+  base: FileTree | undefined;
   bindingsParser: BindingsParser;
   console: {
     write: (text: string) => void;
@@ -29,7 +32,13 @@ interface Wiring {
   vocabularyParser: VocabularyParser;
 }
 
-const createWiring = (input: { root: string }): Wiring => ({
+const createWiring = (input: { base: string | undefined; root: string }): Wiring => ({
+  base:
+    input.base === undefined
+      ? undefined
+      : createNodeBaseTree({
+          root: input.base,
+        }),
   bindingsParser: createYamlBindingsParser(),
   console: {
     write: (text: string): void => {

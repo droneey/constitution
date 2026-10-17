@@ -2,7 +2,7 @@ import { LAYERS } from '#/kernel/constants';
 import type { Finding } from '#/kernel/types';
 import { compareText } from '#/kernel/utils';
 
-import { DocumentPath } from '../../../constants';
+import { BASE_PREFIX, DocumentPath } from '../../../constants';
 import type {
   BindingsParser,
   FileTree,
@@ -168,6 +168,7 @@ const agentsOf = (input: {
   });
 
 const documentsOf = (input: {
+  base: FileTree | undefined;
   frontMatterParser: FrontMatterParser;
   listed: readonly string[];
   parser: ManifestParser;
@@ -184,7 +185,12 @@ const documentsOf = (input: {
   const hooks = textOf(DocumentPath.Hooks);
   const marketplace = repositoryTextOf(DocumentPath.Marketplace);
   const plugin = textOf(DocumentPath.Plugin);
-  const vocabulary = textOf(DocumentPath.Vocabulary);
+  // A pack holds no vocabulary of its own: the words are its base's.
+  const vocabulary =
+    textOf(DocumentPath.Vocabulary) ??
+    (input.base?.list().includes(DocumentPath.Vocabulary)
+      ? input.base.read(DocumentPath.Vocabulary)
+      : undefined);
 
   return {
     agents: agentsOf({
@@ -206,9 +212,68 @@ const documentsOf = (input: {
   };
 };
 
+interface BlocksLoaded {
+  blocks: readonly Block[];
+  findings: readonly Finding[];
+}
+
+const blocksOf = (input: { parser: FrontMatterParser; tree: FileTree }): BlocksLoaded => {
+  const underBlocks = input.tree.list().filter((path) => path.startsWith(BLOCKS));
+  const located = locate(underBlocks);
+  const loaded = groupByFolder(
+    located.filter((entry) => entry.block.file !== BlockPathFile.Stray),
+  ).map((folder) =>
+    loadBlock({
+      folder,
+      parser: input.parser,
+      tree: input.tree,
+    }),
+  );
+
+  return {
+    blocks: loaded.flatMap((outcome) =>
+      outcome.block === undefined
+        ? []
+        : [
+            outcome.block,
+          ],
+    ),
+    findings: [
+      ...underBlocks
+        .filter((path) => classifyBlockPath(path) === undefined)
+        .map((path) => ({
+          message: OUTSIDE,
+          path,
+        })),
+      ...located
+        .filter((entry) => entry.block.file === BlockPathFile.Stray)
+        .map((entry) => ({
+          message: STRAY,
+          path: entry.path,
+        })),
+      ...loaded.flatMap((outcome) => outcome.findings),
+    ],
+  };
+};
+
+// A block of the base keeps its place in the paths apart from the pack's.
+const rebased = (block: Block): Block => ({
+  ...block,
+  files: block.files.map((file) => ({
+    ...file,
+    path: `${BASE_PREFIX}${file.path}`,
+  })),
+  path: `${BASE_PREFIX}${block.path}`,
+});
+
+const BASE_BROKEN =
+  'is the constitution this pack extends, and it does not load; check it before the pack';
+
 // The tree is the constitution's own package; the repository is the one that
-// holds it, the same tree when the package is the repository.
+// holds it, the same tree when the package is the repository. A pack is loaded
+// beside the base it extends, so its arrows and requires resolve against it.
 const loadConstitution = (input: {
+  base?: FileTree;
   bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
@@ -219,26 +284,21 @@ const loadConstitution = (input: {
   const listed = input.tree.list();
   const paths: ReadonlySet<string> = new Set(listed);
   const repositoryPaths: ReadonlySet<string> = new Set(input.repository.list());
-  const underBlocks = listed.filter((path) => path.startsWith(BLOCKS));
-  const located = locate(underBlocks);
-  const loaded = groupByFolder(
-    located.filter((entry) => entry.block.file !== BlockPathFile.Stray),
-  ).map((folder) =>
-    loadBlock({
-      folder,
-      parser: input.frontMatterParser,
-      tree: input.tree,
-    }),
-  );
-  const blocks = loaded
-    .flatMap((outcome) =>
-      outcome.block === undefined
-        ? []
-        : [
-            outcome.block,
-          ],
-    )
-    .toSorted(byLayerThenId);
+  const own = blocksOf({
+    parser: input.frontMatterParser,
+    tree: input.tree,
+  });
+  const base =
+    input.base === undefined
+      ? undefined
+      : blocksOf({
+          parser: input.frontMatterParser,
+          tree: input.base,
+        });
+  const blocks = [
+    ...own.blocks,
+    ...(base?.blocks ?? []).map(rebased),
+  ].toSorted(byLayerThenId);
   const parsed = parsedOf(blocks);
   const filesUnder = (folder: string): readonly PresetFile[] =>
     listed
@@ -258,6 +318,7 @@ const loadConstitution = (input: {
       bindings: bindings.bindings,
       blocks,
       documents: documentsOf({
+        base: input.base,
         frontMatterParser: input.frontMatterParser,
         listed,
         parser: input.manifestParser,
@@ -274,19 +335,15 @@ const loadConstitution = (input: {
       rules: parsed.rules,
     },
     findings: [
-      ...underBlocks
-        .filter((path) => classifyBlockPath(path) === undefined)
-        .map((path) => ({
-          message: OUTSIDE,
-          path,
-        })),
-      ...located
-        .filter((entry) => entry.block.file === BlockPathFile.Stray)
-        .map((entry) => ({
-          message: STRAY,
-          path: entry.path,
-        })),
-      ...loaded.flatMap((outcome) => outcome.findings),
+      ...own.findings,
+      ...((base?.findings.length ?? 0) > 0
+        ? [
+            {
+              message: BASE_BROKEN,
+              path: BASE_PREFIX,
+            },
+          ]
+        : []),
       ...duplicateIdFindings(blocks),
       ...parsed.findings,
       ...bindings.findings,

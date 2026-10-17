@@ -4,10 +4,19 @@ import { Axis } from '#/kernel/constants';
 import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
-import { loadedOf, mainFile, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
+import {
+  loadedOf,
+  mainFile,
+  packSourceOf,
+  rule,
+  textOf,
+  without,
+} from '../../../../../__tests__/constitution.fixtures';
+import { packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { paraglideCard } from '../../../../../__tests__/templates.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { BlockFileRole } from '../../../../entities';
+import { loadConstitution } from '../load-constitution.use-case';
 
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
@@ -775,5 +784,47 @@ describe('loadConstitution', () => {
       answers: [],
       rules: [],
     });
+  });
+
+  it("should load the base's blocks beside the pack's, apart in their paths, and read the base's vocabulary when the pack holds none", () => {
+    // Arrange
+    const source = packSourceOf({
+      base: validFiles(),
+      pack: packFiles(),
+    });
+
+    // Act
+    const { constitution } = loadConstitution(source);
+
+    // Assert
+    expect({
+      paths: constitution.blocks
+        .map((block) => block.path)
+        .filter((path) => path.includes('acme') || path.includes('core/')),
+      vocabulary: constitution.documents.vocabulary?.status,
+    }).toStrictEqual({
+      paths: [
+        '(base)/blocks/core/core.md',
+        'blocks/implementations/acme/acme.md',
+      ],
+      vocabulary: 'parsed',
+    });
+  });
+
+  it('should read no vocabulary when neither the pack nor its base holds one', () => {
+    // Arrange
+    const source = packSourceOf({
+      base: without({
+        files: validFiles(),
+        path: 'vocabulary.yaml',
+      }),
+      pack: packFiles(),
+    });
+
+    // Act
+    const { constitution } = loadConstitution(source);
+
+    // Assert
+    expect(constitution.documents.vocabulary).toBeUndefined();
   });
 });

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { compareText } from '#/kernel/utils';
@@ -52,6 +52,30 @@ const createNodeFileSystem = (input: { root: string }): FileTree & DigestWriter 
   },
 });
 
+// The installed constitution a pack extends, as mise unpacks it: no repository
+// of its own, so its blocks and vocabulary are read from the folders.
+const BASE_FOLDER = 'blocks';
+const BASE_VOCABULARY = 'vocabulary.yaml';
+
+const createNodeBaseTree = (input: { root: string }): FileTree => ({
+  list: (): readonly string[] =>
+    [
+      ...(existsSync(join(input.root, BASE_FOLDER))
+        ? readdirSync(join(input.root, BASE_FOLDER), {
+            recursive: true,
+          })
+            .map((path) => `${BASE_FOLDER}/${path}`)
+            .filter((path) => isFile(join(input.root, path)))
+        : []),
+      ...(isFile(join(input.root, BASE_VOCABULARY))
+        ? [
+            BASE_VOCABULARY,
+          ]
+        : []),
+    ].toSorted(compareText),
+  read: (path: string): string => normalized(readFileSync(join(input.root, path), 'utf8')),
+});
+
 // The root of the repository that holds a folder, where its README and decision log live.
 const repositoryRootOf = (folder: string): string =>
   execFileSync(
@@ -66,4 +90,4 @@ const repositoryRootOf = (folder: string): string =>
     },
   ).trim();
 
-export { createNodeFileSystem, repositoryRootOf };
+export { createNodeBaseTree, createNodeFileSystem, repositoryRootOf };

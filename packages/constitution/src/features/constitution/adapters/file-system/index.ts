@@ -1,1 +1,5 @@
-export { createNodeFileSystem, repositoryRootOf } from './node-file-system.adapter';
+export {
+  createNodeBaseTree,
+  createNodeFileSystem,
+  repositoryRootOf,
+} from './node-file-system.adapter';

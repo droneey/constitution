@@ -5,7 +5,11 @@ import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { createNodeFileSystem, repositoryRootOf } from '../node-file-system.adapter';
+import {
+  createNodeBaseTree,
+  createNodeFileSystem,
+  repositoryRootOf,
+} from '../node-file-system.adapter';
 
 let root = '';
 
@@ -152,5 +156,54 @@ describe('repositoryRootOf', () => {
 
     // Assert
     expect(realpathSync(found)).toBe(realpathSync(root));
+  });
+});
+
+describe('createNodeBaseTree', () => {
+  it('should list the blocks and the vocabulary of an unpacked constitution and nothing else when it holds both', () => {
+    // Arrange
+    write({
+      path: 'blocks/core/core.md',
+      text: '# Core\r\n',
+    });
+    write({
+      path: 'presets/common/biome/self.jsonc',
+      text: '{}\n',
+    });
+    write({
+      path: 'vocabulary.yaml',
+      text: 'architecture: {}\n',
+    });
+    const tree = createNodeBaseTree({
+      root,
+    });
+
+    // Act
+    const listed = tree.list();
+
+    // Assert
+    expect({
+      core: tree.read('blocks/core/core.md'),
+      listed,
+    }).toStrictEqual({
+      core: '# Core\n',
+      listed: [
+        'blocks/core/core.md',
+        'vocabulary.yaml',
+      ],
+    });
+  });
+
+  it('should list nothing when the folder holds no constitution', () => {
+    // Arrange
+    const tree = createNodeBaseTree({
+      root,
+    });
+
+    // Act
+    const listed = tree.list();
+
+    // Assert
+    expect(listed).toStrictEqual([]);
   });
 });

@@ -43,7 +43,7 @@ If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, s
 
 ### 2. Show what the plugin offers
 
-Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only local blocks can be listed.
+Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only local blocks can be listed. When the repository links packs — folders of blocks beside the constitution, such as `.droneey/constitution-extra` — list their paths under `packs:` and offer their blocks with the others, by id; leave `packs:` out when there are none.
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 

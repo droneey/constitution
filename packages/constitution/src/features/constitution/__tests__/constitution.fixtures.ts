@@ -121,6 +121,17 @@ const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = fil
   vocabularyParser: createYamlVocabularyParser(),
 });
 
+// A pack checked against its base: the pack is its repository, the base a tree of its own.
+const packSourceOf = (input: {
+  base: Readonly<Files>;
+  pack: Readonly<Files>;
+}): Source & {
+  base: FileTree;
+} => ({
+  ...sourceOf(input.pack),
+  base: createFakeFileTree(input.base),
+});
+
 const loadedOf = (
   files: Readonly<Files>,
   repositoryFiles: Readonly<Files> = files,
@@ -158,4 +169,14 @@ const without = (input: { files: Readonly<Files>; path: string }): Files =>
   Object.fromEntries(Object.entries(input.files).filter(([candidate]) => candidate !== input.path));
 
 export type { BlockFixture, Files, RuleFixture };
-export { blockFiles, checkInputOf, loadedOf, mainFile, rule, sourceOf, textOf, without };
+export {
+  blockFiles,
+  checkInputOf,
+  loadedOf,
+  mainFile,
+  packSourceOf,
+  rule,
+  sourceOf,
+  textOf,
+  without,
+};

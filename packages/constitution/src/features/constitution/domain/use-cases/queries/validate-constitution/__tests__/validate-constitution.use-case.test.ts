@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'bun:test';
 
-import { rule, sourceOf, textOf } from '../../../../../__tests__/constitution.fixtures';
+import {
+  packSourceOf,
+  rule,
+  sourceOf,
+  textOf,
+} from '../../../../../__tests__/constitution.fixtures';
+import { ACME, packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 
@@ -108,6 +114,90 @@ describe('validateConstitution', () => {
         'similar rules: i18n-plurals-by-cldr (i18n) and screens-plurals-by-cldr (ui)',
       ],
       findings: [],
+    });
+  });
+
+  it('should find nothing and give no advice when a pack carries out the rules of its base', () => {
+    // Arrange
+    const source = packSourceOf({
+      base: validFiles(),
+      pack: packFiles(),
+    });
+
+    // Act
+    const validation = validateConstitution(source);
+
+    // Assert
+    expect(validation).toStrictEqual({
+      advice: [],
+      findings: [],
+    });
+  });
+
+  it('should report only the pack when its rule carries out a rule neither it nor its base holds', () => {
+    // Arrange
+    const base = validFiles();
+    base['blocks/core/core.md'] = `${textOf({
+      files: base,
+      path: 'blocks/core/core.md',
+    })}\nSee [gone](gone.md).\n`;
+    const source = packSourceOf({
+      base,
+      pack: packFiles('no-such-rule'),
+    });
+
+    // Act
+    const validation = validateConstitution(source);
+
+    // Assert
+    expect(validation.findings.map((finding) => finding.path)).toStrictEqual([
+      ACME,
+    ]);
+  });
+
+  it("should report the pack's block and not the base's when the pack repeats an id of its base", () => {
+    // Arrange
+    const pack = packFiles();
+    pack['blocks/domains/i18n/i18n.md'] = textOf({
+      files: validFiles(),
+      path: 'blocks/domains/i18n/i18n.md',
+    });
+    const source = packSourceOf({
+      base: validFiles(),
+      pack,
+    });
+
+    // Act
+    const validation = validateConstitution(source);
+
+    // Assert
+    expect(validation.findings.map((finding) => finding.path)).toStrictEqual([
+      'blocks/domains/i18n/i18n.md',
+    ]);
+  });
+
+  it('should report the base once when the base it is checked against does not load', () => {
+    // Arrange
+    const base = validFiles();
+    base['blocks/domains/ui/notes.txt'] = 'notes\n';
+    const source = packSourceOf({
+      base,
+      pack: packFiles(),
+    });
+
+    // Act
+    const validation = validateConstitution(source);
+
+    // Assert
+    expect(validation).toStrictEqual({
+      advice: [],
+      findings: [
+        {
+          message:
+            'is the constitution this pack extends, and it does not load; check it before the pack',
+          path: '(base)/',
+        },
+      ],
     });
   });
 });

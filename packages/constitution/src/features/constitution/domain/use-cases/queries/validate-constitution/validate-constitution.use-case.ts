@@ -1,6 +1,7 @@
 import type { Finding } from '#/kernel/types';
 import { compareFindings } from '#/kernel/utils';
 
+import { BASE_PREFIX } from '../../../constants';
 import type {
   BindingsParser,
   FileTree,
@@ -60,6 +61,7 @@ interface Validation {
 // The checks run on a sound structure only: a block that did not load would
 // otherwise be reported as missing by every check that names it.
 const validateConstitution = (input: {
+  base?: FileTree;
   bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
@@ -69,24 +71,36 @@ const validateConstitution = (input: {
 }): Validation => {
   const { constitution, findings } = loadConstitution(input);
   const byId = byIdOf(constitution.blocks);
+  // A pack ships no plugin, and what its base holds is the base's to report.
+  const pack = input.base !== undefined;
+  const ownOf = (all: readonly Finding[]): readonly Finding[] =>
+    pack
+      ? all.filter(
+          (finding) => finding.path === BASE_PREFIX || !finding.path.startsWith(BASE_PREFIX),
+        )
+      : all;
 
   if (findings.length > 0) {
     return {
       advice: [],
-      findings: findings.toSorted(compareFindings),
+      findings: ownOf(findings).toSorted(compareFindings),
     };
   }
 
   return {
-    advice: adviseConstitution({
-      byId,
-      constitution,
-    }),
-    findings: CHECKS.flatMap((check) =>
-      check({
-        byId,
-        constitution,
-      }),
+    advice: pack
+      ? []
+      : adviseConstitution({
+          byId,
+          constitution,
+        }),
+    findings: ownOf(
+      (pack ? CHECKS.filter((check) => check !== pluginCheck) : CHECKS).flatMap((check) =>
+        check({
+          byId,
+          constitution,
+        }),
+      ),
     ).toSorted(compareFindings),
   };
 };
