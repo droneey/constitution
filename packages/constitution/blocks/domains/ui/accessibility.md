@@ -54,6 +54,14 @@ A control's accessible name contains its visible label, word for word, best at i
 |---|---|
 | a person who speaks to the device says the words they see, and a name that differs from the label leaves their command unmatched. | [a11y] |
 
+### link-names-its-destination · MUST
+
+A link's text — read alone or with the sentence, list item or table cell that holds it — says where the link leads, never `here`, `this`, `more` or the bare address.
+
+| Why | Tags |
+|---|---|
+| readers scan links, and a screen reader lists them out of their sentence, where `more` tells nothing. | [a11y] |
+
 ### headings-in-order · SHOULD
 
 Headings go in order, and no level is skipped.

@@ -5,6 +5,7 @@
     "./.droneey/constitution/presets/typescript/biome/plugins/focus-shown-by-focusable-utility.grit",
     "./.droneey/constitution/presets/typescript/biome/plugins/logical-utilities-for-direction.grit",
     "./.droneey/constitution/presets/typescript/biome/plugins/important-modifier-never-in-a-class-list.grit",
+    "./.droneey/constitution/presets/typescript/biome/plugins/transition-all-never-used.grit",
   ],
   "linter": {
     "rules": {

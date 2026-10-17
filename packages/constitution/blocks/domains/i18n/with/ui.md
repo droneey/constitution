@@ -1,6 +1,6 @@
 # Internationalisation with a user interface
 
-> Governs the locale on a screen and its direction.
+> Governs the locale on a screen, its direction and its capitals.
 
 ## Screens
 
@@ -19,3 +19,11 @@ A language is offered in its own name and script — "Українська", "De
 | Why | Tags |
 |---|---|
 | a reader finds their language by its name, and a flag names a country, which many languages share and many countries split. | [ux] |
+
+### display-capitals-set-by-style · SHOULD
+
+Text a screen shows in capitals takes them from its style, never from its message.
+
+| Why | Tags |
+|---|---|
+| capitals typed into a message reach every screen and every language that shows it, while a style sets them only where the design wants them, by each language's own rules. | [ux] |

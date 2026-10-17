@@ -95,6 +95,16 @@ Font-size tokens are in `rem`, and line-height tokens are unitless ratios.
 |---|---|
 | the user's text size then scales every text of the user interface. | [] |
 
+## Motion
+
+### transition-all-never-used → transition-names-its-properties · MUST
+
+No class list or `@apply` holds `transition-all`; a transition is a utility that names what it animates, such as `transition-colors` or `transition-transform`.
+
+| Why | Tags |
+|---|---|
+| `transition-all` animates every property, and the other transition utilities each name theirs. | [] |
+
 ## Requirements
 
 | Requirement | How | Met |

@@ -121,3 +121,11 @@ A fast source — a resize, a scroll, a stream — updates a screen's state at m
 | Why | Tags |
 |---|---|
 | dozens of updates a second redraw nothing the user can see and starve everything else. | [performance] |
+
+### frequent-interaction-never-waits-on-motion · SHOULD
+
+A layer the user opens many times a session — a menu, a command palette — opens without an entrance animation, and no animation stands between an action and its result.
+
+| Why | Tags |
+|---|---|
+| an animation seen for the hundredth time is only a wait, and a result held back by motion makes the interface slow however fast its work is. | [performance, ux] |

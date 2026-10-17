@@ -64,6 +64,14 @@ A failed submit moves focus to the first invalid field, or to a summary that lin
 
 ## Submission
 
+### submit-never-disabled-by-an-invalid-form · SHOULD
+
+A submit control is never disabled while its form is not yet valid: a submit of such a form is answered by its errors, and once the form submits, the control shows it is busy.
+
+| Why | Tags |
+|---|---|
+| a disabled submit tells nobody what is missing, and a user left facing it cannot find which field holds them back. | [ux, a11y] |
+
 ### form-submits-once · MUST
 
 A form submits once: while a submit is in flight, a repeated submit is ignored.

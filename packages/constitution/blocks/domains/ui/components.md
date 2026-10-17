@@ -1,6 +1,6 @@
 # Components
 
-> Governs a component: where it comes from, how it is composed, its props, size and interaction.
+> Governs a component: where it comes from, how it is composed, its props, size, interaction and appearance.
 
 ## Sourcing
 
@@ -114,15 +114,39 @@ A change of size or orientation restyles what is shown and never swaps a tree th
 |---|---|
 | turning a device or resizing a window must never erase what the user typed. | [ux, data] |
 
+### truncated-text-reachable-in-full · SHOULD
+
+Text cut to fit — truncated or clamped to a number of lines — can be read in full: on its own screen, in a view that expands it, or in a tooltip that keyboard and touch reach as well.
+
+| Why | Tags |
+|---|---|
+| the part cut off is often the one that tells two items apart, and a user who cannot read it cannot choose between them. | [ux, a11y] |
+
 ## Interaction
 
 ### button-names-its-result · SHOULD
 
-A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action; a confirmation of a destructive action names the action; a payment button shows the amount.
+A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action, and one label such as "Continue" moves a flow to its next step; a confirmation of a destructive action names the action; a payment button shows the amount.
 
 | Why | Tags |
 |---|---|
 | a person reads the button to know what will happen; a vague label makes them guess. | [ux] |
+
+### same-action-same-label · MUST
+
+A control that does the same thing on several screens or steps carries the same label on each.
+
+| Why | Tags |
+|---|---|
+| a user knows a control by its name, so a new name for the same action reads as a new action. | [a11y, ux] |
+
+### switch-labelled-by-its-on-state · SHOULD
+
+A switch or a checkbox is labelled by what it does when it is on, never by a negation: "Send notifications", never "Disable notifications" or "Don't send notifications".
+
+| Why | Tags |
+|---|---|
+| a negated label turned off is a double negative, which the user must work out before they dare touch it. | [ux] |
 
 ### long-lists-virtualised · SHOULD
 
@@ -157,6 +181,54 @@ An element's state — hovered, focused, selected, open, disabled, invalid, busy
 | Why | Tags |
 |---|---|
 | a look driven by a prop drifts from the state assistive technology announces, so a person sees one thing and hears another. | [a11y, ux] |
+
+### changing-numbers-use-fixed-width-digits · SHOULD
+
+A number that changes in place — a timer, a counter, a total — and a column of numbers to compare are set in digits of one width.
+
+| Why | Tags |
+|---|---|
+| digits of different widths make a changing number jitter, and a column of them misaligns the places a reader compares. | [ux] |
+
+### long-text-line-length-bounded · SHOULD
+
+Long-form text — an article, a page of help — is set at no more than 80 characters a line, 40 in Chinese, Japanese and Korean.
+
+| Why | Tags |
+|---|---|
+| the eye loses its place on the way back from the end of a long line to the start of the next. | [ux, a11y] |
+
+### space-between-groups-twice-the-space-within · SHOULD
+
+The space between two groups is at least twice the space between the items inside a group.
+
+| Why | Tags |
+|---|---|
+| a reader sees what belongs together by how close it sits, and groups spaced like their items read as one list. | [ux] |
+
+### nested-radius-concentric · SHOULD
+
+A rounded element nested in another takes the outer radius less the space between them, so both curves share a centre, and is square where that leaves nothing.
+
+| Why | Tags |
+|---|---|
+| an inner curve as round as the outer one leaves the gap thicker at the corners than along the sides, and the nesting looks misaligned. | [ux] |
+
+### icon-stroke-matches-its-text · SHOULD
+
+An icon beside text draws its strokes as heavy as that text's.
+
+| Why | Tags |
+|---|---|
+| an icon heavier than its label pulls the eye from it, and a lighter one fades beside it, so the pair stops reading as one control. | [ux] |
+
+### content-image-edged-by-a-hairline · SHOULD
+
+A content image carries a hairline inside its edge, in the text's colour at a low opacity, which darkens its edge in a light mode and lightens it in a dark one.
+
+| Why | Tags |
+|---|---|
+| an image whose edge matches the surface around it bleeds into it, and the hairline drawn inside keeps its shape without changing its size. | [ux] |
 
 ## Requirements for implementation
 

@@ -6,4 +6,12 @@
       },
     },
   },
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/css/biome/plugins/web-font-served-as-woff2.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+  ],
 }

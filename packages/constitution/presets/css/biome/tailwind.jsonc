@@ -18,5 +18,11 @@
         "**/*.css",
       ],
     },
+    {
+      "path": "./.droneey/constitution/presets/css/biome/plugins/transition-all-never-used.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
   ],
 }

@@ -1,6 +1,8 @@
 tailwind:
   utilities-only-from-tokens:
     - utilities-only-from-tokens.grit
+  transition-all-never-used:
+    - transition-all-never-used.grit
 css:
   class-declared-is-used:
     - noUnusedClasses
@@ -20,9 +22,13 @@ css:
     - useNamedLayer
   selector-never-targets-an-id:
     - selector-never-targets-an-id.grit
+  transition-names-its-properties:
+    - transition-names-its-properties.grit
 design-system:
   theme-colour-written-in-oklch:
     - noHexColors
 browser:
   stylesheet-feature-beyond-the-target-behind-supports:
     - useBaseline
+  web-font-served-as-woff2:
+    - web-font-served-as-woff2.grit

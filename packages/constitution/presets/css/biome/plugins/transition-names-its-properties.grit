@@ -1,0 +1,9 @@
+language css
+
+CssGenericProperty() as $declaration where {
+  or {
+    $declaration <: r"(?is)\s*transition(?:-property)?\s*:(?:.*[\s,])?all(?:[\s,;].*)?",
+    $declaration <: r"(?is)\s*transition\s*:\s*(?:[\d.]+m?s|ease(?:-in-out|-in|-out)?\b|linear\b|cubic-bezier\(|steps\().*"
+  },
+  register_diagnostic(span=$declaration, message="Name the properties a transition animates: all also moves layout, every colour of a theme switch and any property added later", severity="error")
+}
