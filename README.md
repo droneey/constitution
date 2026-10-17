@@ -155,8 +155,8 @@ postinstall = [
 ## 🛠️ Development
 
 ```bash
-mise trust && mise install   # bun, Python and uv, and the Python tools of the dev group
-bun install                  # installs the git hooks
+mise trust && mise install   # bun, Python and uv, the Python tools of the dev group, and the git hooks
+bun install                  # the packages of the workspace
 bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, the Python tools' own checks, blocks, secrets, names, unused code, vulnerabilities
 bun run build                # build the archive's tools into packages/constitution/tools/, as the release does
 claude --plugin-dir packages/constitution   # a session on the working tree's hooks and skills instead of the installed plugin's

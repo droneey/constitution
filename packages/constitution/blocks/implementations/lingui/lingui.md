@@ -31,7 +31,7 @@ The check extracts the source locale's catalog and fails when it differs from th
 
 ### module-level-messages-are-descriptors → module-level-text-holds-the-message · MUST
 
-Text defined outside a render — an option list, an enum's labels — is a `msg` descriptor rendered later.
+Text defined at a module's top level — an option list, an enumeration's labels — is a `msg` descriptor rendered later.
 
 | Why | Tags |
 |---|---|
