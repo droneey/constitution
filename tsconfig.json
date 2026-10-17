@@ -1,28 +1,11 @@
 {
-  "extends": [
-    "./.droneey/constitution/presets/typescript/tsc/self.json",
-    "./.droneey/constitution/presets/typescript/tsc/core.json",
-    "./.droneey/constitution/presets/typescript/tsc/bun.json"
-  ],
-  "compilerOptions": {
-    "exactOptionalPropertyTypes": true,
-    "noEmit": true,
-    "paths": {
-      "#/*": [
-        "./src/*"
-      ]
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/constitution"
     },
-    "types": [
-      "node",
-      "bun"
-    ]
-  },
-  "include": [
-    "src/**/*.ts",
-    "tests/**/*.ts",
-    "tools/*/src/**/*.ts"
-  ],
-  "exclude": [
-    "**/coverage"
+    {
+      "path": "./packages/mutation-check/languages/typescript"
+    }
   ]
 }

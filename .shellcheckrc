@@ -1,3 +1,5 @@
 enable=quote-safe-variables
 enable=check-set-e-suppressed
 enable=check-extra-masked-returns
+source-path=SCRIPTDIR
+external-sources=true

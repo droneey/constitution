@@ -6,6 +6,10 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 
 ## 📦 Layout
 
+The repository is a workspace of three packages: `packages/constitution`, the rules and what ships with them; `packages/mutation-check`, which mutates only the lines a change touches, over Stryker in `languages/typescript` and over mutmut in `languages/python`; and `packages/python-check`, which holds the lengths of functions and files, where a relative import may reach and where a package may be imported. Its root holds the workspace — one per language, `package.json` and `pyproject.toml` — the configuration of its tools, `.claude-plugin/marketplace.json`, `constitution.yaml`, `PROJECT.md` and `DECISIONS.md`, the constitution's own decision log.
+
+`packages/constitution` holds:
+
 | 📂 Path | 🧩 Holds |
 |---|---|
 | `blocks/core` | What holds for any program, always active: its card `core.md`, how to use the constitution, which holds no rule; its chapters at its root and in `architecture/` and `workflow/`, each named for what its rules govern |
@@ -19,10 +23,10 @@ The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis, and beside each axis's parts the bindings that say which setting holds which rule |
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a local block; `project/<block>/`, a project's starter files |
-| `tools` | Programs the release archive carries: `mutation-check`, which mutates only the lines a change touches; for Python, `mutmut-check`, its twin over mutmut, and `python-check`, which holds the lengths of functions and files, where a relative import may reach and where a package may be imported — each a member of the repository's uv workspace with its own specs |
-| `.claude-plugin` | The plugin and marketplace manifests |
-| `src` | The tooling that keeps the blocks sound |
-| `DECISIONS.md` | The constitution's own decision log |
+| `tools` | The programs the release archive carries, built by `bun run build` from the other packages and ignored by git: `mutation-check`, `mutmut-check` and `python-check` |
+| `.claude-plugin` | The plugin's manifest; the marketplace's sits at the repository's root |
+| `src` | The tooling that keeps the blocks sound: `blocks:check` and `digests:write`, which read the package and the repository's README and decision log |
+| `tests/e2e` | The end-to-end specs of the presets, the templates and the hooks |
 | `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
 | `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
 
@@ -119,7 +123,7 @@ claude plugin marketplace add droneey/constitution
 claude plugin install constitution@droneey
 ```
 
-The marketplace serves the plugin from the tag of its latest release: each release commit writes its tag into `.claude-plugin/marketplace.json`, so `claude plugin marketplace update` brings a release, never unreleased work on `main`.
+The marketplace serves the plugin from the folder `packages/constitution` at the tag of its latest release: each release commit writes its tag into `.claude-plugin/marketplace.json`, so `claude plugin marketplace update` brings a release, never unreleased work on `main`.
 
 Each project installs the rules it follows through mise, pinned to the version its `constitution.yaml` names, and links them where the hooks and presets read them:
 
@@ -142,14 +146,14 @@ postinstall = [
 mise trust && mise install   # bun, Python and uv, and the Python tools of the dev group
 bun install                  # installs the git hooks
 bun run check                # lint, manifests, types, imports, unit and end-to-end tests, mutation, the Python tools' own checks, blocks, secrets, names, unused code, vulnerabilities
-bun run digests:write        # write digests/, which git ignores, at the repository root from the blocks
-bun run build                # build tools/mutation-check/dist/main.js and the Python tools' .pyz, as the release does
-claude --plugin-dir .        # a session on the working tree's hooks and skills instead of the installed plugin's
+bun run digests:write        # write packages/constitution/digests/, which git ignores, from the blocks
+bun run build                # build the archive's tools into packages/constitution/tools/, as the release does
+claude --plugin-dir packages/constitution   # a session on the working tree's hooks and skills instead of the installed plugin's
 ```
 
-Here `.droneey/constitution` links to the repository itself, so its sessions read the rules of the working tree: run `bun run digests:write` once, and again after a change to a block. To try unreleased rules in another project, run `bun run digests:write` here and point that project's `.droneey/constitution` at this working tree — `ln -sfn <this repository> .droneey/constitution` — until its next `mise install` links the pinned release back. The release commit writes the version into `package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand.
+Here `.droneey/constitution` links to `packages/constitution`, so its sessions read the rules of the working tree: run `bun run digests:write` once, and again after a change to a block. To try unreleased rules in another project, run `bun run digests:write` here and point that project's `.droneey/constitution` at this working tree — `ln -sfn <this repository>/packages/constitution .droneey/constitution` — until its next `mise install` links the pinned release back. The release commit writes the version into `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag together, so none of them is edited by hand.
 
-The end-to-end spec in `tests/e2e/` builds a plugin root of the hooks, and beside it an archive from fixture blocks — and one from this repository's blocks, with the digests generated as a release generates them — links the archive into fixture projects as mise does, and runs the real hook over them. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
+The end-to-end spec in `packages/constitution/tests/e2e/` builds a plugin root of the hooks, and beside it an archive from fixture blocks — and one from this repository's blocks, with the digests generated as a release generates them — links the archive into fixture projects as mise does, and runs the real hook over them. `bun run test` runs the unit specs, then the end-to-end ones, which plain `bun test` skips; `HOOK_SHELL=/bin/bash bun run test` runs the hook under the bash 3.2 macOS ships.
 
 `blocks:check` loads every block and fails on:
 
@@ -166,7 +170,7 @@ The end-to-end spec in `tests/e2e/` builds a plugin root of the hooks, and besid
 - a preset file that is not, at the tool's root or in `architecture/` or `workflow/`, a part named after a block or `self`, a plugin in `plugins/` named after a rule of that axis, or `bindings.yaml`, or that sits in a scope neither `common` nor a language its tool covers;
 - a binding whose rule, part or setting does not hold, or whose rule sits on an axis its file's folder may not hold — the base's bindings hold rules of the base, an optional axis's those of its axis or of the base — or whose rule belongs to a block below its part; a setting that holds no rule is never reported;
 - a file over 500 lines, and a link to a missing file;
-- a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository at a release tag, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
+- a broken plugin, marketplace or hooks manifest, a marketplace that serves the plugin other than from its manifest's GitHub repository, at a release tag and from the folder that holds the manifest, a skill folder without `SKILL.md`, a `SKILL.md` without a `name` and a `description` in its front matter, and a missing template;
 - a decision log that is missing, repeats a number or lets it fall, or has an entry without its date and status;
 - a file git holds under `digests/`, which is generated, never committed, and a core part of the digest over 3,500 bytes, measured on digests generated in memory; `digests:write` fails on the same limit.
 
@@ -179,8 +183,8 @@ After the findings it prints advice that does not fail the check: rules of sibli
 | 📄 File | ⚡ Trigger | 🎯 Does |
 |---|---|---|
 | `ci-check.yaml` | pull request into `main` | The check with the hook under mawk, the build of the archive's tools, the unit and end-to-end specs again under gawk, the workflow lint; on macOS, the specs with the hook under `/bin/bash` 3.2 and the system awk |
-| `cd-version.yaml` | push to `main`, but for the release commit | Calls `droneey/.github`: bumps `package.json`, `constitution.yaml` and the marketplace's tag from the merged branch prefix and pushes the `vX.Y.Z` tag |
-| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, generates the digests, packs `package.json`, `blocks/`, `digests/`, `presets/`, `templates/` and the built tools into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
+| `cd-version.yaml` | push to `main`, but for the release commit | Calls `droneey/.github`: bumps `packages/constitution/package.json`, `constitution.yaml` and the marketplace's tag from the merged branch prefix and pushes the `vX.Y.Z` tag |
+| `cd-pre-release.yaml` | tag `v*` | Calls `droneey/.github`: builds the archive's tools, generates the digests, packs `package.json`, `blocks/`, `digests/`, `presets/`, `templates/` and the built `tools/` of `packages/constitution` into `constitution.tar.gz` with its checksum, and opens the pre-release with its changelog |
 
 ## 🛠️ Changing it
 

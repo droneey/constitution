@@ -11,18 +11,42 @@ import uv from './.droneey/constitution/presets/typescript/knip/uv.mjs';
 import yamllint from './.droneey/constitution/presets/typescript/knip/yamllint.mjs';
 
 export default {
-  entry: [
-    ...core.entry,
-    ...architecture.entry,
-    'tools/mutation-check/src/main.ts!',
-    'tools/mutation-check/src/runner.ts!',
-    'tools/mutation-check/src/ignorers.ts!',
-  ],
-  project: [
-    ...core.project,
-    'tools/*/src/**/*.ts!',
-    '!tools/*/src/**/__tests__/**!',
-  ],
+  workspaces: {
+    '.': {
+      entry: [],
+      project: [],
+    },
+    'packages/constitution': {
+      entry: [
+        ...core.entry,
+        ...architecture.entry,
+      ],
+      project: core.project,
+      // The end-to-end specs run these from node_modules/.bin.
+      ignoreDependencies: [
+        ...stryker.ignoreDependencies,
+        '@biomejs/biome',
+        '@stryker-mutator/core',
+        '@swc/core',
+        'dclint',
+        'syncpack',
+      ],
+    },
+    'packages/mutation-check/languages/typescript': {
+      entry: [
+        'src/main.ts!',
+        'src/runner.ts!',
+        'src/ignorers.ts!',
+      ],
+      project: [
+        'src/**/*.ts!',
+        '!src/**/__tests__/**!',
+      ],
+      ignoreDependencies: [
+        ...stryker.ignoreDependencies,
+      ],
+    },
+  },
   ignoreBinaries: [
     ...betterleaks.ignoreBinaries,
     ...mise.ignoreBinaries,
@@ -35,10 +59,5 @@ export default {
     'mkfifo',
     'renovate-config-validator',
     'stryker',
-  ],
-  ignoreDependencies: [
-    ...stryker.ignoreDependencies,
-    'dclint',
-    '@swc/core',
   ],
 };

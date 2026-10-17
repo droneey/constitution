@@ -18,7 +18,7 @@ jobs:
         npx --yes bun@1.4.3 install --production --frozen-lockfile
         && npx --yes bun@1.4.3 run build
         && npx --yes bun@1.4.3 run digests:write
-        && tar -czf constitution.tar.gz package.json blocks digests presets templates
-        tools/mutation-check/dist tools/python-check/dist tools/mutmut-check/dist
+        && tar -czf constitution.tar.gz -C packages/constitution
+        package.json blocks digests presets templates tools
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
       assets: constitution.tar.gz constitution.tar.gz.sha256

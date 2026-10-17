@@ -6,6 +6,7 @@ axes:
 domains:
   - version-control
   - open-source
+  - workspace
 platforms: []
 languages:
   - typescript

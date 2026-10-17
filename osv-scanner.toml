@@ -44,13 +44,25 @@ license.override = ["MIT"]
 reason = "deps.dev reports a non-standard licence for vulture; its LICENSE.txt is MIT"
 
 [[PackageOverrides]]
-name = "mutmut-check"
+name = "droneey-mutation-check"
 ecosystem = "PyPI"
 license.ignore = true
 reason = "this repository's own gate for mutmut, a member of its uv workspace that only checks code and never ships in a program"
 
 [[PackageOverrides]]
-name = "python-check"
+name = "droneey-python-check"
 ecosystem = "PyPI"
 license.ignore = true
 reason = "this repository's own check of Python, a member of its uv workspace that only checks code and never ships in a program"
+
+[[PackageOverrides]]
+name = "@droneey/constitution"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own package, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/mutation-check"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own gate for Stryker, a member of its Bun workspace that only checks code and never ships in a program"

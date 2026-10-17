@@ -6,3 +6,10 @@ extends:
   - .droneey/constitution/presets/common/lefthook/workflow/shfmt.yaml
   - .droneey/constitution/presets/common/lefthook/workflow/rumdl.yaml
   - .droneey/constitution/presets/common/lefthook/workflow/betterleaks.yaml
+
+# A template's pyproject.toml extends the presets from where a project links them, so ruff cannot load it here.
+pre-commit:
+  jobs:
+    - name: ruff
+      exclude:
+        - "packages/constitution/templates/**"

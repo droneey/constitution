@@ -8,8 +8,8 @@ exclude-newer-span = "P3D"
 
 [manifest]
 members = [
-    "mutmut-check",
-    "python-check",
+    "droneey-mutation-check",
+    "droneey-python-check",
 ]
 
 [manifest.dependency-groups]
@@ -17,16 +17,16 @@ dev = [
     { name = "anyio", specifier = "==4.15.1" },
     { name = "complexipy", specifier = "==8.0.1" },
     { name = "deptry", specifier = "==0.25.1" },
+    { name = "droneey-mutation-check", editable = "packages/mutation-check/languages/python" },
+    { name = "droneey-python-check", editable = "packages/python-check" },
     { name = "hypothesis", specifier = "==6.169.0" },
     { name = "import-linter", specifier = "==2.15" },
     { name = "mutmut", specifier = "==3.8.0" },
-    { name = "mutmut-check", editable = "tools/mutmut-check" },
     { name = "pydantic", specifier = "==2.14.1" },
     { name = "pytest", specifier = "==9.1.1" },
     { name = "pytest-cov", specifier = "==7.1.0" },
     { name = "pytest-randomly", specifier = "==5.0.0" },
     { name = "pytest-timeout", specifier = "==2.4.0" },
-    { name = "python-check", editable = "tools/python-check" },
     { name = "ruff", specifier = "==0.17.0" },
     { name = "ty", specifier = "==0.0.86" },
     { name = "vulture", specifier = "==2.16" },
@@ -195,6 +195,16 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7a/6a/3f82f7a06217778282bc4456af1b4ffb3bc4b2c8e7891d00e8323f9ad0b8/deptry-0.25.1-cp310-abi3-win_amd64.whl", hash = "sha256:b59a560cb7dffb21832a98bb80d33d614cfb5630ea36ce21833eabf4eae3df99", size = 1718489, upload-time = "2026-03-18T23:22:28.589Z" },
     { url = "https://files.pythonhosted.org/packages/c7/7f/cd6b3ac8cf95f2f1c5c7a74ff6452e9098af89a9b56607381f677880641e/deptry-0.25.1-cp310-abi3-win_arm64.whl", hash = "sha256:6efffd8116fb9d2c45a251382ce4ce1c38dbb17179f581ec9231ed5390f7fc12", size = 1647020, upload-time = "2026-03-18T23:22:23.311Z" },
 ]
+
+[[package]]
+name = "droneey-mutation-check"
+version = "0.0.0"
+source = { editable = "packages/mutation-check/languages/python" }
+
+[[package]]
+name = "droneey-python-check"
+version = "0.0.0"
+source = { editable = "packages/python-check" }
 
 [[package]]
 name = "grimp"
@@ -445,11 +455,6 @@ wheels = [
 ]
 
 [[package]]
-name = "mutmut-check"
-version = "0.0.0"
-source = { editable = "tools/mutmut-check" }
-
-[[package]]
 name = "packaging"
 version = "26.3"
 source = { registry = "https://pypi.org/simple" }
@@ -625,11 +630,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/ac/82/4c9ecabab13363e72
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/b6/3127540ecdf1464a00e5a01ee60a1b09175f6913f0644ac748494d9c4b21/pytest_timeout-2.4.0-py3-none-any.whl", hash = "sha256:c42667e5cdadb151aeb5b26d114aff6bdf5a907f176a007a30b940d3d865b5c2", size = 14382, upload-time = "2025-05-05T19:44:33.502Z" },
 ]
-
-[[package]]
-name = "python-check"
-version = "0.0.0"
-source = { editable = "tools/python-check" }
 
 [[package]]
 name = "pyyaml"
