@@ -1,8 +1,16 @@
 # TypeScript with workspace
 
-> Governs the manifests of a TypeScript workspace and how its packages are compiled.
+> Governs the names and manifests of a TypeScript workspace and how its packages are compiled.
 
 ## Workspace
+
+### unit-package-named-under-the-scope → unit-named-after-its-folder · SHOULD
+
+A unit is `@<scope>/<name>`.
+
+| Why | Tags |
+|---|---|
+| a registry takes one slash in a name, the scope's, so the unit's own name is all that follows it. | [] |
 
 ### root-manifest-private → root-and-internal-units-private · MUST
 

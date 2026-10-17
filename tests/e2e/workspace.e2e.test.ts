@@ -132,7 +132,7 @@ describe('a workspace on the presets', () => {
         'test',
         '--pass-with-no-tests',
       ],
-      folder: 'libs/money',
+      folder: 'packages/money',
       program: 'bun',
     });
 
@@ -214,21 +214,20 @@ describe('a workspace on the presets', () => {
     expect(passed).toBe(true);
   });
 
-  it('should report units-imported-by-name when shared imports a unit by a path into its folder', () => {
+  it('should report units-imported-by-name when a package imports another by a path into its folder', () => {
     // Arrange
     const folder = workspace({
       '.dependency-cruiser.mjs': DEPENDENCY_CRUISER,
-      'libs/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
-      'shared/orders/src/kernel/constants/price.constants.ts':
-        "import { ZERO } from '../../../../../libs/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
+      'packages/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
+      'packages/orders/src/kernel/constants/price.constants.ts':
+        "import { ZERO } from '../../../../../packages/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
     });
 
     // Act
     const { output } = runTool(folder, {
       args: [
         'apps',
-        'shared',
-        'libs',
+        'packages',
         '--config',
         '.dependency-cruiser.mjs',
       ],
@@ -267,7 +266,7 @@ describe('a workspace on the presets', () => {
       ...cruisers,
       'apps/web/package.json': manifestOf({
         dependencies: [
-          '@shop/shared-orders',
+          '@shop/orders',
           'x-api',
         ],
         name: '@shop/web',
@@ -344,9 +343,9 @@ describe('a workspace on the presets', () => {
     write({
       files: {
         'apps/web/src/features/labels/app/label.ts':
-          "import { describeOrder, type OrderId } from '@shop/shared-orders';\n\nexport const label = (id: OrderId): string => `Ordered ${describeOrder({ id, total: 0 })}`;\n",
+          "import { describeOrder, type OrderId } from '@shop/orders';\n\nexport const label = (id: OrderId): string => `Ordered ${describeOrder({ id, total: 0 })}`;\n",
         'apps/web/src/features/labels/app/__tests__/label.test.ts':
-          "import { expect, it } from 'bun:test';\n\nimport type { OrderId } from '@shop/shared-orders';\n\nimport { label } from '../label';\n\nit('should name the order when an order is labelled', () => {\n  // Act\n  const text = label('a' as OrderId);\n\n  // Assert\n  expect(text).toBe('Ordered order:a');\n});\n",
+          "import { expect, it } from 'bun:test';\n\nimport type { OrderId } from '@shop/orders';\n\nimport { label } from '../label';\n\nit('should name the order when an order is labelled', () => {\n  // Act\n  const text = label('a' as OrderId);\n\n  // Assert\n  expect(text).toBe('Ordered order:a');\n});\n",
       },
       folder,
     });

@@ -4,7 +4,7 @@
 
 ### uv-workspace-globbed-by-the-tree · SHOULD
 
-`members` lists the globs `apps/*/languages/python`, `shared/*/languages/python` and `libs/*/languages/python`, which match only Python packages, and the path of each unit in Python alone, `apps/<name>`, `shared/<name>` or `libs/<name>`.
+`members` lists the globs `apps/*/languages/python` and `packages/*/languages/python`, which match only Python packages, and the path of each unit in Python alone, `apps/<name>` or `packages/<name>`.
 
 | Why | Tags |
 |---|---|

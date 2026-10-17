@@ -125,9 +125,8 @@ workspace:
     - units-imported-by-name
   apps-blind-to-each-other:
     - apps-blind-to-each-other
-  units-import-toward-libs:
-    - libs-know-no-product
-    - shared-knows-no-app
+  packages-never-import-apps:
+    - packages-know-no-app
 ky:
   ky-home-is-the-adapters-libs-root-and-its-failure-mapper:
     - ky-home-is-the-adapters-libs-root-and-its-failure-mapper

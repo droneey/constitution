@@ -10,9 +10,9 @@
 |---|---|
 | import-linter knows a unit by its import name, not by its folder, so the project names them; one contract then refuses any import between two of them. | [] |
 
-### units-ordered-by-a-layers-contract → units-import-toward-libs · MUST
+### units-ordered-by-a-layers-contract → packages-never-import-apps · MUST
 
-A `layers` contract of the same section orders the import packages from the units of `apps/`, separated by `|`, above those of `shared/` and then those of `libs/`, each separated by `:`.
+A `layers` contract of the same section orders the import packages of the units of `apps/`, separated by `|`, above those of `packages/`, separated by `:`.
 
 | Why | Tags |
 |---|---|

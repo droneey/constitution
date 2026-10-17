@@ -37,6 +37,7 @@ architecture:
     - languages/
     - libs/
     - models/
+    - packages/
     - providers/
     - queries/
     - repositories/

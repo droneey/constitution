@@ -87,7 +87,7 @@ A local block is a draft until a person reviews it; say so.
 
 ### 5. Ask about units
 
-When the repository holds several units — the apps of a workspace, the code they share, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `apps/`, `shared/` or `libs/`:
+When the repository holds several units — the apps of a workspace, the packages they share or the repository releases, a server beside a web client — ask whether they follow different blocks. Top-level keys apply everywhere; a unit under `packages:` adds its own blocks for the files under its path, whether it sits in `apps/` or `packages/`:
 
 ```yaml
 packages:

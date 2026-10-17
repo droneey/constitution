@@ -11,7 +11,7 @@ governs: ["**"]
 
 # Workspace
 
-> A repository that holds several units — its programs, the parts two or more of them share, and what knows nothing of the product — each one package, or one package for each of its languages. This domain places the units, sets the direction of the imports between them, and links and checks their packages from the working tree.
+> A repository that holds several units — what it deploys, and what others install or its deployed units share — each one package, or one package for each of its languages. This domain places the units, sets the direction of the imports between them, and links and checks their packages from the working tree.
 
 ## The root
 
@@ -38,6 +38,14 @@ The root holds one workspace for each language, whose members are every package 
 | Why | Tags |
 |---|---|
 | a workspace nested in a package is refused by one package manager and ignored by another, so its packages are never linked. | [] |
+
+### unit-named-after-its-folder · SHOULD
+
+A unit is named after its folder under the repository's scope, in each of its languages, and no two units of the repository share a name.
+
+| Why | Tags |
+|---|---|
+| an import then names the folder it reaches, and a package manager refuses two members of one name. | [] |
 
 ## Dependencies
 

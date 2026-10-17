@@ -67,10 +67,10 @@ const WELL_FORMED = {
 // package manager links it, with the workspace's architecture part.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'apps/admin',
-  eros: 'libs/eros/languages/typescript',
-  'libs-smtp': 'libs/smtp',
-  'shared-messages': 'shared/messages',
-  'shared-money': 'shared/money',
+  eros: 'packages/eros/languages/typescript',
+  messages: 'packages/messages',
+  money: 'packages/money',
+  smtp: 'packages/smtp',
   web: 'apps/web',
 };
 
@@ -108,15 +108,13 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
   ],
   roots: [
     'apps',
-    'shared',
-    'libs',
+    'packages',
     'scripts',
   ],
   workspaces: [
     'apps/*',
-    'shared/*',
-    'libs/*',
-    'libs/*/languages/typescript',
+    'packages/*',
+    'packages/*/languages/typescript',
   ],
 });
 
@@ -1238,39 +1236,29 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'apps-blind-to-each-other',
     },
     {
-      condition: 'a unit of shared imports an app by its name',
+      condition: 'a package imports an app by its name',
       files: {
-        'shared/messages/src/messages.ts': importing({
+        'packages/messages/src/messages.ts': importing({
           from: '@shop/web',
           name: 'unit',
         }),
       },
-      rule: 'shared-knows-no-app',
-    },
-    {
-      condition: 'a unit of libs imports a unit of shared by its name',
-      files: {
-        'libs/smtp/src/send.ts': importing({
-          from: '@shop/shared-messages',
-          name: 'unit',
-        }),
-      },
-      rule: 'libs-know-no-product',
+      rule: 'packages-know-no-app',
     },
     {
       condition: 'an app imports a unit by a path into its folder',
       files: {
         'apps/web/src/orders.ts': importing({
-          from: '../../../shared/messages/src/index',
+          from: '../../../packages/messages/src/index',
           name: 'unit',
         }),
       },
       rule: 'units-imported-by-name',
     },
     {
-      condition: 'a unit of shared imports another by a path into its folder',
+      condition: 'a package imports another by a path into its folder',
       files: {
-        'shared/messages/src/messages.ts': importing({
+        'packages/messages/src/messages.ts': importing({
           from: '../../money/src/index',
           name: 'unit',
         }),
@@ -1280,7 +1268,7 @@ describe('the dependency-cruiser layer set', () => {
     {
       condition: 'the package of a library in several languages imports another unit by a path',
       files: {
-        'libs/eros/languages/typescript/src/filter.ts': importing({
+        'packages/eros/languages/typescript/src/filter.ts': importing({
           from: '../../../../smtp/src/index',
           name: 'unit',
         }),
@@ -1311,22 +1299,22 @@ describe('the dependency-cruiser layer set', () => {
   it('should report no violation when the units of a workspace import downward by name', () => {
     // Arrange
     const project = workspaceProject({
-      'libs/eros/shared/schema/kinds.yaml': '- validation\n',
-      'libs/eros/languages/typescript/src/kinds.ts':
+      'packages/eros/shared/schema/kinds.yaml': '- validation\n',
+      'packages/eros/languages/typescript/src/kinds.ts':
         "import kinds from '../../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
       'apps/web/src/orders.ts':
-        "import { unit } from '@shop/shared-messages';\nimport { unit as smtp } from '@shop/libs-smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
+        "import { unit } from '@shop/messages';\nimport { unit as smtp } from '@shop/smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
       'apps/web/src/line.ts': exported('line'),
-      'libs/eros/languages/typescript/src/send.ts': importing({
-        from: '@shop/libs-smtp',
+      'packages/eros/languages/typescript/src/send.ts': importing({
+        from: '@shop/smtp',
         name: 'unit',
       }),
       'scripts/release.ts': importing({
         from: '@shop/web',
         name: 'unit',
       }),
-      'shared/messages/src/messages.ts': importing({
-        from: '@shop/shared-money',
+      'packages/messages/src/messages.ts': importing({
+        from: '@shop/money',
         name: 'unit',
       }),
     });

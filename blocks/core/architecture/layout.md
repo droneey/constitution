@@ -21,6 +21,7 @@ A package keeps each folder below only when it has a file to hold. A delivery un
 src/
 ├── main.*                 the entry of a program: builds the root and runs it
 ├── index.*                the surface of a package others import: its main entry
+├── <entry>.*              a further entry of a package others import, named after what it offers: testing.*
 ├── root/                  the composition root: the wiring file, providers, configuration parsed at start,
 │                          the handler of last resort, the registration of every delivery unit
 ├── composition/<m>/       modules laid out as features: what several features make together, and the
@@ -139,6 +140,14 @@ A surface re-exports by name what callers may use: no declaration, no logic, no 
 | Why | Tags |
 |---|---|
 | a surface that declares or computes becomes a room of its own, and a wildcard offers internals nobody chose to offer. | [] |
+
+### further-entry-sits-beside-the-surface · SHOULD
+
+A package others import offers each further entry that serves no host framework — `testing`, the helpers its consumers test with — as a file beside its surface, named after what it offers, which re-exports by name from the tree and declares nothing.
+
+| Why | Tags |
+|---|---|
+| a consumer finds every door of the package at the top of its source, as `@angular/core/testing` and `hono/testing` show, and an entry that declares nothing never becomes a second home for logic. | [] |
 
 ### surface-offers-operations-not-mechanisms · SHOULD
 

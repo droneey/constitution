@@ -1444,23 +1444,27 @@
   - The JSON Schema spelling of an open enumeration in `mcp-api`: a client reads a tool's output schema from the server it calls, so a value added changes the schema it checks against at once.
 - **Why.** A rule holds one meaning only where its words belong to its layer: a protocol's names in a domain bind every program of that domain to a protocol it may not speak, and a vendor's format in a domain binds it to that vendor. Standard Webhooks is no vendor's format but an open specification of the webhook, so the `webhooks` domain may name it; it supports every clause that names it, the disabling of an endpoint that answers `410` included, so none of them is the owner's choice alone.
 
-## ADR-0199 — A workspace holds its apps, and one job in several languages holds `languages/` and `shared/`
+## ADR-0199 — A workspace holds the apps it deploys and the packages it shares or releases; one job in several languages holds `languages/` and `shared/`
 
-**Date:** 2026-10-16 · **Status:** Accepted
+**Date:** 2026-10-17 · **Status:** Accepted
 
 - **Decision.**
-  - A workspace holds `apps/<name>/`, the programs, each with its own root and blind to each other; `shared/<name>/`, what two or more apps need; and `libs/<name>/`, what knows nothing of the product. A library the repository releases — eros and logus in the kit — is a unit of `libs/`, named `libs-<name>` like any other; units of `libs/` may import each other, never in a cycle.
-  - At every level `shared/` holds what two or more of its neighbours need and the level gives no other home: apps in a workspace, languages beside one purpose, features in a source.
-  - Code that serves one purpose in several languages holds `languages/<language>/`, one package per language, and `shared/`, what they need written in none of them; `languages/` appears with the second language. The rule moves from `workspace` to core's architecture, since a repository of one such product has the same shape. This replaces the per-language folders at the unit's root of ADR-0150.
+  - A workspace holds `apps/<name>/`, what the repository deploys and runs itself and nobody installs, blind to each other; and `packages/<name>/`, every other unit: what its apps share, and the libraries, tools and configurations it releases. Imports go from `apps/` to `packages/` and never back; packages may import each other, never in a cycle. A unit is named after its folder, `@<scope>/<name>` or `<scope>-<name>`, and no two units share a name.
+  - Code that knows nothing of the product and is needed by more than one repository is released from a repository of libraries, the kit; until a second repository needs it, it lives in the `libs/` of the source that uses it — a rule of core, since it holds in a repository of one package too. The boundary of what knows nothing of the product is the repository's, and review holds it inside one (ADR-0200).
+  - A package others import offers a further entry that serves no host framework, such as `testing`, as a file beside its surface that only re-exports, as `@angular/core/testing` and `hono/testing` do.
+  - Code that serves one purpose in several languages holds `languages/<language>/`, one package per language, and `shared/`, what they need written in none of them; `languages/` appears with the second language. The rule lives in core's architecture, since a repository of one such product has the same shape. This replaces the per-language folders at the unit's root of ADR-0150.
 - **Rejected.**
-  - `products/` for what the repository releases, programs and libraries alike: once a released library lives in `libs/`, it held only programs, and releasing a library would move its folder. `packages/` for the programs: core calls every unit a package (ADR-0196).
-  - One folder for every importable unit, without `libs/`, as Turborepo and Nx do with tags: the boundary of what knows nothing of the product would then hold only by a tag a reader cannot see in the path.
-  - Flat siblings per language, `eros-typescript/` and `eros-python/`: uv and Cargo refuse `libs/*` once it matches a folder without their manifest, and a prefix does a folder's job.
+  - `apps/`, `shared/` and `libs/` at the workspace's root, the first form of this decision: it split the units by their reach, which no monorepo tool or large repository does, put a command-line tool others install under `apps/` because it has a root, and named every unit with a `shared-` or `libs-` prefix.
+  - An app as any program with a root of its own: Turborepo puts tooling in `packages/`, Nx calls an app the deployable shell, and vite, react, next, astro and svelte keep their command-line tools in `packages/`.
+  - A folder or a tag for what knows nothing of the product inside one repository, as Turborepo's boundaries and Nx's tags hold it: the repository already draws that line, and a tag is a second place to keep in step.
+  - `products/` for what the repository releases: a library a product's repository shares but never releases would have no home.
+  - Flat siblings per language, `eros-typescript/` and `eros-python/`: uv and Cargo refuse a glob once it matches a folder without their manifest, and a prefix does a folder's job.
   - A top level by language, as protobuf and Arrow have: it spreads one product over a root per language.
   - A nested workspace per product: Bun ignores a workspace inside a package and uv refuses one.
   - Language folders at the unit's root beside a source named by its content, as sentry-conventions has: `languages/` names the axis of its children as `apps/` does, and `shared/` means what two or more neighbours need at every level.
-  - `data/` for the source in no language, from the final review of #289: a word of no role, a catch-all in waiting.
-- **Why.** `apps/` is the word Turborepo and Nx use for programs and services, so a reader from either knows it on sight. Every level holds its units and what two or more of them need, with `libs/` where code knows nothing of the product, so a reader who knows one level knows them all, and a folder says who may use what it holds before it is opened.
+  - `data/` for the source in no language: a word of no role, a catch-all in waiting.
+  - The helpers a package offers for its consumers' tests as an integration into a test runner: they call no runner, so they are an entry of their own, and a package of their own only once they serve one runner, as `@effect/vitest` does.
+- **Why.** `apps/` and `packages/` split the units by how they leave the repository, the split Turborepo states and every repository of libraries and tools follows, so a reader from any of them knows the tree on sight; the direction of the imports follows from the two folders, and the one boundary they do not draw is drawn by the repository.
 
 ## ADR-0200 — Tools hold what breaks in silence; review holds where a file lives and what it is called
 

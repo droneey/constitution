@@ -1,4 +1,4 @@
-// A unit is a folder of apps/, shared/ or libs/; a unit's own shared/ data stays inside it.
+// A unit is a folder of apps/ or packages/; a unit's own shared/ data stays inside it.
 // biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
 export default {
   forbidden: [
@@ -6,10 +6,10 @@ export default {
       name: 'units-imported-by-name',
       severity: 'error',
       from: {
-        path: '^((?:apps|shared|libs)/[^/]+)/',
+        path: '^((?:apps|packages)/[^/]+)/',
       },
       to: {
-        path: '^(?:apps|shared|libs)/',
+        path: '^(?:apps|packages)/',
         pathNot: '^$1/',
         dependencyTypes: [
           'local',
@@ -23,10 +23,10 @@ export default {
       name: 'root-imports-units-by-name',
       severity: 'error',
       from: {
-        pathNot: '^(?:apps|shared|libs)/',
+        pathNot: '^(?:apps|packages)/',
       },
       to: {
-        path: '^(?:apps|shared|libs)/',
+        path: '^(?:apps|packages)/',
         dependencyTypes: [
           'local',
         ],
@@ -47,23 +47,13 @@ export default {
       },
     },
     {
-      name: 'shared-knows-no-app',
+      name: 'packages-know-no-app',
       severity: 'error',
       from: {
-        path: '^shared/',
+        path: '^packages/',
       },
       to: {
         path: '^apps/',
-      },
-    },
-    {
-      name: 'libs-know-no-product',
-      severity: 'error',
-      from: {
-        path: '^libs/',
-      },
-      to: {
-        path: '^(?:apps|shared)/',
       },
     },
   ],

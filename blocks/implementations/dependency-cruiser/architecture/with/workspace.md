@@ -2,9 +2,9 @@
 
 > The configuration that holds the imports between the units of a workspace.
 
-### imports-between-units-held-at-the-root → units-import-toward-libs · MUST
+### imports-between-units-held-at-the-root → packages-never-import-apps · MUST
 
-The root's configuration extends the part `workspace.mjs`, which holds the imports between the units of `apps/`, `shared/` and `libs/`.
+The root's configuration extends the part `workspace.mjs`, which holds the imports between the units of `apps/` and `packages/`.
 
 | Why | Tags |
 |---|---|

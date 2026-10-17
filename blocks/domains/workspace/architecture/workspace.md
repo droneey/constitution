@@ -4,21 +4,13 @@
 
 ## The tree
 
-### workspace-units-placed-by-reach · SHOULD
+### workspace-units-placed-by-how-they-leave · SHOULD
 
-A workspace holds its units in three places at its root, with the roles and the direction they have inside a program: `apps/<name>/`, the programs, each with its root; `shared/<name>/`, each part two or more apps need, a unit of its own; and `libs/<name>/`, what knows nothing of the product, a library the repository releases included.
-
-| Why | Tags |
-|---|---|
-| a unit's folder says who may use it before it is opened, and the direction of the imports follows from the folders as it does between `features/`, `shared/` and `libs/`; a library knows nothing of the product whether or not the repository releases it, so releasing it moves no folder. | [] |
-
-### program-with-its-own-root-is-an-app → package-has-at-most-one-root · MUST
-
-A program with a root of its own is a unit of `apps/`, never of `shared/` or `libs/`.
+A workspace holds its units in two places at its root: `apps/<name>/`, what the repository deploys and runs itself and nobody adds as a dependency — a site, a service, a mobile app; and `packages/<name>/`, every other unit — what its apps share, and the libraries, tools and configurations it releases.
 
 | Why | Tags |
 |---|---|
-| each program then wires one tree of its own, released and changed apart from the others, and what the apps share holds no wiring of its own. | [] |
+| the folder says how a unit leaves the repository, the split a reader of Turborepo or of a package manager's workspace knows on sight, and a library or a tool others install sits in `packages/` as in every repository of libraries and tools. | [] |
 
 ### business-shared-across-languages-lives-in-one-package · SHOULD
 
@@ -36,19 +28,11 @@ Whatever a unit offers — its core, its wire shapes, its integrations into host
 |---|---|
 | a consumer installs one package and imports the entries it needs, and the unit is versioned and released as one. | [] |
 
-### unit-named-after-its-folder · SHOULD
+## Packages
 
-A unit is imported by its name, which follows its folder under the repository's scope: an app by its own name, in each of its languages; a part of `shared/` as `shared-<name>`; a unit of `libs/` as `libs-<name>`, a library the repository releases included.
+### package-cut-on-its-second-user → code-placed-by-its-reason-to-change · MUST
 
-| Why | Tags |
-|---|---|
-| an import then names the folder it reaches, so a reader sees which way it points. | [] |
-
-## Shared
-
-### shared-part-appears-with-its-second-app → code-placed-by-its-reason-to-change · MUST
-
-A part of `shared/` appears when a second app needs it, and returns to its app when only one still does; until then it lives with its one app.
+Code the units share becomes a unit of `packages/` when a second unit needs it, and returns to its user when only one still does; until then it lives in the source of its one user. A unit of `packages/` the repository releases is one from the start.
 
 | Why | Tags |
 |---|---|
@@ -62,12 +46,12 @@ A unit of `apps/` never imports another.
 
 | Why | Tags |
 |---|---|
-| a unit that knows another cannot be released, changed or removed alone; what two of them need goes to `shared/`, or to `libs/` when it knows nothing of the product. | [] |
+| a unit that knows another cannot be released, changed or removed alone; what two of them need goes to `packages/`. | [] |
 
-### units-import-toward-libs → import-points-inward · MUST
+### packages-never-import-apps → import-points-inward · MUST
 
-Imports between units point from `apps/` to `shared/` to `libs/`: a unit of `shared/` imports no unit of `apps/`, and a unit of `libs/` none of `apps/` and nothing of `shared/`, while it may import another of `libs/`.
+A unit of `packages/` never imports a unit of `apps/`, while it may import another of `packages/`.
 
 | Why | Tags |
 |---|---|
-| the more units need a piece, the more stable it must be, and an import upward makes it change whenever one of its users does. | [] |
+| the more units need a piece, the more stable it must be, and an import of an app makes it change whenever that app does. | [] |

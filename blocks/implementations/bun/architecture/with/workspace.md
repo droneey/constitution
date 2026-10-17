@@ -4,7 +4,7 @@
 
 ### workspaces-globbed-by-the-tree · SHOULD
 
-`workspaces` lists the globs `apps/*`, `shared/*` and `libs/*`, and each of them with `/languages/typescript` after it.
+`workspaces` lists the globs `apps/*` and `packages/*`, and each of them with `/languages/typescript` after it.
 
 | Why | Tags |
 |---|---|

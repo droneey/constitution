@@ -120,6 +120,14 @@ Code lives in the layer that owns its reason to change, beside its consumer when
 |---|---|
 | code placed by its reason to change is found where it is needed and moves only when that reason moves. | [] |
 
+### code-shared-across-repositories-released-from-a-library-repository · SHOULD
+
+Code that knows nothing of the product and is needed by more than one repository is released from a repository of libraries, which holds nothing of any product; until a second repository needs it, it lives in the `libs/` of the source that uses it.
+
+| Why | Tags |
+|---|---|
+| the boundary of what knows nothing of the product is then the repository's, which no import can cross, and one release reaches every repository that needs it instead of a copy in each. | [] |
+
 ### contract-lifts-on-its-second-feature · MUST
 
 A contract belongs to the feature that needs it; when a second feature needs it in the same words — a clock, a mailer — it lifts to the kernel's `contracts/`, never sideways into one of them, and a port each context words its own way stays with each context.

@@ -36,24 +36,24 @@ const TEMPLATES = join(REPOSITORY, 'templates', 'project');
 // Each TypeScript package's folder, by the name that follows its unit's folder.
 const UNITS: Readonly<Record<string, string>> = {
   '@shop/api': 'apps/api',
-  '@shop/libs-eros': 'libs/eros/languages/typescript',
-  '@shop/libs-money': 'libs/money',
-  '@shop/shared-orders': 'shared/orders',
+  '@shop/eros': 'packages/eros/languages/typescript',
+  '@shop/money': 'packages/money',
+  '@shop/orders': 'packages/orders',
   '@shop/web': 'apps/web',
 };
 
 // Each Python package's folder: a library the workspace releases, in two
-// languages, an application and the library of libs/ it uses.
+// languages, an application and the library of packages/ it uses.
 const PYTHON_PACKAGES: readonly string[] = [
-  'libs/eros/languages/python',
+  'packages/eros/languages/python',
   'apps/reports',
-  'libs/tabula',
+  'packages/tabula',
 ];
 
 // A file symlink inside a package, then the file it points to: data a package
 // takes at run time from its unit's single source.
 const LINKS: Readonly<Record<string, string>> = {
-  'libs/eros/languages/python/src/shop_libs_eros/kernel/constants/kinds.yaml':
+  'packages/eros/languages/python/src/shop_eros/kernel/constants/kinds.yaml':
     '../../../../../../shared/schema/kinds.yaml',
 };
 
@@ -164,12 +164,12 @@ const INSTALLED: Files = {
 // language once, in shared/, and a package for each language laid out by
 // layers, with its integrations into host frameworks as entries of their own.
 const EROS: Files = {
-  'libs/eros/shared/conformance/cases.yaml': '- code: validation.email\n  status: 422\n',
-  'libs/eros/shared/schema/kinds.yaml': '- validation\n- not-found\n',
-  'libs/eros/languages/typescript/bunfig.toml': bunfig,
-  'libs/eros/languages/typescript/bunfig.integration.toml': bunfigIntegration,
-  'libs/eros/languages/typescript/src/__tests__/sandbox.fixtures.ts': sandbox,
-  'libs/eros/languages/typescript/package.json': manifestOf({
+  'packages/eros/shared/conformance/cases.yaml': '- code: validation.email\n  status: 422\n',
+  'packages/eros/shared/schema/kinds.yaml': '- validation\n- not-found\n',
+  'packages/eros/languages/typescript/bunfig.toml': bunfig,
+  'packages/eros/languages/typescript/bunfig.integration.toml': bunfigIntegration,
+  'packages/eros/languages/typescript/src/__tests__/sandbox.fixtures.ts': sandbox,
+  'packages/eros/languages/typescript/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',
       './nestjs': './src/integrations/nestjs/index.ts',
@@ -187,9 +187,9 @@ const EROS: Files = {
         },
       },
     },
-    name: '@shop/libs-eros',
+    name: '@shop/eros',
   }),
-  'libs/eros/languages/typescript/src/features/errors/domain/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
+  'packages/eros/languages/typescript/src/features/errors/domain/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
 
 export class ErosError extends Error {
   readonly code: ErrorCode;
@@ -200,28 +200,28 @@ export class ErosError extends Error {
   }
 }
 `,
-  'libs/eros/languages/typescript/src/features/errors/domain/errors/index.ts':
+  'packages/eros/languages/typescript/src/features/errors/domain/errors/index.ts':
     "export { ErosError } from './eros.error';\n",
-  'libs/eros/languages/typescript/src/features/errors/domain/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
+  'packages/eros/languages/typescript/src/features/errors/domain/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
 
 export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z-]+$/u.test(text);
 `,
-  'libs/eros/languages/typescript/src/features/errors/domain/value-objects/index.ts':
+  'packages/eros/languages/typescript/src/features/errors/domain/value-objects/index.ts':
     "export { type ErrorCode, isErrorCode } from './error-code.value-object';\n",
-  'libs/eros/languages/typescript/src/features/errors/index.ts':
+  'packages/eros/languages/typescript/src/features/errors/index.ts':
     "export { ErosError } from './domain/errors';\nexport { type ErrorCode, isErrorCode } from './domain/value-objects';\n",
-  'libs/eros/languages/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
+  'packages/eros/languages/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
     "export { kindOf } from './kind-of.use-case';\n",
-  'libs/eros/languages/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
+  'packages/eros/languages/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
 
 export const kindOf = (code: string): string | undefined =>
   KINDS.find((kind) => code.startsWith(\`\${kind}.\`));
 `,
-  'libs/eros/languages/typescript/src/features/mapping/index.ts':
+  'packages/eros/languages/typescript/src/features/mapping/index.ts':
     "export { kindOf } from './domain/use-cases/queries/kind-of';\n",
-  'libs/eros/languages/typescript/src/features/problem/adapters/problem/index.ts':
+  'packages/eros/languages/typescript/src/features/problem/adapters/problem/index.ts':
     "export { problemOf } from './problem.adapter';\n",
-  'libs/eros/languages/typescript/src/features/problem/adapters/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
+  'packages/eros/languages/typescript/src/features/problem/adapters/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
 
 // The wire shape of RFC 9457.
 interface ProblemDocument {
@@ -236,40 +236,40 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
   type: 'about:blank',
 });
 `,
-  'libs/eros/languages/typescript/src/features/problem/domain/entities/index.ts':
+  'packages/eros/languages/typescript/src/features/problem/domain/entities/index.ts':
     "export type { Problem } from './problem.entity';\n",
-  'libs/eros/languages/typescript/src/features/problem/domain/entities/problem.entity.ts':
+  'packages/eros/languages/typescript/src/features/problem/domain/entities/problem.entity.ts':
     'export interface Problem {\n  readonly code: string;\n  readonly status: number;\n}\n',
-  'libs/eros/languages/typescript/src/features/problem/index.ts':
+  'packages/eros/languages/typescript/src/features/problem/index.ts':
     "export type { Problem } from './domain/entities';\n",
-  'libs/eros/languages/typescript/src/features/records/domain/entities/error-record.entity.ts':
+  'packages/eros/languages/typescript/src/features/records/domain/entities/error-record.entity.ts':
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
-  'libs/eros/languages/typescript/src/features/records/domain/entities/index.ts':
+  'packages/eros/languages/typescript/src/features/records/domain/entities/index.ts':
     "export type { ErrorRecord } from './error-record.entity';\n",
-  'libs/eros/languages/typescript/src/features/records/domain/use-cases/queries/to-record/index.ts':
+  'packages/eros/languages/typescript/src/features/records/domain/use-cases/queries/to-record/index.ts':
     "export { toRecord } from './to-record.use-case';\n",
-  'libs/eros/languages/typescript/src/features/records/domain/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
+  'packages/eros/languages/typescript/src/features/records/domain/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
 
 export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code, kind: input.kind });
 `,
-  'libs/eros/languages/typescript/src/features/records/index.ts':
+  'packages/eros/languages/typescript/src/features/records/index.ts':
     "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './domain/use-cases/queries/to-record';\n",
-  'libs/eros/languages/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
+  'packages/eros/languages/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
 export type { Problem } from './features/problem';
 export { problemOf } from './features/problem/adapters/problem';
 export { type ErrorRecord, toRecord } from './features/records';
 export { KINDS } from './kernel/constants';
 `,
-  'libs/eros/languages/typescript/src/integrations/nestjs/index.ts': `import { Module } from '@nestjs/common';
+  'packages/eros/languages/typescript/src/integrations/nestjs/index.ts': `import { Module } from '@nestjs/common';
 
 import { KINDS } from '#/kernel/constants';
 
 export const erosModule = Module({ providers: [{ provide: 'EROS_KINDS', useValue: KINDS }] });
 `,
-  'libs/eros/languages/typescript/src/kernel/constants/index.ts':
+  'packages/eros/languages/typescript/src/kernel/constants/index.ts':
     "export { KINDS } from './kinds.constants';\n",
-  'libs/eros/languages/typescript/src/kernel/constants/kinds.constants.ts': `import kinds from '../../../../../shared/schema/kinds.yaml';
+  'packages/eros/languages/typescript/src/kernel/constants/kinds.constants.ts': `import kinds from '../../../../../shared/schema/kinds.yaml';
 
 const isKinds = (value: unknown): value is readonly string[] =>
   Array.isArray(value) && value.every((kind) => typeof kind === 'string');
@@ -277,7 +277,7 @@ const isKinds = (value: unknown): value is readonly string[] =>
 // The build writes the parsed file into the bundle; a source of another shape is no kind.
 export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
 `,
-  'libs/eros/languages/typescript/tsconfig.json': tsconfigOf({
+  'packages/eros/languages/typescript/tsconfig.json': tsconfigOf({
     parts: [
       'self',
       'core',
@@ -287,7 +287,7 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
     references: [],
     root: '../../../..',
   }),
-  'libs/eros/languages/python/pyproject.toml': pyprojectOf({
+  'packages/eros/languages/python/pyproject.toml': pyprojectOf({
     lines: [
       'dependencies = []',
       '',
@@ -295,61 +295,61 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
       'fastapi = ["fastapi>=0.115"]',
       'fastmcp = ["fastmcp>=2.14"]',
     ],
-    name: 'shop-libs-eros',
+    name: 'shop-eros',
   }),
-  'libs/eros/languages/python/src/shop_libs_eros/__init__.py':
-    "from shop_libs_eros.kernel.constants import KINDS\n\n__all__ = ['KINDS']\n",
-  'libs/eros/languages/python/src/shop_libs_eros/features/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/errors/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/errors/domain/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/errors/domain/errors/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/errors/domain/errors/eros_error.py':
+  'packages/eros/languages/python/src/shop_eros/__init__.py':
+    "from shop_eros.kernel.constants import KINDS\n\n__all__ = ['KINDS']\n",
+  'packages/eros/languages/python/src/shop_eros/features/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/errors/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/errors/domain/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/errors/domain/errors/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/errors/domain/errors/eros_error.py':
     'class ErosError(Exception):\n  pass\n',
-  'libs/eros/languages/python/src/shop_libs_eros/features/problem/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/problem/adapters/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/problem/adapters/problem/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/features/problem/adapters/problem/problem_adapter.py':
+  'packages/eros/languages/python/src/shop_eros/features/problem/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/problem/adapters/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/problem/adapters/problem/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/features/problem/adapters/problem/problem_adapter.py':
     "def problem_of(code: str) -> dict[str, str]:\n  return {'code': code, 'type': 'about:blank'}\n",
-  'libs/eros/languages/python/src/shop_libs_eros/integrations/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/integrations/fastapi/__init__.py':
+  'packages/eros/languages/python/src/shop_eros/integrations/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/integrations/fastapi/__init__.py':
     'from fastapi import APIRouter\n\nrouter = APIRouter()\n',
-  'libs/eros/languages/python/src/shop_libs_eros/integrations/fastmcp/__init__.py':
+  'packages/eros/languages/python/src/shop_eros/integrations/fastmcp/__init__.py':
     "from fastmcp import FastMCP\n\nserver = FastMCP('eros')\n",
-  'libs/eros/languages/python/src/shop_libs_eros/kernel/__init__.py': '',
-  'libs/eros/languages/python/src/shop_libs_eros/kernel/constants/__init__.py':
+  'packages/eros/languages/python/src/shop_eros/kernel/__init__.py': '',
+  'packages/eros/languages/python/src/shop_eros/kernel/constants/__init__.py':
     "from .kinds_constants import KINDS\n\n__all__ = ['KINDS']\n",
-  'libs/eros/languages/python/src/shop_libs_eros/kernel/constants/kinds_constants.py': `from importlib.resources import files
+  'packages/eros/languages/python/src/shop_eros/kernel/constants/kinds_constants.py': `from importlib.resources import files
 
 KINDS = tuple(
   line.removeprefix('- ')
   for line in files(__package__ or '').joinpath('kinds.yaml').read_text(encoding='utf-8').splitlines()
 )
 `,
-  'libs/eros/languages/python/src/shop_libs_eros/py.typed': '',
+  'packages/eros/languages/python/src/shop_eros/py.typed': '',
 };
 
-// An application in Python alone, and the library of libs/ it takes from the workspace.
+// An application in Python alone, and the library of packages/ it takes from the workspace.
 const REPORTS: Files = {
-  'libs/tabula/pyproject.toml': pyprojectOf({
-    name: 'shop-libs-tabula',
+  'packages/tabula/pyproject.toml': pyprojectOf({
+    name: 'shop-tabula',
   }),
-  'libs/tabula/src/shop_libs_tabula/__init__.py':
-    "from shop_libs_tabula.features.sheets import sheet\n\n__all__ = ['sheet']\n",
-  'libs/tabula/src/shop_libs_tabula/features/__init__.py': '',
-  'libs/tabula/src/shop_libs_tabula/features/sheets/__init__.py':
+  'packages/tabula/src/shop_tabula/__init__.py':
+    "from shop_tabula.features.sheets import sheet\n\n__all__ = ['sheet']\n",
+  'packages/tabula/src/shop_tabula/features/__init__.py': '',
+  'packages/tabula/src/shop_tabula/features/sheets/__init__.py':
     "from .domain.entities import sheet\n\n__all__ = ['sheet']\n",
-  'libs/tabula/src/shop_libs_tabula/features/sheets/domain/__init__.py': '',
-  'libs/tabula/src/shop_libs_tabula/features/sheets/domain/entities/__init__.py':
+  'packages/tabula/src/shop_tabula/features/sheets/domain/__init__.py': '',
+  'packages/tabula/src/shop_tabula/features/sheets/domain/entities/__init__.py':
     "from .sheet_entity import sheet\n\n__all__ = ['sheet']\n",
-  'libs/tabula/src/shop_libs_tabula/features/sheets/domain/entities/sheet_entity.py':
+  'packages/tabula/src/shop_tabula/features/sheets/domain/entities/sheet_entity.py':
     "def sheet(rows: list[str]) -> str:\n  return '\\n'.join(rows)\n",
-  'libs/tabula/src/shop_libs_tabula/py.typed': '',
+  'packages/tabula/src/shop_tabula/py.typed': '',
   'apps/reports/pyproject.toml': pyprojectOf({
     lines: [
-      'dependencies = ["shop-libs-tabula"]',
+      'dependencies = ["shop-tabula"]',
       '',
       '[tool.uv.sources]',
-      'shop-libs-tabula = { workspace = true }',
+      'shop-tabula = { workspace = true }',
       '',
       '[tool.python-check]',
       `extend = ["../../${PRESETS.replace('typescript', 'python')}/python-check/architecture/structlog.toml"]`,
@@ -361,7 +361,7 @@ const REPORTS: Files = {
   'apps/reports/src/shop_reports/features/sales/__init__.py': '',
   'apps/reports/src/shop_reports/features/sales/app/__init__.py': '',
   'apps/reports/src/shop_reports/features/sales/app/sales_report.py':
-    "from shop_libs_tabula import sheet\n\n\ndef sales_report() -> str:\n  return sheet(['sales'])\n",
+    "from shop_tabula import sheet\n\n\ndef sales_report() -> str:\n  return sheet(['sales'])\n",
   'apps/reports/src/shop_reports/main.py': 'from shop_reports.root.wiring import run\n\nrun()\n',
   'apps/reports/src/shop_reports/root/__init__.py': '',
   'apps/reports/src/shop_reports/root/wiring.py':
@@ -374,14 +374,14 @@ const WEB: Files = {
   'apps/web/bunfig.integration.toml': bunfigIntegration,
   'apps/web/package.json': manifestOf({
     dependencies: [
-      '@shop/shared-orders',
+      '@shop/orders',
     ],
     name: '@shop/web',
   }),
   'apps/web/src/__tests__/sandbox.fixtures.ts': sandbox,
   'apps/web/src/features/labels/app/__tests__/label.test.ts': `import { expect, it } from 'bun:test';
 
-import type { OrderId } from '@shop/shared-orders';
+import type { OrderId } from '@shop/orders';
 
 import { label } from '../label';
 
@@ -393,7 +393,7 @@ it('should name the order when an order is labelled', () => {
   expect(text).toBe('Order order:a');
 });
 `,
-  'apps/web/src/features/labels/app/label.ts': `import { describeOrder, type OrderId } from '@shop/shared-orders';
+  'apps/web/src/features/labels/app/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
 
 export const label = (id: OrderId): string => \`Order \${describeOrder({ id, total: 0 })}\`;
 `,
@@ -424,7 +424,7 @@ export const label = (id: OrderId): string => \`Order \${describeOrder({ id, tot
       'workspace',
     ],
     references: [
-      '../../shared/orders',
+      '../../packages/orders',
     ],
   }),
   'apps/web/tsconfig.test.json': jsonFileOf({
@@ -448,20 +448,20 @@ export const label = (id: OrderId): string => \`Order \${describeOrder({ id, tot
 
 // A NestJS API on the compiler options of its framework, and what the apps share.
 const API_AND_SHARED: Files = {
-  'libs/money/package.json': manifestOf({
+  'packages/money/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',
     },
-    name: '@shop/libs-money',
+    name: '@shop/money',
   }),
-  'libs/money/src/features/currency/domain/value-objects/cents.value-object.ts':
+  'packages/money/src/features/currency/domain/value-objects/cents.value-object.ts':
     "export type Cents = number & { readonly __brand: 'Cents' };\n",
-  'libs/money/src/features/currency/domain/value-objects/index.ts':
+  'packages/money/src/features/currency/domain/value-objects/index.ts':
     "export type { Cents } from './cents.value-object';\n",
-  'libs/money/src/features/currency/index.ts':
+  'packages/money/src/features/currency/index.ts':
     "export type { Cents } from './domain/value-objects';\n",
-  'libs/money/src/index.ts': "export type { Cents } from './features/currency';\n",
-  'libs/money/tsconfig.json': tsconfigOf({
+  'packages/money/src/index.ts': "export type { Cents } from './features/currency';\n",
+  'packages/money/tsconfig.json': tsconfigOf({
     parts: [
       'self',
       'core',
@@ -473,16 +473,16 @@ const API_AND_SHARED: Files = {
   'apps/api/bunfig.integration.toml': bunfigIntegration,
   'apps/api/package.json': manifestOf({
     dependencies: [
-      '@shop/libs-money',
-      '@shop/shared-orders',
+      '@shop/money',
+      '@shop/orders',
     ],
     name: '@shop/api',
   }),
   'apps/api/src/__tests__/sandbox.fixtures.ts': sandbox,
   'apps/api/src/features/totals/app/__tests__/total-line.test.ts': `import { expect, it } from 'bun:test';
 
-import type { Cents } from '@shop/libs-money';
-import type { OrderId } from '@shop/shared-orders';
+import type { Cents } from '@shop/money';
+import type { OrderId } from '@shop/orders';
 
 import { totalLine } from '../total-line';
 
@@ -497,8 +497,8 @@ it('should name the order and its currency when an order is totalled', () => {
   expect(line).toBe('order:a EUR');
 });
 `,
-  'apps/api/src/features/totals/app/total-line.ts': `import type { Cents } from '@shop/libs-money';
-import { describeOrder, type OrderId } from '@shop/shared-orders';
+  'apps/api/src/features/totals/app/total-line.ts': `import type { Cents } from '@shop/money';
+import { describeOrder, type OrderId } from '@shop/orders';
 
 import { CURRENCY } from '#/kernel/constants';
 
@@ -523,20 +523,20 @@ export const totalLine = (order: Totalled): string => \`\${describeOrder(order)}
       'workspace',
     ],
     references: [
-      '../../libs/money',
-      '../../shared/orders',
+      '../../packages/money',
+      '../../packages/orders',
     ],
   }),
-  'shared/orders/bunfig.toml': bunfig,
-  'shared/orders/bunfig.integration.toml': bunfigIntegration,
-  'shared/orders/package.json': manifestOf({
+  'packages/orders/bunfig.toml': bunfig,
+  'packages/orders/bunfig.integration.toml': bunfigIntegration,
+  'packages/orders/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',
     },
-    name: '@shop/shared-orders',
+    name: '@shop/orders',
   }),
-  'shared/orders/src/__tests__/sandbox.fixtures.ts': sandbox,
-  'shared/orders/src/features/orders/domain/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
+  'packages/orders/src/__tests__/sandbox.fixtures.ts': sandbox,
+  'packages/orders/src/features/orders/domain/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
 
 import { describeOrder, type OrderId, refundLine } from '../order.entity.ts';
 
@@ -556,9 +556,9 @@ it('should name the refund when an order is refunded', () => {
   expect(text).toBe('refund of order:a');
 });
 `,
-  'shared/orders/src/features/orders/domain/entities/index.ts':
+  'packages/orders/src/features/orders/domain/entities/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './order.entity.ts';\n",
-  'shared/orders/src/features/orders/domain/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
+  'packages/orders/src/features/orders/domain/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
 
 export type OrderId = string & { readonly __brand: 'OrderId' };
 
@@ -571,14 +571,15 @@ export const describeOrder = (order: Order): string => \`\${ORDER_PREFIX}:\${ord
 
 export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:\${id}\`;
 `,
-  'shared/orders/src/features/orders/index.ts':
+  'packages/orders/src/features/orders/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './domain/entities/index.ts';\n",
-  'shared/orders/src/index.ts':
+  'packages/orders/src/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './features/orders/index.ts';\n",
-  'shared/orders/src/kernel/constants/index.ts':
+  'packages/orders/src/kernel/constants/index.ts':
     "export { ORDER_PREFIX } from './order.constants.ts';\n",
-  'shared/orders/src/kernel/constants/order.constants.ts': "export const ORDER_PREFIX = 'order';\n",
-  'shared/orders/tsconfig.json': tsconfigOf({
+  'packages/orders/src/kernel/constants/order.constants.ts':
+    "export const ORDER_PREFIX = 'order';\n",
+  'packages/orders/tsconfig.json': tsconfigOf({
     parts: [
       'self',
       'core',
@@ -630,9 +631,9 @@ export default {
     '.': { entry: ['scripts/*.ts!'], project: ['scripts/**/*.ts!'] },
     'apps/api': unit([]),
     'apps/web': unit([]),
-    'libs/eros/languages/typescript': { ...unit([]), ignoreDependencies: ['@nestjs/common!'] },
-    'shared/orders': unit([]),
-    'libs/money': unit([]),
+    'packages/eros/languages/typescript': { ...unit([]), ignoreDependencies: ['@nestjs/common!'] },
+    'packages/orders': unit([]),
+    'packages/money': unit([]),
   },
 };
 `,
@@ -643,15 +644,13 @@ export default {
     workspaces: [
       'apps/*',
       'apps/*/languages/typescript',
-      'shared/*',
-      'shared/*/languages/typescript',
-      'libs/*',
-      'libs/*/languages/typescript',
+      'packages/*',
+      'packages/*/languages/typescript',
     ],
   }),
   'pyproject.toml': [
     '[tool.uv.workspace]',
-    'members = ["apps/reports", "libs/*/languages/python", "libs/tabula"]',
+    'members = ["apps/reports", "packages/*/languages/python", "packages/tabula"]',
     '',
   ].join('\n'),
   'scripts/release.ts': "export const release = (): string => 'release';\n",
