@@ -33,7 +33,7 @@ export default {
 const SURVIVED = /\[Survived\]/g;
 
 // The project reaches Stryker's plugins and the specs' runner through this
-// repository's node_modules.
+// package's node_modules.
 const TOTAL = 'export const total = (price: number, tax: number): number => price + tax;\n';
 
 const mutationOf = (spec: string, source = TOTAL): Mutation => {

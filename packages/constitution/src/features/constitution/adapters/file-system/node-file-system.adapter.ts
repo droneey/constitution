@@ -67,7 +67,6 @@ const createNodeBaseTree = (input: { root: string }): FileTree => ({
   read: (path: string): string => normalized(readFileSync(join(input.root, path), 'utf8')),
 });
 
-// The root of the repository that holds a folder, where its README and decision log live.
 const repositoryRootOf = (folder: string): string =>
   execFileSync(
     'git',
