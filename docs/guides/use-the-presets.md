@@ -4,26 +4,13 @@
 
 ## Find the parts
 
-A preset is split into parts, one per block whose rules the tool holds:
-
-```text
-.droneey/constitution/presets/
-└── <scope>/                common, or a language
-    └── <tool>/             the tool's block
-        ├── <block>.<ext>   a part of the base
-        ├── architecture/
-        │   └── <block>.<ext>
-        └── workflow/
-            └── <block>.<ext>
-```
-
-A project takes:
+A preset is split into parts, one per block whose rules the tool holds, in `.droneey/constitution/presets/<scope>/<tool>/`; [the layout](../reference/presets.md#layout) shows the tree and how a part is named. A project takes:
 
 - the scope `common`, and the scopes of its active languages;
 - of each tool it runs, the parts named after its active blocks, `core`, and `self`, the tool's own settings;
 - the parts in `architecture/` and `workflow/` only for the axes it follows.
 
-A part is named after the block its settings need: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s. [The catalog](../reference/presets.md) lists every tool's parts.
+[The catalog](../reference/presets.md) lists what every tool's parts configure.
 
 ## Extend them
 
@@ -58,11 +45,4 @@ A project adds what is its own after the parts: its paths, its entry points, a r
 
 ## Know which setting holds which rule
 
-Beside the parts of each axis, `bindings.yaml` names, for each part, the rules it holds and the settings that hold them:
-
-```yaml
-nestjs:
-  nestjs-keeps-decorator-metadata: [emitDecoratorMetadata, experimentalDecorators]
-```
-
-A rule never names its tool; only the bindings do.
+Beside the parts of each axis, `bindings.yaml` names the settings that hold each rule; [Bindings](../reference/presets.md#bindings) shows its form. A rule never names its tool; only the bindings do.

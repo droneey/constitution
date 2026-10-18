@@ -8,22 +8,9 @@
 /constitution:amend data-view-shows-every-state
 ```
 
-It finds the rule, shows its block, level and statement, and asks you, one answer at a time:
-
-1. **The level**: lower than the rule's own, `SHOULD` or `MAY`. A `MAY` rule cannot be lowered.
-2. **The reason**: one line, in your words.
-3. **An end date**, if the override is temporary.
-4. **The scope**: the whole repository, or one unit under `packages:`.
-
-It shows the exact lines and writes them once you agree:
-
-```yaml
-overrides:
-  - rule: data-view-shows-every-state
-    level: SHOULD
-    reason: "The admin screens show their state in the shared toolbar"
-    until: 2026-12-31
-```
+1. Check that the rule it shows is the one you mean; the rules it names beside it are lowered too.
+2. Answer its questions, one at a time: the lower level, your reason in one line, an end date if the override is temporary, and the scope, the whole repository or one unit under `packages:`. [Skills](../reference/skills.md#constitutionamend) has what each answer takes.
+3. Check the exact lines it shows under `overrides:`, in [the form of `constitution.yaml`](../reference/constitution-yaml.md#overrides), and agree; it writes them only then.
 
 ## What an override does
 
@@ -34,4 +21,4 @@ overrides:
 
 ## Remove it
 
-The change that ends the reason removes the override: run `/constitution:amend` with the rule's slug again, or delete the entry. [`constitution.yaml`](../reference/constitution-yaml.md#overrides) has the exact form.
+The change that ends the reason removes the override: run `/constitution:amend` with the rule's slug again, or delete the entry.

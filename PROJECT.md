@@ -21,12 +21,12 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Core entities and relationships
 
-- **Block** — a folder under `blocks/` with a main file, its front matter and its rules; it `requires` or `extends` blocks of the layers above.
-- **Rule** — a slug, a level, a statement, Why and Tags; it belongs to one block.
+- **Block** — `requires` or `extends` blocks of the layers above, and holds rules.
+- **Rule** — belongs to one block, and may tighten one rule of another.
 - **Requirement answer** — a library block's answer to a requirement of a block above it.
-- **Digest** — what the hook prints: the active blocks of a project, core's part and MUST headlines.
-- **Preset part** — a file of `presets/<scope>/<tool>/<axis>/`, named after the block its settings need.
-- **Binding** — an entry of a preset's `bindings.yaml`: the settings of a part that hold a rule.
+- **Digest** — built by the hook from a project's `constitution.yaml` and the blocks of its release.
+- **Preset part** — belongs to one tool's preset, and is named after one block.
+- **Binding** — ties settings of one part to one rule.
 - **Decision** — an entry of `DECISIONS.md`: why a rule of the Constitution is what it is.
 
 ## Critical scenarios

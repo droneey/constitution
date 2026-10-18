@@ -10,7 +10,7 @@
 check: bun run check
 ```
 
-The plugin blocks an agent's hand-back while the tree has changed since that command last passed. A repository without one writes `check: null`.
+[The plugin's stop hook](../reference/plugin.md#hooks) blocks an agent's hand-back while the tree has changed since that command last passed. A repository without one writes `check: null`.
 
 ## Run it on every pull request
 

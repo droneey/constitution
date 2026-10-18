@@ -4,19 +4,17 @@
 
 ## Skills
 
-| Skill | Run by | Does | Writes |
-|---|---|---|---|
-| `/constitution:ratify` | you | proposes the blocks from the repository, finds the check, interviews you about the product | `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, draft blocks of a pack |
-| `/constitution:amend [rule]` | you | adds, changes or removes one override, with its level, reason, end date and scope | `constitution.yaml` |
-| `/constitution:check [all\|edits] [lens]` | you or the agent | runs the check, then asks the reviewer to judge the files against their rules | nothing; the agent fixes the findings |
+Each skill is called by its slash command:
 
-Each one shows what it will write and writes it only after your yes.
+- `/constitution:ratify`, by you only, puts a repository under the Constitution;
+- `/constitution:amend`, by you only, adds, changes or removes an override;
+- `/constitution:check`, by you or the agent, runs the check and has the reviewer judge the files.
 
-`/constitution:check` reviews the changed files by default, every file with `all`, and only the rules of one tag with a lens: `a11y`, `data`, `errors`, `performance`, `security`, `testing` or `ux`.
+[Skills](skills.md) describes each, with its arguments and what it writes.
 
 ## The reviewer
 
-The `reviewer` agent reads the files and the rules that govern them, and never edits. A broken `MUST` is a finding; a broken `SHOULD` is one unless the code shows its reason; a `MAY` never is. It skips what the tools already hold, and returns one finding per line:
+The `reviewer` agent reads the files and the rules that govern them, and never edits. A broken `MUST` is a finding; a broken `SHOULD` is one unless the code shows its reason; a `MAY` never is. It skips what the tools already hold, and returns one finding per line, `<path>:<line> — <rule> — <what is wrong> — <the fix>`:
 
 ```text
 src/orders/order.ts:42 — fact-has-one-source — the total is stored beside the lines it sums — compute it from the lines

@@ -44,13 +44,7 @@ A failure is told apart by its type or its code, never by its message.
 | a message is text a person may reword at any time. | [errors] |
 ```
 
-| Level | Means |
-|---|---|
-| `MUST` | binds; a request against it gets the conflict and an alternative |
-| `SHOULD` | is followed unless a reason is stated |
-| `MAY` | is a choice |
-
-A rule that tightens another names it after an arrow, `### class-declared-is-used → dead-code-deleted · MUST`, and is never looser than it. The tags are lenses, `a11y`, `data`, `errors`, `performance`, `security`, `testing` and `ux`, for a review of one concern across every block.
+`MUST` binds, `SHOULD` is left only with a stated reason, and `MAY` is a choice; [how to use it](../packages/constitution/blocks/core/core.md#how-to-use-it) says what each asks of the agent. The tags are lenses, for a review of one concern across every block. [The block format](reference/block-format.md#a-rule) gives every part of a rule, the lenses, and how a rule tightens another.
 
 ## What a project holds
 
@@ -69,9 +63,9 @@ flowchart TD
 
 ## A session
 
-1. **At the start**, a hook gives the agent a digest: the release, the warnings about `constitution.yaml`, core, and every active block with its chapters.
+1. **At the start**, a hook gives the agent [the digest](reference/plugin.md#the-digest): the release, the warnings about `constitution.yaml` and the active blocks.
 2. **On each file** the agent reads or edits, a hook names the blocks that govern it and their MUST rules, once per block.
 3. **At the hand-back**, a hook blocks the stop when the tree changed since the check last passed, and tells the agent to run it.
-4. **On demand**, `/constitution:check` runs the check and asks the reviewer to judge the changed files against their rules.
+4. **On demand**, [`/constitution:check`](reference/skills.md#constitutioncheck) runs the check and asks the reviewer to judge the changed files against their rules.
 
-[The plugin](reference/plugin.md) describes each hook and skill.
+[The plugin](reference/plugin.md#hooks) describes each hook, and [Skills](reference/skills.md) each skill.
