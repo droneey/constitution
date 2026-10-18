@@ -88,8 +88,9 @@
      sidebar open the page sits in a panel; with it collapsed it fills the window. */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #fd-spacious-layout {
-    --fd-page-width: 768px;
-    --fd-sidebar-width: 272px;
+    --fd-page-width: var(--spacing-layout-page);
+    --fd-sidebar-width: var(--spacing-layout-sidebar);
+    --fd-toc-width: var(--spacing-layout-sidebar);
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
@@ -265,7 +266,7 @@
       padding-inline-start: var(--spacing-xs);
       gap: var(--spacing-xs);
       border-radius: var(--radius-lg);
-      font-size: 1rem;
+      font-size: var(--text-base);
     }
 
     & > button:last-child {
@@ -282,7 +283,7 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport'] {
     padding-inline: var(--spacing-sm);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     font-weight: var(--font-weight-ui);
   }
 
@@ -296,7 +297,7 @@
     border: 1px solid var(--color-fd-border);
     border-radius: var(--radius-xl);
     background-color: var(--color-fill-field);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     font-weight: var(--font-weight-ui);
     text-align: start;
     transition: background-color var(--duration-fast) var(--ease-standard);
@@ -334,7 +335,7 @@
       padding-inline: var(--spacing-2xs);
       border-radius: var(--radius-sm);
       font-family: var(--font-sans);
-      font-size: 0.75rem;
+      font-size: var(--text-xs);
     }
   }
 
@@ -374,7 +375,7 @@
   [role='menu'] {
     padding: 0;
     border-radius: var(--radius-xl);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     font-weight: var(--font-weight-ui);
 
     & > div:not([data-glide]) {

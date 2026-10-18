@@ -38,6 +38,16 @@ const createTokenGroup = (overrides: DesignTokenGroup = {}): DesignTokenGroup =>
       },
     },
   },
+  text: {
+    sm: {
+      $value: '{dimension.16}',
+    },
+  },
+  leading: {
+    sm: {
+      $value: '{dimension.8}',
+    },
+  },
   radius: {
     '4': {
       $value: {
