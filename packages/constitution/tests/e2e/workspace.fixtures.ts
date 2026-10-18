@@ -128,13 +128,13 @@ const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string
     '',
   ].join('\n');
 
-const bunfig = readFileSync(join(TEMPLATES, 'bun', 'bunfig.toml'), 'utf8');
+const bunfig = readFileSync(join(TEMPLATES, 'typescript', 'bun', 'bunfig.toml'), 'utf8');
 const bunfigIntegration = readFileSync(
-  join(TEMPLATES, 'bun', 'bunfig.integration.toml'),
+  join(TEMPLATES, 'typescript', 'bun', 'bunfig.integration.toml'),
   'utf8',
 ).replace('coveragePathIgnorePatterns = [\n', 'coveragePathIgnorePatterns = [\n  "../**",\n');
 const sandbox = readFileSync(
-  join(TEMPLATES, 'bun', 'src', '__tests__', 'sandbox.fixtures.ts'),
+  join(TEMPLATES, 'typescript', 'bun', 'src', '__tests__', 'sandbox.fixtures.ts'),
   'utf8',
 );
 
@@ -599,8 +599,8 @@ const WORKSPACE: Files = {
   ...WEB,
   ...API_AND_SHARED,
   '.gitignore': [
-    readFileSync(join(TEMPLATES, 'core', '.gitignore'), 'utf8'),
-    readFileSync(join(TEMPLATES, 'typescript', '.gitignore'), 'utf8'),
+    readFileSync(join(TEMPLATES, 'common', 'core', '.gitignore'), 'utf8'),
+    readFileSync(join(TEMPLATES, 'typescript', 'typescript', '.gitignore'), 'utf8'),
   ].join('\n'),
   'biome.json': jsonFileOf({
     extends: [

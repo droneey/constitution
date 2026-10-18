@@ -21,7 +21,7 @@ The repository is a workspace of three packages: `packages/constitution`, the ru
 | `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
 | `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis, and beside each axis's parts the bindings that say which setting holds which rule |
-| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a block of a project's own pack; `project/<block>/`, a project's starter files |
+| `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a block of a project's own pack; `project/<scope>/<block>/`, a project's starter files |
 | `tools` | The programs the release archive carries, built by `bun run build` from the other packages and ignored by git: `mutation-check`, `mutmut-check` and `python-check` |
 | `.claude-plugin` | The plugin's manifest; the marketplace's sits at the repository's root |
 | `src` | The tooling that keeps the blocks sound: `blocks:check`, which reads the package and the repository's README and decision log, and checks a pack against the constitution with `--base` |
@@ -76,7 +76,7 @@ A project's configuration extends the parts of its active blocks on its axes, th
 }
 ```
 
-A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists. Ruff, whose `extend` takes one file, chains its parts, each extending the one before; ty, which takes one `--config-file`, gets one part; python-check lists its parts in `extend` of `[tool.python-check]`; a tool with neither starts from a template of `templates/project/<block>/`.
+A tool without `extends` — knip, Stryker, syncpack — imports the parts and joins their lists. Ruff, whose `extend` takes one file, chains its parts, each extending the one before; ty, which takes one `--config-file`, gets one part; python-check lists its parts in `extend` of `[tool.python-check]`; a tool with neither starts from a template of `templates/project/<scope>/<block>/`, in the scopes the presets use.
 
 Beside the parts of each axis, a preset holds a `bindings.yaml` — `presets/<scope>/<tool>/bindings.yaml` for the base, `presets/<scope>/<tool>/architecture/bindings.yaml` for the architecture axis: which setting of which part holds which rule, by part and rule, each setting as the part's file spells it. The blocks never name them; the rules stay the blocks' own.
 

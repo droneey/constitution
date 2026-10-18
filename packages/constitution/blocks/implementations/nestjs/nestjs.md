@@ -11,7 +11,7 @@ governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.contr
 
 # NestJS
 
-> Builds an HTTP server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive and the template `templates/project/nestjs/.swcrc` keep the decorator metadata the injector reads.
+> Builds an HTTP server program from modules whose providers the injector wires by their constructors' types. Its parts of the constitution's release archive and the template `templates/project/typescript/nestjs/.swcrc` keep the decorator metadata the injector reads.
 
 ### nestjs-keeps-decorator-metadata · MUST
 

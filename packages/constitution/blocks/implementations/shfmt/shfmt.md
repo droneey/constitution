@@ -11,7 +11,7 @@ governs: []
 
 # shfmt
 
-> Formats shell. It reads its options from `.editorconfig`, which starts from the template `templates/project/core/.editorconfig` of the constitution's release archive; an option given as a flag makes it ignore that file.
+> Formats shell. It reads its options from `.editorconfig`, which starts from the template `templates/project/common/core/.editorconfig` of the constitution's release archive; an option given as a flag makes it ignore that file.
 
 ### shfmt-is-the-formatter → one-formatter-per-language · MUST
 

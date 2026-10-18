@@ -11,7 +11,7 @@ governs: ["pyproject.toml", "uv.lock"]
 
 # uv
 
-> Installs the dependencies, resolves one version of each for the whole workspace into `uv.lock`, runs the tools of the `dev` group and builds packages with its own backend. Its settings are `[tool.uv]` of the root `pyproject.toml`, which starts from the template `templates/project/python/pyproject.toml` of the constitution's release archive.
+> Installs the dependencies, resolves one version of each for the whole workspace into `uv.lock`, runs the tools of the `dev` group and builds packages with its own backend. Its settings are `[tool.uv]` of the root `pyproject.toml`, which starts from the template `templates/project/python/python/pyproject.toml` of the constitution's release archive.
 
 ## Packages and installs
 
