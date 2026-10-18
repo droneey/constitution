@@ -1,0 +1,82 @@
+x-common-healthcheck: &common-healthcheck
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 30s
+
+x-common-logging: &common-logging
+  driver: json-file
+  options:
+    max-size: '50m'
+    max-file: '10'
+
+# the repository's root, which the app reads and installs from
+x-docs-build: &docs-build
+  context: ../../../../
+  dockerfile: ./apps/docs/docker/images/app.Dockerfile
+
+services:
+  _docs:
+    profiles:
+      - do-not-use
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${DOCS_PORT:-3000}:3000'
+    logging: *common-logging
+    healthcheck:
+      <<: *common-healthcheck
+      test:
+        - CMD-SHELL
+        - wget --quiet --spider http://127.0.0.1:3000/docs/ || exit 1
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # the working tree, mounted over the image, with the dependencies installed for Linux in volumes
+  docs-development:
+    build:
+      <<: *docs-build
+      target: development
+    container_name: droneey-constitution-docs-development
+    extends:
+      service: _docs
+    profiles:
+      - development
+    networks:
+      - app-network
+    volumes:
+      - ../../../../:/usr/src/app
+      - node-modules:/usr/src/app/node_modules
+      - node-modules-docs:/usr/src/app/apps/docs/node_modules
+      - node-modules-constitution:/usr/src/app/packages/constitution/node_modules
+      - node-modules-mutation-check:/usr/src/app/packages/mutation-check/languages/typescript/node_modules
+    environment:
+      NODE_ENV: development
+
+  docs-production:
+    build:
+      <<: *docs-build
+      target: production
+    container_name: droneey-constitution-docs-production
+    extends:
+      service: _docs
+    profiles:
+      - production
+    networks:
+      - app-network
+    read_only: true
+
+volumes:
+  node-modules:
+    name: droneey-constitution-docs-node-modules
+    driver: local
+  node-modules-docs:
+    name: droneey-constitution-docs-node-modules-docs
+    driver: local
+  node-modules-constitution:
+    name: droneey-constitution-docs-node-modules-constitution
+    driver: local
+  node-modules-mutation-check:
+    name: droneey-constitution-docs-node-modules-mutation-check
+    driver: local

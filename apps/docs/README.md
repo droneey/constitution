@@ -14,6 +14,16 @@ bun --cwd=apps/docs run theme:build   # the theme's stylesheet, from its tokens
 
 The site builds from its own folder, two levels below the repository's root, where it finds the files it renders.
 
+### In Docker
+
+```bash
+apps/docs/scripts/run.sh dev up     # the site with live reload, on the working tree
+apps/docs/scripts/run.sh prod up    # the built site, served as files, as the static host serves it
+apps/docs/scripts/run.sh dev down   # stops and removes the containers
+```
+
+Both listen on `127.0.0.1:3000`, or on `DOCS_PORT`. The image builds from the repository's root, which the site reads; the development containers keep the dependencies installed for Linux in volumes, made again when `bun.lock` changes.
+
 ## How it is laid out
 
 | Folder | Holds |
@@ -25,3 +35,4 @@ The site builds from its own folder, two levels below the repository's root, whe
 | `src/libs/ui` | the design system's theme, generated from `theme.tokens.json`, and the library parts the interface uses |
 | `src/entrypoints/theme` | the command that checks the tokens and writes the theme's stylesheet |
 | `content/examples` | one example per rule, `<slug>.md`, shown at the foot of its card |
+| `docker`, `compose.yaml`, `scripts` | the image, its Compose services and the script that runs them |

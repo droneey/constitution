@@ -1,0 +1,9 @@
+name: droneey-constitution-docs
+
+include:
+  - docker/compose/app.yaml
+
+networks:
+  app-network:
+    name: droneey-constitution-docs-app-network
+    driver: bridge

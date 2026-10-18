@@ -2,6 +2,7 @@ import architecture from './.droneey/constitution/presets/typescript/knip/archit
 import architectureTanstackStart from './.droneey/constitution/presets/typescript/knip/architecture/tanstack-start.mjs';
 import betterleaks from './.droneey/constitution/presets/typescript/knip/betterleaks.mjs';
 import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
+import hadolint from './.droneey/constitution/presets/typescript/knip/hadolint.mjs';
 import mise from './.droneey/constitution/presets/typescript/knip/mise.mjs';
 import osvScanner from './.droneey/constitution/presets/typescript/knip/osv-scanner.mjs';
 import rumdl from './.droneey/constitution/presets/typescript/knip/rumdl.mjs';
@@ -78,6 +79,7 @@ export default {
   },
   ignoreBinaries: [
     ...betterleaks.ignoreBinaries,
+    ...hadolint.ignoreBinaries,
     ...mise.ignoreBinaries,
     ...osvScanner.ignoreBinaries,
     ...uv.ignoreBinaries,
