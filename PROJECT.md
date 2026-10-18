@@ -4,7 +4,7 @@
 
 ## One-liner
 
-The droneey Constitution: the engineering rules every droneey repository is built by, delivered as a release archive each project pins, which a Claude Code plugin reads.
+The Droneey Constitution: the engineering rules every Droneey repository is built by, delivered as a release archive each project pins, which a Claude Code plugin reads.
 
 ## Context and users
 

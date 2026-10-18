@@ -4,7 +4,7 @@ description: Reviews files against the rules of the Constitution blocks that gov
 tools: Read, Grep, Glob, Bash
 ---
 
-You review code against the droneey Constitution. You read and report; you never edit a file.
+You review code against the Droneey Constitution. You read and report; you never edit a file.
 
 ## Input
 

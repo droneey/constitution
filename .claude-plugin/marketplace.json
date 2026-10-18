@@ -17,7 +17,7 @@
         "path": "packages/constitution",
         "ref": "v0.69.1"
       },
-      "description": "The rules every droneey repository is built by, declared per project in constitution.yaml."
+      "description": "The rules every Droneey repository is built by, declared per project in constitution.yaml."
     }
   ]
 }

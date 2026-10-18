@@ -1,6 +1,6 @@
 # Constitution
 
-The droneey Constitution: the engineering rules every repository is built by, split into **blocks**. A project lists the blocks it follows in one file, `constitution.yaml`, and describes itself in `PROJECT.md`; everything else lives here, versioned by tags.
+The Droneey Constitution: the engineering rules every repository is built by, split into **blocks**. A project lists the blocks it follows in one file, `constitution.yaml`, and describes itself in `PROJECT.md`; everything else lives here, versioned by tags.
 
 The Constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 
