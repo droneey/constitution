@@ -11,14 +11,11 @@ The repository is a workspace of three packages: `packages/constitution`, the ru
 | Path | Holds |
 |---|---|
 | `blocks/core` | What holds for any program, always active: its card `core.md`, how to use the Constitution, which holds no rule; its chapters at its root and in `architecture/` and `workflow/`, each named for what its rules govern |
-| `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `remote-data`, `version-control` |
-| `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
-| `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css`, `python` |
-| `blocks/implementations/<id>` | A framework, library or tool — `react-dom`, `bun`, `git` |
-| `hooks` | `hooks.json` and its scripts: `session-start.sh` gives the digest when a session starts, is cleared or compacted, and when a sub-agent starts; `post-tool-use.sh` names the blocks that govern a file the agent touches; `user-prompt-submit.sh` and `record-check.sh` note the tree when a prompt arrives and when the check passes; `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
-| `skills` | `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
+| `blocks/domains/<id>`, `blocks/contexts/platforms/<id>`, `blocks/contexts/languages/<id>`, `blocks/implementations/<id>` | The blocks of the other [layers](docs/how-it-works.md#blocks-in-layers), a folder each, laid out as [the block format](docs/reference/block-format.md#a-block-is-a-folder) says |
+| `hooks` | `hooks.json` and its scripts, one per [hook](docs/reference/plugin.md#hooks): `session-start.sh` gives the digest, `post-tool-use.sh` names the blocks of a file the agent touches, `user-prompt-submit.sh` and `record-check.sh` note the tree, `stop.sh` is the hand-back gate; `lib/`, the awk programs and `state.sh` they share |
+| `skills` | The plugin's [skills](docs/reference/skills.md): `/ratify` and `/amend`, which write a project's files, and `/check`, which reviews its changes |
 | `agents` | `reviewer`, which `/check` asks to judge files against the rules that govern them |
-| `presets` | The tool configurations that hold rules, `presets/<scope>/<tool>/<block>.*` for the base and `presets/<scope>/<tool>/<axis>/<block>.*` for an optional axis, and beside each axis's parts the bindings that say which setting holds which rule |
+| `presets` | The tool configurations that hold rules, a part per block, with the bindings that say which setting holds which rule; [their layout](docs/reference/presets.md#layout) |
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a block of a project's own pack; `project/<scope>/<block>/`, a project's starter files |
 | `tools` | The programs the release archive carries, built by `bun run build` from the other packages and ignored by git: `mutation-check`, `mutmut-check` and `python-check` |
 | `.claude-plugin` | The plugin's manifest; the marketplace's sits at the repository's root |

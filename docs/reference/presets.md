@@ -2,7 +2,27 @@
 
 > What each tool's presets configure, scope by scope.
 
-The parts sit in [`presets/<scope>/<tool>/`](../../packages/constitution/presets); [Use the presets](../guides/use-the-presets.md) shows how a project extends them. A project takes the common scope and the scope of each of its languages.
+[Use the presets](../guides/use-the-presets.md) shows how a project extends them. A project takes the common scope and the scope of each of its languages.
+
+## Layout
+
+A preset is split into parts, one per block whose rules the tool holds. They sit in [`presets/`](../../packages/constitution/presets), which the release links as `.droneey/constitution/presets/`:
+
+```text
+presets/
+└── <scope>/                common, or a language
+    └── <tool>/             the tool's block
+        ├── <block>.<ext>   a part of the base
+        ├── bindings.yaml
+        ├── architecture/
+        │   ├── <block>.<ext>
+        │   └── bindings.yaml
+        └── workflow/
+            ├── <block>.<ext>
+            └── bindings.yaml
+```
+
+A part is named after the block its settings need: `noTailwindArbitraryValue` sits in `tailwind`, though the rule it holds is `ui`'s. `core` holds the settings of core's rules, and `self` the tool's own settings.
 
 ## Common
 
@@ -64,4 +84,11 @@ The parts sit in [`presets/<scope>/<tool>/`](../../packages/constitution/presets
 
 ## Bindings
 
-Beside the parts of each axis, `bindings.yaml` says which setting of which part holds which rule. It is the only place a rule meets its tool; a block never names one.
+Beside the parts of each axis, `bindings.yaml` names, for each part, the rules it holds and the settings that hold them:
+
+```yaml
+nestjs:
+  nestjs-keeps-decorator-metadata: [emitDecoratorMetadata, experimentalDecorators]
+```
+
+It is the only place a rule meets its tool; a block never names one.

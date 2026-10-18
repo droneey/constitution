@@ -41,6 +41,7 @@ const ICONS: Readonly<Record<string, string>> = {
   '/reference/constitution-yaml': 'FileCode',
   '/reference/plugin': 'Plug',
   '/reference/presets': 'Settings2',
+  '/reference/skills': 'SquareSlash',
   '/reference/templates': 'Files',
 };
 // Stryker restore StringLiteral

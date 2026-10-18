@@ -2,7 +2,7 @@
 
 > List what the project has, layer by layer, and give each part of a workspace the blocks of its own.
 
-`/constitution:ratify` proposes the blocks from what the repository holds — its manifests, lock files, tool configurations, folders and CI — each with its evidence, and writes them once you agree. This guide is for checking its proposal and for changing the list later by hand.
+[`/constitution:ratify`](../reference/skills.md#constitutionratify) proposes the blocks from what the repository holds, each with its evidence, and writes them once you agree. This guide is for checking its proposal and for changing the list later by hand.
 
 ## List a block where the project has it
 
@@ -72,8 +72,8 @@ packages:
       - nestjs
 ```
 
-A unit takes `axes`, the four layer keys and `overrides`. Its `axes` replace the repository's; without them it follows the repository's. A repository of one unit writes `packages: {}`.
+A repository of one unit writes `packages: {}`. [`packages`](../reference/constitution-yaml.md#packages) lists the keys a unit takes, and how its `axes` replace the repository's.
 
 ## Check the result
 
-Start a new session: its digest's second line reads `constitution.yaml pins <version>; <n> blocks are active.`, and the warnings follow it. [Every key](../reference/constitution-yaml.md) of the file is in the reference.
+Start a new session: the second line of its [digest](../reference/plugin.md#the-digest) reads `constitution.yaml pins <version>; <n> blocks are active.`, and the warnings follow it. [Every key](../reference/constitution-yaml.md) of the file is in the reference.
