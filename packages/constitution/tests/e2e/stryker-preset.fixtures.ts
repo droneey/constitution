@@ -40,7 +40,7 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
   const files = {
     'bunfig.mutation.toml': readFileSync(
-      join(REPOSITORY, 'templates', 'project', 'bun', 'bunfig.mutation.toml'),
+      join(REPOSITORY, 'templates', 'project', 'typescript', 'bun', 'bunfig.mutation.toml'),
       'utf8',
     ),
     'package.json': JSON.stringify({

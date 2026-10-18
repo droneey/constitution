@@ -13,7 +13,7 @@ interface Run {
   output: string;
 }
 
-const TEMPLATES = join(REPOSITORY, 'templates', 'project', 'python');
+const TEMPLATES = join(REPOSITORY, 'templates', 'project', 'python', 'python');
 const PRESETS = join(REPOSITORY, 'presets', 'python');
 const GIT_IDENTITY = [
   '-c',
