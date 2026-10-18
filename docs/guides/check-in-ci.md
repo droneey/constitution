@@ -50,15 +50,6 @@ extends:
   - .droneey/constitution/presets/common/lefthook/workflow/betterleaks.yaml
 ```
 
-The same `postinstall` of `mise.toml` that links the release installs them, so every clone has them:
-
-```toml
-[hooks]
-postinstall = [
-  "mkdir -p .droneey",
-  "ln -sfn \"$(mise where github:droneey/constitution)\" .droneey/constitution",
-  "lefthook install",
-]
-```
+Add `lefthook install` to the `postinstall` of `mise.toml`, after the two hooks that link the release in [the quick start](../../README.md#-quick-start), so every clone installs them.
 
 The hooks are never bypassed with `--no-verify` or `LEFTHOOK=0`.

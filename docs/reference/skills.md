@@ -14,7 +14,7 @@ Each skill is a `SKILL.md` of the plugin, called by its slash command. `/constit
 
 Puts a repository under the Constitution. It takes no arguments.
 
-1. Installs the release first when the project has none: the tool in `mise.toml`, the link to `.droneey/constitution`, `/.droneey` in `.gitignore`. Then you call it again.
+1. Installs the release first when the project has none, as [the quick start](../../README.md#-quick-start) does: the tool in `mise.toml`, the link to `.droneey/constitution`, `/.droneey` in `.gitignore`. Then you call it again.
 2. Shows the blocks the installed release offers, by layer.
 3. Asks which [axes](../how-it-works.md#three-axes) the repository follows: `architecture`, `workflow`, both or neither.
 4. Reads the manifests, lock files, tool configurations, folders and CI, and proposes each block with the evidence that picked it, then the blocks those require.

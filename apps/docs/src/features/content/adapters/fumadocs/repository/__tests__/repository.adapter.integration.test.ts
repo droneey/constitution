@@ -40,9 +40,28 @@ describe('addressOf', () => {
       path: 'README.md',
     },
     {
+      address: '/docs/quick-start',
+      condition:
+        "the link leads to the quick start by GitHub's anchor, which keeps the heading's mark as a hyphen",
+      hash: '-quick-start',
+      path: 'README.md',
+    },
+    {
       address: '/docs#documentation',
       condition: 'the link leads to another section of the README',
       hash: 'documentation',
+      path: 'README.md',
+    },
+    {
+      address: '/docs#documentation',
+      condition: "the link leads to another section of the README by GitHub's anchor",
+      hash: '-documentation',
+      path: 'README.md',
+    },
+    {
+      address: '/docs#a-b',
+      condition: 'the anchor of a section of the README holds a hyphen of its own',
+      hash: 'a-b',
       path: 'README.md',
     },
     {

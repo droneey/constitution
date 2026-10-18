@@ -58,7 +58,14 @@ const addressOf = (baseUrl: string, path: string, hash: string): string => {
   const anchor = hash === '' ? '' : `#${hash}`;
 
   if (path === 'README.md') {
-    return hash === QUICK_START ? `${baseUrl}/${QUICK_START}` : `${baseUrl}${anchor}`;
+    // a heading of the README opens with the brand's mark, which GitHub's anchor keeps as a hyphen
+    const section = hash.replace(/^-/, '');
+
+    if (section === QUICK_START) {
+      return `${baseUrl}/${QUICK_START}`;
+    }
+
+    return section === '' ? baseUrl : `${baseUrl}#${section}`;
   }
   if (path.startsWith(DOCS_FOLDER) && path.endsWith(MARKDOWN)) {
     return `${baseUrl}/${path.slice(DOCS_FOLDER.length, -MARKDOWN.length)}${anchor}`;
