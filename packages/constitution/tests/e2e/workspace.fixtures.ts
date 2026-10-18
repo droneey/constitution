@@ -602,23 +602,18 @@ const WORKSPACE: Files = {
     readFileSync(join(TEMPLATES, 'common', 'core', '.gitignore'), 'utf8'),
     readFileSync(join(TEMPLATES, 'typescript', 'typescript', '.gitignore'), 'utf8'),
   ].join('\n'),
-  'biome.json': jsonFileOf({
-    extends: [
-      './.droneey/constitution/presets/common/biome/self.jsonc',
-      './.droneey/constitution/presets/common/biome/git.jsonc',
-    ],
-    files: {
-      includes: [
-        '**',
-        '!apps/api',
-      ],
-    },
-  }),
-  'biome.apps-api.jsonc': jsonFileOf({
+  'apps/api/biome.json': jsonFileOf({
+    root: false,
     extends: [
       './.droneey/constitution/presets/common/biome/self.jsonc',
       './.droneey/constitution/presets/common/biome/git.jsonc',
       './.droneey/constitution/presets/typescript/biome/self.jsonc',
+    ],
+  }),
+  'biome.json': jsonFileOf({
+    extends: [
+      './.droneey/constitution/presets/common/biome/self.jsonc',
+      './.droneey/constitution/presets/common/biome/git.jsonc',
     ],
   }),
   'knip.config.mjs': `import core from './${PRESETS}/knip/core.mjs';
@@ -706,6 +701,11 @@ const link = (folder: string): void => {
 
   mkdirSync(join(folder, '.droneey'));
   symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  mkdirSync(join(folder, 'apps', 'api', '.droneey'));
+  symlinkSync(
+    '../../../.droneey/constitution',
+    join(folder, 'apps', 'api', '.droneey', 'constitution'),
+  );
   mkdirSync(join(folder, '.shims'));
   writeFileSync(join(folder, '.shims', 'node'), '#!/bin/sh\nexec bun "$@"\n');
   chmodSync(join(folder, '.shims', 'node'), EXECUTABLE);

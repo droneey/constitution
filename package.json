@@ -15,8 +15,8 @@
   },
   "type": "module",
   "scripts": {
-    "lint:check": "biome check --error-on-warnings && biome check --error-on-warnings --config-path=biome.apps-docs.jsonc apps/docs && uv run --locked ruff check packages/python-check packages/mutation-check/languages/python",
-    "lint:fix": "biome check --write && biome check --write --config-path=biome.apps-docs.jsonc apps/docs && uv run --locked ruff check --fix packages/python-check packages/mutation-check/languages/python",
+    "lint:check": "biome check --error-on-warnings && uv run --locked ruff check packages/python-check packages/mutation-check/languages/python",
+    "lint:fix": "biome check --write && uv run --locked ruff check --fix packages/python-check packages/mutation-check/languages/python",
     "packages:check": "syncpack lint && syncpack format --check",
     "packages:fix": "syncpack fix && syncpack format",
     "type:check": "tsc -b && uv run --locked ty check --config-file .droneey/constitution/presets/python/ty/self.toml packages/python-check packages/mutation-check/languages/python",

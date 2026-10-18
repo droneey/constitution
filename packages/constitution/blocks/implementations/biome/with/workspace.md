@@ -2,10 +2,10 @@
 
 > The configuration of each package of a workspace.
 
-### configuration-per-unit-at-the-root → unit-checked-by-its-own-tools · MUST
+### biome-configuration-in-the-unit → unit-checked-by-its-own-tools · MUST
 
-A package with parts of its own has its configuration in the repository's root, `biome.<name>.jsonc` — `<name>` the package's whole path from the root with its slashes as hyphens, `biome.apps-web.jsonc` — which extends the shared parts and its own, and `biome.json` leaves that folder out of `files.includes`.
+A package with parts of its own keeps its configuration in its folder: a `biome.json` with `"root": false` that extends the shared parts and its own through `.droneey/constitution`, a committed relative link to the root's; the root's `biome.json` extends the shared parts alone.
 
 | Why | Tags |
 |---|---|
-| Biome reads a plugin's path from the configuration at the top, so a configuration inside the application's folder cannot load the presets' plugins, and a nested one that extends the root's takes no other file; a name from the whole path keeps apart two packages whose folders end in the same name. | [] |
+| Biome reads a plugin's path from the configuration that extends it and checks each file by the nearest configuration, so one run from the root holds each package to its own parts, and a package moved to a repository of its own takes the list of its parts with it. | [] |

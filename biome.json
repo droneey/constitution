@@ -11,11 +11,6 @@
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc"
   ],
-  "files": {
-    "includes": [
-      "!apps/docs"
-    ]
-  },
   "overrides": [
     {
       "includes": [

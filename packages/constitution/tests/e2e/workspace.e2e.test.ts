@@ -190,7 +190,7 @@ describe('a workspace on the presets', () => {
     });
   });
 
-  it("should leave the compiler's declarations out when Biome checks a unit by its own configuration", () => {
+  it("should check a unit by its own configuration, its compiler's declarations left out, when Biome runs from the root", () => {
     // Arrange
     const folder = workspace();
 
@@ -205,7 +205,6 @@ describe('a workspace on the presets', () => {
     const { passed } = runTool(folder, {
       args: [
         'check',
-        '--config-path=biome.apps-api.jsonc',
         'apps/api',
       ],
       program: 'biome',
