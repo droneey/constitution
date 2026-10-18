@@ -60,7 +60,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 - [Templates](docs/reference/templates.md) — the files a release starts a project from
 - [The plugin](docs/reference/plugin.md) — skills, the reviewer and the hooks
 - [Block format](docs/reference/block-format.md) — how a block and its rules are written
-- [Glossary](docs/reference/glossary.md)
+- [Glossary](PROJECT.md#glossary) — the words the Constitution uses in one meaning each
 
 ### Explanation
 
