@@ -14,16 +14,34 @@
         "value": 8
       }
     },
+    "12": {
+      "$value": {
+        "unit": "px",
+        "value": 12
+      }
+    },
     "16": {
       "$value": {
         "unit": "px",
         "value": 16
       }
     },
+    "20": {
+      "$value": {
+        "unit": "px",
+        "value": 20
+      }
+    },
     "24": {
       "$value": {
         "unit": "px",
         "value": 24
+      }
+    },
+    "28": {
+      "$value": {
+        "unit": "px",
+        "value": 28
       }
     },
     "32": {
@@ -62,10 +80,22 @@
         "value": 240
       }
     },
+    "272": {
+      "$value": {
+        "unit": "px",
+        "value": 272
+      }
+    },
     "352": {
       "$value": {
         "unit": "px",
         "value": 352
+      }
+    },
+    "768": {
+      "$value": {
+        "unit": "px",
+        "value": 768
       }
     }
   },
@@ -123,6 +153,16 @@
       "max": {
         "$value": "{dimension.352}",
         "$description": "A common token: the widest a dropdown opens."
+      }
+    },
+    "layout": {
+      "sidebar": {
+        "$value": "{dimension.272}",
+        "$description": "A common token: the width of the sidebar and of the contents column beside the page."
+      },
+      "page": {
+        "$value": "{dimension.768}",
+        "$description": "A common token: the widest the page's text runs."
       }
     }
   },
@@ -690,6 +730,56 @@
       }
     }
   },
+  "text": {
+    "$type": "dimension",
+    "$description": "The type scale: a major third, 1.25, rounded to the 4-pixel grid. Tailwind reads each step as its text-* size, so the library's classes take it too.",
+    "xs": {
+      "$value": "{dimension.12}"
+    },
+    "sm": {
+      "$value": "{dimension.16}"
+    },
+    "base": {
+      "$value": "{dimension.16}"
+    },
+    "lg": {
+      "$value": "{dimension.20}"
+    },
+    "xl": {
+      "$value": "{dimension.24}"
+    },
+    "2xl": {
+      "$value": "{dimension.32}"
+    },
+    "3xl": {
+      "$value": "{dimension.40}"
+    }
+  },
+  "leading": {
+    "$type": "dimension",
+    "$description": "The line height of each step of the type scale.",
+    "xs": {
+      "$value": "{dimension.20}"
+    },
+    "sm": {
+      "$value": "{dimension.24}"
+    },
+    "base": {
+      "$value": "{dimension.28}"
+    },
+    "lg": {
+      "$value": "{dimension.28}"
+    },
+    "xl": {
+      "$value": "{dimension.32}"
+    },
+    "2xl": {
+      "$value": "{dimension.40}"
+    },
+    "3xl": {
+      "$value": "{dimension.48}"
+    }
+  },
   "stroke": {
     "$type": "number",
     "icon": {
@@ -706,15 +796,20 @@
       "grid": [
         4,
         8,
+        12,
         16,
+        20,
         24,
+        28,
         32,
         40,
         48,
         56,
         64,
         240,
-        352
+        272,
+        352,
+        768
       ],
       "contrast": [
         {

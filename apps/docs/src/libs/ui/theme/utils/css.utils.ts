@@ -61,6 +61,19 @@ const themeLines = (
     (path) =>
       `  --spacing-${cssNameOf(path.slice(TokenGroupPath.Size.length))}: var(--${cssNameOf(path)});`,
   ),
+  // Tailwind's own text sizes, so the library's classes and the site's take the one scale
+  ...pathsUnder(tokens, [
+    TokenGroupPath.Text,
+  ]).map(
+    (path) =>
+      `  --${cssNameOf(path)}: var(--p-${cssNameOf(referenceIn(tokens, path, ThemeMode.Light))});`,
+  ),
+  ...pathsUnder(tokens, [
+    TokenGroupPath.Leading,
+  ]).map(
+    (path) =>
+      `  --text-${cssNameOf(path.slice(TokenGroupPath.Leading.length))}--line-height: var(--p-${cssNameOf(referenceIn(tokens, path, ThemeMode.Light))});`,
+  ),
   ...Object.entries(tailwindRadius).map(
     ([name, pixels]) => `  --radius-${name}: var(--p-radius-${pixels});`,
   ),

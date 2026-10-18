@@ -49,6 +49,16 @@ describe('findOffGridTokens', () => {
           $value: '{dimension.6}',
         },
       },
+      text: {
+        sm: {
+          $value: '{dimension.6}',
+        },
+      },
+      leading: {
+        sm: {
+          $value: '{dimension.6}',
+        },
+      },
       radius: {
         '3': {
           $value: {
@@ -72,6 +82,8 @@ describe('findOffGridTokens', () => {
       'dimension.6 is 6px, off the grid',
       'spacing.xs is 6px, off the grid',
       'size.icon is 6px, off the grid',
+      'text.sm is 6px, off the grid',
+      'leading.sm is 6px, off the grid',
     ]);
   });
 
