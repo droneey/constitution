@@ -1,0 +1,21 @@
+# Version control and the local machine
+.git/
+.claude/
+.droneey/
+**/.DS_Store
+.env
+.env.*
+
+# Dependencies
+**/node_modules/
+.venv/
+**/__pycache__/
+
+# Build output and the tools' caches
+**/.output/
+**/.nitro/
+**/.tanstack/
+**/.source/
+**/.stryker-tmp/
+**/coverage/
+packages/constitution/tools/*/dist/

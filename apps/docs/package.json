@@ -28,7 +28,10 @@
     "test": "CI=1 bun test",
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
-    "architecture:check": "depcruise src --config .dependency-cruiser.mjs"
+    "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
+    "docker:check": "hadolint --config ../../.droneey/constitution/presets/common/hadolint/docker.yaml docker/images/app.Dockerfile && dclint --config ../../.droneey/constitution/presets/common/dclint/docker.yaml compose.yaml docker/compose/app.yaml",
+    "shell:check": "shellcheck scripts/*.sh && shfmt -d scripts",
+    "audit:check": "docker build --quiet --target base --tag droneey-constitution-docs-base:local --file docker/images/app.Dockerfile ../.. && osv-scanner scan image droneey-constitution-docs-base:local"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -74,6 +77,7 @@
     "@vitejs/plugin-react": "6.1.2",
     "axe-core": "4.14.0",
     "babel-plugin-react-compiler": "1.0.0",
+    "dclint": "3.1.0",
     "nitro": "3.0.260903-beta",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",

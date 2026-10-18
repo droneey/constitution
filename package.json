@@ -29,17 +29,18 @@
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
     "architecture:check": "depcruise packages/constitution/src packages/constitution/tests packages/mutation-check/languages/typescript/src --config .dependency-cruiser.mjs && bun run --filter '*' architecture:check",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints && for package in packages/python-check packages/mutation-check/languages/python; do uv run --locked --directory \"$package\" --project \"$PWD\" vulture || exit 1; done",
-    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/core.txt)\" --no-ignore .",
+    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/core.txt)\" --no-ignore . && bun run --filter '*' audit:check",
     "format:check": "uv run --locked ruff format --check packages/python-check packages/mutation-check/languages/python",
     "format:fix": "uv run --locked ruff format packages/python-check packages/mutation-check/languages/python",
     "code:check": "uv run --locked python-check packages/python-check/src packages/python-check/tests packages/mutation-check/languages/python/src packages/mutation-check/languages/python/tests",
     "complexity:check": "uv run --locked complexipy packages/python-check packages/mutation-check/languages/python",
     "dependencies:check": "for package in packages/python-check packages/mutation-check/languages/python; do uv run --locked --directory \"$package\" --project \"$PWD\" deptry src || exit 1; done",
-    "shell:check": "bun --cwd=packages/constitution run shell:check",
+    "shell:check": "bun run --filter '*' shell:check",
+    "docker:check": "bun run --filter '*' docker:check",
     "markdown:check": "rumdl check . && rumdl fmt --check .",
     "yaml:check": "yamllint --strict .",
     "renovate:check": "renovate-config-validator --strict",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
   },
   "workspaces": [
     "apps/*",

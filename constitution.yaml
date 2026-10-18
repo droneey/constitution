@@ -60,6 +60,9 @@ packages:
       - tanstack-start
       - testing-library
       - vite
+      - docker
+      - hadolint
+      - dclint
     overrides:
       - rule: selector-never-targets-an-id
         level: MAY
