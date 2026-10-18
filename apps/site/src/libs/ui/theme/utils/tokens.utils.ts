@@ -1,14 +1,9 @@
+import type { PlainColorObject } from 'colorjs.io/fn';
+import { mix, OKLCH, sRGB_Linear, to, toGamut } from 'colorjs.io/fn';
+
 import { BASE_SURFACE, ThemeMode } from '../constants';
 import { ThemeTokenError } from '../errors';
-import type {
-  DesignToken,
-  DesignTokenGroup,
-  DesignTokens,
-  LinearRgb,
-  Oklch,
-  TokenValue,
-} from '../types';
-import { mixLinearSrgb, oklchToLinearSrgb } from './colour.utils';
+import type { DesignToken, DesignTokenGroup, DesignTokens, Oklch, TokenValue } from '../types';
 
 const isToken = (node: DesignToken | DesignTokenGroup): node is DesignToken => '$value' in node;
 
@@ -140,12 +135,37 @@ const pixelsOf = (tokens: DesignTokens, path: string): number => {
 const shareOf = (tokens: DesignTokens, path: string): number | undefined =>
   tokenAt(tokens, path).$extensions?.['dev.droneey.share'];
 
+/** an OKLCH colour in linear sRGB, each channel clipped into the gamut */
+const linearSrgbOf = (oklch: Oklch): PlainColorObject => {
+  const linear = to(
+    {
+      space: OKLCH,
+      coords: [
+        ...oklch,
+      ],
+      alpha: 1,
+    },
+    sRGB_Linear,
+  );
+
+  return toGamut(linear, {
+    method: 'clip',
+  });
+};
+
 /** the colour a semantic token shows in the mode, laid over the base surface by its share */
-const colourOf = (tokens: DesignTokens, path: string, mode: ThemeMode): LinearRgb => {
-  const own = oklchToLinearSrgb(oklchOf(tokens, referenceIn(tokens, path, mode)));
+const colourOf = (tokens: DesignTokens, path: string, mode: ThemeMode): PlainColorObject => {
+  const own = linearSrgbOf(oklchOf(tokens, referenceIn(tokens, path, mode)));
   const share = shareOf(tokens, path) ?? 1;
 
-  return share === 1 ? own : mixLinearSrgb(own, colourOf(tokens, BASE_SURFACE, mode), share);
+  if (share === 1) {
+    return own;
+  }
+
+  // Stryker disable next-line ObjectLiteral: named or not, the space is linear sRGB, the first colour's
+  return mix(colourOf(tokens, BASE_SURFACE, mode), own, share, {
+    space: sRGB_Linear,
+  });
 };
 
 const cssNameOf = (path: string): string => path.replaceAll('.', '-');

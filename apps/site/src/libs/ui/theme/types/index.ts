@@ -1,4 +1,4 @@
-export type { ColourTriple, LinearRgb, Oklch } from './colour.types';
+export type { Oklch } from './colour.types';
 export type {
   CodeTheme,
   CodeThemeRule,

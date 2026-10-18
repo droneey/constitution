@@ -1,14 +1,3 @@
-// WCAG 2's relative luminance and contrast ratio.
-const RED_LUMINANCE = 0.2126;
-const GREEN_LUMINANCE = 0.7152;
-const BLUE_LUMINANCE = 0.0722;
-const LUMINANCE_WEIGHTS = [
-  RED_LUMINANCE,
-  GREEN_LUMINANCE,
-  BLUE_LUMINANCE,
-] as const;
-const CONTRAST_FLARE = 0.05;
-
 /** the scopes of a code theme whose colours code text is written in */
 const CODE_SCOPES =
   /(^|[ ,])(comment|string|constant\.numeric|constant\.language|keyword|storage|entity\.name\.function|entity\.name\.type|support\.function|variable)\b/;
@@ -20,11 +9,4 @@ const EDITOR_FOREGROUND = 'editor.foreground';
 const MODE_LABEL_WIDTH = 5;
 const RATIO_DIGITS = 2;
 
-export {
-  CODE_SCOPES,
-  CONTRAST_FLARE,
-  EDITOR_FOREGROUND,
-  LUMINANCE_WEIGHTS,
-  MODE_LABEL_WIDTH,
-  RATIO_DIGITS,
-};
+export { CODE_SCOPES, EDITOR_FOREGROUND, MODE_LABEL_WIDTH, RATIO_DIGITS };

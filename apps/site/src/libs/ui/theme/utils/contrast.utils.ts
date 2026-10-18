@@ -1,8 +1,9 @@
+import type { PlainColorObject } from 'colorjs.io/fn';
+import { ColorSpace, contrastWCAG21, getColor, sRGB } from 'colorjs.io/fn';
+
 import {
   CODE_SCOPES,
-  CONTRAST_FLARE,
   EDITOR_FOREGROUND,
-  LUMINANCE_WEIGHTS,
   MODE_LABEL_WIDTH,
   RATIO_DIGITS,
   ThemeMode,
@@ -13,18 +14,16 @@ import type {
   ContrastCheck,
   ContrastPair,
   DesignTokens,
-  LinearRgb,
   ThemeContrastInput,
 } from '../types';
-import { dotProduct, hexToLinearSrgb } from './colour.utils';
 import { colourOf } from './tokens.utils';
 
-/** WCAG 2's contrast ratio of two colours, from 1 to 21 */
-const contrastRatio = (one: LinearRgb, other: LinearRgb): number => {
-  const first = dotProduct(LUMINANCE_WEIGHTS, one);
-  const second = dotProduct(LUMINANCE_WEIGHTS, other);
+/** a colour a code theme writes in hex */
+const hexColourOf = (hex: string): PlainColorObject => {
+  // The functional API parses only the formats of the spaces registered with it; hex is sRGB's.
+  ColorSpace.register(sRGB);
 
-  return (Math.max(first, second) + CONTRAST_FLARE) / (Math.min(first, second) + CONTRAST_FLARE);
+  return getColor(hex);
 };
 
 const checkPair = (
@@ -38,7 +37,7 @@ const checkPair = (
     mode,
     label: pair,
     subject: pair,
-    ratio: contrastRatio(
+    ratio: contrastWCAG21(
       colourOf(tokens, `${TokenGroupPath.Colour}${foreground}`, mode),
       colourOf(tokens, `${TokenGroupPath.Colour}${background}`, mode),
     ),
@@ -76,7 +75,7 @@ const checkCode = (
     subject: `code on ${background}`,
     ratio: Math.min(
       ...codeForegroundsOf(codeThemes[mode]).map((colour) =>
-        contrastRatio(hexToLinearSrgb(colour), surface),
+        contrastWCAG21(hexColourOf(colour), surface),
       ),
     ),
     minimum: code.minimum,

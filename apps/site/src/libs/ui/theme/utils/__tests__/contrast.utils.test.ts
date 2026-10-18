@@ -9,6 +9,9 @@ import {
   createTokens,
 } from './theme.fixtures';
 
+/** the decimal places a ratio is matched to, past the rounding of the colour maths */
+const RATIO_PLACES = 3;
+
 describe('checkThemeContrast', () => {
   it('should check each pair and then the code, mode by mode, laying a shared colour over the base surface', () => {
     // Arrange
@@ -47,42 +50,42 @@ describe('checkThemeContrast', () => {
         mode: ThemeMode.Light,
         label: 'text.primary on surface.base',
         subject: 'text.primary on surface.base',
-        ratio: 21,
+        ratio: expect.closeTo(21, RATIO_PLACES),
         minimum: 7,
       },
       {
         mode: ThemeMode.Light,
         label: 'text.primary on fill.hover',
         subject: 'text.primary on fill.hover',
-        ratio: 11,
+        ratio: expect.closeTo(11, RATIO_PLACES),
         minimum: 7,
       },
       {
         mode: ThemeMode.Light,
         label: 'code (light-code) on surface.base',
         subject: 'code on surface.base',
-        ratio: 21,
+        ratio: expect.closeTo(21, RATIO_PLACES),
         minimum: 4.5,
       },
       {
         mode: ThemeMode.Dark,
         label: 'text.primary on surface.base',
         subject: 'text.primary on surface.base',
-        ratio: 21,
+        ratio: expect.closeTo(21, RATIO_PLACES),
         minimum: 7,
       },
       {
         mode: ThemeMode.Dark,
         label: 'text.primary on fill.hover',
         subject: 'text.primary on fill.hover',
-        ratio: 1.909_090_909_090_909,
+        ratio: expect.closeTo(1.909, RATIO_PLACES),
         minimum: 7,
       },
       {
         mode: ThemeMode.Dark,
         label: 'code (dark-code) on surface.base',
         subject: 'code on surface.base',
-        ratio: 21,
+        ratio: expect.closeTo(21, RATIO_PLACES),
         minimum: 4.5,
       },
     ]);
@@ -99,7 +102,7 @@ describe('checkThemeContrast', () => {
           },
         },
       ],
-      expected: 4.478_089_453_577_214,
+      expected: 4.478,
     },
     {
       name: 'the code scope is a later selector of the rule',
@@ -111,7 +114,7 @@ describe('checkThemeContrast', () => {
           },
         },
       ],
-      expected: 4.478_089_453_577_214,
+      expected: 4.478,
     },
     {
       name: 'the code scope is a later one of a list',
@@ -126,7 +129,7 @@ describe('checkThemeContrast', () => {
           },
         },
       ],
-      expected: 7.455_177_810_447_525,
+      expected: 7.455,
     },
     {
       name: 'a scope only ends in a code scope',
@@ -200,11 +203,86 @@ describe('checkThemeContrast', () => {
       createContrastCheck({
         label: 'code (light-code) on surface.base',
         subject: 'code on surface.base',
-        ratio: expected,
+        ratio: expect.closeTo(expected, RATIO_PLACES),
         minimum: 4.5,
       }),
     );
   });
+
+  it.each([
+    {
+      name: 'its red and blue fall below zero',
+      components: [
+        0.6,
+        0.3,
+        150,
+      ],
+      expected: 3.123,
+    },
+    {
+      name: 'its blue rises above one',
+      components: [
+        0.7,
+        0.2,
+        260,
+      ],
+      expected: 2.856,
+    },
+  ])(
+    'should clip each channel of a colour beyond the sRGB gamut when $name',
+    ({ components, expected }) => {
+      // Arrange
+      const input = {
+        tokens: createTokens({
+          color: {
+            neutral: {
+              '0': {
+                $value: {
+                  colorSpace: 'oklch',
+                  components: [
+                    1,
+                    0,
+                    0,
+                  ],
+                },
+              },
+            },
+            vivid: {
+              $value: {
+                colorSpace: 'oklch',
+                components,
+              },
+            },
+            surface: {
+              base: {
+                $value: '{color.neutral.0}',
+              },
+            },
+            text: {
+              primary: {
+                $value: '{color.vivid}',
+              },
+            },
+          },
+        }),
+        settings: createThemeSettings(),
+        codeThemes: {
+          [ThemeMode.Light]: createCodeTheme(),
+          [ThemeMode.Dark]: createCodeTheme(),
+        },
+      };
+
+      // Act
+      const [light] = checkThemeContrast(input);
+
+      // Assert
+      expect(light).toStrictEqual(
+        createContrastCheck({
+          ratio: expect.closeTo(expected, RATIO_PLACES),
+        }),
+      );
+    },
+  );
 
   it('should take the rules alone when the code theme has no editor colours', () => {
     // Arrange
@@ -236,7 +314,7 @@ describe('checkThemeContrast', () => {
       createContrastCheck({
         label: 'code (light-code) on surface.base',
         subject: 'code on surface.base',
-        ratio: 10.368_377_760_269_818,
+        ratio: expect.closeTo(10.368, RATIO_PLACES),
         minimum: 4.5,
       }),
     );
