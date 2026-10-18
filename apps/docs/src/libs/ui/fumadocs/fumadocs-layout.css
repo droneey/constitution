@@ -157,14 +157,21 @@
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :has(> article) {
-    scroll-padding-top: var(--fd-header-height);
+    padding-top: calc(var(--fd-header-height) + var(--spacing-lg));
+    scroll-padding-top: calc(var(--fd-header-height) + var(--spacing-lg));
     padding-inline: max(
       var(--nd-gutter),
       calc((100% - var(--fd-page-width) - var(--fd-toc-width)) / 2)
     );
   }
 
-  /* the bar's background fades out over its lower band, so the page at rest is never under it */
+  /* the panel's padding alone sets where the page starts */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel [role='main'] {
+    padding-top: 0;
+  }
+
+  /* the bar's background covers it and fades out below it, where the page at rest starts */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header {
     gap: var(--spacing-xs);
@@ -185,8 +192,9 @@
     &::before {
       content: '';
       position: absolute;
-      inset: 0;
+      inset: 0 0 auto;
       z-index: -1;
+      height: calc(100% + var(--spacing-lg));
       background: linear-gradient(
         to bottom,
         var(--color-fd-background) calc(100% - var(--spacing-lg)),
