@@ -25,7 +25,7 @@
   }
 
   :focus:not(:focus-visible),
-  :is(main, [role='main'], h1[tabindex='-1']):focus {
+  h1[tabindex='-1']:focus {
     outline: none;
   }
 
@@ -50,6 +50,19 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar :has(> [data-id$='-viewport']:focus-visible) {
     border-radius: var(--radius-lg);
+    outline: 2px solid var(--color-fd-ring);
+    outline-offset: -2px;
+  }
+
+  /* the page, taller than the window, would show only the sides of its ring; its panel draws it */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel [role='main']:focus-visible {
+    outline: none;
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > :has(> [role='main']:focus-visible) {
+    border-radius: inherit;
     outline: 2px solid var(--color-fd-ring);
     outline-offset: -2px;
   }
@@ -82,6 +95,7 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel {
     min-width: min(100vw, 30rem);
+    margin: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 0;
     transition-property: margin, border-width, border-radius, box-shadow;
     transition-duration: var(--duration-base);
     transition-timing-function: var(--ease-out);
@@ -125,10 +139,13 @@
     }
   }
 
-  /* the page's gutter, which the bar's controls share, widens on a wider panel */
+  /* the page's gutter widens on a wider panel; the bar's buttons overhang it by the space around
+     their icons, so an icon stands a gutter from the panel's top and sides, as the text does */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
+    --nd-overhang: calc((var(--spacing-control-md) - var(--spacing-icon-md)) / 2);
+    --fd-header-height: calc(var(--nd-gutter) - var(--nd-overhang) + var(--spacing-control-md));
 
     @container (width >= 40rem) {
       --nd-gutter: var(--spacing-lg);
@@ -137,7 +154,7 @@
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :has(> article) {
-    scroll-padding-top: var(--spacing-header);
+    scroll-padding-top: var(--fd-header-height);
     padding-inline: max(
       var(--nd-gutter),
       calc((100% - var(--fd-page-width) - var(--fd-toc-width)) / 2)
@@ -148,7 +165,8 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header {
     gap: var(--spacing-xs);
-    padding-inline: var(--nd-gutter);
+    padding: calc(var(--nd-gutter) - var(--nd-overhang)) calc(var(--nd-gutter) - var(--nd-overhang))
+      0;
     background: none;
 
     /* the trail keeps its length; the heading after it gives way */
@@ -171,18 +189,15 @@
     }
   }
 
-  /* the expand button, the TOC dropdown and the actions: the outer ones overhang the content edge
-     so their icons align with it */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header > button[aria-controls='nd-sidebar'] {
     flex-shrink: 0;
-    margin-inline-start: calc(-1 * var(--spacing-xs));
+    margin-inline-start: 0;
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header > div:last-child {
     gap: var(--spacing-2xs);
-    margin-inline-end: calc(-1 * var(--spacing-2xs));
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */

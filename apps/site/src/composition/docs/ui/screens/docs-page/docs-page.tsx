@@ -84,14 +84,15 @@ function DocsContent({
   // here, not in the root: its lists are on the page only once this content, which waits for its body, is hydrated
   useGlide();
 
-  // the page panel remounts on each page, so the TOC's observer does too, or it watches the old headings
+  // the page panel remounts on each page, so the TOC's observer does too, or it watches the old headings;
+  // the page is a stop of the keyboard, as the sidebar's list is, so the arrows scroll its panel
   return (
     <DocsPage
       id={mainContentId}
       key={path}
       role='main'
       slots={pageSlots}
-      tabIndex={-1}
+      tabIndex={0}
       toc={toc}
     >
       <DocsTitle

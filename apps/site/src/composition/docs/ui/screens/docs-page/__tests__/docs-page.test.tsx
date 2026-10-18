@@ -104,7 +104,7 @@ describe('DocsPageScreen', () => {
     ]);
   });
 
-  test('should make the page the main region the skip link targets', async () => {
+  test('should make the page the main region the skip link targets and the keyboard stops on', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -118,7 +118,7 @@ describe('DocsPageScreen', () => {
       main.tabIndex,
     ]).toStrictEqual([
       'main',
-      -1,
+      0,
     ]);
   });
 
