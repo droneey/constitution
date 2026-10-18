@@ -111,6 +111,14 @@ In a workspace, the files of each package are checked by the tools of its own bl
 |---|---|
 | a tool's configuration applied from the root either misses a package's paths, as one that names `src/` does, and passes in silence, or applies one package's configuration to the others and changes their rules. | [] |
 
+### unit-configuration-kept-in-its-folder · SHOULD
+
+A package's configuration of a tool sits in the package's own folder, and the root's configuration of that tool holds only what every package shares.
+
+| Why | Tags |
+|---|---|
+| a package then carries the rules that hold it, the root names nothing of one package's own, and a package moved to a repository of its own takes its checks with it; a tool that reads one configuration for the whole repository keeps each package's part in the root's under the package's path. | [] |
+
 ## Requirements for implementation
 
 ### workspace-tool-links-units-from-the-working-tree · SHOULD
