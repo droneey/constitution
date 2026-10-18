@@ -204,6 +204,17 @@
     }
   }
 
+  /* the trail stands apart from the expand button, the heading close to its slash */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header > button + nav {
+    margin-inline-start: var(--spacing-xs);
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header > div:has(> button[aria-haspopup='dialog']) {
+    gap: var(--spacing-xs);
+  }
+
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header > button[aria-controls='nd-sidebar'] {
     flex-shrink: 0;
