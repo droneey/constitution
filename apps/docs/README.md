@@ -18,7 +18,7 @@ The site builds from its own folder, two levels below the repository's root, whe
 
 ```bash
 apps/docs/scripts/run.sh dev up     # the site with live reload, on the working tree
-apps/docs/scripts/run.sh prod up    # the built site, served as files, as the static host serves it
+apps/docs/scripts/run.sh prod up    # the built site, served as files by static-web-server
 apps/docs/scripts/run.sh dev down   # stops and removes the containers
 ```
 
