@@ -1,6 +1,13 @@
-# Constitution
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".brand/banner-dark.svg">
+    <img src=".brand/banner-light.svg" alt="Droneey Constitution — The rules every repository is built by" width="100%">
+  </picture>
+</p>
 
-> The rules every repository is built by, for the people and the agents that write it.
+<p align="center">
+  <img src=".brand/badges/claude-code.svg" alt="Made for Claude Code">&ensp;<a href="LICENSE.md"><img src=".brand/badges/license.svg" alt="License: PolyForm Internal Use"></a>
+</p>
 
 The Constitution is one set of engineering rules — how code is named, layered, tested, secured, reviewed and released — split into blocks. A project lists the blocks it follows in `constitution.yaml`. A Claude Code plugin gives an agent those rules when a session starts, names the ones that govern each file it touches, and holds the hand-back until the project's check passes. The configurations of the tools that hold the rules ship beside them.
 
@@ -9,7 +16,9 @@ The Constitution is one set of engineering rules — how code is named, layered,
 - **Held by tools where a tool can hold them.** Biome, dependency-cruiser, knip, Ruff and the rest extend the presets, so a broken rule fails the check.
 - **Pinned.** A project follows the release it names; a new release changes nothing until the project moves its pin.
 
-## Quick start
+## <img src=".brand/diamond.svg" width="18" height="18" alt=""> Quick start
+
+> Install the plugin, pin a release, ratify a project.
 
 You need Claude Code and [mise](https://mise.jdx.dev).
 
@@ -37,11 +46,10 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 4. Start a new session. The agent now works by the rules, and `/constitution:check` reviews a change against them.
 
-## Documentation
+## <img src=".brand/diamond.svg" width="18" height="18" alt=""> Documentation
 
 ### Start
 
-- [Quick start](#quick-start) — install the plugin, pin a release, ratify a project
 - [How it works](docs/how-it-works.md) — blocks, the plugin and the check
 
 ### Guides
@@ -72,10 +80,10 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 - [Core](packages/constitution/blocks/core/core.md) — what holds for any program
 
-## Contributing
+## <img src=".brand/diamond.svg" width="18" height="18" alt=""> Contributing
 
 How the Constitution itself is changed, checked and released is in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+## <img src=".brand/diamond.svg" width="18" height="18" alt=""> License
 
 [PolyForm Internal Use 1.0.0](LICENSE.md): use it inside your own organisation, commercially or not; do not distribute, sublicense or sell it; keep the author's notice. Copyright Dmytro Kurovskyi.

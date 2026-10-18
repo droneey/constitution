@@ -1,0 +1,417 @@
+/* The library's spacious layout on the site's tokens. Hooks are the library's ids, data and aria
+   attributes, roles and element structure, never its generated class names. */
+
+/* -------------------------------------------------------------------------- */
+/* FOCUS                                                                      */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  /* the ring's colour is set before focus, so a colour transition never fades it in from the text's */
+  * {
+    outline-color: var(--color-fd-ring);
+  }
+
+  /* an element with a radius of its own keeps it; one without gets the smallest */
+  :where(:focus-visible) {
+    border-radius: var(--radius-sm);
+  }
+}
+
+@layer overrides {
+  :focus-visible {
+    --tw-ring-shadow: 0 0 transparent;
+    outline: 2px solid var(--color-fd-ring);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible),
+  :is(main, [role='main'], h1[tabindex='-1']):focus {
+    outline: none;
+  }
+
+  /* rows of scrolling lists, where an outer ring is clipped */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]),
+  [data-toc-list] > a,
+  [role='menu'] [role='menuitem'],
+  nav[aria-label='Versions'] a,
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] {
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* FRAME                                                                      */
+/* -------------------------------------------------------------------------- */
+
+@layer overrides {
+  /* a navigation's cross-fade lets the pointer through, or the sidebar loses its hover and its
+     scrollbar fades out and back on every page */
+  /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
+  @supports selector(::view-transition) {
+    /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
+    ::view-transition {
+      pointer-events: none;
+    }
+  }
+
+  /* One layout at every width. The sidebar opens beside the page and pushes it along; the page
+     is never narrower than a phone, so on a narrow screen it slides out under the edge. With the
+     sidebar open the page sits in a panel; with it collapsed it fills the window. */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #fd-spacious-layout {
+    --fd-page-width: 768px;
+    --fd-sidebar-width: 272px;
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel {
+    min-width: min(100vw, 30rem);
+    transition-property: margin, border-width, border-radius, box-shadow;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-out);
+  }
+
+  /* the page sets data-sidebar on the document; before it does, a narrow screen shows it collapsed */
+  html[data-sidebar='collapsed'] {
+    /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+    & #fd-spacious-layout {
+      --fd-sidebar-col: 0px;
+    }
+
+    /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+    & #nd-page-panel {
+      margin: 0;
+      border-width: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  @media (width < 48rem) {
+    html:not([data-sidebar]) {
+      /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+      & #fd-spacious-layout {
+        --fd-sidebar-col: 0px;
+      }
+
+      /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+      & #nd-sidebar {
+        visibility: hidden;
+      }
+
+      /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+      & #nd-page-panel {
+        margin: 0;
+        border-width: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  }
+
+  /* the page's gutter: 16 on a phone, 32 from 40rem on, the bar's controls on the same line */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > :is(header, :has(> article)) {
+    --nd-gutter: var(--spacing-sm);
+
+    @container (width >= 40rem) {
+      --nd-gutter: var(--spacing-lg);
+    }
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > :has(> article) {
+    scroll-padding-top: var(--spacing-header);
+    padding-inline: max(
+      var(--nd-gutter),
+      calc((100% - var(--fd-page-width) - var(--fd-toc-width)) / 2)
+    );
+  }
+
+  /* the bar's background runs on under it and fades out */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header {
+    gap: var(--spacing-xs);
+    padding-inline: var(--nd-gutter);
+    background: none;
+
+    /* the trail keeps its length; the heading after it gives way */
+    & nav {
+      flex-shrink: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: -1;
+      height: calc(100% + var(--spacing-lg));
+      background: linear-gradient(
+        to bottom,
+        var(--color-fd-background) calc(100% - var(--spacing-lg)),
+        transparent
+      );
+      pointer-events: none;
+    }
+  }
+
+  /* the expand button, the TOC dropdown and the actions: 40 targets, 4 apart, the outer ones
+     overhanging the content edge by 4 so their icons align with it */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header > button[aria-controls='nd-sidebar'] {
+    flex-shrink: 0;
+    margin-inline-start: calc(-1 * var(--spacing-xs));
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header > div:last-child {
+    gap: var(--spacing-2xs);
+    margin-inline-end: calc(-1 * var(--spacing-2xs));
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  :is(#nd-page-panel > header, #nd-sidebar > div > div:first-child)
+  :is(a, button):has(> svg:only-child) {
+    width: var(--spacing-control-md);
+    height: var(--spacing-control-md);
+    padding: 0;
+    border-radius: var(--radius-lg);
+
+    & > svg {
+      width: var(--spacing-icon-md);
+      height: var(--spacing-icon-md);
+    }
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header button[aria-haspopup='dialog'] {
+    gap: var(--spacing-xs);
+    height: var(--spacing-control-md);
+    margin-inline: calc(-1 * var(--spacing-xs));
+    padding-inline: var(--spacing-xs);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* SIDEBAR                                                                    */
+/* -------------------------------------------------------------------------- */
+
+@layer overrides {
+  /* the logo's icon on the fields' leading icons, the collapse icon on their trailing ones */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar > div > div:first-child {
+    gap: var(--spacing-xs);
+    margin-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+
+    & > a:first-child {
+      height: var(--spacing-control-md);
+      padding-inline-start: var(--spacing-xs);
+      gap: var(--spacing-xs);
+      border-radius: var(--radius-lg);
+      font-size: 1rem;
+    }
+
+    & > button:last-child {
+      margin-inline-end: calc(-1 * var(--spacing-2xs));
+    }
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar > div > div:nth-child(2) {
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] {
+    padding-inline: var(--spacing-sm);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-ui);
+  }
+
+  :is([data-search-full], [data-sidebar-field]) {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    height: var(--spacing-control-lg);
+    padding: 0 calc(var(--spacing-xs) - 1px);
+    border: 1px solid var(--color-fd-border);
+    border-radius: var(--radius-xl);
+    background-color: var(--color-fill-field);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-ui);
+    text-align: start;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+
+    &:hover,
+    &[data-popup-open] {
+      background-color: var(--color-fill-field-hover);
+      color: inherit;
+    }
+
+    & > svg {
+      flex-shrink: 0;
+      width: var(--spacing-icon-md);
+      height: var(--spacing-icon-md);
+    }
+  }
+
+  [data-search-full] {
+    color: var(--color-fd-muted-foreground);
+
+    &:hover {
+      color: var(--color-fd-muted-foreground);
+    }
+
+    & > div:last-child {
+      gap: var(--spacing-2xs);
+    }
+
+    & kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--spacing-control-xs);
+      height: var(--spacing-control-xs);
+      padding-inline: var(--spacing-2xs);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+    }
+  }
+
+  /* items and folders, open or closed, current or not */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]) {
+    gap: var(--spacing-xs);
+    min-height: var(--spacing-control-md);
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-lg);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+
+    & > svg {
+      width: var(--spacing-icon-md);
+      height: var(--spacing-icon-md);
+    }
+
+    & > [data-icon] {
+      transition-duration: var(--duration-base);
+      transition-timing-function: var(--ease-out);
+    }
+
+    /* a folder's panel grows and fades; its rows keep their size, so only its height moves them */
+    & + div {
+      transition-property: height, opacity;
+      transition-duration: var(--duration-base);
+      transition-timing-function: var(--ease-out);
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* HEADER MENU AND THEME                                                      */
+/* -------------------------------------------------------------------------- */
+
+@layer overrides {
+  [role='menu'] {
+    padding: 0;
+    border-radius: var(--radius-xl);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-ui);
+
+    & > div:not([data-glide]) {
+      padding: var(--spacing-2xs);
+    }
+
+    & :is([role='menuitem'], [role='menuitemradio']):not([role='group'] *) {
+      gap: var(--spacing-xs);
+      min-height: var(--spacing-control-md);
+      padding: 0 var(--spacing-xs);
+      border-radius: var(--radius-lg);
+    }
+
+    & > div > div:has([role='group']) {
+      gap: var(--spacing-xs);
+      padding: 0 0 0 var(--spacing-xs);
+    }
+  }
+
+  /* flush 40 targets, each showing a 32 shape at its centre that holds the hover, the chosen one's
+     thumb, the press and the focus ring */
+  [data-theme-toggle] {
+    display: inline-flex;
+    gap: var(--spacing-2xs);
+    height: var(--spacing-control-md);
+    padding: var(--spacing-2xs);
+    border: 0;
+    border-radius: var(--radius-xl);
+    background-color: var(--color-fd-secondary);
+    box-shadow: inset 0 0 0 1px var(--color-fd-border);
+
+    & > svg {
+      width: var(--spacing-lg);
+      height: var(--spacing-lg);
+      padding: var(--spacing-xs);
+      border-radius: var(--radius-lg);
+    }
+  }
+
+  [role='group']:has(> [role='menuitemradio']) {
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xl);
+    background-color: transparent;
+    box-shadow: none;
+
+    & > span[aria-hidden] {
+      top: 0;
+      inset-inline-start: 0;
+      width: var(--spacing-control-md);
+      height: var(--spacing-control-md);
+      translate: calc(var(--index) * var(--spacing-control-md)) 0;
+      border-radius: var(--radius-xl);
+      background-color: var(--color-fd-accent);
+      box-shadow: none;
+      transition-property: translate, scale;
+      transition-timing-function: var(--ease-out);
+    }
+
+    & > [role='menuitemradio'] {
+      cursor: pointer;
+      width: var(--spacing-control-md);
+      height: var(--spacing-control-md);
+      border-radius: var(--radius-xl);
+      color: var(--color-text-primary);
+
+      &[data-highlighted] {
+        background: none;
+      }
+
+      &[aria-checked='true'] {
+        color: var(--color-text-primary);
+      }
+
+      &:focus-visible {
+        outline-offset: -2px;
+      }
+
+      & > svg {
+        width: var(--spacing-icon-md);
+        height: var(--spacing-icon-md);
+      }
+    }
+
+    & > [data-glide] {
+      --glide-inset: 0px;
+      border-radius: var(--radius-xl);
+    }
+  }
+}

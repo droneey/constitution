@@ -2,6 +2,9 @@
   "files": [],
   "references": [
     {
+      "path": "./apps/site"
+    },
+    {
       "path": "./packages/constitution"
     },
     {

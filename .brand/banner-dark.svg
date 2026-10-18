@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="224" viewBox="0 0 840 224" role="img" aria-labelledby="title desc">
+  <title id="title">Droneey Constitution</title>
+  <desc id="desc">The rules every repository is built by</desc>
+  <defs>
+    <radialGradient id="glow" cx="0.867" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#D6A200" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#D6A200" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow-end" cx="0.95" cy="1" r="0.5">
+      <stop offset="0" stop-color="#F19100" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#F19100" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="name" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D6A200"/>
+      <stop offset="1" stop-color="#F19100"/>
+    </linearGradient>
+    <linearGradient id="motif" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="96" y2="96">
+      <stop offset="0" stop-color="#D6A200"/>
+      <stop offset="1" stop-color="#F19100"/>
+    </linearGradient>
+  </defs>
+  <rect width="840" height="224" rx="32" fill="#141417"/>
+  <rect width="840" height="224" rx="32" fill="url(#glow)"/>
+  <rect width="840" height="224" rx="32" fill="url(#glow-end)"/>
+  <rect x="0.5" y="0.5" width="839" height="223" rx="31.5" fill="none" stroke="#27272A"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <text x="64" y="112" fill="url(#name)" font-size="68" font-weight="500" letter-spacing="-1.5">Constitution</text>
+    <text x="64" y="157" fill="#A1A1AA" font-size="18">The rules every repository is built by</text>
+  </g>
+  <g transform="translate(680 64)" fill="url(#motif)">
+    <g fill="none" stroke="url(#motif)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M44.476 8.82a8 8 0 0 1 7.048 0l31.36 15.384A2 2 0 0 1 82 28h-68a2 2 0 0 1-.88-3.796z"/>
+    <path d="M24 72v-28M40 72v-28M56 72v-28M72 72v-28M12 88h72"/>
+    </g>
+  </g>
+</svg>

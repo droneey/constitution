@@ -1,0 +1,28 @@
+{
+  "extends": [
+    "../../.droneey/constitution/presets/typescript/tsc/self.json",
+    "../../.droneey/constitution/presets/typescript/tsc/core.json",
+    "../../.droneey/constitution/presets/typescript/tsc/browser.json",
+    "../../.droneey/constitution/presets/typescript/tsc/_react.json",
+    "../../.droneey/constitution/presets/typescript/tsc/workspace.json"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "#/*": [
+        "./src/*"
+      ]
+    },
+    "types": [
+      "bun",
+      "node",
+      "vite/client"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "source.config.ts",
+    ".source/*.ts"
+  ]
+}

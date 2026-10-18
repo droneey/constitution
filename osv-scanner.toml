@@ -26,6 +26,12 @@ license.override = ["CC-BY-4.0"]
 reason = "deps.dev indexes caniuse-lite's frequent releases days late and reports no licence until then; its package.json declares CC-BY-4.0"
 
 [[PackageOverrides]]
+name = "elkjs"
+ecosystem = "npm"
+license.ignore = true
+reason = "EPL-2.0; beautiful-mermaid lays out the site's diagrams with it while the site builds, and only the SVG it draws ships"
+
+[[PackageOverrides]]
 name = "colorama"
 ecosystem = "PyPI"
 license.override = ["BSD-3-Clause"]
@@ -60,6 +66,12 @@ name = "@droneey/constitution"
 ecosystem = "npm"
 license.ignore = true
 reason = "this repository's own package, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/site"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own documentation site, a member of its Bun workspace, under the repository's LICENSE.md"
 
 [[PackageOverrides]]
 name = "@droneey/mutation-check"

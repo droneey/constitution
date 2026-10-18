@@ -8,9 +8,26 @@
     "./.droneey/constitution/presets/common/biome/git.jsonc",
     "./.droneey/constitution/presets/typescript/biome/bun-test.jsonc",
     "./.droneey/constitution/presets/typescript/biome/dependency-cruiser.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/browser.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/_react.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/react-dom.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/css.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/tailwind.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/tanstack-router.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc"
+    "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc",
+    "./.droneey/constitution/presets/css/biome/self.jsonc",
+    "./.droneey/constitution/presets/css/biome/css.jsonc",
+    "./.droneey/constitution/presets/css/biome/browser.jsonc",
+    "./.droneey/constitution/presets/css/biome/design-system.jsonc",
+    "./.droneey/constitution/presets/css/biome/tailwind.jsonc"
   ],
+  "files": {
+    "includes": [
+      "!**/*.gen.*"
+    ]
+  },
   "overrides": [
     {
       "includes": [
@@ -42,7 +59,7 @@
                 "filenameCases": [
                   "kebab-case"
                 ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|fixtures)[.]ts)"
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|fixtures)[.]tsx?)"
               }
             }
           },

@@ -1,0 +1,23 @@
+[test]
+root = "./src"
+preload = ["./src/__tests__/sandbox.fixtures.ts", "./src/__tests__/dom.fixtures.ts"]
+randomize = true
+coverage = true
+coverageReporter = ["text"]
+coverageSkipTestFiles = true
+coverageThreshold = { functions = 1.0, lines = 1.0 }
+# The entry files the framework calls, as the tanstack-start block asks; the tests drive the rest.
+coveragePathIgnorePatterns = [
+  "**/__tests__/**",
+  "src/client.tsx",
+  "src/root/router.tsx",
+  "src/root/routes/__root.tsx",
+  "src/root/routeTree.gen.ts",
+  "src/entrypoints/*/main.ts",
+]
+
+[install]
+minimumReleaseAge = 259200 # three days, in seconds
+
+[run]
+bun = true

@@ -1,0 +1,283 @@
+/* -------------------------------------------------------------------------- */
+/* RULES AND RHYTHM                                                           */
+/* The typography plugin's styles are utilities, so the site's own styles of  */
+/* rendered Markdown sit in the later `prose` layer.                          */
+/* -------------------------------------------------------------------------- */
+
+@layer prose {
+  [data-docs-body] [data-rule-card] {
+    margin-block: var(--spacing-lg);
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border-base);
+    background-color: var(--color-surface-level-1);
+    border-radius: var(--radius-3xl);
+  }
+
+  @media (min-width: 48rem) {
+    [data-docs-body] [data-rule-card] {
+      padding: var(--spacing-md);
+      border-radius: var(--radius-4xl);
+    }
+  }
+
+  [data-docs-body] figure pre {
+    padding-inline-end: var(--spacing-xl);
+  }
+
+  [data-docs-body] :where(h2, h3) + [data-rule-card] {
+    margin-top: var(--spacing-lg);
+  }
+
+  [data-docs-body] [data-rule-card] figure:not([data-diagram]) {
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-base);
+  }
+
+  [data-docs-body] [data-rule-card] > :last-child {
+    margin-bottom: 0;
+  }
+
+  [data-docs-body] [data-rule-card] > :where(p, ul, ol, figure) {
+    margin-block: var(--spacing-xs);
+  }
+
+  [data-docs-body] [data-rule] [data-rule-mark] {
+    display: none;
+  }
+
+  [data-docs-body] [data-rule-meta] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: var(--spacing-sm) 0 var(--spacing-lg);
+  }
+
+  [data-docs-body] [data-rule-card] > p:not([data-rule-meta], [data-rule-why]) {
+    color: var(--color-text-muted);
+  }
+
+  [data-docs-body] figure[data-diagram] {
+    margin-block: var(--spacing-sm);
+    overflow-x: auto;
+  }
+
+  [data-docs-body] figure[data-diagram] > svg {
+    display: block;
+    max-width: none;
+    margin-inline: auto;
+  }
+
+  [data-docs-body] [data-rule] {
+    margin: 0;
+    overflow-wrap: anywhere;
+    scroll-margin-top: calc(var(--spacing-sm) + var(--spacing-sm) + 1px);
+  }
+
+  @media (min-width: 48rem) {
+    [data-docs-body] [data-rule] {
+      scroll-margin-top: calc(var(--spacing-md) + var(--spacing-sm) + 1px);
+    }
+  }
+
+  [data-docs-body] [data-rule] > a {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  [data-docs-body] [data-rule] code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 1rem;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  [data-docs-body] [data-rule-parent] {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: var(--font-weight-normal);
+  }
+
+  [data-docs-body] [data-rule-parent] code {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-normal);
+  }
+
+  [data-rule-level] {
+    display: inline-flex;
+    align-items: center;
+    height: var(--spacing-control-xs);
+    padding-inline: var(--spacing-xs);
+    border: 1px solid var(--color-accent-solid);
+    border-radius: var(--radius-lg);
+    color: var(--color-accent-text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-style: normal;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+  }
+
+  [data-rule-level='must'] {
+    background: var(--color-accent-solid);
+    color: var(--color-accent-on-solid);
+  }
+
+  [data-rule-level='should'] {
+    border-color: transparent;
+    background: var(--color-accent-muted);
+  }
+
+  [data-docs-body] [data-rule-why] {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  [data-docs-body] [data-rule-why-label] {
+    margin-inline-end: var(--spacing-xs);
+    color: var(--color-text-primary);
+    font-style: normal;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  [data-docs-body] [data-rule-example] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+  }
+
+  @media (min-width: 64rem) {
+    [data-docs-body] [data-rule-example='pair'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  [data-docs-body] [data-rule-example-column] > p {
+    margin: 0 0 var(--spacing-xs);
+  }
+
+  [data-docs-body] [data-rule-example-column] figure {
+    margin: 0;
+    border-top-width: 2px;
+  }
+
+  [data-docs-body] [data-rule-example-label] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* the label's icon is its mask; without masks the label stands alone */
+  @supports (mask: none) {
+    [data-docs-body] [data-rule-example-label]::before {
+      content: '';
+      width: var(--spacing-icon-md);
+      height: var(--spacing-icon-md);
+      background-color: currentColor;
+      mask: var(--rule-example-icon) center / contain no-repeat;
+    }
+  }
+
+  [data-docs-body] [data-rule-example-column='avoid'] {
+    --rule-example-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E");
+  }
+
+  [data-docs-body] [data-rule-example-column='prefer'] {
+    --rule-example-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  }
+
+  [data-docs-body] [data-rule-example-column='avoid'] [data-rule-example-label] {
+    color: var(--color-text-danger);
+  }
+
+  [data-docs-body] [data-rule-example-column='avoid'] figure {
+    border-top-color: var(--color-border-danger);
+    background:
+      linear-gradient(var(--color-fill-danger), var(--color-fill-danger)), var(--color-surface-base);
+  }
+
+  [data-docs-body] [data-rule-example-column='prefer'] [data-rule-example-label] {
+    color: var(--color-text-success);
+  }
+
+  [data-docs-body] [data-rule-example-column='prefer'] figure {
+    border-top-color: var(--color-border-success);
+    background:
+      linear-gradient(var(--color-fill-success), var(--color-fill-success)),
+      var(--color-surface-base);
+  }
+
+  [data-docs-body] [data-rule-tag] {
+    display: inline-flex;
+    align-items: center;
+    height: var(--spacing-control-xs);
+    padding-inline: var(--spacing-xs);
+    border-radius: var(--radius-lg);
+    background: var(--color-fill-muted);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-style: normal;
+  }
+
+  [data-docs-body] > :first-child {
+    margin-top: 0;
+  }
+
+  /* biome-ignore lint/style/noDescendingSpecificity: a rule card's last child and the body's last child are different elements */
+  [data-docs-body] > :last-child {
+    margin-bottom: 0;
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel article > nav:last-child {
+    margin-top: var(--spacing-xl);
+  }
+
+  [data-docs-body] :where(h2, h3, h4) {
+    scroll-margin-top: var(--spacing-sm);
+  }
+
+  [data-docs-body] :where(h2) {
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  /* a section after the first opens on a hairline, halfway into the space before it */
+  [data-docs-body] > h2:not(:first-child) {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border-base);
+  }
+
+  [data-docs-body] :where(h3:not([data-rule])) {
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  [data-docs-body] :where(p, ul, ol, table, figure, blockquote) {
+    margin-block: var(--spacing-sm);
+  }
+
+  /* biome-ignore lint/style/noDescendingSpecificity: the figure's own pre is the more specific case and wins on its own */
+  [data-docs-body] pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@layer overrides {
+  /* the page's summary closes on a hairline, 32 above and below, as a section does */
+  [data-docs-description] {
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-base);
+  }
+}
