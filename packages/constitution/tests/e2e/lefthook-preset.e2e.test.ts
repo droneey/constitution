@@ -14,7 +14,7 @@ describe('the commit message hook', () => {
     'refactor: Move the fixtures beside their specs',
     'chore: Update dependencies',
     'feat!: Split the NestJS settings out of the node preset',
-    'fix: Keep the trailers of a signed commit\n\nSigned-off-by: Dmytro Kurovskyi <dmytro.kurovskyi@gmail.com>',
+    'fix: Keep the trailers of a signed commit\n\nSigned-off-by: Dmytro Kurovskyi <me@kurovskyi.dev>',
   ])(
     'should accept "%s" when it follows the four types and its footer holds only trailers',
     (message) => {

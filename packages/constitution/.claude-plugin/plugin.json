@@ -2,8 +2,9 @@
   "name": "constitution",
   "description": "The droneey constitution: the rules a project declares in constitution.yaml, delivered at session start.",
   "author": {
-    "name": "droneey",
-    "url": "https://github.com/droneey"
+    "name": "Dmytro Kurovskyi",
+    "email": "me@kurovskyi.dev",
+    "url": "https://kurovskyi.dev"
   },
   "repository": "https://github.com/droneey/constitution",
   "skills": [
