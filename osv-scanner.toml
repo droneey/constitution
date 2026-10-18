@@ -68,7 +68,7 @@ license.ignore = true
 reason = "this repository's own package, a member of its Bun workspace, under the repository's LICENSE.md"
 
 [[PackageOverrides]]
-name = "@droneey/site"
+name = "@droneey/docs"
 ecosystem = "npm"
 license.ignore = true
 reason = "this repository's own documentation site, a member of its Bun workspace, under the repository's LICENSE.md"

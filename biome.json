@@ -13,7 +13,7 @@
   ],
   "files": {
     "includes": [
-      "!apps/site"
+      "!apps/docs"
     ]
   },
   "overrides": [

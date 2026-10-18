@@ -18,7 +18,7 @@ export default {
       entry: [],
       project: [],
     },
-    'apps/site': {
+    'apps/docs': {
       entry: [
         ...core.entry,
         ...tanstackStart.entry,

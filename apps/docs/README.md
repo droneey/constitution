@@ -7,9 +7,9 @@ The site reads the repository's Markdown as GitHub shows it — the README, `doc
 ## Run it
 
 ```bash
-bun --cwd=apps/site run dev       # the site with live reload, at localhost:3000
-bun --cwd=apps/site run build     # the static site, in apps/site/.output/public
-bun --cwd=apps/site run theme:build   # the theme's stylesheet, from its tokens
+bun --cwd=apps/docs run dev       # the site with live reload, at localhost:3000
+bun --cwd=apps/docs run build     # the static site, in apps/docs/.output/public
+bun --cwd=apps/docs run theme:build   # the theme's stylesheet, from its tokens
 ```
 
 The site builds from its own folder, two levels below the repository's root, where it finds the files it renders.

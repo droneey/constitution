@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/site"
+      "path": "./apps/docs"
     },
     {
       "path": "./packages/constitution"

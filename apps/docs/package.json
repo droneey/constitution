@@ -1,5 +1,5 @@
 {
-  "name": "@droneey/site",
+  "name": "@droneey/docs",
   "version": "0.0.0",
   "private": true,
   "description": "The Constitution's site: its documentation and its blocks, rendered from the repository.",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/droneey/constitution.git",
-    "directory": "apps/site"
+    "directory": "apps/docs"
   },
   "type": "module",
   "imports": {

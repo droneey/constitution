@@ -18,7 +18,7 @@ export const enterRepository = (input: {
   const started = process.cwd();
 
   for (const folder of [
-    'apps/site',
+    'apps/docs',
     ...(input.folders ?? []),
   ]) {
     mkdirSync(join(root, folder), {
@@ -31,7 +31,7 @@ export const enterRepository = (input: {
     });
     writeFileSync(join(root, path), text);
   }
-  process.chdir(join(root, 'apps/site'));
+  process.chdir(join(root, 'apps/docs'));
 
   return {
     leave: (): void => {

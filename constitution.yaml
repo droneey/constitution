@@ -44,7 +44,7 @@ implementations:
   - rumdl
   - yamllint
 packages:
-  apps/site:
+  apps/docs:
     domains:
       - ui
       - design-system

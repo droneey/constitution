@@ -14,7 +14,7 @@ pre-commit:
       exclude:
         - "packages/constitution/templates/**"
     # biome.json leaves the site out, so its own configuration checks its staged files
-    - name: biome-apps-site
+    - name: biome-apps-docs
       stage_fixed: true
-      glob: "apps/site/**"
-      run: bunx --bun biome check --write --no-errors-on-unmatched --config-path=biome.apps-site.jsonc {staged_files}
+      glob: "apps/docs/**"
+      run: bunx --bun biome check --write --no-errors-on-unmatched --config-path=biome.apps-docs.jsonc {staged_files}
