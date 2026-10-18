@@ -15,7 +15,7 @@ const LANGUAGES = '## Languages (blocks/contexts/languages/<id>/<id>.md)';
 const IMPLEMENTATIONS = '## Implementations (blocks/implementations/<id>/<id>.md)';
 
 const firstLine = (root: string): string =>
-  `The droneey Constitution ${INSTALLED} supplies this repository's rules. Block files live under ${root}.`;
+  `The Droneey Constitution ${INSTALLED} supplies this repository's rules. Block files live under ${root}.`;
 
 const contextWith = (input: {
   body?: readonly string[];

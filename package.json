@@ -2,7 +2,7 @@
   "name": "@droneey/constitution-workspace",
   "version": "0.0.0",
   "private": true,
-  "description": "The workspace of the droneey Constitution: its rules and the tools that hold them.",
+  "description": "The workspace of the Droneey Constitution: its rules and the tools that hold them.",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Dmytro Kurovskyi",

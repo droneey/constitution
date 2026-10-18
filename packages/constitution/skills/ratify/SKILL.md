@@ -1,6 +1,6 @@
 ---
 name: ratify
-description: Put a repository under the droneey Constitution — look at its code, propose the blocks it follows, and interview the owner, then write constitution.yaml, PROJECT.md and DECISIONS.md after the owner's yes. Use when the owner asks to ratify, adopt or set up the Constitution in a repository.
+description: Put a repository under the Droneey Constitution — look at its code, propose the blocks it follows, and interview the owner, then write constitution.yaml, PROJECT.md and DECISIONS.md after the owner's yes. Use when the owner asks to ratify, adopt or set up the Constitution in a repository.
 disable-model-invocation: true
 ---
 
@@ -47,7 +47,7 @@ Tell the owner the installed release and the blocks above, grouped by layer, in 
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
-Every block holds at its root its base — what holds for any team, always followed — and may add two optional axes, a folder each: `architecture` — the droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
+Every block holds at its root its base — what holds for any team, always followed — and may add two optional axes, a folder each: `architecture` — the Droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
 
 Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
 

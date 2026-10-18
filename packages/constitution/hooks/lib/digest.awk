@@ -105,13 +105,13 @@ function print_json(   k) {
 function notice(kind, found,   archive) {
   archive = ENVIRON["CONSTITUTION_ROOT"]
   if (kind == "missing") {
-    head("The droneey Constitution is not installed in this repository: " archive " does not exist, so no rules are given.")
+    head("The Droneey Constitution is not installed in this repository: " archive " does not exist, so no rules are given.")
     head("Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.")
   } else if (kind == "older") {
-    head("The droneey Constitution in " archive " is older than block format " ENVIRON["CONSTITUTION_OLDEST"] ", the oldest this plugin reads, so no rules are given.")
+    head("The Droneey Constitution in " archive " is older than block format " ENVIRON["CONSTITUTION_OLDEST"] ", the oldest this plugin reads, so no rules are given.")
     head("Tell the user to raise the Constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.")
   } else {
-    head("The droneey Constitution in " archive " has block format " found ", newer than this plugin reads, so no rules are given.")
+    head("The Droneey Constitution in " archive " has block format " found ", newer than this plugin reads, so no rules are given.")
     head("Tell the user to update the Constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.")
   }
 }
@@ -131,7 +131,7 @@ END {
     exit
   }
   installed = ENVIRON["CONSTITUTION_INSTALLED"]
-  head("The droneey Constitution " installed " supplies this repository's rules. Block files live under " ENVIRON["CONSTITUTION_ROOT"] ".")
+  head("The Droneey Constitution " installed " supplies this repository's rules. Block files live under " ENVIRON["CONSTITUTION_ROOT"] ".")
   if (failed != "") {
     head("constitution.yaml does not parse at line " failed "; only core applies.")
     core()
