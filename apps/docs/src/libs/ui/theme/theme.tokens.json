@@ -1,5 +1,5 @@
 {
-  "$description": "The design system's one source, in the W3C Design Tokens format. Neutrals are the greys every droneey repository shares (zinc, hue 286), their lightness a ladder; the accent runs from gold (85) to amber (65), deep in light mode and pastel in dark; every size is on the 8-pixel grid, with 4 where a tight space needs it; radii follow nesting. design/theme.gen.ts checks it and writes src/styles/theme.css.",
+  "$description": "The design system's one source, in the W3C Design Tokens format. Neutrals are the greys every droneey repository shares (zinc, hue 286), their lightness a ladder; the accent runs from gold (85) to amber (65), deep in light mode and pastel in dark; every size is on the 8-pixel grid, with 4 where a tight space needs it; radii follow nesting. src/entrypoints/theme checks it and writes src/libs/ui/theme/theme.gen.css.",
   "dimension": {
     "$type": "dimension",
     "4": {
@@ -55,6 +55,18 @@
         "unit": "px",
         "value": 64
       }
+    },
+    "240": {
+      "$value": {
+        "unit": "px",
+        "value": 240
+      }
+    },
+    "352": {
+      "$value": {
+        "unit": "px",
+        "value": 352
+      }
     }
   },
   "spacing": {
@@ -102,6 +114,16 @@
     "header": {
       "$value": "{dimension.56}",
       "$description": "A common token: the height of the application's header."
+    },
+    "popup": {
+      "min": {
+        "$value": "{dimension.240}",
+        "$description": "A common token: the narrowest a dropdown opens."
+      },
+      "max": {
+        "$value": "{dimension.352}",
+        "$description": "A common token: the widest a dropdown opens."
+      }
     }
   },
   "radius": {
@@ -690,7 +712,9 @@
         40,
         48,
         56,
-        64
+        64,
+        240,
+        352
       ],
       "contrast": [
         {

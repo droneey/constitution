@@ -140,14 +140,14 @@
   }
 
   /* The page's gutter widens on a wider panel. The bar's controls overhang it by the space around
-     their icons, so an icon stands a gutter from the panel's sides and the wide gutter from its top
-     at every width; the bar is as tall as its paddings and controls make it, and the page starts
-     under it by the same sum. */
+     their icons, so an icon stands a gutter from the panel's sides; the bar centres them in the
+     padding above and below, is as tall as the two make it, and the page starts under it by the
+     same sum. */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
     --nd-overhang: calc((var(--spacing-control-md) - var(--spacing-icon-md)) / 2);
-    --nd-bar-padding: calc(var(--spacing-lg) - var(--nd-overhang));
+    --nd-bar-padding: var(--spacing-sm);
     --fd-header-height: calc(2 * var(--nd-bar-padding) + var(--spacing-control-md));
 
     @container (width >= 40rem) {
@@ -202,6 +202,17 @@
       );
       pointer-events: none;
     }
+  }
+
+  /* the trail stands apart from the expand button, the heading close to its slash */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header > button + nav {
+    margin-inline-start: var(--spacing-xs);
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-page-panel > header > div:has(> button[aria-haspopup='dialog']) {
+    gap: var(--spacing-xs);
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
