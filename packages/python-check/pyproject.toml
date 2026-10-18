@@ -58,3 +58,22 @@ target-version = "py314"
   "PLR2004",
   "S101",
 ]
+
+# poethepoet: each tool's check as a task of the package, named for what it checks
+# `uv run poe` has already entered the environment, so a task runs in it rather than through uv again
+[tool.poe]
+executor = "simple"
+
+[tool.poe.tasks]
+"format:check" = "ruff format --check"
+"format:fix" = "ruff format"
+"lint:check" = "ruff check"
+"lint:fix" = "ruff check --fix"
+"type:check" = "ty check --config-file ../../.droneey/constitution/presets/python/ty/self.toml"
+"code:check" = "python-check src tests"
+"complexity:check" = "complexipy src tests"
+test = "pytest --cov"
+"mutation:check" = "mutmut-check"
+"mutation:all" = "mutmut-check all"
+"unused:check" = "vulture"
+"dependencies:check" = "deptry src"
