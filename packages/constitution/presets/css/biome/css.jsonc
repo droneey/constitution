@@ -33,5 +33,11 @@
         "**/*.css",
       ],
     },
+    {
+      "path": "./.droneey/constitution/presets/css/biome/plugins/transition-names-its-properties.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
   ],
 }

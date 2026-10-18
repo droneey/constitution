@@ -100,11 +100,11 @@ A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps it
 
 ### pointer-target-at-least-24-css-px → target-meets-the-minimum-size · MUST
 
-A pointer target is at least 24 × 24 CSS pixels, padding included, or spaced so that a circle of 24 CSS pixels centred on it overlaps no other target, save the exceptions WCAG 2.5.8 lists.
+A pointer target is at least 24 × 24 CSS pixels, padding included, or spaced so that a circle of 24 CSS pixels centred on it overlaps no other target, save the exceptions WCAG 2.5.8 lists, and no target's area overlaps another's.
 
 | Why | Tags |
 |---|---|
-| 24 CSS pixels is the floor WCAG 2.2 sets for any pointer, and below it people with a tremor or a large finger hit the wrong target. | [a11y] |
+| 24 CSS pixels is the floor WCAG 2.2 sets for any pointer, and below it people with a tremor or a large finger hit the wrong target, and where two targets overlap a press may land on the one its user did not mean. | [a11y] |
 
 ### coarse-pointer-target-at-least-44-css-px · SHOULD
 
@@ -113,6 +113,30 @@ Where the primary pointer is coarse — `@media (pointer: coarse)` — a target 
 | Why | Tags |
 |---|---|
 | a finger covers far more than a cursor, and 44 pixels is the size WCAG's enhanced level sets for a target a thumb hits reliably. | [a11y, ux] |
+
+### fine-pointer-target-at-least-40-css-px · SHOULD
+
+Where the primary pointer is fine — `@media (pointer: fine)` — a target is at least 40 × 40 CSS pixels, save the exceptions WCAG 2.5.8 lists.
+
+| Why | Tags |
+|---|---|
+| the larger a target, the faster and surer a cursor lands on it, and 40 pixels gives a mouse or a trackpad that margin above WCAG's floor. | [a11y, ux] |
+
+### tabindex-only-zero-or-minus-one → focus-order-follows-the-visual-order · MUST
+
+An element's `tabindex` is `0` or `-1`, never a positive number.
+
+| Why | Tags |
+|---|---|
+| a positive `tabindex` moves its element ahead of every other in the order of the keyboard, wherever it sits on the screen. | [a11y] |
+
+### focusable-element-never-aria-hidden → control-operable-by-every-input · MUST
+
+No element that can take focus, or holds one that can, is `aria-hidden`.
+
+| Why | Tags |
+|---|---|
+| a screen reader user then reaches a control their reader cannot name or describe, and hears nothing where focus landed. | [a11y] |
 
 ### native-html-elements-first → native-semantics-first · MUST
 

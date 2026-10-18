@@ -1,0 +1,10 @@
+language css
+
+CssAtRule() as $rule where {
+  $rule <: r"(?is)@font-face\b.*",
+  or {
+    $rule <: r"(?is).*url\(\s*[\"']?[^\"')]*\.(?:ttf|otf|eot|svg|woff)(?:[\"')?#\s].*)",
+    $rule <: not r"(?is).*font-display\s*:\s*(?:swap|fallback|optional)\b.*"
+  },
+  register_diagnostic(span=$rule, message="Serve a web font as WOFF2 alone, with a font-display of swap, fallback or optional, so text shows while it loads", severity="error")
+}

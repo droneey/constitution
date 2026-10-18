@@ -1,0 +1,6 @@
+language css
+
+CssAtRule() as $rule where {
+  $rule <: r"(?s)@apply\b.*\btransition-all\b.*",
+  register_diagnostic(span=$rule, message="Name what moves with transition, transition-colors, transition-opacity or transition-transform: transition-all also animates layout and every colour of a theme switch", severity="error")
+}

@@ -57,6 +57,14 @@ A visual value no token holds is added as a token of the tier its meaning gives 
 |---|---|
 | a value borrowed from a token of another meaning changes when that meaning does, and one written in place is missed by every change of theme. | [ux] |
 
+### token-nothing-reads-deleted → dead-code-deleted · MUST
+
+A token that no component, theme or other token reads is deleted, save a token a package publishes to others.
+
+| Why | Tags |
+|---|---|
+| an unread token is a choice nobody makes, which every later reader weighs before picking a token. | [] |
+
 ## Variants
 
 ### own-variants-one-typed-map · MUST

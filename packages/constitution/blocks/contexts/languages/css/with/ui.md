@@ -1,6 +1,6 @@
 # CSS with a user interface
 
-> Governs how a stylesheet serves screens and components: focus, text size, reflow, hover, motion, values and scope.
+> Governs how a stylesheet serves screens and components: focus, boundaries, text size, wrapping, reflow, overlays, hover, motion, values and scope.
 
 ## Screens
 
@@ -46,6 +46,14 @@ Only the entry stylesheet, and the theme it imports, style elements by their typ
 |---|---|
 | a global rule in a component's stylesheet reaches every screen, and changes whenever that component is or is not loaded. | [] |
 
+### short-text-wrapped-to-balance · SHOULD
+
+A heading wraps with `text-wrap: balance`, and a short paragraph — a description, a caption — with `text-wrap: pretty`; long-form text takes neither.
+
+| Why | Tags |
+|---|---|
+| balanced lines keep a heading from ending on a lone word and pretty ones keep a short text's last line from holding one, while past a few lines the browser balances nothing, and re-wrapping every paragraph of a long page costs layout time no reader sees. | [ux] |
+
 ## Accessibility
 
 ### focus-ring-drawn-as-an-outline → focus-always-visible · MUST
@@ -55,6 +63,14 @@ Focus is shown on `:focus-visible` by an outline, or by a transparent outline be
 | Why | Tags |
 |---|---|
 | forced-colors mode drops shadows and repaints outlines in the system's colour, so only a ring drawn as an outline survives it. | [a11y] |
+
+### control-boundary-drawn-as-a-border → text-and-controls-meet-the-contrast-minimum · MUST
+
+A control whose boundary is drawn by a shadow or a background alone also carries a transparent border.
+
+| Why | Tags |
+|---|---|
+| forced-colors mode drops shadows and backgrounds and paints borders in the system's colour, so only a border keeps a control apart from the text around it. | [a11y] |
 
 ### sticky-content-reserves-scroll-padding → focus-always-visible · MUST
 
@@ -74,7 +90,7 @@ A font size is set in `rem`, in `em` relative to one, or by a `clamp()` whose bo
 
 ### text-spacing-overridable-without-clipping → wcag-aa-conformance · MUST
 
-No box that shows text clips it — none fixes its height while hiding its overflow, save one visually hidden for assistive technology — so text stays whole when the user sets line height to 1.5 times the font size, paragraph spacing to 2 times, letter spacing to 0.12 times and word spacing to 0.16 times.
+No box that shows text clips it — none fixes its height while hiding its overflow, save one visually hidden for assistive technology and text cut to fit whose whole text can be reached — so text stays whole when the user sets line height to 1.5 times the font size, paragraph spacing to 2 times, letter spacing to 0.12 times and word spacing to 0.16 times.
 
 | Why | Tags |
 |---|---|
@@ -87,6 +103,22 @@ At a width of 320 CSS pixels, content reflows into one column with no sideways s
 | Why | Tags |
 |---|---|
 | a page zoomed to 400 percent is 320 CSS pixels wide, and reading line by line while scrolling sideways loses the reader. | [a11y] |
+
+### text-wraps-instead-of-overflowing → wcag-aa-conformance · MUST
+
+Text the program does not write — a web address, an e-mail address, a name, the user's input — breaks inside its box where a word would overflow it, by `overflow-wrap: anywhere`, and never widens the page.
+
+| Why | Tags |
+|---|---|
+| one long word with no place to break pushes its box past the screen, and the whole page then scrolls sideways. | [a11y] |
+
+### decorative-layer-lets-input-through → control-operable-by-every-input · MUST
+
+An element that only decorates and lies over interactive content — a glow, a gradient, a sheen — takes `pointer-events: none`.
+
+| Why | Tags |
+|---|---|
+| an invisible layer over a control takes the click or the tap meant for it, and the control looks alive while nothing answers. | [a11y, ux] |
 
 ### hover-reveal-also-on-focus → hover-content-reachable-and-dismissible · MUST
 

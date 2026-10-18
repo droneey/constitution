@@ -121,7 +121,7 @@ A form control has a label, an image its `alt` text, an SVG and an iframe their 
 
 ### jsx-roles-and-aria-valid → native-semantics-first · MUST
 
-An element's role and ARIA attributes are valid and fit it: no redundant role, no role that makes an interactive element static or a static one interactive, no handler on a non-interactive element, an interactive element focusable, and no `aria-hidden` on a focusable one.
+An element's role and ARIA attributes are valid and fit it: no redundant role, no role that makes an interactive element static or a static one interactive, no handler on a non-interactive element, and an interactive element focusable.
 
 | Why | Tags |
 |---|---|

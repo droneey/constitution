@@ -133,8 +133,11 @@ react-dom:
     - noStaticElementInteractions
     - useSemanticElements
     - useValidAnchor
-  jsx-roles-and-aria-valid:
+  tabindex-only-zero-or-minus-one:
+    - noPositiveTabindex
+  focusable-element-never-aria-hidden:
     - noAriaHiddenOnFocusable
+  jsx-roles-and-aria-valid:
     - noInteractiveElementToNoninteractiveRole
     - noNoninteractiveElementInteractions
     - noNoninteractiveElementToInteractiveRole
@@ -173,6 +176,8 @@ tailwind:
     - noTailwindArbitraryValue
   logical-utilities-for-direction:
     - logical-utilities-for-direction.grit
+  transition-all-never-used:
+    - transition-all-never-used.grit
   focus-shown-by-focusable-utility:
     - focus-shown-by-focusable-utility.grit
   important-modifier-never-in-a-class-list:

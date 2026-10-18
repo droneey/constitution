@@ -1,6 +1,6 @@
 ---
 id: css
-summary: "Stylesheets: cascade layers, selectors, custom properties and classes."
+summary: "Stylesheets: layers, selectors, custom properties, classes, motion."
 requires: []
 extends: null
 abstract: false
@@ -126,3 +126,13 @@ A default meant to be overridden — the reset's, the base layer's, a library's 
 | Why | Tags |
 |---|---|
 | a default of zero specificity yields to any rule that styles the element, so an override never has to outweigh it, inside its layer or, for a library, in a stylesheet without layers. | [] |
+
+## Motion
+
+### transition-names-its-properties · MUST
+
+A transition names the properties it animates, in `transition` or `transition-property`, never `all`.
+
+| Why | Tags |
+|---|---|
+| `all` also moves what nobody meant to move — a layout property, every colour of a theme switch, a property a later change adds — and each one that changes is animated, a layout property with a new layout every frame. | [performance, ux] |

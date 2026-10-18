@@ -1,6 +1,16 @@
 # CSS with a browser
 
-> Governs which features a stylesheet may use in a browser, and the sizes it takes from the viewport.
+> Governs the fonts a stylesheet loads in a browser, the features it may use there and the sizes it takes from the viewport.
+
+## Code
+
+### web-font-served-as-woff2 · SHOULD
+
+A web font is served as WOFF2 alone, and its `@font-face` sets a `font-display` that shows text while the font loads: `swap`, `fallback` or `optional`.
+
+| Why | Tags |
+|---|---|
+| WOFF2 is the smallest form of a font and the browsers a Baseline target covers read it, and a font that blocks its text leaves it invisible for up to three seconds on a slow network. | [performance, ux] |
 
 ## Dependencies
 
