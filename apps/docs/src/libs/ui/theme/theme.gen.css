@@ -27,6 +27,7 @@
     --p-dimension-4: 0.25rem;
     --p-dimension-8: 0.5rem;
     --p-dimension-12: 0.75rem;
+    --p-dimension-14: 0.875rem;
     --p-dimension-16: 1rem;
     --p-dimension-20: 1.25rem;
     --p-dimension-24: 1.5rem;
@@ -100,14 +101,14 @@
   --spacing-layout-sidebar: var(--size-layout-sidebar);
   --spacing-layout-page: var(--size-layout-page);
   --text-xs: var(--p-dimension-12);
-  --text-sm: var(--p-dimension-16);
+  --text-sm: var(--p-dimension-14);
   --text-base: var(--p-dimension-16);
   --text-lg: var(--p-dimension-20);
   --text-xl: var(--p-dimension-24);
   --text-2xl: var(--p-dimension-32);
   --text-3xl: var(--p-dimension-40);
   --text-xs--line-height: var(--p-dimension-20);
-  --text-sm--line-height: var(--p-dimension-24);
+  --text-sm--line-height: var(--p-dimension-20);
   --text-base--line-height: var(--p-dimension-28);
   --text-lg--line-height: var(--p-dimension-28);
   --text-xl--line-height: var(--p-dimension-32);

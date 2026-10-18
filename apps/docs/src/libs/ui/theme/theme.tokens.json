@@ -20,6 +20,12 @@
         "value": 12
       }
     },
+    "14": {
+      "$value": {
+        "unit": "px",
+        "value": 14
+      }
+    },
     "16": {
       "$value": {
         "unit": "px",
@@ -732,12 +738,12 @@
   },
   "text": {
     "$type": "dimension",
-    "$description": "The type scale: a major third, 1.25, rounded to the 4-pixel grid. Tailwind reads each step as its text-* size, so the library's classes take it too.",
+    "$description": "The type scale: a major third, 1.25, rounded to the 4-pixel grid, with 14 for interface text. Tailwind reads each step as its text-* size, so the library's classes take it too.",
     "xs": {
       "$value": "{dimension.12}"
     },
     "sm": {
-      "$value": "{dimension.16}"
+      "$value": "{dimension.14}"
     },
     "base": {
       "$value": "{dimension.16}"
@@ -762,7 +768,7 @@
       "$value": "{dimension.20}"
     },
     "sm": {
-      "$value": "{dimension.24}"
+      "$value": "{dimension.20}"
     },
     "base": {
       "$value": "{dimension.28}"
@@ -797,6 +803,7 @@
         4,
         8,
         12,
+        14,
         16,
         20,
         24,
