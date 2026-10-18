@@ -58,7 +58,7 @@ event="${event:-SessionStart}"
 newest_format=2
 oldest_format=2
 
-# A project whose constitution this plugin cannot read gets the reason alone.
+# A project whose Constitution this plugin cannot read gets the reason alone.
 notice() {
   printf 'notice\t%s\t%s\n' "$1" "$2" |
     CONSTITUTION_ROOT="${archive}" CONSTITUTION_EVENT="${event}" CONSTITUTION_OLDEST="${oldest_format}" \
@@ -98,7 +98,7 @@ blocks_of() {
 tab="$(printf '\t')"
 files="$(blocks_of "${archive}" '')" || fail "cannot list the blocks of ${archive}"
 
-# A pack the project lists is a folder of blocks, read after the constitution's.
+# A pack the project lists is a folder of blocks, read after the Constitution's.
 while IFS= read -r record; do
   case "${record}" in
     "item${tab}${tab}packs${tab}"*) pack="${record#item"${tab}${tab}"packs"${tab}"}" ;;

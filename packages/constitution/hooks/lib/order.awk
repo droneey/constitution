@@ -1,4 +1,4 @@
-# Orders the Markdown files of a folder of blocks as the constitution's check
+# Orders the Markdown files of a folder of blocks as the Constitution's check
 # loads them: block by block, by layer and then by id, and in each the card,
 # its chapters by axis with an axis's own card first, then its seams. Prints a
 # key, a tab and the hook's "blockfile" record; sort orders by the key, and an

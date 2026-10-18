@@ -97,7 +97,7 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed('is missing; the constitution keeps the words of its architecture and workflow here'),
+      listed('is missing; the Constitution keeps the words of its architecture and workflow here'),
     ]);
   });
 

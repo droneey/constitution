@@ -265,9 +265,9 @@ const rebased = (block: Block): Block => ({
 });
 
 const BASE_BROKEN =
-  'is the constitution this pack extends, and it does not load; check it before the pack';
+  'is the Constitution this pack extends, and it does not load; check it before the pack';
 
-// The tree is the constitution's own package; the repository is the one that
+// The tree is the Constitution's own package; the repository is the one that
 // holds it, the same tree when the package is the repository. A pack is loaded
 // beside the base it extends, so its arrows and requires resolve against it.
 const loadConstitution = (input: {

@@ -11,7 +11,7 @@ governs: [".rumdl.toml"]
 
 # rumdl
 
-> Lints and formats Markdown. `.rumdl.toml` extends `presets/markdown/rumdl/core.toml` of the constitution's release archive, which extends `self.toml` — rumdl's default rules, the opt-in ones the rules of `markdown` and of core need, and its defaults that are stricter than those rules turned off — and `presets/markdown/rumdl/bindings.yaml` says which code holds which rule. It fails on a finding of any severity.
+> Lints and formats Markdown. `.rumdl.toml` extends `presets/markdown/rumdl/core.toml` of the Constitution's release archive, which extends `self.toml` — rumdl's default rules, the opt-in ones the rules of `markdown` and of core need, and its defaults that are stricter than those rules turned off — and `presets/markdown/rumdl/bindings.yaml` says which code holds which rule. It fails on a finding of any severity.
 
 ### rumdl-fmt-is-the-formatter → one-formatter-per-language · MUST
 

@@ -46,7 +46,7 @@ const withFiles = (extra: Readonly<Files>): Files => ({
 describe('pluginCheck', () => {
   it.each([
     {
-      expected: 'is missing; the constitution ships as a plugin and needs its manifest',
+      expected: 'is missing; the Constitution ships as a plugin and needs its manifest',
       files: without({
         files: validFiles(),
         path: PLUGIN,
@@ -440,7 +440,7 @@ describe('pluginCheck', () => {
     {
       expected: [
         {
-          message: 'is missing; the constitution ships as a plugin and needs its marketplace',
+          message: 'is missing; the Constitution ships as a plugin and needs its marketplace',
           path: MARKETPLACE,
         },
       ],

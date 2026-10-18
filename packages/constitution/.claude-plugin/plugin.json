@@ -1,6 +1,6 @@
 {
   "name": "constitution",
-  "description": "The droneey constitution: the rules a project declares in constitution.yaml, delivered at session start.",
+  "description": "The droneey Constitution: the rules a project declares in constitution.yaml, delivered at session start.",
   "author": {
     "name": "Dmytro Kurovskyi",
     "email": "me@kurovskyi.dev",

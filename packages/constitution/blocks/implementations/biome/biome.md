@@ -11,7 +11,7 @@ governs: ["biome.json", "biome.*.jsonc", "**/*.grit"]
 
 # Biome
 
-> Formats and lints. `biome.json` extends the parts of the constitution's release archive: those of `presets/common/biome/`, which read any language, and those of the scope of each active language it covers, `presets/typescript/biome/` and `presets/css/biome/`. On each axis — the base at the scope's root, an optional axis in its folder — a scope holds Biome's own settings, `self.jsonc`; core's, `core.jsonc`; the language's own, `typescript.jsonc` or `css.jsonc`; and the part of each other active block that has one, `<block>.jsonc`. The `bindings.yaml` beside the parts of each axis says which setting holds which rule. The limits are errors, with both line limits off under `**/__tests__/**`; `useMaxParams` counts positional parameters, while whether values make one whole is reviewed.
+> Formats and lints. `biome.json` extends the parts of the Constitution's release archive: those of `presets/common/biome/`, which read any language, and those of the scope of each active language it covers, `presets/typescript/biome/` and `presets/css/biome/`. On each axis — the base at the scope's root, an optional axis in its folder — a scope holds Biome's own settings, `self.jsonc`; core's, `core.jsonc`; the language's own, `typescript.jsonc` or `css.jsonc`; and the part of each other active block that has one, `<block>.jsonc`. The `bindings.yaml` beside the parts of each axis says which setting holds which rule. The limits are errors, with both line limits off under `**/__tests__/**`; `useMaxParams` counts positional parameters, while whether values make one whole is reviewed.
 >
 > A rule it cannot hold is reported, and needs another tool, a review or an override.
 
@@ -65,7 +65,7 @@ A function or a method named only `handle`, `process`, `manage`, `do`, `run`, `e
 
 ### project-grit-rules-scoped · SHOULD
 
-A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the constitution's presets carry it.
+A project's own GritQL rule lives in `biome/<name>.grit`, scoped by an override, until the Constitution's presets carry it.
 
 | Why | Tags |
 |---|---|

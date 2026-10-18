@@ -7,7 +7,7 @@ enum DocumentPath {
   Vocabulary = 'vocabulary.yaml',
 }
 
-// Where the blocks of the constitution a pack extends sit in the paths the
+// Where the blocks of the Constitution a pack extends sit in the paths the
 // checks report, apart from the pack's own.
 const BASE_PREFIX = '(base)/';
 

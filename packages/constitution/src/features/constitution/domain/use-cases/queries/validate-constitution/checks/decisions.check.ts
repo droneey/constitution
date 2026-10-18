@@ -87,7 +87,7 @@ const decisionsCheck: Check = ({ constitution }: CheckInput): readonly Finding[]
   return log === undefined
     ? [
         {
-          message: 'is missing; the constitution keeps its decision log at the root',
+          message: 'is missing; the Constitution keeps its decision log at the root',
           path: DocumentPath.Decisions,
         },
       ]

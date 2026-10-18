@@ -124,7 +124,7 @@ describe('repositoryRootOf', () => {
 });
 
 describe('createNodeBaseTree', () => {
-  it('should list the blocks and the vocabulary of an unpacked constitution and nothing else when it holds both', () => {
+  it('should list the blocks and the vocabulary of an unpacked Constitution and nothing else when it holds both', () => {
     // Arrange
     write({
       path: 'blocks/core/core.md',
@@ -158,7 +158,7 @@ describe('createNodeBaseTree', () => {
     });
   });
 
-  it('should list nothing when the folder holds no constitution', () => {
+  it('should list nothing when the folder holds no Constitution', () => {
     // Arrange
     const tree = createNodeBaseTree({
       root,

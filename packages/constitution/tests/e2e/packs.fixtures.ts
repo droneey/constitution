@@ -79,7 +79,7 @@ const createPack = (parent = 'dependency-reached-through-its-public-entry'): str
   return folder;
 };
 
-// The constitution's own check, run in the pack against this repository as its
+// The Constitution's own check, run in the pack against this repository as its
 // base, as a pack's author runs the one its base's archive carries.
 const checkPack = (pack: string): Run => {
   const run = spawnSync(

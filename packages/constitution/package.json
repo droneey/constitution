@@ -2,7 +2,7 @@
   "name": "@droneey/constitution",
   "version": "0.69.0",
   "private": true,
-  "description": "The engineering constitution of droneey: blocks of rules a project declares in constitution.yaml.",
+  "description": "The droneey Constitution: the engineering rules a project declares in constitution.yaml, by blocks.",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Dmytro Kurovskyi",

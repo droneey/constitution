@@ -111,7 +111,7 @@ interface Source {
   vocabularyParser: VocabularyParser;
 }
 
-// A constitution that is its repository, unless the repository's own files are given.
+// A Constitution that is its repository, unless the repository's own files are given.
 const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = files): Source => ({
   bindingsParser: createYamlBindingsParser(),
   frontMatterParser: createYamlFrontMatterParser(),

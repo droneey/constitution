@@ -130,7 +130,7 @@ An agent that delegates keeps the responsibility: it names the rules and files t
 
 ### agent-file-restates-no-rule · SHOULD
 
-An instruction file for agents in a project restates no rule; it only points to the constitution, which delivers the rules, and to `PROJECT.md`.
+An instruction file for agents in a project restates no rule; it only points to the Constitution, which delivers the rules, and to `PROJECT.md`.
 
 | Why | Tags |
 |---|---|

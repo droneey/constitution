@@ -8,7 +8,7 @@ const PRINCIPLES = 'blocks/core/principles.md';
 const README = 'README.md';
 
 describe('linksCheck', () => {
-  it('should resolve the README and the decision log against the repository when the constitution is a package of it', () => {
+  it('should resolve the README and the decision log against the repository when the Constitution is a package of it', () => {
     // Arrange
     const files = without({
       files: validFiles(),

@@ -18,7 +18,7 @@ import {
 } from '#/features/constitution/adapters/yaml';
 
 interface Wiring {
-  // The constitution a pack extends, when the tree is a pack.
+  // The Constitution a pack extends, when the tree is a pack.
   base: FileTree | undefined;
   bindingsParser: BindingsParser;
   console: {

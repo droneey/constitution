@@ -1,6 +1,6 @@
 ---
 name: amend
-description: Add, change or remove an override in this repository's constitution.yaml — lower one constitution rule to SHOULD or MAY, with the owner's reason and consent. Use when the owner wants to record, renew or drop a departure from a rule.
+description: Add, change or remove an override in this repository's constitution.yaml — lower one Constitution rule to SHOULD or MAY, with the owner's reason and consent. Use when the owner wants to record, renew or drop a departure from a rule.
 argument-hint: "[rule-slug]"
 disable-model-invocation: true
 ---
@@ -15,7 +15,7 @@ The rule, when given: $ARGUMENTS
 
 ## What an override is
 
-An override lowers one constitution rule, for the whole repository or for one unit, and records why. Every session's digest shows it, and the reminders mark the rule with its new level. It is the only way a repository departs from a rule, so it is written with the owner's explicit consent in this chat, for this override — never implied from a reason, a request to proceed, or consent to another override.
+An override lowers one Constitution rule, for the whole repository or for one unit, and records why. Every session's digest shows it, and the reminders mark the rule with its new level. It is the only way a repository departs from a rule, so it is written with the owner's explicit consent in this chat, for this override — never implied from a reason, a request to proceed, or consent to another override.
 
 If there is no `constitution.yaml` above, look for it at the repository root — the folder, going up from the project folder, that holds `.git`. If there is none, stop and suggest `/ratify`.
 
