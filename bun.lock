@@ -14,7 +14,7 @@
     },
     "packages/constitution": {
       "name": "@droneey/constitution",
-      "version": "0.69.0",
+      "version": "0.69.1",
       "dependencies": {
         "yaml": "^2.9.1",
         "zod": "^4.6.7",
