@@ -1,6 +1,6 @@
 {
   "name": "@droneey/constitution",
-  "version": "0.71.0",
+  "version": "0.71.1",
   "private": true,
   "description": "The Droneey Constitution: the engineering rules a project declares in constitution.yaml, by blocks.",
   "license": "SEE LICENSE IN LICENSE.md",
