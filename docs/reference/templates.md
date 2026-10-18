@@ -1,10 +1,12 @@
 # Templates
 
-> The files a release starts a project from, in `.droneey/constitution/templates/`.
+> The files a project starts from: its own files, and the configurations of the tools that cannot extend the presets.
 
-## The project's own files
+A release keeps them in `.droneey/constitution/templates/`.
 
-`/constitution:ratify` writes these:
+## Written by ratify
+
+`/constitution:ratify` writes the project's own files from these:
 
 | Template | Becomes |
 |---|---|
@@ -15,21 +17,33 @@
 
 ## Starter files
 
-For a tool whose configuration cannot extend the presets, a project starts from these, in `templates/project/<scope>/<block>/`, when it takes the block:
+A project copies these from `templates/project/<scope>/<block>/` when it takes the block.
 
-| Scope | Block | File | Holds |
-|---|---|---|---|
-| common | core | `.editorconfig` | two spaces, LF, UTF-8, and shfmt's options |
-| common | core | `.gitignore` | `/.droneey`, the system's files, `.env` files but the example, logs |
-| python | python | `.gitignore` | bytecode and the caches of the Python tools |
-| python | python | `pyproject.toml` | the pinned tools, uv, the Ruff chain, pytest and its coverage gate, mutmut, the import contracts |
-| python | python | `tests/conftest.py` | a fixture that refuses the network in unit specs |
-| typescript | typescript | `.gitignore` | `node_modules`, logs, caches, `.npmrc` |
-| typescript | bun | `bunfig.toml` | unit specs in a sandbox and in random order, and a minimum age for new packages |
-| typescript | bun | `bunfig.integration.toml` | the integration run and its coverage gate |
-| typescript | bun | `bunfig.mutation.toml` | the specs a mutation run uses |
-| typescript | bun | `src/__tests__/sandbox.fixtures.ts` | `fetch`, sockets and SQL that throw in specs |
-| typescript | lingui | `src/__tests__/lingui.fixtures.ts` | Lingui's macros and catalogs compiled for specs |
-| typescript | nestjs | `.swcrc` | the decorator metadata Nest's injector reads |
-| typescript | react-dom | `src/__tests__/dom.fixtures.ts` | the DOM globals of happy-dom for specs |
-| typescript | ts-reset | `src/reset.d.ts` | ts-reset, so parsed JSON is `unknown` |
+### Common
+
+| Block | File | Holds |
+|---|---|---|
+| core | `.editorconfig` | two spaces, LF, UTF-8, and shfmt's options |
+| core | `.gitignore` | `/.droneey`, the system's files, `.env` files but the example, logs |
+
+### Python
+
+| Block | File | Holds |
+|---|---|---|
+| python | `.gitignore` | bytecode and the caches of the Python tools |
+| python | `pyproject.toml` | the pinned tools, uv, the Ruff chain, pytest and its coverage gate, mutmut, the import contracts |
+| python | `tests/conftest.py` | a fixture that refuses the network in unit specs |
+
+### TypeScript
+
+| Block | File | Holds |
+|---|---|---|
+| typescript | `.gitignore` | `node_modules`, logs, caches, `.npmrc` |
+| bun | `bunfig.toml` | unit specs in a sandbox and in random order, and a minimum age for new packages |
+| bun | `bunfig.integration.toml` | the integration run and its coverage gate |
+| bun | `bunfig.mutation.toml` | the specs a mutation run uses |
+| bun | `src/__tests__/sandbox.fixtures.ts` | `fetch`, sockets and SQL that throw in specs |
+| lingui | `src/__tests__/lingui.fixtures.ts` | Lingui's macros and catalogs compiled for specs |
+| nestjs | `.swcrc` | the decorator metadata Nest's injector reads |
+| react-dom | `src/__tests__/dom.fixtures.ts` | the DOM globals of happy-dom for specs |
+| ts-reset | `src/reset.d.ts` | ts-reset, so parsed JSON is `unknown` |

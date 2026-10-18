@@ -7,5 +7,7 @@ extends = ".droneey/constitution/presets/markdown/rumdl/core.toml"
 "**/SKILL.md" = ["MD033"]
 # A block's format fixes its levels: rules are H3 under the title or an H2 chapter.
 "packages/constitution/blocks/**/*.md" = ["MD001"]
+# The brand's banner switches with the reader's theme and its badges sit centred, which Markdown cannot write.
+"README.md" = ["MD033"]
 # The template shows that format, its placeholders in angle brackets.
 "packages/constitution/templates/block.md" = ["MD001", "MD033"]

@@ -43,7 +43,30 @@ implementations:
   - shfmt
   - rumdl
   - yamllint
-packages: {}
+packages:
+  apps/docs:
+    domains:
+      - ui
+      - design-system
+      - untrusted-client
+    platforms:
+      - browser
+    languages:
+      - css
+    implementations:
+      - react-dom
+      - tailwind
+      - tanstack-router
+      - tanstack-start
+      - testing-library
+      - vite
+    overrides:
+      - rule: selector-never-targets-an-id
+        level: MAY
+        reason: "Fumadocs exposes the parts of its layout only by their ids, so the site's styles reach them there"
+      - rule: utilities-only-from-tokens
+        level: SHOULD
+        reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"
 check: bun run check
 overrides:
   - rule: agent-file-restates-no-rule

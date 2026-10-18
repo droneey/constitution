@@ -142,11 +142,31 @@ const workspace = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-branch
 
 workspaceOf(workspace);
 
+// a repository that never fetched the main line
+const lone = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-lone-')));
+
+git({
+  args: [
+    'init',
+    '--quiet',
+  ],
+  folder: lone,
+});
+commit({
+  files: WORKSPACE,
+  folder: lone,
+});
+
 afterAll(() => {
-  rmSync(workspace, {
-    force: true,
-    recursive: true,
-  });
+  for (const folder of [
+    workspace,
+    lone,
+  ]) {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
 });
 
 describe('branchIn', () => {
@@ -197,6 +217,30 @@ describe('branchIn', () => {
 
     // Assert
     expect(text).toBe('export const total = 1;\n');
+  });
+
+  test('should read no text for a file the main line never had', () => {
+    // Arrange
+    const { baseText } = branchIn(join(workspace, UNIT));
+
+    // Act
+    const text = baseText('src/line.utils.ts');
+
+    // Assert
+    expect(text).toBe('');
+  });
+
+  test("should fail with git's reason when the repository has no main line", () => {
+    // Arrange
+    const folder = lone;
+
+    // Act
+    const read = (): unknown => branchIn(folder);
+
+    // Assert
+    expect(read).toThrow(
+      `git merge-base HEAD origin/main failed in ${lone}: fatal: Not a valid object name origin/main`,
+    );
   });
 
   test('should fail when git cannot run in the folder', () => {

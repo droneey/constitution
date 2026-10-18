@@ -1554,3 +1554,11 @@
   - Keeping local blocks beside packs: two mechanisms for one thing, the project's own blocks, one of them able to hold only a card.
   - A fixed folder for a project's own pack: the project names its path, as it names any pack's.
 - **Why.** Measured on the 349 files of the constitution, reading the Markdown costs the session start nothing an index saves, so the index was a build step and a second form with no gain. One reader for every block — the constitution's, a shared pack's, the project's own — leaves one engine, and a block edited in a working tree reaches the next session as it is.
+
+## ADR-0206 — TanStack Start requires no server
+
+**Date:** 2026-10-18 · **Status:** Accepted
+
+- **Decision.** `tanstack-start` requires `tanstack-router` alone. A project whose Start server serves the program lists `server` itself; one that prerenders a static site, served by a static host, lists none. The rules of the headers and caching name both — Nitro's `routeRules` or the host's configuration — and what needs a running server moves into the block's seams with `server`: `runtime-config-from-one-server-function` in `with/server.md`, and the half of `spa-mode-without-server-logic` that bounds what Start's server holds in `architecture/with/server.md`; its other half, that the program renders on the client, stays in the block as `spa-mode-renders-on-the-client`.
+- **Rejected.** Keeping `server` among its requirements: a static site would follow the rules of a program it never runs, or carry an override for each of them.
+- **Why.** The Constitution's own site is a static build of Start, and its digest asked for a server it does not have.

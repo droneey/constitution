@@ -13,3 +13,8 @@ pre-commit:
     - name: ruff
       exclude:
         - "packages/constitution/templates/**"
+    # biome.json leaves the site out, so its own configuration checks its staged files
+    - name: biome-apps-docs
+      stage_fixed: true
+      glob: "apps/docs/**"
+      run: bunx --bun biome check --write --no-errors-on-unmatched --config-path=biome.apps-docs.jsonc {staged_files}

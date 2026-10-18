@@ -21,7 +21,8 @@ name: Check
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read

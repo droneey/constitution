@@ -1,0 +1,5 @@
+# tanstack-start: the build and the generated sources
+.output/
+.nitro/
+.tanstack/
+.source/

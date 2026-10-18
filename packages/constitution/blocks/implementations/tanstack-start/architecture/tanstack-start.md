@@ -1,12 +1,12 @@
 # TanStack Start
 
-### spa-mode-without-server-logic → rendering-server-only-delivers · MUST
+### spa-mode-renders-on-the-client · MUST
 
-The application runs in SPA mode: the root route renders on the client, and Start's server holds no server function, server route or data access, save the one server function that serves the public projection of the configuration and, where the API takes bearer tokens, the session proxy its parent allows. The shell it prerenders only speeds the first paint.
+The application runs in SPA mode: the root route renders on the client, and the shell Start prerenders only speeds the first paint.
 
 | Why | Tags |
 |---|---|
-| a server tier with logic of its own is a second backend nobody designed. | [security] |
+| the program renders in the tab alone, so one build serves from a static host or from Start's server alike. | [] |
 
 ### root-route-builds-the-document → composition-root-wires-everything · MUST
 
