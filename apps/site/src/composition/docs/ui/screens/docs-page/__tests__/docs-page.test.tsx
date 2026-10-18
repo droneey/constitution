@@ -15,6 +15,7 @@ import {
 } from '../../../../__tests__/docs.fixtures';
 import { frameFake } from '../../../../__tests__/docs-frame.fake';
 import { loadedVersions } from '../../../../__tests__/get-versions.fake';
+import { pageScrollerSelector } from '../../../constants';
 import { DocsPageScreen } from '../docs-page';
 
 const BUILT_VERSION = process.env.VITE_CONSTITUTION_VERSION;
@@ -119,6 +120,19 @@ describe('DocsPageScreen', () => {
       'main',
       -1,
     ]);
+  });
+
+  test('should name the element the page scrolls in, which the router brings back to the top', async () => {
+    // Arrange
+    renderInDocs(overviewPage());
+
+    // Act
+    await headingOf('Overview');
+
+    // Assert
+    expect(document.querySelector(pageScrollerSelector)?.contains(screen.getByRole('main'))).toBe(
+      true,
+    );
   });
 
   test('should keep the heading out of the tab order', async () => {

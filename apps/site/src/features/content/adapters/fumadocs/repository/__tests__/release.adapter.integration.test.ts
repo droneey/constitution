@@ -14,12 +14,14 @@ afterEach(() => {
 });
 
 describe('releaseOf', () => {
-  it("should read the release from the Constitution's package", () => {
+  it.each([
+    '1.2.3',
+    '10.20.30',
+  ])("should read the release %s from the Constitution's package", (version) => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        'packages/constitution/package.json':
-          '{ "name": "@droneey/constitution", "version": "1.2.3" }',
+        'packages/constitution/package.json': `{ "name": "@droneey/constitution", "version": "${version}" }`,
       },
     }).leave;
 
@@ -27,7 +29,7 @@ describe('releaseOf', () => {
     const release = releaseOf();
 
     // Assert
-    expect(release).toBe('1.2.3');
+    expect(release).toBe(version);
   });
 
   it.each([
@@ -38,6 +40,14 @@ describe('releaseOf', () => {
     {
       condition: 'its version is not a release',
       manifest: '{ "version": "next" }',
+    },
+    {
+      condition: 'its version carries a prefix',
+      manifest: '{ "version": "v1.2.3" }',
+    },
+    {
+      condition: 'its version carries a suffix',
+      manifest: '{ "version": "1.2.3-next" }',
     },
   ])('should fail when $condition', ({ manifest }) => {
     // Arrange
