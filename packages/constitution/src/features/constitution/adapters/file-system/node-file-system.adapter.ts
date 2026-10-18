@@ -27,7 +27,7 @@ const normalized = (text: string): string =>
   );
 
 // One adapter for the one system: the tree reads what git holds — an ignored
-// file is no part of the constitution, and CI sees only committed files.
+// file is no part of the Constitution, and CI sees only committed files.
 const createNodeFileSystem = (input: { root: string }): FileTree => ({
   list: (): readonly string[] =>
     [
@@ -43,7 +43,7 @@ const createNodeFileSystem = (input: { root: string }): FileTree => ({
   read: (path: string): string => normalized(readFileSync(join(input.root, path), 'utf8')),
 });
 
-// The installed constitution a pack extends, as mise unpacks it: no repository
+// The installed Constitution a pack extends, as mise unpacks it: no repository
 // of its own, so its blocks and vocabulary are read from the folders.
 const BASE_FOLDER = 'blocks';
 const BASE_VOCABULARY = 'vocabulary.yaml';

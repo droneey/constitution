@@ -5,7 +5,7 @@ const TEMPLATES = join(import.meta.dir, '..', '..', '..', '..', 'templates');
 const PLACEHOLDER = /<[^>\n]+>/;
 const PARAGLIDE_DIR = 'blocks/implementations/paraglide';
 
-// What /ratify writes for Paraglide, a library the constitution has no block for.
+// What /ratify writes for Paraglide, a library the Constitution has no block for.
 const PARAGLIDE: ReadonlyArray<
   readonly [
     string,

@@ -1166,7 +1166,7 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'a block of the pack takes the id of a constitution block',
+      condition: 'a block of the pack takes the id of a Constitution block',
       layout: {
         config: configOf({
           domains: '[version-control]',
@@ -1186,7 +1186,7 @@ describe('session-start hook', () => {
     },
     {
       condition:
-        'rules of the pack name a rule of the constitution and a rule of a block of the pack read after them',
+        'rules of the pack name a rule of the Constitution and a rule of a block of the pack read after them',
       layout: {
         config: configOf({
           implementations: '[kit, kit-base]',
@@ -1730,7 +1730,7 @@ describe('session-start hook', () => {
     {
       condition: 'the project holds no archive',
       notice: (archive): readonly string[] => [
-        `The droneey constitution is not installed in this repository: ${archive} does not exist, so no rules are given.`,
+        `The droneey Constitution is not installed in this repository: ${archive} does not exist, so no rules are given.`,
         'Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.',
       ],
       unlinked: true,
@@ -1739,7 +1739,7 @@ describe('session-start hook', () => {
       condition: "the project's archive link points nowhere",
       dangling: true,
       notice: (archive): readonly string[] => [
-        `The droneey constitution is not installed in this repository: ${archive} does not exist, so no rules are given.`,
+        `The droneey Constitution is not installed in this repository: ${archive} does not exist, so no rules are given.`,
         'Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.',
       ],
     },
@@ -1760,16 +1760,16 @@ describe('session-start hook', () => {
     ].map((older: Omit<NoticeCase, 'notice'>) => ({
       ...older,
       notice: (archive: string): readonly string[] => [
-        `The droneey constitution in ${archive} is older than block format 2, the oldest this plugin reads, so no rules are given.`,
-        'Tell the user to raise the constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.',
+        `The droneey Constitution in ${archive} is older than block format 2, the oldest this plugin reads, so no rules are given.`,
+        'Tell the user to raise the Constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.',
       ],
     })),
     {
       condition: 'the block format is newer than the plugin reads',
       format: 3,
       notice: (archive): readonly string[] => [
-        `The droneey constitution in ${archive} has block format 3, newer than this plugin reads, so no rules are given.`,
-        'Tell the user to update the constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.',
+        `The droneey Constitution in ${archive} has block format 3, newer than this plugin reads, so no rules are given.`,
+        'Tell the user to update the Constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.',
       ],
     },
   ])(

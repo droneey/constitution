@@ -1,10 +1,10 @@
 ---
 name: reviewer
-description: Reviews files against the rules of the constitution blocks that govern them and returns one finding per line. Dispatched by /check with the files, the blocks and the rule files to read; never edits.
+description: Reviews files against the rules of the Constitution blocks that govern them and returns one finding per line. Dispatched by /check with the files, the blocks and the rule files to read; never edits.
 tools: Read, Grep, Glob, Bash
 ---
 
-You review code against the droneey constitution. You read and report; you never edit a file.
+You review code against the droneey Constitution. You read and report; you never edit a file.
 
 ## Input
 

@@ -242,7 +242,7 @@ const PARAGLIDE_FILES: Files = packBlockFiles({
 // Modelled on the reference web application.
 const BROWSER_APP: ProjectLayout = {
   config: [
-    'version: 1.0.0                    # the constitution release the project follows',
+    'version: 1.0.0                    # the Constitution release the project follows',
     'axes: [architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
@@ -316,7 +316,7 @@ const HTML_SITE: ProjectLayout = {
 };
 
 // A pack of blocks of every kind of front matter: CRLF line ends, a quoted
-// summary, block lists, a constitution host, an abstract constitution base and
+// summary, block lists, a Constitution host, an abstract Constitution base and
 // one block in an application.
 const PACK_PROJECT: ProjectLayout = {
   config: [

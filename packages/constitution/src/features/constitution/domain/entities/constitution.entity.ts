@@ -28,7 +28,7 @@ interface Constitution {
   readonly documents: Documents;
   readonly paths: ReadonlySet<string>;
   readonly presets: readonly PresetFile[];
-  // The files of the repository that holds the constitution, which its README and decision log link to.
+  // The files of the repository that holds the Constitution, which its README and decision log link to.
   readonly repositoryPaths: ReadonlySet<string>;
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];

@@ -1,7 +1,7 @@
 import { validateConstitution } from '#/features/constitution';
 import { createWiring } from '#/root';
 
-// A pack is checked against the constitution it extends: --base <folder>.
+// A pack is checked against the Constitution it extends: --base <folder>.
 const baseAt = process.argv.indexOf('--base');
 const wiring = createWiring({
   base: baseAt === -1 ? undefined : process.argv[baseAt + 1],

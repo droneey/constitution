@@ -11,7 +11,7 @@ governs: [".shellcheckrc"]
 
 # ShellCheck
 
-> Analyses shell. It extends no file, so `.shellcheckrc` at the project's root is a copy of `presets/shell/shellcheck/self.shellcheckrc` of the constitution's release archive, which enables by name the optional checks the rules of `shell` need, and `presets/shell/shellcheck/bindings.yaml` says which check holds which rule. The checks it runs by default, which no file names, hold most of the rest, and its default severity, `style`, reports every finding.
+> Analyses shell. It extends no file, so `.shellcheckrc` at the project's root is a copy of `presets/shell/shellcheck/self.shellcheckrc` of the Constitution's release archive, which enables by name the optional checks the rules of `shell` need, and `presets/shell/shellcheck/bindings.yaml` says which check holds which rule. The checks it runs by default, which no file names, hold most of the rest, and its default severity, `style`, reports every finding.
 
 ### optional-checks-enabled-by-name · MUST
 

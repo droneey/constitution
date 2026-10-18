@@ -194,7 +194,7 @@ describe('validateConstitution', () => {
       findings: [
         {
           message:
-            'is the constitution this pack extends, and it does not load; check it before the pack',
+            'is the Constitution this pack extends, and it does not load; check it before the pack',
           path: '(base)/',
         },
       ],

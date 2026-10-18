@@ -39,7 +39,7 @@ enum Template {
 }
 
 const missing = (input: { path: string; role: string }): Finding => ({
-  message: `is missing; the constitution ships as a plugin and needs its ${input.role}`,
+  message: `is missing; the Constitution ships as a plugin and needs its ${input.role}`,
   path: input.path,
 });
 

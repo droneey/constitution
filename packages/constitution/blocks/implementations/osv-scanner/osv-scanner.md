@@ -11,7 +11,7 @@ governs: ["osv-scanner.toml"]
 
 # OSV-Scanner
 
-> Checks the dependencies of any language by their lockfiles against the OSV database, and their licences against the shared allowlist, which the constitution's release archive carries as `presets/common/osv-scanner/core.txt`. It holds every active rule on known vulnerabilities and licences. It has no severity floor: any known vulnerability is a finding.
+> Checks the dependencies of any language by their lockfiles against the OSV database, and their licences against the shared allowlist, which the Constitution's release archive carries as `presets/common/osv-scanner/core.txt`. It holds every active rule on known vulnerabilities and licences. It has no severity floor: any known vulnerability is a finding.
 
 ### every-lockfile-scanned-for-vulnerabilities → dependency-free-of-known-vulnerabilities · MUST
 
@@ -23,11 +23,11 @@ OSV-Scanner reads every lockfile of the repository, in every language, developme
 
 ### licences-checked-against-the-shared-allowlist → dependency-licence-on-the-allowlist · MUST
 
-OSV-Scanner checks every licence against the allowlist of the constitution's release archive, so a licence that is not on it is a finding.
+OSV-Scanner checks every licence against the allowlist of the Constitution's release archive, so a licence that is not on it is a finding.
 
 | Why | Tags |
 |---|---|
-| one list, versioned with the constitution, says which licences every repository accepts. | [] |
+| one list, versioned with the Constitution, says which licences every repository accepts. | [] |
 
 ### accepted-vulnerability-states-reason-and-expiry → dependency-free-of-known-vulnerabilities · MUST
 

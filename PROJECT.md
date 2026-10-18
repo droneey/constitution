@@ -4,7 +4,7 @@
 
 ## One-liner
 
-The droneey constitution: the engineering rules every droneey repository is built by, delivered as a release archive each project pins, which a Claude Code plugin reads.
+The droneey Constitution: the engineering rules every droneey repository is built by, delivered as a release archive each project pins, which a Claude Code plugin reads.
 
 ## Context and users
 
@@ -27,7 +27,7 @@ The droneey constitution: the engineering rules every droneey repository is buil
 - **Digest** — what the hook prints: the active blocks of a project, core's part and MUST headlines.
 - **Preset part** — a file of `presets/<scope>/<tool>/<axis>/`, named after the block its settings need.
 - **Binding** — an entry of a preset's `bindings.yaml`: the settings of a part that hold a rule.
-- **Decision** — an entry of `DECISIONS.md`: why a rule of the constitution is what it is.
+- **Decision** — an entry of `DECISIONS.md`: why a rule of the Constitution is what it is.
 
 ## Critical scenarios
 

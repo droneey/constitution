@@ -157,7 +157,7 @@ const vocabularyCheck: Check = ({ constitution }: CheckInput): readonly Finding[
     return [
       {
         message:
-          'is missing; the constitution keeps the words of its architecture and workflow here',
+          'is missing; the Constitution keeps the words of its architecture and workflow here',
         path: DocumentPath.Vocabulary,
       },
     ];

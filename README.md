@@ -1,18 +1,18 @@
-# constitution
+# Constitution
 
-The engineering constitution of droneey: the rules every repository is built by, split into **blocks**. A project lists the blocks it follows in one file, `constitution.yaml`, and describes itself in `PROJECT.md`; everything else lives here, versioned by tags.
+The droneey Constitution: the engineering rules every repository is built by, split into **blocks**. A project lists the blocks it follows in one file, `constitution.yaml`, and describes itself in `PROJECT.md`; everything else lives here, versioned by tags.
 
-The constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
+The Constitution is being rebuilt as v1.0 in seven steps, tracked in #50.
 
 ## 📦 Layout
 
-The repository is a workspace of three packages: `packages/constitution`, the rules and what ships with them; `packages/mutation-check`, which mutates only the lines a change touches, over Stryker in `languages/typescript` and over mutmut in `languages/python`; and `packages/python-check`, which holds the lengths of functions and files, where a relative import may reach and where a package may be imported. Its root holds the workspace — one per language, `package.json` and `pyproject.toml` — the configuration of its tools, `.claude-plugin/marketplace.json`, `constitution.yaml`, `PROJECT.md` and `DECISIONS.md`, the constitution's own decision log.
+The repository is a workspace of three packages: `packages/constitution`, the rules and what ships with them; `packages/mutation-check`, which mutates only the lines a change touches, over Stryker in `languages/typescript` and over mutmut in `languages/python`; and `packages/python-check`, which holds the lengths of functions and files, where a relative import may reach and where a package may be imported. Its root holds the workspace — one per language, `package.json` and `pyproject.toml` — the configuration of its tools, `.claude-plugin/marketplace.json`, `constitution.yaml`, `PROJECT.md` and `DECISIONS.md`, the Constitution's own decision log.
 
 `packages/constitution` holds:
 
 | 📂 Path | 🧩 Holds |
 |---|---|
-| `blocks/core` | What holds for any program, always active: its card `core.md`, how to use the constitution, which holds no rule; its chapters at its root and in `architecture/` and `workflow/`, each named for what its rules govern |
+| `blocks/core` | What holds for any program, always active: its card `core.md`, how to use the Constitution, which holds no rule; its chapters at its root and in `architecture/` and `workflow/`, each named for what its rules govern |
 | `blocks/domains/<id>` | An aspect a project has or has not, whatever its technology — `ui`, `remote-data`, `version-control` |
 | `blocks/contexts/platforms/<id>` | Where the code runs — `browser`, `mobile`, `cli` |
 | `blocks/contexts/languages/<id>` | What it is written in — `typescript`, `css`, `python` |
@@ -24,7 +24,7 @@ The repository is a workspace of three packages: `packages/constitution`, the ru
 | `templates` | What `/ratify` writes from: `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, and `block.md` for a block of a project's own pack; `project/<scope>/<block>/`, a project's starter files |
 | `tools` | The programs the release archive carries, built by `bun run build` from the other packages and ignored by git: `mutation-check`, `mutmut-check` and `python-check` |
 | `.claude-plugin` | The plugin's manifest; the marketplace's sits at the repository's root |
-| `src` | The tooling that keeps the blocks sound: `blocks:check`, which reads the package and the repository's README and decision log, and checks a pack against the constitution with `--base` |
+| `src` | The tooling that keeps the blocks sound: `blocks:check`, which reads the package and the repository's README and decision log, and checks a pack against the Constitution with `--base` |
 | `tests/e2e` | The end-to-end specs of the presets, the templates and the hooks |
 | `vocabulary.yaml` | The words of one meaning the `architecture` and `workflow` axes own — terms, folders of the tree, role suffixes, branch prefixes |
 | `.claude/agents/rule-placement.md` | The agent that judges, by meaning, the layer and axis of every rule a change adds or rewrites |
@@ -89,7 +89,7 @@ core:
 
 ## 🧭 What a session receives
 
-The hook finds the `constitution.yaml` of the repository a session works in, reads the blocks of the release the project pins from its `.droneey/constitution/`, and those of the packs it lists, from their Markdown — every card's front matter, every chapter and `with/` file, every rule heading, about 50 ms for the whole constitution — and gives the agent one digest, within Claude Code's 10,000-character cap: that release's version and where its block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each unit's blocks under its path, then the overrides. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
+The hook finds the `constitution.yaml` of the repository a session works in, reads the blocks of the release the project pins from its `.droneey/constitution/`, and those of the packs it lists, from their Markdown — every card's front matter, every chapter and `with/` file, every rule heading, about 50 ms for the whole Constitution — and gives the agent one digest, within Claude Code's 10,000-character cap: that release's version and where its block files live, the warnings about the file, core's part, the active blocks by layer — each with its summary and the chapters and `with/` files of the axes it follows — and each unit's blocks under its path, then the overrides. The agent reads the block files the digest names. A sub-agent receives the same digest; a repository without `constitution.yaml` receives nothing. The hook runs on bash 3.2 and any POSIX awk, and reads nothing else in the project, so a project in any language can follow the constitution.
 
 The plugin is the engine — its hooks, skills and agents — and the rules come from the project's archive, so every repository reads exactly the release its pin names, whatever plugin a machine has. A release names the form of its blocks in `package.json`'s `constitutionFormat`; the plugin reads its own form and the one before it. Where it cannot read them, the digest holds only the reason: no `.droneey/constitution/` asks for `mise install`; an older form, for a higher pin in the project; a newer one, for an update of the plugin.
 
@@ -101,16 +101,16 @@ At the hand-back, a third hook holds the gate. When the project names a `check` 
 
 ## 🧩 Packs
 
-A pack is a folder of blocks shaped like the constitution — `blocks/` and, when it has them, `presets/` and `templates/` — with no manifest and nothing generated. A project links it, as mise links the constitution, and lists it in `constitution.yaml`; its blocks are listed by id beside the constitution's:
+A pack is a folder of blocks shaped like the Constitution — `blocks/` and, when it has them, `presets/` and `templates/` — with no manifest and nothing generated. A project links it, as mise links the Constitution, and lists it in `constitution.yaml`; its blocks are listed by id beside the Constitution's:
 
 ```yaml
 implementations: [react-dom, matomo]
 packs: [.droneey/constitution-extra]
 ```
 
-The engine stays the constitution's. The hook reads a pack's Markdown at session start as it reads the constitution's: the card's front matter, the chapters and `with/` files by their folders, the rules by their headings, a rule's level from its parent where it states none. The digest lists a pack's block with its pack, and the reminders name its files there. A pack not installed, a block whose id is already taken and a rule that carries out an unknown rule are warnings. A project extends a pack's presets from their path, as it extends the constitution's. A pack tightens as any block does: its rules never replace or loosen the constitution's.
+The engine stays the Constitution's. The hook reads a pack's Markdown at session start as it reads the Constitution's: the card's front matter, the chapters and `with/` files by their folders, the rules by their headings, a rule's level from its parent where it states none. The digest lists a pack's block with its pack, and the reminders name its files there. A pack not installed, a block whose id is already taken and a rule that carries out an unknown rule are warnings. A project extends a pack's presets from their path, as it extends the Constitution's. A pack tightens as any block does: its rules never replace or loosen the Constitution's.
 
-A pack's author checks it with the constitution's own check, which the release archive carries: `bun .droneey/constitution/tools/constitution/dist/blocks-check.js --base .droneey/constitution`, run in the pack. Its blocks load beside the constitution's, so every arrow and `requires` resolves, and only the pack's findings are reported.
+A pack's author checks it with the Constitution's own check, which the release archive carries: `bun .droneey/constitution/tools/constitution/dist/blocks-check.js --base .droneey/constitution`, run in the pack. Its blocks load beside the Constitution's, so every arrow and `requires` resolves, and only the pack's findings are reported.
 
 ## ✍️ Skills
 
@@ -125,7 +125,7 @@ The model may run one more itself, as the hand-back reminder suggests:
 
 ## 🔌 Install
 
-The constitution is a Claude Code plugin served from this repository. Once per machine:
+The Constitution is a Claude Code plugin served from this repository. Once per machine:
 
 ```bash
 claude plugin marketplace add droneey/constitution

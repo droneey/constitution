@@ -1,6 +1,6 @@
 # Runs before resolve.awk. The hook reads the blocks from their Markdown: the
-# constitution's, then those of each pack the project lists under packs:. A
-# "blockfile" record names the source — empty for the constitution, the pack's
+# Constitution's, then those of each pack the project lists under packs:. A
+# "blockfile" record names the source — empty for the Constitution, the pack's
 # path for a pack — the file's path inside it and the file, in the order
 # order.awk gives.
 
@@ -70,7 +70,7 @@ function front_matter(file,   line, r, key, value) {
   return -1
 }
 
-# A problem in the constitution's own files, which its release checks, or in a
+# A problem in the Constitution's own files, which its release checks, or in a
 # pack's, which nobody needs to have checked.
 function blocks_warn(source, message) {
   warn(source == "" ? "constitution" : "pack", message)
