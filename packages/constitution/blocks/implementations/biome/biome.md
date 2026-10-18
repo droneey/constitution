@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: [typescript, css]
 dictionary: [Biome, biome.json, biome-ignore, GritQL, .grit]
-governs: ["biome.json", "biome.*.jsonc", "**/*.grit"]
+governs: ["biome.json", "**/*.grit"]
 ---
 
 # Biome

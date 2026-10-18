@@ -25,6 +25,8 @@
     "preview": "vite preview",
     "postinstall": "fumadocs-mdx",
     "theme:build": "bun src/entrypoints/theme/main.ts",
+    "lint:check": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write",
     "test": "CI=1 bun test",
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
@@ -59,6 +61,7 @@
   },
   "devDependencies": {
     "@babel/core": "8.0.7",
+    "@biomejs/biome": "2.5.15",
     "@droneey/mutation-check": "workspace:*",
     "@happy-dom/global-registrator": "21.0.3",
     "@rolldown/plugin-babel": "0.2.4",

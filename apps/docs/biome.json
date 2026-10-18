@@ -1,5 +1,6 @@
 {
-  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
+  "root": false,
   "extends": [
     "./.droneey/constitution/presets/common/biome/self.jsonc",
     "./.droneey/constitution/presets/typescript/biome/self.jsonc",
@@ -21,23 +22,23 @@
     "./.droneey/constitution/presets/css/biome/css.jsonc",
     "./.droneey/constitution/presets/css/biome/browser.jsonc",
     "./.droneey/constitution/presets/css/biome/design-system.jsonc",
-    "./.droneey/constitution/presets/css/biome/tailwind.jsonc",
+    "./.droneey/constitution/presets/css/biome/tailwind.jsonc"
   ],
   "files": {
     "includes": [
-      "!**/*.gen.*",
-    ],
+      "!**/*.gen.*"
+    ]
   },
   "overrides": [
     {
       "includes": [
         "**/__tests__/**",
-        "**/tests/**",
+        "**/tests/**"
       ],
       "linter": {
         "rules": {
           "complexity": {
-            "noExcessiveLinesPerFunction": "off",
+            "noExcessiveLinesPerFunction": "off"
           },
           "style": {
             "noExcessiveLinesPerFile": "off",
@@ -45,17 +46,17 @@
               "level": "error",
               "options": {
                 "filenameCases": [
-                  "kebab-case",
+                  "kebab-case"
                 ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|fixtures)[.]tsx?)",
-              },
-            },
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|fixtures)[.]tsx?)"
+              }
+            }
           },
           "suspicious": {
-            "noTemplateCurlyInString": "off",
-          },
-        },
-      },
-    },
-  ],
+            "noTemplateCurlyInString": "off"
+          }
+        }
+      }
+    }
+  ]
 }
