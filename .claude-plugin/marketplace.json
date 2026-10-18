@@ -1,8 +1,9 @@
 {
   "name": "droneey",
   "owner": {
-    "name": "droneey",
-    "url": "https://github.com/droneey"
+    "name": "Dmytro Kurovskyi",
+    "email": "me@kurovskyi.dev",
+    "url": "https://kurovskyi.dev"
   },
   "metadata": {
     "description": "The plugins of droneey: the constitution every repository is built by."
