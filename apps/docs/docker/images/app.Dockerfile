@@ -8,7 +8,7 @@ FROM oven/bun:1.4.3-alpine@sha256:629e17411f1f129dbec3af78d5af9c9f2a937435c80349
 WORKDIR /usr/src/app
 
 # zlib above the base image's own, which carries ALPINE-CVE-2026-85091
-RUN apk add --no-cache busybox-extras=1.37.0-r31 dumb-init=1.2.5-r4 zlib=1.3.2-r1 && \
+RUN apk add --no-cache dumb-init=1.2.5-r4 zlib=1.3.2-r1 && \
   chown 1000:1000 /usr/src/app
 
 USER 1000
@@ -57,8 +57,9 @@ CMD ["bun", "run", "--cwd", "apps/docs", "dev", "--host"]
 
 FROM base AS production
 
+COPY --from=joseluisq/static-web-server:2.44.1@sha256:94618e3d17802265a21926217e6f9e7832b311b6fbf5933684001739fafed06a /static-web-server /usr/local/bin/static-web-server
 COPY --chown=1000:1000 --from=builder /usr/src/app/apps/docs/.output/public ./public
-COPY --chown=1000:1000 apps/docs/docker/images/httpd.conf ./httpd.conf
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["busybox-extras", "httpd", "-f", "-v", "-p", "3000", "-h", "/usr/src/app/public", "-c", "/usr/src/app/httpd.conf"]
+# an address with no page gets the app shell, which shows its own not-found page
+CMD ["static-web-server", "--port", "3000", "--root", "/usr/src/app/public", "--page404", "_shell.html", "--compression", "true", "--security-headers", "true", "--redirect-trailing-slash", "true", "--health", "true"]
