@@ -15,7 +15,7 @@
         "source": "git-subdir",
         "url": "droneey/constitution",
         "path": "packages/constitution",
-        "ref": "v0.75.3"
+        "ref": "v0.75.4"
       },
       "description": "The rules every Droneey repository is built by, declared per project in constitution.yaml."
     }
