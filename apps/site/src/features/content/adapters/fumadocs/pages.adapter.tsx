@@ -6,7 +6,6 @@ import { docsRoute } from '#/shared/constants';
 
 import { pageSlugsOf } from '../../domain/utils';
 
-/** a page as language models read it: its title, its address and its processed Markdown */
 interface MarkdownPage {
   data: {
     getText: (kind: 'processed') => Promise<string>;
@@ -47,7 +46,6 @@ const cardAsIndex = (path: string): string =>
     ? `${path.slice(0, path.lastIndexOf('/'))}/index.md`
     : path;
 
-/** the path its collection knows a page by */
 const collectionPathOf = (path: string): string => collectionPaths.get(path) ?? path;
 
 /** a sidebar entry that leads to a page of another section carries an arrow after its name */
@@ -78,7 +76,6 @@ const crossLinks: LoaderPlugin = {
   },
 };
 
-/** a page as Markdown for language models, under a heading of its title and address */
 const markdownOfPage = async (
   page: MarkdownPage,
 ): Promise<string> => `# ${page.data.title} (${page.url})

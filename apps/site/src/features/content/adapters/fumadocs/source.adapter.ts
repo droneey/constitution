@@ -32,14 +32,12 @@ const CORE_ORDER = [
   'workflow',
 ];
 
-/** a folder of the sidebar: its title, its icon and its pages in order */
 interface SidebarFolder {
   icon?: string;
   pages: string[];
   title: string;
 }
 
-/** a page of the guides, as their collection gives it */
 type GuidePageData =
   ReturnType<typeof guide.toFumadocsSource> extends Source<infer TConfig>
     ? TConfig['pageData']
@@ -51,7 +49,6 @@ type GuideSource = Source<{
   pageData: GuidePageData;
 }>;
 
-/** a value made when first asked, then kept */
 const lazily = <TValue>(make: () => TValue): (() => TValue) => {
   let made:
     | {
@@ -84,7 +81,6 @@ const metaFile = (
 /** the loader of every page the site renders, built when first asked, since building it reads the repository */
 const contentSource = lazily(() => {
   const sidebar = sidebarOf(docsRoute);
-  // the sidebar's order is the README's, the Core folder's that of core's placement chapter
   const guideSource: GuideSource = {
     files: [
       ...guide.toFumadocsSource().files,
@@ -119,7 +115,6 @@ const contentSource = lazily(() => {
   );
 });
 
-/** a page the site renders */
 type ContentPage = InferPageType<ReturnType<typeof contentSource>>;
 
 /** the pages as Markdown for language models: an index, every page at once, one page */

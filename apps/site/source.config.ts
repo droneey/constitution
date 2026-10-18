@@ -15,6 +15,7 @@ import {
   remarkDropHtml,
   remarkDropSummary,
   remarkDropTitle,
+  remarkRelease,
   remarkRepoLinks,
   remarkSections,
 } from './src/features/content/adapters/fumadocs/remark';
@@ -25,6 +26,7 @@ import {
   ICONS,
   inRepository,
   QUICK_START,
+  releaseOf,
   SITE_BLOCKS,
   sectionSummaryOf,
   sidebarOf,
@@ -32,7 +34,6 @@ import {
 } from './src/features/content/adapters/fumadocs/repository';
 import { markdownSchema } from './src/features/content/adapters/fumadocs/schema.adapter';
 
-/** the README's sections that are pages of their own */
 const QUICK_START_SECTION = 'Quick start';
 
 const DOCUMENTATION_SECTION = 'Documentation';
@@ -60,6 +61,12 @@ const markdownOptions = (remarkPlugins: PluggableList): ReturnType<typeof applyM
     remarkPlugins: (plugins) => [
       remarkDropTitle,
       ...remarkPlugins,
+      [
+        remarkRelease,
+        {
+          version: releaseOf(),
+        },
+      ],
       [
         remarkRepoLinks,
         {
@@ -124,7 +131,6 @@ const overview = defineDocs({
 
 const quickStart = defineDocs({
   dir: '../..',
-  // the repository's root holds no sidebar, only the README and the tools' configurations
   meta: {
     files: [
       'meta.json',

@@ -45,7 +45,6 @@ const searchTrigger: BaseSlots['searchTrigger'] = {
   sm: SearchTrigger,
 };
 
-/** a slot the site leaves empty */
 const nothing = (): undefined => undefined;
 
 // one sidebar at every width, so the library's drawer is left out
@@ -114,7 +113,6 @@ function DocsContent({
   );
 }
 
-/** a page as its collection offers it: its heading and summary, its body, and its contents once loaded */
 export interface DocsPageEntry {
   body: ComponentType<{
     components?: typeof mdxComponents;

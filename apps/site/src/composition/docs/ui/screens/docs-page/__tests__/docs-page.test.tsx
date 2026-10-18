@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:
 import type { ReactElement } from 'react';
 
 import type { RenderResult } from '@testing-library/react';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { screenViolationsIn } from '../../../../__tests__/axe.fixtures';
@@ -90,7 +90,7 @@ describe('DocsPageScreen', () => {
     // Assert
     expect([
       (await headingOf('Overview')).textContent,
-      screen.getByText('The rules a repository is built by.').tagName,
+      screen.getByText('The rules a repository is built by.').textContent,
       screen
         .getByRole('link', {
           name: 'one home',
@@ -98,7 +98,7 @@ describe('DocsPageScreen', () => {
         .getAttribute('href'),
     ]).toStrictEqual([
       'Overview',
-      'P',
+      'The rules a repository is built by.',
       '/docs/core/placement',
     ]);
   });
@@ -152,7 +152,7 @@ describe('DocsPageScreen', () => {
     await navigate(rendered, guidePage());
 
     // Assert
-    expect(document.activeElement?.textContent).toBe('Write a pack');
+    expect(document.activeElement).toBe(await headingOf('Write a pack'));
   });
 
   test('should leave the scroll to the router when the heading takes focus', async () => {
@@ -185,10 +185,10 @@ describe('DocsPageScreen', () => {
     expect([
       screen.getByRole('heading', {
         name: 'On this page',
-      }).tagName,
-      ...screen.getAllByRole('progressbar').map((progress) => progress.getAttribute('aria-label')),
+      }).textContent,
+      screen.getByRole('progressbar').getAttribute('aria-label'),
     ]).toStrictEqual([
-      'H3',
+      'On this page',
       'Reading progress',
     ]);
   });
@@ -214,7 +214,14 @@ describe('DocsPageScreen', () => {
     await headingOf('Overview');
 
     // Assert
-    expect((await versionMenu()).dataset.sidebarField).toBe('');
+    const sidebar = within(screen.getByRole('complementary'));
+    expect(
+      (await versionMenu()).compareDocumentPosition(
+        sidebar.getByRole('button', {
+          name: /^Search/,
+        }),
+      ),
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   test('should link the releases to the page the reader is on', async () => {

@@ -34,12 +34,24 @@
   #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]),
   [data-toc-list] > a,
   [role='menu'] [role='menuitem'],
-  nav[aria-label='Versions'] a,
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
-  #nd-sidebar [data-id$='-viewport'] {
+  nav[aria-label='Versions'] a {
     &:focus-visible {
       outline-offset: -2px;
     }
+  }
+
+  /* the sidebar's list is a stop of its own, so the keyboard can scroll it; its fading edges would
+     clip its ring, which its unmasked frame draws instead */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport']:focus-visible {
+    outline: none;
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar :has(> [data-id$='-viewport']:focus-visible) {
+    border-radius: var(--radius-lg);
+    outline: 2px solid var(--color-fd-ring);
+    outline-offset: -2px;
   }
 }
 
@@ -113,7 +125,7 @@
     }
   }
 
-  /* the page's gutter: 16 on a phone, 32 from 40rem on, the bar's controls on the same line */
+  /* the page's gutter, which the bar's controls share, widens on a wider panel */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
@@ -159,8 +171,8 @@
     }
   }
 
-  /* the expand button, the TOC dropdown and the actions: 40 targets, 4 apart, the outer ones
-     overhanging the content edge by 4 so their icons align with it */
+  /* the expand button, the TOC dropdown and the actions: the outer ones overhang the content edge
+     so their icons align with it */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header > button[aria-controls='nd-sidebar'] {
     flex-shrink: 0;
@@ -286,7 +298,6 @@
     }
   }
 
-  /* items and folders, open or closed, current or not */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]) {
     gap: var(--spacing-xs);
@@ -343,8 +354,8 @@
     }
   }
 
-  /* flush 40 targets, each showing a 32 shape at its centre that holds the hover, the chosen one's
-     thumb, the press and the focus ring */
+  /* flush targets, each showing a smaller shape at its centre that holds the hover, the chosen
+     one's thumb, the press and the focus ring */
   [data-theme-toggle] {
     display: inline-flex;
     gap: var(--spacing-2xs);

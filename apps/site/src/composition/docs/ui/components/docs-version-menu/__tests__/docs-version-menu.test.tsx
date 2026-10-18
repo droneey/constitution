@@ -226,11 +226,11 @@ describe('DocsVersionMenu', () => {
 
     // Assert
     expect([
-      linkTo('0.70.0').lastElementChild?.tagName,
-      linkTo('0.69.2').lastElementChild?.tagName,
+      linkTo('0.70.0').querySelector('svg') === null,
+      linkTo('0.69.2').querySelector('svg') === null,
     ]).toStrictEqual([
-      'SPAN',
-      'svg',
+      true,
+      false,
     ]);
   });
 

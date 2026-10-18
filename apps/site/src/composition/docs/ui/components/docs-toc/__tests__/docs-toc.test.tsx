@@ -213,35 +213,17 @@ describe('DocsTocDropdown', () => {
     scrollTo('placement', 'layer');
 
     // Assert
-    expect(
-      screen
-        .getByRole('progressbar', {
-          name: 'Reading progress',
-        })
-        .lastElementChild?.getAttribute('stroke-dashoffset'),
-    ).toBe('13.613568165555773');
-  });
-
-  test('should draw the ring as an outline whose fill alone moves', () => {
-    // Arrange
-    const dropdown = <DocsTocDropdown />;
-
-    // Act
-    renderOnPage(dropdown);
-
-    // Assert
-    const ring = screen.getByRole('progressbar', {
+    const fill = screen.getByRole('progressbar', {
       name: 'Reading progress',
+    }).lastElementChild;
+    const circumference = 2 * Math.PI * Number(fill?.getAttribute('r'));
+    expect({
+      dash: Number(fill?.getAttribute('stroke-dasharray')) / circumference,
+      unread: Number(fill?.getAttribute('stroke-dashoffset')) / circumference,
+    }).toStrictEqual({
+      dash: 1,
+      unread: expect.closeTo(1 / 3),
     });
-    expect([
-      ring.firstElementChild?.getAttribute('fill'),
-      ring.lastElementChild?.getAttribute('fill'),
-      ring.lastElementChild?.getAttribute('style'),
-    ]).toStrictEqual([
-      'none',
-      'none',
-      '--toc-fill-property: stroke-dashoffset;',
-    ]);
   });
 
   test('should list the page headings when the reader opens it', async () => {

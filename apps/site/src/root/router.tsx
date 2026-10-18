@@ -1,7 +1,7 @@
 import type { Router } from '@tanstack/react-router';
 import { createRouter } from '@tanstack/react-router';
 
-import { DocsNotFoundScreen } from '#/composition/docs';
+import { DocsNotFoundScreen, pageScrollerSelector } from '#/composition/docs';
 
 import { routeTree } from './routeTree.gen';
 import { routerContext } from './wiring';
@@ -15,5 +15,8 @@ export function getRouter(): Router<typeof routeTree> {
     defaultViewTransition: true,
     routeTree,
     scrollRestoration: true,
+    scrollToTopSelectors: [
+      pageScrollerSelector,
+    ],
   });
 }

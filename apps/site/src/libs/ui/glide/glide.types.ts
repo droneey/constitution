@@ -4,7 +4,6 @@ interface GlideList {
   readonly filled?: string;
   /** the attribute a list sets on the row it highlights itself; without one, the pointer and the keyboard's focus decide */
   readonly marked?: string;
-  /** the rows the block slides between */
   readonly rows: string;
 }
 

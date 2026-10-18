@@ -17,10 +17,8 @@ import {
 
 const DOCUMENTATION = 'Documentation';
 
-/** the depth of the README's sections, the Documentation among them */
 const SECTION_DEPTH = 2;
 
-/** the depth of the Documentation's groups */
 const GROUP_DEPTH = 3;
 
 /** the site's icons for the README's entries, by the address each one leads to */
@@ -96,12 +94,10 @@ const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
   };
 };
 
-/** the README's nodes, read when asked */
 const readmeNodes = (): RootContent[] =>
   // Stryker disable next-line StringLiteral: the parser reads a buffer as UTF-8 too
   fromMarkdown(readFileSync(inRepository('README.md'), 'utf8')).children;
 
-/** where the README's second-level section of this heading starts, or -1 */
 const sectionStartOf = (nodes: readonly RootContent[], title: string): number =>
   nodes.findIndex((node) => isHeading(node, SECTION_DEPTH) && headingTextOf(node) === title);
 
@@ -164,10 +160,7 @@ const sidebarEntryOf = (entry: Entry, { fromBase, page }: Place): string => {
   return `./${page}`;
 };
 
-/**
- * The sidebar, in the order the README's Documentation lists the pages: a page by its file, a block
- * folder by its name, any other entry as a link. The overview and the quick start open the first group.
- */
+/** the sidebar, in the order the README's Documentation lists the pages; the overview and the quick start open the first group */
 const sidebarOf = (
   baseUrl: string,
 ): {
@@ -216,12 +209,10 @@ const sectionSummaryOf = (title: string): string | undefined => {
   return summary?.type === 'paragraph' ? textOf(summary) : undefined;
 };
 
-/** the icon of a guide, by its file */
 const guideIconOf = (path: string): string | undefined =>
   // Stryker disable next-line Regex: a guide's path holds .md only at its end
   ICONS[`/${relative(inRepository('docs'), path).replace(/\.md$/, '')}`];
 
-/** the icon of a document the site renders beside the README, by its file */
 const documentIconOf = (path: string): string | undefined =>
   ICONS[`/${SITE_DOCUMENTS[basename(path)]}`];
 

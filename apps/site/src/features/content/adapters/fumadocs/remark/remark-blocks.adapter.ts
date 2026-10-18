@@ -44,7 +44,6 @@ declare module 'mdast' {
   }
 }
 
-/** a rule's heading, and the rule it names */
 interface RuleHeading {
   heading: Heading;
   rule: Rule;
@@ -52,7 +51,6 @@ interface RuleHeading {
 
 type Properties = Readonly<Record<string, string | string[]>>;
 
-/** the depth of a rule's heading */
 const RULE_DEPTH = 3;
 
 const LETTERS: Readonly<Record<Level, string>> = {

@@ -1,7 +1,6 @@
 import type { Heading, Parent, Root } from 'mdast';
 import { visit } from 'unist-util-visit';
 
-/** a parent and its descendants without their raw HTML */
 const dropHtmlOf = (parent: Parent): void => {
   parent.children = parent.children.filter((child) => child.type !== 'html');
   for (const child of parent.children) {

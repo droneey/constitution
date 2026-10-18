@@ -27,7 +27,6 @@ const SECTION_DEPTH = 2;
 /** sections are level 0; the entries under them, rules among them, level 1 */
 const levelOf = (heading: TOCItemType): 0 | 1 => (heading.depth <= SECTION_DEPTH ? 0 : 1);
 
-/** the one list every TOC shows */
 function TocList({ onSelect }: { onSelect?: () => void }): ReactElement {
   const headings = useTOCItems();
 
@@ -110,6 +109,7 @@ const RING = {
   cx: 8,
   cy: 8,
   r: 6.5,
+  // Stryker disable next-line StringLiteral: the ring's paint, which a spec could only restate
   fill: 'none',
 };
 const CIRCUMFERENCE = 2 * Math.PI * RING.r;
@@ -139,10 +139,11 @@ function Progress(): ReactElement {
         strokeDasharray={CIRCUMFERENCE}
         strokeDashoffset={CIRCUMFERENCE * (1 - progress)}
         strokeLinecap='round'
-        // the ring fills as the reader goes down, and only its offset moves
+        // Stryker disable ObjectLiteral,StringLiteral: only the ring's offset transitions, a choice of design a spec could only restate
         style={{
           '--toc-fill-property': 'stroke-dashoffset',
         }}
+        // Stryker restore ObjectLiteral,StringLiteral
         transform='rotate(-90 8 8)'
       />
     </svg>

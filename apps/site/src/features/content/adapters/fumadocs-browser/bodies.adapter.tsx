@@ -12,7 +12,6 @@ interface Loaded {
   toc: TOCItemType[];
 }
 
-/** what a page's body takes: the components its Markdown renders with */
 interface BodyProps {
   components?: MDXComponents;
 }
@@ -106,7 +105,6 @@ const loadingOf = (type: string, path: string, bodies: Bodies): Promise<Loaded> 
   return started;
 };
 
-/** the body of the page at this path of this collection, when the collection holds it */
 const pageBodyOf = (type: string, path: string): PageBody | undefined => {
   const bodies = COLLECTIONS.get(type);
 

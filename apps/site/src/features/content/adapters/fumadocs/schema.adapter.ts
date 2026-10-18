@@ -13,7 +13,6 @@ interface MarkdownFields {
   title: z.ZodDefault<z.ZodString>;
 }
 
-/** the schema of a page of the repository's Markdown */
 type MarkdownSchema = ReturnType<typeof pageSchema.extend<MarkdownFields>>;
 
 /** a page of the repository's Markdown: its title and summary from its heading and quote */

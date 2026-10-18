@@ -14,7 +14,6 @@ interface RenderedReleases extends RenderHookResult<Releases, unknown> {
   provide: (getVersions: GetVersions | undefined) => void;
 }
 
-/** the hook under the provider of the releases, with the use case the case gives */
 export const renderReleases = (getVersions: GetVersions | undefined): RenderedReleases => {
   const provided = {
     current: getVersions,

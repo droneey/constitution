@@ -38,7 +38,6 @@ const buildElement = ({ tag, attributes = {}, text, children = [] }: ElementSpec
   return element;
 };
 
-/** builds the elements and puts them on the page */
 const mountElement = (spec: ElementSpec, parent: Element = document.body): HTMLElement => {
   const element = buildElement(spec);
 

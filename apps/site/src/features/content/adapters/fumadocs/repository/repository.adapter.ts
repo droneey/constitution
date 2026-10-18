@@ -35,7 +35,6 @@ const BLOCKS_FOLDER = 'packages/constitution/blocks/';
 
 const MARKDOWN = '.md';
 
-/** a link's target as a path from the repository's root, and the anchor it names */
 interface RepositoryPath {
   hash: string;
   path: string;

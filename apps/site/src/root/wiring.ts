@@ -50,10 +50,9 @@ interface DocsPageData {
   type: string;
 }
 
-/** a loaded page, as its body is asked for: its title and description, and where its body lives */
+/** a loaded page, as its body is asked for */
 type DocsPageRef = Pick<DocsPageData, 'description' | 'path' | 'title' | 'type'>;
 
-/** the documentation as its routes read it */
 interface DocsContent {
   /** the page at these slugs, read from the repository on the server */
   loadPage: (slugs: string[]) => Promise<DocsPageData>;

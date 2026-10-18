@@ -3,7 +3,6 @@ import { use, useEffect, useState } from 'react';
 import type { Versions } from '../../../../domain/entities';
 import { GetVersionsContext } from '../../../providers';
 
-/** the releases as they load: none yet, unreadable, or read */
 export type Releases =
   | {
       status: 'loading';

@@ -33,7 +33,6 @@ const ruleOf = (text: string): Rule | undefined => {
 
 const linesOf = (markdown: string): readonly string[] => markdown.split('\n');
 
-/** the slugs of every rule a block's file holds */
 const ruleSlugsOf = (markdown: string): readonly string[] =>
   linesOf(markdown).flatMap((line) => {
     const rule = line.startsWith('### ') ? ruleOf(line.slice('### '.length)) : undefined;
@@ -64,7 +63,6 @@ const pageSlugsOf = (path: string): readonly string[] => {
   return parts.at(-1) === parts.at(-2) ? parts.slice(0, -1) : parts;
 };
 
-/** the examples whose names are no rule's slug */
 const unknownExamplesOf = (
   examples: readonly string[],
   rules: ReadonlySet<string>,

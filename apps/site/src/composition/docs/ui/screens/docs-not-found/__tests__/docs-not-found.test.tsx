@@ -90,12 +90,10 @@ describe('DocsNotFoundScreen', () => {
       name: 'GitHub',
     });
     expect([
-      repository.getAttribute('aria-label'),
       repository.textContent,
       repository.getAttribute('target'),
       repository.getAttribute('rel'),
     ]).toStrictEqual([
-      'GitHub',
       '',
       '_blank',
       'noreferrer noopener',

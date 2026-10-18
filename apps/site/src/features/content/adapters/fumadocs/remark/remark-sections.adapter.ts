@@ -15,7 +15,6 @@ interface Section {
   heading: Heading | undefined;
 }
 
-/** the depth of the sections a page keeps or drops */
 const SECTION_DEPTH = 2;
 
 const sectionsOf = (children: readonly RootContent[]): Section[] => {

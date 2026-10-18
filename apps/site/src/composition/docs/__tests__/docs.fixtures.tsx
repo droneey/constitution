@@ -43,7 +43,6 @@ const versionsFixture = (overrides: Partial<Versions> = {}): Versions => ({
   ...overrides,
 });
 
-/** the sidebar's tree: the overview and a guide */
 const pageTreeFixture = (): PageTreeRoot => ({
   name: 'Constitution',
   children: [

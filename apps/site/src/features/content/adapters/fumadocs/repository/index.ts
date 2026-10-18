@@ -6,6 +6,7 @@ export {
   sectionSummaryOf,
   sidebarOf,
 } from './navigation.adapter';
+export { releaseOf } from './release.adapter';
 export {
   addressOf,
   GLOSSARY,

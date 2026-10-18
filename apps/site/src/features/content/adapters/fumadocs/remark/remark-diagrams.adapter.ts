@@ -21,7 +21,6 @@ declare module 'mdast' {
 /** what a figure of the page holds: an element, a text or a comment */
 type FigureContent = NonNullable<Data['hChildren']>[number];
 
-/** what HTML parses into */
 type ParsedContent = ReturnType<typeof fromHtml>['children'][number];
 
 /** the space between the nodes of a diagram, its layers and its edge, in pixels */

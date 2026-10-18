@@ -6,7 +6,6 @@ import { useVersions } from '#/features/versions';
 import { DocsLocationContext } from '../../../app/providers';
 import { DocsVersionMenu } from '../../components/docs-version-menu';
 
-/** the version menu with the releases it reads */
 export function DocsVersionWidget(): ReactElement {
   const { href } = use(DocsLocationContext);
 

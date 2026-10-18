@@ -155,11 +155,20 @@
       opacity: 1;
     }
   }
+
+  /* the previous and next pages, filled as the fields are, whatever level they lie on */
+  [role='main'] > nav:last-child > a {
+    background-color: var(--color-fill-field);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+
+    &:hover {
+      background-color: var(--color-fill-field-hover);
+    }
+  }
 }
 
 /* -------------------------------------------------------------------------- */
 /* SEARCH DIALOG                                                              */
-/* 16 radius, items 8 inside it at 8 radius; the input row is a bar.          */
 /* -------------------------------------------------------------------------- */
 
 @layer overrides {
@@ -295,7 +304,7 @@
 /* -------------------------------------------------------------------------- */
 /* LISTS                                                                      */
 /* One muted block slides to the row under the pointer or the keyboard: the   */
-/* library's in the sidebar, src/components/glide.ts's everywhere else.       */
+/* library's in the sidebar, the glide hook's everywhere else.               */
 /* Rows answer a press by deepening that fill; buttons and segments shrink.   */
 /* -------------------------------------------------------------------------- */
 
@@ -353,16 +362,6 @@
     &[data-highlighted] {
       background-color: transparent;
     }
-
-    &:active {
-      background-color: var(--color-fd-accent);
-      transform: none;
-    }
-  }
-
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
-  #nd-sidebar [data-id$='-viewport'] a[data-active='true']:active {
-    background-color: color-mix(in oklab, var(--color-fd-primary) 16%, transparent);
   }
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
@@ -373,8 +372,12 @@
       transition-timing-function: var(--ease-out);
     }
 
+    /* a pressed row scales, and the block under it with it */
+    :is(nav[aria-label='Versions'], [data-toc-list], [role='menu']):has(:active) > [data-glide],
     [role='group']:has(> [role='menuitemradio']:active) > [data-glide],
-    [role='group']:has(> [aria-checked='true']:active) > span[aria-hidden] {
+    [role='group']:has(> [aria-checked='true']:active) > span[aria-hidden],
+    /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+      #fd-search-list:has(:active) > [data-glide] {
       scale: 0.97;
       transition-duration: var(--duration-fast);
     }

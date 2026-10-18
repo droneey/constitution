@@ -68,6 +68,12 @@
     margin-inline: auto;
   }
 
+  /* a box keeps its square reading; only a terminal's round ends mean a start or an end */
+  [data-docs-body] figure[data-diagram] rect[rx='0'] {
+    rx: var(--radius-xs);
+    ry: var(--radius-xs);
+  }
+
   [data-docs-body] [data-rule] {
     margin: 0;
     overflow-wrap: anywhere;
@@ -274,7 +280,7 @@
 }
 
 @layer overrides {
-  /* the page's summary closes on a hairline, 32 above and below, as a section does */
+  /* the page's summary closes on a hairline, as a section opens on one */
   [data-docs-description] {
     margin-bottom: var(--spacing-sm);
     padding-bottom: var(--spacing-lg);
