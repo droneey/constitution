@@ -190,7 +190,7 @@
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
     button:active {
-      transform: scale(0.97);
+      transform: scale(0.98);
       transition-property: color, background-color, border-color, transform;
       transition-duration: var(--duration-fast);
     }

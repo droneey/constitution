@@ -33,6 +33,8 @@
     --p-dimension-48: 3rem;
     --p-dimension-56: 3.5rem;
     --p-dimension-64: 4rem;
+    --p-dimension-240: 15rem;
+    --p-dimension-352: 22rem;
     --p-radius-4: 0.25rem;
     --p-radius-8: 0.5rem;
     --p-radius-12: 0.75rem;
@@ -79,11 +81,15 @@
   --size-control-lg: var(--p-dimension-48);
   --size-icon-md: var(--p-dimension-16);
   --size-header: var(--p-dimension-56);
+  --size-popup-min: var(--p-dimension-240);
+  --size-popup-max: var(--p-dimension-352);
   --spacing-control-xs: var(--size-control-xs);
   --spacing-control-md: var(--size-control-md);
   --spacing-control-lg: var(--size-control-lg);
   --spacing-icon-md: var(--size-icon-md);
   --spacing-header: var(--size-header);
+  --spacing-popup-min: var(--size-popup-min);
+  --spacing-popup-max: var(--size-popup-max);
   --radius-xs: var(--p-radius-4);
   --radius-sm: var(--p-radius-4);
   --radius-md: var(--p-radius-8);

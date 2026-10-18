@@ -197,8 +197,9 @@ export function DocsTocDropdown(): ReactElement {
         <Popover.Positioner
           align='start'
           className='z-50'
-          // Stryker disable ObjectLiteral,StringLiteral: the axis matters only when the popup would overflow the viewport, which a document without layout never reports
+          // Stryker disable ObjectLiteral,StringLiteral: the popup stays on its trigger's edge and side only when it would overflow the viewport, which a document without layout never reports
           collisionAvoidance={{
+            align: 'none',
             fallbackAxisSide: 'none',
           }}
           // Stryker restore ObjectLiteral,StringLiteral
@@ -206,7 +207,7 @@ export function DocsTocDropdown(): ReactElement {
           sideOffset={8}
         >
           <Popover.Popup
-            className='focusable flex w-88 max-w-(--available-width) max-h-(--available-height) flex-col rounded-xl border bg-fd-popover p-2xs text-fd-popover-foreground shadow-lg origin-(--transform-origin) data-closed:animate-fd-popover-out data-open:animate-fd-popover-in'
+            className='focusable flex max-h-(--available-height) flex-col rounded-xl border bg-fd-popover p-2xs text-fd-popover-foreground shadow-lg origin-(--transform-origin) data-closed:animate-fd-popover-out data-open:animate-fd-popover-in'
             data-toc-dropdown=''
           >
             <TocList onSelect={(): void => setOpen(false)} />

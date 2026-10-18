@@ -52,7 +52,7 @@ export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProp
           // Stryker restore ObjectLiteral,StringLiteral
           sideOffset={8}
         >
-          <Popover.Popup className='w-(--anchor-width) max-h-(--available-height) overflow-y-auto rounded-xl border bg-fd-popover p-2xs text-fd-popover-foreground shadow-lg origin-(--transform-origin) data-closed:animate-fd-popover-out data-open:animate-fd-popover-in'>
+          <Popover.Popup className='w-(--anchor-width) min-w-popup-min max-h-(--available-height) overflow-y-auto rounded-xl border bg-fd-popover p-2xs text-fd-popover-foreground shadow-lg origin-(--transform-origin) data-closed:animate-fd-popover-out data-open:animate-fd-popover-in'>
             <nav aria-label='Versions'>
               <ul>
                 {versions.map((version) => (

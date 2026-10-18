@@ -7,6 +7,12 @@
 /* -------------------------------------------------------------------------- */
 
 @layer overrides {
+  /* it opens from its trigger's edge as wide as the screen leaves it room for, and passes the edge
+     only when that room is narrower than any dropdown */
+  [data-toc-dropdown] {
+    width: clamp(var(--spacing-popup-min), var(--available-width), var(--spacing-popup-max));
+  }
+
   [data-toc-dropdown] [data-toc-list],
   [data-toc-dropdown] :has(> [data-toc-list]) {
     padding-block: 0;
@@ -305,10 +311,15 @@
 /* LISTS                                                                      */
 /* One muted block slides to the row under the pointer or the keyboard: the   */
 /* library's in the sidebar, the glide hook's everywhere else.               */
-/* Rows answer a press by deepening that fill; buttons and segments shrink.   */
+/* A press shrinks a row, a button or a segment a little, with its block.     */
 /* -------------------------------------------------------------------------- */
 
 @layer overrides {
+  /* no dropdown opens narrower than the narrowest */
+  [data-side] > [role='menu'][data-side] {
+    min-width: var(--spacing-popup-min);
+  }
+
   [data-glide],
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
     #nd-sidebar
@@ -366,7 +377,7 @@
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
     :is(a, button, [role='menuitemradio']):active {
-      transform: scale(0.97);
+      transform: scale(0.98);
       transition-property: color, background-color, border-color, transform;
       transition-duration: var(--duration-fast);
       transition-timing-function: var(--ease-out);
@@ -378,7 +389,7 @@
     [role='group']:has(> [aria-checked='true']:active) > span[aria-hidden],
     /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
       #fd-search-list:has(:active) > [data-glide] {
-      scale: 0.97;
+      scale: 0.98;
       transition-duration: var(--duration-fast);
     }
 
