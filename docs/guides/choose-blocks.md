@@ -9,11 +9,24 @@
 Core is always active. Every other block is listed by its id under its layer:
 
 ```yaml
-axes: [architecture, workflow]
-domains: [ui, remote-data, version-control]
-platforms: [browser]
-languages: [typescript, css]
-implementations: [react-dom, tanstack-router, biome, bun, git]
+axes:
+  - architecture
+  - workflow
+domains:
+  - ui
+  - remote-data
+  - version-control
+platforms:
+  - browser
+languages:
+  - typescript
+  - css
+implementations:
+  - react-dom
+  - tanstack-router
+  - biome
+  - bun
+  - git
 ```
 
 | Key | A block belongs here when the project | Evidence to look for |
@@ -43,13 +56,20 @@ In a workspace, a unit adds blocks for the files under its path, on top of the r
 ```yaml
 packages:
   apps/web:
-    domains: [ui, untrusted-client]
-    platforms: [browser]
-    implementations: [react-dom]
+    domains:
+      - ui
+      - untrusted-client
+    platforms:
+      - browser
+    implementations:
+      - react-dom
   apps/api:
-    domains: [rest-api]
-    platforms: [server]
-    implementations: [nestjs]
+    domains:
+      - rest-api
+    platforms:
+      - server
+    implementations:
+      - nestjs
 ```
 
 A unit takes `axes`, the four layer keys and `overrides`. Its `axes` replace the repository's; without them it follows the repository's. A repository of one unit writes `packages: {}`.

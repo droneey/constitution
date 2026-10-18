@@ -23,8 +23,11 @@ constitution/               the pack, in any folder
 `constitution.yaml` names the pack's folder and lists its blocks by id, beside the Constitution's:
 
 ```yaml
-implementations: [react-dom, posthog]
-packs: [constitution]
+implementations:
+  - react-dom
+  - posthog
+packs:
+  - constitution
 ```
 
 A pack shared between projects is linked as the release is, by mise, for example into `.droneey/constitution-extra`, and listed by that path.

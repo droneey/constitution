@@ -4,13 +4,26 @@
 
 ```yaml
 version: 0.70.0
-axes: [architecture, workflow]
-domains: [ui, remote-data, version-control]
-platforms: [browser]
-languages: [typescript, css]
-implementations: [react-dom, biome, bun, git]
+axes:
+  - architecture
+  - workflow
+domains:
+  - ui
+  - remote-data
+  - version-control
+platforms:
+  - browser
+languages:
+  - typescript
+  - css
+implementations:
+  - react-dom
+  - biome
+  - bun
+  - git
 packages: {}
-packs: [constitution]
+packs:
+  - constitution
 check: bun run check
 overrides: []
 ```
@@ -41,10 +54,15 @@ Each unit is a path, two spaces in; its keys sit four spaces in and add to the r
 ```yaml
 packages:
   apps/web:
-    axes: [architecture]
-    domains: [ui, untrusted-client]
-    platforms: [browser]
-    implementations: [react-dom]
+    axes:
+      - architecture
+    domains:
+      - ui
+      - untrusted-client
+    platforms:
+      - browser
+    implementations:
+      - react-dom
     overrides: []
 ```
 
@@ -73,7 +91,7 @@ overrides:
 
 The plugin reads the file with no YAML library, so it takes a plain subset:
 
-- flow lists, `[a, b]`, which may run over several lines, and block lists of `- item`;
+- block lists of `- item`, and flow lists, `[a, b]`, which may run over several lines — the yamllint preset forbids flow lists, so a project that runs it writes block lists, as the examples here do;
 - quotes around a value that holds `:` or `#`;
 - no anchors, tags, multi-line strings or nested `{` and `[`, and no tabs in the indentation.
 
