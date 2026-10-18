@@ -41,13 +41,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Glossary
 
-- **Layer** — one of core, domain, context, implementation: the folder a block sits in.
-- **Axis** — the base, `architecture` or `workflow`: where a rule sits in its block, the base at the block's root and each optional axis in its folder; a project always follows the base and lists the optional axes it chooses.
-- **Active set** — the blocks a project follows: core, the declared blocks and the bases of their `extends` chains.
-- **Override** — a project's recorded lowering of one rule, with the user's consent and a reason.
-- **Local block** — a block file inside a project, under `rules/`.
-- **Lens** — a tag on a rule, for reviewing across all layers at once.
-- **Owned word** — a brand, language or file name only its block and the blocks that depend on it may write.
+The terms are defined once, in [the glossary](docs/reference/glossary.md).
 
 ## Non-functional notes
 
