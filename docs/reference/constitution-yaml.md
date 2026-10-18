@@ -47,6 +47,30 @@ Every key but `packs` is required; a missing or an unknown key is a warning in t
 
 Core is never listed: it is always active. An abstract block, whose id starts with `_`, is never listed either; the blocks that extend it are.
 
+## version
+
+The release whose rules the project follows. [Upgrade](../guides/upgrade.md) raises it.
+
+## axes
+
+The axes beside the base: `architecture` for the program's tree and seams, `workflow` for how a change travels to a release. [Three axes](../how-it-works.md#three-axes) tells them apart.
+
+## domains
+
+The aspects the project has whatever its technology: a user interface, data fetched over a network, a public API. [The domains](../../packages/constitution/blocks/domains) are the blocks to list.
+
+## platforms
+
+Where the project runs: a browser, a server, a command line. [The platforms](../../packages/constitution/blocks/contexts/platforms) are the blocks to list.
+
+## languages
+
+What the project is written in. [The languages](../../packages/constitution/blocks/contexts/languages) are the blocks to list.
+
+## implementations
+
+The libraries, tools and services the project installs, runs or reaches. [The implementations](../../packages/constitution/blocks/implementations) are the blocks to list, and [Choose the blocks](../guides/choose-blocks.md) says how to find each layer's.
+
 ## packages
 
 Each unit is a path, two spaces in; its keys sit four spaces in and add to the repository's for the files under that path:
@@ -67,6 +91,14 @@ packages:
 ```
 
 A unit takes `axes`, `domains`, `platforms`, `languages`, `implementations` and `overrides`. Its `axes` replace the repository's; without them it follows the repository's.
+
+## packs
+
+The folders of blocks the project follows beside the Constitution's: its own pack, and those it shares with other projects. [Write a pack](../guides/write-a-pack.md) shapes one.
+
+## check
+
+The one command that runs every tool; the hand-back waits until it passes. [Run the check in CI](../guides/check-in-ci.md) runs it on every pull request.
 
 ## overrides
 
