@@ -139,13 +139,16 @@
     }
   }
 
-  /* the page's gutter widens on a wider panel; the bar's buttons overhang it by the space around
-     their icons, so an icon stands a gutter from the panel's top and sides, as the text does */
+  /* The page's gutter widens on a wider panel. The bar's controls overhang it by the space around
+     their icons, so an icon stands a gutter from the panel's sides and the wide gutter from its top
+     at every width; the bar is as tall as its paddings and controls make it, and the page starts
+     under it by the same sum. */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
     --nd-overhang: calc((var(--spacing-control-md) - var(--spacing-icon-md)) / 2);
-    --fd-header-height: calc(var(--nd-gutter) - var(--nd-overhang) + var(--spacing-control-md));
+    --nd-bar-padding: calc(var(--spacing-lg) - var(--nd-overhang));
+    --fd-header-height: calc(2 * var(--nd-bar-padding) + var(--spacing-control-md));
 
     @container (width >= 40rem) {
       --nd-gutter: var(--spacing-lg);
@@ -161,12 +164,12 @@
     );
   }
 
-  /* the bar's background runs on under it and fades out */
+  /* the bar's background fades out over its lower band, so the page at rest is never under it */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header {
     gap: var(--spacing-xs);
-    padding: calc(var(--nd-gutter) - var(--nd-overhang)) calc(var(--nd-gutter) - var(--nd-overhang))
-      0;
+    height: auto;
+    padding: var(--nd-bar-padding) calc(var(--nd-gutter) - var(--nd-overhang));
     background: none;
 
     /* the trail keeps its length; the heading after it gives way */
@@ -174,12 +177,16 @@
       flex-shrink: 0;
     }
 
+    /* a trail or a heading that opens the bar starts at the gutter, as the page's text does */
+    & > nav:first-child {
+      margin-inline-start: var(--nd-overhang);
+    }
+
     &::before {
       content: '';
       position: absolute;
-      inset: 0 0 auto;
+      inset: 0;
       z-index: -1;
-      height: calc(100% + var(--spacing-lg));
       background: linear-gradient(
         to bottom,
         var(--color-fd-background) calc(100% - var(--spacing-lg)),
@@ -218,8 +225,7 @@
   #nd-page-panel > header button[aria-haspopup='dialog'] {
     gap: var(--spacing-xs);
     height: var(--spacing-control-md);
-    margin-inline: calc(-1 * var(--spacing-xs));
-    padding-inline: var(--spacing-xs);
+    padding-inline: var(--nd-overhang);
   }
 }
 

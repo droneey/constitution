@@ -150,9 +150,6 @@ function Progress(): ReactElement {
   );
 }
 
-/** the popup's border and padding, by which it is pulled back so its rows' text starts under the trigger's icon */
-const ROW_TEXT_INSET = 5;
-
 /** the desktop TOC */
 export function DocsToc(): ReactElement | undefined {
   const headings = useTOCItems();
@@ -199,8 +196,6 @@ export function DocsTocDropdown(): ReactElement {
       <Popover.Portal>
         <Popover.Positioner
           align='start'
-          // Stryker disable next-line UnaryOperator: the offset moves the popup by its layout, which a document without layout does not compute
-          alignOffset={-ROW_TEXT_INSET}
           className='z-50'
           // Stryker disable ObjectLiteral,StringLiteral: the axis matters only when the popup would overflow the viewport, which a document without layout never reports
           collisionAvoidance={{
