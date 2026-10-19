@@ -76,4 +76,4 @@ A repository of one unit writes `packages: {}`. [`packages`](../reference/consti
 
 ## Check the result
 
-Start a new session: the second line of its [digest](../reference/plugin.md#the-digest) reads `constitution.yaml pins <version>; <n> blocks are active.`, and the warnings follow it. [Every key](../reference/constitution-yaml.md) of the file is in the reference.
+Start a new session: the second line of its [digest](../reference/plugin.md#the-digest) reads `constitution.yaml makes <n> blocks active.`, and the warnings follow it. [Every key](../reference/constitution-yaml.md) of the file is in the reference.

@@ -30,7 +30,8 @@ const startProject = (
     config: configOf({
       [ConfigKey.Axes]: '[architecture]',
       [ConfigKey.Implementations]: '[acme]',
-    }).concat('packs: [packs/acme, packs/gone]\n'),
+      [ConfigKey.Packs]: '[packs/acme, packs/gone]',
+    }),
   });
   mkdirSync(join(project, 'packs'));
   symlinkSync(pack, join(project, 'packs', 'acme'));

@@ -4,7 +4,7 @@
 
 ## Raise the pin
 
-1. Set the new version in `mise.toml` and in `constitution.yaml`'s `version`.
+1. Set the new version in `mise.toml`.
 2. Refresh the lockfile and install, which links the new release into `.droneey/constitution/`:
 
    ```bash

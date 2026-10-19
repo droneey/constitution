@@ -7,7 +7,7 @@ BEGIN {
   FS = "\t"
   T = "\t"
   CODES = "missing abstract unknown wrong-key config pack constitution not-met override"
-  KEYS = "version axes domains platforms languages implementations packages check overrides"
+  KEYS = "axes domains platforms languages implementations packages packs check overrides"
   FIELDS = "id summary requires extends abstract languages dictionary governs"
   LAYERS = "domain platform language implementation"
   AXES = "architecture workflow"
@@ -26,14 +26,14 @@ BEGIN {
     ADD[keys[k]] = keys[k] ": []"
     FILL[keys[k]] = "write " keys[k] ": []"
   }
-  ADD["version"] = "version: " ENVIRON["CONSTITUTION_INSTALLED"]
   ADD["axes"] = "axes: [architecture, workflow]"
   ADD["packages"] = "packages: {}"
+  ADD["packs"] = "packs: []"
   ADD["check"] = "check: <the command that runs every check, or null>"
   ADD["overrides"] = "overrides: []"
-  FILL["version"] = "write version: " ENVIRON["CONSTITUTION_INSTALLED"]
   FILL["axes"] = "write axes: [architecture, workflow], or axes: [] for neither"
   FILL["packages"] = "write packages: {}"
+  FILL["packs"] = "write packs: []"
   FILL["check"] = "name the command that runs every check, or write check: null"
   FILL["overrides"] = "write overrides: []"
 }
@@ -104,8 +104,6 @@ function check_keys(   n, a, k) {
     EXPECTED[a[k]] = 1
     if (!(a[k] in SEEN)) warn("config", "constitution.yaml has no " a[k] " key — add " ADD[a[k]])
   }
-  # packs is the one key a project may leave out: most follow no pack.
-  EXPECTED["packs"] = 1
   for (k = 1; k <= nkeys; k++) if (!(SEENKEY[k] in EXPECTED)) warn("config", "constitution.yaml has the unknown key " SEENKEY[k] " — remove it")
   for (k = 1; k <= nempty; k++) warn("config", (EAPP[k] == "" ? "constitution.yaml" : EAPP[k]) " leaves " EKEY[k] " empty — " FILL[EKEY[k]])
 }
@@ -423,7 +421,6 @@ END {
     requires_of(s)
     answers_of(s)
   }
-  print "pin" T VALUE["version"]
   print "count" T active_count()
   n = split(CODES, codes, " ")
   for (c = 1; c <= n; c++) for (k = 1; k <= WARNINGS[codes[c]] + 0; k++) print "warning" T "- " codes[c] ": " WARNING[codes[c], k]

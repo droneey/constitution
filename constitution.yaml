@@ -1,5 +1,3 @@
-version: 0.76.0
-
 axes:
   - architecture
   - workflow
@@ -70,6 +68,7 @@ packages:
       - rule: utilities-only-from-tokens
         level: SHOULD
         reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"
+packs: []
 check: bun run check
 overrides:
   - rule: agent-file-restates-no-rule

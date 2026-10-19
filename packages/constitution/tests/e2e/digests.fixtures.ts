@@ -75,7 +75,7 @@ const browserAppContext = (root: string): string =>
       '- analytics-consent-first: SHOULD until 2999-12-31',
     ],
     facts: [
-      'constitution.yaml pins 1.0.0; 19 blocks are active.',
+      'constitution.yaml makes 19 blocks active.',
     ],
     root,
   });
@@ -98,7 +98,7 @@ const cliContext = (root: string): string =>
       '- git: Git as the version control. (workflow)',
     ],
     facts: [
-      'constitution.yaml pins 1.0.0; 9 blocks are active.',
+      'constitution.yaml makes 9 blocks active.',
     ],
     root,
   });
@@ -127,7 +127,7 @@ const libraryContext = (root: string): string =>
       '- four-data-states: MAY in packages/react-kit',
     ],
     facts: [
-      'constitution.yaml pins 1.0.0; 13 blocks are active.',
+      'constitution.yaml makes 13 blocks active.',
     ],
     root,
   });
@@ -158,7 +158,7 @@ const packProjectContext = (root: string): string =>
       '- paraglide (implementations): Paraglide messages, compiled per locale.',
     ],
     facts: [
-      'constitution.yaml pins 1.0.0; 16 blocks are active.',
+      'constitution.yaml makes 16 blocks active.',
     ],
     root,
   });
@@ -178,23 +178,14 @@ const htmlSiteContext = (root: string): string =>
       '- git: Git as the version control. (workflow)',
     ],
     facts: [
-      'constitution.yaml pins 1.0.0; 7 blocks are active.',
+      'constitution.yaml makes 7 blocks active.',
     ],
     root,
-  });
-
-const coreOnlyContext = (input: { pin: string; root: string }): string =>
-  contextWith({
-    facts: [
-      `constitution.yaml pins ${input.pin}; 1 block is active.`,
-    ],
-    root: input.root,
   });
 
 export {
   browserAppContext,
   cliContext,
-  coreOnlyContext,
   htmlSiteContext,
   libraryContext,
   packProjectContext,
