@@ -1,4 +1,4 @@
-# Browser with a design system
+# Design system
 
 > Governs how a primitive of the kit passes the page its attributes.
 

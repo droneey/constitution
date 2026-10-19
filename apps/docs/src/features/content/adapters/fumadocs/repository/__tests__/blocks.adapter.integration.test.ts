@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { ZodError } from 'zod';
 
-import { coreChaptersOf, layerBlocksOf } from '../blocks.adapter';
+import { axisFoldersOf, coreChaptersOf, layerBlocksOf } from '../blocks.adapter';
 import { enterRepository } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
@@ -136,5 +136,29 @@ describe('layerBlocksOf', () => {
 
     // Assert
     expect(read).toThrow(ZodError);
+  });
+});
+
+describe('axisFoldersOf', () => {
+  it("should give each axis folder of a layer's blocks", () => {
+    // Arrange
+    const domains = 'packages/constitution/blocks/domains';
+    repository.leave = enterRepository({
+      files: {
+        [`${domains}/i18n/i18n.md`]: cardOf('i18n', 'null'),
+        [`${domains}/ui/architecture/ui.md`]: '# UI\n',
+        [`${domains}/ui/ui.md`]: cardOf('ui', 'null'),
+        [`${domains}/ui/workflow/ui.md`]: '# UI\n',
+      },
+    }).leave;
+
+    // Act
+    const folders = axisFoldersOf('domains');
+
+    // Assert
+    expect(folders).toStrictEqual([
+      'domains/ui/architecture',
+      'domains/ui/workflow',
+    ]);
   });
 });

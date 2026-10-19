@@ -1,4 +1,4 @@
-# mise with version control
+# Version control
 
 > The toolchain's files in the history.
 

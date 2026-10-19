@@ -1,4 +1,4 @@
-# import-linter with workspace
+# Workspace
 
 > The contracts between the Python units of a workspace, in the root `pyproject.toml`.
 

@@ -1,7 +1,7 @@
 import { Layer } from '#/kernel/constants';
 import type { Finding } from '#/kernel/types';
 
-import type { Block } from '../../../../entities';
+import type { Block, BlockFile } from '../../../../entities';
 import { BlockFileRole } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
 import { stemOf } from '../../../../utils';
@@ -15,6 +15,12 @@ interface Subject {
 }
 
 const MARKDOWN_EXTENSION = '.md';
+
+const TITLE = '# ';
+
+/** a file's title line, its first first-level heading */
+const titleOf = (body: string): string | undefined =>
+  body.split('\n').find((line) => line.startsWith(TITLE));
 
 const pairingMessage = (
   input: Subject & {
@@ -41,15 +47,31 @@ const pairingMessage = (
     : `is named after ${input.other}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} pairs only with ${blocksOf(allowed)}`;
 };
 
-const pairingFindings = (subject: Subject): readonly Finding[] =>
+/** a seam titled otherwise than the other block's card, since the seam's folder already names the block it belongs to */
+const titleMessage = (input: { file: BlockFile; other: Block | undefined }): string | undefined => {
+  // Stryker disable next-line OptionalChaining,StringLiteral: a sound pair's other block is loaded, and its first file is its card
+  const expected = titleOf(input.other?.files[0]?.body ?? '');
+
+  return titleOf(input.file.body) === expected
+    ? undefined
+    : "is titled otherwise than the other block's card, whose title a seam takes";
+};
+
+const seamFindings = (subject: Subject): readonly Finding[] =>
   subject.block.files.flatMap((file) => {
+    if (file.with === undefined) {
+      return [];
+    }
+
     const message =
-      file.with === undefined
-        ? undefined
-        : pairingMessage({
-            ...subject,
-            other: file.with,
-          });
+      pairingMessage({
+        ...subject,
+        other: file.with,
+      }) ??
+      titleMessage({
+        file,
+        other: subject.byId.get(file.with),
+      });
 
     return message === undefined
       ? []
@@ -82,7 +104,7 @@ const chapterFindings = (subject: Subject): readonly Finding[] =>
 
 const seamsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] =>
   constitution.blocks.flatMap((block) => [
-    ...pairingFindings({
+    ...seamFindings({
       block,
       byId,
     }),

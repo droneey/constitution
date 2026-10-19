@@ -1,4 +1,4 @@
-# Analytics with a user interface
+# User interface
 
 > Governs page views.
 

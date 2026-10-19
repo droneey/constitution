@@ -1,4 +1,4 @@
-# pino over HTTP
+# HTTP server
 
 > The request logger of an HTTP server that logs with pino.
 

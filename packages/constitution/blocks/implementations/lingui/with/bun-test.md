@@ -1,4 +1,4 @@
-# Lingui with Bun test
+# Bun test
 
 > Specs that render Lingui's macros.
 

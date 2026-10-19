@@ -1,4 +1,4 @@
-# Mobile with remote data
+# Remote data
 
 > Governs remote data on a device that is often offline.
 

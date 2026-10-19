@@ -553,7 +553,7 @@ describe('loadConstitution', () => {
         id: 'i18n',
       }),
       'blocks/implementations/lingui/architecture/with/react-dom.md': [
-        '# Lingui with React DOM',
+        '# React DOM',
         '',
         rule({
           slug: 'provider-at-the-root',

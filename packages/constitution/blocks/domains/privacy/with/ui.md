@@ -1,4 +1,4 @@
-# Privacy with a user interface
+# User interface
 
 > Governs the controls of consent on a screen.
 

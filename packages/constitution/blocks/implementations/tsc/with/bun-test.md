@@ -1,4 +1,4 @@
-# tsc with Bun test
+# Bun test
 
 > Specs that run on Bun inside a program that does not.
 

@@ -11,7 +11,7 @@ governs: ["**"]
 
 # Browser
 
-> A program that runs in a browser tab, on a device its user controls. It is downloaded as a bundle with its configuration served beside it, lives in a document the browser can hide, freeze, restore and close at any moment, and keeps in the tab's storage only what the browser lets it keep; its user can read everything it ships. How its screens use the document is in `with/ui.md`, and what a program rendered first on its own server adds is in `with/server.md`.
+> A program that runs in a browser tab, on a device its user controls. It is downloaded as a bundle with its configuration served beside it, lives in a document the browser can hide, freeze, restore and close at any moment, and keeps in the tab's storage only what the browser lets it keep; its user can read everything it ships.
 
 ## Code
 

@@ -11,7 +11,7 @@ governs: ["**"]
 
 # Webhooks
 
-> HTTP requests one system posts to another when something happens there. Its rules bind the webhooks the program sends, in Standard Webhooks' format — their headers, their signed content, an endpoint disabled — and, in `with/http-server.md`, those it receives from any sender: verified, processed once and acknowledged once recorded; a program that only sends serves no HTTP.
+> HTTP requests one system posts to another when something happens there. Its rules bind the webhooks the program sends, in Standard Webhooks' format — their headers, their signed content, an endpoint disabled — and, where the program serves HTTP, those it receives from any sender: verified, processed once and acknowledged once recorded; a program that only sends serves no HTTP.
 
 ## Sending
 

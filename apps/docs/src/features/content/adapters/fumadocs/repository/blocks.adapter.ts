@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import type { Nodes } from 'mdast';
@@ -77,4 +77,18 @@ const layerBlocksOf = (layer: string): readonly string[] =>
     })),
   );
 
-export { coreChaptersOf, layerBlocksOf };
+/** the axes a block's folder may hold beside its root */
+const AXES: readonly string[] = [
+  'architecture',
+  'workflow',
+];
+
+/** the axis folders of a layer's blocks, each by its path from blocks/: `<layer>/<id>/<axis>` */
+const axisFoldersOf = (layer: string): readonly string[] =>
+  readdirSync(inBlocks(layer)).flatMap((id) =>
+    AXES.filter((axis) => existsSync(inBlocks(layer, id, axis))).map(
+      (axis) => `${layer}/${id}/${axis}`,
+    ),
+  );
+
+export { axisFoldersOf, coreChaptersOf, layerBlocksOf };

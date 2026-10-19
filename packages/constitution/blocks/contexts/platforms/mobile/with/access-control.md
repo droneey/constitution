@@ -1,4 +1,4 @@
-# Mobile with access control
+# Access control
 
 > Governs signing in through an identity provider on a phone or tablet.
 

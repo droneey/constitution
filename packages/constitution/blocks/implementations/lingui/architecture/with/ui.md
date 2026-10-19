@@ -1,4 +1,4 @@
-# Lingui with UI
+# User interface
 
 ### lingui-only-where-text-is-rendered → domain-returns-codes-not-text · MUST
 

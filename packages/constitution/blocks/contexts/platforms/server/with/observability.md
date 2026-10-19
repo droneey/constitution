@@ -1,4 +1,4 @@
-# Server with observability
+# Observability
 
 > Governs what a server's signals say of its copy, and what it sends before it exits.
 

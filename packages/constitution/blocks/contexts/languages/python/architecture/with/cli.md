@@ -1,4 +1,4 @@
-# Python with command line
+# Command line
 
 > Governs how a Python program's commands are named and registered.
 

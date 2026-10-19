@@ -92,7 +92,7 @@ const upperFiles = (): Files => ({
     body: '# UI\n',
     dir: 'blocks/domains/ui',
     files: {
-      'architecture/with/remote-data.md': `# UI with remote data\n\n${rule({
+      'architecture/with/remote-data.md': `# Remote data\n\n${rule({
         parent: 'reads-are-cancellable',
         slug: 'optimistic-writes-roll-back',
         tags: '[ux]',

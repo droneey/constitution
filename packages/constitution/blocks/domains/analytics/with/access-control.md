@@ -1,4 +1,4 @@
-# Analytics with access control
+# Access control
 
 > Governs the identity analytics knows of a caller.
 

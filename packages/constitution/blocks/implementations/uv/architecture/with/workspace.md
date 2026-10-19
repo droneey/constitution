@@ -1,4 +1,4 @@
-# uv with workspace
+# Workspace
 
 > The members of a uv workspace laid out by the workspace's tree.
 

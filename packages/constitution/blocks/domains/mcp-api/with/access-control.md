@@ -1,4 +1,4 @@
-# MCP API with access control
+# Access control
 
 > Governs the tokens a tool server accepts and the consent a proxy asks.
 

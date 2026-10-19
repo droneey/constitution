@@ -1,4 +1,4 @@
-# Language model with observability
+# Observability
 
 > Governs what a model call leaves in logs, traces and metrics.
 

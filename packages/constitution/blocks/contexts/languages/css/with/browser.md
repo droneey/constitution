@@ -1,4 +1,4 @@
-# CSS with a browser
+# Browser
 
 > Governs the fonts a stylesheet loads in a browser, the features it may use there and the sizes it takes from the viewport.
 

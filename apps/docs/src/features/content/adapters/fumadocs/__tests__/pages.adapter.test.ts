@@ -1,18 +1,29 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { Node } from 'fumadocs-core/page-tree';
 import { loader } from 'fumadocs-core/source';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import {
-  cardAsIndex,
   collectionPathOf,
   crossLinks,
+  mainFileAsIndex,
   markdownOfPage,
   renamed,
 } from '../pages.adapter';
 
 const ARROW =
   '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true" data-cross-link=""><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+
+/** the addresses of the pages among a tree's nodes */
+const addressesOf = (nodes: readonly Node[]): readonly string[] =>
+  nodes.flatMap((node) =>
+    node.type === 'page'
+      ? [
+          node.url,
+        ]
+      : [],
+  );
 
 describe('renamed', () => {
   it('should serve every file under the path asked when a source is renamed', () => {
@@ -76,7 +87,7 @@ describe('collectionPathOf', () => {
   });
 });
 
-describe('cardAsIndex', () => {
+describe('mainFileAsIndex', () => {
   it.each([
     {
       condition: 'the file is the card of a block',
@@ -94,6 +105,21 @@ describe('cardAsIndex', () => {
       served: 'core/names.md',
     },
     {
+      condition: "the file is an axis's main chapter",
+      path: 'domains/ui/architecture/ui.md',
+      served: 'domains/ui/architecture/index.md',
+    },
+    {
+      condition: "the file is the workflow axis's main chapter",
+      path: 'domains/ui/workflow/ui.md',
+      served: 'domains/ui/workflow/index.md',
+    },
+    {
+      condition: 'the file is a chapter of an axis',
+      path: 'domains/ui/architecture/state.md',
+      served: 'domains/ui/architecture/state.md',
+    },
+    {
       condition: 'the file sits at the root',
       path: 'core.md',
       served: 'core.md',
@@ -103,7 +129,7 @@ describe('cardAsIndex', () => {
     const file = path;
 
     // Act
-    const page = cardAsIndex(file);
+    const page = mainFileAsIndex(file);
 
     // Assert
     expect(page).toBe(served);
@@ -156,6 +182,43 @@ describe('crossLinks', () => {
       `Precedence${ARROW}`,
       'Names',
       'Repository',
+    ]);
+  });
+
+  it('should lead a link to a whole page to its main region, so the page is found in its own folder', () => {
+    // Arrange
+    const source = loader(
+      {
+        guide: {
+          files: [
+            {
+              data: {
+                pages: [
+                  '[Placement](/docs/core/placement)',
+                  '[Precedence](/docs/core#precedence)',
+                ],
+              },
+              path: 'meta.json',
+              type: 'meta',
+            },
+          ],
+        },
+      },
+      {
+        baseUrl: '/docs',
+        plugins: [
+          crossLinks,
+        ],
+      },
+    );
+
+    // Act
+    const addresses = addressesOf(source.getPageTree().children);
+
+    // Assert
+    expect(addresses).toStrictEqual([
+      '/docs/core/placement#main',
+      '/docs/core#precedence',
     ]);
   });
 });

@@ -1,4 +1,4 @@
-# TanStack Router with access control
+# Access control
 
 > Routes guarded before they load.
 

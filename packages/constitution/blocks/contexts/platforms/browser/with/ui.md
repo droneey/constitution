@@ -1,4 +1,4 @@
-# Browser with a user interface
+# User interface
 
 > Governs a screen in a browser: its document, viewport, pointer, images and speed, and the HTML that carries its accessibility.
 

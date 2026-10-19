@@ -2,7 +2,7 @@
 
 > Governs where the file's type and the schema that parses it live.
 
-## Placement
+## Layers
 
 ### config-file-type-declared-with-its-port → code-placed-by-its-reason-to-change · MUST
 
@@ -19,6 +19,8 @@ The schema that parses the config file, and the library it is written with, live
 | Why | Tags |
 |---|---|
 | the file is outside input whose format is a detail of the edge, so the program's own type changes only when the program does, never when the library or the format does. | [] |
+
+## Ports
 
 ### feature-blind-to-the-config-file → feature-asks-another-through-its-own-contract · MUST
 

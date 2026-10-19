@@ -1,4 +1,4 @@
-# uv with workspace
+# Workspace
 
 > A workspace of Python units as a uv workspace.
 

@@ -1,4 +1,4 @@
-# Browser with privacy
+# Privacy
 
 > Governs how a page reads a person's opt-out signal.
 

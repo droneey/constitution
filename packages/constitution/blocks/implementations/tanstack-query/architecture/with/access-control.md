@@ -1,4 +1,4 @@
-# TanStack Query with access control
+# Access control
 
 > Governs a session ended by a refused read.
 

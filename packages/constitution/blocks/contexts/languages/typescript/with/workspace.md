@@ -1,4 +1,4 @@
-# TypeScript with workspace
+# Workspace
 
 > Governs the names and manifests of a TypeScript workspace and how its packages are compiled.
 

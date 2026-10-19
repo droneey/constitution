@@ -1,4 +1,4 @@
-# CSS with a user interface
+# User interface
 
 > Governs where a component's stylesheet lives in the tree.
 

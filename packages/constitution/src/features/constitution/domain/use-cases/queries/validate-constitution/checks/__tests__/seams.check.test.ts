@@ -4,6 +4,17 @@ import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { seamsCheck } from '../seams.check';
 
+/** a seam titled as its other block's card in the valid files, so only its pairing is in question */
+const seamOf = (path: string): string => {
+  const titles: Readonly<Record<string, string>> = {
+    biome: 'Biome',
+    typescript: 'TypeScript',
+    ui: 'UI',
+  };
+
+  return `# ${titles[path.slice(path.lastIndexOf('/') + 1, -'.md'.length)] ?? 'Seam'}\n`;
+};
+
 describe('seamsCheck', () => {
   it.each([
     {
@@ -30,7 +41,7 @@ describe('seamsCheck', () => {
   ])('should report "$expected" when $path pairs with a block it may not', ({ expected, path }) => {
     // Arrange
     const files = validFiles();
-    files[path] = '# Seam\n';
+    files[path] = seamOf(path);
     const input = checkInputOf(files);
 
     // Act
@@ -51,7 +62,7 @@ describe('seamsCheck', () => {
   ])('should accept %p when it pairs with a block of its own rank or above', (path) => {
     // Arrange
     const files = validFiles();
-    files[path] = '# Seam\n';
+    files[path] = seamOf(path);
     const input = checkInputOf(files);
 
     // Act
@@ -79,6 +90,34 @@ describe('seamsCheck', () => {
       {
         message: 'takes the id of the block ui; a file named after a block belongs in with/',
         path: 'blocks/core/architecture/ui.md',
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: 'is titled after both blocks',
+      title: '# Browser with UI\n',
+    },
+    {
+      condition: 'has no title',
+      title: 'Text.\n',
+    },
+  ])("should report a seam that $condition rather than as the other block's card", ({ title }) => {
+    // Arrange
+    const path = 'blocks/contexts/platforms/browser/with/ui.md';
+    const files = validFiles();
+    files[path] = title;
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = seamsCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        message: "is titled otherwise than the other block's card, whose title a seam takes",
+        path,
       },
     ]);
   });

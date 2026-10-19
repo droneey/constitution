@@ -1,4 +1,4 @@
-# Messaging with observability
+# Observability
 
 > Governs the trace a message carries, the span of its handling, the lag of a consumer, and the alerts of a dead letter and of a scheduled run that fails or never runs.
 

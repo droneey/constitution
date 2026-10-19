@@ -1,4 +1,4 @@
-# React with remote data
+# Remote data
 
 > The states of remote data in a component.
 

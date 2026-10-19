@@ -1,4 +1,4 @@
-# zod with UI
+# User interface
 
 ### zod-imported-by-forms → layer-imports-dependencies-by-its-role · MUST
 

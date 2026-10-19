@@ -1,4 +1,4 @@
-# YAML with shell
+# Shell
 
 > Governs the shell commands a YAML file holds.
 

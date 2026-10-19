@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
@@ -2118,6 +2118,79 @@ describe('session-start hook', () => {
         musts: mustsOf(session),
         warnings: warningsOf(context),
       }).toStrictEqual<AxesView>(view);
+    },
+  );
+
+  it.each<{
+    condition: string;
+    list: readonly string[];
+    order: (string | undefined)[];
+  }>([
+    {
+      condition: 'links every chapter',
+      list: [
+        '- The base: [placement](placement.md), [principles](principles.md), [code](code.md).',
+        '- `architecture/`: [principles](architecture/principles.md).',
+        '- `workflow/`: [delivery](workflow/delivery.md).',
+      ],
+      order: [
+        'placement',
+        'principles',
+        'code',
+        'architecture/principles',
+        'workflow/delivery',
+      ],
+    },
+    {
+      condition: 'leaves chapters out, which follow by their names',
+      list: [
+        '- The base: [principles](principles.md).',
+      ],
+      order: [
+        'principles',
+        'code',
+        'placement',
+        'architecture/principles',
+        'workflow/delivery',
+      ],
+    },
+  ])(
+    "should list core's chapters in the order placement's list gives when it $condition",
+    ({ list, order }) => {
+      // Arrange
+      const plugin = createPluginRoot();
+      writeFileSync(
+        join(archiveOf(plugin), 'blocks/core/placement.md'),
+        [
+          '# Placement',
+          '',
+          '> Governs where a rule goes.',
+          '',
+          'Prose may link [code](code.md) too.',
+          '',
+          ...list,
+          '',
+        ].join('\n'),
+      );
+      const project = createProject({
+        config: FOUND,
+      });
+
+      // Act
+      const chapters = coreLinesOf(
+        contextOf(
+          runHook({
+            event: HookEvent.Subagent,
+            project,
+            root: plugin,
+          }),
+        ),
+      )
+        .slice(1)
+        .map((line) => line.slice('- '.length).split(':')[0]);
+
+      // Assert
+      expect(chapters).toStrictEqual(order);
     },
   );
 

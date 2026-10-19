@@ -1,4 +1,4 @@
-# FastAPI with structlog
+# structlog
 
 ### uvicorn-records-join-the-chain → one-chain-for-every-record · MUST
 

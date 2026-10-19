@@ -1,4 +1,4 @@
-# NestJS with Bun test
+# Bun test
 
 > Specs of a NestJS program that run on Bun.
 

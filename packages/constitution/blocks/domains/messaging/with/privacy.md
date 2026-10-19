@@ -1,4 +1,4 @@
-# Messaging with privacy
+# Privacy
 
 > Governs how long a broker keeps personal data.
 

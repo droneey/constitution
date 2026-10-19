@@ -1,4 +1,4 @@
-# TypeScript with CSS
+# CSS
 
 > Governs the classes a component's markup names.
 

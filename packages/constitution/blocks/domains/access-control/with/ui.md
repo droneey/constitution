@@ -1,4 +1,4 @@
-# Access control with a user interface
+# User interface
 
 > Governs sign-in and sessions on a screen.
 

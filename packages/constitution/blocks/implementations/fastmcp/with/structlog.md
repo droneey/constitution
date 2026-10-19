@@ -1,4 +1,4 @@
-# FastMCP with structlog
+# structlog
 
 ### fastmcp-records-join-the-chain → one-chain-for-every-record · MUST
 

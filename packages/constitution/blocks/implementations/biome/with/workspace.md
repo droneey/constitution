@@ -1,4 +1,4 @@
-# Biome with workspace
+# Workspace
 
 > The configuration of each package of a workspace.
 

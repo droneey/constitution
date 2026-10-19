@@ -1,4 +1,4 @@
-# Browser with a server
+# Server
 
 > Governs a program rendered on its own server and run in the tab: the boundary between the two, and what crosses it.
 

@@ -1,4 +1,4 @@
-# dependency-cruiser with workspace
+# Workspace
 
 > The configuration that holds the imports between the units of a workspace.
 

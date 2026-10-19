@@ -1,4 +1,4 @@
-# Lingui with Vite
+# Vite
 
 > The build that expands Lingui's macros.
 

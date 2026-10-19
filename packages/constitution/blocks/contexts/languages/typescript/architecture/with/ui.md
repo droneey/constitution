@@ -1,4 +1,4 @@
-# TypeScript with user interface
+# User interface
 
 > Governs the input and output a TypeScript component never reaches.
 

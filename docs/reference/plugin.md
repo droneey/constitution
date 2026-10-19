@@ -41,7 +41,7 @@ It stays under Claude Code's limit of 10,000 characters and holds:
 1. the release and the folder of its blocks;
 2. `constitution.yaml makes <n> blocks active.`;
 3. the warnings about `constitution.yaml`, to tell you at the start of a session;
-4. core's card and the list of core's chapters;
+4. core's card and the list of core's chapters, in the order [placement](../../packages/constitution/blocks/core/placement.md) lists them;
 5. every active block by layer, with its summary and the chapters of the axes the project follows, then each unit's blocks;
 6. the overrides.
 

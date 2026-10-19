@@ -7,8 +7,9 @@ import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { docsRoute } from '#/shared/constants';
 import { blocks, documents, glossary, guide, overview, quickStart } from '#collections/server';
 
-import { cardAsIndex, crossLinks, markdownOfPage, renamed } from './pages.adapter';
+import { crossLinks, mainFileAsIndex, markdownOfPage, renamed } from './pages.adapter';
 import {
+  axisFoldersOf,
   BLOCK_LAYERS,
   coreChaptersOf,
   GLOSSARY,
@@ -21,7 +22,7 @@ import {
 
 interface SidebarFolder {
   icon?: string;
-  pages: string[];
+  pages?: string[];
   title?: string;
 }
 
@@ -93,6 +94,9 @@ const metaFile = (
   type: 'meta',
 });
 
+/** an axis folder's title in the sidebar, its name capitalised, since its main chapter, the folder's page, is titled as its block */
+const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
+
 /** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
 const AXIS_SEPARATOR = '/';
 
@@ -131,6 +135,13 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
               ],
       }),
     ),
+    ...BLOCK_LAYERS.filter((layer) => layer !== 'core')
+      .flatMap(axisFoldersOf)
+      .map((folder) =>
+        metaFile(`${folder}/meta.json`, {
+          title: titleOfAxis(folder.slice(folder.lastIndexOf('/') + 1)),
+        }),
+      ),
     ...axes.map((axis) =>
       metaFile(`core/${axis}/meta.json`, {
         pages: chapters
@@ -157,7 +168,7 @@ const contentSource = lazily(() => {
 
   return loader(
     {
-      blocks: renamed(blocks.toFumadocsSource(), cardAsIndex),
+      blocks: renamed(blocks.toFumadocsSource(), mainFileAsIndex),
       documents: renamed(documents.toFumadocsSource(), (path) => `${SITE_DOCUMENTS[path]}.md`),
       glossary: renamed(glossary.toFumadocsSource(), () => `${GLOSSARY}.md`),
       guide: guideSource,

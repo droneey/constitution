@@ -110,7 +110,7 @@ Each folder of the tree imports installed dependencies by its role: the domain a
 |---|---|
 | a dependency is volatile, and one table by folder role holds every dependency at once, those nobody wrote a rule for included. | [] |
 
-## Placement
+## Homes
 
 ### code-placed-by-its-reason-to-change · MUST
 

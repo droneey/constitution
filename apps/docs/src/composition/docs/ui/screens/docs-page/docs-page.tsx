@@ -14,10 +14,11 @@ import {
   TOCProvider,
   useGlide,
 } from '#/libs/ui';
+import { mainContentId } from '#/shared/constants';
 
 import { DocsLocationContext } from '../../../app/providers';
 import { DocsToc, DocsTocDropdown } from '../../components/docs-toc';
-import { layoutOptions, mainContentId, mdxComponents } from '../../constants';
+import { layoutOptions, mdxComponents } from '../../constants';
 import { DocsSidebarWidget } from '../../widgets/docs-sidebar-widget';
 import { DocsVersionWidget } from '../../widgets/docs-version-widget';
 

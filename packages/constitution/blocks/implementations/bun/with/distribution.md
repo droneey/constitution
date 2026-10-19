@@ -1,4 +1,4 @@
-# Bun with distribution
+# Distribution
 
 > Which tool publishes the units a Bun repository distributes.
 
