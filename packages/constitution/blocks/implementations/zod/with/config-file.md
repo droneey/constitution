@@ -1,4 +1,4 @@
-# zod with config file
+# Config file
 
 > The schema of the config file, published for its editors.
 

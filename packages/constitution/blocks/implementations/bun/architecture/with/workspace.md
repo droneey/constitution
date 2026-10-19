@@ -1,4 +1,4 @@
-# Bun with workspace
+# Workspace
 
 > The globs of a Bun workspace laid out by the workspace's tree.
 

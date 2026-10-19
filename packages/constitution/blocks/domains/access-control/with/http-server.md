@@ -1,4 +1,4 @@
-# Access control over HTTP
+# HTTP server
 
 > Governs the cookie that carries a session, and how a refused caller is answered.
 

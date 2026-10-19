@@ -1,4 +1,4 @@
-# Bun with workspace
+# Workspace
 
 > A workspace as a Bun workspace.
 

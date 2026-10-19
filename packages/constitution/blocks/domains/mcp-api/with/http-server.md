@@ -1,4 +1,4 @@
-# MCP API over HTTP
+# HTTP server
 
 > Governs the origins a tool server over HTTP answers, a server on the user’s machine, and how it tells a client where to get a token.
 

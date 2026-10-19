@@ -1,4 +1,4 @@
-# Server with owned data
+# Owned data
 
 > Governs the connections a server's copies open to the store it owns.
 

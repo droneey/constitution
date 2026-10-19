@@ -1,4 +1,4 @@
-# Ruff with pytest
+# pytest
 
 > The specs' rules. The part `presets/python/ruff/pytest.toml` extends `python.toml` with pytest's style (`PT`) and the bans below, and a project that tests with pytest extends it, the last link of the chain.
 

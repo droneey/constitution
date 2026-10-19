@@ -1,4 +1,4 @@
-# TypeScript with YAML
+# YAML
 
 > Governs the code that parses YAML.
 

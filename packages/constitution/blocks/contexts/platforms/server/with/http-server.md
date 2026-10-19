@@ -1,4 +1,4 @@
-# Server with HTTP server
+# HTTP server
 
 > Governs how a server's connections, stop and probes meet HTTP.
 

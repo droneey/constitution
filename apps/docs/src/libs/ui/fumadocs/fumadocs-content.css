@@ -113,10 +113,6 @@
     }
   }
 
-  [data-rule-parent]:not([data-rule] *) {
-    display: none;
-  }
-
   /* outside the page a rule's level is one letter, filled, tinted or outlined as its badge is */
   [data-rule-level]:not([data-docs-body] *) {
     display: none;

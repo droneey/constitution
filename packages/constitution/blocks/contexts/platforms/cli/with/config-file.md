@@ -1,4 +1,4 @@
-# Command line with a config file
+# Config file
 
 > Governs the command that starts a new config file.
 

@@ -1,4 +1,4 @@
-# NestJS with pino
+# pino
 
 > A NestJS program whose records pass the one pino instance.
 

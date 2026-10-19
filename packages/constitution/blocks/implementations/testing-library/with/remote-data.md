@@ -1,4 +1,4 @@
-# Testing Library with remote data
+# Remote data
 
 > Specs of screens that read and change data another system owns.
 

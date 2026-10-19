@@ -1,4 +1,4 @@
-# Browser with a server
+# Server
 
 > Governs what the server that renders the program may hold.
 

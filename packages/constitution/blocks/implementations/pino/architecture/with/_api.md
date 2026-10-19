@@ -1,4 +1,4 @@
-# pino with API
+# API
 
 > Where a server that logs with pino enters each request's trace id.
 

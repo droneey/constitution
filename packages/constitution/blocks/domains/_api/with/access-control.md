@@ -1,4 +1,4 @@
-# API with access control
+# Access control
 
 > Governs what a caller is told of an object it may not see.
 

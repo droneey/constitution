@@ -8,11 +8,12 @@ import { toString as textOf } from 'mdast-util-to-string';
 import { headingTextOf, isHeading } from '../markdown';
 import {
   addressOf,
+  blockLayerOf,
   inRepository,
   QUICK_START,
   repositoryPathOf,
-  SITE_BLOCKS,
   SITE_DOCUMENTS,
+  SITE_LAYERS,
 } from './repository.adapter';
 
 const DOCUMENTATION = 'Documentation';
@@ -51,6 +52,8 @@ interface Entry {
   address: string;
   /** what the README says of it after its dash */
   description: string;
+  /** the site's folder of the blocks of a layer, when it leads to one */
+  layer: string | undefined;
   title: string;
 }
 
@@ -91,6 +94,7 @@ const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
   return {
     address: addressOf(baseUrl, target.path, target.hash),
     description: sentenceOf(textOf(paragraph).split(' — ')[1] ?? ''),
+    layer: blockLayerOf(target.path),
     title: textOf(link),
   };
 };
@@ -145,16 +149,15 @@ const linkEntryOf = ({ address, title }: Entry, fromBase: string): string => {
   return `${icon === undefined ? '' : `[${icon}]`}[${title}](${address})`;
 };
 
-/** an entry of the sidebar: a page by its file, a block folder by its name, any other as a link */
+/** an entry of the sidebar: a page by its file, a layer's folder of blocks by its name, any other as a link */
 const sidebarEntryOf = (entry: Entry, { fromBase, page }: Place): string => {
-  if (
-    page === undefined ||
-    // Stryker disable next-line MethodExpression: the site renders one block folder, so some and every agree
-    SITE_BLOCKS.some((folder) => page.startsWith(`${folder}/`))
-  ) {
+  if (entry.layer !== undefined) {
+    return entry.layer;
+  }
+  if (page === undefined || SITE_LAYERS.some((folder) => page.startsWith(`${folder}/`))) {
     return linkEntryOf(entry, fromBase);
   }
-  if (SITE_BLOCKS.includes(page)) {
+  if (SITE_LAYERS.includes(page)) {
     return page;
   }
 

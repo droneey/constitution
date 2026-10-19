@@ -1,4 +1,4 @@
-# User interface with remote data
+# Remote data
 
 > Governs where a write invalidates what it changed.
 

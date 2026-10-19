@@ -1,4 +1,4 @@
-# Server with messaging
+# Messaging
 
 > Governs the liveness of a server that consumes messages, and when it takes them.
 

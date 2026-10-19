@@ -1,4 +1,4 @@
-# Mobile with a user interface
+# User interface
 
 > Governs screens on a phone or tablet: the system's lifecycle, links, permissions, the keyboard, touch and the system's accessibility settings.
 

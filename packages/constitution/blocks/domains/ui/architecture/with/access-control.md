@@ -1,4 +1,4 @@
-# User interface with access control
+# Access control
 
 > Governs guards of screens and the session they read.
 

@@ -1,4 +1,4 @@
-# Expo with version control
+# Version control
 
 > The native projects in the history.
 

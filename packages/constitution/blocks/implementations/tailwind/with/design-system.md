@@ -1,4 +1,4 @@
-# Tailwind with a design system
+# Design system
 
 > Governs how Tailwind resolves the tokens and variants of a design system.
 

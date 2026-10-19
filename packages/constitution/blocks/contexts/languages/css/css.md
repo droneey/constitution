@@ -11,7 +11,7 @@ governs: ["**/*.css"]
 
 # CSS
 
-> The language of a program's stylesheets, whatever writes their classes: plain stylesheets, scoped ones or a utility library. Cascade layers and selectors decide which rule wins, custom properties carry the values, and classes tie the styles to the markup. What a browser, a user interface, a design system and a reader's direction add lives in the seams.
+> The language of a program's stylesheets, whatever writes their classes: plain stylesheets, scoped ones or a utility library. Cascade layers and selectors decide which rule wins, custom properties carry the values, and classes tie the styles to the markup.
 
 ## Code
 

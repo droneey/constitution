@@ -1,4 +1,4 @@
-# YAML with config file
+# Config file
 
 > Governs a config file written in YAML.
 

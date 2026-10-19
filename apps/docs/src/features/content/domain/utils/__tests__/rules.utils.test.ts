@@ -228,6 +228,15 @@ describe('pageSlugsOf', () => {
       ],
     },
     {
+      condition: "the file is a platform's card, inside contexts",
+      path: 'contexts/platforms/browser/browser.md',
+      slugs: [
+        'contexts',
+        'platforms',
+        'browser',
+      ],
+    },
+    {
       condition: 'the file sits at the root',
       path: 'core.md',
       slugs: [

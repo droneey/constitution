@@ -1,4 +1,4 @@
-# Language model with access control
+# Access control
 
 > Governs what a model is given of people's documents and conversations.
 

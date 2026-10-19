@@ -1,4 +1,4 @@
-# Language model with a user interface
+# User interface
 
 > Governs a model's answer as it streams onto a screen.
 

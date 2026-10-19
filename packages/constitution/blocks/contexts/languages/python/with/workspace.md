@@ -1,4 +1,4 @@
-# Python with workspace
+# Workspace
 
 > Governs the distribution and import names of a Python workspace's units.
 

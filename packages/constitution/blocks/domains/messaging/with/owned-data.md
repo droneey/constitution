@@ -1,4 +1,4 @@
-# Messaging with owned data
+# Owned data
 
 > Governs a change and its message written together, a message recorded with its effect, and a queue kept in the store.
 

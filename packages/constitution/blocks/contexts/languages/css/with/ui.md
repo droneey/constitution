@@ -1,4 +1,4 @@
-# CSS with a user interface
+# User interface
 
 > Governs how a stylesheet serves screens and components: focus, boundaries, text size, wrapping, reflow, overlays, hover, motion, values and scope.
 

@@ -1,4 +1,4 @@
-# Matomo with privacy
+# Privacy
 
 > Governs what Matomo does before consent and after an objection.
 

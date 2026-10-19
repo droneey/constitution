@@ -1,4 +1,4 @@
-# Remote data with a user interface
+# User interface
 
 > Governs what a cache must offer for optimistic writes.
 

@@ -87,6 +87,7 @@ const docsContentFake = (): DocsContentFake => {
           body: (): undefined => undefined,
           description,
           load: () => loadedBody,
+          loaded: (): undefined => undefined,
           title,
         };
 

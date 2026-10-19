@@ -1,4 +1,4 @@
-# User interface with remote data
+# Remote data
 
 > Governs what a screen reads and writes of data another system owns.
 

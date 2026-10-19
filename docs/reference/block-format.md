@@ -17,7 +17,7 @@ blocks/<layer>/<id>/        the layer is its folder
     └── <id>.md             the axis's main chapter
 ```
 
-The card holds the front matter, the summary and the rules of the block's main chapter; every other chapter holds one topic. A chapter is named for what its rules govern, and a rule's statement opens with that thing. [Where a rule goes](../../packages/constitution/blocks/core/placement.md) decides a rule's layer, axis and chapter.
+The card holds the front matter, the summary and the rules of the block's main chapter; every other chapter holds one topic. A chapter is named for what its rules govern, and a rule's statement opens with that thing. A seam, `with/<other>.md`, is titled as the other block's card, since its folder already names its own block; the card says what the block is, never which files hold the rest. [Where a rule goes](../../packages/constitution/blocks/core/placement.md) decides a rule's layer, axis and chapter.
 
 ## The card's front matter
 

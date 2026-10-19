@@ -1,4 +1,4 @@
-# Stryker with Bun test
+# Bun test
 
 > Mutation testing over specs that `bun test` runs.
 

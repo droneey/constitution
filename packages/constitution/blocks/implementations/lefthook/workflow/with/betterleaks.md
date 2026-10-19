@@ -1,4 +1,4 @@
-# Lefthook with Betterleaks
+# Betterleaks
 
 > The secret scan in the commit hook: the part `presets/common/lefthook/workflow/betterleaks.yaml` runs `betterleaks git --pre-commit --staged --redact`.
 

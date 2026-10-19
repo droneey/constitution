@@ -1,3 +1,10 @@
+export {
+  axisFoldersOf,
+  coreChaptersOf,
+  layerBlocksOf,
+  SEAMS,
+  seamHoldersOf,
+} from './blocks.adapter';
 export { taglineOf } from './brand.adapter';
 export {
   documentIconOf,
@@ -9,10 +16,11 @@ export {
 export { releaseOf } from './release.adapter';
 export {
   addressOf,
+  BLOCK_LAYERS,
   GLOSSARY,
   inRepository,
   QUICK_START,
   repositoryPathOf,
-  SITE_BLOCKS,
   SITE_DOCUMENTS,
+  SITE_LAYERS,
 } from './repository.adapter';

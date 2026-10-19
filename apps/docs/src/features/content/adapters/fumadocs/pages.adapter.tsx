@@ -2,9 +2,9 @@ import type { Item } from 'fumadocs-core/page-tree';
 import type { LoaderPlugin } from 'fumadocs-core/source';
 import { ArrowRight } from 'lucide-react';
 
-import { docsRoute } from '#/shared/constants';
+import { docsRoute, mainContentId } from '#/shared/constants';
 
-import { pageSlugsOf } from '../../domain/utils';
+import { isMainFilePath, pageSlugsOf } from '../../domain/utils';
 
 interface MarkdownPage {
   data: {
@@ -40,15 +40,18 @@ const renamed = <
   }),
 });
 
-/** a block's card, `<id>/<id>.md`, served as its folder's index */
-const cardAsIndex = (path: string): string =>
-  pageSlugsOf(path).length < path.split('/').length
-    ? `${path.slice(0, path.lastIndexOf('/'))}/index.md`
-    : path;
+/** a block's file by the path the site serves it under: a main file, a card or an axis's main chapter, as its folder's index */
+const mainFileAsIndex = (path: string): string =>
+  `${pageSlugsOf(path).join('/')}${isMainFilePath(path) ? '/index' : ''}.md`;
 
 const collectionPathOf = (path: string): string => collectionPaths.get(path) ?? path;
 
-/** a sidebar entry that leads to a page of another section carries an arrow after its name */
+/**
+ * A sidebar entry that leads to a page of another section carries an arrow after its name. One that
+ * leads to a whole page leads to its main region, so the page is found where it lives: the library
+ * places a page, for its breadcrumbs, its neighbours and the open folder, at the first entry of its
+ * address.
+ */
 const crossLinked = (node: Item, path: string | undefined): Item => {
   if (path !== undefined || node.external === true || !node.url.startsWith(docsRoute)) {
     return node;
@@ -56,6 +59,7 @@ const crossLinked = (node: Item, path: string | undefined): Item => {
 
   return {
     ...node,
+    url: node.url.includes('#') ? node.url : `${node.url}#${mainContentId}`,
     name: (
       <>
         {node.name}
@@ -82,4 +86,4 @@ const markdownOfPage = async (
 
 ${await page.data.getText('processed')}`;
 
-export { cardAsIndex, collectionPathOf, crossLinks, markdownOfPage, renamed };
+export { collectionPathOf, crossLinks, mainFileAsIndex, markdownOfPage, renamed };

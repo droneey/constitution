@@ -1,4 +1,4 @@
-# TanStack Router with version control
+# Version control
 
 > The generated route tree in the history.
 

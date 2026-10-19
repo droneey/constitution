@@ -1,4 +1,4 @@
-# Python with distribution
+# Distribution
 
 > Governs the types, entries, manifest and floor of a distributed Python package.
 

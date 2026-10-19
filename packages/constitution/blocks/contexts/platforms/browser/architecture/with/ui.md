@@ -1,4 +1,4 @@
-# Browser with a user interface
+# User interface
 
 > Governs where a screen declares what the document says about it.
 

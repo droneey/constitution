@@ -1,4 +1,4 @@
-# TypeScript with distribution
+# Distribution
 
 > Governs the `package.json` and the declarations of a TypeScript package others install.
 

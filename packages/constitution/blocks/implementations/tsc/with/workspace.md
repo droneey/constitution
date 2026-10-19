@@ -1,4 +1,4 @@
-# tsc with workspace
+# Workspace
 
 > Each package of a workspace as a project of its own.
 

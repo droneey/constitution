@@ -1,4 +1,4 @@
-# CSS with a design system
+# Design system
 
 > Governs how stylesheets spell and resolve the tokens, variants and modes of a design system.
 

@@ -1,4 +1,4 @@
-# TypeScript with shell
+# Shell
 
 > Governs the shell commands a package's scripts hold.
 

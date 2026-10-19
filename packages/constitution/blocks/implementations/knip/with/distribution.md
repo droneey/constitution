@@ -1,4 +1,4 @@
-# knip with distribution
+# Distribution
 
 > A distributed package whose integration imports an optional peer.
 

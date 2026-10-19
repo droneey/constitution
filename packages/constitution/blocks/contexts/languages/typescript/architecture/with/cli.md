@@ -1,4 +1,4 @@
-# TypeScript with command line
+# Command line
 
 > Governs the files of a TypeScript command line's commands.
 

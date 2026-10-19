@@ -1,4 +1,4 @@
-# uv with distribution
+# Distribution
 
 > What uv packs into a distributed Python package, and the attestation it uploads beside it.
 

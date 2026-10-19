@@ -1,4 +1,4 @@
-# Remote data with access control
+# Access control
 
 > Governs a cache that outlives no session.
 

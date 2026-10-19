@@ -1,4 +1,4 @@
-# Python with distribution
+# Distribution
 
 > Governs when a distributed Python package raises its floor.
 

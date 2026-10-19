@@ -17,6 +17,7 @@ import {
   abstractBlocksCheck,
   bindingsCheck,
   budgetCheck,
+  coreChaptersCheck,
   corePartCheck,
   cyclesCheck,
   decisionsCheck,
@@ -51,6 +52,7 @@ const CHECKS: readonly Check[] = [
   pluginCheck,
   decisionsCheck,
   corePartCheck,
+  coreChaptersCheck,
 ];
 
 interface Validation {

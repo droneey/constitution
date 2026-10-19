@@ -1,4 +1,4 @@
-# Mobile with privacy
+# Privacy
 
 > Governs permissions, store declarations, account deletion and tracking on a phone or tablet.
 

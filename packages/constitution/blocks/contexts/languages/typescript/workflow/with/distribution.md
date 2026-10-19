@@ -1,4 +1,4 @@
-# TypeScript with distribution
+# Distribution
 
 > Governs when a TypeScript package others install raises its floor.
 

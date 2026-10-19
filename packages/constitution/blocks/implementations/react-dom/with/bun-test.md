@@ -1,4 +1,4 @@
-# React DOM with Bun test
+# Bun test
 
 > Specs that render into a DOM `bun test` does not have.
 

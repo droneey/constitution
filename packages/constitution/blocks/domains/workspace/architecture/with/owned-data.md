@@ -1,4 +1,4 @@
-# Workspace with owned data
+# Owned data
 
 > Governs what programs that own their data share.
 

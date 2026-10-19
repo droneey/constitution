@@ -7,36 +7,54 @@ import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { docsRoute } from '#/shared/constants';
 import { blocks, documents, glossary, guide, overview, quickStart } from '#collections/server';
 
-import { cardAsIndex, crossLinks, markdownOfPage, renamed } from './pages.adapter';
-import { GLOSSARY, QUICK_START, SITE_DOCUMENTS, sidebarOf } from './repository';
-
-// Core's chapters in the order core's placement chapter names them, until the Constitution lists it as data.
-const CORE_ORDER = [
-  'placement',
-  'code',
-  'names',
-  'functions',
-  'relations',
-  'types',
-  'errors',
-  'effects',
-  'security',
-  'dependencies',
-  'tools',
-  'changes',
-  'layout',
-  'comments',
-  'tests',
-  'agents',
-  'architecture',
-  'workflow',
-];
+import { crossLinks, mainFileAsIndex, markdownOfPage, renamed } from './pages.adapter';
+import {
+  axisFoldersOf,
+  BLOCK_LAYERS,
+  coreChaptersOf,
+  GLOSSARY,
+  layerBlocksOf,
+  QUICK_START,
+  SEAMS,
+  SITE_DOCUMENTS,
+  SITE_LAYERS,
+  seamHoldersOf,
+  sidebarOf,
+} from './repository';
 
 interface SidebarFolder {
   icon?: string;
-  pages: string[];
-  title: string;
+  pages?: string[];
+  title?: string;
 }
+
+/** the title and icon of each folder of blocks in the sidebar, by its folder in blocks/ */
+const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title'>>> = {
+  contexts: {
+    icon: 'Boxes',
+    title: 'Contexts',
+  },
+  'contexts/languages': {
+    icon: 'Code',
+    title: 'Languages',
+  },
+  'contexts/platforms': {
+    icon: 'MonitorSmartphone',
+    title: 'Platforms',
+  },
+  core: {
+    icon: 'ScrollText',
+    title: 'Core',
+  },
+  domains: {
+    icon: 'Shapes',
+    title: 'Domains',
+  },
+  implementations: {
+    icon: 'Wrench',
+    title: 'Implementations',
+  },
+};
 
 type GuidePageData =
   ReturnType<typeof guide.toFumadocsSource> extends Source<infer TConfig>
@@ -78,6 +96,86 @@ const metaFile = (
   type: 'meta',
 });
 
+/** an axis folder's title in the sidebar, its name capitalised, since its main chapter, the folder's page, is titled as its block */
+const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
+
+/**
+ * The folders inside the blocks: an axis folder is titled by its axis, since its main chapter, the
+ * folder's page, is titled as its block, and a folder that holds seams lists them after all else.
+ */
+const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
+  const folders = new Map<string, SidebarFolder>();
+  const layers = BLOCK_LAYERS.filter((layer) => layer !== 'core');
+
+  for (const folder of layers.flatMap(axisFoldersOf)) {
+    folders.set(folder, {
+      title: titleOfAxis(folder.slice(folder.lastIndexOf('/') + 1)),
+    });
+  }
+  for (const folder of layers.flatMap(seamHoldersOf)) {
+    folders.set(folder, {
+      ...folders.get(folder),
+      pages: [
+        '...',
+        SEAMS,
+      ],
+    });
+  }
+
+  return [
+    ...folders,
+  ].map(([folder, meta]) => metaFile(`${folder}/meta.json`, meta));
+};
+
+/** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
+const AXIS_SEPARATOR = '/';
+
+/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, a folder of layers by its layers, and core's chapters in the order placement lists them */
+const blockFolders = (): ReturnType<typeof metaFile>[] => {
+  const chapters = coreChaptersOf();
+  const base = chapters.filter((chapter) => !chapter.includes(AXIS_SEPARATOR));
+  const axes = [
+    ...new Set(
+      chapters
+        .filter((chapter) => chapter.includes(AXIS_SEPARATOR))
+        .map((chapter) => chapter.slice(0, chapter.indexOf(AXIS_SEPARATOR))),
+    ),
+  ];
+
+  return [
+    ...SITE_LAYERS.filter((folder) => !BLOCK_LAYERS.includes(folder)).map((folder) =>
+      metaFile(`${folder}/meta.json`, {
+        ...LAYER_FOLDERS[folder],
+        pages: BLOCK_LAYERS.filter((layer) => layer.startsWith(`${folder}/`)).map((layer) =>
+          layer.slice(folder.length + 1),
+        ),
+      }),
+    ),
+    ...BLOCK_LAYERS.map((layer) =>
+      metaFile(`${layer}/meta.json`, {
+        ...LAYER_FOLDERS[layer],
+        pages:
+          layer === 'core'
+            ? [
+                ...base,
+                ...axes,
+              ]
+            : [
+                ...layerBlocksOf(layer),
+              ],
+      }),
+    ),
+    ...blockSubfolders(),
+    ...axes.map((axis) =>
+      metaFile(`core/${axis}/meta.json`, {
+        pages: chapters
+          .filter((chapter) => chapter.startsWith(`${axis}${AXIS_SEPARATOR}`))
+          .map((chapter) => chapter.slice(axis.length + AXIS_SEPARATOR.length)),
+      }),
+    ),
+  ];
+};
+
 /** the loader of every page the site renders, built when first asked, since building it reads the repository */
 const contentSource = lazily(() => {
   const sidebar = sidebarOf(docsRoute);
@@ -88,17 +186,13 @@ const contentSource = lazily(() => {
         pages: sidebar.pages,
         title: 'Constitution',
       }),
-      metaFile('core/meta.json', {
-        icon: 'ScrollText',
-        pages: CORE_ORDER,
-        title: 'Core',
-      }),
+      ...blockFolders(),
     ],
   };
 
   return loader(
     {
-      blocks: renamed(blocks.toFumadocsSource(), cardAsIndex),
+      blocks: renamed(blocks.toFumadocsSource(), mainFileAsIndex),
       documents: renamed(documents.toFumadocsSource(), (path) => `${SITE_DOCUMENTS[path]}.md`),
       glossary: renamed(glossary.toFumadocsSource(), () => `${GLOSSARY}.md`),
       guide: guideSource,

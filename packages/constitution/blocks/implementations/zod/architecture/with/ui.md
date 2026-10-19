@@ -1,4 +1,6 @@
-# zod with UI
+# User interface
+
+> Governs where a form's schema lives in an interface.
 
 ### zod-imported-by-forms → layer-imports-dependencies-by-its-role · MUST
 

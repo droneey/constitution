@@ -1,4 +1,4 @@
-# Testing Library with React DOM
+# React DOM
 
 > Specs that render into a document and query it.
 

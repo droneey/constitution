@@ -1,4 +1,4 @@
-# Mobile with a remote service
+# Remote service
 
 > Governs how the app reaches the systems it calls.
 

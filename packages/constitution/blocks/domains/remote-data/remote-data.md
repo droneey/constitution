@@ -11,7 +11,7 @@ governs: ["**"]
 
 # Remote data
 
-> Data another system owns and decides on, which the program reads, caches and changes through that system: how the data is cached, keyed and invalidated, and folded from a stream. What an interface adds, its optimistic writes, is in the seams with ui.
+> Data another system owns and decides on, which the program reads, caches and changes through that system: how the data is cached, keyed and invalidated, and folded from a stream.
 
 ## Reads
 

@@ -56,11 +56,25 @@ const summaryLineOf = (markdown: string): string | undefined =>
     .find((line) => line.startsWith('> '))
     ?.slice('> '.length);
 
-/** the slugs of a block's file: a card, `<id>/<id>.md`, is its folder's page; a chapter keeps its name */
+/** the folders of a block's optional axes, each holding the axis's main chapter, `<axis>/<id>.md` */
+const AXIS_FOLDERS: readonly string[] = [
+  'architecture',
+  'workflow',
+];
+
+/** whether a block's file is the main file of its folder: the block's card, `<id>/<id>.md`, or an axis's main chapter, `<id>/<axis>/<id>.md` */
+const isMainFilePath = (path: string): boolean => {
+  const [name, folder, above] = path.split('/').toReversed();
+  const owner = AXIS_FOLDERS.some((axis) => axis === folder) ? above : folder;
+
+  return name === `${owner}.md`;
+};
+
+/** the slugs of a block's file: a main file is its folder's page; a chapter keeps its name */
 const pageSlugsOf = (path: string): readonly string[] => {
   const parts = path.replace(/\.md$/, '').split('/');
 
-  return parts.at(-1) === parts.at(-2) ? parts.slice(0, -1) : parts;
+  return isMainFilePath(path) ? parts.slice(0, -1) : parts;
 };
 
 const unknownExamplesOf = (
@@ -78,6 +92,7 @@ const slugsOfMarkdownAddress = (segments: readonly string[]): readonly string[] 
 };
 
 export {
+  isMainFilePath,
   pageSlugsOf,
   ruleOf,
   ruleSlugsOf,

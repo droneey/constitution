@@ -1,4 +1,4 @@
-# Stryker with workspace
+# Workspace
 
 > The mutation configuration of each package of a workspace.
 

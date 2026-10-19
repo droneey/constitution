@@ -1,4 +1,4 @@
-# dependency-cruiser with workspace
+# Workspace
 
 > The configuration of each package of a workspace.
 

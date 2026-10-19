@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react';
 
 import { DefaultNotFound, HomeLayout, useGlide } from '#/libs/ui';
+import { mainContentId } from '#/shared/constants';
 
-import { layoutOptions, mainContentId } from '../../constants';
+import { layoutOptions } from '../../constants';
 
 export function DocsNotFoundScreen(): ReactElement {
   useGlide();

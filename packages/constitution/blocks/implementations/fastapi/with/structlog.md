@@ -1,4 +1,6 @@
-# FastAPI with structlog
+# structlog
+
+> Governs how Uvicorn's own records reach structlog's chain.
 
 ### uvicorn-records-join-the-chain → one-chain-for-every-record · MUST
 

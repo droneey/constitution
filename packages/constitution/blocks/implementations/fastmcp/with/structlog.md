@@ -1,4 +1,6 @@
-# FastMCP with structlog
+# structlog
+
+> Governs how fastmcp's own records reach structlog's chain.
 
 ### fastmcp-records-join-the-chain → one-chain-for-every-record · MUST
 

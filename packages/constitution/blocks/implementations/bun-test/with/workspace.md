@@ -1,4 +1,4 @@
-# Bun test with workspace
+# Workspace
 
 > The coverage gate of each package of a workspace.
 

@@ -1,4 +1,4 @@
-# osv-scanner with Docker
+# Docker
 
 > Images scanned beside the lockfiles.
 

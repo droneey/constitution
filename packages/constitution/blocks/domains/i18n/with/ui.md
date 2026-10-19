@@ -1,4 +1,4 @@
-# Internationalisation with a user interface
+# User interface
 
 > Governs the locale on a screen, its direction and its capitals.
 

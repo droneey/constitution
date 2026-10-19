@@ -14,10 +14,11 @@ import {
   TOCProvider,
   useGlide,
 } from '#/libs/ui';
+import { mainContentId } from '#/shared/constants';
 
 import { DocsLocationContext } from '../../../app/providers';
 import { DocsToc, DocsTocDropdown } from '../../components/docs-toc';
-import { layoutOptions, mainContentId, mdxComponents } from '../../constants';
+import { layoutOptions, mdxComponents } from '../../constants';
 import { DocsSidebarWidget } from '../../widgets/docs-sidebar-widget';
 import { DocsVersionWidget } from '../../widgets/docs-version-widget';
 
@@ -79,7 +80,7 @@ function DocsContent({
   page: DocsPageEntry;
   path: string;
 }): ReactElement {
-  const { toc } = use(page.load());
+  const { toc } = page.loaded() ?? use(page.load());
   const Body = page.body;
   // here, not in the root: its lists are on the page only once this content, which waits for its body, is hydrated
   useGlide();
@@ -122,6 +123,12 @@ export interface DocsPageEntry {
   load: () => Promise<{
     toc: TOCItemType[];
   }>;
+  /** the body's outline once loaded, which the page reads without waiting */
+  loaded: () =>
+    | {
+        toc: TOCItemType[];
+      }
+    | undefined;
   title: string;
 }
 

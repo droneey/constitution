@@ -229,6 +229,7 @@ function block_file(source, rel, file,   layer, rest, id, name, axis, read) {
     block_text(source, rel, file, id, name, axis, name)
   } else if (name ~ /^(architecture|workflow)\/[^\/]+\.md$/ || name ~ /^[^\/]+\.md$/) {
     CHAPTERS[id] = CHAPTERS[id] (CHAPTERS[id] == "" ? "" : " ") name
+    if (id == "core" && name == "placement.md") PLACEMENT = file
     block_text(source, rel, file, id, name, (name ~ /\//) ? substr(name, 1, index(name, "/") - 1) : "", "")
   } else {
     blocks_warn(source, where_of(source, rel) " is not a block file — move or remove it")
@@ -244,9 +245,39 @@ function ancestors_of(id,   base) {
   return ANCESTORS[id]
 }
 
-# Once every file is read: a block's bases through extends, its place among a
-# base's heirs, and each rule's level from its parent where it states none.
+# Core's chapters in the order placement's list links them, those it leaves
+# out after them in the order of their names.
+function order_core(   line, listed, n, a, m, b, k, j, out, used) {
+  if (PLACEMENT == "") return
+  listed = ""
+  while ((getline line < PLACEMENT) > 0) {
+    if (line !~ /^- /) continue
+    while (match(line, /\]\([^)]*\.md\)/)) {
+      listed = listed " " substr(line, RSTART + 2, RLENGTH - 3)
+      line = substr(line, RSTART + RLENGTH)
+    }
+  }
+  close(PLACEMENT)
+  n = split(listed, a, " ")
+  m = split(CHAPTERS["core"], b, " ")
+  out = ""
+  for (k = 1; k <= n; k++) {
+    for (j = 1; j <= m; j++) {
+      if (!(j in used) && b[j] == a[k]) {
+        used[j] = 1
+        out = out (out == "" ? "" : " ") b[j]
+      }
+    }
+  }
+  for (j = 1; j <= m; j++) if (!(j in used)) out = out (out == "" ? "" : " ") b[j]
+  CHAPTERS["core"] = out
+}
+
+# Once every file is read: core's chapters in their order, a block's bases
+# through extends, its place among a base's heirs, and each rule's level from
+# its parent where it states none.
 function finish_blocks(   j, id, i, pass, parent, open, n, a, k) {
+  order_core()
   for (j = 1; j <= nb; j++) {
     id = B[j]
     n = split(REQUIRES[id], a, " ")

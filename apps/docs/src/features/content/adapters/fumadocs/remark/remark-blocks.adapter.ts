@@ -248,42 +248,64 @@ const exampleOf = (markdown: string): Box => {
   );
 };
 
+/** the line under a rule's heading that names the rule it tightens, apart from the heading and its anchor; its slug is linked as every slug outside a heading is */
+const parentLineOf = (parent: string | undefined): Paragraph[] =>
+  parent === undefined
+    ? []
+    : [
+        {
+          children: [
+            text('→ '),
+            code(parent),
+          ],
+          data: {
+            hProperties: {
+              ...part('rule-parent'),
+            },
+          },
+          type: 'paragraph',
+        },
+      ];
+
 const cardOf = (
   { heading, rule }: RuleHeading,
   body: RootContent[],
-  example: string | undefined,
+  options: BlocksOptions,
 ): RuleCard => {
+  const example = options.examples.get(rule.slug);
   const table = body.find((node) => node.type === 'table');
   const tags = table === undefined ? [] : tagNamesOf(table);
-  const meta: Paragraph = {
-    children: [
-      span(part('rule-level', rule.level.toLowerCase()), [
-        text(rule.level),
-      ]),
-      ...tags.map((tag) =>
-        span(part('rule-tag'), [
-          text(tag),
-        ]),
-      ),
-    ],
-    data: {
-      hProperties: {
-        ...part('rule-meta'),
-      },
-    },
-    type: 'paragraph',
-  };
+  // the tags, closing the card, which a rule without tags leaves out
+  const meta: Paragraph[] =
+    tags.length === 0
+      ? []
+      : [
+          {
+            children: tags.map((tag) =>
+              span(part('rule-tag'), [
+                text(tag),
+              ]),
+            ),
+            data: {
+              hProperties: {
+                ...part('rule-meta'),
+              },
+            },
+            type: 'paragraph',
+          },
+        ];
 
   return {
     children: [
       heading,
-      meta,
+      ...parentLineOf(rule.parent),
       ...body.map((node) => (node.type === 'table' ? whyOf(node) : node)),
       ...(example === undefined
         ? []
         : [
             exampleOf(example),
           ]),
+      ...meta,
     ],
     data: {
       hName: 'section',
@@ -306,23 +328,12 @@ const wrapRules = (tree: Root, options: BlocksOptions): void => {
       const end = sectionEnd(tree.children, index);
       const body = tree.children.slice(index + 1, end);
 
-      tree.children.splice(
-        index,
-        end - index,
-        cardOf(ruleHeading, body, options.examples.get(ruleHeading.rule.slug)),
-      );
+      tree.children.splice(index, end - index, cardOf(ruleHeading, body, options));
     }
   }
 };
 
-/** the rule a rule tightens, linked to it when the site renders it */
-const parentOf = (parent: string, options: BlocksOptions): PhrasingContent => {
-  const address = options.addresses.get(parent);
-
-  return address === undefined ? code(parent) : linkTo(address, code(parent));
-};
-
-const ruleHeading = (heading: Heading, options: BlocksOptions): void => {
+const ruleHeading = (heading: Heading): void => {
   const rule = ruleOf(textOf(heading));
 
   if (rule === undefined) {
@@ -352,15 +363,10 @@ const ruleHeading = (heading: Heading, options: BlocksOptions): void => {
         ],
       ),
     ]),
+    span(part('rule-level', rule.level.toLowerCase()), [
+      text(rule.level),
+    ]),
     code(rule.slug),
-    ...(rule.parent === undefined
-      ? []
-      : [
-          span(part('rule-parent'), [
-            text('→ '),
-            parentOf(rule.parent, options),
-          ]),
-        ]),
     text(` [#${rule.slug}]`),
   ];
 };
@@ -393,7 +399,7 @@ const remarkBlocks =
     // Stryker disable next-line StringLiteral: only a heading has a depth, so visiting every node finds the same ones
     visit(tree, 'heading', (heading) => {
       if (heading.depth === RULE_DEPTH) {
-        ruleHeading(heading, options);
+        ruleHeading(heading);
       }
     });
   };

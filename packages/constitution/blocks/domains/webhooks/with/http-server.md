@@ -1,4 +1,4 @@
-# Webhooks over HTTP
+# HTTP server
 
 > Governs the webhooks another system posts to the program.
 

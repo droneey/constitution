@@ -1,4 +1,4 @@
-# Analytics with privacy
+# Privacy
 
 > Governs what an analytics library keeps before consent.
 

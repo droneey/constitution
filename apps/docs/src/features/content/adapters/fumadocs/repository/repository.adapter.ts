@@ -11,10 +11,16 @@ import { pageSlugsOf } from '../../../domain/utils';
  */
 const inRepository = (path = ''): string => resolve('../..', path);
 
-/** the blocks the site renders; the others are read on GitHub */
-const SITE_BLOCKS = [
+/** the folders of each layer's blocks, the same in blocks/ and on the site; a platform's and a language's sit in contexts/ */
+// Stryker disable StringLiteral: the site's loader and build read the layers, which no spec loads; the specs see contexts/ through either of its layers
+const BLOCK_LAYERS: readonly string[] = [
   'core',
+  'domains',
+  'contexts/platforms',
+  'contexts/languages',
+  'implementations',
 ];
+// Stryker restore StringLiteral
 
 const QUICK_START = 'quick-start';
 
@@ -30,8 +36,17 @@ const SITE_DOCUMENTS: Readonly<Record<string, string>> = {
 /** the folder of the guides, each one a page of the site */
 const DOCS_FOLDER = 'docs/';
 
-/** the folder of the blocks, those of `SITE_BLOCKS` pages of the site */
+/** the folder of the blocks, every file of them a page of the site */
 const BLOCKS_FOLDER = 'packages/constitution/blocks/';
+
+/** the folders of blocks/ the README lists, each a folder of the site's sidebar: contexts/ holds two layers */
+const SITE_LAYERS: readonly string[] = [
+  ...new Set(BLOCK_LAYERS.map((layer) => layer.replace(/\/.*/, ''))),
+];
+
+/** the sidebar's folder a path from the root names, when it names one of those folders */
+const blockLayerOf = (path: string): string | undefined =>
+  SITE_LAYERS.find((layer) => path === `${BLOCKS_FOLDER}${layer}`);
 
 const MARKDOWN = '.md';
 
@@ -79,11 +94,7 @@ const addressOf = (baseUrl: string, path: string, hash: string): string => {
 
   const block = path.startsWith(BLOCKS_FOLDER) ? path.slice(BLOCKS_FOLDER.length) : undefined;
 
-  if (
-    block?.endsWith(MARKDOWN) &&
-    // Stryker disable next-line MethodExpression: the site renders one block folder, so some and every agree
-    SITE_BLOCKS.some((folder) => block.startsWith(`${folder}/`))
-  ) {
+  if (block?.endsWith(MARKDOWN)) {
     return (
       [
         baseUrl,
@@ -118,10 +129,13 @@ const repositoryPathOf = (from: string, url: string): RepositoryPath | undefined
 
 export {
   addressOf,
+  BLOCK_LAYERS,
+  BLOCKS_FOLDER,
+  blockLayerOf,
   GLOSSARY,
   inRepository,
   QUICK_START,
   repositoryPathOf,
-  SITE_BLOCKS,
   SITE_DOCUMENTS,
+  SITE_LAYERS,
 };

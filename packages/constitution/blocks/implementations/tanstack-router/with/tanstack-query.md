@@ -1,4 +1,4 @@
-# TanStack Router with TanStack Query
+# TanStack Query
 
 > Routes that load server data through the query cache, and screens whose reads suspend into the route's pending and error components.
 

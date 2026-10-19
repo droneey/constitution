@@ -1,4 +1,4 @@
-# User interface with a remote service
+# Remote service
 
 > Governs forms whose input travels to another system, and the specs that stand in for it.
 

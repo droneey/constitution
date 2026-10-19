@@ -5,6 +5,11 @@
 /* -------------------------------------------------------------------------- */
 
 @layer prose {
+  /* a link's underline is a hairline, as every rule of the page is */
+  [data-docs-body] a {
+    text-decoration-thickness: 1px;
+  }
+
   [data-docs-body] [data-rule-card] {
     margin-block: var(--spacing-lg);
     padding: var(--spacing-sm);
@@ -50,7 +55,15 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-xs);
-    margin: var(--spacing-sm) 0 var(--spacing-lg);
+    margin: var(--spacing-lg) 0 0;
+  }
+
+  /* the statement opens a clear step under the heading and its parent, tags or none */
+  [data-docs-body]
+    [data-rule-card]
+    > :is([data-rule], [data-rule-parent])
+    + :not([data-rule-parent]) {
+    margin-top: var(--spacing-lg);
   }
 
   [data-docs-body] [data-rule-card] > p:not([data-rule-meta], [data-rule-why]) {
@@ -86,13 +99,6 @@
     }
   }
 
-  [data-docs-body] [data-rule] > a {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-xs);
-  }
-
   /* code on the type scale's smallest step, with room between its lines */
   [data-docs-body] pre code {
     font-size: var(--text-xs);
@@ -107,14 +113,32 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  [data-docs-body] [data-rule-parent] {
+  /* the parent a rule tightens, a line of its own right under the heading */
+  [data-docs-body] [data-rule-card] > [data-rule-parent] {
+    margin: var(--spacing-xs) 0 0;
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
     font-style: normal;
     font-weight: var(--font-weight-normal);
   }
 
+  /* the parent is a quiet link: the line's own colour, its underline the strong border's, its code bare */
+  [data-docs-body] [data-rule-parent] a {
+    color: inherit;
+    text-decoration-color: var(--color-border-strong);
+    transition: color var(--duration-fast) var(--ease-standard);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+  }
+
   [data-docs-body] [data-rule-parent] code {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
     font-size: var(--text-sm);
     font-weight: var(--font-weight-normal);
   }
@@ -144,6 +168,12 @@
     background: var(--color-accent-muted);
   }
 
+  /* the level opens the heading's first line and the slug runs on after it, wrapping under it */
+  [data-docs-body] [data-rule] [data-rule-level] {
+    margin-inline-end: var(--spacing-xs);
+    vertical-align: middle;
+  }
+
   [data-docs-body] [data-rule-why] {
     color: var(--color-text-muted);
     font-size: var(--text-sm);
@@ -167,6 +197,11 @@
     [data-docs-body] [data-rule-example='pair'] {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+  }
+
+  /* an example shown once, a code block straight in the example, keeps no margin of its own, as a column's does */
+  [data-docs-body] [data-rule-example] > figure {
+    margin: 0;
   }
 
   [data-docs-body] [data-rule-example-column] > p {
@@ -232,8 +267,9 @@
     align-items: center;
     height: var(--spacing-control-xs);
     padding-inline: var(--spacing-xs);
+    border: 1px solid var(--color-border-base);
     border-radius: var(--radius-lg);
-    background: var(--color-fill-muted);
+    background: transparent;
     color: var(--color-text-muted);
     font-size: var(--text-xs);
     font-style: normal;

@@ -4,11 +4,11 @@ import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanst
 
 import { RootProvider } from 'fumadocs-ui/provider/tanstack';
 
-import { DocsFrameContext, DocsSearchWidget, mainContentId } from '#/composition/docs';
+import { DocsFrameContext, DocsSearchWidget } from '#/composition/docs';
 import { documentFrame } from '#/composition/docs/adapters/document';
 import { createGetVersions, GetVersionsContext } from '#/features/versions';
 import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
-import { appName } from '#/shared/constants';
+import { appName, mainContentId } from '#/shared/constants';
 
 import appCss from '../app.css?url';
 import { translations } from '../constants';

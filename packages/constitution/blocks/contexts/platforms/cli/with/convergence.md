@@ -1,4 +1,4 @@
-# Command line with convergence
+# Convergence
 
 > Governs the exit code of a convergence program's plan and what its flags may choose.
 

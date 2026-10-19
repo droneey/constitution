@@ -1,4 +1,4 @@
-# Messaging with access control
+# Access control
 
 > Governs the identity a message acts for.
 

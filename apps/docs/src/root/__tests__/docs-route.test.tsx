@@ -81,6 +81,23 @@ describe('docs route', () => {
     ]);
   });
 
+  test("should read an abstract block's page, whose id opens with its mark", async () => {
+    // Arrange
+    const content = docsContentFake();
+    const router = routerAt('/docs/domains/_api', content);
+
+    // Act
+    await router.load();
+
+    // Assert
+    expect(content.loads).toStrictEqual([
+      [
+        'domains',
+        '_api',
+      ],
+    ]);
+  });
+
   test('should read the overview when the address names no page', async () => {
     // Arrange
     const content = docsContentFake();
@@ -101,8 +118,12 @@ describe('docs route', () => {
       condition: 'a segment holds a capital',
     },
     {
-      address: '/docs/guides/_draft',
+      address: '/docs/guides/-draft',
       condition: 'a segment starts with a character no slug holds',
+    },
+    {
+      address: '/docs/domains/__api',
+      condition: 'a segment opens with more than the one mark of an abstract block',
     },
     {
       address: '/docs/guides/write_a_pack',

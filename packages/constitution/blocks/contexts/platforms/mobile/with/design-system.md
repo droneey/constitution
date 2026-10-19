@@ -1,4 +1,4 @@
-# Mobile with a design system
+# Design system
 
 > Governs how the theme's modes follow the system's settings on a phone or tablet.
 

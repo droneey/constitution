@@ -1,4 +1,4 @@
-# Vite with the browser
+# Browser
 
 > A bundle the browser downloads.
 

@@ -1,4 +1,4 @@
-# TanStack Start with a server
+# Server
 
 > Governs what Start's server holds, where it serves the program.
 

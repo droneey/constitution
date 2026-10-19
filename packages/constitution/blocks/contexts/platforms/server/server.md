@@ -11,7 +11,7 @@ governs: ["**"]
 
 # Server
 
-> A program that runs until its host stops it — in a container, a virtual machine or a platform's process — and serves requests or works through messages and schedules. Its host decides when it starts, when work is routed to it, how many copies of it run and when it is killed; the program tells its host whether it is alive and ready, and stops when told. What HTTP adds is in `with/http-server.md`, a consumer's liveness in `with/messaging.md`, the connections to its own store in `with/owned-data.md`, the signals of its copies in `with/observability.md`, and where its processes, probes and stop live in `architecture/`.
+> A program that runs until its host stops it — in a container, a virtual machine or a platform's process — and serves requests or works through messages and schedules. Its host decides when it starts, when work is routed to it, how many copies of it run and when it is killed; the program tells its host whether it is alive and ready, and stops when told.
 
 ## Types
 

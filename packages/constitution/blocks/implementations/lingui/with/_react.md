@@ -1,4 +1,4 @@
-# Lingui with React
+# React
 
 > Messages in React components.
 
