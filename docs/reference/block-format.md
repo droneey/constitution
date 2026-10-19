@@ -138,6 +138,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a list of core's chapters, in core's passport, that leaves one out, names a file that is no chapter of core, or names one twice;
 - a malformed Requirements row, or a `partly` or `no` that names no rule of its own block;
 - a preset part named after no block, a binding whose rule, part or setting does not hold;
+- a tool with preset parts and no template that takes them, a template outside a folder `templates/project/<scope>/<block>/` of a block;
 - a file over 500 lines, and a link to a missing file.
 
 After the findings, it advises, without failing, on rules of sibling blocks similar enough to move one layer up.

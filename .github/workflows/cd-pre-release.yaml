@@ -12,8 +12,6 @@ jobs:
       contents: write
     with:
       prerelease: true
-      # The archive a project pins: the rules the plugin's hooks read, the
-      # presets, the templates and the built tools.
       # The install runs no package's scripts: the archive needs none, and the
       # docs app's would read presets through a link this job never makes.
       assets-command: >-

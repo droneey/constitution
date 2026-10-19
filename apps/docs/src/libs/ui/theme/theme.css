@@ -1,10 +1,3 @@
-/* The theme applied: the library's names on the tokens of theme.gen.css, the base styles, the
-   site's utilities and the motion the library's own classes name. */
-
-/* -------------------------------------------------------------------------- */
-/* COMMON TOKENS                                                              */
-/* -------------------------------------------------------------------------- */
-
 /* biome-ignore lint/plugin/utilities-only-from-tokens: Fumadocs styles its own components with Tailwind's default scales; constitution.yaml lowers the rule for the site */
 @theme {
   /* One layout at every width: the library's medium breakpoint, where it switches to its phone
@@ -54,10 +47,6 @@
   --color-fd-diff-add: var(--color-fill-success);
   --color-fd-diff-add-symbol: var(--color-text-success);
 }
-
-/* -------------------------------------------------------------------------- */
-/* BASE STYLES                                                                */
-/* -------------------------------------------------------------------------- */
 
 @layer base {
   html {
@@ -132,10 +121,6 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* UTILITIES                                                                  */
-/* -------------------------------------------------------------------------- */
-
 @utility text-gradient-accent {
   color: var(--color-accent-solid);
 
@@ -154,11 +139,7 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* MOTION                                                                     */
-/* Durations and easings the library's own components still name, on the     */
-/* site's tokens; the layer comes after the utilities it remaps.              */
-/* -------------------------------------------------------------------------- */
+/* The layer comes after the utilities it remaps. */
 
 @layer overrides {
   /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */

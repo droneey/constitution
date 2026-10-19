@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { summaryLineOf, titleOf } from '../../domain/utils';
 import { plainTextOf } from './markdown';
 
-/** the fields a page of the repository's Markdown adds to fumadocs' own */
 interface MarkdownFields {
   description: z.ZodDefault<z.ZodString>;
   icon: z.ZodDefault<z.ZodString> | z.ZodOptional<z.ZodString>;
@@ -15,7 +14,6 @@ interface MarkdownFields {
 
 type MarkdownSchema = ReturnType<typeof pageSchema.extend<MarkdownFields>>;
 
-/** a page of the repository's Markdown: its title and summary from its heading and quote */
 const markdownSchema =
   (iconOf: (path: string) => string | undefined) =>
   (context: { path: string }): MarkdownSchema => {

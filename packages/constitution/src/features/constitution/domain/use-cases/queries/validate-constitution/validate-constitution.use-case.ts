@@ -32,6 +32,7 @@ import {
   requiresCheck,
   rulesCheck,
   seamsCheck,
+  templatesCheck,
   vocabularyCheck,
 } from './checks';
 
@@ -47,6 +48,7 @@ const CHECKS: readonly Check[] = [
   requirementsCheck,
   presetsCheck,
   bindingsCheck,
+  templatesCheck,
   referencesCheck,
   budgetCheck,
   linksCheck,

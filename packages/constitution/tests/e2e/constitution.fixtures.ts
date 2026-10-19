@@ -71,15 +71,10 @@ const AXIS_FOLDERS: readonly string[] = [
   'workflow',
 ];
 
-/** a file's path in its block: a path with no axis folder is foundation's */
+/** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
   AXIS_FOLDERS.some((axis) => path.startsWith(`${axis}/`)) ? path : `foundation/${path}`;
 
-/**
- * A block as its files: the passport holds the front matter and the body — its title, core's preamble
- * the digest gives, or an implementation's Requirements — and each of the files, a chapter or a seam,
- * sits in its axis.
- */
 const blockFiles = (
   input: BlockFixture & {
     dir: string;
@@ -174,7 +169,6 @@ const coreFiles = (body: string): Files =>
     summary: 'The laws for any program.',
   });
 
-/** a block's rules as one chapter of their axis, foundation's code unless the case names another */
 const rulesFile = (input: {
   axis?: Axis;
   chapter?: string;

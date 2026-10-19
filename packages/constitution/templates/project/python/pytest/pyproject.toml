@@ -1,0 +1,24 @@
+# pytest: the specs, strict and offline, in a random order
+[tool.pytest]
+minversion = "9.1"
+strict = true
+testpaths = ["tests"]
+pythonpath = ["tests"]
+# the list replaces pytest's defaults: `.*` keeps the hidden folders out, or Hypothesis warns of .hypothesis/
+norecursedirs = [".*", "integration", "e2e"]
+addopts = ["-ra", "--import-mode=importlib"]
+filterwarnings = ["error"]
+anyio_mode = "auto"
+timeout = "10"
+
+# pytest: the coverage gate, with branches
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = ["**/main.py", "**/__main__.py", "**/root/wiring.py", "**/*_gen.py", "**/*_gen/**"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]

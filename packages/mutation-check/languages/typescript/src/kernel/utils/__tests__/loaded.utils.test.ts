@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 
-import { specsByFile } from '../loaded.ts';
+import { specsByFile } from '../loaded.utils.ts';
 
 const IMPORTS: Readonly<Record<string, readonly string[]>> = {
   'src/__tests__/order.test.ts': [

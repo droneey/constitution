@@ -8,7 +8,6 @@ type DocsContent = RouterContext['docs'];
 
 type DocsPageRef = Parameters<DocsContent['pageOf']>[0];
 
-/** a guide as the server reads it: the sidebar's tree, and where the guide's body lives */
 const pageDataFixture = (overrides: Partial<DocsPageData> = {}): DocsPageData => ({
   description: 'How a project adds blocks of its own.',
   pageTree: {
@@ -40,16 +39,15 @@ const loadedBody = Promise.resolve({
   toc: [],
 });
 
-/** the content the routes read, recording what they asked of it */
 interface DocsContentFake {
   docs: DocsContent;
-  /** the slugs each load asked for, oldest first */
+  /** oldest first */
   loads: string[][];
-  /** the bodies loaded ahead of rendering, by collection and path */
+  /** by collection and path */
   preloads: string[];
 }
 
-/** the content over one guide, and one page the server lists after its body left its collection */
+/** one guide, and one page the server lists after its body left its collection */
 const docsContentFake = (): DocsContentFake => {
   const loads: string[][] = [];
   const preloads: string[] = [];

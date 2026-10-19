@@ -12,6 +12,14 @@ A rule a tool can hold, at a cost its gain repays, is held by one, configured to
 |---|---|
 | a rule held only by prose is broken as soon as nobody reads it, and a tool never tires. | [] |
 
+### configuration-takes-every-part-of-its-blocks · MUST
+
+A tool's configuration names, by its path, every part of the shared configuration that the blocks active where it sits give the tool, on the axes the unit follows, and no part of a block that is not active; at the root of a workspace, a tool with a part for the workspace takes that part and its own alone. A part the tool cannot name where it reads its settings is copied under a line that names its path and the release it comes from.
+
+| Why | Tags |
+|---|---|
+| the configuration then changes with the blocks: a part missing, or one kept after its block is gone, shows by its path, and a copy that lags its release by the release it names. | [] |
+
 ### one-formatter-per-language · MUST
 
 One formatter formats the files of each language, and a file it would change fails the check.

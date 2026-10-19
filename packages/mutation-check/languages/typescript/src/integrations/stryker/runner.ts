@@ -11,8 +11,8 @@ import type {
 } from '@stryker-mutator/api/test-runner';
 import { DryRunStatus, MutantRunStatus, TestStatus } from '@stryker-mutator/api/test-runner';
 
-import { importsOf } from './imports.ts';
-import { specsByFile } from './loaded.ts';
+import { specsByFile } from '#/kernel/utils';
+import { importsOf } from '#/libs/imports';
 
 // Stryker's INSTRUMENTER_CONSTANTS.ACTIVE_MUTANT_ENV_VARIABLE: its module reads Stryker's schema
 // beside it when imported, and the archive's bundle of this runner carries no schema.

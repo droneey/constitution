@@ -19,7 +19,6 @@ import { pendingVersions } from './get-versions.fake';
 interface DocsProviders {
   frame?: DocsFrame;
   getVersions?: GetVersions;
-  /** the address the framework reports */
   pathname?: string;
 }
 
@@ -33,7 +32,6 @@ const staticRouter = (): {
   refresh: (): void => undefined,
 });
 
-/** the releases a site knows of: this one, the latest, and an older one */
 const versionsFixture = (overrides: Partial<Versions> = {}): Versions => ({
   latest: '0.70.0',
   versions: [
@@ -59,7 +57,6 @@ const pageTreeFixture = (): PageTreeRoot => ({
   ],
 });
 
-/** a page's contents: a section, a rule under it, and a deeper entry */
 const tocFixture = (): TOCItemType[] => [
   {
     depth: 2,
@@ -78,7 +75,7 @@ const tocFixture = (): TOCItemType[] => [
   },
 ];
 
-/** a page as its collection offers it, its contents already loaded, its link drawn by the components it is given */
+/** its contents already loaded */
 const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry => {
   const loaded = Promise.resolve({
     toc: tocFixture(),
@@ -102,7 +99,6 @@ const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry
   };
 };
 
-/** renders a docs piece inside the providers the site's root mounts, fresh for each render */
 const renderInDocs = (
   ui: ReactElement,
   { frame, getVersions = pendingVersions, pathname = '/docs' }: DocsProviders = {},

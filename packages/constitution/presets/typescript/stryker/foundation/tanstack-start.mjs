@@ -4,4 +4,8 @@ export default {
     '!src/router.{ts,tsx}',
     '!src/client.{ts,tsx}',
   ],
+  // the build, which the sandbox needs no copy of
+  ignorePatterns: [
+    '.output',
+  ],
 };

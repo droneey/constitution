@@ -1,5 +1,3 @@
-// The collections of the repository's Markdown, which fumadocs-mdx compiles at build time: the
-// server lists the pages from them, and the browser loads a page's body from them.
 import type { RehypeCodeOptions } from 'fumadocs-core/mdx-plugins';
 import { applyMdxPreset, defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import type { PluggableList } from 'unified';

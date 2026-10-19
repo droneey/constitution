@@ -1,0 +1,3 @@
+# dclint: the Compose files, by the part it takes on the command line
+[tasks."compose:check"]
+run = "dclint --config <parts> compose.yaml"

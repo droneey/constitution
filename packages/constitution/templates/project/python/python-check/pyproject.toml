@@ -1,0 +1,5 @@
+# python-check: the homes the Constitution's parts give each block's package
+[tool.python-check]
+extend = [
+  "<parts>",
+]

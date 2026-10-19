@@ -10,7 +10,7 @@ import { translations } from '../constants';
 
 afterEach(cleanup);
 
-/** the library's label, before the notes in brackets that tell its uses apart */
+/** the notes in brackets tell a label's uses apart */
 const labelOf = (key: string): string => key.replace(/\(.*$/, '');
 
 const atTheRoot = (): string => '/';

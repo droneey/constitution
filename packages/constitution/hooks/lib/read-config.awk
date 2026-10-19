@@ -183,7 +183,6 @@ function field(t,   name, value) {
   else oreason = value
 }
 
-# An override is "- <field>: <value>", its other fields two spaces deeper.
 function override(l, t, indent, app) {
   if (t ~ /^-( |$)/) {
     flush()
@@ -256,7 +255,6 @@ function top(t,   key, rest) {
   }
 }
 
-# Under packages: a path two spaces in, its keys four spaces in.
 function app_line(t, indent,   key, rest) {
   if (indent == 2 && t !~ /^-( |$)/) {
     if (substr(t, length(t)) != ":") fail(NR)

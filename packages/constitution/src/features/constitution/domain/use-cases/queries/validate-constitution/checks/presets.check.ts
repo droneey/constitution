@@ -60,7 +60,6 @@ const nameProblem = (input: {
       };
 };
 
-// A scope is common to every language the tool reads, or one of them.
 const scopeProblem = (input: { byId: BlocksById; preset: PresetPath }): Problem | undefined => {
   const { scope, tool } = input.preset;
   const covered = input.byId.get(tool)?.frontMatter.languages ?? [];

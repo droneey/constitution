@@ -1,10 +1,8 @@
 import type { Files } from './constitution.fixtures';
 import { blockFiles, chapterFile, rule } from './constitution.fixtures';
 
-/** the file that holds acme's rule, a chapter of foundation */
 const ACME = 'blocks/implementations/acme/foundation/calls.md';
 
-// A pack of one implementation whose rule carries out a rule of the base's core.
 const packFiles = (parent = 'dependencies-point-inward'): Files => ({
   ...blockFiles({
     body: '# Acme\n',

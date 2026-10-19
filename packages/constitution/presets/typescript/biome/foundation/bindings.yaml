@@ -216,6 +216,8 @@ typescript:
     - module-level-value-never-changed.grit
   module-exports-by-name:
     - noDefaultExport
+  test-folder-files-in-test-forms:
+    - useFilenamingConvention
   return-type-no-wider-than-returned:
     - noMisleadingReturnType
   value-made-text-by-a-named-form:

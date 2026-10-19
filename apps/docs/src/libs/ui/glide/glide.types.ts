@@ -1,4 +1,3 @@
-/** a list whose rows a muted block slides between */
 interface GlideList {
   /** rows that show a fill of their own, which the block fades out over */
   readonly filled?: string;

@@ -1,3 +1,2 @@
-# complexipy: the cognitive complexity of a function
 [tool.complexipy]
 max-complexity-allowed = 15

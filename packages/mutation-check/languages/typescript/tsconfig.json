@@ -2,15 +2,16 @@
   "extends": [
     "../../../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
     "../../../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
-    "../../../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json",
-    "../../../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json"
+    "../../../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json",
+    "../../../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
   ],
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
-    "types": [
-      "node",
-      "bun"
-    ]
+    "paths": {
+      "#/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts"

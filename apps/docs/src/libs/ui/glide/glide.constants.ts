@@ -1,6 +1,6 @@
 import type { GlideList } from './glide.types';
 
-/** every list but the sidebar, whose block is the library's own, by the selector that finds it */
+/** the sidebar is left out, since its block is the library's own */
 const GLIDE_LISTS: Readonly<Record<string, GlideList>> = {
   "nav[aria-label='Versions']": {
     rows: 'a',

@@ -12,10 +12,8 @@ import {
   renamed,
 } from '../pages.adapter';
 
-/** the arrow that follows a cross-link's name, hidden from a screen reader */
 const ARROW = /<svg\b(?=[^>]*\baria-hidden="true")(?=[^>]*\bdata-cross-link="")[^>]*>.*<\/svg>/;
 
-/** an entry of the sidebar by the name it shows, and whether the arrow of a cross-link follows it */
 interface SidebarEntry {
   arrow: boolean;
   name: string;
@@ -30,7 +28,6 @@ const entryOf = (node: Node): SidebarEntry => {
   };
 };
 
-/** the addresses of the pages among a tree's nodes */
 const addressesOf = (nodes: readonly Node[]): readonly string[] =>
   nodes.flatMap((node) =>
     node.type === 'page'

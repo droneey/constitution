@@ -5,13 +5,10 @@ import { gitConfig } from '#/shared/constants';
 
 import { pageSlugsOf } from '../../../domain/utils';
 
-/**
- * A path in the Constitution's repository, whose Markdown the site renders as GitHub shows it. The
- * site builds from its own folder; the path is resolved when asked, since the browser has none.
- */
+/** the site builds from its own folder; the path is resolved when asked, since the browser has none */
 const inRepository = (path = ''): string => resolve('../..', path);
 
-/** the folders of each layer's blocks, the same in blocks/ and on the site; a platform's and a language's sit in contexts/ */
+/** the same folders in blocks/ and on the site */
 // Stryker disable StringLiteral: the site's loader and build read the layers, which no spec loads; the specs see contexts/ through either of its layers
 const BLOCK_LAYERS: readonly string[] = [
   'core',
@@ -27,24 +24,20 @@ const QUICK_START = 'quick-start';
 /** the page made of PROJECT.md's glossary, and that section's anchor */
 const GLOSSARY = 'glossary';
 
-/** the repository's documents beside the README that the site renders, by the page each one becomes */
 const SITE_DOCUMENTS: Readonly<Record<string, string>> = {
   'CONTRIBUTING.md': 'contributing',
   'DECISIONS.md': 'decisions',
 };
 
-/** the folder of the guides, each one a page of the site */
 const DOCS_FOLDER = 'docs/';
 
-/** the folder of the blocks, every file of them a page of the site */
 const BLOCKS_FOLDER = 'packages/constitution/blocks/';
 
-/** the folders of blocks/ the README lists, each a folder of the site's sidebar: contexts/ holds two layers */
+/** contexts/ holds two layers, and the sidebar one folder for them */
 const SITE_LAYERS: readonly string[] = [
   ...new Set(BLOCK_LAYERS.map((layer) => layer.replace(/\/.*/, ''))),
 ];
 
-/** the sidebar's folder a path from the root names, when it names one of those folders */
 const blockLayerOf = (path: string): string | undefined =>
   SITE_LAYERS.find((layer) => path === `${BLOCKS_FOLDER}${layer}`);
 
@@ -65,10 +58,7 @@ const githubAddressOf = (path: string): string => {
   return `https://github.com/${gitConfig.user}/${gitConfig.repo}/${kind}/main/${path}`;
 };
 
-/**
- * The site's address of a file of the repository, by its path from the root: a page where the site
- * renders it, GitHub's view where it does not.
- */
+/** a page where the site renders the file, GitHub's view where it does not */
 const addressOf = (baseUrl: string, path: string, hash: string): string => {
   const anchor = hash === '' ? '' : `#${hash}`;
 
@@ -106,7 +96,6 @@ const addressOf = (baseUrl: string, path: string, hash: string): string => {
   return githubAddressOf(path) + anchor;
 };
 
-/** a link's target as a path from the repository's root, when it is a file of it */
 const repositoryPathOf = (from: string, url: string): RepositoryPath | undefined => {
   if (/^[a-z]+:/i.test(url) || url.startsWith('/')) {
     return undefined;

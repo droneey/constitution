@@ -40,7 +40,6 @@ const ADDRESSES = new Map([
   ],
 ]);
 
-/** a rule whose card holds every part: a parent, a body, a why with tags, and an example */
 const fullRule = (): Root => ({
   children: [
     ...nodesOf('### strict-name → name-says-what · MUST\n\nA name says what it holds.'),
@@ -54,7 +53,6 @@ const fullRule = (): Root => ({
   type: 'root',
 });
 
-/** the example of a rule, as the examples folder holds it */
 const withExample = (markdown: string): BlocksOptions => ({
   addresses: new Map(),
   examples: new Map([

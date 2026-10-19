@@ -58,8 +58,6 @@ const targetProblem = (input: {
       };
 };
 
-// A partly or no answer names, in backticks, the rule of its own block that
-// covers what the library misses or replaces the requirement.
 const coverProblem = (input: {
   answer: RequirementAnswer;
   ownSlugs: ReadonlySet<string>;

@@ -1,4 +1,3 @@
-# vulture: the code nothing in src/ uses
 [tool.vulture]
 paths = ["src"]
 min_confidence = 60

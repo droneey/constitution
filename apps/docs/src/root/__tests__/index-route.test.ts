@@ -11,7 +11,6 @@ import { Route } from '../routes/index';
 import type { RouterContext } from '../wiring';
 import { docsContentFake } from './docs-content.fake';
 
-/** the site's root and its documentation, with the index route's guard at the root */
 const routerAt = (address: string) => {
   const root = createRootRouteWithContext<RouterContext>()();
   const routeTree = root.addChildren([

@@ -1,8 +1,5 @@
-/* -------------------------------------------------------------------------- */
-/* RULES AND RHYTHM                                                           */
-/* The typography plugin's styles are utilities, so the site's own styles of  */
-/* rendered Markdown sit in the later `prose` layer.                          */
-/* -------------------------------------------------------------------------- */
+/* The typography plugin's styles are utilities, so the site's own styles of rendered Markdown sit
+   in the later `prose` layer. */
 
 @layer prose {
   /* a link's underline is a hairline, as every rule of the page is */
@@ -58,7 +55,6 @@
     margin: 0 0 var(--spacing-lg);
   }
 
-  /* the statement opens a clear step under the heading and its parent */
   [data-docs-body]
     [data-rule-card]
     > :is([data-rule], [data-rule-parent])
@@ -99,7 +95,6 @@
     }
   }
 
-  /* code on the type scale's smallest step, with room between its lines */
   [data-docs-body] pre code {
     font-size: var(--text-xs);
     line-height: var(--text-xs--line-height);
@@ -113,7 +108,6 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  /* the parent a rule tightens, a line of its own right under the heading */
   [data-docs-body] [data-rule-card] > [data-rule-parent] {
     margin: var(--spacing-xs) 0 0;
     color: var(--color-text-muted);
@@ -123,7 +117,6 @@
     font-weight: var(--font-weight-normal);
   }
 
-  /* the parent is a quiet link: the line's own colour, its underline the strong border's, its code bare */
   [data-docs-body] [data-rule-parent] a {
     color: inherit;
     text-decoration-color: var(--color-border-strong);
@@ -316,7 +309,6 @@
     line-height: var(--text-base--line-height);
   }
 
-  /* a section after the first opens on a hairline, halfway into the space before it */
   [data-docs-body] > h2:not(:first-child) {
     margin-top: var(--spacing-lg);
     padding-top: var(--spacing-lg);
@@ -340,7 +332,6 @@
 }
 
 @layer overrides {
-  /* the page's summary closes on a hairline, as a section opens on one */
   [data-docs-description] {
     margin-bottom: var(--spacing-sm);
     padding-bottom: var(--spacing-lg);

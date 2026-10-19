@@ -1,0 +1,5 @@
+[tasks."dockerfile:check"]
+run = "hadolint --config ../../.droneey/constitution/presets/common/hadolint/foundation/docker.yaml docker/images/app.Dockerfile"
+
+[tasks."compose:check"]
+run = "dclint --config ../../.droneey/constitution/presets/common/dclint/foundation/docker.yaml compose.yaml docker/compose/app.yaml"

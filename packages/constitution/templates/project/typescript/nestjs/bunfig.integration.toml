@@ -1,0 +1,5 @@
+[test]
+coveragePathIgnorePatterns = [
+  # nestjs: the module the root composes, which Nest's injector reads
+  "**/root/root.module.*",
+]

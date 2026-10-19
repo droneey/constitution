@@ -32,6 +32,7 @@ interface Constitution {
   readonly repositoryPaths: ReadonlySet<string>;
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];
+  readonly templates: readonly PresetFile[];
 }
 
 export type { Constitution, Documents };

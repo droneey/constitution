@@ -1,6 +1,3 @@
-browser:
-  runtime-configuration-served-beside-bundle:
-    - types
 distribution:
   package-export-typed-explicitly:
     - isolatedDeclarations

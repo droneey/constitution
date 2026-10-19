@@ -13,4 +13,4 @@ governs: ["lefthook.yaml"]
 
 > Runs the git hooks.
 
-Lefthook's configuration holds every active rule on commit messages and branch names — the branch name in `pre-commit`, the message in `commit-msg` — extending `presets/common/lefthook/workflow/version-control.yaml` of the Constitution's release archive, and a part for each hook of another tool, `<tool>.yaml`; a rule on them it cannot hold is reported, and needs review or an override.
+Lefthook's configuration holds every active rule on commit messages and branch names — the branch name in `pre-commit`, the message in `commit-msg`; a rule on them it cannot hold is reported, and needs review or an override. A job a later configuration names like a job of a part merges into it, so a project narrows a part's job by its name.

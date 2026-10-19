@@ -1,8 +1,5 @@
-# Orders the Markdown files of a folder of blocks as the Constitution's check
-# loads them: block by block, by layer and then by id, and in each the passport,
-# its chapters by axis, then its seams. Prints a key, a tab and the hook's
-# "blockfile" record; sort orders by the key, and an id ends at a byte below any a
-# name can hold, so "ui" comes before "ui-kit".
+# Sorts as the Constitution's check loads the blocks. END_ID, a byte below any a
+# name can hold, ends an id, so "ui" sorts before "ui-kit".
 
 BEGIN {
   FS = "/"

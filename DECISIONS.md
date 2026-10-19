@@ -24,7 +24,7 @@
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
 | A real application | ADR-0116, ADR-0118 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
-| Workspaces and distribution | ADR-0150, ADR-0151, ADR-0159, ADR-0207 |
+| Workspaces and distribution | ADR-0150, ADR-0151, ADR-0159, ADR-0207, ADR-0213 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129, ADR-0140 |
 | TypeScript configuration | ADR-0131, ADR-0133 |
@@ -40,7 +40,7 @@
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
 | What a tool holds and what review holds | ADR-0200 – ADR-0202 |
-| The plugin and the project's rules | ADR-0203 – ADR-0205 |
+| The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 
 ---
 
@@ -870,7 +870,7 @@
 
 **Date:** 2026-10-06 · **Status:** Accepted
 
-- **Decision.** In a workspace, each unit's files are held by the parts of its own blocks — the repository's and those its path under `packages` adds — and no unit's parts reach another's (`unit-checked-by-its-own-parts`, a rule of `workspace`, which it means nothing without). Each tool's seam with `workspace` gives the form: Biome as ADR-0207 has it, dependency-cruiser a configuration per unit (`cruiser-configuration-per-unit`) beside the root's, which holds the imports between units (`imports-between-units-held-at-the-root`), and knip each unit's parts under `workspaces['<path>']` and the root's under `workspaces['.']`, since knip ignores the top-level `entry` and `project` once `workspaces` is set, the root's included (knip 6.38). Bun's coverage gate leaves out `../**`, the files of the units a unit imports, which their own specs hold (`coverage-gate-on-the-unit-alone`). Each unit with code its specs run has its own `stryker.config.mjs` (`stryker-configuration-per-unit`), and Stryker's part loads the archive's runner by its path from the preset's own file, which finds it from any folder. Each was verified on a workspace of the presets in `tests/e2e/workspace.e2e.test.ts`.
+- **Decision.** In a workspace, each unit's files are held by the parts of its own blocks — the repository's and those its path under `packages` adds — and no unit's parts reach another's (`unit-checked-by-its-own-parts`, a rule of `workspace`, which it means nothing without). Each tool's seam with `workspace` gives the form: Biome as ADR-0213 has it, dependency-cruiser a configuration per unit (`cruiser-configuration-per-unit`) beside the root's, which holds the imports between units (`imports-between-units-held-at-the-root`), and knip a configuration per unit since ADR-0213. Bun's coverage gate leaves out `../**`, the files of the units a unit imports, which their own specs hold (`coverage-gate-on-the-unit-alone`). Each unit with code its specs run has its own `stryker.config.mjs` (`stryker-configuration-per-unit`), and Stryker's part loads the archive's runner by its path from the preset's own file, which finds it from any folder. Each was verified on a workspace of the presets in `tests/e2e/workspace.e2e.test.ts`.
 - **Rejected.** One run from the root with every unit's parts joined, which applies a framework's names or layers to the units that do not use it; overrides per path in one configuration, which only some tools have and which then differ from tool to tool; a coverage ignore that names each imported unit, which changes with every new dependency; a `plugins` path written into each unit's `stryker.config.mjs`, which every unit would write again.
 - **Why.** A unit's blocks are the rules it is held to; a part applied beyond it changes another unit's rules, and one written for `src/` that runs from the root holds nothing at all.
 
@@ -1559,7 +1559,7 @@
 
 ## ADR-0207 — A unit keeps its Biome configuration in its folder
 
-**Date:** 2026-10-18 · **Status:** Accepted
+**Date:** 2026-10-18 · **Status:** Superseded by ADR-0213
 
 - **Decision.** A package with parts of its own keeps a `biome.json` with `"root": false` in its folder, which extends the shared parts and its own through `.droneey/constitution`, a link the folder keeps to the root's; the root's `biome.json` extends the shared parts alone (`biome-configuration-in-the-unit`). One `biome check` from the root checks each file by the nearest configuration, and the package lints by its own script. This replaces the `biome.<name>.jsonc` at the root of ADR-0151. The same holds for every tool as a SHOULD of `workspace`, `unit-configuration-kept-in-its-folder`, which Biome's, Stryker's and dependency-cruiser's rules tighten; it is a SHOULD because knip reads one configuration for the whole repository and keeps each package's part in the root's under the package's path.
 - **Rejected.** A configuration per unit at the root, run once more with `--config-path` and once more in the commit hook: the root then knew every unit's parts, and a unit moved to a repository of its own left its configuration behind. ADR-0151 kept the parts out of the unit's folder because Biome reads a plugin's path from the configuration that extends it; the unit's own link to the release gives that path in its folder.
@@ -1629,3 +1629,38 @@
   - Sections optional: a reader of a short file meets rules with no part named.
   - The order in placement, printed again by the digest with each chapter's Governs line: the order lived in a chapter of rules, and the digest spent its budget repeating what the chapters open with.
 - **Why.** One form for every axis reads the same in every block, in the digest, the presets and the site; a chapter's name says what its rules govern, so one name finds a subject across blocks, and a block's id names only the file that says what the block is (owner).
+
+## ADR-0212 — Every configuration names its parts, which one computation in the hook lists
+
+**Date:** 2026-10-19 · **Status:** Accepted
+
+- **Decision.**
+  - A project's configuration of a tool names, by its path in the release, every part its unit takes (`configuration-takes-every-part-of-its-blocks`, a rule of core's tools, which lefthook's `hooks-from-the-shared-preset` now carries out): a unit is the repository or a path under `packages:`, which adds its blocks to the repository's, and a folder no path names follows the repository's blocks. For each unit, scope, active tool with parts in that scope and axis the unit follows, it takes the parts that exist of `self`, `core`, the scope's language and then every other active block in the digest's order, whether or not they bind a rule. At the root of a workspace a tool with a `workspace` part takes only that part and `self`, since the root runs it only for what crosses the packages: dependency-cruiser's root holding every part refused each import of the packages it cruises, its layer matrix written from a package's `src/`.
+  - The path shows in one way for every tool: an include, where the tool lists files; a marker line `# from <path>, …` over a chain's end, where it extends one file (Ruff, rumdl); a copy of the part between `# from <path>` and `# end <path>`, where it reads no other file (ShellCheck, import-linter, complexipy, deptry, vulture), what the project keeps outside the pair being its own; the command that passes it, where the tool takes its configuration on the command line (ty, hadolint, DCLint, yamlfmt, OSV-Scanner), in the runner the unit already uses for its scope: a script of `package.json`, a poe task of `pyproject.toml`, a task of the unit's own `mise.toml` for a tool of no language; only what checks the whole repository is a task of the root's.
+  - A configuration that joins its parts in code — knip's, Stryker's, syncpack's, dependency-cruiser's — appends each part's lists and merges its tables, so a part only adds, in one order for every tool. dependency-cruiser's `extends`, which keeps the first of two rules of one name, gives way to that join, and its rule against development dependencies in production is built over the development files every part names: core's part names the specs, storybook's the stories, and typescript's part builds the rule without naming either.
+  - Where a configuration lives is the repository's own layout: a file of a tool, found by its template's name, serves the unit its folder lies in and each unit beneath it with no nearer file of that name, and takes the parts of all of them, so a tool configured once at the root takes every unit's that keeps no file of its own. A tool whose parts form a chain takes each link a taken part extends, as Ruff's `fastapi.toml` extends `pytest.toml`.
+  - A template is a fragment its block owns, `templates/project/<scope>/<block>/<path>`, and `/constitution:ratify` assembles a file of one path from the fragments of the active blocks; every tool with parts has a fragment of its configuration that takes them by `<parts>`, which `blocks:check` holds (`preset-tool-without-template`, `template-names-no-block`, `template-scope-not-covered`). Python's `pyproject.toml` is one fragment per block — the project and its build for `python`, a table for each tool — and import-linter's contracts are parts by axis with their bindings.
+  - The computation is `hooks/lib/wiring.awk`, run beside the hook's readers of `constitution.yaml` and the blocks: `hooks/wiring.sh` prints it for ratify, and the session-start hook checks each configuration a template names — at each unit's root, and in any folder git tracks — and gives one `wiring` warning to a file that lacks a part, names one it does not take, or holds a copy whose text between its two lines is no longer the part's. A pack's presets and templates count as the release's, named by the pack's path. An override of the rule lowers it for the repository or a unit.
+- **Rejected.**
+  - The rule in `mise`, beside the archive's install: it would bind only projects that pin the release by mise, though a configuration taken from an archive fetched another way needs it as much, and lefthook's rule could not carry it out.
+  - A front-matter field in each block naming the files it gives and how its tool takes parts: a second description of what the template folder already holds, which a renamed file leaves stale.
+  - The computation in TypeScript, a command of the release: a Python project would need Bun to run ratify's first step, and the hook, which runs on bash and awk, would need a second reader of the same blocks.
+  - A check of its own, a command the project runs: it reports only when someone runs it, while the digest shows a stale configuration to the agent at the start of every session.
+  - Kinds of tools, each with its own placeholder and its own check: one contract, the part's path visible in the file, holds them all, and a template says how the path appears.
+  - The parts of the bindings alone: a part that binds no rule, a tool's binaries for knip say, is still needed, and a project could not tell the parts it lacks.
+  - Units read from the manifests of each language: `constitution.yaml` already names the units whose blocks differ, in any language.
+  - The release's version in a marker, compared with the installed one: every release would warn of every copy, changed or not, and a release step would have to rewrite the markers of the projects; the copy's text says itself whether it drifted.
+  - A marker that leaves a part out, `# without <path>` with its reason: a second way to opt out beside the override, which records the reason where the project's departures are read.
+  - Every command line in the root's `mise.toml`: the root then names a package's files, while each unit already runs its checks.
+  - A folder of templates, or a marker, for the files the root alone holds: the repository's own layout already says which unit a file serves, and ratify keeps it.
+  - A chain cut so that each optional part extends only the language's: Ruff extends one file, so a project with two optional parts could not take both.
+  - For dependency-cruiser, the blocks' parts before the language's, or typescript's rule naming the story's form: the first breaks the one order of parts, the second puts a library's file in a language's part.
+- **Why.** The settings that hold a project's rules then change with its blocks and its release: one computation decides which parts a unit takes, ratify writes them, and the next session shows a configuration that drifted (owner).
+
+## ADR-0213 — A package keeps the configuration of each tool in its folder, knip's included
+
+**Date:** 2026-10-19 · **Status:** Accepted
+
+- **Decision.** A package with parts of its own keeps a `biome.json` with `"root": false` in its folder, which extends the shared parts and its own through `.droneey/constitution`, a link the folder keeps to the root's; the root's `biome.json` extends the shared parts alone (`biome-configuration-in-the-unit`). One `biome check` from the root checks each file by the nearest configuration. Every other tool keeps a package's configuration in its folder (`unit-configuration-kept-in-its-folder`), knip included: each package runs knip by its own `knip.config.ts`, with its own parts, ignores and script, and the root's configuration covers the root's own files and leaves the packages to theirs by `ignoreWorkspaces`. This supersedes ADR-0207.
+- **Rejected.** knip's packages under `workspaces['<path>']` of the root's configuration, as ADR-0151 had them: the root then imported every package's parts, against what the root knows of a workspace — its members and what crosses them — and a package moved to a repository of its own left its configuration behind. A configuration per unit at the root, run with `--config-path`: the root knew every unit's parts.
+- **Why.** What holds a package lives with the package; knip, run in a package's folder with its configuration, checks it as the root's run did, so nothing kept it at the root (owner).

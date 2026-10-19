@@ -114,6 +114,7 @@ describe('DocsNotFoundScreen', () => {
     document.body.append(menu);
 
     // Assert
+    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
     await waitFor(() => expect(menu.querySelectorAll('[data-glide]').length).toBe(1));
   });
 

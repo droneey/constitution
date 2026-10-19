@@ -1,4 +1,3 @@
-/** an element to build: its tag, attributes, text and children */
 interface ElementSpec {
   readonly attributes?: Readonly<Record<string, string>>;
   readonly children?: readonly ElementSpec[];
@@ -6,7 +5,7 @@ interface ElementSpec {
   readonly text?: string;
 }
 
-/** where the layout put an element, which the simulated page never computes */
+/** the simulated page never computes it */
 interface ElementLayout {
   readonly height?: number;
   readonly left: number;
@@ -15,7 +14,7 @@ interface ElementLayout {
   readonly width?: number;
 }
 
-/** the look the block took, read from its inline style */
+/** read from the block's inline style */
 interface BlockStyle {
   readonly height: string;
   readonly opacity: string;
@@ -58,7 +57,6 @@ const linkSpec = (
   text,
 });
 
-/** the versions' navigation: three links, the first the current page */
 const versionsSpec = (style = ''): ElementSpec => ({
   tag: 'nav',
   attributes: {
@@ -82,7 +80,6 @@ const versionsSpec = (style = ''): ElementSpec => ({
   ],
 });
 
-/** the search's results, the second marked as selected */
 const searchSpec = (): ElementSpec => ({
   tag: 'div',
   attributes: {
@@ -110,7 +107,7 @@ const searchSpec = (): ElementSpec => ({
   ],
 });
 
-/** a menu of one item, System, and a group of two radios, Light and Dark, the second checked; the row named highlighted is marked */
+/** the row named `highlighted` is marked */
 const menuSpec = (highlighted: string): ElementSpec => ({
   tag: 'div',
   attributes: {
@@ -168,7 +165,6 @@ const tocSpec = (): ElementSpec => ({
   ],
 });
 
-/** gives an element the offsets and the size the layout would */
 const layOut = (
   element: Element,
   { left, top, width = 0, height = 0, offsetParent }: ElementLayout,
@@ -201,10 +197,10 @@ const layOut = (
   });
 };
 
-/** the block a list was given, the one element the hook adds, which CSS finds by its attribute */
 const blockOf = (list: Element): HTMLElement | undefined =>
   list.querySelector<HTMLElement>(':scope > [data-glide]') ?? undefined;
 
+// biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
 const blocksOf = (list: Element): number => list.querySelectorAll(':scope > [data-glide]').length;
 
 const styleOf = (block: HTMLElement | undefined): BlockStyle | undefined =>

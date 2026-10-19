@@ -11,7 +11,6 @@ const LEVELS: ReadonlyMap<string | undefined, Level> = new Map(
   ]),
 );
 
-/** the rule a third-level heading's text names */
 const ruleOf = (text: string): Rule | undefined => {
   const match = RULE_HEADING.exec(text);
 
@@ -44,33 +43,30 @@ const ruleSlugsOf = (markdown: string): readonly string[] =>
         ];
   });
 
-/** the text of a file's first-level heading */
 const titleOf = (markdown: string): string | undefined =>
   linesOf(markdown)
     .find((line) => line.startsWith('# '))
     ?.slice('# '.length);
 
-/** the first line of a file's quote, still in Markdown */
+/** still in Markdown */
 const summaryLineOf = (markdown: string): string | undefined =>
   linesOf(markdown)
     .find((line) => line.startsWith('> '))
     ?.slice('> '.length);
 
-/** the folders of a block's axes, each holding its named chapters and its seams */
 const AXIS_FOLDERS: readonly string[] = [
   'foundation',
   'architecture',
   'workflow',
 ];
 
-/** whether a block's file is its passport, `<id>/<id>.md`, its folder's page; an axis folder has none */
+/** a passport is `<id>/<id>.md`; an axis folder has none */
 const isPassportPath = (path: string): boolean => {
   const [name, folder] = path.split('/').toReversed();
 
   return !AXIS_FOLDERS.some((axis) => axis === folder) && name === `${folder}.md`;
 };
 
-/** the slugs of a block's file: the passport is its folder's page; a chapter keeps its name */
 const pageSlugsOf = (path: string): readonly string[] => {
   const parts = path.replace(/\.md$/, '').split('/');
 
@@ -82,7 +78,6 @@ const unknownExamplesOf = (
   rules: ReadonlySet<string>,
 ): readonly string[] => examples.filter((slug) => !rules.has(slug));
 
-/** the slugs of a page from the segments of its Markdown address, `<slugs>.md` */
 const slugsOfMarkdownAddress = (segments: readonly string[]): readonly string[] => {
   const slugs = segments.map((segment, index) =>
     index === segments.length - 1 ? segment.replace(/\.md$/, '') : segment,

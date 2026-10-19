@@ -1,6 +1,6 @@
 import type { Oklch } from './colour.types';
 
-/** a colour of the W3C format, in the one space the theme writes */
+/** a colour of the W3C format */
 interface ColourValue {
   readonly colorSpace: 'oklch';
   readonly components: Oklch;
@@ -12,7 +12,7 @@ interface MeasureValue {
   readonly value: number;
 }
 
-/** a raw value, a reference written `{group.name}`, or a list of numbers such as a cubic Bézier */
+/** a reference is written `{group.name}`; a list of numbers is a cubic Bézier */
 type TokenValue = ColourValue | MeasureValue | number | string | readonly number[];
 
 /** the value a token takes in the dark mode, in place of its own */
@@ -32,12 +32,12 @@ interface DesignToken {
   readonly $value: TokenValue;
 }
 
-/** a group of tokens and groups by name, with its `$type` and `$description` beside them */
+/** a string is the group's `$type` or `$description` */
 interface DesignTokenGroup {
   readonly [name: string]: DesignToken | DesignTokenGroup | string;
 }
 
-/** every token by its dotted path, in the order the source lists them */
+/** by dotted path, in the order the source lists them */
 type DesignTokens = ReadonlyMap<string, DesignToken>;
 
 export type {

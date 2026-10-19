@@ -28,6 +28,7 @@ The project folder holds:
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
 - **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the Constitution — `constitution/` unless the owner names another — listed under `packs:`.
+- **Each tool's configuration**, wired with the parts of the presets its unit's blocks take, from the fragments the active blocks keep in `.droneey/constitution/templates/project/`. The session-start hook warns of a configuration that lacks a part or keeps one its blocks no longer take, so a project whose blocks or release changed runs this skill again to bring them up to date; with `constitution.yaml` already in place, offer to go straight to step 9.
 
 The repository root is the folder, going up from the project folder, that holds `.git`. Core is always active and is never listed.
 
@@ -76,7 +77,7 @@ For a block of the project's own pack, fill the template's placeholders from the
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — Constitution ids or other blocks of the pack; `extends` names an abstract Constitution base it inherits, an id that starts with `_`, or stays `null` — a Constitution block it builds on goes under `requires`;
 - `languages` lists, for a tool, the language blocks whose files it reads — Constitution ids or language blocks of the pack — and stays `[]` for a tool of any language and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern;
-- the passport's **setup** paragraph says how the library is set up in the repository — its preset parts, templates, configuration files and exclusions; drop it when there is nothing to say;
+- the passport's **setup** paragraph says what the block's parts and templates cannot show — how the library is set up, a quirk of the tool, a limit of what it holds; drop it when there is nothing to say;
 - the passport's **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the chapter template's format, with a slug no rule heading of the Constitution's blocks holds. Drop the chapter, and its `foundation/` folder, when there is none.
 
@@ -137,7 +138,24 @@ Write only after the owner's yes, and only the files the owner agreed to.
 - **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
 - **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
 
-### 9. See what a session will receive
+### 9. Wire the tools' configurations
+
+Once `constitution.yaml` is written, run, from the repository root:
+
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/hooks/wiring.sh"
+```
+
+It prints each file the active blocks give — `<path> for <units>` at each folder that holds one, `(new)` at the root when none does there — with the units it serves: the unit its folder lies in and each beneath it without a nearer file of that name, `.` for the repository. Under the file come the fragment of each block, `.droneey/constitution/templates/project/<scope>/<block>/<path>`, and under a tool's fragment the parts it takes, in order. Keep the repository's layout: update each file that exists, and write a new one at the root, unless a unit already keeps that tool's configuration itself or the tool has nothing at the root to check. Write each file from it:
+
+- **Assemble** the file from its fragments, one after the other in the order printed, each under its block's line as the fragment writes it; in a structured file — JSON, TOML, YAML, code — merge each fragment's table, list or script into the file's own, one entry each under the block's line. A fragment marked `(the folder adds it)` is the only one a file the tool also reads from the folders above, as git reads `.gitignore`, takes there; every other file takes all its fragments.
+- **Fill** the placeholders: `<parts>` becomes the printed parts, each by its path relative to the file — one entry each in a list, one import each in code, named after the part and, off `foundation`, its axis; `<chain end>` the printed part none of the others extends, which a part's own `extend` or `extends` line shows; `<copied parts>`, between `# from <parts>` and `# end <parts>`, one pair to a part — its line `# from <path>`, its content unchanged, its line `# end <path>` — with the project's own settings outside the pairs; `<name>` and `<package>` the project's name and its import package. Biome reaches the parts of a unit through a `.droneey/constitution` link in the unit's folder to the root's: create it when it is missing.
+- **Keep the project's own settings.** When the file exists, keep every setting of its own after the parts and change only how it takes them; when a part now holds a setting the file repeats, drop the repetition and say so.
+- **A tool with no template** — a line `no template: <scope>/<tool>` — is a pack's tool: wire its parts in `<pack>/presets/<scope>/<tool>/` from what you know of the tool, and say that no template guided it.
+
+Show the owner the diff of every file you will write, write only after the owner's yes, and run the check command when it exists; a finding a newly taken part raises is the code's or the part's to fix, never a reason to leave the part out — an override lowers a rule only through `/amend`.
+
+### 10. See what a session will receive
 
 Run the hook as a session start would, from the repository root:
 
@@ -145,4 +163,4 @@ Run the hook as a session start would, from the repository root:
 printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT}" bash "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
 ```
 
-It prints the digest as JSON. The digest's second line must say `constitution.yaml makes <n> blocks active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the file, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.
+It prints the digest as JSON. The digest's second line must say `constitution.yaml makes <n> blocks active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the files, a `wiring` warning included, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.

@@ -1,0 +1,3 @@
+# yamlfmt: the YAML files, by the part it takes on the command line
+[tasks."yaml:format:check"]
+run = "yamlfmt -lint -conf <parts> ."

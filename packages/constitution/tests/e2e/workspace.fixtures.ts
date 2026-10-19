@@ -13,6 +13,8 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { configFromTemplate } from './dependency-cruiser-preset.fixtures';
+
 interface Run {
   output: string;
   passed: boolean;
@@ -32,7 +34,7 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const BIN = join(REPOSITORY, 'node_modules', '.bin');
 const PRESETS = '.droneey/constitution/presets/typescript';
 
-/** a part's path in its tool's folder: a part with no axis folder is foundation's */
+/** a part with no axis folder is foundation's */
 const inAxis = (part: string): string => (part.includes('/') ? part : `foundation/${part}`);
 const TEMPLATES = join(REPOSITORY, 'templates', 'project');
 
@@ -595,6 +597,27 @@ export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:
   }),
 };
 
+// A package's knip, its parts joined, every list after the lists before it,
+// written as Biome formats it.
+const knipOf = (input: { depth: number; own: readonly string[] }): string => {
+  const archive = `${'../'.repeat(input.depth)}${PRESETS}/knip`;
+
+  return [
+    `import architecture from '${archive}/architecture/core.mjs';`,
+    `import core from '${archive}/foundation/core.mjs';`,
+    '',
+    'export default {',
+    '  entry: [',
+    '    ...core.entry,',
+    '    ...architecture.entry,',
+    '  ],',
+    '  project: core.project,',
+    ...input.own,
+    '};',
+    '',
+  ].join('\n');
+};
+
 // The workspace's root: one workspace for each language, the parts each tool
 // joins, and the configuration of each package checked by its own parts.
 const WORKSPACE: Files = {
@@ -606,6 +629,7 @@ const WORKSPACE: Files = {
   '.gitignore': [
     readFileSync(join(TEMPLATES, 'common', 'core', '.gitignore'), 'utf8'),
     readFileSync(join(TEMPLATES, 'typescript', 'typescript', '.gitignore'), 'utf8'),
+    readFileSync(join(TEMPLATES, 'typescript', 'tsc', '.gitignore'), 'utf8'),
   ].join('\n'),
   'apps/api/biome.json': jsonFileOf({
     root: false,
@@ -621,22 +645,29 @@ const WORKSPACE: Files = {
       './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
     ],
   }),
-  'knip.config.mjs': `import core from './${PRESETS}/knip/foundation/core.mjs';
-import architecture from './${PRESETS}/knip/architecture/core.mjs';
-
-const unit = (entry) => ({ entry: [...core.entry, ...architecture.entry, ...entry], project: core.project });
-
-export default {
-  workspaces: {
-    '.': { entry: ['scripts/*.ts!'], project: ['scripts/**/*.ts!'] },
-    'apps/api': unit([]),
-    'apps/web': unit([]),
-    'packages/eros/languages/typescript': { ...unit([]), ignoreDependencies: ['@nestjs/common!'] },
-    'packages/orders': unit([]),
-    'packages/money': unit([]),
-  },
+  // The root's knip reads its own scripts, each package's runs by the configuration in its folder.
+  'knip.config.mjs': `export default {
+  entry: ['scripts/*.ts!'],
+  project: ['scripts/**/*.ts!'],
+  ignoreWorkspaces: ${JSON.stringify(Object.values(UNITS))},
 };
 `,
+  ...Object.fromEntries(
+    Object.values(UNITS).map((path) => [
+      `${path}/knip.config.mjs`,
+      knipOf({
+        depth: path.split('/').length,
+        own:
+          path === 'packages/eros/languages/typescript'
+            ? [
+                '  ignoreDependencies: [',
+                "    '@nestjs/common!',",
+                '  ],',
+              ]
+            : [],
+      }),
+    ]),
+  ),
   'package.json': jsonFileOf({
     name: 'shop',
     private: true,
@@ -662,13 +693,13 @@ export default {
   }),
 };
 
-// Each package's own parts of dependency-cruiser, from its folder.
+// Each package's own parts of dependency-cruiser, from its folder, written in the template.
 const cruiserOf = (input: { depth: number; parts: readonly string[] }): string =>
-  `export default {\n  extends: ${JSON.stringify(
+  configFromTemplate(
     input.parts.map(
       (part) => `${'../'.repeat(input.depth)}${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`,
     ),
-  )},\n};\n`;
+  );
 
 const write = (input: { files: Files; folder: string }): void => {
   for (const [path, text] of Object.entries(input.files)) {

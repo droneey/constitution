@@ -1,0 +1,9 @@
+# import-linter: the package whose imports the contracts hold
+[tool.importlinter]
+root_packages = ["<package>"]
+include_external_packages = true
+
+# import-linter: the Constitution's contracts, copied with the package named, since import-linter reads no other file
+# from <parts>
+<copied parts>
+# end <parts>

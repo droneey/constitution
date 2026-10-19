@@ -88,7 +88,7 @@ const themeLines = (
   ]).map((path) => `  --${cssNameOf(path)}: ${scalarIn(tokens, path, ThemeMode.Light)};`),
 ];
 
-/** the values of the modes Tailwind needs no utility for, each mode in its own block */
+/** for the tokens Tailwind needs no utility for */
 const modeLines = (
   tokens: DesignTokens,
   groups: readonly TokenGroupPath[],
@@ -98,7 +98,7 @@ const modeLines = (
     (path) => `  --${cssNameOf(path)}: ${scalarIn(tokens, path, mode)};`,
   );
 
-/** the stylesheet of the theme, line by line, from the blank line below its banner */
+/** from the blank line below its banner, which the caller writes */
 const emitThemeCss = (
   tokens: DesignTokens,
   tailwindRadius: Readonly<Record<string, number>>,

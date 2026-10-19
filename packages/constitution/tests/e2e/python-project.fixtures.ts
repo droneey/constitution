@@ -95,8 +95,6 @@ const linkConstitution = (input: { folder: string; withTools: boolean }): void =
   }
 };
 
-// The callback runs in a temporary project, which is removed after it,
-// whatever it returns or throws.
 const inPythonProject = <TResult>(input: {
   files: Files;
   run: (folder: string) => TResult;

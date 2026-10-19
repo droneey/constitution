@@ -13,4 +13,4 @@ governs: ["osv-scanner.toml"]
 
 > Checks the dependencies of any language by their lockfiles against the OSV database, and their licences against the shared allowlist.
 
-The Constitution's release archive carries the allowlist as `presets/common/osv-scanner/foundation/core.txt`. OSV-Scanner holds every active rule on known vulnerabilities and licences. It has no severity floor: any known vulnerability is a finding.
+The allowlist is a part of one licence to a line, which the scan takes on the command line. OSV-Scanner holds every active rule on known vulnerabilities and licences. It has no severity floor: any known vulnerability is a finding.

@@ -31,7 +31,6 @@ const LAYER_FIELDS: readonly LayerField[] = [
   LayerField.Dictionary,
 ];
 
-// Every layer but core may build on an abstract base of its own.
 const BUILT_ON: readonly Layer[] = LAYERS.filter((layer) => layer !== Layer.Core);
 
 const FILLED_ON: Readonly<Record<LayerField, readonly Layer[]>> = {

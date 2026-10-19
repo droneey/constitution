@@ -27,7 +27,6 @@ const MARKDOWN_EXTENSION = '.md';
 
 const TITLE = '# ';
 
-/** a file's title line, its first first-level heading */
 const titleOf = (body: string): string | undefined =>
   body.split('\n').find((line) => line.startsWith(TITLE));
 

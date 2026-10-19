@@ -48,6 +48,7 @@ A new session reads `constitution.yaml` and reports what does not hold, at the t
 | `wrong-key: X is an implementation — move it from languages to implementations` | move the id to its layer's key |
 | `abstract: _x cannot be listed — list <heirs>` | list the block that extends it instead |
 | `not-met: X does not meet <rule>` | read X's Requirements table: another rule stands in, or the block does not fit |
+| `wiring: <file> lacks <part> — run /constitution:ratify` | run `/constitution:ratify`, which wires the file with [the parts](../reference/presets.md#the-parts-a-project-takes) of its blocks |
 
 ## Give a part of a workspace its own blocks
 

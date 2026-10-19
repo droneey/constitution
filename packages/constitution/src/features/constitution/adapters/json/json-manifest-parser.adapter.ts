@@ -73,8 +73,6 @@ const readManifest = <TWire, TManifest>(input: {
       };
 };
 
-// A plugin the marketplace serves from GitHub, at the repository's root or from
-// one of its folders; any other source names no repository.
 const marketplacePluginOf = (plugin: MarketplaceWire['plugins'][number]): MarketplacePlugin => {
   const { source } = plugin;
 

@@ -261,7 +261,6 @@ const isMentioned = (input: { name: string; text: string }): boolean => {
   return false;
 };
 
-// The names a text mentions, of those given, in their given order.
 const mentionedOf = (input: { names: readonly string[]; text: string }): readonly string[] =>
   input.names.filter((name) =>
     isMentioned({
@@ -302,7 +301,6 @@ const LAST_GROUP = /\([^()]*\)$/u;
 const colonOf = (text: string): number =>
   text.replace(GROUP, (group) => '_'.repeat(group.length)).indexOf(': ');
 
-// The bracketed group a text ends with, brackets and all, or ''.
 const lastGroupOf = (text: string): string => LAST_GROUP.exec(text)?.[0] ?? '';
 
 // An item as its id, the brackets that follow it and the bracketed files that
@@ -356,10 +354,8 @@ const cutOf = (lines: readonly string[]): Cut => {
   };
 };
 
-// How many lines of the block list are given and how many its note leaves out.
 const listCutOf = (context: string): Cut => cutOf(blockListOf(context));
 
-// The heading of the warnings and the lines under it.
 const warningSectionOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
   const start = lines.findIndex((line) => line.startsWith(WARNINGS));
@@ -376,14 +372,12 @@ const warningSectionOf = (context: string): readonly string[] => {
 const warningLinesOf = (context: string): readonly string[] =>
   warningSectionOf(context).filter((line) => line.startsWith(ITEM));
 
-// Whether the warnings' heading carries, beyond its mark, the call to tell the user.
 const tellsTheUserOf = (context: string): boolean => {
   const [heading] = warningSectionOf(context);
 
   return heading !== undefined && heading !== WARNINGS;
 };
 
-// How many warnings are given and how many the note under them leaves out.
 const warningCutOf = (context: string): Cut => cutOf(warningSectionOf(context).slice(1));
 
 // A warning as its code, then the names it gives.
@@ -423,9 +417,7 @@ const LEFT_OUT_RESERVE = 200;
 const WARNING_BUDGET = 1000;
 
 enum Edge {
-  // the end of the block list's last line
   LastLine = 'its last line',
-  // the end of the block list's heading
   Heading = 'its heading',
 }
 

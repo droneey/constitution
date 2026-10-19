@@ -10,7 +10,7 @@ const LOG_LEVELS: ReadonlySet<unknown> = new Set([
   'fatal',
 ]);
 
-// The receiver is the logger by its name: `logger`, `log`, `this.logger`, `input.logger`, `auditLogger`.
+// The logger is known by its name alone, the receiver's or its property's, as in `this.logger`.
 const LOGGER_NAME = /^(?:log|logger|\w*Logger)$/;
 
 // Stryker hands Babel's paths over as an opaque NodePath, so their fields are read as unknown.
@@ -22,7 +22,6 @@ const isOfType = (node: unknown, type: string): boolean => fieldOf(node, 'type')
 const nameOf = (node: unknown): unknown =>
   isOfType(node, 'Identifier') ? fieldOf(node, 'name') : undefined;
 
-// A non-computed member's property name, `info` of `logger.info`.
 const propertyOf = (node: unknown): unknown =>
   isOfType(node, 'MemberExpression') && fieldOf(node, 'computed') === false
     ? nameOf(fieldOf(node, 'property'))

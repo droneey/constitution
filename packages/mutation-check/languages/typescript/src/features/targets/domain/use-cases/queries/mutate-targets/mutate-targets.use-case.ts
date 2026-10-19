@@ -1,6 +1,6 @@
 import { matchesGlob } from 'node:path';
 
-import { loadedBy } from './loaded.ts';
+import { loadedBy } from '#/kernel/utils';
 
 interface Range {
   end: number;

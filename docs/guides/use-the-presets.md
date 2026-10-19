@@ -1,43 +1,47 @@
 # Use the presets
 
-> A tool's configuration extends the parts of the project's active blocks from the release, so the tool holds their rules.
+> A tool's configuration takes the parts of the project's active blocks from the release, so the tool holds their rules.
 
-## Find the parts
+## Let ratify wire them
 
-A preset is split into parts, one per block whose rules the tool holds, in `.droneey/constitution/presets/<scope>/<tool>/`; [the layout](../reference/presets.md#layout) shows the tree and how a part is named. A project takes:
+[`/constitution:ratify`](../reference/skills.md#constitutionratify) writes each tool's configuration from its [template](../reference/templates.md), with the parts the project's blocks take, shows the diff and writes it after your yes. To see what it computes, run the plugin's script from the project:
 
-- the scope `common`, and the scopes of its active languages;
-- of each tool it runs, the parts named after its active blocks, `core`, and `self`, the tool's own settings;
-- the parts in `architecture/` and `workflow/` only for the axes it follows.
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/hooks/wiring.sh"
+```
 
-[The catalog](../reference/presets.md) lists what every tool's parts configure.
+It prints each file the active blocks give, with the units it serves, the template of each block's fragment and the parts each tool's fragment takes, in order:
 
-## Extend them
+```text
+biome.json for ., packages/kit
+  biome .droneey/constitution/templates/project/common/biome/biome.json
+    .droneey/constitution/presets/common/biome/foundation/self.jsonc
+  biome .droneey/constitution/templates/project/typescript/biome/biome.json
+    .droneey/constitution/presets/typescript/biome/foundation/self.jsonc
+    .droneey/constitution/presets/typescript/biome/foundation/core.jsonc
+    .droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc
+```
 
-A tool with `extends` lists the parts, `foundation/`'s first:
+[The parts a project takes](../reference/presets.md#the-parts-a-project-takes) gives the rule it follows.
+
+## Write them by hand
+
+A configuration names every part its unit takes by its path in the release, the way its template shows: in its `extends`, its imports, its chain's marker line, a copy's two marker lines or the command that runs it. A part's path is relative to the file; Biome reaches the parts through a committed `.droneey/constitution` link in the package's own folder to the root's.
 
 ```json
 {
   "extends": [
     "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/react-dom.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc"
   ]
 }
 ```
 
-The other tools take them their own way:
-
-| Tool | How it takes the parts |
-|---|---|
-| knip, Stryker, syncpack | the configuration imports the parts and joins their lists |
-| Ruff | `extend` takes one file, so each part extends the one before |
-| ty | `--config-file` takes one part |
-| python-check | `extend` of `[tool.python-check]` lists the parts |
-| a tool with neither | starts from [a template](../reference/templates.md) of `templates/project/<scope>/<block>/` |
+When a block is added or dropped, or a release adds a part, the next session warns of each configuration that lacks a part or keeps one it no longer takes, and of a copy that no longer repeats its part: run `/constitution:ratify` again.
 
 ## Keep your own settings beside them
 

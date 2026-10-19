@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import { afterEach, describe, expect, it } from 'bun:test';
 
+import { configFromTemplate } from './dependency-cruiser-preset.fixtures';
 import { isFoundIn } from './python-template.fixtures';
 import { uvBinary } from './uv.fixtures';
 import {
@@ -36,24 +37,21 @@ afterEach(() => {
   }
 });
 
-const DEPENDENCY_CRUISER = `export default {
-  extends: ${JSON.stringify(
-    [
-      'self',
-      'core',
-      'typescript',
-      'architecture/workspace',
-    ].map((part) => `./${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`),
-  )},
-};
-`;
+const DEPENDENCY_CRUISER = configFromTemplate(
+  [
+    'self',
+    'core',
+    'typescript',
+    'architecture/workspace',
+  ].map((part) => `./${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`),
+);
 
-// Each TypeScript package's own parts, from its folder, its blocks' parts before the language's and core's.
+// Each TypeScript package's own parts, from its folder, in the order ratify computes them.
 const CRUISER_PARTS = [
   'self',
-  'bun',
   'core',
   'typescript',
+  'bun',
   'architecture/core',
 ];
 
@@ -143,7 +141,10 @@ describe('a workspace on the presets', () => {
     expect(passed).toBe(true);
   });
 
-  it("should report no unused file when knip takes the root's parts under its workspace", () => {
+  it.each([
+    '.',
+    ...Object.values(UNITS),
+  ])('should report no unused file when knip runs in %s by its own configuration', (unit) => {
     // Arrange
     const folder = workspace();
 
@@ -154,6 +155,7 @@ describe('a workspace on the presets', () => {
         'knip.config.mjs',
         '--no-config-hints',
       ],
+      folder: unit,
       program: 'knip',
     });
 
@@ -179,6 +181,7 @@ describe('a workspace on the presets', () => {
         '--strict',
         '--no-config-hints',
       ],
+      folder: 'packages/eros/languages/typescript',
       program: 'knip',
     });
 

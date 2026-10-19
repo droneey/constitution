@@ -9,7 +9,6 @@ import { FullSearchTrigger } from '#/libs/ui';
 import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { renderInDocs } from '../../../../__tests__/docs.fixtures';
 
-/** the index the site prerenders at /api/search, over two pages */
 const searchIndex = createSearchAPI('simple', {
   indexes: [
     {
@@ -27,7 +26,6 @@ const searchIndex = createSearchAPI('simple', {
 
 const refusingFetch = globalThis.fetch;
 
-/** serves the prerendered index at its address and nothing else */
 const servePrerenderedIndex = async (input: RequestInfo | URL): Promise<Response> =>
   input === '/api/search'
     ? searchIndex.staticGET()
@@ -53,7 +51,6 @@ afterAll(() => {
 
 afterEach(cleanup);
 
-/** the reader opens search from the sidebar's field */
 const openSearch = async (): Promise<void> => {
   renderInDocs(<FullSearchTrigger />);
   await userEvent.click(screen.getByRole('button'));

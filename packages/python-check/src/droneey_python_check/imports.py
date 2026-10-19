@@ -50,8 +50,6 @@ def module_of(folder: tuple[str, ...]) -> tuple[str, ...]:
   return folder[: MODULE_DEPTH if in_feature_form(folder) else 1]
 
 
-# The folder a target lies in: itself when it names a folder, else the folder
-# of the file or of the name it names.
 def target_folder(*, root: ImportRoot, target: tuple[str, ...]) -> tuple[str, ...]:
   return target if root.folder.joinpath(*target).is_dir() else target[:-1]
 

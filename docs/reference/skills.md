@@ -6,7 +6,7 @@ Each skill is a `SKILL.md` of the plugin, called by its slash command. `/constit
 
 | Skill | Called by | Writes |
 |---|---|---|
-| [`/constitution:ratify`](#constitutionratify) | you only | `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, draft blocks of a pack |
+| [`/constitution:ratify`](#constitutionratify) | you only | `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, draft blocks of a pack, the tools' configurations |
 | [`/constitution:amend [rule]`](#constitutionamend) | you only | `constitution.yaml` |
 | [`/constitution:check [all\|edits] [lens]`](#constitutioncheck) | you or the agent | nothing; the agent fixes the findings |
 
@@ -22,6 +22,7 @@ Puts a repository under the Constitution. It takes no arguments.
 6. Finds the command that runs every check, or asks for it.
 7. Asks whether the [units of a workspace](constitution-yaml.md#packages) follow blocks of their own.
 8. Interviews you for `PROJECT.md`, a question or two at a time.
+9. Wires each tool's configuration from its [template](templates.md) with the [parts](presets.md#the-parts-a-project-takes) its unit takes, shows the diff, and writes it once you agree; run again, it brings the configurations up to the blocks and the release.
 
 [Choose the blocks](../guides/choose-blocks.md) shows how to check its proposal and change the list later.
 

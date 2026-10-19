@@ -10,7 +10,6 @@ import { pageBodyOf } from '#/features/content/adapters/fumadocs-browser';
 
 import { slugsShape } from './constants';
 
-/** the collection a page's body lives in, by its name */
 const collectionShape = z.string();
 
 const serverLoader = createServerFn({
@@ -41,7 +40,6 @@ const serverLoader = createServerFn({
     };
   });
 
-/** a page of the documentation as its route loads it: the sidebar's tree, and where its body lives */
 interface DocsPageData {
   description: string;
   pageTree: SerializedPageTree;
@@ -50,24 +48,21 @@ interface DocsPageData {
   type: string;
 }
 
-/** a loaded page, as its body is asked for */
 type DocsPageRef = Pick<DocsPageData, 'description' | 'path' | 'title' | 'type'>;
 
 interface DocsContent {
-  /** the page at these slugs, read from the repository on the server */
+  /** read from the repository on the server */
   loadPage: (slugs: string[]) => Promise<DocsPageData>;
-  /** a loaded page with its body, as its collection offers it; not found when the collection has none there */
+  /** throws not found when the collection has no body at the page's path */
   pageOf: (page: DocsPageRef) => DocsPageEntry & {
     preload: () => Promise<unknown>;
   };
 }
 
-/** what the routes' loaders and components reach through the router */
 interface RouterContext {
   docs: DocsContent;
 }
 
-/** the program's wiring: the content the routes read, over the repository's collections */
 const routerContext: RouterContext = {
   docs: {
     loadPage: (slugs) =>

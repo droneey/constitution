@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 
-import { mutateTargets } from '../changes.ts';
+import { mutateTargets } from '../mutate-targets.use-case.ts';
 
 const MUTATE = [
   'src/**/*.ts',

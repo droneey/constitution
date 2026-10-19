@@ -3,7 +3,7 @@ import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
 import { pseudo } from '../pseudo.grammar';
 
-/** each piece of a line of pseudo-code, with the scopes the grammar gives it beyond the language's own */
+/** only the scopes beyond the language's own */
 export const scopesOf = async (code: string): Promise<string[][]> => {
   const highlighter = await createHighlighterCore({
     engine: createJavaScriptRegexEngine(),

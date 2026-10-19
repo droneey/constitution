@@ -4,7 +4,6 @@
       "ESNext",
       "DOM",
       "DOM.Iterable"
-    ],
-    "types": []
+    ]
   }
 }

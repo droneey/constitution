@@ -22,7 +22,7 @@ const SECTION_DEPTH = 2;
 
 const GROUP_DEPTH = 3;
 
-/** the site's icons for the README's entries, by the address each one leads to */
+/** by the address each entry leads to, from the site's base */
 // Stryker disable StringLiteral: the icons are the site's choice of design, which a spec could only restate
 const ICONS: Readonly<Record<string, string>> = {
   '': 'BookOpenText',
@@ -48,11 +48,8 @@ const ICONS: Readonly<Record<string, string>> = {
 // Stryker restore StringLiteral
 
 interface Entry {
-  /** the address of the page, or of the link when it leads to no page of its own */
   address: string;
-  /** what the README says of it after its dash */
   description: string;
-  /** the site's folder of the blocks of a layer, when it leads to one */
   layer: string | undefined;
   title: string;
 }
@@ -62,13 +59,11 @@ interface Group {
   group: string;
 }
 
-/** where an entry leads, from the site's base: the page it names, when it names one */
 interface Place {
   fromBase: string;
   page: string | undefined;
 }
 
-/** the README's note after an entry's dash, as a page's description: a sentence */
 const sentenceOf = (note: string): string =>
   note === '' ? '' : `${note.charAt(0).toUpperCase()}${note.slice(1)}.`;
 
@@ -106,7 +101,6 @@ const readmeNodes = (): RootContent[] =>
 const sectionStartOf = (nodes: readonly RootContent[], title: string): number =>
   nodes.findIndex((node) => isHeading(node, SECTION_DEPTH) && headingTextOf(node) === title);
 
-/** the README's Documentation section, its third-level headings the groups of the sidebar */
 const documentationOf = (baseUrl: string): Group[] => {
   const nodes = readmeNodes();
   const start = sectionStartOf(nodes, DOCUMENTATION);
@@ -142,14 +136,12 @@ const placeOf = (baseUrl: string, address: string): Place => {
   };
 };
 
-/** an entry of the sidebar that leads elsewhere than a page of its folder: a link, with its icon */
 const linkEntryOf = ({ address, title }: Entry, fromBase: string): string => {
   const icon = ICONS[fromBase];
 
   return `${icon === undefined ? '' : `[${icon}]`}[${title}](${address})`;
 };
 
-/** an entry of the sidebar: a page by its file, a layer's folder of blocks by its name, any other as a link */
 const sidebarEntryOf = (entry: Entry, { fromBase, page }: Place): string => {
   if (entry.layer !== undefined) {
     return entry.layer;
@@ -164,7 +156,6 @@ const sidebarEntryOf = (entry: Entry, { fromBase, page }: Place): string => {
   return `./${page}`;
 };
 
-/** the sidebar, in the order the README's Documentation lists the pages; the overview and the quick start open the first group */
 const sidebarOf = (
   baseUrl: string,
 ): {
@@ -198,7 +189,6 @@ const sidebarOf = (
   };
 };
 
-/** the first paragraph of the quote right under one of the README's second-level headings, as plain text */
 const sectionSummaryOf = (title: string): string | undefined => {
   const nodes = readmeNodes();
   const start = sectionStartOf(nodes, title);

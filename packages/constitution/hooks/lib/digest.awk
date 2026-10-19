@@ -48,7 +48,6 @@ function warnings(   k, bytes) {
   if (k <= nwarnings) put("and " (nwarnings - k + 1) " more")
 }
 
-# Core's passport without its front matter and the blank lines around its text.
 function core(   path, line, r, lines, read, front, started, blanks) {
   path = ENVIRON["CONSTITUTION_CORE"]
   lines = 0
@@ -98,7 +97,6 @@ function print_json(   k) {
   printf "\"}}\n"
 }
 
-# A Constitution this plugin cannot read, or its absence, leaves only the reason.
 function notice(kind, found,   archive) {
   archive = ENVIRON["CONSTITUTION_ROOT"]
   if (kind == "missing") {

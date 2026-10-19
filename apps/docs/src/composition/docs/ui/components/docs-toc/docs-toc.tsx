@@ -21,10 +21,8 @@ declare module 'react' {
 
 const ON_THIS_PAGE = 'On this page';
 
-/** the deepest heading level that is a section; deeper headings are the entries under it */
 const SECTION_DEPTH = 2;
 
-/** sections are level 0; the entries under them, rules among them, level 1 */
 const levelOf = (heading: TOCItemType): 0 | 1 => (heading.depth <= SECTION_DEPTH ? 0 : 1);
 
 function TocList({ onSelect }: { onSelect?: () => void }): ReactElement {
@@ -57,7 +55,7 @@ interface TrackedHeading {
   original: TOCItemType;
 }
 
-/** the topmost heading on screen, and where it sits among the page's headings; nowhere, before the first, when none is */
+/** `position` is -1, before the first heading, when none is on screen */
 interface Topmost {
   heading: TOCItemType | undefined;
   position: number;
@@ -75,7 +73,6 @@ const selectTopmost = (headings: TrackedHeading[]): Topmost => {
 const selectProgress = (headings: Pick<TrackedHeading, 'active'>[]): number =>
   (headings.findLastIndex((heading) => heading.active) + 1) / Math.max(1, headings.length);
 
-/** the topmost heading on screen, rolling in from the direction of scrolling */
 function ActiveHeading({ fallback }: { fallback: ReactNode }): ReactElement {
   const { heading, position } = useTOCSelector(selectTopmost);
   const [shown, setShown] = useState({
@@ -114,7 +111,6 @@ const RING = {
 };
 const CIRCUMFERENCE = 2 * Math.PI * RING.r;
 
-/** how far down the page the reader is */
 function Progress(): ReactElement {
   const progress = useTOCSelector(selectProgress);
 
@@ -150,7 +146,6 @@ function Progress(): ReactElement {
   );
 }
 
-/** the desktop TOC */
 export function DocsToc(): ReactElement | undefined {
   const headings = useTOCItems();
   if (headings.length === 0) {
@@ -176,7 +171,6 @@ export function DocsToc(): ReactElement | undefined {
   );
 }
 
-/** the TOC in the page's header, when its column has no room */
 export function DocsTocDropdown(): ReactElement {
   const [open, setOpen] = useState(false);
 

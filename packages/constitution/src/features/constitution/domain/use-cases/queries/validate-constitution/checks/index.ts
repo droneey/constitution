@@ -16,4 +16,5 @@ export { requirementsCheck } from './requirements.check';
 export { requiresCheck } from './requires.check';
 export { rulesCheck } from './rules.check';
 export { seamsCheck } from './seams.check';
+export { templatesCheck } from './templates.check';
 export { vocabularyCheck } from './vocabulary.check';

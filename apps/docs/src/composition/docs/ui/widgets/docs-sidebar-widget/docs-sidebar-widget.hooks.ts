@@ -5,8 +5,8 @@ import { useSidebar } from '#/libs/ui';
 import { DocsFrameContext, DocsLocationContext } from '../../../app/providers';
 
 /**
- * The sidebar's state on the frame around the page; on a narrow screen, where the open sidebar
- * pushes the page out of view, it collapses when the site opens and after each page.
+ * Marks the sidebar's state on the frame; on a narrow screen, where the open sidebar pushes the page
+ * out of view, it collapses the sidebar when the site opens and after each page.
  */
 export function useSidebarFrame(): void {
   const { collapsed, setCollapsed } = useSidebar();

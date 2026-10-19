@@ -24,10 +24,8 @@ import { docsContentFake } from './docs-content.fake';
 
 afterEach(cleanup);
 
-/** the site's router over the documentation's route alone, at this address */
 const routerAt = (address: string, content: DocsContentFake) => {
   const root = createRootRouteWithContext<RouterContext>()({
-    // the root's providers, as the site's root route mounts them
     component: (): ReactElement => (
       <RootProvider
         theme={{
@@ -47,7 +45,6 @@ const routerAt = (address: string, content: DocsContentFake) => {
   ]);
 
   return createRouter({
-    // as the site's router declares it
     defaultNotFoundComponent: DocsNotFoundScreen,
     context: {
       docs: content.docs,

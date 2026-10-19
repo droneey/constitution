@@ -1,0 +1,8 @@
+# mutmut: the mutants, each one killed
+[tool.mutmut]
+source_paths = ["src"]
+do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
+# a log call's text and level are no behaviour a caller relies on
+do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
+pytest_add_cli_args = ["-p", "no:randomly"]
+type_check_command = ["ty", "check", "--output-format", "gitlab"]

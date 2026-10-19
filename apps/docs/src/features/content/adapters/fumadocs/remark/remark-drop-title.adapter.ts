@@ -1,6 +1,5 @@
 import type { Root } from 'mdast';
 
-/** the first paragraph of the quote that opens the tree, which the page shows as its summary */
 const dropSummary = (tree: Root): void => {
   const [first] = tree.children;
 
@@ -27,7 +26,6 @@ const dropTitle = (tree: Root): void => {
 
 const remarkDropTitle = (): ((tree: Root) => void) => dropTitle;
 
-/** a page cut from a section drops the summary its quote opens with, as a file's page drops its title's */
 const remarkDropSummary = (): ((tree: Root) => void) => dropSummary;
 
 export { dropTitle, remarkDropSummary, remarkDropTitle };

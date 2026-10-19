@@ -1,5 +1,6 @@
 [test]
-preload = [] # only the fixtures of active blocks (lingui, dom), never the sandbox
+# the fixtures of the active blocks join it, never the sandbox
+preload = []
 randomize = true
 pathIgnorePatterns = ["tests/**"]
 coverage = true
@@ -10,6 +11,5 @@ coveragePathIgnorePatterns = [
   "**/__tests__/**",
   "**/main.*",
   "**/root/wiring.*",
-  "**/root/root.module.*",
   "**/*.gen.*",
 ]

@@ -113,7 +113,6 @@ function lowered(s, slug) {
   return ((0, slug) in LOWERED) || (s > 0 && ((s, slug) in LOWERED))
 }
 
-# An override that is incomplete, names no rule or has expired lowers nothing.
 function apply_overrides(   o, s, rule, missing) {
   for (o = 1; o <= nover; o++) {
     rule = ORULE[o]
@@ -231,9 +230,7 @@ function seam(entry) {
   return axis_of(entry) "/with/" name_of(entry)
 }
 
-# A block's chapters and seams beyond its passport, which the layer's heading
-# names, axis by axis: "<axis>: <file>, ...", an axis with nothing active left
-# out. With only, the files a unit adds to the repository's.
+# With only, just the files a unit adds to the repository's.
 function by_axis(s, id, only,   out, x, ax, group, n, a, k, b) {
   out = ""
   for (x = 1; x <= NAXIS; x++) {

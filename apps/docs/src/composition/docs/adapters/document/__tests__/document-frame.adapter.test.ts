@@ -3,7 +3,6 @@ import { afterEach, describe, expect, test } from 'bun:test';
 import { documentFrame } from '../document-frame.adapter';
 
 declare global {
-  /** the simulated browser the specs run in, which sizes its window on request */
   var happyDOM: {
     setViewport: (viewport: { width: number }) => void;
   };
@@ -11,7 +10,7 @@ declare global {
 
 const WIDE = globalThis.innerWidth;
 
-/** the browser's window at this width, in CSS pixels */
+/** in CSS pixels */
 const viewportOf = (width: number): void => {
   globalThis.happyDOM.setViewport({
     width,

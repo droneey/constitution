@@ -1,0 +1,2 @@
+# tsc: the declarations and build info of a unit's project
+.tsc-cache/

@@ -26,7 +26,7 @@ afterEach(() => {
   viewport.restore();
 });
 
-/** the page's sections, which the TOC watches, beside the TOC under test */
+/** with the page's sections, which the TOC watches */
 const renderOnPage = (ui: ReactElement, toc: TOCItemType[] = tocFixture()): RenderResult =>
   render(
     <TOCProvider toc={toc}>

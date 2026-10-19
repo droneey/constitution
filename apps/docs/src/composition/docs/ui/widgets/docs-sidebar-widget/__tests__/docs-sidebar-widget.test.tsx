@@ -22,7 +22,6 @@ const sidebar = {
   provider: SidebarProvider,
 };
 
-/** the layout the widget is the sidebar of, as the screen sets it up, on the page at this path */
 const layoutOn = (path: string): ReactElement => (
   <DocsLocationContext
     value={{

@@ -86,14 +86,10 @@ const AXIS_FOLDERS: readonly string[] = [
   'workflow',
 ];
 
-/** a file's path in its block: a path with no axis folder is foundation's */
+/** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
   AXIS_FOLDERS.some((axis) => path.startsWith(`${axis}/`)) ? path : `foundation/${path}`;
 
-/**
- * A block as its files: the passport holds the front matter and the body — its title, its setup and
- * an implementation's Requirements — and each of the files, a chapter or a seam, sits in its axis.
- */
 const blockFiles = (input: BlockFilesFixture): Files => {
   const { dir, files = {}, ...card } = input;
 
@@ -127,7 +123,6 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
-/** a chapter or a seam in its form: its title, its Governs line and its rules under General */
 const chapterFile = (title: string, ...rules: readonly string[]): string =>
   `# ${title}\n\n> Governs ${title.toLowerCase()}.\n\n## General\n\n${rules.join('\n')}`;
 
@@ -140,7 +135,6 @@ interface Source {
   vocabularyParser: VocabularyParser;
 }
 
-// A Constitution that is its repository, unless the repository's own files are given.
 const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = files): Source => ({
   bindingsParser: createYamlBindingsParser(),
   frontMatterParser: createYamlFrontMatterParser(),
@@ -150,7 +144,6 @@ const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = fil
   vocabularyParser: createYamlVocabularyParser(),
 });
 
-// A pack checked against its base: the pack is its repository, the base a tree of its own.
 const packSourceOf = (input: {
   base: Readonly<Files>;
   pack: Readonly<Files>;
@@ -184,10 +177,7 @@ const checkInputOf = (
   };
 };
 
-/**
- * A finding as a case expects it, whatever its wording: its code, its path and a message that is
- * never empty and names each of `names`.
- */
+/** whatever its wording, the message is never empty and names each of `names` */
 const findingOf = (input: FindingFixture): Finding => ({
   code: input.code,
   message: expect.stringMatching(

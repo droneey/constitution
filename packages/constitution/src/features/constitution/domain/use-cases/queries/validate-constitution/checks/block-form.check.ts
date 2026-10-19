@@ -19,9 +19,9 @@ const RULE_HEADING = '### ';
 const TITLE = /^# (.+)/;
 const GOVERNS = '> Governs ';
 const SECTION = /^## (.+)/;
-/** the section of rules about the whole subject, first when a file holds one */
+/** first in a file that holds it */
 const GENERAL = 'General';
-/** the section of the rules an implementation answers, last when a file holds one */
+/** last in a file that holds it */
 const REQUIREMENTS = 'Requirements for implementation';
 
 const linesOf = (file: BlockFile): readonly string[] => withoutCodeFences(file.body).split('\n');
@@ -42,7 +42,6 @@ const passportFindings = (block: Block): readonly Finding[] =>
       ]
     : [];
 
-/** the title of a chapter or a seam, its first line, and the line that follows it */
 const openingOf = (
   lines: readonly string[],
 ): {
@@ -119,8 +118,6 @@ const ruleProblems = (rules: readonly Rule[]): readonly Problem[] =>
           message: `has the rule "${rule.slug}" under no section; every rule sits under a "## " section`,
         }));
 
-// A chapter or a seam: its title and Governs line, then its rules in "## " sections,
-// General first and the Requirements for implementation last.
 const fileFindings = (input: { file: BlockFile; rules: readonly Rule[] }): readonly Finding[] => {
   const { file } = input;
   const lines = linesOf(file);

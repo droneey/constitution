@@ -25,13 +25,11 @@ interface BlocksOptions {
   examples: ReadonlyMap<string, string>;
 }
 
-/** a part of a rule's card rendered as a `div`, marked by its data attribute */
 interface Box extends Parent {
   data: Data;
   type: 'box';
 }
 
-/** a rule's card: its level and tags, its heading, its body and its example */
 interface RuleCard extends Parent {
   data: Data;
   type: 'ruleCard';
@@ -59,7 +57,6 @@ const LETTERS: Readonly<Record<Level, string>> = {
   [Level.Should]: 'S',
 };
 
-/** the tone of an example's column, by the title of its code */
 const TONES: ReadonlyMap<string, string> = new Map([
   [
     'Avoid',
@@ -90,7 +87,6 @@ const linkTo = (address: string, child: PhrasingContent): Link => ({
   url: address,
 });
 
-/** a part of the rendered rule, marked by its data attribute for the site's styles */
 const part = (name: string, attribute = ''): Properties => ({
   [`data-${name}`]: attribute,
 });
@@ -127,7 +123,6 @@ const box = (properties: Properties, children: RootContent[]): Box => ({
   type: 'box',
 });
 
-/** the rule a third-level heading of the tree names */
 const ruleHeadingOf = (node: RootContent): RuleHeading | undefined => {
   if (!isHeading(node, RULE_DEPTH)) {
     return undefined;
@@ -143,7 +138,6 @@ const ruleHeadingOf = (node: RootContent): RuleHeading | undefined => {
       };
 };
 
-/** where a rule's section ends: at the next heading of its depth or above, or the next card */
 const sectionEnd = (children: readonly RootContent[], from: number): number => {
   const next = children.findIndex(
     (child, index) =>
@@ -193,7 +187,6 @@ const whyOf = (table: Table): Paragraph => ({
   type: 'paragraph',
 });
 
-/** an example's code block: a column of its tone when its title gives it one, else itself */
 interface Column {
   column: RootContent;
   tone: string | undefined;
@@ -248,7 +241,7 @@ const exampleOf = (markdown: string): Box => {
   );
 };
 
-/** the line under a rule's heading that names the rule it tightens, apart from the heading and its anchor; its slug is linked as every slug outside a heading is */
+/** a line apart from the heading, so its slug is linked as every slug outside a heading is */
 const parentLineOf = (parent: string | undefined): Paragraph[] =>
   parent === undefined
     ? []
@@ -275,7 +268,6 @@ const cardOf = (
   const example = options.examples.get(rule.slug);
   const table = body.find((node) => node.type === 'table');
   const tags = table === undefined ? [] : tagNamesOf(table);
-  // the level and the tags, a line of their own above the heading
   const meta: Paragraph = {
     children: [
       span(part('rule-level', rule.level.toLowerCase()), [

@@ -1,0 +1,12 @@
+# ruff: the Constitution's parts, each extending the one before; ruff extends the last
+# from <parts>
+[tool.ruff]
+extend = "<chain end>"
+
+# ruff: what the specs lift
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**" = [
+  "INP001",
+  "PLR2004",
+  "S101",
+]

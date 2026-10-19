@@ -1,3 +1,6 @@
 tanstack-start:
   dead-code-deleted:
     - entry
+tanstack-router:
+  dead-code-deleted:
+    - entry

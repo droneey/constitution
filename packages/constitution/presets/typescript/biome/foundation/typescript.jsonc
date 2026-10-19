@@ -197,6 +197,27 @@
     {
       "includes": [
         "**/__tests__/**",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "filenameCases": [
+                  "kebab-case",
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
         "**/*.test.ts",
         "**/*.test.tsx",
       ],

@@ -13,7 +13,7 @@ governs: []
 
 > <What the library does in this repository, in one sentence.>
 
-<How the library is set up in this repository: its preset parts, templates, configuration files and exclusions.>
+<What its parts and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>
 
 ## Requirements
 

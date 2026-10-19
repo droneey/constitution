@@ -26,4 +26,4 @@ A package's configuration of a tool sits in the package's own folder, and the ro
 
 | Why | Tags |
 |---|---|
-| a package then carries the rules that hold it, the root names nothing of one package's own, and a package moved to a repository of its own takes its checks with it; a tool that reads one configuration for the whole repository keeps each package's part in the root's under the package's path. | [] |
+| a package then carries the rules that hold it, the root names nothing of one package's own, and a package moved to a repository of its own takes its checks with it. | [] |

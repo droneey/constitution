@@ -146,8 +146,7 @@ def layers_of(folders: tuple[str, ...]) -> tuple[str, ...]:
   return (*folders[:1], *folders[2:3]) if in_feature_form(folders) else folders[:1]
 
 
-# A file's role by its layers; a top-level folder the tree does not name is no
-# part of the edge.
+# A top-level folder the tree does not name is no part of the edge.
 def role_of(*, folders: tuple[str, ...], stem: str) -> Role:
   layers = layers_of(folders)
 

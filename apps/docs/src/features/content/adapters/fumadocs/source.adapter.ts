@@ -28,7 +28,6 @@ interface SidebarFolder {
   title?: string;
 }
 
-/** the title and icon of each folder of blocks in the sidebar, by its folder in blocks/ */
 const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title'>>> = {
   contexts: {
     icon: 'Boxes',
@@ -61,7 +60,6 @@ type GuidePageData =
     ? TConfig['pageData']
     : never;
 
-/** the guides, and the folders of the sidebar the site adds to them */
 type GuideSource = Source<{
   metaData: MetaData;
   pageData: GuidePageData;
@@ -96,13 +94,10 @@ const metaFile = (
   type: 'meta',
 });
 
-/** an axis folder's title in the sidebar, its name capitalised, since the folder has no page of its own */
+/** an axis folder has no page of its own to give it a title */
 const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
 
-/**
- * The folders inside the blocks: a block lists its axes in their order; an axis folder, which has no
- * page of its own, is titled by its axis and lists its seams after all else.
- */
+/** In an axis folder, the library's `...` lists its other pages, so its seams come after all else. */
 const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
   const folders = new Map<string, SidebarFolder>();
   const layers = BLOCK_LAYERS.filter((layer) => layer !== 'core');
@@ -136,10 +131,8 @@ const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
   ].map(([folder, meta]) => metaFile(`${folder}/meta.json`, meta));
 };
 
-/** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
 const AXIS_SEPARATOR = '/';
 
-/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, a folder of layers by its layers, and core's chapters in the order its passport lists them */
 const blockFolders = (): ReturnType<typeof metaFile>[] => {
   const chapters = coreChaptersOf();
   const axes = [
@@ -178,7 +171,7 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
   ];
 };
 
-/** the loader of every page the site renders, built when first asked, since building it reads the repository */
+/** built when first asked, since building it reads the repository */
 const contentSource = lazily(() => {
   const sidebar = sidebarOf(docsRoute);
   const guideSource: GuideSource = {
@@ -213,7 +206,6 @@ const contentSource = lazily(() => {
 
 type ContentPage = InferPageType<ReturnType<typeof contentSource>>;
 
-/** the pages as Markdown for language models: an index, every page at once, one page */
 const contentLlms = (): LLMsWithPages<ContentPage, string> =>
   llms(contentSource(), {
     renderPage: markdownOfPage,

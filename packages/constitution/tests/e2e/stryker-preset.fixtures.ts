@@ -32,8 +32,6 @@ export default {
 
 const SURVIVED = /\[Survived\]/g;
 
-// The project reaches Stryker's plugins and the specs' runner through this
-// package's node_modules.
 const TOTAL = 'export const total = (price: number, tax: number): number => price + tax;\n';
 
 const mutationOf = (spec: string, source = TOTAL): Mutation => {
@@ -61,6 +59,7 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
 
   mkdirSync(join(folder, '.droneey'));
   symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  // Stryker's plugins and the specs' runner resolve from this package's node_modules.
   symlinkSync(join(REPOSITORY, 'node_modules'), join(folder, 'node_modules'));
 
   const running = spawnSync(

@@ -13,4 +13,4 @@ governs: ["tsconfig.json", "tsconfig.src.json", "tsconfig.test.json"]
 
 > The compiler checks the types of the program and its specs.
 
-`tsconfig.json` — or `tsconfig.src.json`, where the specs have a configuration of their own — extends the parts of the Constitution's release archive — `presets/typescript/tsc/foundation/self.json`, the compiler's own options and the strict ones, `core.json`, the options that refuse dead code, and the part of each other active block that has options of its own, `<block>.json` — of the platforms, only the one the program runs on. `presets/typescript/tsc/foundation/bindings.yaml` says which option holds which rule.
+The compiler's `extends` takes the parts in order, and a later part's option replaces an earlier's whole, a list such as `lib` or `types` included, so `types` is set by one part alone.

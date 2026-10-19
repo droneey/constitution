@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -141,16 +141,39 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
       ]),
   );
 
+const TEMPLATE = readFileSync(
+  join(
+    REPOSITORY,
+    'templates',
+    'project',
+    'typescript',
+    'dependency-cruiser',
+    '.dependency-cruiser.mjs',
+  ),
+  'utf8',
+);
+
+// The template written for the parts at these paths, as /constitution:ratify writes it: one
+// namespace import to a part, and the parts joined in their order.
+const configFromTemplate = (paths: readonly string[]): string => {
+  const names = paths.map((_, index) => `part${String(index)}`);
+
+  return TEMPLATE.replace(
+    "import * as part from '<parts>';",
+    paths.map((path, index) => `import * as ${names[index] ?? ''} from '${path}';`).join('\n'),
+  ).replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
+};
+
 const configOf = (parts: readonly string[]): string =>
-  `export default {\n  extends: ${JSON.stringify(
+  configFromTemplate(
     [
-      ...parts,
       ...BASE_PARTS,
+      ...parts,
     ].map(
       (part) =>
         `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/').replace(/\/dependency-cruiser\/(?!architecture\/|workflow\/)/, '/dependency-cruiser/foundation/')}.mjs`,
     ),
-  )},\n};\n`;
+  );
 
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
@@ -230,4 +253,4 @@ const cruise = (project: Project): Cruise => {
   };
 };
 
-export { cruise };
+export { configFromTemplate, cruise };

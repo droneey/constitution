@@ -10,7 +10,6 @@ import type { Releases } from '../get-versions.hooks';
 import { useVersions } from '../get-versions.hooks';
 
 interface RenderedReleases extends RenderHookResult<Releases, unknown> {
-  /** gives the hook another use case, as the root would on a new render */
   provide: (getVersions: GetVersions | undefined) => void;
 }
 
