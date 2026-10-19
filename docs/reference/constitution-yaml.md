@@ -27,7 +27,7 @@ check: bun run check
 overrides: []
 ```
 
-Every key is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order. The release the project follows is pinned in `mise.toml` alone, and the hook reads it from `.droneey/constitution/`; [Upgrade](../guides/upgrade.md) raises it.
+Every key is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order.
 
 ## Keys
 
