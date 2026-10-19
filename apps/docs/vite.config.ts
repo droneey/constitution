@@ -24,6 +24,15 @@ const { version: constitutionVersion } = manifestShape.parse(
 export default defineConfig({
   server: {
     port: 3000,
+    watch: {
+      // Stryker's sandboxes copy the app, tsconfig.json included, and a changed
+      // tsconfig.json restarts the server under the page being served
+      ignored: [
+        '**/.stryker-tmp/**',
+        '**/.tsc-cache/**',
+        '**/coverage/**',
+      ],
+    },
   },
   define: {
     'import.meta.env.VITE_CONSTITUTION_VERSION': JSON.stringify(constitutionVersion),
