@@ -14,7 +14,15 @@ import {
   treeOf,
   withoutPositions,
 } from './mdast.fixtures';
-import { boxOf, cardOf, headingOf, markOf, metaOf, whyOf } from './remark-blocks.adapter.fixtures';
+import {
+  boxOf,
+  cardOf,
+  headingOf,
+  markOf,
+  metaOf,
+  parentLineOf,
+  whyOf,
+} from './remark-blocks.adapter.fixtures';
 
 const NO_OPTIONS: BlocksOptions = {
   addresses: new Map(),
@@ -258,16 +266,11 @@ describe('remarkBlocks', () => {
           headingOf([
             SHOULD,
             inlineCode('strict-name'),
-            span(
-              {
-                'data-rule-parent': '',
-              },
-              [
-                text('→ '),
-                parent,
-              ],
-            ),
             text(' [#strict-name]'),
+          ]),
+          parentLineOf([
+            text('→ '),
+            parent,
           ]),
           metaOf([
             levelOf('SHOULD', 'should'),

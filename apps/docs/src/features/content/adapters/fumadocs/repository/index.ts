@@ -1,4 +1,10 @@
-export { axisFoldersOf, coreChaptersOf, layerBlocksOf } from './blocks.adapter';
+export {
+  axisFoldersOf,
+  coreChaptersOf,
+  layerBlocksOf,
+  SEAMS,
+  seamHoldersOf,
+} from './blocks.adapter';
 export { taglineOf } from './brand.adapter';
 export {
   documentIconOf,

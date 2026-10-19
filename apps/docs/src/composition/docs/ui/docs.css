@@ -5,6 +5,11 @@
 /* -------------------------------------------------------------------------- */
 
 @layer prose {
+  /* a link's underline is a hairline, as every rule of the page is */
+  [data-docs-body] a {
+    text-decoration-thickness: 1px;
+  }
+
   [data-docs-body] [data-rule-card] {
     margin-block: var(--spacing-lg);
     padding: var(--spacing-sm);
@@ -107,9 +112,12 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  [data-docs-body] [data-rule-parent] {
+  /* the parent a rule tightens, a line of its own right under the heading */
+  [data-docs-body] [data-rule-card] > [data-rule-parent] {
+    margin: 0;
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
     font-style: normal;
     font-weight: var(--font-weight-normal);
   }
@@ -232,8 +240,9 @@
     align-items: center;
     height: var(--spacing-control-xs);
     padding-inline: var(--spacing-xs);
+    border: 1px solid var(--color-border-base);
     border-radius: var(--radius-lg);
-    background: var(--color-fill-muted);
+    background: transparent;
     color: var(--color-text-muted);
     font-size: var(--text-xs);
     font-style: normal;

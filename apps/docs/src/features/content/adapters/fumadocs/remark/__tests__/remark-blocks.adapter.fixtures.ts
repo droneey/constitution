@@ -43,6 +43,17 @@ export const headingOf = (children: PhrasingContent[]): RootContent => ({
 });
 
 /** the line under a rule's heading: its level and its tags */
+/** the line under a rule's heading that names the rule it tightens */
+export const parentLineOf = (children: PhrasingContent[]): RootContent => ({
+  children,
+  data: {
+    hProperties: {
+      'data-rule-parent': '',
+    },
+  },
+  type: 'paragraph',
+});
+
 export const metaOf = (children: PhrasingContent[]): RootContent => ({
   children,
   data: {

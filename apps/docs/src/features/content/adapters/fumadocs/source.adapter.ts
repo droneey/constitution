@@ -15,8 +15,10 @@ import {
   GLOSSARY,
   layerBlocksOf,
   QUICK_START,
+  SEAMS,
   SITE_DOCUMENTS,
   SITE_LAYERS,
+  seamHoldersOf,
   sidebarOf,
 } from './repository';
 
@@ -97,6 +99,34 @@ const metaFile = (
 /** an axis folder's title in the sidebar, its name capitalised, since its main chapter, the folder's page, is titled as its block */
 const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
 
+/**
+ * The folders inside the blocks: an axis folder is titled by its axis, since its main chapter, the
+ * folder's page, is titled as its block, and a folder that holds seams lists them after all else.
+ */
+const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
+  const folders = new Map<string, SidebarFolder>();
+  const layers = BLOCK_LAYERS.filter((layer) => layer !== 'core');
+
+  for (const folder of layers.flatMap(axisFoldersOf)) {
+    folders.set(folder, {
+      title: titleOfAxis(folder.slice(folder.lastIndexOf('/') + 1)),
+    });
+  }
+  for (const folder of layers.flatMap(seamHoldersOf)) {
+    folders.set(folder, {
+      ...folders.get(folder),
+      pages: [
+        '...',
+        SEAMS,
+      ],
+    });
+  }
+
+  return [
+    ...folders,
+  ].map(([folder, meta]) => metaFile(`${folder}/meta.json`, meta));
+};
+
 /** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
 const AXIS_SEPARATOR = '/';
 
@@ -135,13 +165,7 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
               ],
       }),
     ),
-    ...BLOCK_LAYERS.filter((layer) => layer !== 'core')
-      .flatMap(axisFoldersOf)
-      .map((folder) =>
-        metaFile(`${folder}/meta.json`, {
-          title: titleOfAxis(folder.slice(folder.lastIndexOf('/') + 1)),
-        }),
-      ),
+    ...blockSubfolders(),
     ...axes.map((axis) =>
       metaFile(`core/${axis}/meta.json`, {
         pages: chapters

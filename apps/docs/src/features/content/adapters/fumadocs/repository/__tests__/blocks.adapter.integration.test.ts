@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { ZodError } from 'zod';
 
-import { axisFoldersOf, coreChaptersOf, layerBlocksOf } from '../blocks.adapter';
+import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from '../blocks.adapter';
 import { enterRepository } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
@@ -157,6 +157,32 @@ describe('axisFoldersOf', () => {
 
     // Assert
     expect(folders).toStrictEqual([
+      'domains/ui/architecture',
+      'domains/ui/workflow',
+    ]);
+  });
+});
+
+describe('seamHoldersOf', () => {
+  it("should give each folder of a layer's blocks, root or axis, that holds seams", () => {
+    // Arrange
+    const domains = 'packages/constitution/blocks/domains';
+    repository.leave = enterRepository({
+      files: {
+        [`${domains}/i18n/i18n.md`]: cardOf('i18n', 'null'),
+        [`${domains}/ui/architecture/with/remote-data.md`]: '# Remote data\n',
+        [`${domains}/ui/ui.md`]: cardOf('ui', 'null'),
+        [`${domains}/ui/with/i18n.md`]: '# i18n\n',
+        [`${domains}/ui/workflow/with/i18n.md`]: '# i18n\n',
+      },
+    }).leave;
+
+    // Act
+    const folders = seamHoldersOf('domains');
+
+    // Assert
+    expect(folders).toStrictEqual([
+      'domains/ui',
       'domains/ui/architecture',
       'domains/ui/workflow',
     ]);

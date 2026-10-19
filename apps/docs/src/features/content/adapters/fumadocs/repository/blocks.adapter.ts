@@ -91,4 +91,18 @@ const axisFoldersOf = (layer: string): readonly string[] =>
     ),
   );
 
-export { axisFoldersOf, coreChaptersOf, layerBlocksOf };
+/** the folder of a block's seams, in its root or an axis */
+const SEAMS = 'with';
+
+/** the folders of a layer's blocks, roots and axes, that hold seams, each by its path from blocks/ */
+const seamHoldersOf = (layer: string): readonly string[] =>
+  readdirSync(inBlocks(layer)).flatMap((id) =>
+    [
+      id,
+      ...AXES.map((axis) => `${id}/${axis}`),
+    ]
+      .filter((folder) => existsSync(inBlocks(layer, folder, SEAMS)))
+      .map((folder) => `${layer}/${folder}`),
+  );
+
+export { axisFoldersOf, coreChaptersOf, layerBlocksOf, SEAMS, seamHoldersOf };
