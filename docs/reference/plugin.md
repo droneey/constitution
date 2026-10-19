@@ -41,8 +41,8 @@ It stays under Claude Code's limit of 10,000 characters and holds:
 1. the release and the folder of its blocks;
 2. `constitution.yaml makes <n> blocks active.`;
 3. the warnings about `constitution.yaml`, to tell you at the start of a session;
-4. core's card and the list of core's chapters, in the order [placement](../../packages/constitution/blocks/core/placement.md) lists them;
-5. every active block by layer, with its summary and the chapters of the axes the project follows, then each unit's blocks;
+4. [core's passport](../../packages/constitution/blocks/core/core.md) whole, its front matter aside, whose list of core's chapters gives the order they are read in;
+5. every active block by layer — a domain or a context with its summary, an implementation by its library's name — with its chapters and seams, foundation's first, then axis by axis, on the axes the project follows, and its pack in square brackets; then each unit's blocks;
 6. the overrides.
 
 A repository without `constitution.yaml` gets nothing. Without `.droneey/constitution/`, the digest only asks for `mise install`.

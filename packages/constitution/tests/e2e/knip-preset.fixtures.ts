@@ -41,11 +41,11 @@ const configOf = (parts: readonly string[]): string => {
   const names = parts.map((_, index) => `part${index}`);
 
   return `import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
-import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
+import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
 ${parts
   .map(
     (part, index) =>
-      `import ${names[index]} from './.droneey/constitution/presets/${part.replace('/', '/knip/')}.mjs';`,
+      `import ${names[index]} from './.droneey/constitution/presets/${part.replace('/', '/knip/').replace(/\/knip\/(?!architecture\/|workflow\/)/, '/knip/foundation/')}.mjs';`,
   )
   .join('\n')}
 

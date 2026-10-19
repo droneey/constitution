@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { Files } from '../../../__tests__/constitution.fixtures';
-import { checkInputOf, mainFile } from '../../../__tests__/constitution.fixtures';
+import { checkInputOf, passportFile } from '../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../__tests__/valid-files.fixtures';
 import type { Place } from '../closure.utils';
 import { closureOf, mayCarryOut, mayReferTo, reachableFrom } from '../closure.utils';
@@ -20,7 +20,7 @@ interface ReachCase {
 }
 
 const implementationRequiring = (input: { id: string; requires: readonly string[] }): Files => ({
-  [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
+  [`blocks/implementations/${input.id}/${input.id}.md`]: passportFile({
     body: `# ${input.id}\n`,
     id: input.id,
     requires: input.requires,
@@ -106,7 +106,7 @@ describe('reachableFrom', () => {
         'browser',
         'untrusted-client',
       ],
-      name: 'a main file, which reaches its block and its closure',
+      name: 'a passport, which reaches its block and its closure',
       place: {
         block: 'browser',
         with: undefined,

@@ -2,7 +2,7 @@
 
 > Governs what programs that own their data share.
 
-## Shared
+## General
 
 ### programs-owning-their-data-share-only-contracts · MUST
 

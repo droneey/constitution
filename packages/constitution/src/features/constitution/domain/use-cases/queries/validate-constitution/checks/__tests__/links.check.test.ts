@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  without,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { linksCheck } from '../links.check';
 
-const PRINCIPLES = 'blocks/core/principles.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const README = 'README.md';
 
 describe('linksCheck', () => {
@@ -26,10 +30,13 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'links to a missing file "blocks/core/core.md"',
+      findingOf({
+        code: 'link-to-missing-file',
+        names: [
+          'blocks/core/core.md',
+        ],
         path: README,
-      },
+      }),
     ]);
   });
 
@@ -46,25 +53,34 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'links to a missing file "gone.md"',
+      findingOf({
+        code: 'link-to-missing-file',
+        names: [
+          'gone.md',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'links to a missing file "local/plan.md"',
+      }),
+      findingOf({
+        code: 'link-to-missing-file',
+        names: [
+          'local/plan.md',
+        ],
         path: README,
-      },
-      {
-        message: 'links to a missing file "local/draft.md"',
+      }),
+      findingOf({
+        code: 'link-to-missing-file',
+        names: [
+          'local/draft.md',
+        ],
         path: 'DECISIONS.md',
-      },
+      }),
     ]);
   });
 
   it('should report a link to a missing file when it drops the extension of a file that exists', () => {
     // Arrange
     const files = validFiles();
-    files[PRINCIPLES] = '# Principles\n\nSee [the card](core).\n';
+    files[PRINCIPLES] = '# Principles\n\nSee [the workflow](../workflow/workflow).\n';
     const input = checkInputOf(files);
 
     // Act
@@ -72,10 +88,13 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'links to a missing file "core"',
+      findingOf({
+        code: 'link-to-missing-file',
+        names: [
+          '../workflow/workflow',
+        ],
         path: PRINCIPLES,
-      },
+      }),
     ]);
   });
 
@@ -119,10 +138,13 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'links to a missing file "gone.md"',
+      findingOf({
+        code: 'link-to-missing-file',
+        names: [
+          'gone.md',
+        ],
         path: PRINCIPLES,
-      },
+      }),
     ]);
   });
 });

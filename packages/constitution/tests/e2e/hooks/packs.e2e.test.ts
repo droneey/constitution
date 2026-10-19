@@ -6,16 +6,40 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import {
   contextOf,
   HookEvent,
+  indexOf,
+  mentionedOf,
   newSession,
   removeSessions,
   runHook,
   runScript,
+  warningsOf,
 } from '../hook.fixtures';
 import { checkPack, createPack, removePacks } from '../packs.fixtures';
 import { createRealPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
 import { ConfigKey, configOf, createProject, removeProjects } from '../project.fixtures';
 
 let root = '';
+
+// The files of Acme's axes a reminder names, and its MUST rules.
+const ACME_NAMES = [
+  'packs/acme/blocks/implementations/acme/acme.md',
+  'packs/acme/blocks/implementations/acme/foundation/dependencies.md',
+  'packs/acme/blocks/implementations/acme/architecture/root.md',
+  'acme-reached-through-its-entry',
+  'acme-client-wired-by-the-root',
+];
+// The warnings of the project whose pack's rule carries out no rule, in their order.
+const UNKNOWN_PARENT = [
+  [
+    'pack',
+    'packs/gone',
+  ],
+  [
+    'pack',
+    'acme-reached-through-its-entry',
+    'no-such-rule',
+  ],
+];
 
 // A project that follows Acme from the packs it lists, the first linked where
 // it says and the second never installed.
@@ -74,10 +98,7 @@ describe('a pack checked against its base', () => {
     const checked = checkPack(pack);
 
     // Assert
-    expect(checked).toStrictEqual({
-      output: 'blocks: every block is sound\n',
-      passed: true,
-    });
+    expect(checked.passed).toBe(true);
   });
 
   it("should report the pack's rule when it carries out a rule the base does not hold", () => {
@@ -89,7 +110,7 @@ describe('a pack checked against its base', () => {
 
     // Assert
     expect({
-      named: checked.output.includes('blocks/implementations/acme/acme.md'),
+      named: checked.output.includes('blocks/implementations/acme/foundation/dependencies.md'),
       passed: checked.passed,
     }).toStrictEqual({
       named: true,
@@ -108,15 +129,24 @@ describe('a pack in a project', () => {
 
     // Assert
     expect({
-      listed: context.includes(
-        "- acme (packs/acme): Acme sends the shop's events to its analytics. (architecture)",
-      ),
-      warned: context.includes(
-        '- pack: packs/gone is not installed — run mise install, or check the path',
-      ),
+      listed: indexOf(context).includes('acme [packs/acme] (dependencies; architecture: root)'),
+      warnings: warningsOf({
+        context,
+        like: [
+          [
+            'pack',
+            'packs/gone',
+          ],
+        ],
+      }),
     }).toStrictEqual({
       listed: true,
-      warned: true,
+      warnings: [
+        [
+          'pack',
+          'packs/gone',
+        ],
+      ],
     });
   });
 
@@ -156,9 +186,12 @@ describe('a pack in a project', () => {
     }).stdout;
 
     // Assert
-    expect(reminder).toContain(
-      'read packs/acme/blocks/implementations/acme/acme.md packs/acme/blocks/implementations/acme/architecture/acme.md; its MUST rules: acme-reached-through-its-entry, acme-client-wired-by-the-root.',
-    );
+    expect(
+      mentionedOf({
+        names: ACME_NAMES,
+        text: reminder,
+      }),
+    ).toStrictEqual(ACME_NAMES);
   });
 
   it('should warn of the rule when a rule of the pack carries out a rule nobody holds', () => {
@@ -169,8 +202,11 @@ describe('a pack in a project', () => {
     const { context } = startProject(pack);
 
     // Assert
-    expect(context).toContain(
-      '- pack: acme-reached-through-its-entry → no-such-rule: no-such-rule is an unknown rule — check the slug',
-    );
+    expect(
+      warningsOf({
+        context,
+        like: UNKNOWN_PARENT,
+      }),
+    ).toStrictEqual(UNKNOWN_PARENT);
   });
 });

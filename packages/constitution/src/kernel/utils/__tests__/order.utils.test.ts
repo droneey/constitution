@@ -38,19 +38,27 @@ describe('compareText', () => {
 });
 
 describe('compareFindings', () => {
-  it('should order findings by path, then by message when the paths are equal', () => {
+  it('should order findings by path, then by code, then by message when the paths and codes are equal', () => {
     // Arrange
     const findings = [
       {
-        message: 'b',
+        code: 'b-code',
+        message: 'a',
         path: 'x.md',
       },
       {
+        code: 'a-code',
+        message: 'z',
+        path: 'x.md',
+      },
+      {
+        code: 'z-code',
         message: 'z',
         path: 'a.md',
       },
       {
-        message: 'a',
+        code: 'a-code',
+        message: 'y',
         path: 'x.md',
       },
     ];
@@ -61,15 +69,23 @@ describe('compareFindings', () => {
     // Assert
     expect(sorted).toStrictEqual([
       {
+        code: 'z-code',
         message: 'z',
         path: 'a.md',
       },
       {
-        message: 'a',
+        code: 'a-code',
+        message: 'y',
         path: 'x.md',
       },
       {
-        message: 'b',
+        code: 'a-code',
+        message: 'z',
+        path: 'x.md',
+      },
+      {
+        code: 'b-code',
+        message: 'a',
         path: 'x.md',
       },
     ]);

@@ -1,6 +1,8 @@
 # Workspace
 
-> The configuration that holds the imports between the units of a workspace.
+> Governs the configuration that holds the imports between the units of a workspace.
+
+## General
 
 ### imports-between-units-held-at-the-root → packages-never-import-apps · MUST
 

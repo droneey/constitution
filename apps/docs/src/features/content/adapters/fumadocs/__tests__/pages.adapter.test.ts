@@ -7,13 +7,28 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import {
   collectionPathOf,
   crossLinks,
-  mainFileAsIndex,
   markdownOfPage,
+  passportAsIndex,
   renamed,
 } from '../pages.adapter';
 
-const ARROW =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true" data-cross-link=""><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+/** the arrow that follows a cross-link's name, hidden from a screen reader */
+const ARROW = /<svg\b(?=[^>]*\baria-hidden="true")(?=[^>]*\bdata-cross-link="")[^>]*>.*<\/svg>/;
+
+/** an entry of the sidebar by the name it shows, and whether the arrow of a cross-link follows it */
+interface SidebarEntry {
+  arrow: boolean;
+  name: string;
+}
+
+const entryOf = (node: Node): SidebarEntry => {
+  const markup = renderToStaticMarkup(node.name);
+
+  return {
+    arrow: ARROW.test(markup),
+    name: markup.replace(ARROW, ''),
+  };
+};
 
 /** the addresses of the pages among a tree's nodes */
 const addressesOf = (nodes: readonly Node[]): readonly string[] =>
@@ -87,7 +102,7 @@ describe('collectionPathOf', () => {
   });
 });
 
-describe('mainFileAsIndex', () => {
+describe('passportAsIndex', () => {
   it.each([
     {
       condition: 'the file is the card of a block',
@@ -105,14 +120,19 @@ describe('mainFileAsIndex', () => {
       served: 'core/names.md',
     },
     {
-      condition: "the file is an axis's main chapter",
+      condition: 'the file of an axis is named after its block',
       path: 'domains/ui/architecture/ui.md',
-      served: 'domains/ui/architecture/index.md',
+      served: 'domains/ui/architecture/ui.md',
     },
     {
-      condition: "the file is the workflow axis's main chapter",
-      path: 'domains/ui/workflow/ui.md',
-      served: 'domains/ui/workflow/index.md',
+      condition: 'the file of an axis is named after its axis',
+      path: 'domains/ui/foundation/foundation.md',
+      served: 'domains/ui/foundation/foundation.md',
+    },
+    {
+      condition: 'the file is a seam',
+      path: 'domains/ui/workflow/with/git.md',
+      served: 'domains/ui/workflow/with/git.md',
     },
     {
       condition: 'the file is a chapter of an axis',
@@ -129,7 +149,7 @@ describe('mainFileAsIndex', () => {
     const file = path;
 
     // Act
-    const page = mainFileAsIndex(file);
+    const page = passportAsIndex(file);
 
     // Assert
     expect(page).toBe(served);
@@ -177,11 +197,23 @@ describe('crossLinks', () => {
     const entries = source.getPageTree().children;
 
     // Assert
-    expect(entries.map((entry) => renderToStaticMarkup(entry.name))).toStrictEqual([
-      'Overview',
-      `Precedence${ARROW}`,
-      'Names',
-      'Repository',
+    expect(entries.map(entryOf)).toStrictEqual([
+      {
+        arrow: false,
+        name: 'Overview',
+      },
+      {
+        arrow: true,
+        name: 'Precedence',
+      },
+      {
+        arrow: false,
+        name: 'Names',
+      },
+      {
+        arrow: false,
+        name: 'Repository',
+      },
     ]);
   });
 

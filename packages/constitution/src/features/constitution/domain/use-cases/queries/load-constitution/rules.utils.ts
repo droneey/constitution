@@ -1,10 +1,21 @@
 import type { Axis, Level } from '#/kernel/constants';
 import { LEVELS } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { Finding, Problem } from '#/kernel/types';
 
 import type { StatedRule } from '../../../entities';
 import type { MarkdownSection } from '../../../utils';
 import { sectionsOf } from '../../../utils';
+
+enum RuleFormCode {
+  HeadingMisshapen = 'rule-heading-misshapen',
+  WithoutTable = 'rule-without-table',
+  TablesMany = 'rule-with-many-tables',
+  HeaderMisshapen = 'rule-table-header-misshapen',
+  RowsNotOne = 'rule-table-rows-not-one',
+  CellsMiscounted = 'rule-table-cells-miscounted',
+  TagsNotList = 'rule-tags-not-a-list',
+  HoldsLabel = 'rule-holds-label',
+}
 
 interface Source {
   axis: Axis;
@@ -22,7 +33,7 @@ interface Heading {
 
 interface Table {
   cells: readonly string[];
-  problems: readonly string[];
+  problems: readonly Problem[];
 }
 
 interface SectionRead {
@@ -39,8 +50,6 @@ const HEADING = /^### (\S+)(?: → (\S+))?(?: · (\S+))?$/;
 const TITLE = /^# (.+)/;
 const CHAPTER = /^## (.+)/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
-const HEADING_FORMS =
-  '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';
 const TABLE_LINE = /^\|/;
 const DASHES = /^:?-+:?$/;
 const LABEL_LINE = /^\*\*([^*]+):\*\*/;
@@ -96,16 +105,23 @@ const tablesOf = (lines: readonly string[]): readonly (readonly string[])[] => {
   return tables;
 };
 
-const tableOf = (lines: readonly string[]): Table => {
-  const tables = tablesOf(lines);
+const tableOf = (input: { lines: readonly string[]; slug: string }): Table => {
+  const { slug } = input;
+  const tables = tablesOf(input.lines);
 
   if (tables.length !== 1) {
     return {
       cells: [],
       problems: [
         tables.length === 0
-          ? `has no table "${HEADER}"`
-          : `has ${tables.length} tables; a rule has one`,
+          ? {
+              code: RuleFormCode.WithoutTable,
+              message: `rule "${slug}" has no table "${HEADER}"`,
+            }
+          : {
+              code: RuleFormCode.TablesMany,
+              message: `rule "${slug}" has ${tables.length} tables; a rule has one`,
+            },
       ],
     };
   }
@@ -123,30 +139,42 @@ const tableOf = (lines: readonly string[]): Table => {
       ...(isHeader
         ? []
         : [
-            `has a table whose header is not "${HEADER}"`,
+            {
+              code: RuleFormCode.HeaderMisshapen,
+              message: `rule "${slug}" has a table whose header is not "${HEADER}"`,
+            },
           ]),
       ...(rows.length === 1
         ? []
         : [
-            `has ${rows.length} rows in its table; a rule's table has one`,
+            {
+              code: RuleFormCode.RowsNotOne,
+              message: `rule "${slug}" has ${rows.length} rows in its table; a rule's table has one`,
+            },
           ]),
       ...(rows.length === 0 || cells.length === CELLS
         ? []
         : [
-            `has a row of ${cells.length} cells; a rule's table has ${CELLS}`,
+            {
+              code: RuleFormCode.CellsMiscounted,
+              message: `rule "${slug}" has a row of ${cells.length} cells; a rule's table has ${CELLS}`,
+            },
           ]),
     ],
   };
 };
 
-const labelProblems = (lines: readonly string[]): readonly string[] =>
-  lines.flatMap((line) => {
+const labelProblems = (input: { lines: readonly string[]; slug: string }): readonly Problem[] =>
+  input.lines.flatMap((line) => {
     const name = LABEL_LINE.exec(line)?.[1];
 
     return name === undefined || name === EXAMPLE
       ? []
       : [
-          `has the label "${name}"; a rule states Why and Tags in its table and holds no label but ${EXAMPLE}`,
+          {
+            code: RuleFormCode.HoldsLabel,
+            message: `rule "${input.slug}" has the label "${name}"; a rule states Why and Tags in its table and holds no label but ${EXAMPLE}`,
+          },
         ];
   });
 
@@ -181,7 +209,8 @@ const readSection = (input: {
       findings: LOOKS_LIKE_RULE.test(input.section.heading)
         ? [
             {
-              message: `heading "${input.section.heading}" looks like a rule but is not ${HEADING_FORMS}`,
+              code: RuleFormCode.HeadingMisshapen,
+              message: `heading "${input.section.heading}" looks like a rule but is not "### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"`,
               path: input.source.file,
             },
           ]
@@ -190,7 +219,11 @@ const readSection = (input: {
   }
 
   const { lines } = input.section;
-  const table = tableOf(lines);
+  const { slug } = heading;
+  const table = tableOf({
+    lines,
+    slug,
+  });
   const [why = '', cell = '[]'] = table.cells;
   const tags = tagsOf(cell);
 
@@ -199,12 +232,18 @@ const readSection = (input: {
       ...table.problems,
       ...(tags === undefined
         ? [
-            `has the Tags "${cell}"; Tags is a list, such as [security, ux] or []`,
+            {
+              code: RuleFormCode.TagsNotList,
+              message: `rule "${slug}" has the Tags "${cell}"; Tags is a list, such as [security, ux] or []`,
+            },
           ]
         : []),
-      ...labelProblems(lines),
+      ...labelProblems({
+        lines,
+        slug,
+      }),
     ].map((problem) => ({
-      message: `rule "${heading.slug}" ${problem}`,
+      ...problem,
       path: input.source.file,
     })),
     draft: {
@@ -213,7 +252,7 @@ const readSection = (input: {
       file: input.source.file,
       ownTags: tags ?? [],
       parent: heading.parent,
-      slug: heading.slug,
+      slug,
       statedLevel: heading.level,
       statement: statementOf(lines),
       title: input.title,

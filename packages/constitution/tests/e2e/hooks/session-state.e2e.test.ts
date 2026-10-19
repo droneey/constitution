@@ -114,7 +114,10 @@ describe('the session state the session-start hook saves', () => {
         kind: 'check',
         session,
       }),
-      warnings: warningsOf(contextOf(run)),
+      warnings: warningsOf({
+        context: contextOf(run),
+        like: [],
+      }),
     }).toStrictEqual({
       check: [
         [

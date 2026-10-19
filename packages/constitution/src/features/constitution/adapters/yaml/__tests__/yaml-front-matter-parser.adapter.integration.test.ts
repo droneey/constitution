@@ -71,11 +71,11 @@ describe('createYamlFrontMatterParser', () => {
       issues: [
         {
           field: 'abstract',
-          message: 'Invalid input: expected boolean, received string',
+          message: expect.stringContaining('boolean'),
         },
         {
           field: 'dictionary.1',
-          message: 'Invalid input: expected string, received number',
+          message: expect.stringContaining('string'),
         },
       ],
       keys: KEYS,

@@ -2,17 +2,28 @@ import { describe, expect, it } from 'bun:test';
 
 import type { Finding } from '#/kernel/types';
 
-import { checkInputOf, mainFile, textOf } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+  textOf,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { ownedWordsCheck } from '../owned-words.check';
 
 const UI = 'blocks/domains/ui/ui.md';
-const PRINCIPLES = 'blocks/core/principles.md';
+const UI_CHAPTER = 'blocks/domains/ui/foundation/forms.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
-const named = (input: { owner: string; path: string; word: string }): Finding => ({
-  message: `names "${input.word}", which ${input.owner} owns; only ${input.owner} and the blocks that depend on it may`,
-  path: input.path,
-});
+const named = (input: { owner: string; path: string; word: string }): Finding =>
+  findingOf({
+    code: 'owned-word-out-of-reach',
+    names: [
+      input.word,
+      input.owner,
+    ],
+    path: input.path,
+  });
 
 describe('ownedWordsCheck', () => {
   it('should report a word when a second block owns it too', () => {
@@ -29,10 +40,14 @@ describe('ownedWordsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'owns "Biome", which biome owns already',
+      findingOf({
+        code: 'word-owned-twice',
+        names: [
+          'Biome',
+          'biome',
+        ],
         path: 'blocks/implementations/lingui/lingui.md',
-      },
+      }),
     ]);
   });
 
@@ -46,26 +61,23 @@ describe('ownedWordsCheck', () => {
       expected: [
         named({
           owner: 'typescript',
-          path: UI,
+          path: UI_CHAPTER,
           word: 'TypeScript',
         }),
         named({
           owner: 'typescript',
-          path: UI,
+          path: UI_CHAPTER,
           word: '.ts',
         }),
         named({
           owner: 'typescript',
-          path: UI,
+          path: UI_CHAPTER,
           word: 'index.ts',
         }),
       ],
       name: 'a domain names them in prose and in inline code',
-      path: UI,
-      text: mainFile({
-        body: '# UI\n\nEach screen is one `index.ts` in TypeScript.\n',
-        id: 'ui',
-      }),
+      path: UI_CHAPTER,
+      text: '# UI\n\nEach screen is one `index.ts` in TypeScript.\n',
     },
     {
       expected: [
@@ -77,7 +89,7 @@ describe('ownedWordsCheck', () => {
       ],
       name: 'the summary of a domain names one',
       path: UI,
-      text: mainFile({
+      text: passportFile({
         body: '# UI\n',
         id: 'ui',
         summary: 'Screens written in React.',
@@ -140,15 +152,12 @@ describe('ownedWordsCheck', () => {
   it.each([
     {
       name: 'a fenced sample of a domain holds one',
-      path: UI,
-      text: mainFile({
-        body: '# UI\n\n```tsx\nconst Screen = (): React.ReactNode => null;\n```\n',
-        id: 'ui',
-      }),
+      path: UI_CHAPTER,
+      text: '# UI\n\n```tsx\nconst Screen = (): React.ReactNode => null;\n```\n',
     },
     {
       name: 'a with/ file named after the owner holds one',
-      path: 'blocks/contexts/platforms/browser/with/typescript.md',
+      path: 'blocks/contexts/platforms/browser/foundation/with/typescript.md',
       text: '# Browser with TypeScript\n\nEach `index.ts` runs in the tab.\n',
     },
     {

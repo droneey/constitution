@@ -1,0 +1,17 @@
+{
+  "linter": {
+    "rules": {
+      "nursery": {
+        "useBaseline": "error",
+      },
+    },
+  },
+  "plugins": [
+    {
+      "path": "./.droneey/constitution/presets/css/biome/foundation/plugins/web-font-served-as-woff2.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+  ],
+}

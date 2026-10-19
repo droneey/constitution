@@ -2,46 +2,41 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
 
-import { axisFolderOf, axisNameOf } from '../axes.utils';
+import { mayReachAxis } from '../axes.utils';
 
-describe('axes', () => {
+describe('mayReachAxis', () => {
   it.each([
     {
-      axis: Axis.Foundation,
-      expected: '',
+      expected: true,
+      from: Axis.Architecture,
+      to: Axis.Architecture,
     },
     {
-      axis: Axis.Architecture,
-      expected: 'architecture/',
+      expected: true,
+      from: Axis.Workflow,
+      to: Axis.Foundation,
     },
-  ])('should give the folder "$expected" when the axis is $axis', ({ axis, expected }) => {
+    {
+      expected: false,
+      from: Axis.Architecture,
+      to: Axis.Workflow,
+    },
+    {
+      expected: false,
+      from: Axis.Foundation,
+      to: Axis.Architecture,
+    },
+  ])('should answer $expected when $from refers to $to', ({ expected, from, to }) => {
     // Arrange
-    const input = axis;
+    const reference = {
+      from,
+      to,
+    };
 
     // Act
-    const folder = axisFolderOf(input);
+    const reaches = mayReachAxis(reference);
 
     // Assert
-    expect(folder).toBe(expected);
-  });
-
-  it.each([
-    {
-      axis: Axis.Foundation,
-      expected: 'the base',
-    },
-    {
-      axis: Axis.Workflow,
-      expected: 'workflow',
-    },
-  ])('should give the name "$expected" when the axis is $axis', ({ axis, expected }) => {
-    // Arrange
-    const input = axis;
-
-    // Act
-    const name = axisNameOf(input);
-
-    // Assert
-    expect(name).toBe(expected);
+    expect(reaches).toBe(expected);
   });
 });

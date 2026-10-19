@@ -4,23 +4,23 @@ import type { Root } from 'mdast';
 
 import type { BlocksOptions } from '../remark-blocks.adapter';
 import { remarkBlocks } from '../remark-blocks.adapter';
-import {
-  inlineCode,
-  link,
-  nodesOf,
-  ruleTable,
-  span,
-  text,
-  treeOf,
-  withoutPositions,
-} from './mdast.fixtures';
+import { inlineCode, link, nodesOf, ruleTable, text, treeOf } from './mdast.fixtures';
 import {
   boxOf,
   cardOf,
+  cellLessTable,
+  columnOf,
   headingOf,
+  levelOf,
+  linksOf,
   markOf,
   metaOf,
+  outlineOf,
   parentLineOf,
+  partOf,
+  partsOf,
+  tagOf,
+  textsOf,
   whyOf,
 } from './remark-blocks.adapter.fixtures';
 
@@ -29,102 +29,221 @@ const NO_OPTIONS: BlocksOptions = {
   examples: new Map(),
 };
 
-const MUST = markOf({
-  letter: 'M',
-  level: 'MUST',
-  mark: 'must',
+const ADDRESSES = new Map([
+  [
+    'name-says-what',
+    '/docs/core/names#name-says-what',
+  ],
+  [
+    'name-is-short',
+    '/docs/core/names#name-is-short',
+  ],
+]);
+
+/** a rule whose card holds every part: a parent, a body, a why with tags, and an example */
+const fullRule = (): Root => ({
+  children: [
+    ...nodesOf('### strict-name → name-says-what · MUST\n\nA name says what it holds.'),
+    ruleTable({
+      tags: '[naming, clarity]',
+      why: [
+        text('a reader then knows.'),
+      ],
+    }),
+  ],
+  type: 'root',
 });
 
-const SHOULD = markOf({
-  letter: 'S',
-  level: 'SHOULD',
-  mark: 'should',
-});
-
-const MAY = markOf({
-  letter: 'Y',
-  level: 'MAY',
-  mark: 'may',
-});
-
-const levelOf = (level: string, mark: string): ReturnType<typeof span> =>
-  span(
-    {
-      'data-rule-level': mark,
-    },
+/** the example of a rule, as the examples folder holds it */
+const withExample = (markdown: string): BlocksOptions => ({
+  addresses: new Map(),
+  examples: new Map([
     [
-      text(level),
+      'name-says-what',
+      markdown,
     ],
-  );
-
-const tagOf = (tag: string): ReturnType<typeof span> =>
-  span(
-    {
-      'data-rule-tag': '',
-    },
-    [
-      text(tag),
-    ],
-  );
+  ]),
+});
 
 describe('remarkBlocks', () => {
-  it('should wrap a rule into a card of its level, tags, body and why when a block holds one', () => {
-    // Arrange
-    const tree: Root = {
-      children: [
-        ...nodesOf('### name-says-what · MUST\n\nA name says what it holds.'),
-        ruleTable({
-          tags: '[naming, clarity]',
-          why: [
-            text('a reader then knows.'),
-          ],
-        }),
-        ...nodesOf('#### Deeper\n\nMore.\n\n## Other\n\nAfter.'),
-      ],
-      type: 'root',
-    };
-
-    // Act
-    remarkBlocks(NO_OPTIONS)(tree);
-
-    // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
+  it.each([
+    {
+      card: cardOf([
+        metaOf([
+          levelOf({
+            level: 'MUST',
+            mark: 'must',
+          }),
+          tagOf('naming'),
+          tagOf('clarity'),
+        ]),
+        headingOf([
+          markOf({
+            letter: 'M',
+            level: 'MUST',
+            mark: 'must',
+          }),
+          inlineCode('strict-name'),
+          text(' [#strict-name]'),
+        ]),
+        parentLineOf([
+          text('→ '),
+          link('/docs/core/names#name-says-what', [
             inlineCode('name-says-what'),
-            text(' [#name-says-what]'),
-          ]),
-          ...nodesOf('A name says what it holds.'),
-          whyOf([
-            text('A reader then knows.'),
-          ]),
-          ...nodesOf('#### Deeper\n\nMore.'),
-          metaOf([
-            tagOf('naming'),
-            tagOf('clarity'),
           ]),
         ]),
-        ...nodesOf('## Other\n\nAfter.'),
-      ],
-      type: 'root',
-    });
-  });
+        ...nodesOf('A name says what it holds.'),
+        whyOf([
+          text('A reader then knows.'),
+        ]),
+        boxOf(
+          {
+            'data-rule-example': '',
+          },
+          nodesOf('```ts\nconst count = 1;\n```'),
+        ),
+      ]),
+      condition: 'the rule has every part',
+      examples: new Map([
+        [
+          'strict-name',
+          '```ts\nconst count = 1;\n```',
+        ],
+      ]),
+      tree: fullRule(),
+    },
+    {
+      card: cardOf([
+        metaOf([
+          levelOf({
+            level: 'MAY',
+            mark: 'may',
+          }),
+        ]),
+        headingOf([
+          markOf({
+            letter: 'Y',
+            level: 'MAY',
+            mark: 'may',
+          }),
+          inlineCode('name-is-short'),
+          text(' [#name-is-short]'),
+        ]),
+      ]),
+      condition: 'the rule has only its heading',
+      examples: new Map(),
+      tree: treeOf('### name-is-short · MAY'),
+    },
+  ])(
+    'should render a rule as a card of its parts in order when $condition',
+    ({ card, examples, tree }) => {
+      // Arrange
+      const options = {
+        addresses: ADDRESSES,
+        examples,
+      };
 
-  it('should keep the why as written and show no tag when it opens with code and the rule has no tag', () => {
+      // Act
+      remarkBlocks(options)(tree);
+
+      // Assert
+      expect(partOf(tree, 'rule-card')).toStrictEqual(card);
+    },
+  );
+
+  it.each([
+    {
+      heading: '### name-says-what · MUST',
+      level: levelOf({
+        level: 'MUST',
+        mark: 'must',
+      }),
+      mark: markOf({
+        letter: 'M',
+        level: 'MUST',
+        mark: 'must',
+      }),
+    },
+    {
+      heading: '### name-says-what · SHOULD',
+      level: levelOf({
+        level: 'SHOULD',
+        mark: 'should',
+      }),
+      mark: markOf({
+        letter: 'S',
+        level: 'SHOULD',
+        mark: 'should',
+      }),
+    },
+    {
+      heading: '### name-says-what · MAY',
+      level: levelOf({
+        level: 'MAY',
+        mark: 'may',
+      }),
+      mark: markOf({
+        letter: 'Y',
+        level: 'MAY',
+        mark: 'may',
+      }),
+    },
+  ])(
+    'should show the level in the meta and as the mark of the heading when a rule reads $heading',
+    ({ heading, level, mark }) => {
+      // Arrange
+      const tree = treeOf(heading);
+
+      // Act
+      remarkBlocks(NO_OPTIONS)(tree);
+
+      // Assert
+      expect([
+        partOf(tree, 'rule-level'),
+        partOf(tree, 'rule-mark'),
+      ]).toStrictEqual([
+        level,
+        mark,
+      ]);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'the table lists them',
+      table: ruleTable({
+        tags: '[naming, clarity]',
+        why: [],
+      }),
+      tags: [
+        'naming',
+        'clarity',
+      ],
+    },
+    {
+      condition: 'the table lists none',
+      table: ruleTable({
+        tags: '[]',
+        why: [],
+      }),
+      tags: [],
+    },
+    {
+      condition: 'the table has no row',
+      table: ruleTable(),
+      tags: [],
+    },
+    {
+      condition: 'its row holds no cell',
+      table: cellLessTable(),
+      tags: [],
+    },
+  ])('should show the tags in their order when $condition', ({ table, tags }) => {
     // Arrange
     const tree: Root = {
       children: [
-        ...nodesOf('### name-is-short · MAY'),
-        ruleTable({
-          tags: '[]',
-          why: [
-            inlineCode('x'),
-            text(' is short.'),
-          ],
-        }),
+        ...nodesOf('### name-says-what · MUST'),
+        table,
       ],
       type: 'root',
     };
@@ -133,145 +252,174 @@ describe('remarkBlocks', () => {
     remarkBlocks(NO_OPTIONS)(tree);
 
     // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MAY,
-            levelOf('MAY', 'may'),
-            inlineCode('name-is-short'),
-            text(' [#name-is-short]'),
-          ]),
-          whyOf([
-            inlineCode('x'),
-            text(' is short.'),
-          ]),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should show only the label of the why when the table has no row', () => {
-    // Arrange
-    const tree: Root = {
-      children: [
-        ...nodesOf('### name-is-short · SHOULD'),
-        ruleTable(),
-      ],
-      type: 'root',
-    };
-
-    // Act
-    remarkBlocks(NO_OPTIONS)(tree);
-
-    // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            SHOULD,
-            levelOf('SHOULD', 'should'),
-            inlineCode('name-is-short'),
-            text(' [#name-is-short]'),
-          ]),
-          whyOf([]),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should show only the label of the why when its row holds no cell', () => {
-    // Arrange
-    const tree: Root = {
-      children: [
-        ...nodesOf('### name-is-short · SHOULD'),
-        {
-          align: [],
-          children: [
-            {
-              children: [],
-              type: 'tableRow',
-            },
-            {
-              children: [],
-              type: 'tableRow',
-            },
-          ],
-          type: 'table',
-        },
-      ],
-      type: 'root',
-    };
-
-    // Act
-    remarkBlocks(NO_OPTIONS)(tree);
-
-    // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            SHOULD,
-            levelOf('SHOULD', 'should'),
-            inlineCode('name-is-short'),
-            text(' [#name-is-short]'),
-          ]),
-          whyOf([]),
-        ]),
-      ],
-      type: 'root',
-    });
+    expect(textsOf(partsOf(tree, 'rule-tag'))).toStrictEqual(tags);
   });
 
   it.each([
     {
-      addresses: new Map([
-        [
-          'name-says-what',
-          '/docs/core/names#name-says-what',
+      condition: 'it opens with a word',
+      table: ruleTable({
+        tags: '[]',
+        why: [
+          text('a reader of '),
+          inlineCode('x'),
+          text(' knows.'),
         ],
-      ]),
-      condition: 'the rule it tightens has an address',
-      parent: link('/docs/core/names#name-says-what', [
-        inlineCode('name-says-what'),
+      }),
+      why: whyOf([
+        text('A reader of '),
+        inlineCode('x'),
+        text(' knows.'),
       ]),
     },
     {
-      addresses: new Map(),
-      condition: 'the rule it tightens has none',
-      parent: inlineCode('name-says-what'),
+      condition: 'it opens with code',
+      table: ruleTable({
+        tags: '[]',
+        why: [
+          inlineCode('x'),
+          text(' is short.'),
+        ],
+      }),
+      why: whyOf([
+        inlineCode('x'),
+        text(' is short.'),
+      ]),
     },
-  ])('should name the rule a rule tightens when $condition', ({ addresses, parent }) => {
-    // Arrange
-    const tree = treeOf('### strict-name → name-says-what · SHOULD');
+    {
+      condition: 'the table has no row',
+      table: ruleTable(),
+      why: whyOf([]),
+    },
+    {
+      condition: 'its row holds no cell',
+      table: cellLessTable(),
+      why: whyOf([]),
+    },
+  ])(
+    'should show the why under its label, its first word capitalised, when $condition',
+    ({ table, why }) => {
+      // Arrange
+      const tree: Root = {
+        children: [
+          ...nodesOf('### name-says-what · MUST'),
+          table,
+        ],
+        type: 'root',
+      };
 
-    // Act
-    remarkBlocks({
-      addresses,
-      examples: new Map(),
-    })(tree);
+      // Act
+      remarkBlocks(NO_OPTIONS)(tree);
 
-    // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            SHOULD,
-            levelOf('SHOULD', 'should'),
-            inlineCode('strict-name'),
-            text(' [#strict-name]'),
-          ]),
-          parentLineOf([
-            text('→ '),
-            parent,
-          ]),
+      // Assert
+      expect(partOf(tree, 'rule-why')).toStrictEqual(why);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'the rule it tightens has an address',
+      heading: '### strict-name → name-says-what · SHOULD',
+      line: parentLineOf([
+        text('→ '),
+        link('/docs/core/names#name-says-what', [
+          inlineCode('name-says-what'),
         ]),
+      ]),
+    },
+    {
+      condition: 'the rule it tightens has none',
+      heading: '### strict-name → unknown-rule · SHOULD',
+      line: parentLineOf([
+        text('→ '),
+        inlineCode('unknown-rule'),
+      ]),
+    },
+    {
+      condition: 'the rule tightens none',
+      heading: '### strict-name · SHOULD',
+      line: undefined,
+    },
+  ])(
+    'should name the rule a rule tightens on a line of its own when $condition',
+    ({ heading, line }) => {
+      // Arrange
+      const tree = treeOf(heading);
+
+      // Act
+      remarkBlocks({
+        addresses: ADDRESSES,
+        examples: new Map(),
+      })(tree);
+
+      // Assert
+      expect(partOf(tree, 'rule-parent')).toStrictEqual(line);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'two rules follow each other',
+      markdown: '### first-rule · MUST\n\nFirst.\n\n### second-rule · MAY\n\nSecond.',
+      outline: [
+        {
+          body: [
+            'First.',
+          ],
+          rule: 'first-rule',
+        },
+        {
+          body: [
+            'Second.',
+          ],
+          rule: 'second-rule',
+        },
       ],
-      type: 'root',
-    });
-  });
+    },
+    {
+      condition: 'a heading of a rule depth names no rule',
+      markdown: 'Intro.\n\n### first-rule · MUST\n\nFirst.\n\n### Kinds\n\nPlain.',
+      outline: [
+        'Intro.',
+        {
+          body: [
+            'First.',
+          ],
+          rule: 'first-rule',
+        },
+        'Kinds',
+        'Plain.',
+      ],
+    },
+    {
+      condition: 'a deeper heading comes before a higher one',
+      markdown: '### first-rule · MUST\n\nFirst.\n\n#### Deeper\n\nMore.\n\n## Other\n\nAfter.',
+      outline: [
+        {
+          body: [
+            'First.',
+            'Deeper',
+            'More.',
+          ],
+          rule: 'first-rule',
+        },
+        'Other',
+        'After.',
+      ],
+    },
+  ])(
+    'should end a rule at the next heading of its depth or above when $condition',
+    ({ markdown, outline }) => {
+      // Arrange
+      const tree = treeOf(markdown);
+
+      // Act
+      remarkBlocks(NO_OPTIONS)(tree);
+
+      // Assert
+      expect(outlineOf(tree)).toStrictEqual(outline);
+    },
+  );
 
   it('should read the rule of a heading when its text carries marks and an image', () => {
     // Arrange
@@ -281,78 +429,12 @@ describe('remarkBlocks', () => {
     remarkBlocks(NO_OPTIONS)(tree);
 
     // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
-            inlineCode('name-says-what'),
-            text(' [#name-says-what]'),
-          ]),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should end each rule at the next one when two rules follow each other', () => {
-    // Arrange
-    const tree = treeOf('### first-rule · MUST\n\nFirst.\n\n### second-rule · MAY\n\nSecond.');
-
-    // Act
-    remarkBlocks(NO_OPTIONS)(tree);
-
-    // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
-            inlineCode('first-rule'),
-            text(' [#first-rule]'),
-          ]),
-          ...nodesOf('First.'),
-        ]),
-        cardOf([
-          headingOf([
-            MAY,
-            levelOf('MAY', 'may'),
-            inlineCode('second-rule'),
-            text(' [#second-rule]'),
-          ]),
-          ...nodesOf('Second.'),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should end a rule at the next heading of a rule depth when it names no rule', () => {
-    // Arrange
-    const tree = treeOf('Intro.\n\n### first-rule · MUST\n\nFirst.\n\n### Kinds\n\nPlain.');
-
-    // Act
-    remarkBlocks(NO_OPTIONS)(tree);
-
-    // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        ...nodesOf('Intro.'),
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
-            inlineCode('first-rule'),
-            text(' [#first-rule]'),
-          ]),
-          ...nodesOf('First.'),
-        ]),
-        ...nodesOf('### Kinds\n\nPlain.'),
-      ],
-      type: 'root',
-    });
+    expect(outlineOf(tree)).toStrictEqual([
+      {
+        body: [],
+        rule: 'name-says-what',
+      },
+    ]);
   });
 
   it('should leave the headings of another depth when they read like rules', () => {
@@ -387,268 +469,91 @@ describe('remarkBlocks', () => {
 
     // Act
     remarkBlocks({
-      addresses: new Map([
-        [
-          'name-says-what',
-          '/docs/core/names#name-says-what',
-        ],
-        [
-          'name-is-short',
-          '/docs/core/names#name-is-short',
-        ],
-      ]),
+      addresses: ADDRESSES,
       examples: new Map(),
     })(tree);
 
     // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        ...nodesOf('## About `name-says-what`'),
+    expect(linksOf(tree)).toStrictEqual([
+      {
+        text: 'name-says-what',
+        url: '/docs/core/names#name-says-what',
+      },
+      {
+        text: 'see name-is-short',
+        url: 'names.md',
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: 'its code is titled Avoid and Prefer',
+      example: boxOf(
         {
-          children: [
-            text('As '),
-            link('/docs/core/names#name-says-what', [
-              inlineCode('name-says-what'),
-            ]),
-            text(' and '),
-            inlineCode('unknown-rule'),
-            text(' say, '),
-            {
-              children: [
-                text('see '),
-                inlineCode('name-is-short'),
-              ],
-              title: null,
-              type: 'link',
-              url: 'names.md',
-            },
-            text('.'),
-          ],
-          type: 'paragraph',
+          'data-rule-example': 'pair',
         },
-        ...nodesOf('name-says-what'),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should show an example of a pair side by side when its code is titled Avoid and Prefer', () => {
-    // Arrange
-    const tree = treeOf('### name-says-what · MUST');
-
-    // Act
-    remarkBlocks({
-      addresses: new Map(),
-      examples: new Map([
         [
-          'name-says-what',
-          '```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```',
+          columnOf({
+            code: '```ts\nlet x;\n```',
+            title: 'Avoid',
+            tone: 'avoid',
+          }),
+          columnOf({
+            code: '```ts showLineNumbers\nconst x = 1;\n```',
+            title: 'Prefer',
+            tone: 'prefer',
+          }),
         ],
-      ]),
-    })(tree);
-
-    // Assert
-    expect(withoutPositions(tree)).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
-            inlineCode('name-says-what'),
-            text(' [#name-says-what]'),
-          ]),
-          boxOf(
-            {
-              'data-rule-example': 'pair',
-            },
-            [
-              boxOf(
-                {
-                  'data-rule-example-column': 'avoid',
-                },
-                [
-                  {
-                    children: [
-                      span(
-                        {
-                          'data-rule-example-label': '',
-                        },
-                        [
-                          text('Avoid'),
-                        ],
-                      ),
-                    ],
-                    type: 'paragraph',
-                  },
-                  {
-                    lang: 'ts',
-                    meta: null,
-                    type: 'code',
-                    value: 'let x;',
-                  },
-                ],
-              ),
-              boxOf(
-                {
-                  'data-rule-example-column': 'prefer',
-                },
-                [
-                  {
-                    children: [
-                      span(
-                        {
-                          'data-rule-example-label': '',
-                        },
-                        [
-                          text('Prefer'),
-                        ],
-                      ),
-                    ],
-                    type: 'paragraph',
-                  },
-                  {
-                    lang: 'ts',
-                    meta: 'showLineNumbers',
-                    type: 'code',
-                    value: 'const x = 1;',
-                  },
-                ],
-              ),
-            ],
-          ),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should show an example at full width when its code is not a pair', () => {
-    // Arrange
-    const tree = treeOf('### name-says-what · MUST');
-
-    // Act
-    remarkBlocks({
-      addresses: new Map(),
-      examples: new Map([
+      ),
+      markdown:
+        '```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```',
+    },
+    {
+      condition: 'its code is not a pair',
+      example: boxOf(
+        {
+          'data-rule-example': '',
+        },
         [
-          'name-says-what',
-          '```ts title="Avoid"\nlet x;\n```\n\nThen:\n\n```ts title="Other"\nrun();\n```',
+          columnOf({
+            code: '```ts\nlet x;\n```',
+            title: 'Avoid',
+            tone: 'avoid',
+          }),
+          ...nodesOf('Then:\n\n```ts title="Other"\nrun();\n```'),
         ],
-      ]),
-    })(tree);
-
-    // Assert
-    expect(withoutPositions(tree)).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
-            inlineCode('name-says-what'),
-            text(' [#name-says-what]'),
-          ]),
-          boxOf(
-            {
-              'data-rule-example': '',
-            },
-            [
-              boxOf(
-                {
-                  'data-rule-example-column': 'avoid',
-                },
-                [
-                  {
-                    children: [
-                      span(
-                        {
-                          'data-rule-example-label': '',
-                        },
-                        [
-                          text('Avoid'),
-                        ],
-                      ),
-                    ],
-                    type: 'paragraph',
-                  },
-                  {
-                    lang: 'ts',
-                    meta: null,
-                    type: 'code',
-                    value: 'let x;',
-                  },
-                ],
-              ),
-              ...nodesOf('Then:\n\n```ts title="Other"\nrun();\n```'),
-            ],
-          ),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
-
-  it('should show an example at full width when it holds only the better code', () => {
-    // Arrange
-    const tree = treeOf('### name-says-what · MUST');
-
-    // Act
-    remarkBlocks({
-      addresses: new Map(),
-      examples: new Map([
+      ),
+      markdown: '```ts title="Avoid"\nlet x;\n```\n\nThen:\n\n```ts title="Other"\nrun();\n```',
+    },
+    {
+      condition: 'it holds only the better code',
+      example: boxOf(
+        {
+          'data-rule-example': '',
+        },
         [
-          'name-says-what',
-          '```ts\nsetup();\n```\n\n```ts title="Prefer"\nconst x = 1;\n```',
+          ...nodesOf('```ts\nsetup();\n```'),
+          columnOf({
+            code: '```ts\nconst x = 1;\n```',
+            title: 'Prefer',
+            tone: 'prefer',
+          }),
         ],
-      ]),
-    })(tree);
+      ),
+      markdown: '```ts\nsetup();\n```\n\n```ts title="Prefer"\nconst x = 1;\n```',
+    },
+  ])(
+    'should lay out an example by the titles of its code when $condition',
+    ({ example, markdown }) => {
+      // Arrange
+      const tree = treeOf('### name-says-what · MUST');
 
-    // Assert
-    expect(withoutPositions(tree)).toStrictEqual({
-      children: [
-        cardOf([
-          headingOf([
-            MUST,
-            levelOf('MUST', 'must'),
-            inlineCode('name-says-what'),
-            text(' [#name-says-what]'),
-          ]),
-          boxOf(
-            {
-              'data-rule-example': '',
-            },
-            [
-              ...nodesOf('```ts\nsetup();\n```'),
-              boxOf(
-                {
-                  'data-rule-example-column': 'prefer',
-                },
-                [
-                  {
-                    children: [
-                      span(
-                        {
-                          'data-rule-example-label': '',
-                        },
-                        [
-                          text('Prefer'),
-                        ],
-                      ),
-                    ],
-                    type: 'paragraph',
-                  },
-                  {
-                    lang: 'ts',
-                    meta: null,
-                    type: 'code',
-                    value: 'const x = 1;',
-                  },
-                ],
-              ),
-            ],
-          ),
-        ]),
-      ],
-      type: 'root',
-    });
-  });
+      // Act
+      remarkBlocks(withExample(markdown))(tree);
+
+      // Assert
+      expect(partOf(tree, 'rule-example')).toStrictEqual(example);
+    },
+  );
 });

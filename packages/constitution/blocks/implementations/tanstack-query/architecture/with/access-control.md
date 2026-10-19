@@ -2,6 +2,8 @@
 
 > Governs a session ended by a refused read.
 
+## General
+
 ### unauthorized-handled-once-in-the-cache → unauthenticated-failure-ends-the-session-once · MUST
 
 `onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, is the one place that acts on an unauthorized error.

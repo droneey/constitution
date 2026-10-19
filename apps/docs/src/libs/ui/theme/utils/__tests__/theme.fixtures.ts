@@ -204,4 +204,22 @@ const createContrastCheck = (overrides: Partial<ContrastCheck> = {}): ContrastCh
   ...overrides,
 });
 
-export { createCodeTheme, createContrastCheck, createThemeSettings, createTokens };
+/** the lines of a stylesheet's block, between the line that opens it and the brace that closes it */
+const blockOf = (lines: readonly string[], opening: string): readonly string[] => {
+  const start = lines.indexOf(opening) + 1;
+
+  return lines.slice(start, lines.indexOf('}', start));
+};
+
+/** the lines of a stylesheet that declare a property */
+const declarationsOf = (lines: readonly string[], property: string): readonly string[] =>
+  lines.filter((line) => line.trimStart().startsWith(`${property}:`));
+
+export {
+  blockOf,
+  createCodeTheme,
+  createContrastCheck,
+  createThemeSettings,
+  createTokens,
+  declarationsOf,
+};

@@ -1,1 +1,1 @@
-export type { Finding } from './finding.types';
+export type { Finding, Problem } from './finding.types';

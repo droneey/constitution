@@ -5,6 +5,10 @@ import { resolveLink } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { foldersOf, linkTargetsOf } from '../link-targets.utils';
 
+enum LinksCode {
+  MissingTarget = 'link-to-missing-file',
+}
+
 interface Document {
   // The files and folders its links may reach.
   known: ReadonlySet<string>;
@@ -63,6 +67,7 @@ const linksCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => 
         return !document.known.has(resolved);
       })
       .map((target) => ({
+        code: LinksCode.MissingTarget,
         message: `links to a missing file "${target}"`,
         path: document.path,
       })),

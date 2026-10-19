@@ -1,4 +1,4 @@
-export { axisFolderOf, axisNameOf } from './axes.utils';
+export { mayReachAxis } from './axes.utils';
 export type { BlocksById, Place } from './closure.utils';
 export {
   byIdOf,

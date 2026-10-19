@@ -23,7 +23,7 @@ describe('createYamlBindingsParser', () => {
     });
   });
 
-  it('should return the reason when the text is not YAML', () => {
+  it('should return the reason without its position when the text is not YAML', () => {
     // Arrange
     const parser = createYamlBindingsParser();
 
@@ -31,7 +31,10 @@ describe('createYamlBindingsParser', () => {
     const read = parser.parse('core: [\n');
 
     // Assert
-    expect(read.status).toBe('not-yaml');
+    expect(read).toStrictEqual({
+      reason: 'Flow sequence in block collection must be sufficiently indented and end with a ]',
+      status: 'not-yaml',
+    });
   });
 
   it('should return every issue at its field when a part lists its settings without a rule and a setting is not text', () => {
@@ -46,11 +49,11 @@ describe('createYamlBindingsParser', () => {
       issues: [
         {
           field: 'self',
-          message: 'Invalid input: expected record, received array',
+          message: expect.stringContaining('record'),
         },
         {
           field: 'core.any-never-typed.0',
-          message: 'Invalid input: expected string, received number',
+          message: expect.stringContaining('string'),
         },
       ],
       status: 'mismatched',

@@ -2,7 +2,7 @@
 
 > Governs how a Python program's commands are named and registered.
 
-## Layers
+## General
 
 ### command-module-named-with-the-cli-suffix → command-is-its-operations-binding-unit · MUST
 

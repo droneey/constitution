@@ -1,6 +1,8 @@
 # Access control
 
-> Routes guarded before they load.
+> Governs routes guarded before they load.
+
+## General
 
 ### guard-reaches-features-outside-react → screen-guarded-through-the-session-owners-surface · MUST
 

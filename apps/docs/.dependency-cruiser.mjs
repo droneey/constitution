@@ -1,8 +1,8 @@
 export default {
   extends: [
-    '../../.droneey/constitution/presets/typescript/dependency-cruiser/self.mjs',
-    '../../.droneey/constitution/presets/typescript/dependency-cruiser/core.mjs',
-    '../../.droneey/constitution/presets/typescript/dependency-cruiser/typescript.mjs',
+    '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/self.mjs',
+    '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/core.mjs',
+    '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/typescript.mjs',
     '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/core.mjs',
     '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/ui.mjs',
     '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/_react.mjs',

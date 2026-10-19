@@ -2,7 +2,7 @@
 
 > Governs the stages in the tree.
 
-## Stages
+## General
 
 ### each-stage-is-a-use-case-of-its-own · SHOULD
 

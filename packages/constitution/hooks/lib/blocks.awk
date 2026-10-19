@@ -100,8 +100,8 @@ function requirement_row(id, line,   n, f, requirement, met) {
 
 # Its rule headings: "### <slug> · <LEVEL>", or "### <slug> → <parent>" with a
 # level after the parent or none, which the parent's level then gives; its
-# Governs line, which the digest prints beside a chapter of core; its
-# Requirements rows. A heading in a code fence is an example.
+# Requirements rows, which an implementation's passport holds. A heading in a
+# code fence is an example.
 function block_text(source, rel, file, id, name, axis, seam,   line, r, first, in_fence, in_front, in_answers, rest, arrow, dot, at, slug, parent, level) {
   arrow = " → "
   dot = " · "
@@ -127,9 +127,6 @@ function block_text(source, rel, file, id, name, axis, seam,   line, r, first, i
       continue
     }
     if (in_fence) continue
-    if (index(line, "> Governs ") == 1 && !((id, name) in CGOVERNS)) {
-      CGOVERNS[id, name] = substr(line, 11)
-    }
     if (line ~ /^#{1,2} /) in_answers = (line == "## Requirements")
     if (in_answers && substr(line, 1, 1) == "|") {
       requirement_row(id, line)
@@ -209,7 +206,7 @@ function block_file(source, rel, file,   layer, rest, id, name, axis, read) {
       return
     }
     if (read != 1) {
-      blocks_warn(source, where_of(source, rel) " has no front matter — the block is read without its card")
+      blocks_warn(source, where_of(source, rel) " has no front matter — the block is read without it")
     } else {
       SUMMARY[id] = FM["summary"]
       REQUIRES[id] = FM["requires"]
@@ -217,20 +214,20 @@ function block_file(source, rel, file,   layer, rest, id, name, axis, read) {
       EXTENDS[id] = FM["extends"]
       GOVERNS[id] = FM["governs"]
     }
-    block_text(source, rel, file, id, name, "", "")
-  } else if (name ~ /^with\/[^\/]+\.md$/) {
-    name = substr(name, 6, length(name) - 8)
-    WITH[id] = WITH[id] (WITH[id] == "" ? "" : " ") name
-    block_text(source, rel, file, id, name, "", name)
-  } else if (name ~ /^(architecture|workflow)\/with\/[^\/]+\.md$/) {
-    axis = substr(name, 1, index(name, "/") - 1)
-    name = substr(name, length(axis) + 7, length(name) - length(axis) - 9)
-    WITH[id] = WITH[id] (WITH[id] == "" ? "" : " ") axis "/" name
-    block_text(source, rel, file, id, name, axis, name)
-  } else if (name ~ /^(architecture|workflow)\/[^\/]+\.md$/ || name ~ /^[^\/]+\.md$/) {
+    block_text(source, rel, file, id, name, "foundation", "")
+    return
+  }
+  axis = substr(name, 1, index(name, "/") - 1)
+  rest = substr(name, length(axis) + 2)
+  if (!has("foundation " AXES, axis)) {
+    blocks_warn(source, where_of(source, rel) " is not a block file — move or remove it")
+  } else if (rest ~ /^with\/[^\/]+\.md$/) {
+    rest = substr(rest, 6, length(rest) - 8)
+    WITH[id] = WITH[id] (WITH[id] == "" ? "" : " ") axis "/" rest
+    block_text(source, rel, file, id, rest, axis, rest)
+  } else if (rest ~ /^[^\/]+\.md$/) {
     CHAPTERS[id] = CHAPTERS[id] (CHAPTERS[id] == "" ? "" : " ") name
-    if (id == "core" && name == "placement.md") PLACEMENT = file
-    block_text(source, rel, file, id, name, (name ~ /\//) ? substr(name, 1, index(name, "/") - 1) : "", "")
+    block_text(source, rel, file, id, name, axis, "")
   } else {
     blocks_warn(source, where_of(source, rel) " is not a block file — move or remove it")
   }
@@ -245,39 +242,9 @@ function ancestors_of(id,   base) {
   return ANCESTORS[id]
 }
 
-# Core's chapters in the order placement's list links them, those it leaves
-# out after them in the order of their names.
-function order_core(   line, listed, n, a, m, b, k, j, out, used) {
-  if (PLACEMENT == "") return
-  listed = ""
-  while ((getline line < PLACEMENT) > 0) {
-    if (line !~ /^- /) continue
-    while (match(line, /\]\([^)]*\.md\)/)) {
-      listed = listed " " substr(line, RSTART + 2, RLENGTH - 3)
-      line = substr(line, RSTART + RLENGTH)
-    }
-  }
-  close(PLACEMENT)
-  n = split(listed, a, " ")
-  m = split(CHAPTERS["core"], b, " ")
-  out = ""
-  for (k = 1; k <= n; k++) {
-    for (j = 1; j <= m; j++) {
-      if (!(j in used) && b[j] == a[k]) {
-        used[j] = 1
-        out = out (out == "" ? "" : " ") b[j]
-      }
-    }
-  }
-  for (j = 1; j <= m; j++) if (!(j in used)) out = out (out == "" ? "" : " ") b[j]
-  CHAPTERS["core"] = out
-}
-
-# Once every file is read: core's chapters in their order, a block's bases
-# through extends, its place among a base's heirs, and each rule's level from
-# its parent where it states none.
+# Once every file is read: a block's bases through extends, its place among a
+# base's heirs, and each rule's level from its parent where it states none.
 function finish_blocks(   j, id, i, pass, parent, open, n, a, k) {
-  order_core()
   for (j = 1; j <= nb; j++) {
     id = B[j]
     n = split(REQUIRES[id], a, " ")

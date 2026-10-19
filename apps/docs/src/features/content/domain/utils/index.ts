@@ -1,7 +1,8 @@
 export type { ChapterListGaps, LayerBlock } from './blocks.utils';
 export { chapterListGapsOf, readingOrderOf } from './blocks.utils';
 export {
-  isMainFilePath,
+  AXIS_FOLDERS,
+  isPassportPath,
   pageSlugsOf,
   ruleOf,
   ruleSlugsOf,

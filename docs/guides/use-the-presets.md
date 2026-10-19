@@ -14,16 +14,16 @@ A preset is split into parts, one per block whose rules the tool holds, in `.dro
 
 ## Extend them
 
-A tool with `extends` lists the parts, the base first:
+A tool with `extends` lists the parts, `foundation/`'s first:
 
 ```json
 {
   "extends": [
-    "./.droneey/constitution/presets/common/biome/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/self.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/core.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/react-dom.jsonc",
+    "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/react-dom.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc"
   ]
 }

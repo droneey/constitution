@@ -2,7 +2,7 @@
 
 > Governs what the server that renders the program may hold.
 
-## Layers
+## General
 
 ### rendering-server-only-delivers · MUST
 

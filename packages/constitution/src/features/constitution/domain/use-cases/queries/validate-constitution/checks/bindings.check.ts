@@ -1,16 +1,17 @@
-import { Axis } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { Finding, Problem } from '#/kernel/types';
 
 import type { Binding, PresetFile, Rule } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import {
-  axisFolderOf,
-  axisNameOf,
-  mayReferTo,
-  PresetFileKind,
-  presetPathOf,
-} from '../../../../utils';
+import { mayReachAxis, mayReferTo, PresetFileKind, presetPathOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
+
+enum BindingsCode {
+  NotRule = 'binding-names-no-rule',
+  OffAxis = 'binding-off-axis',
+  OutOfReach = 'binding-out-of-reach',
+  PartMissing = 'binding-part-missing',
+  SettingMissing = 'binding-setting-missing',
+}
 
 const partOf = (input: {
   binding: Binding;
@@ -63,21 +64,32 @@ const isAbove = (input: { binding: Binding; byId: BlocksById; rule: Rule }): boo
   );
 };
 
-const bindingMessage = (input: {
+const bindingProblem = (input: {
   binding: Binding;
   byId: BlocksById;
   presets: readonly PresetFile[];
   rule: Rule | undefined;
-}): string | undefined => {
+}): Problem | undefined => {
   const { binding, rule } = input;
 
   if (rule === undefined) {
-    return `binds "${binding.rule}", which is not a rule`;
+    return {
+      code: BindingsCode.NotRule,
+      message: `binds "${binding.rule}", which is not a rule`,
+    };
   }
 
-  // A part holds a rule of its own axis or of the base, as rules refer.
-  if (rule.axis !== binding.axis && rule.axis !== Axis.Foundation) {
-    return `binds ${rule.slug}, a rule of ${rule.axis}, under ${axisNameOf(binding.axis)}`;
+  // A part holds a rule of its own axis or of foundation, as rules refer.
+  if (
+    !mayReachAxis({
+      from: binding.axis,
+      to: rule.axis,
+    })
+  ) {
+    return {
+      code: BindingsCode.OffAxis,
+      message: `binds ${rule.slug}, a rule of ${rule.axis}, under ${binding.axis}`,
+    };
   }
 
   if (
@@ -87,18 +99,27 @@ const bindingMessage = (input: {
       rule,
     })
   ) {
-    return `binds ${rule.slug}, a rule of ${rule.block}, to the part ${binding.part}, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool`;
+    return {
+      code: BindingsCode.OutOfReach,
+      message: `binds ${rule.slug}, a rule of ${rule.block}, to the part ${binding.part}, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool`,
+    };
   }
 
   const part = partOf(input);
 
   if (part === undefined) {
-    return `binds ${rule.slug} to the part ${binding.part}, which presets/${binding.scope}/${binding.tool}/${axisFolderOf(binding.axis)} does not hold`;
+    return {
+      code: BindingsCode.PartMissing,
+      message: `binds ${rule.slug} to the part ${binding.part}, which presets/${binding.scope}/${binding.tool}/${binding.axis}/ does not hold`,
+    };
   }
 
   return part.text.includes(binding.setting)
     ? undefined
-    : `binds ${rule.slug} to "${binding.setting}", which ${part.path} does not hold`;
+    : {
+        code: BindingsCode.SettingMissing,
+        message: `binds ${rule.slug} to "${binding.setting}", which ${part.path} does not hold`,
+      };
 };
 
 const bindingsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
@@ -110,18 +131,18 @@ const bindingsCheck: Check = ({ byId, constitution }: CheckInput): readonly Find
   );
 
   return constitution.bindings.flatMap((binding) => {
-    const message = bindingMessage({
+    const problem = bindingProblem({
       binding,
       byId,
       presets: constitution.presets,
       rule: rules.get(binding.rule),
     });
 
-    return message === undefined
+    return problem === undefined
       ? []
       : [
           {
-            message,
+            ...problem,
             path: binding.file,
           },
         ];

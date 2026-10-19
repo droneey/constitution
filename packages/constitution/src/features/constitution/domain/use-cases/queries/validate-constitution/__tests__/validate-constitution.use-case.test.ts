@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import {
+  findingOf,
   packSourceOf,
   rule,
   sourceOf,
@@ -11,8 +12,8 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { validateConstitution } from '../validate-constitution.use-case';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
-const UI = 'blocks/domains/ui/screens.md';
-const PRINCIPLES = 'blocks/core/principles.md';
+const UI = 'blocks/domains/ui/foundation/screens.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
 // A rule of ui that says nearly what a rule of i18n says: the advice names the
 // pair whenever the checks run.
@@ -42,26 +43,31 @@ describe('validateConstitution', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [
-        {
-          message: 'front matter: extends "Bad", which is not a block id',
+        findingOf({
+          code: 'entry-not-block-id',
+          names: [
+            'extends',
+            'Bad',
+          ],
           path: REMOTE_DATA,
-        },
-        {
-          message:
-            "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md",
+        }),
+        findingOf({
+          code: 'stray-block-file',
           path: 'blocks/domains/ui/notes.txt',
-        },
+        }),
       ],
     });
   });
 
-  it('should order the findings of one file by message when the checks emit them in another order', () => {
+  it('should order the findings of one file by code when the checks emit them in another order', () => {
     // Arrange
     const files = validFiles();
     files[PRINCIPLES] = [
       '# Principles',
       '',
       '> Governs how the code depends on itself.',
+      '',
+      '## General',
       '',
       rule({
         slug: 'dependencies-point-inward',
@@ -83,15 +89,20 @@ describe('validateConstitution', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [
-        {
-          message:
-            'has 511 lines; a file holds at most 500, and a longer block splits into chapters',
+        findingOf({
+          code: 'file-over-line-budget',
+          names: [
+            '513',
+          ],
           path: PRINCIPLES,
-        },
-        {
-          message: 'rule "dependencies-point-inward" has no Why',
+        }),
+        findingOf({
+          code: 'rule-without-why',
+          names: [
+            'dependencies-point-inward',
+          ],
           path: PRINCIPLES,
-        },
+        }),
       ],
     });
   });
@@ -162,6 +173,10 @@ describe('validateConstitution', () => {
       files: validFiles(),
       path: 'blocks/domains/i18n/i18n.md',
     });
+    pack['blocks/domains/i18n/foundation/plurals.md'] = textOf({
+      files: validFiles(),
+      path: 'blocks/domains/i18n/foundation/plurals.md',
+    });
     const source = packSourceOf({
       base: validFiles(),
       pack,
@@ -192,11 +207,10 @@ describe('validateConstitution', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [
-        {
-          message:
-            'is the Constitution this pack extends, and it does not load; check it before the pack',
+        findingOf({
+          code: 'base-does-not-load',
           path: '(base)/',
-        },
+        }),
       ],
     });
   });

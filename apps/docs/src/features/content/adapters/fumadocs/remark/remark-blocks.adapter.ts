@@ -31,7 +31,7 @@ interface Box extends Parent {
   type: 'box';
 }
 
-/** a rule's card: its heading, its level and tags, its body and its example */
+/** a rule's card: its level and tags, its heading, its body and its example */
 interface RuleCard extends Parent {
   data: Data;
   type: 'ruleCard';
@@ -275,28 +275,29 @@ const cardOf = (
   const example = options.examples.get(rule.slug);
   const table = body.find((node) => node.type === 'table');
   const tags = table === undefined ? [] : tagNamesOf(table);
-  // the tags, closing the card, which a rule without tags leaves out
-  const meta: Paragraph[] =
-    tags.length === 0
-      ? []
-      : [
-          {
-            children: tags.map((tag) =>
-              span(part('rule-tag'), [
-                text(tag),
-              ]),
-            ),
-            data: {
-              hProperties: {
-                ...part('rule-meta'),
-              },
-            },
-            type: 'paragraph',
-          },
-        ];
+  // the level and the tags, a line of their own above the heading
+  const meta: Paragraph = {
+    children: [
+      span(part('rule-level', rule.level.toLowerCase()), [
+        text(rule.level),
+      ]),
+      ...tags.map((tag) =>
+        span(part('rule-tag'), [
+          text(tag),
+        ]),
+      ),
+    ],
+    data: {
+      hProperties: {
+        ...part('rule-meta'),
+      },
+    },
+    type: 'paragraph',
+  };
 
   return {
     children: [
+      meta,
       heading,
       ...parentLineOf(rule.parent),
       ...body.map((node) => (node.type === 'table' ? whyOf(node) : node)),
@@ -305,7 +306,6 @@ const cardOf = (
         : [
             exampleOf(example),
           ]),
-      ...meta,
     ],
     data: {
       hName: 'section',
@@ -362,9 +362,6 @@ const ruleHeading = (heading: Heading): void => {
           text(rule.level),
         ],
       ),
-    ]),
-    span(part('rule-level', rule.level.toLowerCase()), [
-      text(rule.level),
     ]),
     code(rule.slug),
     text(` [#${rule.slug}]`),

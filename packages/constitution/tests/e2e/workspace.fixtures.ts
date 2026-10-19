@@ -31,6 +31,9 @@ const EXECUTABLE = 0o755;
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const BIN = join(REPOSITORY, 'node_modules', '.bin');
 const PRESETS = '.droneey/constitution/presets/typescript';
+
+/** a part's path in its tool's folder: a part with no axis folder is foundation's */
+const inAxis = (part: string): string => (part.includes('/') ? part : `foundation/${part}`);
 const TEMPLATES = join(REPOSITORY, 'templates', 'project');
 
 // Each TypeScript package's folder, by the name that follows its unit's folder.
@@ -68,7 +71,9 @@ const tsconfigOf = (input: {
   root?: string;
 }): string =>
   jsonFileOf({
-    extends: input.parts.map((part) => `${input.root ?? '../..'}/${PRESETS}/tsc/${part}.json`),
+    extends: input.parts.map(
+      (part) => `${input.root ?? '../..'}/${PRESETS}/tsc/${inAxis(part)}.json`,
+    ),
     compilerOptions: {
       ...input.extra,
       paths: {
@@ -605,18 +610,18 @@ const WORKSPACE: Files = {
   'apps/api/biome.json': jsonFileOf({
     root: false,
     extends: [
-      './.droneey/constitution/presets/common/biome/self.jsonc',
-      './.droneey/constitution/presets/common/biome/git.jsonc',
-      './.droneey/constitution/presets/typescript/biome/self.jsonc',
+      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
+      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
+      './.droneey/constitution/presets/typescript/biome/foundation/self.jsonc',
     ],
   }),
   'biome.json': jsonFileOf({
     extends: [
-      './.droneey/constitution/presets/common/biome/self.jsonc',
-      './.droneey/constitution/presets/common/biome/git.jsonc',
+      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
+      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
     ],
   }),
-  'knip.config.mjs': `import core from './${PRESETS}/knip/core.mjs';
+  'knip.config.mjs': `import core from './${PRESETS}/knip/foundation/core.mjs';
 import architecture from './${PRESETS}/knip/architecture/core.mjs';
 
 const unit = (entry) => ({ entry: [...core.entry, ...architecture.entry, ...entry], project: core.project });
@@ -661,7 +666,7 @@ export default {
 const cruiserOf = (input: { depth: number; parts: readonly string[] }): string =>
   `export default {\n  extends: ${JSON.stringify(
     input.parts.map(
-      (part) => `${'../'.repeat(input.depth)}${PRESETS}/dependency-cruiser/${part}.mjs`,
+      (part) => `${'../'.repeat(input.depth)}${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`,
     ),
   )},\n};\n`;
 
@@ -806,6 +811,7 @@ export {
   commitBase,
   createWorkspace,
   cruiserOf,
+  inAxis,
   manifestOf,
   PRESETS,
   PYTHON_PACKAGES,

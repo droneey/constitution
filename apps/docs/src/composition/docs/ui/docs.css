@@ -55,10 +55,10 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-xs);
-    margin: var(--spacing-lg) 0 0;
+    margin: 0 0 var(--spacing-lg);
   }
 
-  /* the statement opens a clear step under the heading and its parent, tags or none */
+  /* the statement opens a clear step under the heading and its parent */
   [data-docs-body]
     [data-rule-card]
     > :is([data-rule], [data-rule-parent])
@@ -166,12 +166,6 @@
   [data-rule-level='should'] {
     border-color: transparent;
     background: var(--color-accent-muted);
-  }
-
-  /* the level opens the heading's first line and the slug runs on after it, wrapping under it */
-  [data-docs-body] [data-rule] [data-rule-level] {
-    margin-inline-end: var(--spacing-xs);
-    vertical-align: middle;
   }
 
   [data-docs-body] [data-rule-why] {

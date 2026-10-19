@@ -19,7 +19,7 @@ const RUMDL_REPORT = z.array(
 );
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESET = join(REPOSITORY, 'presets', 'markdown', 'rumdl', 'core.toml');
+const PRESET = join(REPOSITORY, 'presets', 'markdown', 'rumdl', 'foundation', 'core.toml');
 const RUMDL = miseBinary('rumdl');
 
 // A project whose .rumdl.toml extends the archive's preset, with its documents.

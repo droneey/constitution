@@ -9,7 +9,7 @@ const stated = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: 'core',
   chapter: undefined,
-  file: 'blocks/core/principles.md',
+  file: 'blocks/core/foundation/principles.md',
   ownTags: [],
   parent: undefined,
   slug: 'a',

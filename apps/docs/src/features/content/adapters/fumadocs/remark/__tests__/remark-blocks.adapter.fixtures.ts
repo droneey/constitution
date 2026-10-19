@@ -1,9 +1,11 @@
-import type { PhrasingContent, RootContent } from 'mdast';
+import type { Nodes, PhrasingContent, Root, RootContent, Table } from 'mdast';
+import { toString as plainText } from 'mdast-util-to-string';
+import { visit } from 'unist-util-visit';
 
-import { span, text } from './mdast.fixtures';
+import { nodesOf, span, text, withoutPositions } from './mdast.fixtures';
 
 /** the mark before a rule's slug: its letter, and its level for a screen reader */
-export const markOf = (input: { letter: string; level: string; mark: string }): PhrasingContent =>
+const markOf = (input: { letter: string; level: string; mark: string }): PhrasingContent =>
   span(
     {
       'data-rule-mark': input.mark,
@@ -30,8 +32,41 @@ export const markOf = (input: { letter: string; level: string; mark: string }): 
     ],
   );
 
+/** a rule's level, the first entry of its meta */
+const levelOf = (input: { level: string; mark: string }): PhrasingContent =>
+  span(
+    {
+      'data-rule-level': input.mark,
+    },
+    [
+      text(input.level),
+    ],
+  );
+
+/** one of a rule's tags, after its level */
+const tagOf = (tag: string): PhrasingContent =>
+  span(
+    {
+      'data-rule-tag': '',
+    },
+    [
+      text(tag),
+    ],
+  );
+
+/** the line of a rule's level and tags, opening its card */
+const metaOf = (children: PhrasingContent[]): RootContent => ({
+  children,
+  data: {
+    hProperties: {
+      'data-rule-meta': '',
+    },
+  },
+  type: 'paragraph',
+});
+
 /** a rule's heading as the plugin renders it */
-export const headingOf = (children: PhrasingContent[]): RootContent => ({
+const headingOf = (children: PhrasingContent[]): RootContent => ({
   children,
   data: {
     hProperties: {
@@ -42,9 +77,8 @@ export const headingOf = (children: PhrasingContent[]): RootContent => ({
   type: 'heading',
 });
 
-/** the line of a rule's tags, closing its card */
 /** the line under a rule's heading that names the rule it tightens */
-export const parentLineOf = (children: PhrasingContent[]): RootContent => ({
+const parentLineOf = (children: PhrasingContent[]): RootContent => ({
   children,
   data: {
     hProperties: {
@@ -54,18 +88,8 @@ export const parentLineOf = (children: PhrasingContent[]): RootContent => ({
   type: 'paragraph',
 });
 
-export const metaOf = (children: PhrasingContent[]): RootContent => ({
-  children,
-  data: {
-    hProperties: {
-      'data-rule-meta': '',
-    },
-  },
-  type: 'paragraph',
-});
-
 /** a rule's why, under its label */
-export const whyOf = (children: PhrasingContent[]): RootContent => ({
+const whyOf = (children: PhrasingContent[]): RootContent => ({
   children: [
     span(
       {
@@ -86,7 +110,7 @@ export const whyOf = (children: PhrasingContent[]): RootContent => ({
 });
 
 /** a rule's card */
-export const cardOf = (children: RootContent[]): RootContent => ({
+const cardOf = (children: RootContent[]): RootContent => ({
   children,
   data: {
     hName: 'section',
@@ -98,7 +122,7 @@ export const cardOf = (children: RootContent[]): RootContent => ({
 });
 
 /** a part of an example, a `div` marked by its attributes */
-export const boxOf = (
+const boxOf = (
   attributes: Readonly<Record<string, string>>,
   children: RootContent[],
 ): RootContent => ({
@@ -111,3 +135,141 @@ export const boxOf = (
   },
   type: 'box',
 });
+
+/** a column of an example: the label of its tone above its code, written in Markdown */
+const columnOf = (input: { code: string; title: string; tone: string }): RootContent =>
+  boxOf(
+    {
+      'data-rule-example-column': input.tone,
+    },
+    [
+      {
+        children: [
+          span(
+            {
+              'data-rule-example-label': '',
+            },
+            [
+              text(input.title),
+            ],
+          ),
+        ],
+        type: 'paragraph',
+      },
+      ...nodesOf(input.code),
+    ],
+  );
+
+/** a rule's table whose rows hold no cell */
+const cellLessTable = (): Table => ({
+  align: [],
+  children: [
+    {
+      children: [],
+      type: 'tableRow',
+    },
+    {
+      children: [],
+      type: 'tableRow',
+    },
+  ],
+  type: 'table',
+});
+
+/** the value of a node's data attribute `data-<name>`, absent when the node is no such part */
+const attributeOf = (node: Nodes, name: string): unknown =>
+  node.data?.hProperties?.[`data-${name}`];
+
+/** every part of a tree marked by `data-<name>`, in reading order, without positions */
+const partsOf = (tree: Nodes, name: string): Nodes[] => {
+  const parts: Nodes[] = [];
+
+  visit(tree, (node) => {
+    if (attributeOf(node, name) !== undefined) {
+      parts.push(withoutPositions(node));
+    }
+  });
+
+  return parts;
+};
+
+/** the first part of a tree marked by `data-<name>`, without positions */
+const partOf = (tree: Nodes, name: string): Nodes | undefined => partsOf(tree, name)[0];
+
+/** the text a reader sees in each node */
+const textsOf = (nodes: readonly Nodes[]): readonly string[] =>
+  nodes.map((node) => plainText(node));
+
+/** the slug a card's heading names */
+const slugOf = (card: Nodes): string => {
+  const heading = partOf(card, 'rule');
+  const slugs: string[] = [];
+
+  if (heading !== undefined) {
+    visit(heading, 'inlineCode', (node) => {
+      slugs.push(node.value);
+    });
+  }
+
+  return slugs.join('');
+};
+
+/** a node the author wrote, which the plugin marks as no part of a card */
+const isAuthored = (node: RootContent): boolean =>
+  Object.keys(node.data?.hProperties ?? {}).length === 0;
+
+/** a card, by the rule it names and the text of what its author wrote under the heading */
+interface CardOutline {
+  readonly body: readonly string[];
+  readonly rule: string;
+}
+
+/** the top of a tree: each card by its rule and body, every other node by its text */
+const outlineOf = (tree: Root): ReadonlyArray<CardOutline | string> =>
+  tree.children.map((node) =>
+    node.type === 'ruleCard'
+      ? {
+          body: textsOf(node.children.filter(isAuthored)),
+          rule: slugOf(node),
+        }
+      : plainText(node),
+  );
+
+/** a link by the text it shows and its address */
+interface LinkOutline {
+  readonly text: string;
+  readonly url: string;
+}
+
+/** every link of a tree, in reading order */
+const linksOf = (tree: Root): readonly LinkOutline[] => {
+  const links: LinkOutline[] = [];
+
+  visit(tree, 'link', (node) => {
+    links.push({
+      text: plainText(node),
+      url: node.url,
+    });
+  });
+
+  return links;
+};
+
+export {
+  boxOf,
+  cardOf,
+  cellLessTable,
+  columnOf,
+  headingOf,
+  levelOf,
+  linksOf,
+  markOf,
+  metaOf,
+  outlineOf,
+  parentLineOf,
+  partOf,
+  partsOf,
+  tagOf,
+  textsOf,
+  whyOf,
+};

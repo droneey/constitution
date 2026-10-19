@@ -6,13 +6,18 @@ import { compareText } from '#/kernel/utils';
 import type { FileTree, FrontMatterParser } from '../../../contracts';
 import type { Block, BlockFile } from '../../../entities';
 import { BlockFileRole } from '../../../entities';
-import { fileNameOf, splitFrontMatter } from '../../../utils';
-import type { BlockPath } from './block-path.utils';
+import { splitFrontMatter } from '../../../utils';
+import type { PlacedPath } from './block-path.utils';
 import { BlockPathFile } from './block-path.utils';
 import { readFrontMatter } from './front-matter.utils';
 
+enum BlockLoadCode {
+  SecondaryFrontMatter = 'front-matter-outside-passport',
+  WithoutPassport = 'block-without-passport',
+}
+
 interface Located {
-  block: BlockPath;
+  block: PlacedPath;
   path: string;
 }
 
@@ -69,49 +74,40 @@ const secondaryFindings = (secondary: readonly Secondary[]): readonly Finding[] 
   secondary
     .filter(({ text }) => splitFrontMatter(text).frontMatter !== undefined)
     .map(({ entry }) => ({
-      message: 'has front matter; only the main file of a block carries it',
+      code: BlockLoadCode.SecondaryFrontMatter,
+      message: 'has front matter; only the passport of a block carries it',
       path: entry.path,
     }));
+
+const ROLE_OF: Readonly<Record<PlacedPath['file'], BlockFileRole>> = {
+  [BlockPathFile.Chapter]: BlockFileRole.Chapter,
+  [BlockPathFile.Passport]: BlockFileRole.Passport,
+  [BlockPathFile.With]: BlockFileRole.With,
+};
 
 const secondaryFile = ({ entry, text }: Secondary): BlockFile => ({
   axis: entry.block.axis,
   body: text,
   lines: lineCount(text),
   path: entry.path,
-  role: entry.block.file === BlockPathFile.With ? BlockFileRole.With : BlockFileRole.Chapter,
+  role: ROLE_OF[entry.block.file],
   with: entry.block.with,
 });
 
-const axisRank = (entry: Located): number => AXES.indexOf(entry.block.axis);
+const compareFiles = (left: BlockFile, right: BlockFile): number =>
+  AXES.indexOf(left.axis) - AXES.indexOf(right.axis) || compareText(left.path, right.path);
 
-const nameRank = (input: { entry: Located; id: string }): 0 | 1 =>
-  fileNameOf(input.entry.path) === `${input.id}.md` ? 0 : 1;
-
-const compareSecondary =
-  (id: string) =>
-  (left: Secondary, right: Secondary): number =>
-    axisRank(left.entry) - axisRank(right.entry) ||
-    nameRank({
-      entry: left.entry,
-      id,
-    }) -
-      nameRank({
-        entry: right.entry,
-        id,
-      }) ||
-    compareText(left.entry.block.name, right.entry.block.name);
-
+// After the passport, the chapters by axis, then the seams by axis.
 const filesOf = (input: {
-  id: string;
-  main: BlockFile;
+  passport: BlockFile;
   secondary: readonly Secondary[];
 }): readonly BlockFile[] => {
-  const ordered = input.secondary.toSorted(compareSecondary(input.id));
+  const ordered = input.secondary.map(secondaryFile).toSorted(compareFiles);
 
   return [
-    input.main,
-    ...ordered.filter(({ entry }) => entry.block.file === BlockPathFile.Chapter).map(secondaryFile),
-    ...ordered.filter(({ entry }) => entry.block.file === BlockPathFile.With).map(secondaryFile),
+    input.passport,
+    ...ordered.filter((file) => file.role !== BlockFileRole.With),
+    ...ordered.filter((file) => file.role === BlockFileRole.With),
   ];
 };
 
@@ -121,23 +117,24 @@ const loadBlock = (input: {
   tree: FileTree;
 }): BlockLoaded => {
   const { dir, entries, id, layer } = input.folder;
-  const main = entries.find((entry) => entry.block.file === BlockPathFile.Main);
+  const passport = entries.find((entry) => entry.block.file === BlockPathFile.Passport);
 
-  if (main === undefined) {
+  if (passport === undefined) {
     return {
       findings: [
         {
-          message: `has no main file ${id}.md`,
+          code: BlockLoadCode.WithoutPassport,
+          message: `has no passport ${id}.md`,
           path: dir,
         },
       ],
     };
   }
 
-  const text = input.tree.read(main.path);
+  const text = input.tree.read(passport.path);
   const read = readFrontMatter({
     parser: input.parser,
-    path: main.path,
+    path: passport.path,
     text,
   });
 
@@ -148,7 +145,7 @@ const loadBlock = (input: {
   }
 
   const secondary = entries
-    .filter((entry) => entry.block.file !== BlockPathFile.Main)
+    .filter((entry) => entry.block.file !== BlockPathFile.Passport)
     .map((entry) => ({
       entry,
       text: input.tree.read(entry.path),
@@ -157,13 +154,12 @@ const loadBlock = (input: {
   return {
     block: {
       files: filesOf({
-        id,
-        main: {
-          axis: main.block.axis,
+        passport: {
+          axis: passport.block.axis,
           body: read.body,
           lines: lineCount(text),
-          path: main.path,
-          role: BlockFileRole.Main,
+          path: passport.path,
+          role: BlockFileRole.Passport,
           with: undefined,
         },
         secondary,
@@ -171,7 +167,7 @@ const loadBlock = (input: {
       frontMatter: read.frontMatter,
       id,
       layer,
-      path: main.path,
+      path: passport.path,
     },
     findings: secondaryFindings(secondary),
   };

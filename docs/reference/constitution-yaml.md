@@ -33,7 +33,7 @@ Every key is required; a missing or an unknown key is a warning in the digest. `
 
 | Key | Holds | Empty |
 |---|---|---|
-| `axes` | the optional axes it follows: `architecture`, `workflow`; the base is always followed | `[]`, the base alone |
+| `axes` | the optional axes it follows: `architecture`, `workflow`; `foundation` is always followed | `[]`, `foundation` alone |
 | `domains` | the ids of its domain blocks | `[]` |
 | `platforms` | the ids of its platform blocks | `[]` |
 | `languages` | the ids of its language blocks | `[]` |
@@ -47,7 +47,7 @@ Core is never listed: it is always active. An abstract block, whose id starts wi
 
 ## axes
 
-The axes beside the base: `architecture` for the program's tree and seams, `workflow` for how a change travels to a release. [Three axes](../how-it-works.md#three-axes) tells them apart.
+The axes beside `foundation`: `architecture` for the program's tree and seams, `workflow` for how a change travels to a release. [Three axes](../how-it-works.md#three-axes) tells them apart.
 
 ## domains
 

@@ -1,5 +1,5 @@
 import { Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { Finding, Problem } from '#/kernel/types';
 
 import type { RequirementAnswer, Rule } from '../../../../entities';
 import { Met } from '../../../../entities';
@@ -7,28 +7,43 @@ import type { BlocksById } from '../../../../utils';
 import { inlineCodeSpans, mayReferTo } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
+enum RequirementsCode {
+  OutsideImplementation = 'requirements-outside-implementation',
+  OutsidePassport = 'requirements-outside-passport',
+  NotRule = 'answer-names-no-rule',
+  OwnRule = 'answer-names-own-rule',
+  OutOfReach = 'answer-out-of-reach',
+  MetUnknown = 'answer-met-unknown',
+  WithoutHow = 'answer-without-how',
+  WithoutCover = 'answer-without-covering-rule',
+  Repeated = 'answer-repeated',
+}
+
 const METS: readonly string[] = Object.values(Met);
 const SHORT_OF: readonly string[] = [
   Met.Partly,
   Met.No,
 ];
 
-const at = (input: { answer: RequirementAnswer; message: string }): Finding => ({
-  message: `answers "${input.answer.requirement}"${input.message}`,
-  path: input.answer.file,
-});
-
-const targetMessage = (input: {
+const targetProblem = (input: {
   answer: RequirementAnswer;
   byId: BlocksById;
   target: Rule | undefined;
-}): string | undefined => {
+}): Problem | undefined => {
+  const { requirement } = input.answer;
+
   if (input.target === undefined) {
-    return ', which is not a rule';
+    return {
+      code: RequirementsCode.NotRule,
+      message: `answers "${requirement}", which is not a rule`,
+    };
   }
 
   if (input.target.block === input.answer.block) {
-    return ', a rule of its own block; a Requirements table answers the blocks above';
+    return {
+      code: RequirementsCode.OwnRule,
+      message: `answers "${requirement}", a rule of its own block; a Requirements table answers the blocks above`,
+    };
   }
 
   return mayReferTo({
@@ -37,32 +52,55 @@ const targetMessage = (input: {
     to: input.target.block,
   })
     ? undefined
-    : ` of ${input.target.block}, which its block may not refer to`;
+    : {
+        code: RequirementsCode.OutOfReach,
+        message: `answers "${requirement}" of ${input.target.block}, which its block may not refer to`,
+      };
 };
 
 // A partly or no answer names, in backticks, the rule of its own block that
 // covers what the library misses or replaces the requirement.
-const coverMessage = (input: {
+const coverProblem = (input: {
   answer: RequirementAnswer;
   ownSlugs: ReadonlySet<string>;
-}): string | undefined =>
+}): Problem | undefined =>
   !SHORT_OF.includes(input.answer.met) ||
   inlineCodeSpans(input.answer.how).some((slug) => input.ownSlugs.has(slug))
     ? undefined
-    : ` ${input.answer.met} without naming the rule that covers the rest`;
+    : {
+        code: RequirementsCode.WithoutCover,
+        message: `answers "${input.answer.requirement}" ${input.answer.met} without naming the rule that covers the rest`,
+      };
 
-const formMessages = (input: {
+const formProblems = (input: {
   answer: RequirementAnswer;
   isRepeated: boolean;
   ownSlugs: ReadonlySet<string>;
-}): readonly (string | undefined)[] => [
-  METS.includes(input.answer.met)
-    ? undefined
-    : ` with Met "${input.answer.met}"; Met is ${Met.Yes}, ${Met.Partly} or ${Met.No}`,
-  input.answer.how === '' ? ' without saying how' : undefined,
-  coverMessage(input),
-  input.isRepeated ? ' twice' : undefined,
-];
+}): readonly (Problem | undefined)[] => {
+  const { how, met, requirement } = input.answer;
+
+  return [
+    METS.includes(met)
+      ? undefined
+      : {
+          code: RequirementsCode.MetUnknown,
+          message: `answers "${requirement}" with Met "${met}"; Met is ${Met.Yes}, ${Met.Partly} or ${Met.No}`,
+        },
+    how === ''
+      ? {
+          code: RequirementsCode.WithoutHow,
+          message: `answers "${requirement}" without saying how`,
+        }
+      : undefined,
+    coverProblem(input),
+    input.isRepeated
+      ? {
+          code: RequirementsCode.Repeated,
+          message: `answers "${requirement}" twice`,
+        }
+      : undefined,
+  ];
+};
 
 const answerFindings = (input: {
   answers: readonly RequirementAnswer[];
@@ -84,26 +122,26 @@ const answerFindings = (input: {
     seen.add(key);
 
     return [
-      targetMessage({
+      targetProblem({
         answer,
         byId: input.byId,
         target: slugs.get(answer.requirement),
       }),
-      ...formMessages({
+      ...formProblems({
         answer,
         isRepeated,
         ownSlugs: new Set(
           input.rules.filter((rule) => rule.block === answer.block).map((rule) => rule.slug),
         ),
       }),
-    ].flatMap((message) =>
-      message === undefined
+    ].flatMap((problem) =>
+      problem === undefined
         ? []
         : [
-            at({
-              answer,
-              message,
-            }),
+            {
+              ...problem,
+              path: answer.file,
+            },
           ],
     );
   });
@@ -113,29 +151,38 @@ const requirementsCheck: Check = ({ byId, constitution }: CheckInput): readonly 
   const isInImplementation = (answer: RequirementAnswer): boolean =>
     // Stryker disable next-line OptionalChaining: every answer comes from a loaded block
     byId.get(answer.block)?.layer === Layer.Implementation;
+  const isInPassport = (answer: RequirementAnswer): boolean =>
+    // Stryker disable next-line OptionalChaining: every answer comes from a loaded block
+    byId.get(answer.block)?.path === answer.file;
   const fileFindings = (input: {
     isMisplaced: (answer: RequirementAnswer) => boolean;
-    message: string;
+    problem: Problem;
   }): readonly Finding[] =>
     [
       ...new Set(
         constitution.requirementAnswers.filter(input.isMisplaced).map((answer) => answer.file),
       ),
     ].map((path) => ({
-      message: input.message,
+      ...input.problem,
       path,
     }));
   const outside = [
     ...fileFindings({
       isMisplaced: (answer: RequirementAnswer): boolean => !isInImplementation(answer),
-      message: 'answers requirements, which only an implementation does',
+      problem: {
+        code: RequirementsCode.OutsideImplementation,
+        message: 'answers requirements, which only an implementation does',
+      },
     }),
-    // The index gives an answer no seam, so a with/ file holds no answer.
+    // The answers describe the block whole, so its passport holds them, never a chapter or a seam.
     ...fileFindings({
       isMisplaced: (answer: RequirementAnswer): boolean =>
-        isInImplementation(answer) && answer.with !== undefined,
-      message:
-        'answers requirements in a with/ file; a block answers them in its main file or a chapter',
+        isInImplementation(answer) && !isInPassport(answer),
+      problem: {
+        code: RequirementsCode.OutsidePassport,
+        message:
+          "answers requirements outside the block's passport; an implementation answers them in its passport <id>.md",
+      },
     }),
   ];
 

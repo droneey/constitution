@@ -1,6 +1,8 @@
 # Workspace
 
-> The members of a uv workspace laid out by the workspace's tree.
+> Governs the members of a uv workspace laid out by the workspace's tree.
+
+## General
 
 ### uv-workspace-globbed-by-the-tree · SHOULD
 

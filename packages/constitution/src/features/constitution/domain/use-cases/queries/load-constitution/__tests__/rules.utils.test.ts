@@ -3,13 +3,12 @@ import { describe, expect, it } from 'bun:test';
 import { Axis, Level } from '#/kernel/constants';
 import type { Finding } from '#/kernel/types';
 
+import { findingOf } from '../../../../../__tests__/constitution.fixtures';
 import type { StatedRule } from '../../../../entities';
 import { parseRules } from '../rules.utils';
 
-const FILE = 'blocks/core/principles.md';
-const CARD = 'blocks/core/core.md';
-const HEADING_FORMS =
-  '"### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"';
+const FILE = 'blocks/core/foundation/principles.md';
+const AGREEMENT = 'blocks/core/foundation/agreement.md';
 const TABLE = [
   '',
   '| Why | Tags |',
@@ -49,10 +48,12 @@ const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   ...fields,
 });
 
-const found = (message: string): Finding => ({
-  message,
-  path: FILE,
-});
+const found = (input: { code: string; names: readonly string[] }): Finding =>
+  findingOf({
+    code: input.code,
+    names: input.names,
+    path: FILE,
+  });
 
 describe('parseRules', () => {
   it('should read the heading, the statement and the table when a root rule is complete', () => {
@@ -191,7 +192,12 @@ describe('parseRules', () => {
     // Assert
     expect(parsed).toStrictEqual({
       findings: [
-        found(`heading "${heading}" looks like a rule but is not ${HEADING_FORMS}`),
+        found({
+          code: 'rule-heading-misshapen',
+          names: [
+            heading,
+          ],
+        }),
       ],
       rules: [],
     });
@@ -220,29 +226,40 @@ describe('parseRules', () => {
   });
 
   it.each<{
+    findings: readonly Finding[];
     lines: readonly string[];
-    messages: readonly string[];
     name: string;
     rule: Partial<StatedRule>;
   }>([
     {
-      lines: [],
-      messages: [
-        'has no table "| Why | Tags |"',
+      findings: [
+        found({
+          code: 'rule-without-table',
+          names: [
+            'a',
+          ],
+        }),
       ],
+      lines: [],
       name: 'no table',
       rule: {
         why: '',
       },
     },
     {
+      findings: [
+        found({
+          code: 'rule-with-many-tables',
+          names: [
+            'a',
+            '2',
+          ],
+        }),
+      ],
       lines: [
         ...TABLE,
         '',
         ...TABLE,
-      ],
-      messages: [
-        'has 2 tables; a rule has one',
       ],
       name: 'two tables',
       rule: {
@@ -250,25 +267,41 @@ describe('parseRules', () => {
       },
     },
     {
+      findings: [
+        found({
+          code: 'rule-table-header-misshapen',
+          names: [
+            'a',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Check | Tags |',
         '|---|---|---|',
         '| it keeps the code honest. | [] |',
       ],
-      messages: [
-        'has a table whose header is not "| Why | Tags |"',
-      ],
       name: 'the header of the old form',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-table-header-misshapen',
+          names: [
+            'a',
+          ],
+        }),
+        found({
+          code: 'rule-table-rows-not-one',
+          names: [
+            'a',
+            '0',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '| it keeps the code honest. | [] |',
-      ],
-      messages: [
-        'has a table whose header is not "| Why | Tags |"',
-        "has 0 rows in its table; a rule's table has one",
       ],
       name: 'no delimiter row',
       rule: {
@@ -276,116 +309,168 @@ describe('parseRules', () => {
       },
     },
     {
+      findings: [
+        found({
+          code: 'rule-table-rows-not-one',
+          names: [
+            'a',
+            '2',
+          ],
+        }),
+      ],
       lines: [
         ...TABLE,
         '| it keeps the tests honest. | [] |',
-      ],
-      messages: [
-        "has 2 rows in its table; a rule's table has one",
       ],
       name: 'two rows',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-table-cells-miscounted',
+          names: [
+            'a',
+            '1',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '|---|---|',
         '| it keeps the code honest. |',
       ],
-      messages: [
-        "has a row of 1 cells; a rule's table has 2",
-      ],
       name: 'a row of one cell',
       rule: {},
     },
     {
+      findings: [],
       lines: [
         '| Why | Tags |',
         '|---|---|',
         '|  | [] |',
       ],
-      messages: [],
       name: 'an empty Why, which the rules check reports',
       rule: {
         why: '',
       },
     },
     {
+      findings: [
+        found({
+          code: 'rule-tags-not-a-list',
+          names: [
+            'a',
+            'ux, data',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '|---|---|',
         '| it keeps the code honest. | ux, data |',
       ],
-      messages: [
-        'has the Tags "ux, data"; Tags is a list, such as [security, ux] or []',
-      ],
       name: 'Tags that are no list',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-table-header-misshapen',
+          names: [
+            'a',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '| x- | --- |',
         '| it keeps the code honest. | [] |',
       ],
-      messages: [
-        'has a table whose header is not "| Why | Tags |"',
-      ],
       name: 'a delimiter cell with a word before its dashes',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-table-header-misshapen',
+          names: [
+            'a',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '| --- | -x |',
         '| it keeps the code honest. | [] |',
       ],
-      messages: [
-        'has a table whose header is not "| Why | Tags |"',
-      ],
       name: 'a delimiter cell with a word after its dashes',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-tags-not-a-list',
+          names: [
+            'a',
+            'see [ux]',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '|---|---|',
         '| it keeps the code honest. | see [ux] |',
       ],
-      messages: [
-        'has the Tags "see [ux]"; Tags is a list, such as [security, ux] or []',
-      ],
       name: 'Tags with a word before the list',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-tags-not-a-list',
+          names: [
+            'a',
+            '[ux] too',
+          ],
+        }),
+      ],
       lines: [
         '| Why | Tags |',
         '|---|---|',
         '| it keeps the code honest. | [ux] too |',
       ],
-      messages: [
-        'has the Tags "[ux] too"; Tags is a list, such as [security, ux] or []',
-      ],
       name: 'Tags with a word after the list',
       rule: {},
     },
     {
+      findings: [
+        found({
+          code: 'rule-holds-label',
+          names: [
+            'a',
+            'Why',
+          ],
+        }),
+        found({
+          code: 'rule-holds-label',
+          names: [
+            'a',
+            'Implements',
+          ],
+        }),
+      ],
       lines: [
         '**Why:** it keeps the code honest.',
         ...TABLE,
         '**Implements:** `b`',
-      ],
-      messages: [
-        'has the label "Why"; a rule states Why and Tags in its table and holds no label but Example',
-        'has the label "Implements"; a rule states Why and Tags in its table and holds no label but Example',
       ],
       name: 'labels of the old form',
       rule: {},
     },
   ])(
     'should report the table and read what it can when a rule has $name',
-    ({ lines, messages, rule }) => {
+    ({ findings, lines, rule }) => {
       // Arrange
       const source = sourceOf([
         '### a · MUST',
@@ -398,7 +483,7 @@ describe('parseRules', () => {
 
       // Assert
       expect(parsed).toStrictEqual({
-        findings: messages.map((message) => found(`rule "a" ${message}`)),
+        findings,
         rules: [
           ruleOf(rule),
         ],
@@ -406,7 +491,7 @@ describe('parseRules', () => {
     },
   );
 
-  it('should read the rules of the card on the base and report a heading that looks like a rule when the rules sit in the card', () => {
+  it('should read the rules of a chapter and report a heading that looks like a rule when the rules follow its title', () => {
     // Arrange
     const source = {
       ...sourceOf([
@@ -416,7 +501,7 @@ describe('parseRules', () => {
         ...TABLE,
         '### x - MUST',
       ]),
-      file: CARD,
+      file: AGREEMENT,
     };
 
     // Act
@@ -425,14 +510,17 @@ describe('parseRules', () => {
     // Assert
     expect(parsed).toStrictEqual({
       findings: [
-        {
-          message: `heading "### x - MUST" looks like a rule but is not ${HEADING_FORMS}`,
-          path: CARD,
-        },
+        findingOf({
+          code: 'rule-heading-misshapen',
+          names: [
+            '### x - MUST',
+          ],
+          path: AGREEMENT,
+        }),
       ],
       rules: [
         ruleOf({
-          file: CARD,
+          file: AGREEMENT,
           slug: 'rules-bind',
           statement: 'The rules bind.',
           title: 'Core',

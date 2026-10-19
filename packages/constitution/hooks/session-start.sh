@@ -55,8 +55,8 @@ event="${event:-SessionStart}"
 
 # The forms of the blocks this plugin reads: the newest and the one before it,
 # once there is one. A release names its form in its package.json.
-newest_format=2
-oldest_format=2
+newest_format=3
+oldest_format=3
 
 # A project whose Constitution this plugin cannot read gets the reason alone.
 notice() {

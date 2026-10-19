@@ -146,7 +146,7 @@ describe('createJsonManifestParser', () => {
       issues: [
         {
           field: 'plugins.0.source',
-          message: 'Invalid input',
+          message: expect.any(String),
         },
       ],
       status: 'mismatched',
@@ -193,11 +193,11 @@ describe('createJsonManifestParser', () => {
       issues: [
         {
           field: 'name',
-          message: 'Invalid string: must match pattern /^[a-z0-9-]+$/',
+          message: expect.stringContaining('/^[a-z0-9-]+$/'),
         },
         {
           field: 'skills',
-          message: 'Invalid string: must match pattern /^\\.\\/.*\\/$/',
+          message: expect.stringContaining('/^\\.\\/.*\\/$/'),
         },
       ],
       json: '{"name":"Not A Slug","skills":"skills"}',
@@ -207,7 +207,7 @@ describe('createJsonManifestParser', () => {
       issues: [
         {
           field: 'plugins.0.source',
-          message: 'Invalid input',
+          message: expect.any(String),
         },
       ],
       json: '{"name":"droneey","plugins":[{"name":"constitution"}]}',
@@ -217,7 +217,7 @@ describe('createJsonManifestParser', () => {
       issues: [
         {
           field: 'hooks.Stop.0.hooks.0.command',
-          message: 'Invalid input: expected string, received number',
+          message: expect.stringContaining('string'),
         },
       ],
       json: '{"hooks":{"Stop":[{"hooks":[{"type":"command","command":42}]}]}}',

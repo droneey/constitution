@@ -40,7 +40,14 @@ interface PartJob {
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'common', 'lefthook', 'workflow');
-const SHELLCHECK_RC = join(REPOSITORY, 'presets', 'shell', 'shellcheck', 'self.shellcheckrc');
+const SHELLCHECK_RC = join(
+  REPOSITORY,
+  'presets',
+  'shell',
+  'shellcheck',
+  'foundation',
+  'self.shellcheckrc',
+);
 const SHELLCHECK = miseBinary('shellcheck');
 
 const presetConfig = (part: string): unknown =>

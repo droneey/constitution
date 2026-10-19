@@ -1,9 +1,9 @@
 {
   "extends": [
-    "../../.droneey/constitution/presets/typescript/tsc/self.json",
-    "../../.droneey/constitution/presets/typescript/tsc/core.json",
-    "../../.droneey/constitution/presets/typescript/tsc/bun.json",
-    "../../.droneey/constitution/presets/typescript/tsc/workspace.json"
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json"
   ],
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
@@ -20,8 +20,8 @@
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
-    "presets/typescript/stryker/bun-test.mjs",
-    "presets/typescript/syncpack/self.mjs"
+    "presets/typescript/stryker/foundation/bun-test.mjs",
+    "presets/typescript/syncpack/foundation/self.mjs"
   ],
   "exclude": [
     "**/coverage"

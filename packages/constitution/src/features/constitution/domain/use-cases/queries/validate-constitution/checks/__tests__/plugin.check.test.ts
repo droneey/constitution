@@ -3,14 +3,27 @@ import { describe, expect, it } from 'bun:test';
 import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  without,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { pluginCheck } from '../plugin.check';
 
 const PLUGIN = '.claude-plugin/plugin.json';
 const MARKETPLACE = '.claude-plugin/marketplace.json';
-const UNSERVED = (repo: string): string =>
-  `does not list the plugin "constitution" from the GitHub repository its manifest names (${repo}), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest`;
+const SKILL = 'skills/ratify/SKILL.md';
+const AGENT = 'agents/reviewer.md';
+const unserved = (repo: string): Finding =>
+  findingOf({
+    code: 'marketplace-omits-plugin',
+    names: [
+      '"constitution"',
+      repo,
+    ],
+    path: MARKETPLACE,
+  });
 const listed = (source: unknown): string =>
   JSON.stringify({
     name: 'droneey',
@@ -44,9 +57,17 @@ const withFiles = (extra: Readonly<Files>): Files => ({
 });
 
 describe('pluginCheck', () => {
-  it.each([
+  it.each<ManifestCase>([
     {
-      expected: 'is missing; the Constitution ships as a plugin and needs its manifest',
+      expected: [
+        findingOf({
+          code: 'plugin-manifest-missing',
+          names: [
+            'manifest',
+          ],
+          path: PLUGIN,
+        }),
+      ],
       files: without({
         files: validFiles(),
         path: PLUGIN,
@@ -54,14 +75,31 @@ describe('pluginCheck', () => {
       name: 'missing',
     },
     {
-      expected: "is not valid JSON: JSON Parse error: Expected '}'",
+      expected: [
+        findingOf({
+          code: 'manifest-not-json',
+          names: [
+            "JSON Parse error: Expected '}'",
+          ],
+          path: PLUGIN,
+        }),
+      ],
       files: withFiles({
         [PLUGIN]: '{',
       }),
       name: 'not JSON',
     },
     {
-      expected: 'does not match its schema: <root>: Invalid input: expected object, received array',
+      expected: [
+        findingOf({
+          code: 'manifest-off-schema',
+          names: [
+            '<root>',
+            'Invalid input: expected object, received array',
+          ],
+          path: PLUGIN,
+        }),
+      ],
       files: withFiles({
         [PLUGIN]: '[]',
       }),
@@ -78,15 +116,15 @@ describe('pluginCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        {
-          message: expected,
-          path: PLUGIN,
-        },
-        {
-          message:
-            'does not list the plugin "" from the GitHub repository its manifest names (none), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest',
+        ...expected,
+        findingOf({
+          code: 'marketplace-omits-plugin',
+          names: [
+            '""',
+            'none',
+          ],
           path: MARKETPLACE,
-        },
+        }),
       ]);
     },
   );
@@ -94,10 +132,13 @@ describe('pluginCheck', () => {
   it.each<ManifestCase>([
     {
       expected: [
-        {
-          message: 'lists the skills directory "./skills/", which holds no <skill>/SKILL.md',
+        findingOf({
+          code: 'skills-directory-without-skills',
+          names: [
+            'skills/',
+          ],
           path: PLUGIN,
-        },
+        }),
       ],
       files: withFiles({
         [PLUGIN]:
@@ -107,10 +148,13 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: 'does not list "./skills/", which holds skills',
+        findingOf({
+          code: 'skills-directory-unlisted',
+          names: [
+            'skills/',
+          ],
           path: PLUGIN,
-        },
+        }),
       ],
       files: withFiles({
         'skills/ratify/SKILL.md': RATIFY,
@@ -131,10 +175,10 @@ describe('pluginCheck', () => {
   it.each<ManifestCase>([
     {
       expected: [
-        {
-          message: 'holds no SKILL.md; a skill is a folder with SKILL.md in it',
+        findingOf({
+          code: 'skill-without-skill-file',
           path: 'skills/ratify',
-        },
+        }),
       ],
       files: withFiles({
         'skills/ratify/SKILL.md.orig': RATIFY,
@@ -143,10 +187,10 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: 'holds no SKILL.md; a skill is a folder with SKILL.md in it',
+        findingOf({
+          code: 'skill-without-skill-file',
           path: 'tools/skills/check',
-        },
+        }),
       ],
       files: withFiles({
         [PLUGIN]:
@@ -180,52 +224,85 @@ describe('pluginCheck', () => {
   });
 
   it.each<{
-    messages: readonly string[];
+    expected: Finding[];
     name: string;
     skill: string;
   }>([
     {
-      messages: [
-        'has no front matter; a skill names itself and says when to use it there',
+      expected: [
+        findingOf({
+          code: 'skill-without-front-matter',
+          path: SKILL,
+        }),
       ],
       name: 'it has no front matter',
       skill: '# Ratify\n',
     },
     {
-      messages: [
-        'front matter is not valid YAML: Flow sequence in block collection must be sufficiently indented and end with a ]',
+      expected: [
+        findingOf({
+          code: 'skill-front-matter-not-yaml',
+          names: [
+            'Flow sequence in block collection must be sufficiently indented and end with a ]',
+          ],
+          path: SKILL,
+        }),
       ],
       name: 'its front matter is not YAML',
       skill: '---\nname: ratify\ndescription: [a\n---\n',
     },
     {
-      messages: [
-        'front matter lacks "name"; a skill declares its name and description',
+      expected: [
+        findingOf({
+          code: 'skill-field-missing',
+          names: [
+            '"name"',
+          ],
+          path: SKILL,
+        }),
       ],
       name: 'it has no name',
       skill: '---\ndescription: Writes constitution.yaml.\n---\n',
     },
     {
-      messages: [
-        'front matter lacks "description"; a skill declares its name and description',
+      expected: [
+        findingOf({
+          code: 'skill-field-missing',
+          names: [
+            '"description"',
+          ],
+          path: SKILL,
+        }),
       ],
       name: 'its description is blank',
       skill: '---\nname: ratify\ndescription: ""\n---\n',
     },
     {
-      messages: [
-        'front matter lacks "name"; a skill declares its name and description',
-        'front matter lacks "description"; a skill declares its name and description',
+      expected: [
+        findingOf({
+          code: 'skill-field-missing',
+          names: [
+            '"name"',
+          ],
+          path: SKILL,
+        }),
+        findingOf({
+          code: 'skill-field-missing',
+          names: [
+            '"description"',
+          ],
+          path: SKILL,
+        }),
       ],
       name: 'its front matter is empty',
       skill: '---\n---\n',
     },
-  ])('should check what a SKILL.md declares when $name', ({ messages, skill }) => {
+  ])('should check what a SKILL.md declares when $name', ({ expected, skill }) => {
     // Arrange
     const input = checkInputOf(
       withFiles({
         [PLUGIN]: LISTING_SKILLS,
-        'skills/ratify/SKILL.md': skill,
+        [SKILL]: skill,
       }),
     );
 
@@ -233,64 +310,87 @@ describe('pluginCheck', () => {
     const findings = pluginCheck(input);
 
     // Assert
-    expect(findings).toStrictEqual(
-      messages.map((message) => ({
-        message,
-        path: 'skills/ratify/SKILL.md',
-      })),
-    );
+    expect(findings).toStrictEqual(expected);
   });
 
   it.each<{
     agent: string;
-    messages: readonly string[];
+    expected: Finding[];
     name: string;
   }>([
     {
       agent: 'You review.\n',
-      messages: [
-        'has no front matter; an agent names itself and says when to use it there',
+      expected: [
+        findingOf({
+          code: 'agent-without-front-matter',
+          path: AGENT,
+        }),
       ],
       name: 'it has no front matter',
     },
     {
       agent: '---\nname: reviewer\ndescription: [a\n---\n',
-      messages: [
-        'front matter is not valid YAML: Flow sequence in block collection must be sufficiently indented and end with a ]',
+      expected: [
+        findingOf({
+          code: 'agent-front-matter-not-yaml',
+          names: [
+            'Flow sequence in block collection must be sufficiently indented and end with a ]',
+          ],
+          path: AGENT,
+        }),
       ],
       name: 'its front matter is not YAML',
     },
     {
       agent: '---\ndescription: Reviews files.\n---\n',
-      messages: [
-        'front matter lacks "name"; an agent declares its name and description',
+      expected: [
+        findingOf({
+          code: 'agent-field-missing',
+          names: [
+            '"name"',
+          ],
+          path: AGENT,
+        }),
       ],
       name: 'it has no name',
     },
     {
       agent: '---\nname: reviewer\n---\n',
-      messages: [
-        'front matter lacks "description"; an agent declares its name and description',
+      expected: [
+        findingOf({
+          code: 'agent-field-missing',
+          names: [
+            '"description"',
+          ],
+          path: AGENT,
+        }),
       ],
       name: 'it has no description',
     },
     {
       agent: '---\nname: critic\ndescription: Reviews files.\n---\n',
-      messages: [
-        'is named "critic" in its front matter; an agent is named after its file, reviewer',
+      expected: [
+        findingOf({
+          code: 'agent-name-mismatches-file',
+          names: [
+            '"critic"',
+            'reviewer',
+          ],
+          path: AGENT,
+        }),
       ],
       name: 'its name is not its file',
     },
     {
       agent: '---\nname: reviewer\ndescription: Reviews files.\n---\n',
-      messages: [],
+      expected: [],
       name: 'it is named after its file and says what it does',
     },
-  ])('should check what an agent declares when $name', ({ agent, messages }) => {
+  ])('should check what an agent declares when $name', ({ agent, expected }) => {
     // Arrange
     const input = checkInputOf(
       withFiles({
-        'agents/reviewer.md': agent,
+        [AGENT]: agent,
       }),
     );
 
@@ -298,18 +398,14 @@ describe('pluginCheck', () => {
     const findings = pluginCheck(input);
 
     // Assert
-    expect(findings).toStrictEqual(
-      messages.map((message) => ({
-        message,
-        path: 'agents/reviewer.md',
-      })),
-    );
+    expect(findings).toStrictEqual(expected);
   });
 
   it.each([
     'templates/PROJECT.md',
     'templates/DECISIONS.md',
-    'templates/block.md',
+    'templates/block/block.md',
+    'templates/block/foundation/chapter.md',
     'templates/constitution.yaml',
   ])('should report the template %s when it is missing', (path) => {
     // Arrange
@@ -325,10 +421,10 @@ describe('pluginCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'is missing; /ratify writes a project from the templates',
+      findingOf({
+        code: 'template-missing',
         path,
-      },
+      }),
     ]);
   });
 
@@ -351,10 +447,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       name: 'a folder that holds no plugin manifest',
       source: {
@@ -364,10 +457,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       name: 'the root of a repository that holds the manifest in a folder',
       source: {
@@ -376,10 +466,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       name: 'a folder of no named repository',
       source: {
@@ -429,20 +516,20 @@ describe('pluginCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: UNSERVED('droneey/constitution'),
-        path: MARKETPLACE,
-      },
+      unserved('droneey/constitution'),
     ]);
   });
 
   it.each<ManifestCase>([
     {
       expected: [
-        {
-          message: 'is missing; the Constitution ships as a plugin and needs its marketplace',
+        findingOf({
+          code: 'marketplace-missing',
+          names: [
+            'marketplace',
+          ],
           path: MARKETPLACE,
-        },
+        }),
       ],
       files: without({
         files: validFiles(),
@@ -452,10 +539,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       files: withFiles({
         [MARKETPLACE]: listed('./'),
@@ -464,10 +548,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       files: withFiles({
         [MARKETPLACE]: listed({
@@ -484,10 +565,7 @@ describe('pluginCheck', () => {
       undefined,
     ].map((ref) => ({
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       files: withFiles({
         [MARKETPLACE]: listed({
@@ -499,10 +577,7 @@ describe('pluginCheck', () => {
     })),
     {
       expected: [
-        {
-          message: UNSERVED('none'),
-          path: MARKETPLACE,
-        },
+        unserved('none'),
       ],
       files: withFiles({
         '.claude-plugin/plugin.json': '{"name":"constitution"}',
@@ -515,10 +590,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('none'),
-          path: MARKETPLACE,
-        },
+        unserved('none'),
       ],
       files: withFiles({
         '.claude-plugin/plugin.json':
@@ -532,10 +604,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: UNSERVED('droneey/constitution'),
-          path: MARKETPLACE,
-        },
+        unserved('droneey/constitution'),
       ],
       files: withFiles({
         [MARKETPLACE]:
@@ -545,11 +614,14 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message:
-            'does not match its schema: plugins: Too small: expected array to have >=1 items',
+        findingOf({
+          code: 'manifest-off-schema',
+          names: [
+            'plugins',
+            'Too small: expected array to have >=1 items',
+          ],
           path: MARKETPLACE,
-        },
+        }),
       ],
       files: withFiles({
         [MARKETPLACE]: '{"name":"droneey","plugins":[]}',
@@ -586,10 +658,13 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message: 'runs "hooks/session-start.sh", which is missing',
+        findingOf({
+          code: 'hook-runs-missing-file',
+          names: [
+            'hooks/session-start.sh',
+          ],
           path: HOOKS,
-        },
+        }),
       ],
       files: withFiles({
         [HOOKS]: SESSION_START_HOOK,
@@ -606,11 +681,14 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        {
-          message:
-            'does not match its schema: hooks: Invalid input: expected record, received string',
+        findingOf({
+          code: 'manifest-off-schema',
+          names: [
+            'hooks',
+            'Invalid input: expected record, received string',
+          ],
           path: HOOKS,
-        },
+        }),
       ],
       files: withFiles({
         [HOOKS]: '{"hooks":"none"}',

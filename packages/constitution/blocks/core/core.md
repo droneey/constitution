@@ -28,6 +28,14 @@ The rules a repository is built by. The digest lists the active blocks and their
 3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project's own pack.
 4. Two rules of one layer that disagree are a defect: until it is amended, the one naming the narrower case wins, and the clash is reported.
 
+## Its chapters
+
+Read in this order, each in its axis's folder:
+
+- `foundation/`: [placement](foundation/placement.md), [code](foundation/code.md), [names](foundation/names.md), [functions](foundation/functions.md), [relations](foundation/relations.md), [types](foundation/types.md), [errors](foundation/errors.md), [effects](foundation/effects.md), [security](foundation/security.md), [dependencies](foundation/dependencies.md), [tools](foundation/tools.md), [changes](foundation/changes.md), [layout](foundation/layout.md), [comments](foundation/comments.md), [tests](foundation/tests.md), [agents](foundation/agents.md).
+- `architecture/`: [layers](architecture/layers.md), [layout](architecture/layout.md), [ports](architecture/ports.md), [root](architecture/root.md), [domain](architecture/domain.md), [tests](architecture/tests.md).
+- `workflow/`: [agents](workflow/agents.md).
+
 ## A dependency with no block
 
 Hold it to the rules of the project's domains and language and their requirements for implementation, report every MUST it cannot meet, and propose a block for it in the project's own pack. Never break a rule silently.

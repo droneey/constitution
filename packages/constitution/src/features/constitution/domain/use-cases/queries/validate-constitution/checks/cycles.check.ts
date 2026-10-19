@@ -6,6 +6,10 @@ import type { BlocksById } from '../../../../utils';
 import { linksOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
+enum CyclesCode {
+  Cycle = 'dependency-cycle',
+}
+
 interface Search {
   block: Block;
   byId: BlocksById;
@@ -85,6 +89,7 @@ const cyclesCheck: Check = ({ byId, constitution }: CheckInput): readonly Findin
 
     return [
       {
+        code: CyclesCode.Cycle,
         message: `is part of a dependency cycle: ${cycle.join(' → ')}`,
         path: block.path,
       },

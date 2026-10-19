@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { corePartCheck } from '../core-part.check';
 
@@ -8,7 +12,7 @@ const CORE = 'blocks/core/core.md';
 
 const withCore = (body: string): ReturnType<typeof validFiles> => {
   const files = validFiles();
-  files[CORE] = mainFile({
+  files[CORE] = passportFile({
     body,
     id: 'core',
   });
@@ -37,10 +41,13 @@ describe('corePartCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'makes a core part of 3509 bytes; the digest holds at most 3500 of core',
+      findingOf({
+        code: 'core-over-byte-budget',
+        names: [
+          '3509',
+        ],
         path: CORE,
-      },
+      }),
     ]);
   });
 
@@ -58,7 +65,7 @@ describe('corePartCheck', () => {
   it('should find nothing when a block other than core passes 3,500 bytes', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/domains/i18n/i18n.md'] = mainFile({
+    files['blocks/domains/i18n/i18n.md'] = passportFile({
       body: `# i18n\n\n${'x'.repeat(4000)}\n`,
       id: 'i18n',
     });

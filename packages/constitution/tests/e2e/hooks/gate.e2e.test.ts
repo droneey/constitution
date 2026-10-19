@@ -5,7 +5,15 @@ import { dirname, join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import type { HookRun } from '../hook.fixtures';
-import { HookEvent, newSession, removeSessions, runHook, runScript } from '../hook.fixtures';
+import {
+  HookEvent,
+  isRecord,
+  mentionedOf,
+  newSession,
+  removeSessions,
+  runHook,
+  runScript,
+} from '../hook.fixtures';
 import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from '../project.fixtures';
 
@@ -20,14 +28,46 @@ interface Session {
 }
 
 const CHECK = 'bun run check';
-const BLOCKED = JSON.stringify({
-  decision: 'block',
-  reason:
-    "The tree changed since the check last passed. Run the project's check, `bun run check`, and hand back only when it passes.",
-});
-const REVIEW = JSON.stringify({
-  systemMessage: 'Changed files fall under ui; /check edits reviews them against the rules.',
-});
+// What the gate says: its decision, or a review asked for in a system message,
+// then the names it gives, the check to run or the blocks the changes fall under.
+const NOTHING: readonly string[] = [];
+const BLOCKED: readonly string[] = [
+  'block',
+  CHECK,
+];
+const REVIEW: readonly string[] = [
+  'review',
+  'ui',
+];
+
+const gateOf = (stdout: string): readonly string[] => {
+  const parsed: unknown = stdout === '' ? {} : JSON.parse(stdout);
+  const { decision, reason, systemMessage } = isRecord(parsed) ? parsed : {};
+
+  if (typeof decision === 'string') {
+    return [
+      decision,
+      ...mentionedOf({
+        names: [
+          CHECK,
+        ],
+        text: String(reason),
+      }),
+    ];
+  }
+
+  return typeof systemMessage === 'string'
+    ? [
+        'review',
+        ...mentionedOf({
+          names: [
+            'ui',
+          ],
+          text: systemMessage,
+        }),
+      ]
+    : NOTHING;
+};
 
 let root = '';
 
@@ -143,18 +183,24 @@ const ran = (input: { command: string; session: Session }): HookRun =>
     session: input.session,
   });
 
-const stop = (input: { active?: boolean; event?: StopEvent; session: Session }): string =>
-  fire({
-    event: input.event ?? StopEvent.Stop,
-    fields: Object.fromEntries([
-      [
-        'stop_hook_active',
-        input.active === true ? 'true' : 'false',
-      ],
-    ]),
-    script: 'stop.sh',
-    session: input.session,
-  }).stdout.trim();
+const stop = (input: {
+  active?: boolean;
+  event?: StopEvent;
+  session: Session;
+}): readonly string[] =>
+  gateOf(
+    fire({
+      event: input.event ?? StopEvent.Stop,
+      fields: Object.fromEntries([
+        [
+          'stop_hook_active',
+          input.active === true ? 'true' : 'false',
+        ],
+      ]),
+      script: 'stop.sh',
+      session: input.session,
+    }).stdout.trim(),
+  );
 
 beforeAll(() => {
   root = createPluginRoot();
@@ -182,7 +228,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe('');
+    expect(output).toStrictEqual(NOTHING);
   });
 
   it('should block once and then ask for a review when files changed and the check did not run', () => {
@@ -236,7 +282,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe('');
+    expect(output).toStrictEqual(NOTHING);
   });
 
   it('should block again when the tree changed after the check passed', () => {
@@ -263,7 +309,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe(BLOCKED);
+    expect(output).toStrictEqual(BLOCKED);
   });
 
   it.each([
@@ -289,7 +335,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe(BLOCKED);
+    expect(output).toStrictEqual(BLOCKED);
   });
 
   it('should only ask for a review when check is null', () => {
@@ -313,7 +359,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe(REVIEW);
+    expect(output).toStrictEqual(REVIEW);
   });
 
   it('should say nothing about a review when no active block governs the changed files', () => {
@@ -337,7 +383,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe('');
+    expect(output).toStrictEqual(NOTHING);
   });
 
   it('should not ask for a review when the reviewer reviewed the changed tree', () => {
@@ -375,7 +421,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe('');
+    expect(output).toStrictEqual(NOTHING);
   });
 
   it('should let a subagent stop without asking for a review when the check passed', () => {
@@ -403,7 +449,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe('');
+    expect(output).toStrictEqual(NOTHING);
   });
 
   it('should let the agent stop when a block of this hook is being answered', () => {
@@ -423,6 +469,6 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(output).toBe('');
+    expect(output).toStrictEqual(NOTHING);
   });
 });

@@ -12,7 +12,7 @@ interface FrontMatter {
 }
 
 enum BlockFileRole {
-  Main = 'main',
+  Passport = 'passport',
   Chapter = 'chapter',
   With = 'with',
 }

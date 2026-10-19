@@ -11,12 +11,6 @@ governs: [".syncpackrc.mjs"]
 
 # Syncpack
 
-> Holds the manifests. `.syncpackrc.mjs` joins the parts of the Constitution's release archive in `presets/typescript/syncpack/`, the scope of the language whose manifests it reads: at the tool's root `typescript.mjs`, exact versions for the tools and caret ranges for the program's dependencies, `self.mjs`, its own formatting options and the order of fields, and `core.mjs`, which bans a dependency from the address of a source repository or of an archive, while a `file:` or `link:` path is left to review, which keeps it inside the repository; its default holds one version of each dependency across manifests. A repository of several units joins the version groups of its package manager's part, the repository's own units as `workspace:*`, and one that distributes a package those of `distribution.mjs`, peer ranges left alone. What is in the lockfile is out of its reach.
+> Holds the manifests.
 
-### syncpack-holds-versions-and-field-order · MUST
-
-Syncpack's configuration holds one version of each dependency across the manifests, and the shared order of a manifest's fields.
-
-| Why | Tags |
-|---|---|
-| one version per dependency is one behaviour of it in every unit, and one order of fields shows each field where every manifest keeps it. | [] |
+`.syncpackrc.mjs` joins the parts of the Constitution's release archive in `presets/typescript/syncpack/`, the scope of the language whose manifests it reads: in `foundation/` `typescript.mjs`, exact versions for the tools and caret ranges for the program's dependencies, `self.mjs`, its own formatting options and the order of fields, and `core.mjs`, which bans a dependency from the address of a source repository or of an archive, while a `file:` or `link:` path is left to review, which keeps it inside the repository; its default holds one version of each dependency across manifests. A repository of several units joins the version groups of its package manager's part, the repository's own units as `workspace:*`, and one that distributes a package those of `distribution.mjs`, peer ranges left alone. What is in the lockfile is out of its reach.

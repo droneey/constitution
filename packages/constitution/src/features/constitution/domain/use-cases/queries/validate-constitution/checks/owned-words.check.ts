@@ -6,6 +6,11 @@ import { reachableFrom, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { collapseWhitespace, ownedWordMatcher } from '../tokens.utils';
 
+enum OwnedWordsCode {
+  OwnedTwice = 'word-owned-twice',
+  OutOfReach = 'owned-word-out-of-reach',
+}
+
 interface Owner {
   block: string;
   matches: (text: string) => boolean;
@@ -29,6 +34,7 @@ const ownersOf = (blocks: readonly Block[]): Owners => {
         owners.set(word, block.id);
       } else {
         duplicates.push({
+          code: OwnedWordsCode.OwnedTwice,
           message: `owns "${word}", which ${owner} owns already`,
           path: block.path,
         });
@@ -53,7 +59,9 @@ const proseOf = (input: { block: Block; file: BlockFile }): string => {
   const body = withoutCodeFences(input.file.body);
 
   return collapseWhitespace(
-    input.file.role === BlockFileRole.Main ? `${input.block.frontMatter.summary}\n${body}` : body,
+    input.file.role === BlockFileRole.Passport
+      ? `${input.block.frontMatter.summary}\n${body}`
+      : body,
   );
 };
 
@@ -79,6 +87,7 @@ const ownedWordsCheck: Check = ({ byId, constitution }: CheckInput): readonly Fi
         return owners
           .filter((owner) => !allowed.has(owner.block) && owner.matches(text))
           .map((owner) => ({
+            code: OwnedWordsCode.OutOfReach,
             message: `names "${owner.word}", which ${owner.block} owns; only ${owner.block} and the blocks that depend on it may`,
             path: file.path,
           }));

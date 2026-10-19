@@ -1,20 +1,19 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, findingOf, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { rulesCheck } from '../rules.check';
 
-const PRINCIPLES = 'blocks/core/principles.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
-const I18N = 'blocks/domains/i18n/plurals.md';
-const REMOTE_DATA = 'blocks/domains/remote-data/architecture/remote-data.md';
-const UI = 'blocks/domains/ui/screens.md';
+const I18N = 'blocks/domains/i18n/foundation/plurals.md';
+const REMOTE_DATA = 'blocks/domains/remote-data/architecture/reads.md';
+const UI = 'blocks/domains/ui/foundation/screens.md';
 const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
-const TYPES = 'blocks/contexts/languages/typescript/types.md';
-const UNTITLED = 'blocks/core/untitled.md';
-const DELIVERY = 'blocks/contexts/platforms/browser/delivery.md';
-const BROWSER = 'blocks/contexts/platforms/browser/architecture/browser.md';
+const TYPES = 'blocks/contexts/languages/typescript/foundation/types.md';
+const UNTITLED = 'blocks/core/foundation/untitled.md';
+const DELIVERY = 'blocks/contexts/platforms/browser/foundation/delivery.md';
 const TYPESCRIPT_WITH_BROWSER = 'blocks/contexts/languages/typescript/architecture/with/browser.md';
 
 describe('rulesCheck', () => {
@@ -52,34 +51,57 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'rule "not_Kebab" is not a kebab-case slug',
+      findingOf({
+        code: 'slug-not-kebab-case',
+        names: [
+          'not_Kebab',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'rule "not_Kebab" has no statement',
+      }),
+      findingOf({
+        code: 'rule-without-statement',
+        names: [
+          'not_Kebab',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'rule "not_Kebab" has no Why',
+      }),
+      findingOf({
+        code: 'rule-without-why',
+        names: [
+          'not_Kebab',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'rule "not_Kebab" has the tag "vibes", which is not a lens',
+      }),
+      findingOf({
+        code: 'tag-not-a-lens',
+        names: [
+          'not_Kebab',
+          'vibes',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'rule "b" has the tag "types", which is not a lens',
+      }),
+      findingOf({
+        code: 'tag-not-a-lens',
+        names: [
+          'b',
+          'types',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'rule "no-any-written" opens with "no-"; a slug says what holds',
+      }),
+      findingOf({
+        code: 'slug-opens-with-no',
+        names: [
+          'no-any-written',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message: 'rule "c" has no Why',
+      }),
+      findingOf({
+        code: 'rule-without-why',
+        names: [
+          'c',
+        ],
         path: PRINCIPLES,
-      },
+      }),
     ]);
   });
 
@@ -96,29 +118,47 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: `rule "dependencies-point-inward" is also defined in ${PRINCIPLES}`,
+      findingOf({
+        code: 'rule-defined-twice',
+        names: [
+          'dependencies-point-inward',
+          PRINCIPLES,
+        ],
         path: WORKFLOW,
-      },
+      }),
     ]);
   });
 
-  it.each([
+  it.each<{
+    code: string;
+    names: string[];
+    parent: string;
+  }>([
     {
-      expected:
-        'rule "i18n-plurals-by-cldr" carries out "four-data-states" of ui, which its block may not refer to',
+      code: 'parent-out-of-reach',
+      names: [
+        'i18n-plurals-by-cldr',
+        'four-data-states',
+        'ui',
+      ],
       parent: 'four-data-states',
     },
     {
-      expected:
-        'rule "i18n-plurals-by-cldr" carries out a chain that comes back to it: i18n-plurals-by-cldr → i18n-plurals-by-cldr',
+      code: 'parent-chain-cycle',
+      names: [
+        'i18n-plurals-by-cldr → i18n-plurals-by-cldr',
+      ],
       parent: 'i18n-plurals-by-cldr',
     },
     {
-      expected: 'rule "i18n-plurals-by-cldr" carries out "plurals-by-icu", which is not a rule',
+      code: 'parent-not-a-rule',
+      names: [
+        'i18n-plurals-by-cldr',
+        'plurals-by-icu',
+      ],
       parent: 'plurals-by-icu',
     },
-  ])('should report "$expected" when a rule carries out $parent', ({ expected, parent }) => {
+  ])('should report $code when a rule carries out $parent', ({ code, names, parent }) => {
     // Arrange
     const files = validFiles();
     files[I18N] = `# i18n\n\n${rule({
@@ -133,27 +173,41 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: expected,
+      findingOf({
+        code,
+        names,
         path: I18N,
-      },
+      }),
     ]);
   });
 
-  it.each([
+  it.each<{
+    code: string;
+    names: string[];
+    parent: string;
+  }>([
     {
-      expected:
-        'rule "portals-for-overlays" carries out "optimistic-writes-roll-back" of ui with remote-data, which its place does not reach',
+      code: 'parent-seam-out-of-reach',
+      names: [
+        'portals-for-overlays',
+        'optimistic-writes-roll-back',
+        'ui',
+        'remote-data',
+      ],
       parent: 'optimistic-writes-roll-back',
     },
     {
-      expected:
-        'rule "portals-for-overlays" carries out "i18n-plurals-by-cldr" of i18n, which its block may not refer to',
+      code: 'parent-out-of-reach',
+      names: [
+        'portals-for-overlays',
+        'i18n-plurals-by-cldr',
+        'i18n',
+      ],
       parent: 'i18n-plurals-by-cldr',
     },
   ])(
-    'should report "$expected" when a rule carries out a parent its place cannot reach',
-    ({ expected, parent }) => {
+    'should report $code when a rule carries out a parent its place cannot reach',
+    ({ code, names, parent }) => {
       // Arrange
       const files = validFiles();
       files[PORTALS] = `# Portals\n\n${rule({
@@ -168,10 +222,11 @@ describe('rulesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        {
-          message: expected,
+        findingOf({
+          code,
+          names,
           path: PORTALS,
-        },
+        }),
       ]);
     },
   );
@@ -202,16 +257,20 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'rule "dependencies-point-inward" carries out a chain that comes back to it: dependencies-point-inward → names-reveal-intent → dependencies-point-inward',
+      findingOf({
+        code: 'parent-chain-cycle',
+        names: [
+          'dependencies-point-inward → names-reveal-intent → dependencies-point-inward',
+        ],
         path: PRINCIPLES,
-      },
-      {
-        message:
-          'rule "names-reveal-intent" carries out a chain that comes back to it: names-reveal-intent → dependencies-point-inward → names-reveal-intent',
+      }),
+      findingOf({
+        code: 'parent-chain-cycle',
+        names: [
+          'names-reveal-intent → dependencies-point-inward → names-reveal-intent',
+        ],
         path: PRINCIPLES,
-      },
+      }),
     ]);
   });
 
@@ -221,7 +280,7 @@ describe('rulesCheck', () => {
         parent: 'dependencies-point-inward',
         slug: 'portals-for-overlays',
       },
-      condition: 'a rule on workflow carries out a MUST rule of the base',
+      condition: 'a rule on workflow carries out a MUST rule of foundation',
       parentLevel: 'MUST',
     },
     {
@@ -256,9 +315,13 @@ describe('rulesCheck', () => {
         file: I18N,
         slug: 'i18n-plurals-by-cldr',
       },
-      condition: 'a rule of the base carries out a workflow rule',
-      expected:
-        'rule "i18n-plurals-by-cldr" carries out "rules-bind" on workflow, which a rule on the base may not refer to',
+      condition: 'a rule of foundation carries out a workflow rule',
+      names: [
+        'i18n-plurals-by-cldr',
+        'rules-bind',
+        'workflow',
+        'foundation',
+      ],
       parent: 'rules-bind',
     },
     {
@@ -267,11 +330,15 @@ describe('rulesCheck', () => {
         slug: 'reads-are-cancellable',
       },
       condition: 'an architecture rule carries out a workflow rule',
-      expected:
-        'rule "reads-are-cancellable" carries out "rules-bind" on workflow, which a rule on architecture may not refer to',
+      names: [
+        'reads-are-cancellable',
+        'rules-bind',
+        'workflow',
+        'architecture',
+      ],
       parent: 'rules-bind',
     },
-  ])('should report the reference when $condition', ({ child, expected, parent }) => {
+  ])('should report the reference when $condition', ({ child, names, parent }) => {
     // Arrange
     const files = validFiles();
     files[child.file] = `# Chapter\n\n${rule({
@@ -285,10 +352,11 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: expected,
+      findingOf({
+        code: 'parent-off-axis',
+        names,
         path: child.file,
-      },
+      }),
     ]);
   });
 
@@ -322,11 +390,16 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'rule "portals-for-overlays" is SHOULD while it carries out the MUST rule "four-data-states"; a rule is never looser than the rule it carries out',
+      findingOf({
+        code: 'rule-looser-than-parent',
+        names: [
+          'portals-for-overlays',
+          'SHOULD',
+          'MUST',
+          'four-data-states',
+        ],
         path: PORTALS,
-      },
+      }),
     ]);
   });
 
@@ -345,11 +418,14 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'rule "portals-for-overlays" carries out "four-data-states" without a level; a rule that carries out another states its own, never looser than it',
+      findingOf({
+        code: 'rule-without-level',
+        names: [
+          'portals-for-overlays',
+          'four-data-states',
+        ],
         path: PORTALS,
-      },
+      }),
     ]);
   });
 
@@ -382,49 +458,58 @@ describe('rulesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        {
-          message: `rule "${slug}" carries out "${parent}", a rule of its own block; a rule carries out only a rule of another block`,
+        findingOf({
+          code: 'parent-in-own-block',
+          names: [
+            slug,
+            parent,
+          ],
           path: file,
-        },
+        }),
       ]);
     },
   );
 
   it.each<{
     body: string;
+    chapter: string;
     condition: string;
-    section: string;
+    file: string;
   }>([
     {
-      body: `# Types\n\n## Names\n\n${rule({
+      body: `# Types\n\n## Principles\n\n${rule({
         parent: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,
-      condition: 'under a section named for another chapter',
-      section: 'Names',
+      chapter: 'Types',
+      condition:
+        "of a language sits in a chapter titled for another, under a section named for its parent's",
+      file: TYPES,
     },
     {
-      body: `# Types\n\n${rule({
+      body: `# Delivery\n\n## General\n\n${rule({
         parent: 'dependencies-point-inward',
-        slug: 'types-point-inward',
+        slug: 'delivery-points-inward',
       })}`,
-      condition: 'in a chapter file named for another chapter',
-      section: 'Types',
+      chapter: 'Delivery',
+      condition: 'of a platform sits in a chapter titled for another',
+      file: DELIVERY,
     },
     {
       body: rule({
         parent: 'dependencies-point-inward',
         slug: 'types-point-inward',
       }),
-      condition: 'under no section and no title',
-      section: 'no section',
+      chapter: 'untitled',
+      condition: 'of a language sits in a file with no title',
+      file: TYPES,
     },
   ])(
-    'should report a rule of a language that carries out a rule of core $condition',
-    ({ body, section }) => {
+    'should report a rule that carries out a rule of core when it $condition',
+    ({ body, chapter, file }) => {
       // Arrange
       const files = validFiles();
-      files[TYPES] = body;
+      files[file] = body;
       const input = checkInputOf(files);
 
       // Act
@@ -432,44 +517,27 @@ describe('rulesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        {
-          message: `rule "types-point-inward" sits under "${section}" while it carries out "dependencies-point-inward" of the chapter "Principles"; a rule of a language or a platform sits in the section named for its parent's chapter`,
-          path: TYPES,
-        },
+        findingOf({
+          code: 'rule-outside-parent-chapter',
+          names: [
+            chapter,
+            'dependencies-point-inward',
+            'Principles',
+          ],
+          path: file,
+        }),
       ]);
     },
   );
 
-  it('should report a rule of a platform that carries out a rule of core under a section named for another chapter', () => {
-    // Arrange
-    const files = validFiles();
-    files[DELIVERY] = `# Delivery\n\n## Names\n\n${rule({
-      parent: 'dependencies-point-inward',
-      slug: 'delivery-points-inward',
-    })}`;
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = rulesCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message:
-          'rule "delivery-points-inward" sits under "Names" while it carries out "dependencies-point-inward" of the chapter "Principles"; a rule of a language or a platform sits in the section named for its parent\'s chapter',
-        path: DELIVERY,
-      },
-    ]);
-  });
-
-  it('should report a rule of a language whose parent sits in a file with no title', () => {
+  it('should report a rule of a language whose parent of core sits in a file with no title', () => {
     // Arrange
     const files = validFiles();
     files[UNTITLED] = rule({
-      slug: 'untitled-rule',
+      slug: 'bare-rule',
     });
-    files[TYPES] = `# Types\n\n## Types\n\n${rule({
-      parent: 'untitled-rule',
+    files[TYPES] = `# Types\n\n## General\n\n${rule({
+      parent: 'bare-rule',
       slug: 'types-point-inward',
     })}`;
     const input = checkInputOf(files);
@@ -479,75 +547,55 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'rule "types-point-inward" sits under "Types" while it carries out "untitled-rule" of the chapter "untitled"; a rule of a language or a platform sits in the section named for its parent\'s chapter',
+      findingOf({
+        code: 'rule-outside-parent-chapter',
+        names: [
+          'types-point-inward',
+          'Types',
+          'bare-rule',
+          'untitled',
+        ],
         path: TYPES,
-      },
+      }),
     ]);
   });
 
   it.each([
     {
-      browser: `# Browser\n\n## Render\n\n${rule({
-        slug: 'window-never-read-during-render',
-      })}`,
-      chapter: 'Render',
-      condition: 'the section its parent sits in',
-      section: 'Browser',
-    },
-    {
-      browser: `# Browser\n\n${rule({
-        slug: 'window-never-read-during-render',
-      })}`,
-      chapter: 'Browser',
-      condition: "the title of its parent's chapter file",
-      section: 'Render',
-    },
-  ])(
-    'should report a rule of a seam with a platform that sits elsewhere than $condition',
-    ({ browser, chapter, section }) => {
-      // Arrange
-      const files = validFiles();
-      files[BROWSER] = browser;
-      files[TYPESCRIPT_WITH_BROWSER] = `# TypeScript with browser\n\n## ${section}\n\n${rule({
-        parent: 'window-never-read-during-render',
-        slug: 'window-read-after-render',
-      })}`;
-      const input = checkInputOf(files);
-
-      // Act
-      const findings = rulesCheck(input);
-
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          message: `rule "window-read-after-render" sits under "${section}" while it carries out "window-never-read-during-render" of the chapter "${chapter}"; a rule of a language or a platform sits in the section named for its parent's chapter`,
-          path: TYPESCRIPT_WITH_BROWSER,
-        },
-      ]);
-    },
-  );
-
-  it.each([
-    {
-      condition: "a rule of a language sits under its parent's chapter",
+      condition: "a rule of a language sits in the chapter titled like its parent's, under General",
       file: TYPES,
-      body: `# Types\n\n## Principles\n\n${rule({
+      body: `# Principles\n\n## General\n\n${rule({
         parent: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,
     },
     {
-      condition: "a rule of a language sits in a chapter file named for its parent's chapter",
+      condition:
+        "a rule of a language sits in the chapter titled like its parent's, under a part of it",
       file: TYPES,
-      body: `# Principles\n\n${rule({
+      body: `# Principles\n\n## Imports\n\n${rule({
         parent: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,
     },
     {
-      condition: 'a rule of a domain sits under a section of its own',
+      condition: 'a rule of a seam of a language carries out a rule of core',
+      file: TYPESCRIPT_WITH_BROWSER,
+      body: `# Browser\n\n## General\n\n${rule({
+        parent: 'dependencies-point-inward',
+        slug: 'window-points-inward',
+      })}`,
+    },
+    {
+      condition: 'a rule of a platform carries out a rule of a domain',
+      file: DELIVERY,
+      body: `# Delivery\n\n## General\n\n${rule({
+        parent: 'secret-never-held-by-the-client',
+        slug: 'secret-never-delivered',
+      })}`,
+    },
+    {
+      condition: 'a rule of a domain sits in a chapter of its own',
       file: I18N,
       body: `# Plurals\n\n## Forms\n\n${rule({
         parent: 'dependencies-point-inward',

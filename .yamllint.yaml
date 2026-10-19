@@ -1,4 +1,4 @@
-extends: .droneey/constitution/presets/yaml/yamllint/self.yaml
+extends: .droneey/constitution/presets/yaml/yamllint/foundation/self.yaml
 
 # .gitignore's paths, the environment uv builds and the lockfiles mise writes
 ignore: |

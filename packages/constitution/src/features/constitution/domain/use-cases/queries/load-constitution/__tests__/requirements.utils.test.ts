@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { findingOf } from '../../../../../__tests__/constitution.fixtures';
 import type { RequirementAnswer } from '../../../../entities';
 import { parseRequirements } from '../requirements.utils';
 
@@ -192,10 +193,13 @@ describe('parseRequirements', () => {
     expect(parsed).toStrictEqual({
       answers: [],
       findings: [
-        {
-          message: `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <met> |"`,
+        findingOf({
+          code: 'requirements-row-misshapen',
+          names: [
+            row,
+          ],
           path: FILE,
-        },
+        }),
       ],
     });
   });
@@ -218,10 +222,13 @@ describe('parseRequirements', () => {
     expect(parsed).toStrictEqual({
       answers: [],
       findings: [
-        {
-          message: `has the header "${header}" in its Requirements; it is "| Requirement | How | Met |"`,
+        findingOf({
+          code: 'requirements-header-misshapen',
+          names: [
+            header,
+          ],
           path: FILE,
-        },
+        }),
       ],
     });
   });
@@ -245,10 +252,13 @@ describe('parseRequirements', () => {
       expect(parsed).toStrictEqual({
         answers: [],
         findings: [
-          {
-            message: `has the heading "${heading}", which names the Requirements section; it is "## Requirements"`,
+          findingOf({
+            code: 'requirements-heading-misshapen',
+            names: [
+              heading,
+            ],
             path: FILE,
-          },
+          }),
         ],
       });
     },

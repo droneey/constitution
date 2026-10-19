@@ -4,7 +4,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { strykerPlugins } from '@droneey/mutation-check/runner';
 
-import bunTest from '../../presets/typescript/stryker/bun-test.mjs';
+import bunTest from '../../presets/typescript/stryker/foundation/bun-test.mjs';
 import { mutationOf } from './stryker-preset.fixtures';
 
 // Each case runs a whole Stryker process, which takes several seconds on a CI

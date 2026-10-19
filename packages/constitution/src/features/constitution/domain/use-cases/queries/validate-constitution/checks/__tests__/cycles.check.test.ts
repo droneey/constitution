@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { cyclesCheck } from '../cycles.check';
 
 const requiring = (input: { id: string; requires: readonly string[] }): Files => ({
-  [`blocks/implementations/${input.id}/${input.id}.md`]: mainFile({
+  [`blocks/implementations/${input.id}/${input.id}.md`]: passportFile({
     body: `# ${input.id}\n`,
     id: input.id,
     requires: input.requires,
@@ -68,10 +72,13 @@ describe('cyclesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'is part of a dependency cycle: biome → lingui → biome',
+      findingOf({
+        code: 'dependency-cycle',
+        names: [
+          'biome → lingui → biome',
+        ],
         path: 'blocks/implementations/biome/biome.md',
-      },
+      }),
     ]);
   });
 
@@ -106,7 +113,7 @@ describe('cyclesCheck', () => {
     },
     {
       files: {
-        'blocks/contexts/platforms/browser/browser.md': mainFile({
+        'blocks/contexts/platforms/browser/browser.md': passportFile({
           body: '# Browser\n',
           id: 'browser',
           requires: [

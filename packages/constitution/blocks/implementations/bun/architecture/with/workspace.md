@@ -1,6 +1,8 @@
 # Workspace
 
-> The globs of a Bun workspace laid out by the workspace's tree.
+> Governs the globs of a Bun workspace laid out by the workspace's tree.
+
+## General
 
 ### workspaces-globbed-by-the-tree · SHOULD
 

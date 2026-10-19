@@ -5,6 +5,11 @@ import type { BindingsParser } from '../../../contracts';
 import type { Binding, PresetFile } from '../../../entities';
 import { PresetFileKind, presetPathOf } from '../../../utils';
 
+enum BindingsFileCode {
+  NotYaml = 'bindings-not-yaml',
+  OffSchema = 'bindings-off-schema',
+}
+
 interface BindingsLoaded {
   bindings: readonly Binding[];
   findings: readonly Finding[];
@@ -25,6 +30,7 @@ const loadFile = (input: {
       bindings: [],
       findings: [
         {
+          code: BindingsFileCode.NotYaml,
           message: `is not valid YAML: ${read.reason}`,
           path,
         },
@@ -36,6 +42,7 @@ const loadFile = (input: {
     return {
       bindings: [],
       findings: read.issues.map((issue) => ({
+        code: BindingsFileCode.OffSchema,
         message: `does not match its schema: ${issue.field === '' ? '<root>' : issue.field}: ${issue.message}`,
         path,
       })),

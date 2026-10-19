@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { frontMatterCheck } from '../front-matter.check';
 
@@ -16,7 +20,7 @@ describe('frontMatterCheck', () => {
     // Arrange
     const input = checkInputOf({
       ...validFiles(),
-      [CORE]: mainFile({
+      [CORE]: passportFile({
         abstract: true,
         body: '# Core\n',
         id: 'core',
@@ -28,20 +32,25 @@ describe('frontMatterCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'sets "abstract", which a core block leaves empty',
+      findingOf({
+        code: 'field-outside-layer',
+        names: [
+          'abstract',
+          'core',
+        ],
         path: CORE,
-      },
-      {
-        message: 'is abstract, so its id starts with "_"',
+      }),
+      findingOf({
+        code: 'abstract-id-without-underscore',
         path: CORE,
-      },
+      }),
     ]);
   });
 
   it.each<{
     block: BlockFixture;
-    expected: string;
+    code: string;
+    names?: readonly string[];
     path: string;
   }>([
     {
@@ -49,7 +58,11 @@ describe('frontMatterCheck', () => {
         body: '# UI\n',
         id: 'ux',
       },
-      expected: 'declares the id "ux"; its folder names it "ui"',
+      code: 'id-mismatches-folder',
+      names: [
+        'ux',
+        'ui',
+      ],
       path: UI,
     },
     {
@@ -60,7 +73,11 @@ describe('frontMatterCheck', () => {
           'i18n',
         ],
       },
-      expected: 'sets "requires", which a core block leaves empty',
+      code: 'field-outside-layer',
+      names: [
+        'requires',
+        'core',
+      ],
       path: CORE,
     },
     {
@@ -69,7 +86,11 @@ describe('frontMatterCheck', () => {
         extends: 'i18n',
         id: 'core',
       },
-      expected: 'sets "extends", which a core block leaves empty',
+      code: 'field-outside-layer',
+      names: [
+        'extends',
+        'core',
+      ],
       path: CORE,
     },
     {
@@ -80,7 +101,11 @@ describe('frontMatterCheck', () => {
           'typescript',
         ],
       },
-      expected: 'sets "languages", which a language block leaves empty',
+      code: 'field-outside-layer',
+      names: [
+        'languages',
+        'language',
+      ],
       path: TYPESCRIPT,
     },
     {
@@ -91,7 +116,11 @@ describe('frontMatterCheck', () => {
           'typescript',
         ],
       },
-      expected: 'sets "languages", which a platform block leaves empty',
+      code: 'field-outside-layer',
+      names: [
+        'languages',
+        'platform',
+      ],
       path: BROWSER,
     },
     {
@@ -102,7 +131,10 @@ describe('frontMatterCheck', () => {
           'ui',
         ],
       },
-      expected: 'languages lists ui, which is not a language block',
+      code: 'languages-names-no-language',
+      names: [
+        'ui',
+      ],
       path: BIOME,
     },
     {
@@ -113,7 +145,10 @@ describe('frontMatterCheck', () => {
           'kotlin',
         ],
       },
-      expected: 'languages lists kotlin, which is not a language block',
+      code: 'languages-names-no-language',
+      names: [
+        'kotlin',
+      ],
       path: BIOME,
     },
     {
@@ -124,7 +159,11 @@ describe('frontMatterCheck', () => {
           'Screen',
         ],
       },
-      expected: 'sets "dictionary", which a domain block leaves empty',
+      code: 'field-outside-layer',
+      names: [
+        'dictionary',
+        'domain',
+      ],
       path: UI,
     },
     {
@@ -133,7 +172,7 @@ describe('frontMatterCheck', () => {
         body: '# React\n',
         id: '_react',
       },
-      expected: 'has an id starting with "_", so it is abstract',
+      code: 'underscore-id-not-abstract',
       path: 'blocks/implementations/_react/_react.md',
     },
     {
@@ -142,16 +181,16 @@ describe('frontMatterCheck', () => {
         body: '# Biome\n',
         id: 'biome',
       },
-      expected: 'is abstract, so its id starts with "_"',
+      code: 'abstract-id-without-underscore',
       path: BIOME,
     },
   ])(
-    'should report "$expected" when a block breaks a rule of its front matter',
-    ({ block, expected, path }) => {
+    'should report $code when a block breaks a rule of its front matter',
+    ({ block, path, ...finding }) => {
       // Arrange
       const input = checkInputOf({
         ...validFiles(),
-        [path]: mainFile(block),
+        [path]: passportFile(block),
       });
 
       // Act
@@ -159,10 +198,10 @@ describe('frontMatterCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        {
-          message: expected,
+        findingOf({
+          ...finding,
           path,
-        },
+        }),
       ]);
     },
   );

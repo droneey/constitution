@@ -2,7 +2,7 @@
 
 > The Constitution's site: its documentation and its blocks, rendered from the repository.
 
-The site reads the repository's Markdown as GitHub shows it — the README, `docs/`, `PROJECT.md`'s glossary, `DECISIONS.md`, `CONTRIBUTING.md` and core's blocks — and prerenders every page into a static site. The README's Documentation section is its sidebar; a link between two files becomes a link between their pages, and a link to a file the site does not render leads to GitHub.
+The site reads the repository's Markdown as GitHub shows it — the README, `docs/`, `PROJECT.md`'s glossary, `DECISIONS.md`, `CONTRIBUTING.md` and the blocks — and prerenders every page into a static site. The README's Documentation section is its sidebar; a link between two files becomes a link between their pages, and a link to a file the site does not render leads to GitHub.
 
 ## Run it
 

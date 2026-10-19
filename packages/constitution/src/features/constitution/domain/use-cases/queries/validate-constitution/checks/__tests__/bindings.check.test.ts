@@ -3,12 +3,12 @@ import { describe, expect, it } from 'bun:test';
 import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, findingOf, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { bindingsCheck } from '../bindings.check';
 
-const BINDINGS = 'presets/typescript/biome/bindings.yaml';
-const PART = 'presets/typescript/biome/_react.jsonc';
+const BINDINGS = 'presets/typescript/biome/foundation/bindings.yaml';
+const PART = 'presets/typescript/biome/foundation/_react.jsonc';
 const HOOKS_BINDING = '_react:\n  hooks-at-top-level: [useHookAtTopLevel]\n';
 
 const presetFiles = (): Files => ({
@@ -58,7 +58,7 @@ describe('bindingsCheck', () => {
     },
     {
       bindings: 'presets/typescript/biome/workflow/bindings.yaml',
-      name: 'a workflow part holds a rule of the base',
+      name: 'a workflow part holds a rule of foundation',
       part: 'presets/typescript/biome/workflow/ui.yaml',
       yaml: 'ui:\n  four-data-states: [cancel]\n',
     },
@@ -80,21 +80,34 @@ describe('bindingsCheck', () => {
 
   it.each([
     {
-      message: 'binds "hooks-anywhere", which is not a rule',
+      code: 'binding-names-no-rule',
       name: 'the rule does not exist',
+      names: [
+        'hooks-anywhere',
+      ],
       yaml: '  hooks-anywhere: [useHookAtTopLevel]\n',
     },
     {
-      message: 'binds reads-are-cancellable, a rule of architecture, under the base',
+      code: 'binding-off-axis',
       name: 'the rule sits on another axis',
+      names: [
+        'reads-are-cancellable',
+        'architecture',
+        'foundation',
+      ],
       yaml: '  reads-are-cancellable: [useHookAtTopLevel]\n',
     },
     {
-      message: `binds four-data-states to "noUselessFragments", which ${PART} does not hold`,
+      code: 'binding-setting-missing',
       name: 'the part does not spell the setting',
+      names: [
+        'four-data-states',
+        'noUselessFragments',
+        PART,
+      ],
       yaml: '  four-data-states: [noUselessFragments]\n',
     },
-  ])('should report the binding when $name', ({ message, yaml }) => {
+  ])('should report the binding when $name', ({ code, names, yaml }) => {
     // Arrange
     const files = {
       ...presetFiles(),
@@ -106,29 +119,38 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message,
+      findingOf({
+        code,
+        names,
         path: BINDINGS,
-      },
+      }),
     ]);
   });
 
   it.each([
     {
-      message:
-        'binds hooks-at-top-level, a rule of _react, to the part ui, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
+      code: 'binding-out-of-reach',
       name: 'a domain part holds a rule of a library',
-      part: 'presets/typescript/biome/ui.jsonc',
+      names: [
+        'hooks-at-top-level',
+        '_react',
+        'ui',
+      ],
+      part: 'presets/typescript/biome/foundation/ui.jsonc',
       yaml: 'ui:\n  hooks-at-top-level: [useHookAtTopLevel]\n',
     },
     {
-      message:
-        'binds hooks-at-top-level, a rule of _react, to the part self, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
+      code: 'binding-out-of-reach',
       name: "the tool's own part holds a rule of a library beside it",
-      part: 'presets/typescript/biome/self.jsonc',
+      names: [
+        'hooks-at-top-level',
+        '_react',
+        'self',
+      ],
+      part: 'presets/typescript/biome/foundation/self.jsonc',
       yaml: 'self:\n  hooks-at-top-level: [useHookAtTopLevel]\n',
     },
-  ])('should report the binding when $name', ({ message, part, yaml }) => {
+  ])('should report the binding when $name', ({ code, names, part, yaml }) => {
     // Arrange
     const files = {
       ...presetFiles(),
@@ -141,17 +163,18 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message,
+      findingOf({
+        code,
+        names,
         path: BINDINGS,
-      },
+      }),
     ]);
   });
 
   it.each([
     {
       binding: `${HOOKS_BINDING}browser:\n  four-data-states: [useHookAtTopLevel]\n`,
-      folder: '',
+      folder: 'foundation/',
       name: 'the part of a platform holds a rule of a domain above it',
       part: 'browser',
       scope: 'typescript',
@@ -165,21 +188,21 @@ describe('bindingsCheck', () => {
     },
     {
       binding: `${HOOKS_BINDING}ui:\n  biome-runs-in-the-check: [useHookAtTopLevel]\n`,
-      folder: '',
+      folder: 'foundation/',
       name: 'the part of a library holds a rule of the tool itself',
       part: 'ui',
       scope: 'typescript',
     },
     {
       binding: `${HOOKS_BINDING}i18n:\n  any-never-typed: [useHookAtTopLevel]\n`,
-      folder: '',
+      folder: 'foundation/',
       name: "a part of a language's scope holds a rule of its language",
       part: 'i18n',
       scope: 'typescript',
     },
     {
       binding: 'nowhere:\n  four-data-states: [useHookAtTopLevel]\n',
-      folder: '',
+      folder: 'foundation/',
       name: 'a part named after no block holds a rule',
       part: 'nowhere',
       scope: 'common',
@@ -191,7 +214,7 @@ describe('bindingsCheck', () => {
       [BINDINGS]: HOOKS_BINDING,
       [`presets/${scope}/biome/${folder}bindings.yaml`]: binding,
       [`presets/${scope}/biome/${folder}${part}.jsonc`]: '{ "useHookAtTopLevel": "error" }\n',
-      'blocks/implementations/biome/checks.md': `# Checks\n\n${rule({
+      'blocks/implementations/biome/foundation/checks.md': `# Checks\n\n${rule({
         slug: 'biome-runs-in-the-check',
       })}`,
     };
@@ -205,12 +228,12 @@ describe('bindingsCheck', () => {
 
   it('should report the binding when a part of every language holds a rule of a language', () => {
     // Arrange
-    const bindings = 'presets/common/biome/bindings.yaml';
+    const bindings = 'presets/common/biome/foundation/bindings.yaml';
     const files = {
       ...presetFiles(),
       [BINDINGS]: HOOKS_BINDING,
       [bindings]: 'i18n:\n  any-never-typed: [useHookAtTopLevel]\n',
-      'presets/common/biome/i18n.jsonc': '{ "useHookAtTopLevel": "error" }\n',
+      'presets/common/biome/foundation/i18n.jsonc': '{ "useHookAtTopLevel": "error" }\n',
     };
 
     // Act
@@ -218,11 +241,15 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'binds any-never-typed, a rule of typescript, to the part i18n, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
+      findingOf({
+        code: 'binding-out-of-reach',
+        names: [
+          'any-never-typed',
+          'typescript',
+          'i18n',
+        ],
         path: bindings,
-      },
+      }),
     ]);
   });
 
@@ -232,11 +259,12 @@ describe('bindingsCheck', () => {
     const files = {
       ...presetFiles(),
       [BINDINGS]: `${HOOKS_BINDING}ui:\n  four-data-states: [useHookAtTopLevel]\n`,
-      'presets/common/biome/ui.jsonc': setting,
+      'presets/common/biome/foundation/ui.jsonc': setting,
       'presets/typescript/biome/architecture/ui.jsonc': setting,
       'presets/typescript/biome/notes/ui.jsonc': setting,
-      'presets/typescript/biome/plugins/ui.grit': setting,
-      'presets/typescript/eslint/ui.jsonc': setting,
+      'presets/typescript/biome/ui.jsonc': setting,
+      'presets/typescript/biome/foundation/plugins/ui.grit': setting,
+      'presets/typescript/eslint/foundation/ui.jsonc': setting,
     };
 
     // Act
@@ -244,11 +272,17 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'binds four-data-states to the part ui, which presets/typescript/biome/ does not hold',
+      findingOf({
+        code: 'binding-part-missing',
+        names: [
+          'four-data-states',
+          'ui',
+          'typescript',
+          'biome',
+          'foundation/',
+        ],
         path: BINDINGS,
-      },
+      }),
     ]);
   });
 });

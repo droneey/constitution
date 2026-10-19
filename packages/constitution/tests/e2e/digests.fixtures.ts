@@ -1,14 +1,10 @@
 import { CORE_TEXT } from './constitution.fixtures';
 import { INSTALLED } from './plugin-root.fixtures';
 
-const CORE_FILES = [
-  "Core's chapters, blocks/core/<name>.md, and what each governs:",
-  '- code: any code no other chapter governs.',
-  '- principles',
-  '- architecture/principles',
-  '- workflow/delivery',
-].join('\n');
-const KEY = "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>.";
+// The digests a case pins whole, as a reader sees them: the one place their
+// wording is written down.
+const KEY =
+  "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
 const PLATFORMS = '## Platforms (blocks/contexts/platforms/<id>/<id>.md)';
 const LANGUAGES = '## Languages (blocks/contexts/languages/<id>/<id>.md)';
@@ -21,13 +17,19 @@ const contextWith = (input: {
   body?: readonly string[];
   facts: readonly string[];
   root: string;
+  warnings?: readonly string[];
 }): string =>
   [
     [
       firstLine(input.root),
       ...input.facts,
     ].join('\n'),
-    `${CORE_TEXT}${CORE_FILES}`,
+    ...(input.warnings === undefined
+      ? []
+      : [
+          input.warnings.join('\n'),
+        ]),
+    CORE_TEXT.trimEnd(),
     ...(input.body === undefined
       ? []
       : [
@@ -50,27 +52,27 @@ const browserAppContext = (root: string): string =>
     body: [
       DOMAINS,
       KEY,
-      '- analytics: Measuring how the product is used.',
-      '- i18n: Text in the user language.',
-      '- remote-data: Data another system owns. (architecture)',
-      '- ui: Screens and what a user sees on them. (architecture/forms, architecture/with/remote-data)',
-      '- unreliable-network: A network that drops and delays.',
-      '- untrusted-client: Code on a machine the user controls.',
-      '- version-control: History of the code. (workflow)',
+      '- analytics: Measuring how the product is used. (consent)',
+      '- i18n: Text in the user language. (plurals)',
+      '- remote-data: Data another system owns. (architecture: reads)',
+      '- ui: Screens and what a user sees on them. (screens; architecture: forms, with/remote-data)',
+      '- unreliable-network: A network that drops and delays. (retries)',
+      '- untrusted-client: Code on a machine the user controls. (secrets)',
+      '- version-control: History of the code. (workflow: commits)',
       PLATFORMS,
-      '- browser: Code that runs in a browser tab. (architecture)',
+      '- browser: Code that runs in a browser tab. (architecture: render)',
       LANGUAGES,
-      '- typescript: Code written in TypeScript.',
+      '- typescript: Code written in TypeScript. (types)',
       IMPLEMENTATIONS,
-      '- _react: React as every renderer shares it.',
-      '- betterleaks: Finds secrets in commits.',
-      '- biome: Formats and lints TypeScript.',
-      '- git: Git as the version control. (workflow)',
-      '- lefthook: Git hooks. (workflow)',
-      '- matomo: Matomo web analytics.',
-      '- react-dom: React in the browser. (architecture)',
-      '- tanstack-query: Server state in React. (architecture)',
-      '- paraglide (constitution): Paraglide messages, compiled per locale.',
+      '- _react (hooks)',
+      '- betterleaks',
+      '- biome',
+      '- git (workflow: tags)',
+      '- lefthook (workflow: hooks)',
+      '- matomo (tracking)',
+      '- react-dom (architecture: portals)',
+      '- tanstack-query (architecture: queries)',
+      '- paraglide [constitution]',
       '## Overrides',
       '- analytics-consent-first: SHOULD until 2999-12-31',
     ],
@@ -80,114 +82,37 @@ const browserAppContext = (root: string): string =>
     root,
   });
 
-const cliContext = (root: string): string =>
+const everyCodeContext = (root: string): string =>
   contextWith({
     body: [
       DOMAINS,
       KEY,
-      '- untrusted-client: Code on a machine the user controls.',
-      '- version-control: History of the code. (workflow)',
-      PLATFORMS,
-      '- cli: A program run from a terminal.',
+      '- analytics: Measuring how the product is used. (consent)',
+      '- ui: Screens and what a user sees on them. (screens; architecture: forms)',
+      '- version-control: History of the code. (workflow: commits)',
       LANGUAGES,
-      '- typescript: Code written in TypeScript.',
+      '- typescript: Code written in TypeScript. (types)',
       IMPLEMENTATIONS,
-      '- betterleaks: Finds secrets in commits.',
-      '- biome: Formats and lints TypeScript.',
-      '- bun: The runtime and package manager. (workflow)',
-      '- git: Git as the version control. (workflow)',
+      '- _react (hooks)',
+      '- git (workflow: tags)',
+      '- matomo (tracking)',
+      '- react-dom (architecture: portals)',
     ],
     facts: [
       'constitution.yaml makes 9 blocks active.',
     ],
     root,
+    warnings: [
+      '⚠️ Warnings — tell the user at the start of the session',
+      '- missing: react-dom needs browser — add browser to platforms',
+      '- abstract: _react cannot be listed — list react-dom',
+      '- unknown: tanstak-query is not a block — check the name',
+      '- wrong-key: ui is a domain — move it from implementations to domains',
+      '- config: constitution.yaml has no packages key — add packages: {}',
+      '- pack: packs/gone is not installed — run mise install, or check the path',
+      '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
+      '- override: four-data-states expired on 2020-01-01 — renew or remove it',
+    ],
   });
 
-const libraryContext = (root: string): string =>
-  contextWith({
-    body: [
-      DOMAINS,
-      KEY,
-      '- version-control: History of the code. (workflow)',
-      LANGUAGES,
-      '- typescript: Code written in TypeScript.',
-      IMPLEMENTATIONS,
-      '- betterleaks: Finds secrets in commits.',
-      '- biome: Formats and lints TypeScript.',
-      '- git: Git as the version control. (workflow)',
-      '- lefthook: Git hooks. (workflow)',
-      '## packages/react-kit',
-      '- ui (domains): Screens and what a user sees on them. (architecture/forms)',
-      '- unreliable-network (domains): A network that drops and delays.',
-      '- untrusted-client (domains): Code on a machine the user controls.',
-      '- browser (contexts/platforms): Code that runs in a browser tab. (architecture)',
-      '- _react (implementations): React as every renderer shares it.',
-      '- react-dom (implementations): React in the browser. (architecture)',
-      '## Overrides',
-      '- four-data-states: MAY in packages/react-kit',
-    ],
-    facts: [
-      'constitution.yaml makes 13 blocks active.',
-    ],
-    root,
-  });
-
-const packProjectContext = (root: string): string =>
-  contextWith({
-    body: [
-      DOMAINS,
-      KEY,
-      '- ui: Screens and what a user sees on them. (architecture/forms)',
-      '- unreliable-network: A network that drops and delays.',
-      '- untrusted-client: Code on a machine the user controls.',
-      '- version-control: History of the code. (workflow)',
-      PLATFORMS,
-      '- browser: Code that runs in a browser tab. (architecture)',
-      LANGUAGES,
-      '- typescript: Code written in TypeScript.',
-      IMPLEMENTATIONS,
-      '- _lint-base: What every TypeScript linter shares.',
-      '- _react: React as every renderer shares it.',
-      '- betterleaks: Finds secrets in commits.',
-      '- git: Git as the version control. (workflow)',
-      '- react-dom: React in the browser. (architecture)',
-      '- git-flow (constitution): Git flow: a branch per change, a tag per release.',
-      '- lint-kit (constitution): Lints TypeScript the way this team likes.',
-      '## packages/web',
-      '- i18n (domains): Text in the user language.',
-      '- paraglide (implementations): Paraglide messages, compiled per locale.',
-    ],
-    facts: [
-      'constitution.yaml makes 16 blocks active.',
-    ],
-    root,
-  });
-
-const htmlSiteContext = (root: string): string =>
-  contextWith({
-    body: [
-      DOMAINS,
-      KEY,
-      '- ui: Screens and what a user sees on them. (architecture/forms)',
-      '- unreliable-network: A network that drops and delays.',
-      '- untrusted-client: Code on a machine the user controls.',
-      '- version-control: History of the code. (workflow)',
-      PLATFORMS,
-      '- browser: Code that runs in a browser tab. (architecture)',
-      IMPLEMENTATIONS,
-      '- git: Git as the version control. (workflow)',
-    ],
-    facts: [
-      'constitution.yaml makes 7 blocks active.',
-    ],
-    root,
-  });
-
-export {
-  browserAppContext,
-  cliContext,
-  htmlSiteContext,
-  libraryContext,
-  packProjectContext,
-  unparsedContext,
-};
+export { browserAppContext, everyCodeContext, unparsedContext };

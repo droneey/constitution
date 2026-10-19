@@ -131,7 +131,7 @@ describe('createNodeBaseTree', () => {
       text: '# Core\r\n',
     });
     write({
-      path: 'presets/common/biome/self.jsonc',
+      path: 'presets/common/biome/foundation/self.jsonc',
       text: '{}\n',
     });
     write({

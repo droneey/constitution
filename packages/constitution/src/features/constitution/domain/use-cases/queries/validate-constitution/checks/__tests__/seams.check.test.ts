@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { seamsCheck } from '../seams.check';
 
-/** a seam titled as its other block's card in the valid files, so only its pairing is in question */
+/** a seam titled as its other block's passport in the valid files, so only its pairing is in question */
 const seamOf = (path: string): string => {
   const titles: Readonly<Record<string, string>> = {
     biome: 'Biome',
@@ -16,29 +20,45 @@ const seamOf = (path: string): string => {
 };
 
 describe('seamsCheck', () => {
-  it.each([
+  it.each<{
+    code: string;
+    names: string[];
+    path: string;
+  }>([
     {
-      expected:
-        'is named after biome, an implementation block; a platform block pairs only with domain blocks, platform blocks or language blocks',
+      code: 'seam-out-of-layer',
+      names: [
+        'biome',
+      ],
       path: 'blocks/contexts/platforms/browser/architecture/with/biome.md',
     },
     {
-      expected: 'is named after its own block',
-      path: 'blocks/domains/ui/with/ui.md',
+      code: 'seam-named-after-own-block',
+      names: [],
+      path: 'blocks/domains/ui/foundation/with/ui.md',
     },
     {
-      expected: 'is named after core, which is not a block it may pair with',
+      code: 'seam-names-no-pair',
+      names: [
+        'core',
+      ],
       path: 'blocks/domains/ui/workflow/with/core.md',
     },
     {
-      expected: 'is named after nowhere, which is not a block it may pair with',
+      code: 'seam-names-no-pair',
+      names: [
+        'nowhere',
+      ],
       path: 'blocks/domains/ui/architecture/with/nowhere.md',
     },
     {
-      expected: 'is a with/ file of core, which pairs with no block',
-      path: 'blocks/core/with/ui.md',
+      code: 'seam-of-unpairing-block',
+      names: [
+        'core',
+      ],
+      path: 'blocks/core/foundation/with/ui.md',
     },
-  ])('should report "$expected" when $path pairs with a block it may not', ({ expected, path }) => {
+  ])('should report $code when $path pairs with a block it may not', ({ code, names, path }) => {
     // Arrange
     const files = validFiles();
     files[path] = seamOf(path);
@@ -49,15 +69,16 @@ describe('seamsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: expected,
+      findingOf({
+        code,
+        names,
         path,
-      },
+      }),
     ]);
   });
 
   it.each([
-    'blocks/contexts/platforms/browser/with/typescript.md',
+    'blocks/contexts/platforms/browser/foundation/with/typescript.md',
     'blocks/contexts/platforms/browser/workflow/with/ui.md',
   ])('should accept %p when it pairs with a block of its own rank or above', (path) => {
     // Arrange
@@ -75,7 +96,7 @@ describe('seamsCheck', () => {
   it('should report a chapter named after a block when core lists it', () => {
     // Arrange
     const files = validFiles();
-    files['blocks/core/core.md'] = mainFile({
+    files['blocks/core/core.md'] = passportFile({
       body: '# Core\n',
       id: 'core',
     });
@@ -87,11 +108,27 @@ describe('seamsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'takes the id of the block ui; a file named after a block belongs in with/',
+      findingOf({
+        code: 'chapter-named-after-block',
+        names: [
+          'ui',
+        ],
         path: 'blocks/core/architecture/ui.md',
-      },
+      }),
     ]);
+  });
+
+  it("should take the title of the other block's passport when a chapter of it is titled otherwise", () => {
+    // Arrange
+    const files = validFiles();
+    files['blocks/domains/remote-data/foundation/caching.md'] = '# Remote data at large\n';
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = seamsCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
   });
 
   it.each([
@@ -103,22 +140,25 @@ describe('seamsCheck', () => {
       condition: 'has no title',
       title: 'Text.\n',
     },
-  ])("should report a seam that $condition rather than as the other block's card", ({ title }) => {
-    // Arrange
-    const path = 'blocks/contexts/platforms/browser/with/ui.md';
-    const files = validFiles();
-    files[path] = title;
-    const input = checkInputOf(files);
+  ])(
+    "should report a seam that $condition rather than as the other block's passport",
+    ({ title }) => {
+      // Arrange
+      const path = 'blocks/contexts/platforms/browser/foundation/with/ui.md';
+      const files = validFiles();
+      files[path] = title;
+      const input = checkInputOf(files);
 
-    // Act
-    const findings = seamsCheck(input);
+      // Act
+      const findings = seamsCheck(input);
 
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: "is titled otherwise than the other block's card, whose title a seam takes",
-        path,
-      },
-    ]);
-  });
+      // Assert
+      expect(findings).toStrictEqual([
+        findingOf({
+          code: 'seam-title-mismatch',
+          path,
+        }),
+      ]);
+    },
+  );
 });

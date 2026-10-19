@@ -87,7 +87,8 @@ const inProject = <T>(project: Project, run: (folder: string) => T): T => {
     ...project.files,
     'biome.json': JSON.stringify({
       extends: (project.parts ?? PARTS).map(
-        (part) => `./.droneey/constitution/presets/${part.replace('/', '/biome/')}.jsonc`,
+        (part) =>
+          `./.droneey/constitution/presets/${part.replace('/', '/biome/').replace(/\/biome\/(?!architecture\/|workflow\/)/, '/biome/foundation/')}.jsonc`,
       ),
       vcs: {
         enabled: false,

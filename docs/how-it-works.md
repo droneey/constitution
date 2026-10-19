@@ -22,11 +22,11 @@ A block of a narrower layer tightens the layers above it and never loosens them.
 
 ## Three axes
 
-Inside a block, a rule sits on one of three axes. A project always follows the base, and chooses the other two.
+Inside a block, a rule sits in a chapter of one of three axes, each a folder of one form: its chapters, named for what their rules govern, and its seams with other blocks. The block's passport beside them says what the block is and how it is set up. A project always follows `foundation/`, and chooses the other two.
 
 | Axis | Holds | A team leaves it out when |
 |---|---|---|
-| Base | what any team wants | never |
+| `foundation` | what any team wants | never |
 | `architecture` | layers, ports and adapters, the homes of input, output and state, the tree | it has another architecture |
 | `workflow` | branches, commits, review, hooks, release | it has another workflow |
 
