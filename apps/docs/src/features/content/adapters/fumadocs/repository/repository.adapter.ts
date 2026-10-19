@@ -11,10 +11,14 @@ import { pageSlugsOf } from '../../../domain/utils';
  */
 const inRepository = (path = ''): string => resolve('../..', path);
 
-/** the blocks the site renders; the others are read on GitHub */
-const SITE_BLOCKS = [
-  'core',
-];
+/** the folders of the blocks' layers, by the site's folder of each; a platform and a language sit under contexts/ */
+const BLOCK_LAYERS: Readonly<Record<string, string>> = {
+  core: 'core',
+  domains: 'domains',
+  implementations: 'implementations',
+  languages: 'contexts/languages',
+  platforms: 'contexts/platforms',
+};
 
 const QUICK_START = 'quick-start';
 
@@ -30,8 +34,15 @@ const SITE_DOCUMENTS: Readonly<Record<string, string>> = {
 /** the folder of the guides, each one a page of the site */
 const DOCS_FOLDER = 'docs/';
 
-/** the folder of the blocks, those of `SITE_BLOCKS` pages of the site */
+/** the folder of the blocks, every file of them a page of the site */
 const BLOCKS_FOLDER = 'packages/constitution/blocks/';
+
+/** the site's folders of the layers */
+const SITE_LAYERS = Object.keys(BLOCK_LAYERS);
+
+/** the site's folder of the layer a path from the root names, when it names a layer's folder */
+const blockLayerOf = (path: string): string | undefined =>
+  SITE_LAYERS.find((layer) => path === `${BLOCKS_FOLDER}${BLOCK_LAYERS[layer]}`);
 
 const MARKDOWN = '.md';
 
@@ -79,11 +90,7 @@ const addressOf = (baseUrl: string, path: string, hash: string): string => {
 
   const block = path.startsWith(BLOCKS_FOLDER) ? path.slice(BLOCKS_FOLDER.length) : undefined;
 
-  if (
-    block?.endsWith(MARKDOWN) &&
-    // Stryker disable next-line MethodExpression: the site renders one block folder, so some and every agree
-    SITE_BLOCKS.some((folder) => block.startsWith(`${folder}/`))
-  ) {
+  if (block?.endsWith(MARKDOWN)) {
     return (
       [
         baseUrl,
@@ -118,10 +125,13 @@ const repositoryPathOf = (from: string, url: string): RepositoryPath | undefined
 
 export {
   addressOf,
+  BLOCK_LAYERS,
+  BLOCKS_FOLDER,
+  blockLayerOf,
   GLOSSARY,
   inRepository,
   QUICK_START,
   repositoryPathOf,
-  SITE_BLOCKS,
   SITE_DOCUMENTS,
+  SITE_LAYERS,
 };

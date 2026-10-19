@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { addressOf, inRepository, repositoryPathOf } from '../repository.adapter';
+import { addressOf, blockLayerOf, inRepository, repositoryPathOf } from '../repository.adapter';
 import { enterRepository } from './repository.fixtures';
 
 const GITHUB = 'https://github.com/droneey/constitution';
@@ -131,16 +131,16 @@ describe('addressOf', () => {
       path: 'packages/constitution/blocks/core/names.md',
     },
     {
-      address: `${GITHUB}/blob/main/packages/constitution/blocks/domains/ui/ui.md#rule`,
-      condition: 'the link leads to a block the site does not render',
+      address: '/docs/domains/ui#rule',
+      condition: "the link leads to a rule of a domain's card",
       hash: 'rule',
       path: 'packages/constitution/blocks/domains/ui/ui.md',
     },
     {
-      address: `${GITHUB}/blob/main/packages/constitution/blocks/corex/corex.md`,
-      condition: 'the link leads to a block whose name starts like a rendered one',
+      address: '/docs/platforms/browser/with/ui',
+      condition: "the link leads to a platform's seam, which the site lifts out of contexts",
       hash: '',
-      path: 'packages/constitution/blocks/corex/corex.md',
+      path: 'packages/constitution/blocks/contexts/platforms/browser/with/ui.md',
     },
     {
       address: `${GITHUB}/blob/main/packages/constitution/blocks/core/core.txt`,
@@ -268,5 +268,40 @@ describe('repositoryPathOf', () => {
 
     // Assert
     expect(found).toBeUndefined();
+  });
+});
+
+describe('blockLayerOf', () => {
+  it.each([
+    {
+      layer: 'core',
+      path: 'packages/constitution/blocks/core',
+    },
+    {
+      layer: 'domains',
+      path: 'packages/constitution/blocks/domains',
+    },
+    {
+      layer: 'platforms',
+      path: 'packages/constitution/blocks/contexts/platforms',
+    },
+    {
+      layer: 'languages',
+      path: 'packages/constitution/blocks/contexts/languages',
+    },
+    {
+      layer: 'implementations',
+      path: 'packages/constitution/blocks/implementations',
+    },
+    {
+      layer: undefined,
+      path: 'packages/constitution/blocks/contexts',
+    },
+  ])('should give $layer as the site folder of $path', ({ layer, path }) => {
+    // Act
+    const folder = blockLayerOf(path);
+
+    // Assert
+    expect(folder).toBe(layer);
   });
 });

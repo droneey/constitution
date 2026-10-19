@@ -18,7 +18,7 @@
 | Testing | ADR-0046 – ADR-0048 |
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
-| Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095 |
+| Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095, ADR-0209 |
 | Tools and tests | ADR-0077 – ADR-0081, ADR-0083, ADR-0084, ADR-0086, ADR-0096, ADR-0099, ADR-0105, ADR-0138 |
 | Axes | ADR-0088, ADR-0089, ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
@@ -1577,3 +1577,15 @@
   - `version` in `constitution.yaml` alone: mise installs and links the release, so it reads its pin from `mise.toml`.
   - `packs` as the one optional key: a reader of the file could not tell a project with no packs from one that forgot them.
 - **Why.** One pin, where the release is installed from, leaves nothing to drift; and a file whose every key is written reads the same in every project (owner).
+
+## ADR-0209 — Placement lists core's chapters as links, in the order they are read
+
+**Date:** 2026-10-19 · **Status:** Accepted
+
+- **Decision.** The `placement` chapter lists core's chapters as links, axis by axis, in the order they are read — itself first, then the base's from `code` to `agents`, then `architecture/` and `workflow/`; a language or a platform names its sections after them in that order, as before. The site reads the order of core's sidebar from that list and stops its build when the list leaves a chapter out, names one core has not, or repeats one; the links resolve by the links check. The hook's digest keeps listing core's chapters by axis and name: an agent picks a chapter by what it governs, not by its place. Every other block keeps its chapters in the order of their names.
+- **Rejected.**
+  - A `chapters:` field in every card, `[]` where a block has no order: a field nearly every card leaves empty, for one block's need.
+  - A `chapters:` field in core's card alone: a field one card has and every other card is refused breaks the one format of a card.
+  - The order of the names everywhere, core's and the languages' sections alike: the order now runs from a line of code out to the agents at work on it, which the alphabet loses.
+  - The order kept in the site's own code: a second list beside placement's, which had already drifted for `architecture/`.
+- **Why.** The order already is a rule of placement, which a language's sections follow; written as links it is one list that an author reads and a program checks (owner).

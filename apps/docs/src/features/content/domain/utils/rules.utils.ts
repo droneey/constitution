@@ -56,11 +56,22 @@ const summaryLineOf = (markdown: string): string | undefined =>
     .find((line) => line.startsWith('> '))
     ?.slice('> '.length);
 
-/** the slugs of a block's file: a card, `<id>/<id>.md`, is its folder's page; a chapter keeps its name */
+/** the folder of the platforms' and the languages' blocks, which the site's addresses leave out */
+const CONTEXTS = 'contexts';
+
+/** whether a block's file is its card, `<id>/<id>.md` */
+const isCardPath = (path: string): boolean => {
+  const parts = path.split('/');
+
+  return parts.at(-1) === `${parts.at(-2)}.md`;
+};
+
+/** the slugs of a block's file: a card, `<id>/<id>.md`, is its folder's page; a chapter keeps its name; a context sits beside the other layers */
 const pageSlugsOf = (path: string): readonly string[] => {
   const parts = path.replace(/\.md$/, '').split('/');
+  const slugs = isCardPath(path) ? parts.slice(0, -1) : parts;
 
-  return parts.at(-1) === parts.at(-2) ? parts.slice(0, -1) : parts;
+  return slugs[0] === CONTEXTS ? slugs.slice(1) : slugs;
 };
 
 const unknownExamplesOf = (
@@ -78,6 +89,7 @@ const slugsOfMarkdownAddress = (segments: readonly string[]): readonly string[] 
 };
 
 export {
+  isCardPath,
   pageSlugsOf,
   ruleOf,
   ruleSlugsOf,

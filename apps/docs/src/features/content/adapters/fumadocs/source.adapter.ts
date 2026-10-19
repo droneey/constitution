@@ -8,35 +8,45 @@ import { docsRoute } from '#/shared/constants';
 import { blocks, documents, glossary, guide, overview, quickStart } from '#collections/server';
 
 import { cardAsIndex, crossLinks, markdownOfPage, renamed } from './pages.adapter';
-import { GLOSSARY, QUICK_START, SITE_DOCUMENTS, sidebarOf } from './repository';
-
-// Core's chapters in the order core's placement chapter names them, until the Constitution lists it as data.
-const CORE_ORDER = [
-  'placement',
-  'code',
-  'names',
-  'functions',
-  'relations',
-  'types',
-  'errors',
-  'effects',
-  'security',
-  'dependencies',
-  'tools',
-  'changes',
-  'layout',
-  'comments',
-  'tests',
-  'agents',
-  'architecture',
-  'workflow',
-];
+import {
+  BLOCK_LAYERS,
+  coreChaptersOf,
+  GLOSSARY,
+  layerBlocksOf,
+  QUICK_START,
+  SITE_DOCUMENTS,
+  sidebarOf,
+} from './repository';
 
 interface SidebarFolder {
   icon?: string;
   pages: string[];
-  title: string;
+  title?: string;
 }
+
+/** the title and icon of each layer's folder in the sidebar, by the site's folder */
+const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title'>>> = {
+  core: {
+    icon: 'ScrollText',
+    title: 'Core',
+  },
+  domains: {
+    icon: 'Shapes',
+    title: 'Domains',
+  },
+  implementations: {
+    icon: 'Wrench',
+    title: 'Implementations',
+  },
+  languages: {
+    icon: 'Code',
+    title: 'Languages',
+  },
+  platforms: {
+    icon: 'MonitorSmartphone',
+    title: 'Platforms',
+  },
+};
 
 type GuidePageData =
   ReturnType<typeof guide.toFumadocsSource> extends Source<infer TConfig>
@@ -78,6 +88,46 @@ const metaFile = (
   type: 'meta',
 });
 
+/** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
+const AXIS_SEPARATOR = '/';
+
+/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, and core's chapters in the order placement lists them */
+const blockFolders = (): ReturnType<typeof metaFile>[] => {
+  const chapters = coreChaptersOf();
+  const base = chapters.filter((chapter) => !chapter.includes(AXIS_SEPARATOR));
+  const axes = [
+    ...new Set(
+      chapters
+        .filter((chapter) => chapter.includes(AXIS_SEPARATOR))
+        .map((chapter) => chapter.slice(0, chapter.indexOf(AXIS_SEPARATOR))),
+    ),
+  ];
+
+  return [
+    ...Object.entries(BLOCK_LAYERS).map(([layer, folder]) =>
+      metaFile(`${layer}/meta.json`, {
+        ...LAYER_FOLDERS[layer],
+        pages:
+          layer === 'core'
+            ? [
+                ...base,
+                ...axes,
+              ]
+            : [
+                ...layerBlocksOf(folder),
+              ],
+      }),
+    ),
+    ...axes.map((axis) =>
+      metaFile(`core/${axis}/meta.json`, {
+        pages: chapters
+          .filter((chapter) => chapter.startsWith(`${axis}${AXIS_SEPARATOR}`))
+          .map((chapter) => chapter.slice(axis.length + AXIS_SEPARATOR.length)),
+      }),
+    ),
+  ];
+};
+
 /** the loader of every page the site renders, built when first asked, since building it reads the repository */
 const contentSource = lazily(() => {
   const sidebar = sidebarOf(docsRoute);
@@ -88,11 +138,7 @@ const contentSource = lazily(() => {
         pages: sidebar.pages,
         title: 'Constitution',
       }),
-      metaFile('core/meta.json', {
-        icon: 'ScrollText',
-        pages: CORE_ORDER,
-        title: 'Core',
-      }),
+      ...blockFolders(),
     ],
   };
 

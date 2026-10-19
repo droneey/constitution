@@ -81,7 +81,7 @@ describe('sidebarOf', () => {
       '[Layers][Precedence](/docs/core#precedence)',
       '[MapPin][Placement](/docs/core/placement)',
       '[Names](/docs/core/names)',
-      '[Blocks](https://github.com/droneey/constitution/tree/main/packages/constitution/blocks/domains)',
+      'domains',
     ]);
   });
 

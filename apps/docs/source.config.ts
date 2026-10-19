@@ -20,6 +20,7 @@ import {
   remarkSections,
 } from './src/features/content/adapters/fumadocs/remark';
 import {
+  BLOCK_LAYERS,
   documentIconOf,
   GLOSSARY,
   guideIconOf,
@@ -27,7 +28,6 @@ import {
   inRepository,
   QUICK_START,
   releaseOf,
-  SITE_BLOCKS,
   sectionSummaryOf,
   sidebarOf,
   taglineOf,
@@ -219,7 +219,7 @@ const blocks = defineDocs({
   docs: {
     async: true,
     files: [
-      'core/**/*.md',
+      '**/*.md',
     ],
     postprocess: {
       includeProcessedMarkdown: true,
@@ -230,7 +230,7 @@ const blocks = defineDocs({
         baseUrl: docsRoute,
         blocks: inRepository('packages/constitution/blocks'),
         examples: 'content/examples',
-        folders: SITE_BLOCKS,
+        folders: Object.values(BLOCK_LAYERS),
       });
 
       return await applyMdxPreset({

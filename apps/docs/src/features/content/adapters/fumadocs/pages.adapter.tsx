@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { docsRoute } from '#/shared/constants';
 
-import { pageSlugsOf } from '../../domain/utils';
+import { isCardPath, pageSlugsOf } from '../../domain/utils';
 
 interface MarkdownPage {
   data: {
@@ -40,11 +40,9 @@ const renamed = <
   }),
 });
 
-/** a block's card, `<id>/<id>.md`, served as its folder's index */
+/** a block's file by the path the site serves it under: a card, `<id>/<id>.md`, as its folder's index, a context's beside the other layers */
 const cardAsIndex = (path: string): string =>
-  pageSlugsOf(path).length < path.split('/').length
-    ? `${path.slice(0, path.lastIndexOf('/'))}/index.md`
-    : path;
+  `${pageSlugsOf(path).join('/')}${isCardPath(path) ? '/index' : ''}.md`;
 
 const collectionPathOf = (path: string): string => collectionPaths.get(path) ?? path;
 
