@@ -16,10 +16,11 @@ interface BodyProps {
   components?: MDXComponents;
 }
 
-/** a page's body as the browser loads it: its component, and its loading, which gives its outline */
+/** a page's body as the browser loads it: its component, its loading, which gives its outline, and that outline once loaded */
 interface PageBody {
   body: FC<BodyProps>;
   load: () => Promise<Loaded>;
+  loaded: () => Loaded | undefined;
 }
 
 /** the bodies of one collection, by their paths in it */
@@ -95,10 +96,21 @@ const COLLECTIONS: ReadonlyMap<string, Bodies> = new Map([
 /** the loading of each body, by its collection and path, so a render that asks again waits on the same */
 const loadings = new Map<string, Promise<Loaded>>();
 
+/**
+ * Each body once loaded, which a render reads at once, as the library's own renderer does: a page whose
+ * route loaded its body renders whole in its first commit, so the router finds a heading the address names.
+ */
+const loadedBodies = new Map<string, Loaded>();
+
 /** a body's loading, started once and kept, as React's `use` needs */
 const loadingOf = (type: string, path: string, bodies: Bodies): Promise<Loaded> => {
   const key = `${type}:${path}`;
-  const started = loadings.get(key) ?? bodies.loader.preload(path);
+  const started =
+    loadings.get(key) ??
+    bodies.loader.preload(path).then((loaded) => {
+      loadedBodies.set(key, loaded);
+      return loaded;
+    });
 
   loadings.set(key, started);
 
@@ -115,6 +127,7 @@ const pageBodyOf = (type: string, path: string): PageBody | undefined => {
   return {
     body: bodies.loader.getComponent(path),
     load: () => loadingOf(type, path, bodies),
+    loaded: () => loadedBodies.get(`${type}:${path}`),
   };
 };
 

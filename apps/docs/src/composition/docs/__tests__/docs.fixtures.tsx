@@ -96,6 +96,7 @@ const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry
     },
     description: 'The rules a repository is built by.',
     load: () => loaded,
+    loaded: (): undefined => undefined,
     title: 'Overview',
     ...overrides,
   };

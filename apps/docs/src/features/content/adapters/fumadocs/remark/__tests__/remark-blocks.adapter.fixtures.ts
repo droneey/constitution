@@ -42,7 +42,7 @@ export const headingOf = (children: PhrasingContent[]): RootContent => ({
   type: 'heading',
 });
 
-/** the line under a rule's heading: its level and its tags */
+/** the line of a rule's tags, closing its card */
 /** the line under a rule's heading that names the rule it tightens */
 export const parentLineOf = (children: PhrasingContent[]): RootContent => ({
   children,

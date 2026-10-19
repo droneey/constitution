@@ -80,7 +80,7 @@ function DocsContent({
   page: DocsPageEntry;
   path: string;
 }): ReactElement {
-  const { toc } = use(page.load());
+  const { toc } = page.loaded() ?? use(page.load());
   const Body = page.body;
   // here, not in the root: its lists are on the page only once this content, which waits for its body, is hydrated
   useGlide();
@@ -123,6 +123,12 @@ export interface DocsPageEntry {
   load: () => Promise<{
     toc: TOCItemType[];
   }>;
+  /** the body's outline once loaded, which the page reads without waiting */
+  loaded: () =>
+    | {
+        toc: TOCItemType[];
+      }
+    | undefined;
   title: string;
 }
 

@@ -275,36 +275,37 @@ const cardOf = (
   const example = options.examples.get(rule.slug);
   const table = body.find((node) => node.type === 'table');
   const tags = table === undefined ? [] : tagNamesOf(table);
-  const meta: Paragraph = {
-    children: [
-      span(part('rule-level', rule.level.toLowerCase()), [
-        text(rule.level),
-      ]),
-      ...tags.map((tag) =>
-        span(part('rule-tag'), [
-          text(tag),
-        ]),
-      ),
-    ],
-    data: {
-      hProperties: {
-        ...part('rule-meta'),
-      },
-    },
-    type: 'paragraph',
-  };
+  // the tags, closing the card, which a rule without tags leaves out
+  const meta: Paragraph[] =
+    tags.length === 0
+      ? []
+      : [
+          {
+            children: tags.map((tag) =>
+              span(part('rule-tag'), [
+                text(tag),
+              ]),
+            ),
+            data: {
+              hProperties: {
+                ...part('rule-meta'),
+              },
+            },
+            type: 'paragraph',
+          },
+        ];
 
   return {
     children: [
       heading,
       ...parentLineOf(rule.parent),
-      meta,
       ...body.map((node) => (node.type === 'table' ? whyOf(node) : node)),
       ...(example === undefined
         ? []
         : [
             exampleOf(example),
           ]),
+      ...meta,
     ],
     data: {
       hName: 'section',
@@ -361,6 +362,9 @@ const ruleHeading = (heading: Heading): void => {
           text(rule.level),
         ],
       ),
+    ]),
+    span(part('rule-level', rule.level.toLowerCase()), [
+      text(rule.level),
     ]),
     code(rule.slug),
     text(` [#${rule.slug}]`),

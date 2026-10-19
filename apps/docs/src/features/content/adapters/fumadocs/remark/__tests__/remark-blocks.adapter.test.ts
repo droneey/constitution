@@ -93,19 +93,19 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('name-says-what'),
             text(' [#name-says-what]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
-            tagOf('naming'),
-            tagOf('clarity'),
           ]),
           ...nodesOf('A name says what it holds.'),
           whyOf([
             text('A reader then knows.'),
           ]),
           ...nodesOf('#### Deeper\n\nMore.'),
+          metaOf([
+            tagOf('naming'),
+            tagOf('clarity'),
+          ]),
         ]),
         ...nodesOf('## Other\n\nAfter.'),
       ],
@@ -138,11 +138,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MAY,
+            levelOf('MAY', 'may'),
             inlineCode('name-is-short'),
             text(' [#name-is-short]'),
-          ]),
-          metaOf([
-            levelOf('MAY', 'may'),
           ]),
           whyOf([
             inlineCode('x'),
@@ -173,11 +171,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             SHOULD,
+            levelOf('SHOULD', 'should'),
             inlineCode('name-is-short'),
             text(' [#name-is-short]'),
-          ]),
-          metaOf([
-            levelOf('SHOULD', 'should'),
           ]),
           whyOf([]),
         ]),
@@ -218,11 +214,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             SHOULD,
+            levelOf('SHOULD', 'should'),
             inlineCode('name-is-short'),
             text(' [#name-is-short]'),
-          ]),
-          metaOf([
-            levelOf('SHOULD', 'should'),
           ]),
           whyOf([]),
         ]),
@@ -265,15 +259,13 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             SHOULD,
+            levelOf('SHOULD', 'should'),
             inlineCode('strict-name'),
             text(' [#strict-name]'),
           ]),
           parentLineOf([
             text('→ '),
             parent,
-          ]),
-          metaOf([
-            levelOf('SHOULD', 'should'),
           ]),
         ]),
       ],
@@ -294,11 +286,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('name-says-what'),
             text(' [#name-says-what]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
           ]),
         ]),
       ],
@@ -319,22 +309,18 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('first-rule'),
             text(' [#first-rule]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
           ]),
           ...nodesOf('First.'),
         ]),
         cardOf([
           headingOf([
             MAY,
+            levelOf('MAY', 'may'),
             inlineCode('second-rule'),
             text(' [#second-rule]'),
-          ]),
-          metaOf([
-            levelOf('MAY', 'may'),
           ]),
           ...nodesOf('Second.'),
         ]),
@@ -357,11 +343,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('first-rule'),
             text(' [#first-rule]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
           ]),
           ...nodesOf('First.'),
         ]),
@@ -469,11 +453,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('name-says-what'),
             text(' [#name-says-what]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
           ]),
           boxOf(
             {
@@ -561,11 +543,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('name-says-what'),
             text(' [#name-says-what]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
           ]),
           boxOf(
             {
@@ -628,11 +608,9 @@ describe('remarkBlocks', () => {
         cardOf([
           headingOf([
             MUST,
+            levelOf('MUST', 'must'),
             inlineCode('name-says-what'),
             text(' [#name-says-what]'),
-          ]),
-          metaOf([
-            levelOf('MUST', 'must'),
           ]),
           boxOf(
             {

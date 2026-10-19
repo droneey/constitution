@@ -104,6 +104,33 @@ describe('DocsPageScreen', () => {
     ]);
   });
 
+  test('should show the page in its first render when its route has loaded the body, so the router finds the heading an address names', () => {
+    // Arrange
+    const page = (
+      <DocsPageScreen
+        href='/docs'
+        page={pageEntryFixture({
+          loaded: () => ({
+            toc: [],
+          }),
+        })}
+        pageTree={pageTreeFixture()}
+        path='index.md'
+      />
+    );
+
+    // Act
+    renderInDocs(page);
+
+    // Assert
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Overview',
+      }).textContent,
+    ).toBe('Overview');
+  });
+
   test('should make the page the main region the skip link targets and the keyboard stops on', async () => {
     // Arrange
     renderInDocs(overviewPage());
