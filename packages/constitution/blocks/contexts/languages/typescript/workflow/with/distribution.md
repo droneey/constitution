@@ -2,7 +2,7 @@
 
 > Governs when a TypeScript package others install raises its floor.
 
-## Releases
+## Versions
 
 ### engines-floor-raised-only-in-a-major → runtime-floor-never-raised-in-a-patch · MUST
 

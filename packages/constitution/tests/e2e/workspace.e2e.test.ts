@@ -3,11 +3,13 @@ import { fileURLToPath } from 'node:url';
 
 import { afterEach, describe, expect, it } from 'bun:test';
 
+import { isFoundIn } from './python-template.fixtures';
 import { uvBinary } from './uv.fixtures';
 import {
   commitBase,
   createWorkspace,
   cruiserOf,
+  inAxis,
   manifestOf,
   PRESETS,
   PYTHON_PACKAGES,
@@ -41,7 +43,7 @@ const DEPENDENCY_CRUISER = `export default {
       'core',
       'typescript',
       'architecture/workspace',
-    ].map((part) => `./${PRESETS}/dependency-cruiser/${part}.mjs`),
+    ].map((part) => `./${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`),
   )},
 };
 `;
@@ -67,9 +69,9 @@ const cruisers = Object.fromEntries(
   ]),
 );
 
-const STRYKER = `import bunTest from '../../${PRESETS}/stryker/bun-test.mjs';
-import core from '../../${PRESETS}/stryker/core.mjs';
-import self from '../../${PRESETS}/stryker/self.mjs';
+const STRYKER = `import bunTest from '../../${PRESETS}/stryker/foundation/bun-test.mjs';
+import core from '../../${PRESETS}/stryker/foundation/core.mjs';
+import self from '../../${PRESETS}/stryker/foundation/self.mjs';
 
 export default {
   ...self,
@@ -328,7 +330,16 @@ describe('a workspace on the presets', () => {
     });
 
     // Assert
-    expect(output).toContain('structlog is imported in adapters/log, outside its home: root');
+    expect(
+      isFoundIn({
+        finding: [
+          'structlog',
+          'adapters/log',
+          'root',
+        ],
+        output,
+      }),
+    ).toBe(true);
   });
 
   it('should mutate the changed line of a unit when the mutation check runs from its folder', () => {

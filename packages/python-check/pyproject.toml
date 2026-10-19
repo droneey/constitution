@@ -49,7 +49,7 @@ min_confidence = 60
 max-complexity-allowed = 15
 
 [tool.ruff]
-extend = "../../.droneey/constitution/presets/python/ruff/pytest.toml"
+extend = "../../.droneey/constitution/presets/python/ruff/foundation/pytest.toml"
 target-version = "py314"
 
 [tool.ruff.lint.extend-per-file-ignores]
@@ -69,7 +69,7 @@ executor = "simple"
 "format:fix" = "ruff format"
 "lint:check" = "ruff check"
 "lint:fix" = "ruff check --fix"
-"type:check" = "ty check --config-file ../../.droneey/constitution/presets/python/ty/self.toml"
+"type:check" = "ty check --config-file ../../.droneey/constitution/presets/python/ty/foundation/self.toml"
 "code:check" = "python-check src tests"
 "complexity:check" = "complexipy src tests"
 test = "pytest --cov"

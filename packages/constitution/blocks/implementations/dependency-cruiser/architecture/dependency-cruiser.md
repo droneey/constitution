@@ -1,3 +1,0 @@
-# dependency-cruiser
-
-> Core's import rules are its layer matrix with its surfaces: the direction of every import, the independence of features and of composition modules, the homes of the root and of the adapters, the ports a binding unit never imports, the surfaces a module is reached through and the homes each block gives its packages. Where a file lives and how a folder is laid out no import shows, and a reviewer holds them. A global such as `Date.now()` used under `domain/` is held by a lint, or a reviewer, and a reviewer holds a vendor's package that a lib wraps and a unit outside the edge reaches through it.

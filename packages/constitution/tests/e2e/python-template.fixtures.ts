@@ -169,7 +169,8 @@ const runInTemplate = (input: { changes: Files; command: readonly string[] }): R
 const TASKS: Readonly<Record<string, string>> = {
   'format:check': 'ruff format --check',
   'lint:check': 'ruff check',
-  'type:check': 'ty check --config-file .droneey/constitution/presets/python/ty/self.toml',
+  'type:check':
+    'ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml',
   'code:check': 'python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests',
   'complexity:check': 'complexipy src tests',
   'architecture:check': 'lint-imports --no-logo',
@@ -211,6 +212,13 @@ const templateTable = (tool: string): unknown =>
   SETTINGS.parse(Bun.TOML.parse(PYPROJECT)).tool[tool];
 
 const partTable = (tool: string): unknown =>
-  SETTINGS.parse(Bun.TOML.parse(readFileSync(join(PRESETS, tool, 'core.toml'), 'utf8'))).tool[tool];
+  SETTINGS.parse(
+    Bun.TOML.parse(readFileSync(join(PRESETS, tool, 'foundation', 'core.toml'), 'utf8')),
+  ).tool[tool];
 
-export { partTable, python, runTask, templateTable };
+// Whether one line of a tool's output holds every text of a finding: the package,
+// the place and the home a finding names, say, rather than its sentence.
+const isFoundIn = (input: { finding: readonly string[]; output: string }): boolean =>
+  input.output.split('\n').some((line) => input.finding.every((text) => line.includes(text)));
+
+export { isFoundIn, partTable, python, runTask, templateTable };

@@ -1,16 +1,23 @@
 import type { Files } from './constitution.fixtures';
-import { blockFiles, rule } from './constitution.fixtures';
+import { blockFiles, chapterFile, rule } from './constitution.fixtures';
 
-const ACME = 'blocks/implementations/acme/acme.md';
+/** the file that holds acme's rule, a chapter of foundation */
+const ACME = 'blocks/implementations/acme/foundation/calls.md';
 
 // A pack of one implementation whose rule carries out a rule of the base's core.
 const packFiles = (parent = 'dependencies-point-inward'): Files => ({
   ...blockFiles({
-    body: `# Acme\n\n${rule({
-      parent,
-      slug: 'acme-called-inward',
-    })}`,
+    body: '# Acme\n',
     dir: 'blocks/implementations/acme',
+    files: {
+      'calls.md': chapterFile(
+        'Calls',
+        rule({
+          parent,
+          slug: 'acme-called-inward',
+        }),
+      ),
+    },
     governs: [
       '**/acme.*',
     ],

@@ -70,7 +70,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/biome-refuses-empty-names.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/biome-refuses-empty-names.grit",
       "includes": [
         "**",
         "!**/libs/**",

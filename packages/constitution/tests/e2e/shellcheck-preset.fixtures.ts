@@ -17,7 +17,14 @@ const SHELLCHECK_REPORT = z.array(
 );
 
 const REPOSITORY = join(import.meta.dir, '..', '..');
-const SHELLCHECK_RC = join(REPOSITORY, 'presets', 'shell', 'shellcheck', 'self.shellcheckrc');
+const SHELLCHECK_RC = join(
+  REPOSITORY,
+  'presets',
+  'shell',
+  'shellcheck',
+  'foundation',
+  'self.shellcheckrc',
+);
 const SHELLCHECK = miseBinary('shellcheck');
 
 // The project copies the archive's rc to .shellcheckrc; the spec points at it.

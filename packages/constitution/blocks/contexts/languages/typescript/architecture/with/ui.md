@@ -2,7 +2,7 @@
 
 > Governs the input and output a TypeScript component never reaches.
 
-## User interface
+## Components
 
 ### component-reaches-no-io-global → presentational-component-performs-no-io · MUST
 

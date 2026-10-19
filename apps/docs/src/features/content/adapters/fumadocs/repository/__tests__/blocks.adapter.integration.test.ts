@@ -7,18 +7,25 @@ import { enterRepository } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
 
-const PLACEMENT = [
-  '# Placement',
+// core's passport lists its chapters; a link in its prose, or in an item that names no axis folder, is no entry
+const PASSPORT = [
+  '# Core',
   '',
-  '- The base: [placement](placement.md), [code](code.md).',
+  'Prose may quote - `foundation/`: [code](foundation/code.md) mid-line.',
+  '',
+  '- `PROJECT.md`: [code](foundation/code.md).',
+  '',
+  '## Its chapters',
+  '',
+  '- `foundation/`: [placement](foundation/placement.md), [code](foundation/code.md).',
   '- `architecture/`: [layers](architecture/layers.md).',
   '',
 ].join('\n');
 
 const CORE_FILES = {
   [`${CORE}/architecture/layers.md`]: '# Layers\n',
-  [`${CORE}/code.md`]: '# Code\n',
-  [`${CORE}/core.md`]: '# Core\n',
+  [`${CORE}/foundation/code.md`]: '# Code\n',
+  [`${CORE}/foundation/placement.md`]: '# Placement\n',
 };
 
 const cardOf = (id: string, base: string): string =>
@@ -34,12 +41,12 @@ afterEach(() => {
 });
 
 describe('coreChaptersOf', () => {
-  it("should give core's chapters in the order placement lists them", () => {
+  it("should give core's chapters in the order its passport lists them", () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
         ...CORE_FILES,
-        [`${CORE}/placement.md`]: PLACEMENT,
+        [`${CORE}/core.md`]: PASSPORT,
       },
     }).leave;
 
@@ -48,8 +55,8 @@ describe('coreChaptersOf', () => {
 
     // Assert
     expect(chapters).toStrictEqual([
-      'placement',
-      'code',
+      'foundation/placement',
+      'foundation/code',
       'architecture/layers',
     ]);
   });
@@ -58,32 +65,32 @@ describe('coreChaptersOf', () => {
     {
       condition: 'leaves a chapter out',
       extra: {
-        [`${CORE}/names.md`]: '# Names\n',
+        [`${CORE}/foundation/names.md`]: '# Names\n',
       },
       named: 'names',
-      placement: PLACEMENT,
+      passport: PASSPORT,
     },
     {
       condition: 'lists a chapter core does not have',
       extra: {},
       named: 'types',
-      placement: `${PLACEMENT}- [types](types.md)\n`,
+      passport: `${PASSPORT}- \`foundation/\`: [types](foundation/types.md)\n`,
     },
     {
       condition: 'lists a chapter twice',
       extra: {},
       named: 'code twice',
-      placement: `${PLACEMENT}- [code](code.md)\n`,
+      passport: `${PASSPORT}- \`workflow/\`: [code](foundation/code.md)\n`,
     },
   ])(
-    'should stop the build, naming the entry, when placement $condition',
-    ({ extra, named, placement }) => {
+    'should stop the build, naming the entry, when the passport $condition',
+    ({ extra, named, passport }) => {
       // Arrange
       repository.leave = enterRepository({
         files: {
           ...CORE_FILES,
           ...extra,
-          [`${CORE}/placement.md`]: placement,
+          [`${CORE}/core.md`]: passport,
         },
       }).leave;
 
@@ -146,9 +153,9 @@ describe('axisFoldersOf', () => {
     repository.leave = enterRepository({
       files: {
         [`${domains}/i18n/i18n.md`]: cardOf('i18n', 'null'),
-        [`${domains}/ui/architecture/ui.md`]: '# UI\n',
+        [`${domains}/ui/architecture/state.md`]: '# State\n',
         [`${domains}/ui/ui.md`]: cardOf('ui', 'null'),
-        [`${domains}/ui/workflow/ui.md`]: '# UI\n',
+        [`${domains}/ui/workflow/reviews.md`]: '# Reviews\n',
       },
     }).leave;
 
@@ -164,7 +171,7 @@ describe('axisFoldersOf', () => {
 });
 
 describe('seamHoldersOf', () => {
-  it("should give each folder of a layer's blocks, root or axis, that holds seams", () => {
+  it("should give each axis folder of a layer's blocks that holds seams", () => {
     // Arrange
     const domains = 'packages/constitution/blocks/domains';
     repository.leave = enterRepository({
@@ -172,7 +179,7 @@ describe('seamHoldersOf', () => {
         [`${domains}/i18n/i18n.md`]: cardOf('i18n', 'null'),
         [`${domains}/ui/architecture/with/remote-data.md`]: '# Remote data\n',
         [`${domains}/ui/ui.md`]: cardOf('ui', 'null'),
-        [`${domains}/ui/with/i18n.md`]: '# i18n\n',
+        [`${domains}/ui/foundation/screens.md`]: '# Screens\n',
         [`${domains}/ui/workflow/with/i18n.md`]: '# i18n\n',
       },
     }).leave;
@@ -182,7 +189,6 @@ describe('seamHoldersOf', () => {
 
     // Assert
     expect(folders).toStrictEqual([
-      'domains/ui',
       'domains/ui/architecture',
       'domains/ui/workflow',
     ]);

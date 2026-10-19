@@ -1,4 +1,5 @@
-import { Axis, OPTIONAL_AXES } from '#/kernel/constants';
+import type { Axis } from '#/kernel/constants';
+import { AXES } from '#/kernel/constants';
 
 enum PresetFileKind {
   Bindings = 'bindings',
@@ -21,8 +22,8 @@ type PresetPath =
       tool: string;
     };
 
-// presets/<scope>/<tool>/, then architecture/ or workflow/ for an optional
-// axis, then bindings.yaml, <part>.<extension> or plugins/<rule>.grit
+// presets/<scope>/<tool>/<axis>/, the axis foundation, architecture or
+// workflow, then bindings.yaml, <part>.<extension> or plugins/<rule>.grit
 const PRESETS = 'presets';
 const BINDINGS = 'bindings.yaml';
 const PLUGINS = 'plugins';
@@ -71,14 +72,14 @@ const fileOf = (
 const presetPathOf = (path: string): PresetPath | undefined => {
   // Stryker disable next-line StringLiteral: the file needs a fourth segment, so the scope and the tool are there
   const [root, scope = '', tool = '', ...segments] = path.split('/');
-  const optional = OPTIONAL_AXES.find((axis) => axis === segments[0]);
-  const file = fileOf(optional === undefined ? segments : segments.slice(1));
+  const axis = AXES.find((candidate) => candidate === segments[0]);
+  const file = fileOf(segments.slice(1));
 
-  return root !== PRESETS || file === undefined
+  return root !== PRESETS || axis === undefined || file === undefined
     ? undefined
     : {
         ...file,
-        axis: optional ?? Axis.Foundation,
+        axis,
         scope,
         tool,
       };

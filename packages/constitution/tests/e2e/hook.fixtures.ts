@@ -4,7 +4,8 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { archiveOf, linkArchive } from './plugin-root.fixtures';
+import { CORE_TEXT } from './constitution.fixtures';
+import { archiveOf, coreBodyOfBytes, createPluginRoot, linkArchive } from './plugin-root.fixtures';
 
 enum HookEvent {
   Startup = 'startup',
@@ -232,38 +233,134 @@ const contextOf = (run: HookRun): string => outputOf(run).context;
 
 const linesOf = (context: string): readonly string[] => context.replace(/\n$/, '').split('\n');
 
-const CORE_CHAPTERS = "Core's chapters";
+// The digest is read by its marks, a list item's "- " and a heading's "## ", and
+// by the names it gives, never by its wording: a sentence reworded breaks no case.
+const ITEM = '- ';
+const HEADING = '## ';
+// The note that closes a block list cut short opens with the number of lines it leaves out.
+const NOTE = /^\d/u;
 
-// The line that opens core's chapters and the chapter lines under it.
-const coreLinesOf = (context: string): readonly string[] => {
-  const lines = linesOf(context);
-  const start = lines.findIndex((line) => line.startsWith(CORE_CHAPTERS));
+// A character of a name, a path or a date: a name is mentioned where none borders it.
+const NAME_CHARACTER = /[\w./-]/u;
 
-  if (start === -1) {
-    return [];
+const isMentioned = (input: { name: string; text: string }): boolean => {
+  const { name, text } = input;
+
+  for (let at = text.indexOf(name); at !== -1; at = text.indexOf(name, at + 1)) {
+    const after = at + name.length;
+    // a full stop that ends a sentence borders a name too
+    const isBorderedAfter =
+      !NAME_CHARACTER.test(text.charAt(after)) ||
+      (text.charAt(after) === '.' && !NAME_CHARACTER.test(text.charAt(after + 1)));
+
+    if (!NAME_CHARACTER.test(text.charAt(at - 1)) && isBorderedAfter) {
+      return true;
+    }
   }
 
-  const end = lines.findIndex((line, index) => index > start && !line.startsWith('- '));
-
-  return lines.slice(start, end === -1 ? undefined : end);
+  return false;
 };
+
+// The names a text mentions, of those given, in their given order.
+const mentionedOf = (input: { names: readonly string[]; text: string }): readonly string[] =>
+  input.names.filter((name) =>
+    isMentioned({
+      name,
+      text: input.text,
+    }),
+  );
+
+const numberIn = (line: string): number => Number(/\d+/u.exec(line)?.[0] ?? 0);
+
+const bytesOf = (lines: readonly string[]): number =>
+  lines.reduce((bytes, line) => bytes + Buffer.byteLength(line) + 1, 0);
 
 const headerOf = (context: string): readonly string[] =>
   linesOf(context.slice(0, context.indexOf('\n\n')));
 
-const factsOf = (context: string): readonly string[] => headerOf(context).slice(1);
+// The number the header's fact gives: how many blocks are active, or the line
+// at which constitution.yaml does not parse.
+const factNumberOf = (context: string): number => numberIn(headerOf(context)[1] ?? '');
 
+// The block list closes the digest, the paragraph after core's text: it opens
+// with a heading or, when none of its lines fit, is the note alone.
 const blockListOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
-  const chapters = coreLinesOf(context).length;
-  const start = lines.findIndex((line) => line.startsWith(CORE_CHAPTERS)) + chapters + 1;
+  const list = lines.slice(lines.lastIndexOf('') + 1);
+  const [first = ''] = list;
 
-  const end = lines.indexOf('', start);
-
-  return lines.slice(start, end === -1 ? undefined : end);
+  return first.startsWith(HEADING) || (list.length === 1 && NOTE.test(first)) ? list : [];
 };
 
-const warningsOf = (context: string): readonly string[] => {
+// The mark of an application's item that adds files to a block the repository lists.
+const ALSO = 'Also: ';
+
+const GROUP = /\([^()]*\)/gu;
+const LAST_GROUP = /\([^()]*\)$/u;
+
+// Where a line's first ": " outside brackets starts, or -1.
+const colonOf = (text: string): number =>
+  text.replace(GROUP, (group) => '_'.repeat(group.length)).indexOf(': ');
+
+// The bracketed group a text ends with, brackets and all, or ''.
+const lastGroupOf = (text: string): string => LAST_GROUP.exec(text)?.[0] ?? '';
+
+// An item as its id, the brackets that follow it and the bracketed files that
+// close it; the summary between, or an override's level, is left out.
+const itemOf = (line: string): string => {
+  const text = line.slice(ITEM.length);
+  const colon = colonOf(text);
+
+  if (colon === -1) {
+    return text;
+  }
+
+  const head = text.slice(0, colon);
+  const tail = text.slice(colon + ': '.length);
+  const files = tail.startsWith(ALSO) ? `(${tail.slice(ALSO.length)})` : lastGroupOf(tail);
+
+  return files === '' ? head : `${head} ${files}`;
+};
+
+// The block list as its headings, without the folder they name, and its items;
+// the summaries and the prose between are left out.
+const indexOf = (context: string): readonly string[] =>
+  blockListOf(context).flatMap((line) => {
+    if (line.startsWith(HEADING)) {
+      return [
+        line.split(' (')[0] ?? line,
+      ];
+    }
+
+    return line.startsWith(ITEM)
+      ? [
+          itemOf(line),
+        ]
+      : [];
+  });
+
+interface Cut {
+  // the lines given, or the warnings
+  kept: number;
+  // the number the note closing them gives, or 0 with no note
+  leftOut: number;
+}
+
+const cutOf = (lines: readonly string[]): Cut => {
+  const last = lines.at(-1) ?? '';
+  const leftOut = last.startsWith(ITEM) || last.startsWith(HEADING) ? 0 : numberIn(last);
+
+  return {
+    kept: lines.length - (leftOut > 0 ? 1 : 0),
+    leftOut,
+  };
+};
+
+// How many lines of the block list are given and how many its note leaves out.
+const listCutOf = (context: string): Cut => cutOf(blockListOf(context));
+
+// The heading of the warnings and the lines under it.
+const warningSectionOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
   const start = lines.findIndex((line) => line.startsWith(WARNINGS));
 
@@ -276,11 +373,108 @@ const warningsOf = (context: string): readonly string[] => {
   return lines.slice(start, end === -1 ? undefined : end);
 };
 
+const warningLinesOf = (context: string): readonly string[] =>
+  warningSectionOf(context).filter((line) => line.startsWith(ITEM));
+
+// Whether the warnings' heading carries, beyond its mark, the call to tell the user.
+const tellsTheUserOf = (context: string): boolean => {
+  const [heading] = warningSectionOf(context);
+
+  return heading !== undefined && heading !== WARNINGS;
+};
+
+// How many warnings are given and how many the note under them leaves out.
+const warningCutOf = (context: string): Cut => cutOf(warningSectionOf(context).slice(1));
+
+// A warning as its code, then the names it gives.
+type Warning = readonly string[];
+
+// Each warning given, read as its code and, of the names its counterpart in
+// `like` gives, those it mentions: the words around them are wording.
+const warningsOf = (input: { context: string; like: readonly Warning[] }): readonly Warning[] =>
+  warningLinesOf(input.context).map((line, index) => [
+    line.slice(ITEM.length, line.indexOf(': ')),
+    ...mentionedOf({
+      names: input.like[index]?.slice(1) ?? [],
+      text: line,
+    }),
+  ]);
+
+// The blocks a reminder's notes name, one note to a line, each opening with its block's id.
+const remindedOf = (stdout: string): readonly string[] =>
+  stdout === ''
+    ? []
+    : outputOf({
+        exitCode: 0,
+        stderr: '',
+        stdout,
+      })
+        .context.split('\n')
+        .map((note) => note.split(' ')[0] ?? '')
+        .toSorted();
+
 const bytesAfterHeader = (context: string): number =>
   Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
 
-const lastLinesOf = (input: { context: string; count: number }): readonly string[] =>
-  linesOf(input.context).slice(-input.count);
+// The hook's budget of the digest after its header, the room it keeps there for
+// the note of the lines left out, and its budget of the warnings.
+const BUDGET = 9400;
+const LEFT_OUT_RESERVE = 200;
+const WARNING_BUDGET = 1000;
+
+enum Edge {
+  // the end of the block list's last line
+  LastLine = 'its last line',
+  // the end of the block list's heading
+  Heading = 'its heading',
+}
+
+// The bytes of a core body that put the edge `past` bytes beyond the room the
+// budget leaves, measured on `context`: the digest of a project whose list fits
+// whole, under the plugin root whose core holds CORE_TEXT.
+const coreBodyAt = (input: { context: string; edge: Edge; past: number }): number => {
+  const list = blockListOf(input.context);
+  const beyond = input.edge === Edge.Heading ? bytesOf(list.slice(1)) : 0;
+  const rest = bytesAfterHeader(input.context) - Buffer.byteLength(CORE_TEXT) - beyond;
+
+  return BUDGET - LEFT_OUT_RESERVE + input.past - rest;
+};
+
+// A plugin root whose core's body puts the edge of the block list `past` bytes
+// beyond the room the budget leaves; `context` as coreBodyAt measures it.
+const pluginAtEdge = (input: { context: string; edge: Edge; past: number }): string =>
+  createPluginRoot({
+    coreBody: coreBodyOfBytes(coreBodyAt(input)),
+  });
+
+const ID_PREFIX = 'u';
+const ID_NUMBER_WIDTH = 2;
+const PADDING = 'x';
+
+// The ids of `count` unknown blocks whose warnings take the warnings' budget and
+// `past` bytes more, newlines included, measured on `probe`: a digest that warns
+// of the one unknown block `probeId`.
+const unknownIdsFilling = (input: {
+  count: number;
+  past: number;
+  probe: string;
+  probeId: string;
+}): readonly string[] => {
+  const perWarning = bytesOf(warningLinesOf(input.probe)) - input.probeId.length;
+  const room = WARNING_BUDGET + input.past - input.count * perWarning;
+  const length = Math.floor(room / input.count);
+
+  return Array.from(
+    {
+      length: input.count,
+    },
+    (_, index) =>
+      `${ID_PREFIX}${String(index + 1).padStart(ID_NUMBER_WIDTH, '0')}`.padEnd(
+        index === input.count - 1 ? room - length * (input.count - 1) : length,
+        PADDING,
+      ),
+  );
+};
 
 const runScript = (call: {
   event: Readonly<Record<string, unknown>>;
@@ -355,22 +549,31 @@ const removeSessions = (): void => {
   }
 };
 
-export type { HookRun };
+export type { Cut, HookRun, Warning };
 export {
-  blockListOf,
+  BUDGET,
   bytesAfterHeader,
   contextOf,
-  coreLinesOf,
-  factsOf,
+  Edge,
+  factNumberOf,
   HOOK_TODAY,
   HookEvent,
-  lastLinesOf,
+  indexOf,
+  isRecord,
+  LEFT_OUT_RESERVE,
+  listCutOf,
+  mentionedOf,
   mustsOf,
   newSession,
   outputOf,
+  pluginAtEdge,
+  remindedOf,
   removeSessions,
   runHook,
   runScript,
   stateFolderOf,
+  tellsTheUserOf,
+  unknownIdsFilling,
+  warningCutOf,
   warningsOf,
 };

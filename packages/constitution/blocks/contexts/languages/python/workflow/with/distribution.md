@@ -2,7 +2,7 @@
 
 > Governs when a distributed Python package raises its floor.
 
-## Releases
+## Versions
 
 ### requires-python-raised-in-a-minor-or-a-major → runtime-floor-never-raised-in-a-patch · MUST
 

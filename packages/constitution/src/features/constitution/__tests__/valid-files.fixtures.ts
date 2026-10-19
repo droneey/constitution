@@ -1,5 +1,5 @@
 import type { Files } from './constitution.fixtures';
-import { blockFiles, mainFile, rule } from './constitution.fixtures';
+import { blockFiles, chapterFile, rule } from './constitution.fixtures';
 
 const pluginFiles = (): Files => ({
   '.claude-plugin/marketplace.json': JSON.stringify({
@@ -37,7 +37,8 @@ const pluginFiles = (): Files => ({
   }),
   'templates/PROJECT.md': '# Project Context\n',
   'templates/DECISIONS.md': '# Decisions\n',
-  'templates/block.md': '---\nid: <id>\n---\n',
+  'templates/block/block.md': '---\nid: <id>\n---\n',
+  'templates/block/foundation/chapter.md': '# <Chapter>\n',
   'templates/constitution.yaml': 'axes: []\n',
   'vocabulary.yaml': [
     'architecture:',
@@ -54,15 +55,31 @@ const pluginFiles = (): Files => ({
 
 const upperFiles = (): Files => ({
   ...blockFiles({
-    body: '# Core\n\nRead [principles](principles.md).\n',
+    body: [
+      '# Core',
+      '',
+      'Read [principles](foundation/principles.md).',
+      '',
+      '## Its chapters',
+      '',
+      '- `foundation/`: [principles](foundation/principles.md).',
+      '- `workflow/`: [workflow](workflow/workflow.md).',
+      '',
+    ].join('\n'),
     dir: 'blocks/core',
     files: {
-      'principles.md': `# Principles\n\n> Governs how the code depends on itself.\n\n${rule({
-        slug: 'dependencies-point-inward',
-      })}`,
-      'workflow/workflow.md': `# Workflow\n\n${rule({
-        slug: 'rules-bind',
-      })}`,
+      'principles.md': chapterFile(
+        'Principles',
+        rule({
+          slug: 'dependencies-point-inward',
+        }),
+      ),
+      'workflow/workflow.md': chapterFile(
+        'Workflow',
+        rule({
+          slug: 'rules-bind',
+        }),
+      ),
     },
     id: 'core',
   }),
@@ -70,10 +87,13 @@ const upperFiles = (): Files => ({
     body: '# i18n\n',
     dir: 'blocks/domains/i18n',
     files: {
-      'plurals.md': `# Plurals\n\n${rule({
-        slug: 'i18n-plurals-by-cldr',
-        tags: '[ux]',
-      })}`,
+      'plurals.md': chapterFile(
+        'Plurals',
+        rule({
+          slug: 'i18n-plurals-by-cldr',
+          tags: '[ux]',
+        }),
+      ),
     },
     id: 'i18n',
   }),
@@ -81,10 +101,13 @@ const upperFiles = (): Files => ({
     body: '# Remote data\n',
     dir: 'blocks/domains/remote-data',
     files: {
-      'architecture/remote-data.md': `# Remote data\n\n${rule({
-        slug: 'reads-are-cancellable',
-        tags: '[data]',
-      })}`,
+      'architecture/reads.md': chapterFile(
+        'Reads',
+        rule({
+          slug: 'reads-are-cancellable',
+          tags: '[data]',
+        }),
+      ),
     },
     id: 'remote-data',
   }),
@@ -92,15 +115,21 @@ const upperFiles = (): Files => ({
     body: '# UI\n',
     dir: 'blocks/domains/ui',
     files: {
-      'architecture/with/remote-data.md': `# Remote data\n\n${rule({
-        parent: 'reads-are-cancellable',
-        slug: 'optimistic-writes-roll-back',
-        tags: '[ux]',
-      })}`,
-      'screens.md': `# Screens\n\n${rule({
-        slug: 'four-data-states',
-        tags: '[ux, a11y]',
-      })}`,
+      'architecture/with/remote-data.md': chapterFile(
+        'Remote data',
+        rule({
+          parent: 'reads-are-cancellable',
+          slug: 'optimistic-writes-roll-back',
+          tags: '[ux]',
+        }),
+      ),
+      'screens.md': chapterFile(
+        'Screens',
+        rule({
+          slug: 'four-data-states',
+          tags: '[ux, a11y]',
+        }),
+      ),
     },
     governs: [
       '**/ui/**',
@@ -108,11 +137,16 @@ const upperFiles = (): Files => ({
     id: 'ui',
   }),
   ...blockFiles({
-    body: `# Untrusted client\n\n${rule({
-      slug: 'secret-never-held-by-the-client',
-      tags: '[security]',
-    })}`,
     dir: 'blocks/domains/untrusted-client',
+    files: {
+      'secrets.md': chapterFile(
+        'Secrets',
+        rule({
+          slug: 'secret-never-held-by-the-client',
+          tags: '[security]',
+        }),
+      ),
+    },
     id: 'untrusted-client',
   }),
 });
@@ -122,10 +156,13 @@ const contextFiles = (): Files => ({
     body: '# TypeScript\n',
     dir: 'blocks/contexts/languages/typescript',
     files: {
-      'types.md': `# Types\n\n${rule({
-        slug: 'any-never-typed',
-        statement: 'A TypeScript value is never typed `any`.',
-      })}`,
+      'types.md': chapterFile(
+        'Types',
+        rule({
+          slug: 'any-never-typed',
+          statement: 'A TypeScript value is never typed `any`.',
+        }),
+      ),
     },
     id: 'typescript',
     dictionary: [
@@ -138,9 +175,12 @@ const contextFiles = (): Files => ({
     body: '# Browser\n',
     dir: 'blocks/contexts/platforms/browser',
     files: {
-      'architecture/browser.md': `# Browser\n\n${rule({
-        slug: 'window-never-read-during-render',
-      })}`,
+      'architecture/render.md': chapterFile(
+        'Render',
+        rule({
+          slug: 'window-never-read-during-render',
+        }),
+      ),
     },
     id: 'browser',
     requires: [
@@ -155,10 +195,13 @@ const implementationFiles = (): Files => ({
     body: '# React\n',
     dir: 'blocks/implementations/_react',
     files: {
-      'hooks.md': `# Hooks\n\n${rule({
-        slug: 'hooks-at-top-level',
-        statement: 'A React hook is called only at the top level.',
-      })}`,
+      'hooks.md': chapterFile(
+        'Hooks',
+        rule({
+          slug: 'hooks-at-top-level',
+          statement: 'A React hook is called only at the top level.',
+        }),
+      ),
     },
     id: '_react',
     dictionary: [
@@ -168,8 +211,9 @@ const implementationFiles = (): Files => ({
       'ui',
     ],
   }),
-  'blocks/implementations/biome/biome.md': mainFile({
+  ...blockFiles({
     body: '# Biome\n\nBiome checks every `.ts` file.\n',
+    dir: 'blocks/implementations/biome',
     id: 'biome',
     dictionary: [
       'Biome',
@@ -181,7 +225,7 @@ const implementationFiles = (): Files => ({
       'typescript',
     ],
   }),
-  'blocks/implementations/lingui/lingui.md': mainFile({
+  ...blockFiles({
     body: [
       '# Lingui',
       '',
@@ -194,6 +238,7 @@ const implementationFiles = (): Files => ({
       '| `i18n-plurals-by-cldr` | ICU plural | yes |',
       '',
     ].join('\n'),
+    dir: 'blocks/implementations/lingui',
     id: 'lingui',
     dictionary: [
       'Lingui',
@@ -208,10 +253,13 @@ const implementationFiles = (): Files => ({
     dir: 'blocks/implementations/react-dom',
     extends: '_react',
     files: {
-      'workflow/portals.md': `# Portals\n\n${rule({
-        slug: 'portals-for-overlays',
-        statement: 'React DOM renders an overlay through a portal.',
-      })}`,
+      'workflow/portals.md': chapterFile(
+        'Portals',
+        rule({
+          slug: 'portals-for-overlays',
+          statement: 'React DOM renders an overlay through a portal.',
+        }),
+      ),
     },
     id: 'react-dom',
     dictionary: [

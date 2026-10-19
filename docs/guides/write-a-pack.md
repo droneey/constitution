@@ -11,12 +11,14 @@ constitution/               the pack, in any folder
 ├── blocks/
 │   └── implementations/
 │       └── posthog/
-│           └── posthog.md  the block's card and rules
+│           ├── posthog.md  the block's passport
+│           └── foundation/
+│               └── consent.md  a chapter of its rules
 ├── presets/                when a tool holds its rules
 └── templates/              when it starts a project's files
 ```
 
-`/constitution:ratify` offers a draft block in `constitution/` for every library it finds without one. To start one by hand, copy `.droneey/constitution/templates/block.md` and follow [the block format](../reference/block-format.md).
+`/constitution:ratify` offers a draft block in `constitution/` for every library it finds without one. To start one by hand, copy `.droneey/constitution/templates/block/` into the pack as `blocks/implementations/<id>/`, rename the passport `block.md` to `<id>.md` and `foundation/chapter.md` to the subject of its rules, and follow [the block format](../reference/block-format.md).
 
 ## List it
 

@@ -1,10 +1,8 @@
 import { Axis } from '#/kernel/constants';
 
-const BASE = 'the base';
+// architecture/ and workflow/ may refer to foundation/, never to each other; foundation/ refers only
+// to itself.
+const mayReachAxis = (input: { from: Axis; to: Axis }): boolean =>
+  input.to === input.from || input.to === Axis.Foundation;
 
-// The base has no folder: its files sit at the root of a block or a preset.
-const axisFolderOf = (axis: Axis): string => (axis === Axis.Foundation ? '' : `${axis}/`);
-
-const axisNameOf = (axis: Axis): string => (axis === Axis.Foundation ? BASE : axis);
-
-export { axisFolderOf, axisNameOf };
+export { mayReachAxis };

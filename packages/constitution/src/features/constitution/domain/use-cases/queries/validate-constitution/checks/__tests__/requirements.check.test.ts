@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  rule,
+  textOf,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import type { CheckInput } from '../../check.types';
 import { requirementsCheck } from '../requirements.check';
@@ -25,7 +30,7 @@ const coveredBy = (rows: readonly string[]): CheckInput => {
     files,
     path: LINGUI,
   }).replace(ANSWER, rows.join('\n'));
-  files['blocks/implementations/lingui/catalogs.md'] = `# Catalogs\n\n${rule({
+  files['blocks/implementations/lingui/foundation/catalogs.md'] = `# Catalogs\n\n${rule({
     slug: 'catalogs-compile',
   })}`;
 
@@ -53,61 +58,89 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'answers requirements, which only an implementation does',
+      findingOf({
+        code: 'requirements-outside-implementation',
         path,
-      },
-    ]);
-  });
-
-  it('should report a with/ file once when an implementation answers two requirements in it', () => {
-    // Arrange
-    const path = 'blocks/implementations/biome/with/lingui.md';
-    const files = validFiles();
-    files[path] = [
-      '# Biome with Lingui',
-      '',
-      '## Requirements',
-      '',
-      '| Requirement | How | Met |',
-      '|---|---|---|',
-      '| `any-never-typed` | the noExplicitAny rule | yes |',
-      '| `dependencies-point-inward` | review | yes |',
-      '',
-    ].join('\n');
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = requirementsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        message:
-          'answers requirements in a with/ file; a block answers them in its main file or a chapter',
-        path,
-      },
+      }),
     ]);
   });
 
   it.each([
     {
-      expected: 'answers "no-such-rule", which is not a rule',
+      name: 'a with/ file',
+      path: 'blocks/implementations/biome/foundation/with/lingui.md',
+    },
+    {
+      name: 'a chapter',
+      path: 'blocks/implementations/biome/foundation/formatting.md',
+    },
+  ])(
+    'should report $name once when an implementation answers two requirements in it',
+    ({ path }) => {
+      // Arrange
+      const files = validFiles();
+      files[path] = [
+        '# Biome with Lingui',
+        '',
+        '## Requirements',
+        '',
+        '| Requirement | How | Met |',
+        '|---|---|---|',
+        '| `any-never-typed` | the noExplicitAny rule | yes |',
+        '| `dependencies-point-inward` | review | yes |',
+        '',
+      ].join('\n');
+      const input = checkInputOf(files);
+
+      // Act
+      const findings = requirementsCheck(input);
+
+      // Assert
+      expect(findings).toStrictEqual([
+        findingOf({
+          code: 'requirements-outside-passport',
+          path,
+        }),
+      ]);
+    },
+  );
+
+  it.each<{
+    code: string;
+    names: readonly string[];
+    row: string;
+  }>([
+    {
+      code: 'answer-names-no-rule',
+      names: [
+        'no-such-rule',
+      ],
       row: '| `no-such-rule` | x | yes |',
     },
     {
-      expected: 'answers "portals-for-overlays" of react-dom, which its block may not refer to',
+      code: 'answer-out-of-reach',
+      names: [
+        'portals-for-overlays',
+        'react-dom',
+      ],
       row: '| `portals-for-overlays` | x | yes |',
     },
     {
-      expected: 'answers "i18n-plurals-by-cldr" with Met "met"; Met is yes, partly or no',
+      code: 'answer-met-unknown',
+      names: [
+        'i18n-plurals-by-cldr',
+        'met',
+      ],
       row: '| `i18n-plurals-by-cldr` | ICU plural | met |',
     },
     {
-      expected: 'answers "i18n-plurals-by-cldr" without saying how',
+      code: 'answer-without-how',
+      names: [
+        'i18n-plurals-by-cldr',
+      ],
       row: '| `i18n-plurals-by-cldr` |  | yes |',
     },
-  ])('should report "$expected" when a row breaks its rule', ({ expected, row }) => {
+  ])('should report $code when a row breaks its rule', ({ code, names, row }) => {
     // Arrange
     const input = answering([
       row,
@@ -118,10 +151,11 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: expected,
+      findingOf({
+        code,
+        names,
         path: LINGUI,
-      },
+      }),
     ]);
   });
 
@@ -137,10 +171,13 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'answers "i18n-plurals-by-cldr" twice',
+      findingOf({
+        code: 'answer-repeated',
+        names: [
+          'i18n-plurals-by-cldr',
+        ],
         path: LINGUI,
-      },
+      }),
     ]);
   });
 
@@ -166,10 +203,14 @@ describe('requirementsCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        {
-          message: `answers "i18n-plurals-by-cldr" ${met} without naming the rule that covers the rest`,
+        findingOf({
+          code: 'answer-without-covering-rule',
+          names: [
+            'i18n-plurals-by-cldr',
+            met,
+          ],
           path: LINGUI,
-        },
+        }),
       ]);
     },
   );
@@ -193,9 +234,7 @@ describe('requirementsCheck', () => {
     files[LINGUI] = textOf({
       files,
       path: LINGUI,
-    })
-      .replace('chapters: []', 'chapters: ["workflow/catalogs.md"]')
-      .replace(ANSWER, `${ANSWER}\n| \`catalogs-compile\` | the CLI | yes |`);
+    }).replace(ANSWER, `${ANSWER}\n| \`catalogs-compile\` | the CLI | yes |`);
     files['blocks/implementations/lingui/workflow/catalogs.md'] = `# Catalogs\n\n${rule({
       slug: 'catalogs-compile',
     })}`;
@@ -206,11 +245,13 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message:
-          'answers "catalogs-compile", a rule of its own block; a Requirements table answers the blocks above',
+      findingOf({
+        code: 'answer-names-own-rule',
+        names: [
+          'catalogs-compile',
+        ],
         path: LINGUI,
-      },
+      }),
     ]);
   });
 });

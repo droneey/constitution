@@ -33,8 +33,20 @@ const PARAGLIDE: ReadonlyArray<
     'Paraglide',
   ],
   [
-    '<What the library does in this repository, in one or two sentences.>',
+    '<What the library does in this repository, in one sentence.>',
     'Paraglide compiles the messages of each locale into typed functions.',
+  ],
+  [
+    '<How the library is set up in this repository: its preset parts, templates, configuration files and exclusions.>',
+    'Its compiler runs before the type check, and its output is ignored.',
+  ],
+  [
+    '<Chapter>',
+    'Messages',
+  ],
+  [
+    "<what this chapter's rules govern, in a few words>",
+    'how a message is read',
   ],
   [
     '<requirement>',
@@ -66,22 +78,28 @@ const PARAGLIDE: ReadonlyArray<
   ],
 ];
 
-const paraglideFromTemplate = (): string => {
+/** a file of templates/block/, its placeholders filled for Paraglide */
+const paraglideFromTemplate = (path: string): string => {
   const filled = PARAGLIDE.reduce(
     (text, [placeholder, filling]) => text.replaceAll(placeholder, filling),
-    readFileSync(join(TEMPLATES, 'block.md'), 'utf8'),
+    readFileSync(join(TEMPLATES, 'block', path), 'utf8'),
   );
   const left = PLACEHOLDER.exec(filled)?.[0];
 
   if (left !== undefined) {
-    throw new Error(`templates/block.md has a placeholder no fill covers: ${left}`);
+    throw new Error(`templates/block/${path} has a placeholder no fill covers: ${left}`);
   }
 
   return filled;
 };
 
+/**
+ * the block /ratify writes for Paraglide from templates/block/: block.md named paraglide.md, and
+ * chapter.md named after its subject
+ */
 const paraglideCard = (): Readonly<Record<string, string>> => ({
-  [`${PARAGLIDE_DIR}/paraglide.md`]: paraglideFromTemplate(),
+  [`${PARAGLIDE_DIR}/paraglide.md`]: paraglideFromTemplate('block.md'),
+  [`${PARAGLIDE_DIR}/foundation/messages.md`]: paraglideFromTemplate('foundation/chapter.md'),
 });
 
 export { paraglideCard };

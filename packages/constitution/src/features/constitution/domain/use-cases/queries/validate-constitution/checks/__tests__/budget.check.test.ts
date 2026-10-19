@@ -2,11 +2,11 @@ import { describe, expect, it } from 'bun:test';
 
 import type { Finding } from '#/kernel/types';
 
-import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, findingOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { budgetCheck } from '../budget.check';
 
-const PRINCIPLES = 'blocks/core/principles.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
 const linesOf = (count: number): string =>
   Array.from(
@@ -27,11 +27,13 @@ describe('budgetCheck', () => {
     },
     {
       expected: [
-        {
-          message:
-            'has 501 lines; a file holds at most 500, and a longer block splits into chapters',
+        findingOf({
+          code: 'file-over-line-budget',
+          names: [
+            '501',
+          ],
           path: PRINCIPLES,
-        },
+        }),
       ],
       lines: 501,
     },

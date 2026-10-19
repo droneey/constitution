@@ -7,6 +7,14 @@ import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../direction.utils';
 import { aBlock } from '../wording.utils';
 
+enum FrontMatterCode {
+  IdMismatch = 'id-mismatches-folder',
+  FieldOutsideLayer = 'field-outside-layer',
+  NotLanguage = 'languages-names-no-language',
+  AbstractWithoutUnderscore = 'abstract-id-without-underscore',
+  UnderscoreNotAbstract = 'underscore-id-not-abstract',
+}
+
 enum LayerField {
   Requires = 'requires',
   Extends = 'extends',
@@ -47,6 +55,7 @@ const identityFindings = (block: Block): readonly Finding[] =>
     ? []
     : [
         {
+          code: FrontMatterCode.IdMismatch,
           message: `declares the id "${block.frontMatter.id}"; its folder names it "${block.id}"`,
           path: block.path,
         },
@@ -56,6 +65,7 @@ const layerFindings = (block: Block): readonly Finding[] =>
   LAYER_FIELDS.filter(
     (field) => !(FILLED_ON[field].includes(block.layer) || isEmpty(block.frontMatter[field])),
   ).map((field) => ({
+    code: FrontMatterCode.FieldOutsideLayer,
     message: `sets "${field}", which ${aBlock(block.layer)} leaves empty`,
     path: block.path,
   }));
@@ -67,6 +77,7 @@ const languageFindings = (input: { block: Block; byId: BlocksById }): readonly F
     ? input.block.frontMatter.languages
         .filter((id) => input.byId.get(id)?.layer !== Layer.Language)
         .map((id) => ({
+          code: FrontMatterCode.NotLanguage,
           message: `languages lists ${id}, which is not a language block`,
           path: input.block.path,
         }))
@@ -78,12 +89,17 @@ const flagFindings = (block: Block): readonly Finding[] => {
   return isAbstract === block.id.startsWith('_')
     ? []
     : [
-        {
-          message: isAbstract
-            ? 'is abstract, so its id starts with "_"'
-            : 'has an id starting with "_", so it is abstract',
-          path: block.path,
-        },
+        isAbstract
+          ? {
+              code: FrontMatterCode.AbstractWithoutUnderscore,
+              message: 'is abstract, so its id starts with "_"',
+              path: block.path,
+            }
+          : {
+              code: FrontMatterCode.UnderscoreNotAbstract,
+              message: 'has an id starting with "_", so it is abstract',
+              path: block.path,
+            },
       ];
 };
 

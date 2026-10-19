@@ -147,7 +147,8 @@ const configOf = (parts: readonly string[]): string =>
       ...parts,
       ...BASE_PARTS,
     ].map(
-      (part) => `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/')}.mjs`,
+      (part) =>
+        `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/').replace(/\/dependency-cruiser\/(?!architecture\/|workflow\/)/, '/dependency-cruiser/foundation/')}.mjs`,
     ),
   )},\n};\n`;
 

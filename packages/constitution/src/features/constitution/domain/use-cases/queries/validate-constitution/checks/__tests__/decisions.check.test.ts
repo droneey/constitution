@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
+import type { Finding } from '#/kernel/types';
+
+import {
+  checkInputOf,
+  findingOf,
+  without,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { decisionsCheck } from '../decisions.check';
 
 const LOG = 'DECISIONS.md';
 const ACCEPTED = '**Date:** 2026-09-25 · **Status:** Accepted';
-const NO_DATE_LINE =
-  'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed" under its heading';
 
 const logOf = (entries: readonly string[]): string =>
   [
@@ -34,16 +38,28 @@ describe('decisionsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'is missing; the Constitution keeps its decision log at the root',
+      findingOf({
+        code: 'decision-log-missing',
         path: LOG,
-      },
+      }),
     ]);
   });
 
-  it.each([
+  it.each<{
+    expected: Finding[];
+    name: string;
+    numbers: string[];
+  }>([
     {
-      expected: 'entry ADR-0001 follows ADR-0001; the numbers of the log only rise',
+      expected: [
+        findingOf({
+          code: 'decision-out-of-order',
+          names: [
+            'ADR-0001',
+          ],
+          path: LOG,
+        }),
+      ],
       name: 'a number repeats',
       numbers: [
         '0001',
@@ -51,7 +67,16 @@ describe('decisionsCheck', () => {
       ],
     },
     {
-      expected: 'entry ADR-0002 follows ADR-0003; the numbers of the log only rise',
+      expected: [
+        findingOf({
+          code: 'decision-out-of-order',
+          names: [
+            'ADR-0002',
+            'ADR-0003',
+          ],
+          path: LOG,
+        }),
+      ],
       name: 'a number falls',
       numbers: [
         '0001',
@@ -76,36 +101,76 @@ describe('decisionsCheck', () => {
     const findings = decisionsCheck(input);
 
     // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: expected,
-        path: LOG,
-      },
-    ]);
+    expect(findings).toStrictEqual(expected);
   });
 
-  it.each([
+  it.each<{
+    expected: Finding[];
+    line: string;
+  }>([
     {
-      expected: NO_DATE_LINE,
+      expected: [
+        findingOf({
+          code: 'decision-without-date-line',
+          names: [
+            'ADR-0001',
+          ],
+          path: LOG,
+        }),
+      ],
       line: '**Date:** 2026-09-25 · **Status:** Done',
     },
     {
-      expected: NO_DATE_LINE,
+      expected: [
+        findingOf({
+          code: 'decision-without-date-line',
+          names: [
+            'ADR-0001',
+          ],
+          path: LOG,
+        }),
+      ],
       line: '- **Date:** 2026-09-25 · **Status:** Accepted',
     },
     {
-      expected: NO_DATE_LINE,
+      expected: [
+        findingOf({
+          code: 'decision-without-date-line',
+          names: [
+            'ADR-0001',
+          ],
+          path: LOG,
+        }),
+      ],
       line: '**Date:** 2026-09-25 · **Status:** Accepted by the team',
     },
     {
-      expected: 'entry ADR-0001 is dated 2026-02-30, which is not a calendar date',
+      expected: [
+        findingOf({
+          code: 'decision-date-not-in-calendar',
+          names: [
+            'ADR-0001',
+            '2026-02-30',
+          ],
+          path: LOG,
+        }),
+      ],
       line: '**Date:** 2026-02-30 · **Status:** Accepted',
     },
     {
-      expected: 'entry ADR-0001 is dated 2026-13-05, which is not a calendar date',
+      expected: [
+        findingOf({
+          code: 'decision-date-not-in-calendar',
+          names: [
+            'ADR-0001',
+            '2026-13-05',
+          ],
+          path: LOG,
+        }),
+      ],
       line: '**Date:** 2026-13-05 · **Status:** Accepted',
     },
-  ])('should report "$expected" when the line under the heading is $line', ({ expected, line }) => {
+  ])('should report the entry when the line under the heading is $line', ({ expected, line }) => {
     // Arrange
     const files = validFiles();
     files[LOG] = logOf([
@@ -120,12 +185,7 @@ describe('decisionsCheck', () => {
     const findings = decisionsCheck(input);
 
     // Assert
-    expect(findings).toStrictEqual([
-      {
-        message: expected,
-        path: LOG,
-      },
-    ]);
+    expect(findings).toStrictEqual(expected);
   });
 
   it.each([
@@ -173,6 +233,19 @@ describe('decisionsCheck', () => {
       ]),
       name: 'a line of spaces parts a heading from its date line',
     },
+    {
+      log: logOf([
+        entry({
+          line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
+          number: '0001',
+        }),
+        entry({
+          line: ACCEPTED,
+          number: '0002',
+        }),
+      ]),
+      name: 'an entry is superseded by a later one',
+    },
   ])('should find nothing when $name', ({ log }) => {
     // Arrange
     const files = validFiles();
@@ -184,5 +257,53 @@ describe('decisionsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([]);
+  });
+
+  it.each([
+    {
+      name: 'an earlier entry',
+      successor: '0001',
+    },
+    {
+      name: 'the entry itself',
+      successor: '0002',
+    },
+    {
+      name: 'an entry the log does not hold',
+      successor: '0009',
+    },
+  ])('should report the entry when it is superseded by $name', ({ successor }) => {
+    // Arrange
+    const files = validFiles();
+    files[LOG] = logOf([
+      entry({
+        line: ACCEPTED,
+        number: '0001',
+      }),
+      entry({
+        line: `**Date:** 2026-09-25 · **Status:** Superseded by ADR-${successor}`,
+        number: '0002',
+      }),
+      entry({
+        line: ACCEPTED,
+        number: '0003',
+      }),
+    ]);
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = decisionsCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      findingOf({
+        code: 'decision-superseded-by-no-later-entry',
+        names: [
+          'ADR-0002',
+          `ADR-${successor}`,
+        ],
+        path: LOG,
+      }),
+    ]);
   });
 });

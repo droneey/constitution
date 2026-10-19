@@ -1,15 +1,24 @@
 import { Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { Finding, Problem } from '#/kernel/types';
 
 import type { Rule } from '../../../../entities';
 import type { BlocksById, PresetPath } from '../../../../utils';
-import { axisFolderOf, axisNameOf, PresetFileKind, presetPathOf } from '../../../../utils';
+import { PresetFileKind, presetPathOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
+
+enum PresetsCode {
+  StrayFile = 'stray-preset-file',
+  ToolNamesNoBlock = 'preset-tool-names-no-block',
+  ScopeNotCovered = 'preset-scope-not-covered',
+  PartNamesNoBlock = 'part-names-no-block',
+  PluginNamesNoRule = 'plugin-names-no-rule',
+  PluginOffAxis = 'plugin-off-axis',
+}
 
 const SELF = 'self';
 const COMMON = 'common';
 const LAYOUT =
-  'is not a part of a preset: presets/<scope>/<tool>/<block>.<extension>, presets/<scope>/<tool>/plugins/<rule>.grit or presets/<scope>/<tool>/bindings.yaml, each also under architecture/ or workflow/ for that axis';
+  'is not a part of a preset: presets/<scope>/<tool>/<axis>/<block>.<extension>, presets/<scope>/<tool>/<axis>/plugins/<rule>.grit or presets/<scope>/<tool>/<axis>/bindings.yaml, the axis foundation, architecture or workflow';
 
 type PartPath = Exclude<
   PresetPath,
@@ -18,32 +27,41 @@ type PartPath = Exclude<
   }
 >;
 
-const nameMessage = (input: {
+const nameProblem = (input: {
   isBlock: (id: string) => boolean;
   preset: PartPath;
   rules: ReadonlyMap<string, Rule>;
-}): string | undefined => {
+}): Problem | undefined => {
   const { name, axis } = input.preset;
 
   if (input.preset.kind === PresetFileKind.Part) {
     return name === SELF || input.isBlock(name)
       ? undefined
-      : `is named "${name}", which is neither a block nor ${SELF}`;
+      : {
+          code: PresetsCode.PartNamesNoBlock,
+          message: `is named "${name}", which is neither a block nor ${SELF}`,
+        };
   }
 
   const rule = input.rules.get(name);
 
   if (rule === undefined) {
-    return `is named "${name}", which is not a rule; a plugin is named after the rule it holds`;
+    return {
+      code: PresetsCode.PluginNamesNoRule,
+      message: `is named "${name}", which is not a rule; a plugin is named after the rule it holds`,
+    };
   }
 
   return rule.axis === axis
     ? undefined
-    : `holds ${name}, a rule of ${axisNameOf(rule.axis)}, in ${axisFolderOf(axis)}plugins/`;
+    : {
+        code: PresetsCode.PluginOffAxis,
+        message: `holds ${name}, a rule of ${rule.axis}, in ${axis}/plugins/`,
+      };
 };
 
 // A scope is common to every language the tool reads, or one of them.
-const scopeMessage = (input: { byId: BlocksById; preset: PresetPath }): string | undefined => {
+const scopeProblem = (input: { byId: BlocksById; preset: PresetPath }): Problem | undefined => {
   const { scope, tool } = input.preset;
   const covered = input.byId.get(tool)?.frontMatter.languages ?? [];
   const isCovered =
@@ -52,7 +70,10 @@ const scopeMessage = (input: { byId: BlocksById; preset: PresetPath }): string |
 
   return scope === COMMON || isCovered
     ? undefined
-    : `is in presets/${scope}/, which is neither ${COMMON} nor a language ${tool} covers`;
+    : {
+        code: PresetsCode.ScopeNotCovered,
+        message: `is in presets/${scope}/, which is neither ${COMMON} nor a language ${tool} covers`,
+      };
 };
 
 const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Finding[] => {
@@ -70,6 +91,7 @@ const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Findi
     if (preset === undefined) {
       return [
         {
+          code: PresetsCode.StrayFile,
           message: LAYOUT,
           path,
         },
@@ -79,24 +101,27 @@ const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Findi
     return [
       isBlock(preset.tool)
         ? undefined
-        : `is in presets/${preset.scope}/${preset.tool}/, which names no block`,
-      scopeMessage({
+        : {
+            code: PresetsCode.ToolNamesNoBlock,
+            message: `is in presets/${preset.scope}/${preset.tool}/, which names no block`,
+          },
+      scopeProblem({
         byId,
         preset,
       }),
       preset.kind === PresetFileKind.Bindings
         ? undefined
-        : nameMessage({
+        : nameProblem({
             isBlock,
             preset,
             rules,
           }),
-    ].flatMap((message) =>
-      message === undefined
+    ].flatMap((problem) =>
+      problem === undefined
         ? []
         : [
             {
-              message,
+              ...problem,
               path,
             },
           ],

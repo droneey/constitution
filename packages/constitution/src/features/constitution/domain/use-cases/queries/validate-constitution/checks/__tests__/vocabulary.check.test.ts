@@ -4,7 +4,8 @@ import type { Finding } from '#/kernel/types';
 
 import {
   checkInputOf,
-  mainFile,
+  findingOf,
+  passportFile,
   rule,
   without,
 } from '../../../../../../__tests__/constitution.fixtures';
@@ -24,8 +25,8 @@ interface Sections {
 }
 
 const VOCABULARY = 'vocabulary.yaml';
-const CARD = 'blocks/core/core.md';
-const PRINCIPLES = 'blocks/core/principles.md';
+const PASSPORT = 'blocks/core/core.md';
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const ARCHITECTURE_PORTS = 'blocks/core/architecture/ports.md';
 const WORKFLOW_PORTS = 'blocks/core/workflow/ports.md';
 
@@ -49,23 +50,30 @@ const vocabularyOf = (sections: Sections): string =>
     '',
   ].join('\n');
 
-const used = (input: { path: string; place: string; section: string; word: string }): Finding => ({
-  message: `uses "${input.word}", a word of the ${input.section}; ${input.place} holds whatever the ${input.section}`,
-  path: input.path,
-});
+const used = (input: { path: string; place: string; section: string; word: string }): Finding =>
+  findingOf({
+    code: 'word-off-axis',
+    names: [
+      input.word,
+      input.section,
+      input.place,
+    ],
+    path: input.path,
+  });
 
-const inBase = (word: string): Finding =>
+const inFoundation = (word: string): Finding =>
   used({
     path: PRINCIPLES,
-    place: 'the base',
+    place: 'foundation',
     section: 'architecture',
     word,
   });
 
-const listed = (message: string): Finding => ({
-  message,
-  path: VOCABULARY,
-});
+const listed = (input: { code: string; names?: readonly string[] }): Finding =>
+  findingOf({
+    ...input,
+    path: VOCABULARY,
+  });
 
 const inputOf = (input: {
   path: string;
@@ -97,7 +105,9 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed('is missing; the Constitution keeps the words of its architecture and workflow here'),
+      listed({
+        code: 'vocabulary-missing',
+      }),
     ]);
   });
 
@@ -112,9 +122,12 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed(
-        'is not valid YAML: Flow sequence in block collection must be sufficiently indented and end with a ]',
-      ),
+      listed({
+        code: 'vocabulary-not-yaml',
+        names: [
+          'Flow sequence in block collection must be sufficiently indented and end with a ]',
+        ],
+      }),
     ]);
   });
 
@@ -129,13 +142,27 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed(
-        'does not match its schema: architecture.folders: Invalid input: expected array, received undefined',
-      ),
-      listed(
-        'does not match its schema: workflow: Invalid input: expected object, received undefined',
-      ),
-      listed('does not match its schema: <root>: Unrecognized key: "layers"'),
+      listed({
+        code: 'vocabulary-off-schema',
+        names: [
+          'architecture.folders',
+          'Invalid input: expected array, received undefined',
+        ],
+      }),
+      listed({
+        code: 'vocabulary-off-schema',
+        names: [
+          'workflow',
+          'Invalid input: expected object, received undefined',
+        ],
+      }),
+      listed({
+        code: 'vocabulary-off-schema',
+        names: [
+          '<root>',
+          'Unrecognized key: "layers"',
+        ],
+      }),
     ]);
   });
 
@@ -184,26 +211,86 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed(
-        'lists the concept "Port" of the architecture, which is not lower-case words separated by spaces or "-"',
-      ),
-      listed(
-        'lists the concept "binding_unit" of the architecture, which is not lower-case words separated by spaces or "-"',
-      ),
-      listed(
-        'lists the concept "Squash" of the workflow, which is not lower-case words separated by spaces or "-"',
-      ),
-      listed('lists the folder "adapters" of the architecture, which does not end in "/"'),
-      listed('lists the folder "feature" of the workflow, which does not end in "/"'),
-      listed('lists the suffix "port" of the architecture, which does not start with "."'),
-      listed('lists the suffix "patch" of the workflow, which does not start with "."'),
-      listed('lists ".port" twice in the architecture'),
-      listed('lists "merge" twice in the workflow'),
-      listed('lists "sink" in both the architecture and the workflow'),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'concept',
+          'Port',
+          'architecture',
+        ],
+      }),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'concept',
+          'binding_unit',
+          'architecture',
+        ],
+      }),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'concept',
+          'Squash',
+          'workflow',
+        ],
+      }),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'folder',
+          'adapters',
+          'architecture',
+        ],
+      }),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'folder',
+          'feature',
+          'workflow',
+        ],
+      }),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'suffix',
+          'port',
+          'architecture',
+        ],
+      }),
+      listed({
+        code: 'word-misshapen',
+        names: [
+          'suffix',
+          'patch',
+          'workflow',
+        ],
+      }),
+      listed({
+        code: 'word-listed-twice',
+        names: [
+          '.port',
+          'architecture',
+        ],
+      }),
+      listed({
+        code: 'word-listed-twice',
+        names: [
+          'merge',
+          'workflow',
+        ],
+      }),
+      listed({
+        code: 'word-in-both-axes',
+        names: [
+          'sink',
+        ],
+      }),
     ]);
   });
 
-  it("should report a repeated word once where a chapter at the block's root uses it when the vocabulary lists it twice", () => {
+  it('should report a repeated word once where a chapter of foundation uses it when the vocabulary lists it twice', () => {
     // Arrange
     const files = validFiles();
     files[VOCABULARY] = vocabularyOf({
@@ -222,8 +309,14 @@ describe('vocabularyCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      listed('lists "port" twice in the architecture'),
-      inBase('port'),
+      listed({
+        code: 'word-listed-twice',
+        names: [
+          'port',
+          'architecture',
+        ],
+      }),
+      inFoundation('port'),
     ]);
   });
 
@@ -236,7 +329,7 @@ describe('vocabularyCheck', () => {
   }>([
     {
       expected: [
-        inBase('port'),
+        inFoundation('port'),
       ],
       name: 'a chapter uses a concept in the plural and in capitals',
       path: PRINCIPLES,
@@ -244,7 +337,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inBase('class'),
+        inFoundation('class'),
       ],
       name: 'a chapter uses a concept in its plural with "es"',
       path: PRINCIPLES,
@@ -259,7 +352,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inBase('binding unit'),
+        inFoundation('binding unit'),
       ],
       name: 'a line break splits a concept of two words',
       path: PRINCIPLES,
@@ -267,7 +360,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inBase('adapters/'),
+        inFoundation('adapters/'),
       ],
       name: 'a path holds a folder',
       path: PRINCIPLES,
@@ -275,7 +368,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inBase('.port'),
+        inFoundation('.port'),
       ],
       name: 'a file name holds a suffix',
       path: PRINCIPLES,
@@ -290,7 +383,7 @@ describe('vocabularyCheck', () => {
     },
     {
       expected: [
-        inBase('port'),
+        inFoundation('port'),
       ],
       name: 'a line that is no heading holds a hash',
       path: PRINCIPLES,
@@ -299,47 +392,19 @@ describe('vocabularyCheck', () => {
     {
       expected: [
         used({
-          path: CARD,
-          place: 'the base',
-          section: 'architecture',
-          word: 'port',
-        }),
-        used({
-          path: CARD,
-          place: 'the base',
-          section: 'architecture',
-          word: 'adapters/',
-        }),
-        used({
-          path: CARD,
-          place: 'the base',
-          section: 'workflow',
-          word: 'squash merge',
-        }),
-      ],
-      name: 'a card uses words of both sections',
-      path: CARD,
-      text: mainFile({
-        body: '# Core\n\nEvery port has adapters/ and lands by squash merge.\n',
-        id: 'core',
-      }),
-    },
-    {
-      expected: [
-        used({
           path: PRINCIPLES,
-          place: 'the base',
+          place: 'foundation',
           section: 'workflow',
           word: 'squash merge',
         }),
         used({
           path: PRINCIPLES,
-          place: 'the base',
+          place: 'foundation',
           section: 'workflow',
           word: 'feature/',
         }),
       ],
-      name: "a chapter at the block's root uses words of the workflow",
+      name: 'a chapter of foundation uses words of the workflow',
       path: PRINCIPLES,
       text: '# Principles\n\nSquash merges land on feature/login.\n',
     },
@@ -426,15 +491,23 @@ describe('vocabularyCheck', () => {
       text: '# Principles\n\n```ts\nconst port = import("adapters/x.port");\n```\n',
     },
     {
-      name: "only the card's front matter uses the words",
-      path: CARD,
-      text: mainFile({
+      name: "only the passport's front matter uses the words",
+      path: PASSPORT,
+      text: passportFile({
         body: '# Core\n',
         governs: [
           '**/adapters/**',
         ],
         id: 'core',
         summary: 'Ports and binding units.',
+      }),
+    },
+    {
+      name: 'a passport uses words of every axis',
+      path: PASSPORT,
+      text: passportFile({
+        body: '# Core\n\nEvery port has adapters/ and lands by squash merge.\n',
+        id: 'core',
       }),
     },
     {

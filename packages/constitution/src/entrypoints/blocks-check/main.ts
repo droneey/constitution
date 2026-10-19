@@ -21,8 +21,9 @@ const { advice, findings } = validateConstitution({
   vocabularyParser: wiring.vocabularyParser,
 });
 
+// The code closes the line, as a linter's rule id does.
 for (const finding of findings) {
-  wiring.console.write(`${finding.path}: ${finding.message}\n`);
+  wiring.console.write(`${finding.path}: ${finding.message} [${finding.code}]\n`);
 }
 
 wiring.console.write(

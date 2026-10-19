@@ -1,5 +1,6 @@
 export { abstractBlocksCheck } from './abstract-blocks.check';
 export { bindingsCheck } from './bindings.check';
+export { blockFormCheck } from './block-form.check';
 export { budgetCheck } from './budget.check';
 export { coreChaptersCheck } from './core-chapters.check';
 export { corePartCheck } from './core-part.check';

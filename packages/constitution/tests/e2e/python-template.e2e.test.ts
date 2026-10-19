@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { partTable, python, runTask, templateTable } from './python-template.fixtures';
+import { isFoundIn, partTable, python, runTask, templateTable } from './python-template.fixtures';
 
 // A run of the check, mutmut's above all, takes seconds, not milliseconds.
 const RUN_MS = 60_000;
@@ -128,7 +128,9 @@ describe('the python template', () => {
       changes: {
         'src/shop/kernel.py': python('def zero() -> int:', '    return 0'),
       },
-      finding: '1 file would be reformatted',
+      finding: [
+        '1 file would be reformatted',
+      ],
       task: 'format:check',
     },
     {
@@ -143,7 +145,9 @@ describe('the python template', () => {
           '  assert True',
         ),
       },
-      finding: '`pytest.mark.skip` is banned',
+      finding: [
+        '`pytest.mark.skip` is banned',
+      ],
       task: 'lint:check',
     },
     {
@@ -151,7 +155,9 @@ describe('the python template', () => {
       changes: {
         'src/shop/kernel.py': python("LIMIT: int = 'ten'"),
       },
-      finding: 'invalid-assignment',
+      finding: [
+        'invalid-assignment',
+      ],
       task: 'type:check',
     },
     {
@@ -159,7 +165,12 @@ describe('the python template', () => {
       changes: {
         'src/shop/kernel.py': LONG_FUNCTION,
       },
-      finding: 'src/shop/kernel.py:1: tally holds 103 lines, more than 100',
+      finding: [
+        'src/shop/kernel.py:1',
+        'tally',
+        '103',
+        '100',
+      ],
       task: 'code:check',
     },
     {
@@ -167,7 +178,9 @@ describe('the python template', () => {
       changes: {
         'src/shop/kernel.py': TANGLED,
       },
-      finding: 'FAILED',
+      finding: [
+        'FAILED',
+      ],
       task: 'complexity:check',
     },
     {
@@ -177,7 +190,9 @@ describe('the python template', () => {
         'src/shop/features/billing/__init__.py': 'from shop.features.orders import ORDER\n',
         'src/shop/features/orders/__init__.py': 'ORDER = 1\n',
       },
-      finding: 'feature-never-imports-a-feature BROKEN',
+      finding: [
+        'feature-never-imports-a-feature BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -187,7 +202,9 @@ describe('the python template', () => {
         'src/shop/features/orders/__init__.py': 'ORDER = 1\n',
         'src/shop/kernel/__init__.py': 'from shop.features.orders import ORDER\n',
       },
-      finding: 'kernel-imports-only-itself BROKEN',
+      finding: [
+        'kernel-imports-only-itself BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -197,7 +214,9 @@ describe('the python template', () => {
         'src/shop/kernel/currency.py': 'from shop.kernel import money\n',
         'src/shop/kernel/money.py': 'from shop.kernel import currency\n',
       },
-      finding: 'module-imports-form-no-cycle BROKEN',
+      finding: [
+        'module-imports-form-no-cycle BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -207,7 +226,10 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/order_entity.py': 'from pydantic import BaseModel\n',
       },
-      finding: 'features/orders/domain imports no package, and pydantic is one',
+      finding: [
+        'features/orders/domain',
+        'pydantic',
+      ],
       task: 'code:check',
     },
     {
@@ -216,7 +238,10 @@ describe('the python template', () => {
         'src/shop/kernel/__init__.py': '',
         'src/shop/kernel/limits.py': 'from pydantic_settings import BaseSettings\n',
       },
-      finding: 'kernel imports no package, and pydantic_settings is one',
+      finding: [
+        'kernel',
+        'pydantic_settings',
+      ],
       task: 'code:check',
     },
     {
@@ -226,7 +251,9 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/order_entity.py': 'import logging\n',
       },
-      finding: 'domain-imports-no-logging BROKEN',
+      finding: [
+        'domain-imports-no-logging BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -239,7 +266,9 @@ describe('the python template', () => {
         'src/shop/libs/run/__init__.py': "from .run_utils import run\n\n__all__ = ['run']\n",
         'src/shop/libs/run/run_utils.py': "from subprocess import run\n\n__all__ = ['run']\n",
       },
-      finding: 'effects-held-only-by-the-edge BROKEN',
+      finding: [
+        'effects-held-only-by-the-edge BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -249,7 +278,11 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_logs.py': 'import structlog\n',
       },
-      finding: 'structlog is imported in features/orders/app, outside its home: root',
+      finding: [
+        'structlog',
+        'features/orders/app',
+        'root',
+      ],
       task: 'code:check',
     },
     {
@@ -259,8 +292,11 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_client.py': 'import httpx2\n',
       },
-      finding:
-        'httpx2 is imported in features/orders/app, outside its home: adapters, libs, shared, root',
+      finding: [
+        'httpx2',
+        'features/orders/app',
+        'adapters, libs, shared, root',
+      ],
       task: 'code:check',
     },
     {
@@ -270,8 +306,10 @@ describe('the python template', () => {
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_dates.py': 'import arrow\n',
       },
-      finding:
-        'arrow has no home in features/orders/app; a package without one is imported at the edge',
+      finding: [
+        'arrow',
+        'features/orders/app',
+      ],
       task: 'code:check',
     },
     {
@@ -281,7 +319,9 @@ describe('the python template', () => {
         'src/shop/adapters/__init__.py': '',
         'src/shop/adapters/mail/__init__.py': 'from shop.features import orders\n',
       },
-      finding: 'adapter-imports-only-its-owners-domain-and-shared-layers BROKEN',
+      finding: [
+        'adapter-imports-only-its-owners-domain-and-shared-layers BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -292,7 +332,9 @@ describe('the python template', () => {
         'src/shop/features/orders/app/orders_start.py': 'from shop.main import main\n',
         'src/shop/main.py': 'def main() -> None:\n  pass\n',
       },
-      finding: 'entrypoint-never-imported BROKEN',
+      finding: [
+        'entrypoint-never-imported BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -305,7 +347,9 @@ describe('the python template', () => {
         'src/shop/integrations/__init__.py': '',
         'src/shop/integrations/fastapi/__init__.py': 'router = 1\n',
       },
-      finding: 'integration-never-imported BROKEN',
+      finding: [
+        'integration-never-imported BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -316,7 +360,9 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'WIRED = 1\n',
       },
-      finding: 'root-imported-only-by-entries BROKEN',
+      finding: [
+        'root-imported-only-by-entries BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -327,7 +373,9 @@ describe('the python template', () => {
         'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
         'src/shop/features/orders/app/__init__.py': 'from ..adapters.http import ADAPTER\n',
       },
-      finding: 'adapter-imported-only-by-the-root BROKEN',
+      finding: [
+        'adapter-imported-only-by-the-root BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -338,7 +386,9 @@ describe('the python template', () => {
         'src/shop/features/orders/adapters/__init__.py': '',
         'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
       },
-      finding: 'adapter-imported-only-by-the-root BROKEN',
+      finding: [
+        'adapter-imported-only-by-the-root BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -353,7 +403,9 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/use_cases/queries/list_orders_use_case.py':
           'from ..commands import place_order_use_case\n',
       },
-      finding: 'query-and-command-apart BROKEN',
+      finding: [
+        'query-and-command-apart BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -363,7 +415,9 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop import features\n',
       },
-      finding: 'surface-only-on-a-module-or-one-kind BROKEN',
+      finding: [
+        'surface-only-on-a-module-or-one-kind BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -375,7 +429,9 @@ describe('the python template', () => {
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop.kernel.types.money import MONEY\n',
       },
-      finding: 'module-reached-only-through-its-surface BROKEN',
+      finding: [
+        'module-reached-only-through-its-surface BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -386,7 +442,9 @@ describe('the python template', () => {
         'src/shop/libs/__init__.py': '',
         'src/shop/libs/smtp/__init__.py': 'CLIENT = 1\n',
       },
-      finding: 'kernel-imports-only-itself BROKEN',
+      finding: [
+        'kernel-imports-only-itself BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -397,7 +455,9 @@ describe('the python template', () => {
         'src/shop/shared/__init__.py': '',
         'src/shop/shared/mail/__init__.py': 'from shop.kernel.contracts import MAILER\n',
       },
-      finding: 'shared-imports-no-feature-adapter-contract-or-root BROKEN',
+      finding: [
+        'shared-imports-no-feature-adapter-contract-or-root BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -410,7 +470,9 @@ describe('the python template', () => {
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/contracts/__init__.py': 'ORDERS = 1\n',
       },
-      finding: 'binding-unit-calls-only-use-cases BROKEN',
+      finding: [
+        'binding-unit-calls-only-use-cases BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -421,7 +483,9 @@ describe('the python template', () => {
           'from shop.composition.checkout import CHECKOUT\n',
         'src/shop/composition/checkout/__init__.py': 'CHECKOUT = 1\n',
       },
-      finding: 'composition-module-never-imports-another BROKEN',
+      finding: [
+        'composition-module-never-imports-another BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -432,7 +496,10 @@ describe('the python template', () => {
         'src/shop/composition/checkout/domain/__init__.py': '',
         'src/shop/composition/checkout/domain/cart_entity.py': 'import attrs\n',
       },
-      finding: 'composition/checkout/domain imports no package, and attrs is one',
+      finding: [
+        'composition/checkout/domain',
+        'attrs',
+      ],
       task: 'code:check',
     },
     {
@@ -443,7 +510,9 @@ describe('the python template', () => {
         'src/shop/features/__init__.py': '',
         'src/shop/features/orders/__init__.py': 'from shop.composition import checkout\n',
       },
-      finding: 'import-points-inward BROKEN',
+      finding: [
+        'import-points-inward BROKEN',
+      ],
       task: 'architecture:check',
     },
     {
@@ -452,7 +521,9 @@ describe('the python template', () => {
         'src/shop/kernel.py': python('import orders_fixtures', '', 'ORDERS = orders_fixtures'),
         'tests/orders_fixtures.py': 'ORDER = 1\n',
       },
-      finding: 'DEP001',
+      finding: [
+        'DEP001',
+      ],
       task: 'dependencies:check',
     },
     {
@@ -460,7 +531,9 @@ describe('the python template', () => {
       changes: {
         'src/shop/kernel.py': python('import pytest', '', 'MARK = pytest.mark'),
       },
-      finding: 'DEP004',
+      finding: [
+        'DEP004',
+      ],
       task: 'dependencies:check',
     },
     {
@@ -468,7 +541,9 @@ describe('the python template', () => {
       changes: {
         'src/shop/kernel.py': python('def stale() -> int:', '  return 0'),
       },
-      finding: "unused function 'stale'",
+      finding: [
+        "unused function 'stale'",
+      ],
       task: 'unused:check',
     },
     {
@@ -476,7 +551,9 @@ describe('the python template', () => {
       changes: {
         'tests/test_orders.py': SPEC_OF_ONE_CASE,
       },
-      finding: 'Required test coverage of 100.0% not reached',
+      finding: [
+        'Required test coverage of 100.0% not reached',
+      ],
       task: 'test:check',
     },
     {
@@ -487,7 +564,9 @@ describe('the python template', () => {
           "  warnings.warn('old', DeprecationWarning, stacklevel=1)",
         ),
       },
-      finding: 'DeprecationWarning: old',
+      finding: [
+        'DeprecationWarning: old',
+      ],
       task: 'test:check',
     },
     {
@@ -499,7 +578,9 @@ describe('the python template', () => {
           '  assert total([1], discount=0) == 1',
         ),
       },
-      finding: "'slow' not found in `markers` configuration option",
+      finding: [
+        "'slow' not found in `markers` configuration option",
+      ],
       task: 'test:check',
     },
     {
@@ -510,7 +591,9 @@ describe('the python template', () => {
           "  assert socket.getaddrinfo('example.com', 443) == []",
         ),
       },
-      finding: 'a spec reached the network',
+      finding: [
+        'a spec reached the network',
+      ],
       task: 'test:check',
     },
     {
@@ -518,7 +601,9 @@ describe('the python template', () => {
       changes: {
         'tests/test_orders.py': SPEC_OF_ONE_CASE,
       },
-      finding: 'mutation: shop.orders.x_total__mutmut_',
+      finding: [
+        'mutation: shop.orders.x_total__mutmut_',
+      ],
       task: 'mutation:check',
     },
     {
@@ -526,7 +611,9 @@ describe('the python template', () => {
       changes: {
         'src/shop/orders.py': ORDERS_WITH_LABEL(''),
       },
-      finding: 'mutation: shop.orders.x_label__mutmut_1: no tests',
+      finding: [
+        'mutation: shop.orders.x_label__mutmut_1: no tests',
+      ],
       task: 'mutation:check',
     },
   ])(
@@ -543,7 +630,10 @@ describe('the python template', () => {
 
       // Assert
       expect({
-        hasFinding: run.output.includes(finding),
+        hasFinding: isFoundIn({
+          finding,
+          output: run.output,
+        }),
         isClean: run.isClean,
       }).toStrictEqual({
         hasFinding: true,

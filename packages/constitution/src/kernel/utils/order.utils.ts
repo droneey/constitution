@@ -9,7 +9,10 @@ const compareText = (left: string, right: string): -1 | 0 | 1 => {
   return left < right ? -1 : 1;
 };
 
+// By the code before the message, so a reworded message keeps its place.
 const compareFindings = (left: Finding, right: Finding): -1 | 0 | 1 =>
-  compareText(left.path, right.path) || compareText(left.message, right.message);
+  compareText(left.path, right.path) ||
+  compareText(left.code, right.code) ||
+  compareText(left.message, right.message);
 
 export { compareFindings, compareText };

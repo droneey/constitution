@@ -1,41 +1,53 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { coreChaptersCheck } from '../core-chapters.check';
 
-const PLACEMENT = 'blocks/core/placement.md';
+const CORE = 'blocks/core/core.md';
 
-// The valid files' core holds principles.md and workflow/workflow.md beside its card.
-const placementListing = (items: readonly string[]): string =>
-  [
-    '# Placement',
-    '',
-    'Prose may link [principles](principles.md) too.',
-    '',
-    ...items,
-    '',
-  ].join('\n');
+// The valid files' core holds foundation/principles.md and workflow/workflow.md beside its passport,
+// which the list leaves out; a list item that names no axis folder, or a link in a code fence, is
+// no item of it.
+const passportListing = (items: readonly string[]): string =>
+  passportFile({
+    body: [
+      '# Core',
+      '',
+      'Prose may quote - `foundation/`: [principles](foundation/principles.md) mid-line.',
+      '',
+      '- `PROJECT.md`: [principles](foundation/principles.md).',
+      '',
+      '```md',
+      '- `foundation/`: [principles](foundation/principles.md).',
+      '```',
+      '',
+      '## Its chapters',
+      '',
+      ...items,
+      '',
+    ].join('\n'),
+    id: 'core',
+  });
 
-const checkWith = (placement: string | undefined): ReturnType<typeof coreChaptersCheck> => {
+const checkWith = (items: readonly string[]): ReturnType<typeof coreChaptersCheck> => {
   const files = validFiles();
-
-  if (placement !== undefined) {
-    files[PLACEMENT] = placement;
-  }
+  files[CORE] = passportListing(items);
 
   return coreChaptersCheck(checkInputOf(files));
 };
 
 describe('coreChaptersCheck', () => {
-  it("should find nothing when placement's list links every chapter of core once", () => {
+  it("should find nothing when the passport's list links every chapter of core once", () => {
     // Act
-    const findings = checkWith(
-      placementListing([
-        '- The base: [placement](placement.md), [principles](principles.md).',
-        '- `workflow/`: [workflow](workflow/workflow.md).',
-      ]),
-    );
+    const findings = checkWith([
+      '- `foundation/`: [principles](foundation/principles.md).',
+      '- `workflow/`: [workflow](workflow/workflow.md).',
+    ]);
 
     // Assert
     expect(findings).toStrictEqual([]);
@@ -54,53 +66,60 @@ describe('coreChaptersCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it('should find nothing when core has no placement chapter', () => {
-    // Act
-    const findings = checkWith(undefined);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it.each([
+  it.each<{
+    code: string;
+    condition: string;
+    items: string[];
+    named: string;
+  }>([
     {
+      code: 'core-chapter-unlisted',
       condition: 'leaves a chapter out',
       items: [
-        '- The base: [placement](placement.md), [principles](principles.md).',
+        '- `foundation/`: [principles](foundation/principles.md).',
       ],
-      named: 'workflow/workflow.md',
+      named: 'blocks/core/workflow/workflow.md',
     },
     {
+      code: 'core-list-names-no-chapter',
       condition: 'links a file that is no chapter of core',
       items: [
-        '- The base: [placement](placement.md), [principles](principles.md), [card](core.md).',
+        '- `foundation/`: [principles](foundation/principles.md), [passport](core.md).',
         '- `workflow/`: [workflow](workflow/workflow.md).',
       ],
-      named: 'core.md',
+      named: 'blocks/core/core.md',
     },
     {
-      condition: 'links a chapter twice',
+      code: 'core-list-names-no-chapter',
+      condition: 'links a file core does not hold',
       items: [
-        '- The base: [placement](placement.md), [principles](principles.md), [principles](principles.md).',
+        '- `foundation/`: [gone](foundation/gone.md), [principles](foundation/principles.md).',
         '- `workflow/`: [workflow](workflow/workflow.md).',
       ],
-      named: 'principles.md',
+      named: 'blocks/core/foundation/gone.md',
     },
-  ])('should report placement when its list $condition', ({ items, named }) => {
+    {
+      code: 'core-chapter-listed-twice',
+      condition: 'links a chapter twice',
+      items: [
+        '- `foundation/`: [principles](foundation/principles.md), [principles](foundation/principles.md).',
+        '- `workflow/`: [workflow](workflow/workflow.md).',
+      ],
+      named: 'blocks/core/foundation/principles.md',
+    },
+  ])('should report the passport when its list $condition', ({ code, items, named }) => {
     // Act
-    const findings = checkWith(placementListing(items));
+    const findings = checkWith(items);
 
     // Assert
-    expect(
-      findings.map((finding) => ({
-        names: finding.message.includes(named),
-        path: finding.path,
-      })),
-    ).toStrictEqual([
-      {
-        names: true,
-        path: PLACEMENT,
-      },
+    expect(findings).toStrictEqual([
+      findingOf({
+        code,
+        names: [
+          named,
+        ],
+        path: CORE,
+      }),
     ]);
   });
 });

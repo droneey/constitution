@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { findingOf } from '../../../../../__tests__/constitution.fixtures';
 import { createFakeFrontMatterParser } from '../../../../../__tests__/front-matter-parser.fake';
 import type { FrontMatterFields, FrontMatterRead } from '../../../../contracts';
 import { readFrontMatter } from '../front-matter.utils';
@@ -17,6 +18,8 @@ const FIELDS: FrontMatterFields = {
   requires: [],
   summary: 'The ui block.',
 };
+// A message that interpolates a value it does not hold reads "undefined" or "NaN".
+const UNFILLED = /undefined|NaN/;
 const KEYS = [
   'id',
   'summary',
@@ -122,10 +125,10 @@ describe('readFrontMatter', () => {
       expect(loaded).toStrictEqual({
         body: text,
         findings: [
-          {
-            message: 'has no front matter; a main file opens with it',
+          findingOf({
+            code: 'front-matter-missing',
             path: PATH,
-          },
+          }),
         ],
       });
     },
@@ -147,9 +150,10 @@ describe('readFrontMatter', () => {
   });
 
   it.each<{
+    code: string;
     lines: readonly string[];
-    message: string;
     name: string;
+    names: readonly string[];
     read: FrontMatterRead;
   }>([
     {
@@ -158,7 +162,11 @@ describe('readFrontMatter', () => {
         'summary: Screens: states.',
         'requires: []',
       ],
-      message: 'front matter line 3 (summary) is not valid YAML: broken',
+      code: 'front-matter-not-yaml',
+      names: [
+        'line 3 (summary)',
+        'broken',
+      ],
       name: 'a YAML error on the line of a field',
       read: {
         line: 2,
@@ -171,7 +179,11 @@ describe('readFrontMatter', () => {
         'id: ui',
         'summary : Screens.',
       ],
-      message: 'front matter line 3 (summary) is not valid YAML: broken',
+      code: 'front-matter-not-yaml',
+      names: [
+        'line 3 (summary)',
+        'broken',
+      ],
       name: 'a YAML error on the line of a field with a space before its colon',
       read: {
         line: 2,
@@ -185,7 +197,11 @@ describe('readFrontMatter', () => {
         'governs:',
         '  - pattern: *.tsx',
       ],
-      message: 'front matter line 4 (governs) is not valid YAML: broken',
+      code: 'front-matter-not-yaml',
+      names: [
+        'line 4 (governs)',
+        'broken',
+      ],
       name: 'a YAML error on a nested line under a field',
       read: {
         line: 3,
@@ -198,7 +214,11 @@ describe('readFrontMatter', () => {
         '- id',
         'summary: Screens.',
       ],
-      message: 'front matter line 2 is not valid YAML: broken',
+      code: 'front-matter-not-yaml',
+      names: [
+        'line 2',
+        'broken',
+      ],
       name: 'a YAML error above every field',
       read: {
         line: 1,
@@ -210,7 +230,10 @@ describe('readFrontMatter', () => {
       lines: [
         'id: ui',
       ],
-      message: 'front matter is not valid YAML: broken',
+      code: 'front-matter-not-yaml',
+      names: [
+        'broken',
+      ],
       name: 'a YAML error at no known line',
       read: {
         line: undefined,
@@ -222,7 +245,8 @@ describe('readFrontMatter', () => {
       lines: [
         '- id',
       ],
-      message: 'front matter is not a mapping of fields',
+      code: 'front-matter-not-a-mapping',
+      names: [],
       name: 'a list',
       read: {
         status: 'not-a-mapping',
@@ -232,7 +256,11 @@ describe('readFrontMatter', () => {
       lines: [
         'abstract: "no"',
       ],
-      message: 'front matter: abstract: expected a boolean',
+      code: 'front-matter-off-schema',
+      names: [
+        'abstract',
+        'expected a boolean',
+      ],
       name: 'a field of the wrong type',
       read: {
         fields: undefined,
@@ -250,7 +278,11 @@ describe('readFrontMatter', () => {
       lines: [
         'id: ui',
       ],
-      message: 'front matter: <root>: expected an object',
+      code: 'front-matter-off-schema',
+      names: [
+        '<root>',
+        'expected an object',
+      ],
       name: 'an issue at the root',
       read: {
         fields: undefined,
@@ -264,7 +296,7 @@ describe('readFrontMatter', () => {
         status: 'mapping',
       },
     },
-  ])('should report "$message" when the parser reads $name', ({ lines, message, read }) => {
+  ])('should report $code when the parser reads $name', ({ code, lines, names, read }) => {
     // Arrange
     const parser = createFakeFrontMatterParser(read);
     const text = [
@@ -285,23 +317,29 @@ describe('readFrontMatter', () => {
     expect(loaded).toStrictEqual({
       body: '# UI',
       findings: [
-        {
-          message,
+        findingOf({
+          code,
+          names,
           path: PATH,
-        },
+        }),
       ],
     });
+    expect(loaded.findings[0]?.message).not.toMatch(UNFILLED);
   });
 
   it.each<{
+    code: string;
     fields?: Partial<FrontMatterFields>;
     keys?: readonly string[];
-    message: string;
     name: string;
+    names: readonly string[];
   }>([
     {
       keys: KEYS.filter((key) => key !== 'governs'),
-      message: 'front matter lacks "governs"; every block declares every field',
+      code: 'front-matter-field-missing',
+      names: [
+        'governs',
+      ],
       name: 'a missing field',
     },
     {
@@ -309,7 +347,10 @@ describe('readFrontMatter', () => {
         ...KEYS,
         'brands',
       ],
-      message: 'front matter has "brands", which is not a field',
+      code: 'front-matter-field-unknown',
+      names: [
+        'brands',
+      ],
       name: 'an unknown field',
     },
     {
@@ -318,43 +359,55 @@ describe('readFrontMatter', () => {
         'id',
         ...KEYS.slice(2),
       ],
-      message:
-        'front matter lists its fields out of order; the order is id, summary, requires, extends, abstract, languages, dictionary, governs',
+      code: 'front-matter-out-of-order',
+      names: [],
       name: 'its fields out of order',
     },
     {
       fields: {
         id: 'ui_kit',
       },
-      message: 'front matter: id "ui_kit" is not a kebab-case block id',
+      code: 'id-not-kebab-case',
+      names: [
+        'ui_kit',
+      ],
       name: 'an id in snake case',
     },
     {
       fields: {
         summary: `${'A'.repeat(70)}.`,
       },
-      message: 'front matter: summary has 71 characters; it holds at most 70',
+      code: 'summary-too-long',
+      names: [
+        '71',
+      ],
       name: 'a summary of 71 characters',
     },
     {
       fields: {
         summary: 'Screens. And tokens',
       },
-      message: 'front matter: summary is one sentence on one line, ending with a full stop',
+      code: 'summary-not-one-sentence',
+      names: [],
       name: 'a summary with no full stop at its end',
     },
     {
       fields: {
         summary: 'Screens\nand tokens.',
       },
-      message: 'front matter: summary is one sentence on one line, ending with a full stop',
+      code: 'summary-not-one-sentence',
+      names: [],
       name: 'a summary over two lines',
     },
     {
       fields: {
         extends: 'Bad',
       },
-      message: 'front matter: extends "Bad", which is not a block id',
+      code: 'entry-not-block-id',
+      names: [
+        'extends',
+        'Bad',
+      ],
       name: 'an extends that is no block id',
     },
     {
@@ -363,7 +416,11 @@ describe('readFrontMatter', () => {
           'Bad',
         ],
       },
-      message: 'front matter: requires "Bad", which is not a block id',
+      code: 'entry-not-block-id',
+      names: [
+        'requires',
+        'Bad',
+      ],
       name: 'a requires entry that is no block id',
     },
     {
@@ -372,7 +429,11 @@ describe('readFrontMatter', () => {
           'Type Script',
         ],
       },
-      message: 'front matter: languages "Type Script", which is not a block id',
+      code: 'entry-not-block-id',
+      names: [
+        'languages',
+        'Type Script',
+      ],
       name: 'a languages entry that is no block id',
     },
     {
@@ -382,7 +443,11 @@ describe('readFrontMatter', () => {
           'css',
         ],
       },
-      message: 'front matter: languages lists "css" twice',
+      code: 'entry-repeated',
+      names: [
+        'languages',
+        'css',
+      ],
       name: 'the same language in languages twice',
     },
     {
@@ -392,7 +457,8 @@ describe('readFrontMatter', () => {
           '  ',
         ],
       },
-      message: 'front matter: dictionary and governs hold no empty entry',
+      code: 'entry-empty',
+      names: [],
       name: 'dictionary entries of whitespace only',
     },
     {
@@ -401,7 +467,8 @@ describe('readFrontMatter', () => {
           '',
         ],
       },
-      message: 'front matter: dictionary and governs hold no empty entry',
+      code: 'entry-empty',
+      names: [],
       name: 'an empty governs entry',
     },
     {
@@ -410,8 +477,10 @@ describe('readFrontMatter', () => {
           'src/my ui/**',
         ],
       },
-      message:
-        'front matter: governs lists "src/my ui/**", which holds whitespace; the index separates globs with spaces',
+      code: 'glob-holds-whitespace',
+      names: [
+        '"src/my ui/**"',
+      ],
       name: 'a governs glob with a space',
     },
     {
@@ -420,11 +489,13 @@ describe('readFrontMatter', () => {
           'src/ui\t**',
         ],
       },
-      message:
-        'front matter: governs lists "src/ui\\t**", which holds whitespace; the index separates globs with spaces',
+      code: 'glob-holds-whitespace',
+      names: [
+        '"src/ui\\t**"',
+      ],
       name: 'a governs glob with a tab',
     },
-  ])('should report "$message" when the front matter has $name', ({ fields, keys, message }) => {
+  ])('should report $code when the front matter has $name', ({ code, fields, keys, names }) => {
     // Arrange
     const read = mappingOf({
       fields,
@@ -438,10 +509,11 @@ describe('readFrontMatter', () => {
     expect(loaded).toStrictEqual({
       body: BODY,
       findings: [
-        {
-          message,
+        findingOf({
+          code,
+          names,
           path: PATH,
-        },
+        }),
       ],
     });
   });

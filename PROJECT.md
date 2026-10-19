@@ -14,7 +14,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Domains of the business
 
-- **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis: the base at its root, and the optional `architecture` and `workflow` in a folder each.
+- **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
 - **Validation** — the checks that keep every block sound and consistent with the others.
 - **Presets** — the tool configurations that hold the tool-checked rules, split into parts by scope, tool and axis, with the bindings that say which setting holds which rule.
 - **Delivery** — the release archive `constitution.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets and the templates; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
@@ -43,9 +43,10 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 - **Block** — a folder of rules about one thing a project may have: core, a domain, a platform, a language, a library or a tool.
 - **Layer** — core, domains, contexts or implementations: the folder a block sits in, from the widest to the narrowest.
-- **Axis** — the base, `architecture` or `workflow`: where a rule sits in its block; a project always follows the base and chooses the others.
-- **Card** — a block's `<id>.md`: its front matter, its summary and the rules of its main chapter.
-- **Chapter** — a file of a block, named for what its rules govern.
+- **Axis** — `foundation`, `architecture` or `workflow`: the folder of its block a rule sits in; a project always follows `foundation` and chooses the others.
+- **Passport** — a block's `<id>.md` at its root, the one file its id names: its front matter, its title, one line of what the block is, its setup and an implementation's Requirements; no rule.
+- **Chapter** — a file of an axis of a block, `<axis>/<name>.md`, of one subject and named for it in its block's own terms, never after its block; a language's or a platform's chapter that refines one of core's takes its name. It opens with its title and a `> Governs …` line and holds its rules in sections.
+- **Section** — a `##` part of a chapter or a seam that names a part of its subject: `General`, first, for the rules about the whole subject, and `Requirements for implementation`, last.
 - **Seam** — a `with/<other>.md` file: the rules that hold only when two blocks meet.
 - **Rule** — a heading with a slug and a level, a statement, its Why and its tags.
 - **Level** — `MUST`, `SHOULD` or `MAY`: how hard a rule binds.

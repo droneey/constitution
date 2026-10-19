@@ -48,8 +48,8 @@ function warnings(   k, bytes) {
   if (k <= nwarnings) put("and " (nwarnings - k + 1) " more")
 }
 
-# Core's card without its front matter and the blank lines around its text.
-function core(   path, line, r, lines, k, read, front, started, blanks) {
+# Core's passport without its front matter and the blank lines around its text.
+function core(   path, line, r, lines, read, front, started, blanks) {
   path = ENVIRON["CONSTITUTION_CORE"]
   lines = 0
   read = 0
@@ -77,9 +77,6 @@ function core(   path, line, r, lines, k, read, front, started, blanks) {
   }
   if (r < 0) exit 2
   close(path)
-  if (!ncorefiles) return
-  if (!lines) open_section()
-  for (k = 1; k <= ncorefiles; k++) put(COREFILES[k])
 }
 
 function index_lines(   k) {
@@ -118,7 +115,6 @@ function notice(kind, found,   archive) {
 
 $1 == "notice" { notice_kind = $2; notice_found = $3 }
 $1 == "error" { failed = $2 }
-$1 == "core" { COREFILES[++ncorefiles] = text(1) }
 $1 == "count" { count = $2 }
 $1 == "warning" { WARNING[++nwarnings] = text(1) }
 $1 == "index" { INDEX[++nindex] = text(1) }

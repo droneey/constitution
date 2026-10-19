@@ -47,7 +47,7 @@ Tell the owner the installed release and the blocks above, grouped by layer, in 
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
-Every block holds at its root its base — what holds for any team, always followed — and may add two optional axes, a folder each: `architecture` — the Droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
+Every block holds its rules on three axes, a folder each: `foundation` — what holds for any team, always followed — and two optional ones: `architecture` — the Droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
 
 Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
 
@@ -67,7 +67,7 @@ The owner confirms or corrects each key. A block the owner drops is dropped; a b
 
 **A library with no block.** When the repository relies on a framework, library or tool the list does not offer, ask the owner which they want:
 
-- **a block of the project's own pack** — you write `<pack>/blocks/implementations/<id>/<id>.md` from `.droneey/constitution/templates/block.md`, list the pack's folder under `packs:` and the block's id under `implementations`;
+- **a block of the project's own pack** — you copy `.droneey/constitution/templates/block/` to `<pack>/blocks/implementations/<id>/`, rename its passport `block.md` to `<id>.md` and `foundation/chapter.md` to the subject of its rules — `foundation/retries.md`, named in the block's own terms, never `<id>.md` —, list the pack's folder under `packs:` and the block's id under `implementations`;
 - **nothing** — it is left out. Using a tool the Constitution has no block for is not a departure.
 
 For a block of the project's own pack, fill the template's placeholders from the repository and the owner:
@@ -76,8 +76,9 @@ For a block of the project's own pack, fill the template's placeholders from the
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — Constitution ids or other blocks of the pack; `extends` names an abstract Constitution base it inherits, an id that starts with `_`, or stays `null` — a Constitution block it builds on goes under `requires`;
 - `languages` lists, for a tool, the language blocks whose files it reads — Constitution ids or language blocks of the pack — and stays `[]` for a tool of any language and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern;
-- the **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
-- a **rule** is written only when the owner states one, in the template's format, with a slug no rule heading of the Constitution's blocks holds. Drop the placeholder rule when there is none.
+- the passport's **setup** paragraph says how the library is set up in the repository — its preset parts, templates, configuration files and exclusions; drop it when there is nothing to say;
+- the passport's **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
+- a **rule** is written only when the owner states one, in the chapter template's format, with a slug no rule heading of the Constitution's blocks holds. Drop the chapter, and its `foundation/` folder, when there is none.
 
 A block of the project's own pack is a draft until a person reviews it; say so.
 
@@ -128,7 +129,7 @@ Show the owner everything you will write:
 - `DECISIONS.md` in full, when it will be written;
 - each block of the project's own pack in full.
 
-Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the release's, from their cards under `.droneey/constitution/blocks/`, and each block of the project's own pack — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
+Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the release's, from the chapters of their axes under `.droneey/constitution/blocks/`, and each block of the project's own pack — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
 
 Write only after the owner's yes, and only the files the owner agreed to.
 

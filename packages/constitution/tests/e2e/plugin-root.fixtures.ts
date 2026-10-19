@@ -5,6 +5,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readdirSync,
+  readFileSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -33,8 +34,14 @@ interface PluginRootOptions {
 }
 
 const INSTALLED = '1.0.0';
-const FORMAT = 2;
 const REPOSITORY = join(import.meta.dir, '..', '..');
+// The block format of this repository's release, the one its hooks read, found
+// in its package.json as the hook finds it.
+const FORMAT = Number(
+  /"constitutionFormat"\s*:\s*(\d+)/u.exec(
+    readFileSync(join(REPOSITORY, 'package.json'), 'utf8'),
+  )?.[1],
+);
 const HOOKS = 'hooks';
 const LIBRARY = 'hooks/lib';
 
@@ -186,14 +193,25 @@ const removeFolder = (path: string): void => {
 const LINE_BYTES = 100;
 
 // A body of core's card of exactly `bytes` bytes, in lines of at most 100 with
-// their newline, to put the budget's edge where a case needs it.
-const coreBodyOfBytes = (bytes: number): string =>
-  Array.from(
+// their newline and never empty, since the digest drops a blank last line, to put
+// the budget's edge where a case needs it.
+const coreBodyOfBytes = (bytes: number): string => {
+  const lines = Math.ceil(bytes / LINE_BYTES);
+  const last = bytes - (lines - 1) * LINE_BYTES;
+  const sizes = Array.from(
     {
-      length: Math.ceil(bytes / LINE_BYTES),
+      length: lines,
     },
-    (_, index) => `${'x'.repeat(Math.min(LINE_BYTES, bytes - index * LINE_BYTES) - 1)}\n`,
-  ).join('');
+    (_, index) => (index < lines - 1 ? LINE_BYTES : last),
+  );
+
+  if (last === 1 && lines > 1) {
+    sizes[lines - 2] = LINE_BYTES - 1;
+    sizes[lines - 1] = 2;
+  }
+
+  return sizes.map((size) => `${'x'.repeat(size - 1)}\n`).join('');
+};
 
 const removePluginRoots = (): void => {
   for (const root of created.splice(0)) {
@@ -207,6 +225,7 @@ export {
   coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
+  FORMAT,
   INSTALLED,
   LINK,
   linkArchive,

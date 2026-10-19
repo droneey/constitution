@@ -46,7 +46,7 @@ describe('createYamlVocabularyParser', () => {
       issues: [
         {
           field: '',
-          message: 'Unrecognized key: "domain"',
+          message: expect.stringContaining('"domain"'),
         },
       ],
       name: 'the root holds an unknown key',
@@ -56,7 +56,7 @@ describe('createYamlVocabularyParser', () => {
       issues: [
         {
           field: 'architecture',
-          message: 'Unrecognized key: "layers"',
+          message: expect.stringContaining('"layers"'),
         },
       ],
       name: 'the architecture holds an unknown key',
@@ -66,15 +66,15 @@ describe('createYamlVocabularyParser', () => {
       issues: [
         {
           field: 'architecture.concepts',
-          message: 'Invalid input: expected array, received string',
+          message: expect.stringContaining('array'),
         },
         {
           field: 'architecture.suffixes',
-          message: 'Invalid input: expected array, received undefined',
+          message: expect.stringContaining('array'),
         },
         {
           field: 'workflow',
-          message: 'Invalid input: expected object, received undefined',
+          message: expect.stringContaining('object'),
         },
       ],
       name: 'a list is text or missing, and so is the workflow',

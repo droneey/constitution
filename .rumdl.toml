@@ -1,4 +1,4 @@
-extends = ".droneey/constitution/presets/markdown/rumdl/core.toml"
+extends = ".droneey/constitution/presets/markdown/rumdl/foundation/core.toml"
 
 # The archive's entries, repeated since this table replaces its own.
 [per-file-ignores]
@@ -10,4 +10,4 @@ extends = ".droneey/constitution/presets/markdown/rumdl/core.toml"
 # The brand's banner switches with the reader's theme and its badges sit centred, which Markdown cannot write.
 "README.md" = ["MD033"]
 # The template shows that format, its placeholders in angle brackets.
-"packages/constitution/templates/block.md" = ["MD001", "MD033"]
+"packages/constitution/templates/block/foundation/chapter.md" = ["MD001", "MD033"]

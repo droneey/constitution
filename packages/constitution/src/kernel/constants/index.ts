@@ -8,6 +8,5 @@ export {
   Layer,
   LEVELS,
   Level,
-  OPTIONAL_AXES,
   Tag,
 } from './vocabulary.constants';

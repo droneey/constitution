@@ -5,8 +5,10 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import {
   HookEvent,
+  mentionedOf,
   newSession,
   outputOf,
+  remindedOf,
   removeSessions,
   runHook,
   runScript,
@@ -15,6 +17,14 @@ import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from '../project.fixtures';
 
 let root = '';
+
+const ORDER_CARD = 'src/features/orders/ui/order-card.tsx';
+// The file a note names, ui's passport and one of its MUST rules.
+const UI_NAMES = [
+  ORDER_CARD,
+  'blocks/domains/ui/ui.md',
+  'four-data-states',
+];
 
 const startSession = (
   config: string,
@@ -95,7 +105,7 @@ describe('the reminders of the post-tool-use hook', () => {
 
     // Act
     const reminder = touch({
-      filePath: join(project, 'src/features/orders/ui/order-card.tsx'),
+      filePath: join(project, ORDER_CARD),
       session,
     });
 
@@ -107,14 +117,17 @@ describe('the reminders of the post-tool-use hook', () => {
     });
 
     expect({
-      files: context.includes('read blocks/domains/ui/ui.md'),
-      musts: context.includes('its MUST rules: '),
-      opening: context.startsWith('ui governs src/features/orders/ui/order-card.tsx: '),
+      blocks: remindedOf(reminder),
+      mentioned: mentionedOf({
+        names: UI_NAMES,
+        text: context,
+      }),
       within: context.length <= 300,
     }).toStrictEqual({
-      files: true,
-      musts: true,
-      opening: true,
+      blocks: [
+        'ui',
+      ],
+      mentioned: UI_NAMES,
       within: true,
     });
   });
@@ -136,7 +149,22 @@ describe('the reminders of the post-tool-use hook', () => {
     });
 
     // Assert
-    expect(reminder).toContain(`ui governs ${path}: `);
+    expect({
+      blocks: remindedOf(reminder),
+      mentioned: mentionedOf({
+        names: [
+          path,
+        ],
+        text: reminder,
+      }),
+    }).toStrictEqual({
+      blocks: [
+        'ui',
+      ],
+      mentioned: [
+        path,
+      ],
+    });
   });
 
   it.each([
@@ -187,18 +215,7 @@ describe('the reminders of the post-tool-use hook', () => {
     });
 
     // Assert
-    const { context } = outputOf({
-      exitCode: 0,
-      stderr: '',
-      stdout: reminder,
-    });
-
-    expect(
-      context
-        .split('\n')
-        .map((note) => note.split(' ')[0])
-        .toSorted(),
-    ).toStrictEqual([
+    expect(remindedOf(reminder)).toStrictEqual([
       '_react',
       'browser',
       'react-dom',

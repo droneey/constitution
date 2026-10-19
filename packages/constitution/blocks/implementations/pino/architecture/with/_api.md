@@ -1,6 +1,8 @@
 # API
 
-> Where a server that logs with pino enters each request's trace id.
+> Governs where a server that logs with pino enters each request's trace id.
+
+## General
 
 ### trace-middleware-registered-by-the-root · MUST
 

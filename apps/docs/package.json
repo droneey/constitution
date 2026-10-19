@@ -31,7 +31,7 @@
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
     "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
-    "docker:check": "hadolint --config ../../.droneey/constitution/presets/common/hadolint/docker.yaml docker/images/app.Dockerfile && dclint --config ../../.droneey/constitution/presets/common/dclint/docker.yaml compose.yaml docker/compose/app.yaml",
+    "docker:check": "hadolint --config ../../.droneey/constitution/presets/common/hadolint/foundation/docker.yaml docker/images/app.Dockerfile && dclint --config ../../.droneey/constitution/presets/common/dclint/foundation/docker.yaml compose.yaml docker/compose/app.yaml",
     "shell:check": "shellcheck scripts/*.sh && shfmt -d scripts",
     "audit:check": "docker build --quiet --target base --tag droneey-constitution-docs-base:local --file docker/images/app.Dockerfile ../.. && osv-scanner scan image droneey-constitution-docs-base:local"
   },

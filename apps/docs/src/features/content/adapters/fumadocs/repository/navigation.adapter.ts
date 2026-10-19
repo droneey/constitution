@@ -27,7 +27,7 @@ const GROUP_DEPTH = 3;
 const ICONS: Readonly<Record<string, string>> = {
   '': 'BookOpenText',
   '/core#precedence': 'Layers',
-  '/core/placement': 'MapPin',
+  '/core/foundation/placement': 'MapPin',
   '/decisions': 'Scale',
   '/glossary': 'BookA',
   '/guides/check-in-ci': 'GitPullRequest',

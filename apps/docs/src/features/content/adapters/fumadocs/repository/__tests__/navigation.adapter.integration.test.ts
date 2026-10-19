@@ -32,7 +32,7 @@ const README = [
   '### Reference',
   '',
   '- [Precedence](packages/constitution/blocks/core/core.md#precedence) — which rule wins',
-  '- [Placement](packages/constitution/blocks/core/placement.md) — where a rule goes',
+  '- [Placement](packages/constitution/blocks/core/foundation/placement.md) — where a rule goes',
   '- [Names](packages/constitution/blocks/core/names.md)',
   '- [Blocks](packages/constitution/blocks/domains) — every block, on GitHub',
   '- [Site](https://example.com/site) — not a file of the repository',
@@ -79,7 +79,7 @@ describe('sidebarOf', () => {
       './glossary',
       '---Reference---',
       '[Layers][Precedence](/docs/core#precedence)',
-      '[MapPin][Placement](/docs/core/placement)',
+      '[MapPin][Placement](/docs/core/foundation/placement)',
       '[Names](/docs/core/names)',
       'domains',
     ]);
@@ -120,7 +120,7 @@ describe('sidebarOf', () => {
         'Which rule wins.',
       ],
       [
-        'core/placement',
+        'core/foundation/placement',
         'Where a rule goes.',
       ],
       [

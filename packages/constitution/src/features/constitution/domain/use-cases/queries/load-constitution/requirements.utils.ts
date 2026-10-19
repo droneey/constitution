@@ -4,6 +4,12 @@ import type { RequirementAnswer } from '../../../entities';
 import type { MarkdownSection } from '../../../utils';
 import { sectionsOf } from '../../../utils';
 
+enum RequirementsTableCode {
+  HeaderMisshapen = 'requirements-header-misshapen',
+  RowMisshapen = 'requirements-row-misshapen',
+  HeadingMisshapen = 'requirements-heading-misshapen',
+}
+
 interface Source {
   block: string;
   file: string;
@@ -22,9 +28,7 @@ const ROW = /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?
 const SEPARATOR = /^\|?[\s:|-]+\|?$/;
 const HEADER = /^\|\s*Requirement\s*\|\s*How\s*\|\s*Met\s*\|$/;
 const NEAR_HEADER = /^\|\s*Requirement\s*\|/;
-const HEADER_FORM = '| Requirement | How | Met |';
 const PIPE = '|';
-const ROW_FORM = '| `<requirement>` | <how> | <met> |';
 
 const rowsOf = (input: { section: MarkdownSection; source: Source }): RequirementsParsed => {
   const rows = input.section.lines
@@ -55,12 +59,19 @@ const rowsOf = (input: { section: MarkdownSection; source: Source }): Requiremen
     }),
     findings: rows
       .filter((row) => !ROW.test(row))
-      .map((row) => ({
-        message: NEAR_HEADER.test(row)
-          ? `has the header "${row}" in its Requirements; it is "${HEADER_FORM}"`
-          : `has the row "${row}" in its Requirements, which is not "${ROW_FORM}"`,
-        path: input.source.file,
-      })),
+      .map((row) =>
+        NEAR_HEADER.test(row)
+          ? {
+              code: RequirementsTableCode.HeaderMisshapen,
+              message: `has the header "${row}" in its Requirements; it is "| Requirement | How | Met |"`,
+              path: input.source.file,
+            }
+          : {
+              code: RequirementsTableCode.RowMisshapen,
+              message: `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <met> |"`,
+              path: input.source.file,
+            },
+      ),
   };
 };
 
@@ -76,6 +87,7 @@ const readSection = (input: { section: MarkdownSection; source: Source }): Requi
     findings: NEAR_SECTION.test(heading)
       ? [
           {
+            code: RequirementsTableCode.HeadingMisshapen,
             message: `has the heading "${heading}", which names the Requirements section; it is "${SECTION}"`,
             path: input.source.file,
           },

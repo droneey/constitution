@@ -1,3 +1,7 @@
+import { expect } from 'bun:test';
+
+import type { Finding } from '#/kernel/types';
+
 import { createJsonManifestParser } from '../adapters/json';
 import {
   createYamlBindingsParser,
@@ -40,6 +44,13 @@ interface BlockFilesFixture extends CardFixture {
   files?: Readonly<Files>;
 }
 
+interface FindingFixture {
+  code: string;
+  // The parts of the message the case proves, such as the id or the slug it names.
+  names?: readonly string[] | undefined;
+  path: string;
+}
+
 interface RuleFixture {
   // false leaves the level out of a heading that carries out another rule.
   isLevelStated?: boolean;
@@ -53,7 +64,7 @@ interface RuleFixture {
 
 const list = (items: readonly string[] | undefined): string => JSON.stringify(items ?? []);
 
-const mainFile = (block: BlockFixture): string =>
+const passportFile = (block: BlockFixture): string =>
   [
     '---',
     `id: ${block.id}`,
@@ -69,17 +80,31 @@ const mainFile = (block: BlockFixture): string =>
     block.body,
   ].join('\n');
 
+const AXIS_FOLDERS: readonly string[] = [
+  'foundation',
+  'architecture',
+  'workflow',
+];
+
+/** a file's path in its block: a path with no axis folder is foundation's */
+const inAxis = (path: string): string =>
+  AXIS_FOLDERS.some((axis) => path.startsWith(`${axis}/`)) ? path : `foundation/${path}`;
+
+/**
+ * A block as its files: the passport holds the front matter and the body — its title, its setup and
+ * an implementation's Requirements — and each of the files, a chapter or a seam, sits in its axis.
+ */
 const blockFiles = (input: BlockFilesFixture): Files => {
   const { dir, files = {}, ...card } = input;
 
   return {
-    [`${dir}/${input.id}.md`]: mainFile({
+    [`${dir}/${input.id}.md`]: passportFile({
       ...card,
       body: input.body ?? `# ${input.id}\n`,
     }),
     ...Object.fromEntries(
       Object.entries(files).map(([path, text]) => [
-        `${dir}/${path}`,
+        `${dir}/${inAxis(path)}`,
         text,
       ]),
     ),
@@ -101,6 +126,10 @@ const rule = (input: RuleFixture): string =>
     `| ${input.why ?? 'it keeps the code honest.'} | ${input.tags ?? '[]'} |`,
     '',
   ].join('\n');
+
+/** a chapter or a seam in its form: its title, its Governs line and its rules under General */
+const chapterFile = (title: string, ...rules: readonly string[]): string =>
+  `# ${title}\n\n> Governs ${title.toLowerCase()}.\n\n## General\n\n${rules.join('\n')}`;
 
 interface Source {
   bindingsParser: BindingsParser;
@@ -155,6 +184,20 @@ const checkInputOf = (
   };
 };
 
+/**
+ * A finding as a case expects it, whatever its wording: its code, its path and a message that is
+ * never empty and names each of `names`.
+ */
+const findingOf = (input: FindingFixture): Finding => ({
+  code: input.code,
+  message: expect.stringMatching(
+    new RegExp(
+      `^${(input.names ?? []).map((name) => `(?=[\\s\\S]*${RegExp.escape(name)})`).join('')}[\\s\\S]`,
+    ),
+  ),
+  path: input.path,
+});
+
 const textOf = (input: { files: Readonly<Files>; path: string }): string => {
   const text: string | undefined = input.files[input.path];
 
@@ -171,10 +214,12 @@ const without = (input: { files: Readonly<Files>; path: string }): Files =>
 export type { BlockFixture, Files, RuleFixture };
 export {
   blockFiles,
+  chapterFile,
   checkInputOf,
+  findingOf,
   loadedOf,
-  mainFile,
   packSourceOf,
+  passportFile,
   rule,
   sourceOf,
   textOf,

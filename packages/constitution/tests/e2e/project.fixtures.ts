@@ -77,6 +77,10 @@ const configOf = (config: Config): string =>
     .join('\n')
     .concat('\n');
 
+// The line of a config that holds `at`, counted from 1.
+const lineOf = (input: { at: string; config: string }): number =>
+  input.config.slice(0, input.config.indexOf(input.at)).split('\n').length;
+
 const write = (input: { path: string; text: string }): void => {
   mkdirSync(dirname(input.path), {
     recursive: true,
@@ -431,7 +435,13 @@ const RATIFIED: ProjectLayout = {
           'requires: [i18n, typescript]',
         ],
       ],
-      name: 'block.md',
+      name: 'block/block.md',
+    }),
+    [packPath({
+      id: 'paraglide',
+    }).replace('/paraglide.md', '/foundation/messages.md')]: fromTemplate({
+      fills: [],
+      name: 'block/foundation/chapter.md',
     }),
   },
 };
@@ -485,6 +495,7 @@ export {
   createProject,
   HTML_SITE,
   LIBRARY,
+  lineOf,
   OWN_PACK,
   PACK_PROJECT,
   packBlockFiles,

@@ -29,7 +29,7 @@
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
     "architecture:check": "depcruise packages/constitution/src packages/constitution/tests packages/mutation-check/languages/typescript/src --config .dependency-cruiser.mjs && bun run --filter '*' architecture:check",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints && scripts/poe-each.sh unused:check",
-    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/core.txt)\" --no-ignore . && bun run --filter '*' audit:check",
+    "audit:check": "osv-scanner scan source --licenses=\"$(paste -sd, .droneey/constitution/presets/common/osv-scanner/foundation/core.txt)\" --no-ignore . && bun run --filter '*' audit:check",
     "format:check": "scripts/poe-each.sh format:check",
     "format:fix": "scripts/poe-each.sh format:fix",
     "code:check": "scripts/poe-each.sh code:check",

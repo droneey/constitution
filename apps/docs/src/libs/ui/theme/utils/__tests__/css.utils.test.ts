@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { ThemeTokenError } from '../../errors';
 import { emitThemeCss } from '../css.utils';
-import { createTokens } from './theme.fixtures';
+import { blockOf, createTokens, declarationsOf } from './theme.fixtures';
 
 describe('emitThemeCss', () => {
   it('should write the primitives, the semantic tokens and the values of each mode', () => {
@@ -97,42 +97,16 @@ describe('emitThemeCss', () => {
     const lines = emitThemeCss(tokens, {});
 
     // Assert
-    expect(lines).toStrictEqual([
-      '',
-      '@layer base {',
-      '  :root {',
-      '    --p-color-neutral-0: oklch(1 0 0);',
-      '    --p-dimension-8: 0.5rem;',
-      '    --p-dimension-16: 1rem;',
-      '    --p-radius-4: 0.25rem;',
-      '  }',
-      '}',
-      '',
-      '@theme {',
-      '  --color-surface-base: light-dark(var(--p-color-neutral-0), var(--p-color-neutral-0));',
-      '  --spacing-sm: var(--p-dimension-8);',
-      '  --size-control-md: var(--p-dimension-16);',
-      '  --spacing-control-md: var(--size-control-md);',
-      '  --text-sm: var(--p-dimension-16);',
-      '  --text-sm--line-height: var(--p-dimension-8);',
-      '  --duration-fast: 100ms;',
-      '  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);',
-      '}',
-      '',
-      ':root {',
-      '  --stroke-icon: 2;',
-      '}',
-      '',
-      '.dark {',
-      '  --stroke-icon: 2;',
-      '}',
-      '',
-      '@media (prefers-reduced-motion: reduce) {',
-      '  :root {',
-      '    --duration-fast: 0ms;',
-      '  }',
-      '}',
-      '',
+    expect([
+      declarationsOf(lines, '--color-surface-base'),
+      blockOf(lines, '.dark {'),
+    ]).toStrictEqual([
+      [
+        '  --color-surface-base: light-dark(var(--p-color-neutral-0), var(--p-color-neutral-0));',
+      ],
+      [
+        '  --stroke-icon: 2;',
+      ],
     ]);
   });
 

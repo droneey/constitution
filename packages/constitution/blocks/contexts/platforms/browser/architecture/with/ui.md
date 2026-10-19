@@ -2,7 +2,7 @@
 
 > Governs where a screen declares what the document says about it.
 
-## User interface
+## Screens
 
 ### document-metadata-owned-by-screen · SHOULD
 

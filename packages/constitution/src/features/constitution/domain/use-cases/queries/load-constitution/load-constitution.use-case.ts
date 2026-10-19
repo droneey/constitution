@@ -1,5 +1,5 @@
 import { LAYERS } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { Finding, Problem } from '#/kernel/types';
 import { compareText } from '#/kernel/utils';
 
 import { BASE_PREFIX, DocumentPath } from '../../../constants';
@@ -23,12 +23,21 @@ import type {
 } from '../../../entities';
 import { splitFrontMatter, withoutCodeFences } from '../../../utils';
 import { bindingsOf } from './bindings.utils';
+import type { UnplacedFile } from './block-path.utils';
 import { BlockPathFile, classifyBlockPath } from './block-path.utils';
 import type { Located } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';
 import { parseRequirements } from './requirements.utils';
 import { resolveRules } from './rule-chain.utils';
 import { parseRules } from './rules.utils';
+
+enum LoadCode {
+  OutsideBlockFolder = 'outside-block-folder',
+  StrayBlockFile = 'stray-block-file',
+  ChapterNamedAfterBlock = 'chapter-named-after-its-block',
+  BaseDoesNotLoad = 'base-does-not-load',
+  IdShared = 'block-id-shared',
+}
 
 interface ConstitutionLoaded {
   constitution: Constitution;
@@ -46,7 +55,19 @@ const PRESETS = 'presets/';
 const OUTSIDE =
   'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
 const STRAY =
-  "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md";
+  'is not a block file; a block holds at its root its passport <id>.md, and in foundation/, architecture/ and workflow/ its chapters <name>.md and its seams with/<block>.md';
+const NAMED_AFTER_BLOCK =
+  "is named after its block; an axis holds named chapters and seams, and the block's id names only its passport <id>.md";
+const UNPLACED: Readonly<Record<UnplacedFile, Problem>> = {
+  [BlockPathFile.NamedAfterBlock]: {
+    code: LoadCode.ChapterNamedAfterBlock,
+    message: NAMED_AFTER_BLOCK,
+  },
+  [BlockPathFile.Stray]: {
+    code: LoadCode.StrayBlockFile,
+    message: STRAY,
+  },
+};
 // <directory>/<skill>/SKILL.md, where no folder is hidden
 const SKILL_FILE = /^((?:[^./][^/]*\/)+)[^./][^/]*\/SKILL\.md$/;
 const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
@@ -54,8 +75,18 @@ const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
 const byLayerThenId = (left: Block, right: Block): number =>
   LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) || compareText(left.id, right.id);
 
-const locate = (paths: readonly string[]): readonly Located[] =>
-  paths.flatMap((path) => {
+interface Unplaced {
+  file: UnplacedFile;
+  path: string;
+}
+
+interface Location {
+  placed: readonly Located[];
+  unplaced: readonly Unplaced[];
+}
+
+const locate = (paths: readonly string[]): Location => {
+  const found = paths.flatMap((path) => {
     const block = classifyBlockPath(path);
 
     return block === undefined
@@ -67,6 +98,30 @@ const locate = (paths: readonly string[]): readonly Located[] =>
           },
         ];
   });
+
+  return {
+    placed: found.flatMap(({ block, path }) =>
+      'axis' in block
+        ? [
+            {
+              block,
+              path,
+            },
+          ]
+        : [],
+    ),
+    unplaced: found.flatMap(({ block, path }) =>
+      'axis' in block
+        ? []
+        : [
+            {
+              file: block.file,
+              path,
+            },
+          ],
+    ),
+  };
+};
 
 const parsedOf = (blocks: readonly Block[]): Parsed => {
   const sources = blocks.flatMap((block) =>
@@ -99,6 +154,7 @@ const duplicateIdFindings = (blocks: readonly Block[]): readonly Finding[] =>
       ? []
       : [
           {
+            code: LoadCode.IdShared,
             message: `shares the id "${block.id}" with ${others.map((other) => other.path).join(', ')}; an id names one block`,
             path: block.path,
           },
@@ -218,9 +274,7 @@ interface BlocksLoaded {
 const blocksOf = (input: { parser: FrontMatterParser; tree: FileTree }): BlocksLoaded => {
   const underBlocks = input.tree.list().filter((path) => path.startsWith(BLOCKS));
   const located = locate(underBlocks);
-  const loaded = groupByFolder(
-    located.filter((entry) => entry.block.file !== BlockPathFile.Stray),
-  ).map((folder) =>
+  const loaded = groupByFolder(located.placed).map((folder) =>
     loadBlock({
       folder,
       parser: input.parser,
@@ -240,15 +294,14 @@ const blocksOf = (input: { parser: FrontMatterParser; tree: FileTree }): BlocksL
       ...underBlocks
         .filter((path) => classifyBlockPath(path) === undefined)
         .map((path) => ({
+          code: LoadCode.OutsideBlockFolder,
           message: OUTSIDE,
           path,
         })),
-      ...located
-        .filter((entry) => entry.block.file === BlockPathFile.Stray)
-        .map((entry) => ({
-          message: STRAY,
-          path: entry.path,
-        })),
+      ...located.unplaced.map(({ file, path }) => ({
+        ...UNPLACED[file],
+        path,
+      })),
       ...loaded.flatMap((outcome) => outcome.findings),
     ],
   };
@@ -337,6 +390,7 @@ const loadConstitution = (input: {
       ...((base?.findings.length ?? 0) > 0
         ? [
             {
+              code: LoadCode.BaseDoesNotLoad,
               message: BASE_BROKEN,
               path: BASE_PREFIX,
             },

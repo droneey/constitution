@@ -11,6 +11,7 @@ BEGIN {
   FIELDS = "id summary requires extends abstract languages dictionary governs"
   LAYERS = "domain platform language implementation"
   AXES = "architecture workflow"
+  NAXIS = split("foundation " AXES, AXIS, " ")
   TODAY = ENVIRON["CONSTITUTION_TODAY"]
   split("domains platforms languages implementations", keys, " ")
   split(LAYERS, layers, " ")
@@ -155,40 +156,23 @@ function active_rule(s, i) {
   return ON[s, RAXIS[i]] && IN[s, RBLOCK[i]] && (RWITH[i] == "" || IN[s, RWITH[i]])
 }
 
-# The base, the files at a block's root, is always followed: its axis is "".
-# axes lists the optional ones; a scope without the key takes the default.
+# foundation is always followed; axes lists the optional ones, and a scope
+# without the key takes the default.
 function axes_of(s,   i, n, a, k, app, listed) {
   app = s ? APP[s] : ""
   listed = ((app, "axes") in LISTED)
   delete PICKED
   for (i = 1; i <= nitems; i++) {
     if (IKEY[i] != "axes" || IAPP[i] != app) continue
-    if (ITEXT[i] == "foundation") warn("config", (s ? app : "constitution.yaml") " lists foundation in axes — a block's root is always followed, remove it")
+    if (ITEXT[i] == "foundation") warn("config", (s ? app : "constitution.yaml") " lists foundation in axes — foundation is always followed, remove it")
     else if (!has(AXES, ITEXT[i])) warn("config", "axes names " ITEXT[i] " — write architecture or workflow")
     else PICKED[ITEXT[i]] = 1
   }
-  ON[s, ""] = 1
+  ON[s, "foundation"] = 1
   n = split(AXES, a, " ")
   for (k = 1; k <= n; k++) {
     if (listed) ON[s, a[k]] = (a[k] in PICKED)
     else ON[s, a[k]] = s ? ON[0, a[k]] : 1
-  }
-}
-
-function all_axes(   n, a, k) {
-  ON[0, ""] = 1
-  n = split(AXES, a, " ")
-  for (k = 1; k <= n; k++) ON[0, a[k]] = 1
-}
-
-function print_core(   n, a, k, name) {
-  if (!("core" in KNOWN)) return
-  print "core" T "Core's chapters, blocks/core/<name>.md, and what each governs:"
-  n = split(chapters(0, "core"), a, " ")
-  for (k = 1; k <= n; k++) {
-    name = a[k]
-    sub(/\.md$/, "", name)
-    print "core" T "- " name (CGOVERNS["core", a[k]] == "" ? "" : ": " CGOVERNS["core", a[k]])
   }
 }
 
@@ -244,26 +228,51 @@ function chapters(s, id,   out, n, a, k) {
 }
 
 function seam(entry) {
-  return (axis_of(entry) == "" ? "" : axis_of(entry) "/") "with/" name_of(entry)
+  return axis_of(entry) "/with/" name_of(entry)
 }
 
-function chapter(entry, id) {
-  sub(/\.md$/, "", entry)
-  return (name_of(entry) == id) ? axis_of(entry) : entry
-}
-
-function also(s, id,   out, n, a, k) {
+# A block's chapters and seams beyond its passport, which the layer's heading
+# names, axis by axis: "<axis>: <file>, ...", an axis with nothing active left
+# out. With only, the files a unit adds to the repository's.
+function by_axis(s, id, only,   out, x, ax, group, n, a, k, b) {
   out = ""
-  n = split(chapters(s, id), a, " ")
-  for (k = 1; k <= n; k++) out = out (out == "" ? "" : ", ") chapter(a[k], id)
-  n = split(WITH[id], a, " ")
-  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && IN[s, name_of(a[k])]) out = out (out == "" ? "" : ", ") seam(a[k])
+  for (x = 1; x <= NAXIS; x++) {
+    ax = AXIS[x]
+    if (!ON[s, ax]) continue
+    group = ""
+    n = split(CHAPTERS[id], a, " ")
+    for (k = 1; k <= n; k++) {
+      if (axis_of(a[k]) != ax || (only && ON[0, ax])) continue
+      b = name_of(a[k])
+      sub(/\.md$/, "", b)
+      group = group ", " b
+    }
+    n = split(WITH[id], a, " ")
+    for (k = 1; k <= n; k++) {
+      b = name_of(a[k])
+      if (axis_of(a[k]) != ax || !IN[s, b] || (only && IN[0, b] && ON[0, ax])) continue
+      group = group ", with/" b
+    }
+    if (group == "") continue
+    out = out (out == "" ? "" : "; ") (ax == "foundation" ? "" : ax ": ") substr(group, 3)
+  }
+  return out
+}
+
+# An implementation is known by its library's name; the digest's budget goes to
+# the blocks a name alone does not explain.
+function summary_of(id) {
+  return (LAYER[id] == "implementation") ? "" : ": " SUMMARY[id]
+}
+
+function also(s, id,   out) {
+  out = by_axis(s, id, 0)
   return (out == "") ? "" : " (" out ")"
 }
 
 function heading(layer) {
   print "index" T "## " TITLE[layer] " (blocks/" FOLDER[layer] "/<id>/<id>.md)"
-  if (!KEYED++) print "index" T "In brackets, a block's other files, named without .md; an axis alone is <axis>/<id>."
+  if (!KEYED++) print "index" T "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer."
 }
 
 function print_blocks(   l, layer, j, id, k, s, lines) {
@@ -274,7 +283,7 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
       id = B[j]
       if (LAYER[id] != layer || !IN[0, id]) continue
       if (!lines++) heading(layer)
-      print "index" T "- " id ((id in PACK) ? " (" PACK[id] ")" : "") ": " SUMMARY[id] also(0, id)
+      print "index" T "- " id ((id in PACK) ? " [" PACK[id] "]" : "") summary_of(id) also(0, id)
     }
   }
   for (s = 1; s <= napps; s++) {
@@ -285,11 +294,11 @@ function print_blocks(   l, layer, j, id, k, s, lines) {
       if (IN[0, id]) {
         if (app_only_files(s, id) == "") continue
         if (!lines++) print "index" T "## " APP[s]
-        print "index" T "- " id " (" FOLDER[LAYER[id]] "): Also: " app_only_files(s, id)
+        print "index" T "- " id " [" FOLDER[LAYER[id]] "]: Also: " app_only_files(s, id)
         continue
       }
       if (!lines++) print "index" T "## " APP[s]
-      print "index" T "- " id " (" FOLDER[LAYER[id]] "): " SUMMARY[id] also(s, id)
+      print "index" T "- " id " [" FOLDER[LAYER[id]] "]" summary_of(id) also(s, id)
     }
   }
 }
@@ -303,16 +312,8 @@ function print_overrides(   k, o) {
   }
 }
 
-function app_only_files(s, id,   out, n, a, k, b) {
-  out = ""
-  n = split(CHAPTERS[id], a, " ")
-  for (k = 1; k <= n; k++) if (ON[s, axis_of(a[k])] && !ON[0, axis_of(a[k])]) out = out (out == "" ? "" : ", ") chapter(a[k], id)
-  n = split(WITH[id], a, " ")
-  for (k = 1; k <= n; k++) {
-    b = name_of(a[k])
-    if (ON[s, axis_of(a[k])] && IN[s, b] && !(IN[0, b] && ON[0, axis_of(a[k])])) out = out (out == "" ? "" : ", ") seam(a[k])
-  }
-  return out
+function app_only_files(s, id) {
+  return by_axis(s, id, 1)
 }
 
 # Records the digest ignores: the session's state keeps them for the later hooks.
@@ -400,8 +401,6 @@ record == "override" {
 
 END {
   if (failed != "") {
-    all_axes()
-    print_core()
     print "error" T failed
     exit
   }
@@ -410,7 +409,6 @@ END {
   if ("core" in KNOWN) IN[0, "core"] = 1
   axes_of(0)
   for (s = 1; s <= napps; s++) axes_of(s)
-  print_core()
   for (i = 1; i <= nitems; i++) if (IAPP[i] == "" && IKEY[i] != "axes" && IKEY[i] != "packs") declare(0, i)
   for (s = 1; s <= napps; s++) {
     for (j = 1; j <= nb; j++) if (IN[0, B[j]]) IN[s, B[j]] = 1

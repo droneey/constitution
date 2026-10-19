@@ -2,7 +2,7 @@
 
 > Governs the files of a TypeScript command line's commands.
 
-## Layers
+## General
 
 ### command-file-named-with-the-cli-suffix → command-is-its-operations-binding-unit · MUST
 

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
+import { toString as plainText } from 'mdast-util-to-string';
+
 import { remarkDropHtml } from '../remark-drop-html.adapter';
-import { inlineCode, text, treeOf } from './mdast.fixtures';
+import { treeOf } from './mdast.fixtures';
 
 describe('remarkDropHtml', () => {
   it('should drop the banner and the badges when the README opens with them', () => {
@@ -60,20 +62,7 @@ describe('remarkDropHtml', () => {
     remarkDropHtml()(tree);
 
     // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        {
-          children: [
-            inlineCode(' code '),
-            text(' and '),
-            inlineCode(' more '),
-          ],
-          depth: 2,
-          type: 'heading',
-        },
-      ],
-      type: 'root',
-    });
+    expect(tree).toStrictEqual(treeOf('## `  code  ` and `  more  `'));
   });
 
   it('should drop the HTML inside a list when the README nests it', () => {
@@ -84,32 +73,6 @@ describe('remarkDropHtml', () => {
     remarkDropHtml()(tree);
 
     // Assert
-    expect(tree).toStrictEqual({
-      children: [
-        {
-          children: [
-            {
-              children: [
-                {
-                  children: [
-                    text('One '),
-                    text(' two'),
-                  ],
-                  type: 'paragraph',
-                },
-              ],
-              checked: null,
-              spread: false,
-              type: 'listItem',
-            },
-          ],
-          ordered: false,
-          spread: false,
-          start: null,
-          type: 'list',
-        },
-      ],
-      type: 'root',
-    });
+    expect(plainText(tree)).toBe('One  two');
   });
 });

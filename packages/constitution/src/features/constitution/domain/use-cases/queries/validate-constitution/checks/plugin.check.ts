@@ -11,6 +11,26 @@ import type {
 } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 
+enum PluginCode {
+  ManifestMissing = 'plugin-manifest-missing',
+  MarketplaceMissing = 'marketplace-missing',
+  NotJson = 'manifest-not-json',
+  OffSchema = 'manifest-off-schema',
+  SkillsDirectoryEmpty = 'skills-directory-without-skills',
+  SkillsDirectoryUnlisted = 'skills-directory-unlisted',
+  SkillWithoutFile = 'skill-without-skill-file',
+  SkillWithoutFrontMatter = 'skill-without-front-matter',
+  SkillFrontMatterNotYaml = 'skill-front-matter-not-yaml',
+  SkillFieldMissing = 'skill-field-missing',
+  AgentWithoutFrontMatter = 'agent-without-front-matter',
+  AgentFrontMatterNotYaml = 'agent-front-matter-not-yaml',
+  AgentFieldMissing = 'agent-field-missing',
+  AgentNameMismatch = 'agent-name-mismatches-file',
+  TemplateMissing = 'template-missing',
+  MarketplaceOmitsPlugin = 'marketplace-omits-plugin',
+  HookFileMissing = 'hook-runs-missing-file',
+}
+
 type Unread = Exclude<
   ManifestRead<unknown>,
   {
@@ -34,11 +54,13 @@ enum SkillField {
 enum Template {
   Project = 'templates/PROJECT.md',
   Decisions = 'templates/DECISIONS.md',
-  Block = 'templates/block.md',
+  Block = 'templates/block/block.md',
+  Chapter = 'templates/block/foundation/chapter.md',
   Config = 'templates/constitution.yaml',
 }
 
-const missing = (input: { path: string; role: string }): Finding => ({
+const missing = (input: { code: PluginCode; path: string; role: string }): Finding => ({
+  code: input.code,
   message: `is missing; the Constitution ships as a plugin and needs its ${input.role}`,
   path: input.path,
 });
@@ -47,6 +69,7 @@ const readFindings = (input: { path: string; read: Unread }): readonly Finding[]
   if (input.read.status === 'not-json') {
     return [
       {
+        code: PluginCode.NotJson,
         message: `is not valid JSON: ${input.read.reason}`,
         path: input.path,
       },
@@ -54,6 +77,7 @@ const readFindings = (input: { path: string; read: Unread }): readonly Finding[]
   }
 
   return input.read.issues.map((issue) => ({
+    code: PluginCode.OffSchema,
     message: `does not match its schema: ${issue.field === '' ? '<root>' : issue.field}: ${issue.message}`,
     path: input.path,
   }));
@@ -69,6 +93,7 @@ const listingFindings = (input: {
     ...input.declared
       .filter((directory) => !present.has(directory))
       .map((directory) => ({
+        code: PluginCode.SkillsDirectoryEmpty,
         message: `lists the skills directory "${RELATIVE_PREFIX}${directory}", which holds no <skill>/SKILL.md`,
         path: DocumentPath.Plugin,
       })),
@@ -77,6 +102,7 @@ const listingFindings = (input: {
     ]
       .filter((directory) => !input.declared.includes(directory))
       .map((directory) => ({
+        code: PluginCode.SkillsDirectoryUnlisted,
         message: `does not list "${RELATIVE_PREFIX}${directory}", which holds skills`,
         path: DocumentPath.Plugin,
       })),
@@ -114,6 +140,7 @@ const folderFindings = (input: {
   ]
     .filter((folder) => !input.paths.has(`${folder}/${SKILL_FILE}`))
     .map((folder) => ({
+      code: PluginCode.SkillWithoutFile,
       message: `holds no ${SKILL_FILE}; a skill is a folder with ${SKILL_FILE} in it`,
       path: folder,
     }));
@@ -125,6 +152,7 @@ const frontMatterFindings = (skill: Skill): readonly Finding[] => {
   if (frontMatter === undefined) {
     return [
       {
+        code: PluginCode.SkillWithoutFrontMatter,
         message: 'has no front matter; a skill names itself and says when to use it there',
         path,
       },
@@ -134,6 +162,7 @@ const frontMatterFindings = (skill: Skill): readonly Finding[] => {
   if (frontMatter.status === 'not-yaml') {
     return [
       {
+        code: PluginCode.SkillFrontMatterNotYaml,
         message: `front matter is not valid YAML: ${frontMatter.reason}`,
         path,
       },
@@ -143,6 +172,7 @@ const frontMatterFindings = (skill: Skill): readonly Finding[] => {
   return Object.values(SkillField)
     .filter((field) => frontMatter[field] === undefined)
     .map((field) => ({
+      code: PluginCode.SkillFieldMissing,
       message: `front matter lacks "${field}"; a skill declares its name and description`,
       path,
     }));
@@ -164,6 +194,7 @@ const agentFindings = (agent: Agent): readonly Finding[] => {
   if (frontMatter === undefined) {
     return [
       {
+        code: PluginCode.AgentWithoutFrontMatter,
         message: 'has no front matter; an agent names itself and says when to use it there',
         path,
       },
@@ -173,6 +204,7 @@ const agentFindings = (agent: Agent): readonly Finding[] => {
   if (frontMatter.status === 'not-yaml') {
     return [
       {
+        code: PluginCode.AgentFrontMatterNotYaml,
         message: `front matter is not valid YAML: ${frontMatter.reason}`,
         path,
       },
@@ -183,6 +215,7 @@ const agentFindings = (agent: Agent): readonly Finding[] => {
     ...Object.values(SkillField)
       .filter((field) => frontMatter[field] === undefined)
       .map((field) => ({
+        code: PluginCode.AgentFieldMissing,
         message: `front matter lacks "${field}"; an agent declares its name and description`,
         path,
       })),
@@ -190,6 +223,7 @@ const agentFindings = (agent: Agent): readonly Finding[] => {
       ? []
       : [
           {
+            code: PluginCode.AgentNameMismatch,
             message: `is named "${frontMatter.name}" in its front matter; an agent is named after its file, ${file}`,
             path,
           },
@@ -201,6 +235,7 @@ const templateFindings = (paths: ReadonlySet<string>): readonly Finding[] =>
   Object.values(Template)
     .filter((path) => !paths.has(path))
     .map((path) => ({
+      code: PluginCode.TemplateMissing,
       message: 'is missing; /ratify writes a project from the templates',
       path,
     }));
@@ -218,6 +253,7 @@ const checkPlugin = (
     return {
       findings: [
         missing({
+          code: PluginCode.ManifestMissing,
           path: DocumentPath.Plugin,
           role: 'manifest',
         }),
@@ -256,6 +292,7 @@ const checkMarketplace = (input: {
   if (input.read === undefined) {
     return [
       missing({
+        code: PluginCode.MarketplaceMissing,
         path: DocumentPath.Marketplace,
         role: 'marketplace',
       }),
@@ -287,6 +324,7 @@ const checkMarketplace = (input: {
     ? []
     : [
         {
+          code: PluginCode.MarketplaceOmitsPlugin,
           message: `does not list the plugin "${input.pluginName ?? ''}" from the GitHub repository its manifest names (${repo ?? 'none'}), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest`,
           path: DocumentPath.Marketplace,
         },
@@ -313,6 +351,7 @@ const checkHooks = (input: {
         )
         .filter((file) => !input.paths.has(file))
         .map((file) => ({
+          code: PluginCode.HookFileMissing,
           message: `runs "${file}", which is missing`,
           path: DocumentPath.Hooks,
         }))

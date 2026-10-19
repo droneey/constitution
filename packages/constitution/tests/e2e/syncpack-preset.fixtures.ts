@@ -14,11 +14,11 @@ interface Manifest {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const SYNCPACK = join(REPOSITORY, 'node_modules', '.bin', 'syncpack');
 
-const CONFIG = `import bun from './.droneey/constitution/presets/typescript/syncpack/bun.mjs';
-import core from './.droneey/constitution/presets/typescript/syncpack/core.mjs';
-import distribution from './.droneey/constitution/presets/typescript/syncpack/distribution.mjs';
-import self from './.droneey/constitution/presets/typescript/syncpack/self.mjs';
-import typescript from './.droneey/constitution/presets/typescript/syncpack/typescript.mjs';
+const CONFIG = `import bun from './.droneey/constitution/presets/typescript/syncpack/foundation/bun.mjs';
+import core from './.droneey/constitution/presets/typescript/syncpack/foundation/core.mjs';
+import distribution from './.droneey/constitution/presets/typescript/syncpack/foundation/distribution.mjs';
+import self from './.droneey/constitution/presets/typescript/syncpack/foundation/self.mjs';
+import typescript from './.droneey/constitution/presets/typescript/syncpack/foundation/typescript.mjs';
 
 export default {
   ...self,

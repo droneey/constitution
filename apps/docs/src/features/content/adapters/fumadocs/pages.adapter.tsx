@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { docsRoute, mainContentId } from '#/shared/constants';
 
-import { isMainFilePath, pageSlugsOf } from '../../domain/utils';
+import { isPassportPath, pageSlugsOf } from '../../domain/utils';
 
 interface MarkdownPage {
   data: {
@@ -17,7 +17,7 @@ interface MarkdownPage {
 /** the paths the collections know their pages by, by the path the site serves each one under */
 const collectionPaths = new Map<string, string>();
 
-/** a source whose files are served under other paths: the README's parts, and a block's card as its folder's index */
+/** a source whose files are served under other paths: the README's parts, and a block's passport as its folder's index */
 const renamed = <
   TSource extends {
     files: {
@@ -40,9 +40,9 @@ const renamed = <
   }),
 });
 
-/** a block's file by the path the site serves it under: a main file, a card or an axis's main chapter, as its folder's index */
-const mainFileAsIndex = (path: string): string =>
-  `${pageSlugsOf(path).join('/')}${isMainFilePath(path) ? '/index' : ''}.md`;
+/** a block's file by the path the site serves it under: its passport as its folder's index */
+const passportAsIndex = (path: string): string =>
+  `${pageSlugsOf(path).join('/')}${isPassportPath(path) ? '/index' : ''}.md`;
 
 const collectionPathOf = (path: string): string => collectionPaths.get(path) ?? path;
 
@@ -86,4 +86,4 @@ const markdownOfPage = async (
 
 ${await page.data.getText('processed')}`;
 
-export { collectionPathOf, crossLinks, mainFileAsIndex, markdownOfPage, renamed };
+export { collectionPathOf, crossLinks, markdownOfPage, passportAsIndex, renamed };

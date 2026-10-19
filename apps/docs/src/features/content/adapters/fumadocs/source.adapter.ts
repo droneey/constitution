@@ -7,7 +7,7 @@ import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { docsRoute } from '#/shared/constants';
 import { blocks, documents, glossary, guide, overview, quickStart } from '#collections/server';
 
-import { crossLinks, mainFileAsIndex, markdownOfPage, renamed } from './pages.adapter';
+import { crossLinks, markdownOfPage, passportAsIndex, renamed } from './pages.adapter';
 import {
   axisFoldersOf,
   BLOCK_LAYERS,
@@ -96,20 +96,29 @@ const metaFile = (
   type: 'meta',
 });
 
-/** an axis folder's title in the sidebar, its name capitalised, since its main chapter, the folder's page, is titled as its block */
+/** an axis folder's title in the sidebar, its name capitalised, since the folder has no page of its own */
 const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
 
 /**
- * The folders inside the blocks: an axis folder is titled by its axis, since its main chapter, the
- * folder's page, is titled as its block, and a folder that holds seams lists them after all else.
+ * The folders inside the blocks: a block lists its axes in their order; an axis folder, which has no
+ * page of its own, is titled by its axis and lists its seams after all else.
  */
 const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
   const folders = new Map<string, SidebarFolder>();
   const layers = BLOCK_LAYERS.filter((layer) => layer !== 'core');
 
   for (const folder of layers.flatMap(axisFoldersOf)) {
+    const block = folder.slice(0, folder.lastIndexOf('/'));
+    const axis = folder.slice(block.length + 1);
+
+    folders.set(block, {
+      pages: [
+        ...(folders.get(block)?.pages ?? []),
+        axis,
+      ],
+    });
     folders.set(folder, {
-      title: titleOfAxis(folder.slice(folder.lastIndexOf('/') + 1)),
+      title: titleOfAxis(axis),
     });
   }
   for (const folder of layers.flatMap(seamHoldersOf)) {
@@ -130,16 +139,11 @@ const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
 /** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
 const AXIS_SEPARATOR = '/';
 
-/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, a folder of layers by its layers, and core's chapters in the order placement lists them */
+/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, a folder of layers by its layers, and core's chapters in the order its passport lists them */
 const blockFolders = (): ReturnType<typeof metaFile>[] => {
   const chapters = coreChaptersOf();
-  const base = chapters.filter((chapter) => !chapter.includes(AXIS_SEPARATOR));
   const axes = [
-    ...new Set(
-      chapters
-        .filter((chapter) => chapter.includes(AXIS_SEPARATOR))
-        .map((chapter) => chapter.slice(0, chapter.indexOf(AXIS_SEPARATOR))),
-    ),
+    ...new Set(chapters.map((chapter) => chapter.slice(0, chapter.indexOf(AXIS_SEPARATOR)))),
   ];
 
   return [
@@ -156,10 +160,7 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
         ...LAYER_FOLDERS[layer],
         pages:
           layer === 'core'
-            ? [
-                ...base,
-                ...axes,
-              ]
+            ? axes
             : [
                 ...layerBlocksOf(layer),
               ],
@@ -168,6 +169,7 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
     ...blockSubfolders(),
     ...axes.map((axis) =>
       metaFile(`core/${axis}/meta.json`, {
+        title: titleOfAxis(axis),
         pages: chapters
           .filter((chapter) => chapter.startsWith(`${axis}${AXIS_SEPARATOR}`))
           .map((chapter) => chapter.slice(axis.length + AXIS_SEPARATOR.length)),
@@ -192,7 +194,7 @@ const contentSource = lazily(() => {
 
   return loader(
     {
-      blocks: renamed(blocks.toFumadocsSource(), mainFileAsIndex),
+      blocks: renamed(blocks.toFumadocsSource(), passportAsIndex),
       documents: renamed(documents.toFumadocsSource(), (path) => `${SITE_DOCUMENTS[path]}.md`),
       glossary: renamed(glossary.toFumadocsSource(), () => `${GLOSSARY}.md`),
       guide: guideSource,

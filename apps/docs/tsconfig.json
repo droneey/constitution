@@ -1,10 +1,10 @@
 {
   "extends": [
-    "../../.droneey/constitution/presets/typescript/tsc/self.json",
-    "../../.droneey/constitution/presets/typescript/tsc/core.json",
-    "../../.droneey/constitution/presets/typescript/tsc/browser.json",
-    "../../.droneey/constitution/presets/typescript/tsc/_react.json",
-    "../../.droneey/constitution/presets/typescript/tsc/workspace.json"
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/browser.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/_react.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json"
   ],
   "compilerOptions": {
     "paths": {

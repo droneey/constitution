@@ -11,4 +11,6 @@ governs: ["lefthook.yaml"]
 
 # Lefthook
 
-> Runs the git hooks. Its configuration holds every active rule on commit messages and branch names — the branch name in `pre-commit`, the message in `commit-msg` — extending `presets/common/lefthook/workflow/version-control.yaml` of the Constitution's release archive, and a part for each hook of another tool, `<tool>.yaml`; a rule on them it cannot hold is reported, and needs review or an override.
+> Runs the git hooks.
+
+Lefthook's configuration holds every active rule on commit messages and branch names — the branch name in `pre-commit`, the message in `commit-msg` — extending `presets/common/lefthook/workflow/version-control.yaml` of the Constitution's release archive, and a part for each hook of another tool, `<tool>.yaml`; a rule on them it cannot hold is reported, and needs review or an override.

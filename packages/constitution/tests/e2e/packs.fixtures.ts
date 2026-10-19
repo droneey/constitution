@@ -14,13 +14,15 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 
 const created: string[] = [];
 
-// A pack of one implementation whose rule carries out a rule of the base's core,
-// in a repository of its own, with the chapter of its architecture axis.
+// A pack of one implementation whose rule carries out a rule of core's foundation,
+// in a repository of its own, with a chapter on its foundation and one on its architecture.
 const packFilesOf = (parent: string): Files => ({
-  'blocks/implementations/acme/architecture/acme.md': [
-    '# Acme',
+  'blocks/implementations/acme/architecture/root.md': [
+    '# Root',
     '',
     '> Governs where Acme is called from.',
+    '',
+    '## General',
     '',
     '### acme-client-wired-by-the-root → adapter-imported-only-by-the-root · MUST',
     '',
@@ -47,7 +49,15 @@ const packFilesOf = (parent: string): Files => ({
     '',
     '# Acme',
     '',
+    "> Acme, the shop's analytics.",
+    '',
+  ].join('\n'),
+  'blocks/implementations/acme/foundation/dependencies.md': [
+    '# Dependencies',
+    '',
     '> Governs the files that call Acme.',
+    '',
+    '## General',
     '',
     `### acme-reached-through-its-entry → ${parent} · MUST`,
     '',

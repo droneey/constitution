@@ -1,69 +1,73 @@
 import type { Finding } from '#/kernel/types';
 
-import type { Block, BlockFile } from '../../../../entities';
+import type { Block } from '../../../../entities';
 import { BlockFileRole } from '../../../../entities';
-import { directoryOf, localLinkTargets, resolveLink } from '../../../../utils';
+import { localLinkTargets, resolveLink, withoutCodeFences } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
+
+enum CoreChaptersCode {
+  ChapterUnlisted = 'core-chapter-unlisted',
+  ListsNoChapter = 'core-list-names-no-chapter',
+  ListedTwice = 'core-chapter-listed-twice',
+}
 
 const CORE = 'core';
 
-/** core's chapter whose list gives core's chapters in the order they are read */
-const PLACEMENT = 'placement.md';
-
-const LIST_ITEM = '- ';
+/** an item of the passport's list of core's chapters, which opens with its axis folder: "- `foundation/`: …" */
+const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
 /** the chapters the list's items link, each by its path */
-const listedIn = (placement: BlockFile): readonly string[] =>
-  placement.body
+const listedIn = (core: Block): readonly string[] =>
+  withoutCodeFences(
+    // Stryker disable next-line OptionalChaining,ConditionalExpression,StringLiteral: a block's first file is its passport
+    core.files.find((file) => file.role === BlockFileRole.Passport)?.body ?? '',
+  )
     .split('\n')
-    .filter((line) => line.startsWith(LIST_ITEM))
+    .filter((line) => AXIS_ITEM.test(line))
     .flatMap(localLinkTargets)
     .map((target) =>
       resolveLink({
-        path: placement.path,
+        path: core.path,
         target,
       }),
     );
 
-const listFindings = (input: { core: Block; placement: BlockFile }): readonly Finding[] => {
-  const chapters = input.core.files
-    .filter((file) => file.role === BlockFileRole.Chapter)
+const coreFindings = (core: Block): readonly Finding[] => {
+  // the passport is core.md, which opens the Constitution: the list names the rest
+  const chapters = core.files
+    .filter((file) => file.role !== BlockFileRole.Passport)
     .map((file) => file.path);
-  const listed = listedIn(input.placement);
-  const findingOf = (message: string): Finding => ({
+  const listed = listedIn(core);
+  const findingOf = (code: CoreChaptersCode, message: string): Finding => ({
+    code,
     message,
-    path: input.placement.path,
+    path: core.path,
   });
 
   return [
     ...chapters
       .filter((chapter) => !listed.includes(chapter))
       .map((chapter) =>
-        findingOf(`leaves ${chapter} out of its list; it lists every chapter of core once`),
+        findingOf(
+          CoreChaptersCode.ChapterUnlisted,
+          `leaves ${chapter} out of its list of core's chapters; it lists every chapter of core once`,
+        ),
       ),
     ...listed
       .filter((entry) => !chapters.includes(entry))
-      .map((entry) => findingOf(`lists ${entry}, which is not a chapter of core`)),
+      .map((entry) =>
+        findingOf(
+          CoreChaptersCode.ListsNoChapter,
+          `lists ${entry}, which is not a chapter of core`,
+        ),
+      ),
     ...[
       ...new Set(listed.filter((entry, index) => listed.indexOf(entry) !== index)),
-    ].map((entry) => findingOf(`lists ${entry} twice`)),
+    ].map((entry) => findingOf(CoreChaptersCode.ListedTwice, `lists ${entry} twice`)),
   ];
 };
 
-const coreFindings = (core: Block): readonly Finding[] => {
-  const placement = core.files.find(
-    (file) => file.path === `${directoryOf(core.path)}/${PLACEMENT}`,
-  );
-
-  return placement === undefined
-    ? []
-    : listFindings({
-        core,
-        placement,
-      });
-};
-
-// Placement's list is the order core's chapters are read in, which the site and the digest follow.
+// Core's passport lists its chapters in the order they are read, which the site follows.
 const coreChaptersCheck: Check = ({ byId }: CheckInput): readonly Finding[] => {
   const core = byId.get(CORE);
 

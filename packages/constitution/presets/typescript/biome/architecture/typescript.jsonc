@@ -8,7 +8,7 @@
   },
   "plugins": [
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/undefined-is-the-only-absence.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
         "!**/adapters/**",
@@ -17,7 +17,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/plugins/closed-name-set-is-a-string-enum.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/closed-name-set-is-a-string-enum.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

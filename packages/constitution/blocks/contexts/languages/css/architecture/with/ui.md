@@ -2,7 +2,7 @@
 
 > Governs where a component's stylesheet lives in the tree.
 
-## User interface
+## Components
 
 ### component-styles-in-its-folder → component-in-its-own-folder · MUST
 

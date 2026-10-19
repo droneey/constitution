@@ -1,17 +1,17 @@
 import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
 import architectureTanstackStart from './.droneey/constitution/presets/typescript/knip/architecture/tanstack-start.mjs';
-import betterleaks from './.droneey/constitution/presets/typescript/knip/betterleaks.mjs';
-import core from './.droneey/constitution/presets/typescript/knip/core.mjs';
-import hadolint from './.droneey/constitution/presets/typescript/knip/hadolint.mjs';
-import mise from './.droneey/constitution/presets/typescript/knip/mise.mjs';
-import osvScanner from './.droneey/constitution/presets/typescript/knip/osv-scanner.mjs';
-import rumdl from './.droneey/constitution/presets/typescript/knip/rumdl.mjs';
-import shellcheck from './.droneey/constitution/presets/typescript/knip/shellcheck.mjs';
-import shfmt from './.droneey/constitution/presets/typescript/knip/shfmt.mjs';
-import stryker from './.droneey/constitution/presets/typescript/knip/stryker.mjs';
-import tanstackStart from './.droneey/constitution/presets/typescript/knip/tanstack-start.mjs';
-import uv from './.droneey/constitution/presets/typescript/knip/uv.mjs';
-import yamllint from './.droneey/constitution/presets/typescript/knip/yamllint.mjs';
+import betterleaks from './.droneey/constitution/presets/typescript/knip/foundation/betterleaks.mjs';
+import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
+import hadolint from './.droneey/constitution/presets/typescript/knip/foundation/hadolint.mjs';
+import mise from './.droneey/constitution/presets/typescript/knip/foundation/mise.mjs';
+import osvScanner from './.droneey/constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
+import rumdl from './.droneey/constitution/presets/typescript/knip/foundation/rumdl.mjs';
+import shellcheck from './.droneey/constitution/presets/typescript/knip/foundation/shellcheck.mjs';
+import shfmt from './.droneey/constitution/presets/typescript/knip/foundation/shfmt.mjs';
+import stryker from './.droneey/constitution/presets/typescript/knip/foundation/stryker.mjs';
+import tanstackStart from './.droneey/constitution/presets/typescript/knip/foundation/tanstack-start.mjs';
+import uv from './.droneey/constitution/presets/typescript/knip/foundation/uv.mjs';
+import yamllint from './.droneey/constitution/presets/typescript/knip/foundation/yamllint.mjs';
 
 export default {
   workspaces: {

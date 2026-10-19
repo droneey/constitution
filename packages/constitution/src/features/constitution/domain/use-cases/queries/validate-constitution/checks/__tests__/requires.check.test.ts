@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, mainFile } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  checkInputOf,
+  findingOf,
+  passportFile,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { requiresCheck } from '../requires.check';
 
@@ -12,7 +16,7 @@ describe('requiresCheck', () => {
   it('should report each requires a platform may not have when it names core, a language, an unknown id and itself', () => {
     // Arrange
     const files = validFiles();
-    files[BROWSER] = mainFile({
+    files[BROWSER] = passportFile({
       body: '# Browser\n',
       id: 'browser',
       requires: [
@@ -29,30 +33,35 @@ describe('requiresCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'requires core, which is always active',
+      findingOf({
+        code: 'requires-core',
         path: BROWSER,
-      },
-      {
-        message:
-          'requires typescript, a language block; a platform block requires only domain blocks or platform blocks',
+      }),
+      findingOf({
+        code: 'requires-out-of-layer',
+        names: [
+          'typescript',
+        ],
         path: BROWSER,
-      },
-      {
-        message: 'requires webgl, which is not a block',
+      }),
+      findingOf({
+        code: 'requires-no-block',
+        names: [
+          'webgl',
+        ],
         path: BROWSER,
-      },
-      {
-        message: 'requires itself',
+      }),
+      findingOf({
+        code: 'requires-itself',
         path: BROWSER,
-      },
+      }),
     ]);
   });
 
   it('should accept an implementation when it requires another implementation', () => {
     // Arrange
     const files = validFiles();
-    files[BIOME] = mainFile({
+    files[BIOME] = passportFile({
       body: '# Biome\n',
       id: 'biome',
       requires: [
@@ -73,7 +82,7 @@ describe('requiresCheck', () => {
     // Arrange
     const input = checkInputOf({
       ...validFiles(),
-      'blocks/domains/i18n/i18n.md': mainFile({
+      'blocks/domains/i18n/i18n.md': passportFile({
         body: '# i18n\n',
         id: 'i18n',
         requires: [
@@ -87,10 +96,13 @@ describe('requiresCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: 'requires browser, a platform block; a domain block requires only domain blocks',
+      findingOf({
+        code: 'requires-out-of-layer',
+        names: [
+          'browser',
+        ],
         path: 'blocks/domains/i18n/i18n.md',
-      },
+      }),
     ]);
   });
 
@@ -98,7 +110,7 @@ describe('requiresCheck', () => {
     // Arrange
     const input = checkInputOf({
       ...validFiles(),
-      'blocks/core/core.md': mainFile({
+      'blocks/core/core.md': passportFile({
         body: '# Core\n',
         id: 'core',
         requires: [
@@ -118,7 +130,7 @@ describe('requiresCheck', () => {
     // Arrange
     const input = checkInputOf({
       ...validFiles(),
-      'blocks/domains/i18n/i18n.md': mainFile({
+      'blocks/domains/i18n/i18n.md': passportFile({
         body: '# i18n\n',
         id: 'i18n',
         requires: [
@@ -134,28 +146,41 @@ describe('requiresCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it.each([
+  it.each<{
+    base: string;
+    code: string;
+    names: string[];
+  }>([
     {
       base: 'eslint',
-      expected: 'extends eslint, which is not a block',
+      code: 'extends-no-block',
+      names: [
+        'eslint',
+      ],
     },
     {
       base: 'biome',
-      expected: 'extends itself',
+      code: 'extends-itself',
+      names: [],
     },
     {
       base: 'ui',
-      expected: 'extends ui, a domain block; a block extends only a base of its own layer',
+      code: 'extends-other-layer',
+      names: [
+        'ui',
+      ],
     },
     {
       base: 'lingui',
-      expected:
-        'extends lingui, a concrete block; a block extends only an abstract base — require it instead',
+      code: 'extends-concrete-block',
+      names: [
+        'lingui',
+      ],
     },
-  ])('should report "$expected" when an implementation extends $base', ({ base, expected }) => {
+  ])('should report $code when an implementation extends $base', ({ base, code, names }) => {
     // Arrange
     const files = validFiles();
-    files[BIOME] = mainFile({
+    files[BIOME] = passportFile({
       body: '# Biome\n',
       extends: base,
       id: 'biome',
@@ -167,10 +192,11 @@ describe('requiresCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      {
-        message: expected,
+      findingOf({
+        code,
+        names,
         path: BIOME,
-      },
+      }),
     ]);
   });
 });

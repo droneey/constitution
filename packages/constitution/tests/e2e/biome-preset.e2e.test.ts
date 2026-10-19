@@ -439,8 +439,8 @@ describe("the parts of Biome's base", () => {
   });
 
   it.each([
-    'common/biome/git.jsonc',
-    'typescript/biome/react-dom.jsonc',
+    'common/biome/foundation/git.jsonc',
+    'typescript/biome/foundation/react-dom.jsonc',
   ])('should parse when a project extends %s', (path) => {
     // Arrange
     const text = presetText(path);

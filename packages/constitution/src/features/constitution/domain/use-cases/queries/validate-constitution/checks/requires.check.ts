@@ -1,5 +1,5 @@
 import type { Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { Finding, Problem } from '#/kernel/types';
 
 import type { Block } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
@@ -7,37 +7,60 @@ import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../direction.utils';
 import { aBlock, blocksOf } from '../wording.utils';
 
+enum RequiresCode {
+  RequiresCore = 'requires-core',
+  RequiresNoBlock = 'requires-no-block',
+  RequiresItself = 'requires-itself',
+  RequiresOutOfLayer = 'requires-out-of-layer',
+  ExtendsNoBlock = 'extends-no-block',
+  ExtendsItself = 'extends-itself',
+  ExtendsOtherLayer = 'extends-other-layer',
+  ExtendsConcrete = 'extends-concrete-block',
+}
+
 interface Subject {
   block: Block;
   byId: BlocksById;
 }
 
-const requireMessage = (
+const requireProblem = (
   input: Subject & {
     allowed: readonly Layer[];
     id: string;
   },
-): string | undefined => {
+): Problem | undefined => {
   const target = input.byId.get(input.id);
 
   if (input.id === 'core') {
-    return 'requires core, which is always active';
+    return {
+      code: RequiresCode.RequiresCore,
+      message: 'requires core, which is always active',
+    };
   }
 
   if (target === undefined) {
-    return `requires ${input.id}, which is not a block`;
+    return {
+      code: RequiresCode.RequiresNoBlock,
+      message: `requires ${input.id}, which is not a block`,
+    };
   }
 
   if (target.id === input.block.id) {
-    return 'requires itself';
+    return {
+      code: RequiresCode.RequiresItself,
+      message: 'requires itself',
+    };
   }
 
   return input.allowed.includes(target.layer)
     ? undefined
-    : `requires ${input.id}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} requires only ${blocksOf(input.allowed)}`;
+    : {
+        code: RequiresCode.RequiresOutOfLayer,
+        message: `requires ${input.id}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} requires only ${blocksOf(input.allowed)}`,
+      };
 };
 
-const extendsMessage = (subject: Subject): string | undefined => {
+const extendsProblem = (subject: Subject): Problem | undefined => {
   const base = subject.block.frontMatter.extends;
 
   if (base === undefined) {
@@ -47,45 +70,57 @@ const extendsMessage = (subject: Subject): string | undefined => {
   const target = subject.byId.get(base);
 
   if (target === undefined) {
-    return `extends ${base}, which is not a block`;
+    return {
+      code: RequiresCode.ExtendsNoBlock,
+      message: `extends ${base}, which is not a block`,
+    };
   }
 
   if (target.id === subject.block.id) {
-    return 'extends itself';
+    return {
+      code: RequiresCode.ExtendsItself,
+      message: 'extends itself',
+    };
   }
 
   if (target.layer !== subject.block.layer) {
-    return `extends ${base}, ${aBlock(target.layer)}; a block extends only a base of its own layer`;
+    return {
+      code: RequiresCode.ExtendsOtherLayer,
+      message: `extends ${base}, ${aBlock(target.layer)}; a block extends only a base of its own layer`,
+    };
   }
 
   return target.frontMatter.abstract
     ? undefined
-    : `extends ${base}, a concrete block; a block extends only an abstract base — require it instead`;
+    : {
+        code: RequiresCode.ExtendsConcrete,
+        message: `extends ${base}, a concrete block; a block extends only an abstract base — require it instead`,
+      };
 };
 
 // A layer that requires or extends nothing leaves the fields empty; the
 // front-matter check reports a filled one, so this check skips those layers.
 const blockFindings = (subject: Subject): readonly Finding[] => {
   const allowed = requirableBy(subject.block.layer);
-  const messages = [
+  const problems = [
     ...(allowed.length === 0
       ? []
       : subject.block.frontMatter.requires.map((id) =>
-          requireMessage({
+          requireProblem({
             ...subject,
             allowed,
             id,
           }),
         )),
-    extendsMessage(subject),
+    extendsProblem(subject),
   ];
 
-  return messages.flatMap((message) =>
-    message === undefined
+  return problems.flatMap((problem) =>
+    problem === undefined
       ? []
       : [
           {
-            message,
+            ...problem,
             path: subject.block.path,
           },
         ],

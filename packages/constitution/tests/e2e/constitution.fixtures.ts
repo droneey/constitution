@@ -26,7 +26,7 @@ const NUMBER_WIDTH = 3;
 
 const list = (items: readonly string[] | undefined): string => `[${(items ?? []).join(', ')}]`;
 
-const mainFile = (block: BlockFixture): string =>
+const passportFile = (block: BlockFixture): string =>
   [
     '---',
     `id: ${block.id}`,
@@ -65,6 +65,21 @@ const section = (input: {
 }): string =>
   `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${input.rules.map(rule).join('\n')}`;
 
+const AXIS_FOLDERS: readonly string[] = [
+  'foundation',
+  'architecture',
+  'workflow',
+];
+
+/** a file's path in its block: a path with no axis folder is foundation's */
+const inAxis = (path: string): string =>
+  AXIS_FOLDERS.some((axis) => path.startsWith(`${axis}/`)) ? path : `foundation/${path}`;
+
+/**
+ * A block as its files: the passport holds the front matter and the body — its title, core's preamble
+ * the digest gives, or an implementation's Requirements — and each of the files, a chapter or a seam,
+ * sits in its axis.
+ */
 const blockFiles = (
   input: BlockFixture & {
     dir: string;
@@ -72,17 +87,12 @@ const blockFiles = (
   },
 ): Files => {
   const { dir, files = {}, ...card } = input;
-  const { [`${input.id}.md`]: base, ...others } = files;
 
-  // The rules of the base's main chapter sit in the card, under its title.
   return {
-    [`${dir}/${input.id}.md`]: mainFile({
-      ...card,
-      body: base === undefined ? card.body : `${card.body}\n${base.slice(base.indexOf('\n') + 1)}`,
-    }),
+    [`${dir}/${input.id}.md`]: passportFile(card),
     ...Object.fromEntries(
-      Object.entries(others).map(([path, text]) => [
-        `${dir}/${path}`,
+      Object.entries(files).map(([path, text]) => [
+        `${dir}/${inAxis(path)}`,
         text,
       ]),
     ),
@@ -164,15 +174,25 @@ const coreFiles = (body: string): Files =>
     summary: 'The laws for any program.',
   });
 
-const rulesFile = (input: { axis?: Axis; id: string; rules: readonly RuleFixture[] }): Files => ({
-  [`${input.axis === undefined ? '' : `${input.axis}/`}${input.id}.md`]: section({
-    rules: input.rules,
-    title: input.id,
-  }),
-});
+/** a block's rules as one chapter of their axis, foundation's code unless the case names another */
+const rulesFile = (input: {
+  axis?: Axis;
+  chapter?: string;
+  rules: readonly RuleFixture[];
+}): Files => {
+  const chapter = input.chapter ?? 'code';
+
+  return {
+    [`${input.axis === undefined ? '' : `${input.axis}/`}${chapter}.md`]: section({
+      rules: input.rules,
+      title: `${chapter.charAt(0).toUpperCase()}${chapter.slice(1)}`,
+    }),
+  };
+};
 
 const domain = (input: {
   axis?: Axis;
+  chapter?: string;
   files?: Readonly<Files>;
   governs?: readonly string[];
   id: string;
@@ -222,6 +242,7 @@ const domainFiles = (): Files => ({
       '**/components/**',
       'styles/*.{css,scss}',
     ],
+    chapter: 'screens',
     id: 'ui',
     rules: [
       {
@@ -249,6 +270,7 @@ const domainFiles = (): Files => ({
   }),
   ...domain({
     axis: Axis.Architecture,
+    chapter: 'reads',
     id: 'remote-data',
     rules: [
       {
@@ -259,6 +281,7 @@ const domainFiles = (): Files => ({
     summary: 'Data another system owns.',
   }),
   ...domain({
+    chapter: 'secrets',
     id: 'untrusted-client',
     rules: [
       {
@@ -269,6 +292,7 @@ const domainFiles = (): Files => ({
     summary: 'Code on a machine the user controls.',
   }),
   ...domain({
+    chapter: 'retries',
     id: 'unreliable-network',
     rules: [
       {
@@ -279,6 +303,7 @@ const domainFiles = (): Files => ({
     summary: 'A network that drops and delays.',
   }),
   ...domain({
+    chapter: 'consent',
     id: 'analytics',
     rules: [
       {
@@ -290,6 +315,7 @@ const domainFiles = (): Files => ({
   }),
   ...domain({
     axis: Axis.Workflow,
+    chapter: 'commits',
     id: 'version-control',
     rules: [
       {
@@ -305,6 +331,7 @@ const domainFiles = (): Files => ({
     summary: 'History of the code.',
   }),
   ...domain({
+    chapter: 'plurals',
     id: 'i18n',
     rules: [
       {
@@ -323,6 +350,7 @@ enum ContextFolder {
 
 const context = (input: {
   axis?: Axis;
+  chapter?: string;
   folder: ContextFolder;
   id: string;
   requires?: readonly string[];
@@ -346,6 +374,7 @@ const context = (input: {
 const contextFiles = (): Files => ({
   ...context({
     folder: ContextFolder.Languages,
+    chapter: 'types',
     id: 'typescript',
     rules: [
       {
@@ -358,6 +387,7 @@ const contextFiles = (): Files => ({
   }),
   ...context({
     folder: ContextFolder.Languages,
+    chapter: 'errors',
     id: 'python',
     rules: [
       {
@@ -371,6 +401,7 @@ const contextFiles = (): Files => ({
   ...context({
     axis: Axis.Architecture,
     folder: ContextFolder.Platforms,
+    chapter: 'render',
     id: 'browser',
     requires: [
       'untrusted-client',
@@ -387,6 +418,7 @@ const contextFiles = (): Files => ({
   }),
   ...context({
     folder: ContextFolder.Platforms,
+    chapter: 'exits',
     id: 'cli',
     requires: [
       'untrusted-client',
@@ -406,6 +438,7 @@ const implementation = (input: {
   abstract?: boolean;
   axis?: Axis;
   body?: string;
+  chapter?: string;
   extends?: string;
   governs?: readonly string[];
   id: string;
@@ -414,7 +447,7 @@ const implementation = (input: {
   rules?: readonly RuleFixture[];
   summary: string;
 }): Files => {
-  const { axis, rules, ...card } = input;
+  const { axis, chapter, rules, ...card } = input;
 
   return blockFiles({
     ...card,
@@ -429,7 +462,11 @@ const implementation = (input: {
               : {
                   axis,
                 }),
-            id: input.id,
+            ...(chapter === undefined
+              ? {}
+              : {
+                  chapter,
+                }),
             rules,
           }),
   });
@@ -464,6 +501,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     abstract: true,
+    chapter: 'hooks',
     id: '_react',
     requires: [
       'ui',
@@ -482,6 +520,7 @@ const implementationFiles = (): Files => ({
     governs: [
       '**/*.tsx',
     ],
+    chapter: 'portals',
     id: 'react-dom',
     requires: [
       'browser',
@@ -496,6 +535,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     axis: Axis.Architecture,
+    chapter: 'queries',
     id: 'tanstack-query',
     requires: [
       '_react',
@@ -521,6 +561,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     axis: Axis.Workflow,
+    chapter: 'lockfile',
     id: 'bun',
     requires: [
       'typescript',
@@ -535,6 +576,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     axis: Axis.Workflow,
+    chapter: 'tags',
     id: 'git',
     requires: [
       'version-control',
@@ -549,6 +591,7 @@ const implementationFiles = (): Files => ({
   }),
   ...implementation({
     axis: Axis.Workflow,
+    chapter: 'hooks',
     id: 'lefthook',
     requires: [
       'git',
@@ -578,6 +621,7 @@ const implementationFiles = (): Files => ({
       '| `analytics-consent-first` | tracks from the first page view | no |',
       '',
     ].join('\n'),
+    chapter: 'tracking',
     id: 'matomo',
     requires: [
       'analytics',

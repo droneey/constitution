@@ -19,7 +19,12 @@ describe('presetPathOf', () => {
         scope: 'typescript',
         tool: 'biome',
       },
-      name: "a part at the tool's root",
+      name: 'a part of the foundation axis',
+      path: 'presets/typescript/biome/foundation/core.jsonc',
+    },
+    {
+      expected: undefined,
+      name: "a part at the tool's root, in no axis folder",
       path: 'presets/typescript/biome/core.jsonc',
     },
     {
@@ -47,6 +52,16 @@ describe('presetPathOf', () => {
       expected: undefined,
       name: 'a file outside the presets',
       path: 'templates/typescript/biome/core.jsonc',
+    },
+    {
+      expected: undefined,
+      name: 'a file outside the presets, in a folder named like an axis',
+      path: 'templates/typescript/biome/foundation/core.jsonc',
+    },
+    {
+      expected: undefined,
+      name: 'a GritQL rule in a folder that is not plugins/',
+      path: 'presets/typescript/biome/foundation/notes/surface-only-re-exports.grit',
     },
   ])('should read $name when the path is $path', ({ expected, path }) => {
     // Arrange

@@ -4,16 +4,12 @@ enum Axis {
   Workflow = 'workflow',
 }
 
-// The base, always followed, sits at a block's root; the optional axes keep a
-// folder each, and a project lists the ones it follows.
-const OPTIONAL_AXES: readonly Axis[] = [
-  Axis.Architecture,
-  Axis.Workflow,
-];
-
+// Each axis keeps a folder in a block and in a preset alike; foundation is always followed, and a
+// project lists the others it follows.
 const AXES: readonly Axis[] = [
   Axis.Foundation,
-  ...OPTIONAL_AXES,
+  Axis.Architecture,
+  Axis.Workflow,
 ];
 
 enum Kind {
@@ -77,16 +73,4 @@ enum Tag {
   Errors = 'errors',
 }
 
-export {
-  AXES,
-  Axis,
-  KIND_OF_LAYER,
-  Kind,
-  LAYER_RANK,
-  LAYERS,
-  Layer,
-  LEVELS,
-  Level,
-  OPTIONAL_AXES,
-  Tag,
-};
+export { AXES, Axis, KIND_OF_LAYER, Kind, LAYER_RANK, LAYERS, Layer, LEVELS, Level, Tag };

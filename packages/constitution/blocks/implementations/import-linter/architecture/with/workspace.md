@@ -1,6 +1,8 @@
 # Workspace
 
-> The contracts between the Python units of a workspace, in the root `pyproject.toml`.
+> Governs the contracts between the Python units of a workspace, in the root `pyproject.toml`.
+
+## General
 
 ### units-blind-by-an-independence-contract → apps-blind-to-each-other · MUST
 

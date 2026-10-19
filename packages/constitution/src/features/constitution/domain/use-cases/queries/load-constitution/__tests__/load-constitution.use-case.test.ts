@@ -5,9 +5,11 @@ import type { Finding } from '#/kernel/types';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
 import {
+  blockFiles,
+  findingOf,
   loadedOf,
-  mainFile,
   packSourceOf,
+  passportFile,
   rule,
   textOf,
   without,
@@ -18,12 +20,7 @@ import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { BlockFileRole } from '../../../../entities';
 import { loadConstitution } from '../load-constitution.use-case';
 
-const OUTSIDE =
-  'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
-const STRAY =
-  "is not a block file; a block holds at its root its card <id>.md, its chapters and with/<block>.md, and in architecture/ or workflow/ that axis's chapters and with/<block>.md";
-
-const UI_CARD = mainFile({
+const UI_PASSPORT = passportFile({
   body: '# UI\n',
   id: 'ui',
 });
@@ -216,7 +213,7 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should load a block written from templates/block.md without a finding when its placeholders are filled and its rules sit in its card', () => {
+  it('should load a block written from templates/block/ without a finding when its placeholders are filled and its rules sit in foundation', () => {
     // Arrange
     const files = paraglideCard();
 
@@ -249,8 +246,9 @@ describe('loadConstitution', () => {
     // Arrange
     const files = {
       ...validFiles(),
-      'blocks/contexts/platforms/web/web.md': mainFile({
+      ...blockFiles({
         body: '# Web\n',
+        dir: 'blocks/contexts/platforms/web',
         id: 'web',
       }),
     };
@@ -297,16 +295,17 @@ describe('loadConstitution', () => {
 
       // Assert
       expect(loaded.findings).toStrictEqual([
-        {
-          message: OUTSIDE,
+        findingOf({
+          code: 'outside-block-folder',
           path,
-        },
+        }),
       ]);
     },
   );
 
   it.each([
-    'blocks/domains/ui/foundation/parts.md',
+    'blocks/domains/ui/parts.md',
+    'blocks/domains/ui/with/i18n.md',
     'blocks/domains/ui/design/with/remote-data.md',
     'blocks/domains/ui/architecture',
     'blocks/domains/ui/.draft.md',
@@ -319,7 +318,7 @@ describe('loadConstitution', () => {
     'blocks/domains/ui/architecture/parts/a.md',
     'blocks/domains/ui/workflow/with/notes.txt',
   ])(
-    'should report %p as a stray file when it is hidden, nested, not markdown or in a folder that is neither an optional axis nor with/',
+    "should report %p as a stray file when it sits at the block's root beside its passport, is hidden, nested, not markdown or in a folder that is neither an axis nor with/",
     (path) => {
       // Arrange
       const files = {
@@ -331,24 +330,23 @@ describe('loadConstitution', () => {
 
       // Assert
       expect(loaded.findings).toStrictEqual([
-        {
-          message: STRAY,
+        findingOf({
+          code: 'stray-block-file',
           path,
-        },
+        }),
       ]);
     },
   );
 
-  it('should load the card, the chapters by axis with the one named after the block first, then the seams by axis, when the tree lists them otherwise', () => {
+  it('should load the passport, the chapters by axis, then the seams by axis, when the tree lists them otherwise', () => {
     // Arrange
     const files = {
       'blocks/domains/ui/architecture/remote-data.md': '# Remote data\n\nText.',
-      'blocks/domains/ui/architecture/ui.md': '# UI\n',
       'blocks/domains/ui/architecture/with/remote-data.md': '# UI with remote data\n',
-      'blocks/domains/ui/b.md': '# B\n',
-      'blocks/domains/ui/a.md': '# A\n',
-      'blocks/domains/ui/with/i18n.md': '# UI with i18n\n',
-      'blocks/domains/ui/ui.md': UI_CARD,
+      'blocks/domains/ui/foundation/b.md': '# B\n',
+      'blocks/domains/ui/foundation/a.md': '# A\n',
+      'blocks/domains/ui/foundation/with/i18n.md': '# UI with i18n\n',
+      'blocks/domains/ui/ui.md': UI_PASSPORT,
       'blocks/domains/ui/workflow/reviews.md': '# Reviews\n',
     };
 
@@ -367,14 +365,14 @@ describe('loadConstitution', () => {
             body: '\n# UI\n',
             lines: 12,
             path: 'blocks/domains/ui/ui.md',
-            role: BlockFileRole.Main,
+            role: BlockFileRole.Passport,
             with: undefined,
           },
           {
             axis: Axis.Foundation,
             body: '# A\n',
             lines: 1,
-            path: 'blocks/domains/ui/a.md',
+            path: 'blocks/domains/ui/foundation/a.md',
             role: BlockFileRole.Chapter,
             with: undefined,
           },
@@ -382,15 +380,7 @@ describe('loadConstitution', () => {
             axis: Axis.Foundation,
             body: '# B\n',
             lines: 1,
-            path: 'blocks/domains/ui/b.md',
-            role: BlockFileRole.Chapter,
-            with: undefined,
-          },
-          {
-            axis: Axis.Architecture,
-            body: '# UI\n',
-            lines: 1,
-            path: 'blocks/domains/ui/architecture/ui.md',
+            path: 'blocks/domains/ui/foundation/b.md',
             role: BlockFileRole.Chapter,
             with: undefined,
           },
@@ -414,7 +404,7 @@ describe('loadConstitution', () => {
             axis: Axis.Foundation,
             body: '# UI with i18n\n',
             lines: 1,
-            path: 'blocks/domains/ui/with/i18n.md',
+            path: 'blocks/domains/ui/foundation/with/i18n.md',
             role: BlockFileRole.With,
             with: 'i18n',
           },
@@ -438,16 +428,26 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
-        'blocks/domains/ui/ui.md': UI_CARD,
+        'blocks/domains/ui/foundation/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
+        'blocks/domains/ui/ui.md': UI_PASSPORT,
       },
-      finding: {
-        message: 'has front matter; only the main file of a block carries it',
-        path: 'blocks/domains/ui/with/i18n.md',
+      finding: findingOf({
+        code: 'front-matter-outside-passport',
+        path: 'blocks/domains/ui/foundation/with/i18n.md',
+      }),
+    },
+    {
+      files: {
+        'blocks/domains/ui/architecture/ui.md': '# UI\n',
+        'blocks/domains/ui/ui.md': UI_PASSPORT,
       },
+      finding: findingOf({
+        code: 'chapter-named-after-its-block',
+        path: 'blocks/domains/ui/architecture/ui.md',
+      }),
     },
   ])(
-    'should report "$finding.message" when a file breaks the layout of its block',
+    'should report $finding.code when a file breaks the layout of its block',
     ({ files, finding }) => {
       // Arrange
       const tree = files;
@@ -469,23 +469,26 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/parts.md': '# Parts\n',
+        'blocks/domains/ui/foundation/screens.md': '# Screens\n',
       },
-      finding: {
-        message: 'has no main file ui.md',
+      finding: findingOf({
+        code: 'block-without-passport',
+        names: [
+          'ui.md',
+        ],
         path: 'blocks/domains/ui',
-      },
-      name: 'a layer folder has no main file',
+      }),
+      name: 'a layer folder has no passport',
     },
     {
       files: {
         'blocks/domains/ui/ui.md': '# UI\n',
       },
-      finding: {
-        message: 'has no front matter; a main file opens with it',
+      finding: findingOf({
+        code: 'front-matter-missing',
         path: 'blocks/domains/ui/ui.md',
-      },
-      name: 'its main file has no front matter',
+      }),
+      name: 'its passport has no front matter',
     },
   ])('should load no block and report why when $name', ({ files, finding }) => {
     // Arrange
@@ -509,12 +512,12 @@ describe('loadConstitution', () => {
   it('should report every block that shares its id when three layers hold the same id', () => {
     // Arrange
     const files = {
-      'blocks/contexts/platforms/ui/ui.md': mainFile({
+      'blocks/contexts/platforms/ui/ui.md': passportFile({
         body: '# UI platform\n',
         id: 'ui',
       }),
-      'blocks/domains/ui/ui.md': UI_CARD,
-      'blocks/implementations/ui/ui.md': mainFile({
+      'blocks/domains/ui/ui.md': UI_PASSPORT,
+      'blocks/implementations/ui/ui.md': passportFile({
         body: '# UI kit\n',
         id: 'ui',
       }),
@@ -525,31 +528,41 @@ describe('loadConstitution', () => {
 
     // Assert
     expect(loaded.findings).toStrictEqual([
-      {
-        message:
-          'shares the id "ui" with blocks/contexts/platforms/ui/ui.md, blocks/implementations/ui/ui.md; an id names one block',
+      findingOf({
+        code: 'block-id-shared',
+        names: [
+          'ui',
+          'blocks/contexts/platforms/ui/ui.md, blocks/implementations/ui/ui.md',
+        ],
         path: 'blocks/domains/ui/ui.md',
-      },
-      {
-        message:
-          'shares the id "ui" with blocks/domains/ui/ui.md, blocks/implementations/ui/ui.md; an id names one block',
+      }),
+      findingOf({
+        code: 'block-id-shared',
+        names: [
+          'ui',
+          'blocks/domains/ui/ui.md, blocks/implementations/ui/ui.md',
+        ],
         path: 'blocks/contexts/platforms/ui/ui.md',
-      },
-      {
-        message:
-          'shares the id "ui" with blocks/domains/ui/ui.md, blocks/contexts/platforms/ui/ui.md; an id names one block',
+      }),
+      findingOf({
+        code: 'block-id-shared',
+        names: [
+          'ui',
+          'blocks/domains/ui/ui.md, blocks/contexts/platforms/ui/ui.md',
+        ],
         path: 'blocks/implementations/ui/ui.md',
-      },
+      }),
     ]);
   });
 
-  it('should gather the rules, the answers and their findings of every block when they spread over cards, chapters and seams', () => {
+  it('should gather the rules, the answers and their findings of every block when they spread over passports, chapters and seams', () => {
     // Arrange
     const files = {
-      'blocks/domains/i18n/i18n.md': mainFile({
-        body: `# i18n\n\n${rule({
-          slug: 'i18n-plurals-by-cldr',
-        })}`,
+      'blocks/domains/i18n/foundation/plurals.md': `# i18n\n\n${rule({
+        slug: 'i18n-plurals-by-cldr',
+      })}`,
+      'blocks/domains/i18n/i18n.md': passportFile({
+        body: '# i18n\n',
         id: 'i18n',
       }),
       'blocks/implementations/lingui/architecture/with/react-dom.md': [
@@ -568,7 +581,7 @@ describe('loadConstitution', () => {
           slug: 'catalogs-are-compiled',
         }),
       ].join('\n'),
-      'blocks/implementations/lingui/lingui.md': mainFile({
+      'blocks/implementations/lingui/lingui.md': passportFile({
         body: [
           '# Lingui',
           '',
@@ -608,22 +621,26 @@ describe('loadConstitution', () => {
         },
       ],
       findings: [
-        {
-          message:
-            'heading "## loose · MUST" looks like a rule but is not "### <slug> · <LEVEL>", "### <slug> → <parent>" or "### <slug> → <parent> · <LEVEL>"',
+        findingOf({
+          code: 'rule-heading-misshapen',
+          names: [
+            '## loose · MUST',
+          ],
           path: 'blocks/implementations/lingui/workflow/catalogs.md',
-        },
-        {
-          message:
-            'has the row "| i18n typed keys | catalogs | yes |" in its Requirements, which is not "| `<requirement>` | <how> | <met> |"',
+        }),
+        findingOf({
+          code: 'requirements-row-misshapen',
+          names: [
+            '| i18n typed keys | catalogs | yes |',
+          ],
           path: 'blocks/implementations/lingui/lingui.md',
-        },
+        }),
       ],
       rules: [
         [
           'i18n',
           'foundation',
-          'blocks/domains/i18n/i18n.md',
+          'blocks/domains/i18n/foundation/plurals.md',
           undefined,
           'i18n-plurals-by-cldr',
         ],
@@ -649,12 +666,12 @@ describe('loadConstitution', () => {
     // Arrange
     const files: Files = {
       ...validFiles(),
-      'presets/typescript/biome/bindings.yaml': [
+      'presets/typescript/biome/foundation/bindings.yaml': [
         '_react:',
         '  hooks-at-top-level: [useHookAtTopLevel, useExhaustiveDependencies]',
         '',
       ].join('\n'),
-      'presets/typescript/biome/_react.jsonc': '{}\n',
+      'presets/typescript/biome/foundation/_react.jsonc': '{}\n',
       'presets/typescript/biome/architecture/bindings.yaml': [
         'core:',
         '  reads-are-cancellable: [surface.grit]',
@@ -684,7 +701,7 @@ describe('loadConstitution', () => {
         },
         {
           axis: Axis.Foundation,
-          file: 'presets/typescript/biome/bindings.yaml',
+          file: 'presets/typescript/biome/foundation/bindings.yaml',
           part: '_react',
           rule: 'hooks-at-top-level',
           scope: 'typescript',
@@ -693,7 +710,7 @@ describe('loadConstitution', () => {
         },
         {
           axis: Axis.Foundation,
-          file: 'presets/typescript/biome/bindings.yaml',
+          file: 'presets/typescript/biome/foundation/bindings.yaml',
           part: '_react',
           rule: 'hooks-at-top-level',
           scope: 'typescript',
@@ -703,9 +720,9 @@ describe('loadConstitution', () => {
       ],
       findings: [],
       presets: [
-        'presets/typescript/biome/_react.jsonc',
         'presets/typescript/biome/architecture/bindings.yaml',
-        'presets/typescript/biome/bindings.yaml',
+        'presets/typescript/biome/foundation/_react.jsonc',
+        'presets/typescript/biome/foundation/bindings.yaml',
         'presets/typescript/biome/notes/bindings.yaml',
       ],
     });
@@ -713,26 +730,36 @@ describe('loadConstitution', () => {
 
   it.each([
     {
-      message: 'is not valid YAML: Unexpected flow-seq-end token in YAML stream: "]"',
+      code: 'bindings-not-yaml',
       name: 'the file is not YAML',
+      names: [
+        'Unexpected flow-seq-end token in YAML stream: "]"',
+      ],
       text: 'core: ]\n',
     },
     {
-      message: 'does not match its schema: <root>: Invalid input: expected record, received array',
+      code: 'bindings-off-schema',
       name: 'the file is a list',
+      names: [
+        '<root>',
+        'Invalid input: expected record, received array',
+      ],
       text: '- core\n',
     },
     {
-      message:
-        'does not match its schema: core.any-never-typed: Too small: expected array to have >=1 items',
+      code: 'bindings-off-schema',
       name: 'a rule lists no setting',
+      names: [
+        'core.any-never-typed',
+        'Too small: expected array to have >=1 items',
+      ],
       text: 'core:\n  any-never-typed: []\n',
     },
-  ])('should report the bindings and load none when $name', ({ message, text }) => {
+  ])('should report the bindings and load none when $name', ({ code, names, text }) => {
     // Arrange
     const files: Files = {
       ...validFiles(),
-      'presets/typescript/biome/bindings.yaml': text,
+      'presets/typescript/biome/foundation/bindings.yaml': text,
     };
 
     // Act
@@ -745,10 +772,11 @@ describe('loadConstitution', () => {
     }).toStrictEqual({
       bindings: [],
       findings: [
-        {
-          message,
-          path: 'presets/typescript/biome/bindings.yaml',
-        },
+        findingOf({
+          code,
+          names,
+          path: 'presets/typescript/biome/foundation/bindings.yaml',
+        }),
       ],
     });
   });
@@ -756,19 +784,20 @@ describe('loadConstitution', () => {
   it('should read neither rules nor answers when they sit in a code fence', () => {
     // Arrange
     const files = {
-      'blocks/implementations/lingui/lingui.md': mainFile({
-        body: [
-          '# Lingui',
-          '',
-          '```markdown',
-          rule({
-            slug: 'sample-rule',
-          }),
-          '## Requirements',
-          '| `sample-rule` | sample | yes |',
-          '```',
-          '',
-        ].join('\n'),
+      'blocks/implementations/lingui/foundation/samples.md': [
+        '# Samples',
+        '',
+        '```markdown',
+        rule({
+          slug: 'sample-rule',
+        }),
+        '## Requirements',
+        '| `sample-rule` | sample | yes |',
+        '```',
+        '',
+      ].join('\n'),
+      'blocks/implementations/lingui/lingui.md': passportFile({
+        body: '# Lingui\n',
         id: 'lingui',
       }),
     };

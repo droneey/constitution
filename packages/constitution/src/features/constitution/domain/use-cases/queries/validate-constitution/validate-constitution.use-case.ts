@@ -16,6 +16,7 @@ import type { Check } from './check.types';
 import {
   abstractBlocksCheck,
   bindingsCheck,
+  blockFormCheck,
   budgetCheck,
   coreChaptersCheck,
   corePartCheck,
@@ -53,6 +54,7 @@ const CHECKS: readonly Check[] = [
   decisionsCheck,
   corePartCheck,
   coreChaptersCheck,
+  blockFormCheck,
 ];
 
 interface Validation {
