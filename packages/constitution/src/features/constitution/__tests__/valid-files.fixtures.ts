@@ -38,7 +38,7 @@ const pluginFiles = (): Files => ({
   'templates/PROJECT.md': '# Project Context\n',
   'templates/DECISIONS.md': '# Decisions\n',
   'templates/block.md': '---\nid: <id>\n---\n',
-  'templates/constitution.yaml': 'version: <installed version>\n',
+  'templates/constitution.yaml': 'axes: []\n',
   'vocabulary.yaml': [
     'architecture:',
     '  concepts: [port, binding unit]',

@@ -6,7 +6,6 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import {
   browserAppContext,
   cliContext,
-  coreOnlyContext,
   htmlSiteContext,
   libraryContext,
   packProjectContext,
@@ -84,11 +83,10 @@ interface UnparsedCase {
   line: number;
 }
 
-interface FactsCase {
+interface QuotedCase {
   condition: string;
-  event: HookEvent;
-  facts: readonly string[];
-  version: string;
+  domains: string;
+  name: string;
 }
 
 interface WarningCase {
@@ -109,7 +107,7 @@ interface DigestCase {
 }
 
 interface EscapeCase {
-  pin: string;
+  name: string;
   shown: string;
   what: string;
 }
@@ -400,7 +398,7 @@ describe('session-start hook', () => {
       repository: Repository.Folder,
     },
   ])(
-    'should find the project and state its pin when $condition',
+    'should find the project and count its blocks when $condition',
     ({ cwd, nonUtf8Byte, projectDir, repository, spawnOutside }) => {
       // Arrange
       const project = createProject({
@@ -436,7 +434,7 @@ describe('session-start hook', () => {
 
       // Assert
       expect(facts).toStrictEqual([
-        'constitution.yaml pins 1.0.0; 3 blocks are active.',
+        'constitution.yaml makes 3 blocks active.',
       ]);
     },
   );
@@ -445,9 +443,9 @@ describe('session-start hook', () => {
     {
       condition: 'a value is an anchor',
       config: configOf({
-        version: '&pin 1.0.0',
+        check: '&check bun run check',
       }),
-      line: 1,
+      line: 8,
     },
     {
       condition: 'axes leaves architecture and workflow out and a later list item is an alias',
@@ -455,19 +453,19 @@ describe('session-start hook', () => {
         axes: '[]',
         platforms: '[*browser]',
       }),
-      line: 4,
+      line: 3,
     },
     {
       condition: 'a tab indents a line',
       config: configOf({
         domains: '\n\t- ui',
       }),
-      line: 4,
+      line: 3,
     },
     {
       condition: 'a flow list never closes',
-      config: 'version: 1.0.0\ndomains: [ui,\n  remote-data\n',
-      line: 2,
+      config: 'domains: [ui,\n  remote-data\n',
+      line: 1,
     },
     {
       condition: 'a value is a block scalar',
@@ -478,7 +476,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'a second document follows',
-      config: `${configOf({})}---\nversion: 1.0.0\n`,
+      config: `${configOf({})}---\ncheck: bun run check\n`,
       line: 10,
     },
     {
@@ -496,33 +494,33 @@ describe('session-start hook', () => {
     {
       condition: 'a value carries a tag',
       config: configOf({
-        version: '!!str 1.0.0',
+        check: '!!str bun run check',
       }),
-      line: 1,
+      line: 8,
     },
     {
       condition: 'a flow list holds a flow mapping',
       config: configOf({
         domains: '[{a: b}]',
       }),
-      line: 3,
+      line: 2,
     },
     {
       condition: 'a flow list nests another that runs on to the next line',
-      config: 'version: 1.0.0\ndomains: [ui, [i18n,\n  remote-data]]\n',
-      line: 2,
+      config: 'domains: [ui, [i18n,\n  remote-data]]\n',
+      line: 1,
     },
     {
       condition: 'a flow list has an empty item between two',
       config: configOf({
         domains: '[ui,, i18n]',
       }),
-      line: 3,
+      line: 2,
     },
     {
       condition: 'a flow list goes on at the start of a line',
-      config: 'version: 1.0.0\ndomains: [ui,\nremote-data]\n',
-      line: 3,
+      config: 'domains: [ui,\nremote-data]\n',
+      line: 2,
     },
     {
       condition: 'a key has no space after its colon',
@@ -536,14 +534,14 @@ describe('session-start hook', () => {
       config: configOf({
         packages: '\n  web:\n    domains: [ui]\n  web:\n    domains: [i18n]',
       }),
-      line: 10,
+      line: 9,
     },
     {
       condition: "an application's key is repeated",
       config: configOf({
         packages: '\n  web:\n    domains: [ui]\n    domains: [i18n]',
       }),
-      line: 10,
+      line: 9,
     },
     {
       condition: "an override's field is repeated",
@@ -564,7 +562,7 @@ describe('session-start hook', () => {
       config: configOf({
         packages: '\n  web:\n    stack: [react]',
       }),
-      line: 9,
+      line: 8,
     },
   ])('should name the line and give only core when $condition', ({ config, line }) => {
     // Arrange
@@ -595,50 +593,14 @@ describe('session-start hook', () => {
       condition: 'CRLF line ends',
       config: FOUND.replaceAll('\n', '\r\n'),
       facts: [
-        'constitution.yaml pins 1.0.0; 3 blocks are active.',
+        'constitution.yaml makes 3 blocks active.',
       ],
     },
     {
       condition: 'a document marker on its first line',
       config: `---\n${FOUND}`,
       facts: [
-        'constitution.yaml pins 1.0.0; 3 blocks are active.',
-      ],
-    },
-    {
-      condition: 'a "#" and a ":" in a double-quoted value',
-      config: configOf({
-        version: '"1.0 #7: x"',
-      }),
-      facts: [
-        'constitution.yaml pins 1.0 #7: x; 1 block is active.',
-      ],
-    },
-    {
-      condition: 'a "#" with no blank before it',
-      config: configOf({
-        version: '1.0#7',
-      }),
-      facts: [
-        'constitution.yaml pins 1.0#7; 1 block is active.',
-      ],
-    },
-    {
-      condition: 'escaped quotes and backslashes in a double-quoted value',
-      config: configOf({
-        version: '"1.0\\"7\\\\x"',
-      }),
-      facts: [
-        'constitution.yaml pins 1.0"7\\x; 1 block is active.',
-      ],
-    },
-    {
-      condition: 'a doubled quote in a single-quoted value',
-      config: configOf({
-        version: "'1.0''7'",
-      }),
-      facts: [
-        "constitution.yaml pins 1.0'7; 1 block is active.",
+        'constitution.yaml makes 3 blocks active.',
       ],
     },
     {
@@ -648,7 +610,7 @@ describe('session-start hook', () => {
         implementations: '[git,]',
       }),
       facts: [
-        'constitution.yaml pins 1.0.0; 3 blocks are active.',
+        'constitution.yaml makes 3 blocks active.',
       ],
     },
     {
@@ -659,7 +621,7 @@ describe('session-start hook', () => {
         overrides: '[ ]',
       }),
       facts: [
-        'constitution.yaml pins 1.0.0; 1 block is active.',
+        'constitution.yaml makes 1 block active.',
       ],
     },
     {
@@ -668,7 +630,7 @@ describe('session-start hook', () => {
         implementations: '[ui]',
       }),
       facts: [
-        'constitution.yaml pins 1.0.0; 2 blocks are active.',
+        'constitution.yaml makes 2 blocks active.',
       ],
     },
   ])('should read constitution.yaml when it holds $condition', ({ config, facts }) => {
@@ -722,7 +684,7 @@ describe('session-start hook', () => {
 
     // Assert
     expect(facts).toStrictEqual([
-      'constitution.yaml pins 1.0.0; 2 blocks are active.',
+      'constitution.yaml makes 2 blocks active.',
     ]);
   });
 
@@ -746,7 +708,7 @@ describe('session-start hook', () => {
       warnings: warningsOf(context),
     }).toStrictEqual({
       facts: [
-        'constitution.yaml pins 1.0.0; 7 blocks are active.',
+        'constitution.yaml makes 7 blocks active.',
       ],
       pack: [
         '- paraglide (constitution): Paraglide messages, compiled per locale.',
@@ -755,63 +717,40 @@ describe('session-start hook', () => {
     });
   });
 
-  it.each<FactsCase>([
+  it.each<QuotedCase>([
     {
-      condition: 'the pin differs at startup',
-      event: HookEvent.Startup,
-      facts: [
-        'constitution.yaml pins 0.9.0; 3 blocks are active.',
-        'constitution.yaml pins 0.9.0 while .droneey/constitution holds 1.0.0; this digest follows 1.0.0.',
-      ],
-      version: '0.9.0',
+      condition: 'a "#" and a ":" in a double-quoted value',
+      domains: '["u #7: x"]',
+      name: 'u #7: x',
     },
     {
-      condition: 'the pin differs after clear',
-      event: HookEvent.Clear,
-      facts: [
-        'constitution.yaml pins 0.9.0; 3 blocks are active.',
-      ],
-      version: '0.9.0',
+      condition: 'a "#" with no blank before it',
+      domains: '[u#7]',
+      name: 'u#7',
     },
     {
-      condition: 'the pin differs in a sub-agent',
-      event: HookEvent.Subagent,
-      facts: [
-        'constitution.yaml pins 0.9.0; 3 blocks are active.',
-      ],
-      version: '0.9.0',
+      condition: 'escaped quotes and backslashes in a double-quoted value',
+      domains: '["u\\"7\\\\x"]',
+      name: 'u"7\\x',
     },
     {
-      condition: 'the pin equals the installed version at startup',
-      event: HookEvent.Startup,
-      facts: [
-        'constitution.yaml pins 1.0.0; 3 blocks are active.',
-      ],
-      version: '1.0.0',
+      condition: 'a doubled quote in a single-quoted value',
+      domains: "['u''7']",
+      name: "u'7",
     },
-    {
-      condition: 'constitution.yaml pins no version at startup',
-      event: HookEvent.Startup,
-      facts: [
-        'constitution.yaml pins no version; 3 blocks are active.',
-      ],
-      version: '',
-    },
-  ])('should state the header facts when $condition', ({ event, facts, version }) => {
+  ])('should read a quoted name as YAML does when it holds $condition', ({ domains, name }) => {
     // Arrange
     const project = createProject({
       config: configOf({
-        domains: '[version-control]',
-        implementations: '[git]',
-        version,
+        domains,
       }),
     });
 
     // Act
-    const printed = factsOf(
+    const warnings = warningsOf(
       contextOf(
         runHook({
-          event,
+          event: HookEvent.Subagent,
           project,
           root,
         }),
@@ -819,7 +758,10 @@ describe('session-start hook', () => {
     );
 
     // Assert
-    expect(printed).toStrictEqual(facts);
+    expect(warnings).toStrictEqual([
+      WARNINGS,
+      unknownWarning(name),
+    ]);
   });
 
   it.each<HeadingCase>([
@@ -1109,6 +1051,40 @@ describe('session-start hook', () => {
       warnings: [
         WARNINGS,
         '- config: web leaves domains empty — write domains: []',
+      ],
+    },
+    {
+      condition: 'packs is left out',
+      layout: {
+        config: configOf({
+          omit: ConfigKey.Packs,
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        '- config: constitution.yaml has no packs key — add packs: []',
+      ],
+    },
+    {
+      condition: 'packs holds nothing',
+      layout: {
+        config: configOf({
+          packs: '',
+        }),
+      },
+      warnings: [
+        WARNINGS,
+        '- config: constitution.yaml leaves packs empty — write packs: []',
+      ],
+    },
+    {
+      condition: 'a version key is left from an older release',
+      layout: {
+        config: `version: 1.0.0\n${configOf({})}`,
+      },
+      warnings: [
+        WARNINGS,
+        '- config: constitution.yaml has the unknown key version — remove it',
       ],
     },
     {
@@ -1507,42 +1483,42 @@ describe('session-start hook', () => {
 
   it.each<EscapeCase>([
     {
-      pin: '1.0\\0',
+      name: '1.0\\0',
       shown: '1.0\\0',
       what: 'a backslash',
     },
     {
-      pin: '1.0"0',
+      name: '1.0"0',
       shown: '1.0"0',
       what: 'a quote',
     },
     {
-      pin: '1.0\t0',
+      name: '1.0\t0',
       shown: '1.0\t0',
       what: 'a tab',
     },
     {
-      pin: '1.0\u001f0',
+      name: '1.0\u001f0',
       shown: '1.0\u001f0',
       what: 'the control byte 0x1f',
     },
     {
-      pin: '1.0\r0',
+      name: '1.0\r0',
       shown: '1.00',
       what: 'a carriage return, which the context drops',
     },
     {
-      pin: '1.0-naïve-крок',
+      name: '1.0-naïve-крок',
       shown: '1.0-naïve-крок',
       what: 'non-ASCII text',
     },
   ])(
-    'should print one valid JSON object that keeps the pin when it holds $what',
-    ({ pin, shown }) => {
+    'should print one valid JSON object that keeps a name when it holds $what',
+    ({ name, shown }) => {
       // Arrange
       const project = createProject({
         config: configOf({
-          version: pin,
+          domains: `[${name}]`,
         }),
       });
 
@@ -1556,21 +1532,24 @@ describe('session-start hook', () => {
       );
 
       // Assert
-      expect(output).toStrictEqual({
-        context: coreOnlyContext({
-          pin: shown,
-          root: archiveIn(project),
-        }),
+      expect({
+        event: output.event,
+        warnings: warningsOf(output.context),
+      }).toStrictEqual({
         event: 'SubagentStart',
+        warnings: [
+          WARNINGS,
+          unknownWarning(shown),
+        ],
       });
     },
   );
 
-  it('should escape DEL as \\u007f when the pin holds it', () => {
+  it('should escape DEL as \\u007f when a name holds it', () => {
     // Arrange
     const project = createProject({
       config: configOf({
-        version: '1.0\u007f0',
+        domains: '[1.0\u007f0]',
       }),
     });
 
@@ -1582,7 +1561,7 @@ describe('session-start hook', () => {
     });
 
     // Assert
-    expect(run.stdout).toContain('pins 1.0\\u007f0;');
+    expect(run.stdout).toContain('1.0\\u007f0 is not a block');
   });
 
   it('should mark a rule with every override of it, in the order of the file, when a project overrides rules', () => {
@@ -1761,7 +1740,7 @@ describe('session-start hook', () => {
       ...older,
       notice: (archive: string): readonly string[] => [
         `The Droneey Constitution in ${archive} is older than block format 2, the oldest this plugin reads, so no rules are given.`,
-        'Tell the user to raise the Constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.',
+        "Tell the user to raise the Constitution pin in this project's mise.toml and run mise install.",
       ],
     })),
     {
@@ -1845,7 +1824,7 @@ describe('session-start hook', () => {
 
     // Assert
     expect(facts).toStrictEqual([
-      'constitution.yaml pins 1.0.0; 9 blocks are active.',
+      'constitution.yaml makes 9 blocks active.',
     ]);
   });
 

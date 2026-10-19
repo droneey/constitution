@@ -6,4 +6,4 @@ Report a vulnerability privately through GitHub: on the repository's **Security*
 
 ## Supported versions
 
-Only the latest release gets fixes. A fix ships as a new release; projects pick it up by moving their pinned version in `constitution.yaml`.
+Only the latest release gets fixes. A fix ships as a new release; projects pick it up by moving their pinned version in `mise.toml`.

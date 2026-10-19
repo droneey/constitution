@@ -10,7 +10,7 @@
 |---|---|
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005 |
-| Project files | ADR-0009, ADR-0010, ADR-0102 |
+| Project files | ADR-0009, ADR-0102, ADR-0208 |
 | Rules and roles | ADR-0013, ADR-0014, ADR-0144 |
 | Overrides and precedence | ADR-0020 |
 | The anatomy | ADR-0032, ADR-0036, ADR-0157, ADR-0158 |
@@ -90,12 +90,6 @@
 
 - **Decision.** A project declares the blocks it follows, its applications, its check command and its overrides in `constitution.yaml`, and describes the product — what it is, for whom, its domains, entities and glossary — in `PROJECT.md`. A project keeps no `DECISIONS.md`: a departure is an override, and git history keeps its record.
 - **Rejected.** A `DECISIONS.md` or ADR log in each project: a departure is an override with its reason, and git history keeps the record.
-
-## ADR-0010 — A project pins a released version
-
-**Date:** 2026-09-25 · **Status:** Accepted
-
-- **Decision.** `constitution.yaml` pins a released version; until 1.0.0 it pins the current 0.x one.
 
 ## ADR-0013 — Rules: one format, global slugs
 
@@ -1521,7 +1515,7 @@
   - A dist branch with the built plugin: a second, generated history main never merges.
   - `releases/latest`: pre-releases, the only releases before 1.0, never reach it, and an archive's sha256 cannot follow a URL whose file changes.
   - Committed digests: a generated file that changes with every block, with its diffs and conflicts.
-  - The plugin delivering the rules of its installed version (ADR-0010's former delivery): two repositories on one machine would read one release whatever they pin.
+  - The plugin delivering the rules of its installed version (the plugin's former delivery): two repositories on one machine would read one release whatever they pin.
 - **Why.** Projects already pin one release through mise for their presets; reading the rules from the same archive makes that pin the single source, and the plugin's only contract with a release is the digest format.
 
 ## ADR-0204 — A pack is a folder of blocks the hook reads as it finds them
@@ -1529,7 +1523,7 @@
 **Date:** 2026-10-17 · **Status:** Accepted
 
 - **Decision.**
-  - A pack is a folder shaped like the constitution, `blocks/` and, when it has them, `presets/` and `templates/`, with no manifest and nothing generated. A project lists the packs it follows by their paths in `constitution.yaml`'s optional `packs:`, and their blocks by plain id beside the constitution's.
+  - A pack is a folder shaped like the constitution, `blocks/` and, when it has them, `presets/` and `templates/`, with no manifest and nothing generated. A project lists the packs it follows by their paths in `constitution.yaml`'s `packs:`, and their blocks by plain id beside the constitution's.
   - The engine is the constitution's alone. At session start the hook reads each listed pack's Markdown as it reads a local block: a block's card for its front matter, its chapters and `with/` files by their folders, and its rules by their headings, a rule's level from its parent where it states none. A pack's block is listed with its pack and its files read from there. A pack that is not installed, a block whose id the constitution or an earlier pack already holds, and a rule that carries out an unknown rule are warnings, never the end of the digest.
   - A pack's presets are extended by the project's own configuration, from their path, as the constitution's are.
   - A pack tightens as any block does: its rules never replace or loosen the constitution's.
@@ -1570,3 +1564,16 @@
 - **Decision.** A package with parts of its own keeps a `biome.json` with `"root": false` in its folder, which extends the shared parts and its own through `.droneey/constitution`, a link the folder keeps to the root's; the root's `biome.json` extends the shared parts alone (`biome-configuration-in-the-unit`). One `biome check` from the root checks each file by the nearest configuration, and the package lints by its own script. This replaces the `biome.<name>.jsonc` at the root of ADR-0151. The same holds for every tool as a SHOULD of `workspace`, `unit-configuration-kept-in-its-folder`, which Biome's, Stryker's and dependency-cruiser's rules tighten; it is a SHOULD because knip reads one configuration for the whole repository and keeps each package's part in the root's under the package's path.
 - **Rejected.** A configuration per unit at the root, run once more with `--config-path` and once more in the commit hook: the root then knew every unit's parts, and a unit moved to a repository of its own left its configuration behind. ADR-0151 kept the parts out of the unit's folder because Biome reads a plugin's path from the configuration that extends it; the unit's own link to the release gives that path in its folder.
 - **Why.** What holds a unit lives with the unit: the root names only what every unit shares, and the unit carries its own rules wherever it goes (owner).
+
+## ADR-0208 — mise.toml alone pins the release, and every key of constitution.yaml is written
+
+**Date:** 2026-10-19 · **Status:** Accepted
+
+- **Decision.**
+  - A project pins the Constitution's release in `mise.toml` alone; until 1.0.0 it pins the current 0.x one. `constitution.yaml` has no `version`: the hook takes the release from `.droneey/constitution/package.json`, the release `mise install` linked, and the digest's second line reads `constitution.yaml makes <n> blocks active.` A `version` key left from an older release is an unknown key, a warning that says to remove it.
+  - `packs` is required as every other key is, written `packs: []` when the project follows no pack; a missing `packs` is a warning that says to add it.
+- **Rejected.**
+  - `version` in both files, with a digest line when they differ: two sources of one fact, and the hook already followed the linked release whatever `constitution.yaml` said.
+  - `version` in `constitution.yaml` alone: mise installs and links the release, so it reads its pin from `mise.toml`.
+  - `packs` as the one optional key: a reader of the file could not tell a project with no packs from one that forgot them.
+- **Why.** One pin, where the release is installed from, leaves nothing to drift; and a file whose every key is written reads the same in every project (owner).

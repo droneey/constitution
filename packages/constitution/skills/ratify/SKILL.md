@@ -43,7 +43,7 @@ If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, s
 
 ### 2. Show what the plugin offers
 
-Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only the blocks of packs can be listed. When the repository links packs — folders of blocks beside the Constitution, such as `.droneey/constitution-extra` — list their paths under `packs:` and offer their blocks with the others, by id; leave `packs:` out when there are none.
+Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only the blocks of packs can be listed. When the repository links packs — folders of blocks beside the Constitution, such as `.droneey/constitution-extra` — list their paths under `packs:` and offer their blocks with the others, by id; `packs: []` stays when there are none.
 
 ### 3. Ask for the axes, then look at the repository and propose the blocks
 
@@ -132,7 +132,7 @@ Then list every `partly` and `no` row of the Requirements tables of the blocks y
 
 Write only after the owner's yes, and only the files the owner agreed to.
 
-- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<installed version>` replaced by the version of the release installed above and `<check command>` by the check command, and each `[]` or `{}` replaced where there is something to list. Keep every key, in the template's order. The hook reads a fixed subset of YAML: a list is a flow list `[a, b]` that may go on over indented lines until its `]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
+- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<check command>` replaced by the check command, and each `[]` or `{}` replaced where there is something to list. Keep every key, in the template's order. The hook reads a fixed subset of YAML: a list is a flow list `[a, b]` that may go on over indented lines until its `]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
 - **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
 - **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
 
@@ -144,4 +144,4 @@ Run the hook as a session start would, from the repository root:
 printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT}" bash "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
 ```
 
-It prints the digest as JSON. The digest's second line must say `constitution.yaml pins <version>; <n> blocks are active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the file, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.
+It prints the digest as JSON. The digest's second line must say `constitution.yaml makes <n> blocks active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the file, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.

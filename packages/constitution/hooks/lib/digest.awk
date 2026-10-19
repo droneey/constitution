@@ -109,7 +109,7 @@ function notice(kind, found,   archive) {
     head("Tell the user to run mise install, which installs the release mise.toml pins as github:droneey/constitution and links it there.")
   } else if (kind == "older") {
     head("The Droneey Constitution in " archive " is older than block format " ENVIRON["CONSTITUTION_OLDEST"] ", the oldest this plugin reads, so no rules are given.")
-    head("Tell the user to raise the Constitution pin in this project, in mise.toml and constitution.yaml, and run mise install.")
+    head("Tell the user to raise the Constitution pin in this project's mise.toml and run mise install.")
   } else {
     head("The Droneey Constitution in " archive " has block format " found ", newer than this plugin reads, so no rules are given.")
     head("Tell the user to update the Constitution plugin: claude plugin marketplace update droneey, then claude plugin update constitution@droneey.")
@@ -119,7 +119,6 @@ function notice(kind, found,   archive) {
 $1 == "notice" { notice_kind = $2; notice_found = $3 }
 $1 == "error" { failed = $2 }
 $1 == "core" { COREFILES[++ncorefiles] = text(1) }
-$1 == "pin" { pin = text(1) }
 $1 == "count" { count = $2 }
 $1 == "warning" { WARNING[++nwarnings] = text(1) }
 $1 == "index" { INDEX[++nindex] = text(1) }
@@ -136,8 +135,7 @@ END {
     head("constitution.yaml does not parse at line " failed "; only core applies.")
     core()
   } else {
-    head("constitution.yaml pins " (pin == "" ? "no version" : pin) "; " count (count == 1 ? " block is" : " blocks are") " active.")
-    if (ENVIRON["CONSTITUTION_STARTUP"] != "" && pin != "" && pin != installed) head("constitution.yaml pins " pin " while .droneey/constitution holds " installed "; this digest follows " installed ".")
+    head("constitution.yaml makes " count (count == 1 ? " block" : " blocks") " active.")
     warnings()
     core()
     index_lines()

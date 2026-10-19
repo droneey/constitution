@@ -1,9 +1,8 @@
 # constitution.yaml
 
-> The file at a project's root that names the release it follows, its blocks, its check and its overrides.
+> The file at a project's root that names its blocks, its packs, its check and its overrides.
 
 ```yaml
-version: 0.70.0
 axes:
   - architecture
   - workflow
@@ -28,28 +27,23 @@ check: bun run check
 overrides: []
 ```
 
-Every key but `packs` is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order.
+Every key is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order.
 
 ## Keys
 
 | Key | Holds | Empty |
 |---|---|---|
-| `version` | the release the project pins, as in `mise.toml` | — |
 | `axes` | the optional axes it follows: `architecture`, `workflow`; the base is always followed | `[]`, the base alone |
 | `domains` | the ids of its domain blocks | `[]` |
 | `platforms` | the ids of its platform blocks | `[]` |
 | `languages` | the ids of its language blocks | `[]` |
 | `implementations` | the ids of its library, tool and service blocks | `[]` |
 | `packages` | the units of a workspace, each with blocks of its own | `{}` |
-| `packs` | the folders of blocks it follows beside the Constitution's, relative to the root | left out |
+| `packs` | the folders of blocks it follows beside the Constitution's, relative to the root | `[]` |
 | `check` | the command that runs every check | `null` |
 | `overrides` | the rules it lowers | `[]` |
 
 Core is never listed: it is always active. An abstract block, whose id starts with `_`, is never listed either; the blocks that extend it are.
-
-## version
-
-The release whose rules the project follows. [Upgrade](../guides/upgrade.md) raises it.
 
 ## axes
 

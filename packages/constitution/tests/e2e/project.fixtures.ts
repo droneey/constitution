@@ -12,16 +12,16 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import type { Files } from './constitution.fixtures';
-import { INSTALLED, removeFolder } from './plugin-root.fixtures';
+import { removeFolder } from './plugin-root.fixtures';
 
 enum ConfigKey {
-  Version = 'version',
   Axes = 'axes',
   Domains = 'domains',
   Platforms = 'platforms',
   Languages = 'languages',
   Implementations = 'implementations',
   Packages = 'packages',
+  Packs = 'packs',
   Check = 'check',
   Overrides = 'overrides',
 }
@@ -32,10 +32,8 @@ enum Repository {
   None = 'none',
 }
 
-// packs, the one key a project may leave out, is written last and only when given.
 type Config = Partial<Record<ConfigKey, string>> & {
   omit?: ConfigKey;
-  packs?: string;
 };
 
 // Paths are relative to the project root; aboveConfig and links lie in the
@@ -61,8 +59,8 @@ const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
   languages: '[]',
   overrides: '[]',
   packages: '{}',
+  packs: '[]',
   platforms: '[]',
-  version: '1.0.0',
 };
 
 const created: string[] = [];
@@ -76,7 +74,6 @@ const configOf = (config: Config): string =>
 
       return setting.startsWith('\n') ? `${key}:${setting}` : `${key}: ${setting}`;
     })
-    .concat(config.packs === undefined ? [] : `packs: ${config.packs}`)
     .join('\n')
     .concat('\n');
 
@@ -242,7 +239,6 @@ const PARAGLIDE_FILES: Files = packBlockFiles({
 // Modelled on the reference web application.
 const BROWSER_APP: ProjectLayout = {
   config: [
-    'version: 1.0.0                    # the Constitution release the project follows',
     'axes: [architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
     '          untrusted-client, unreliable-network]',
@@ -251,13 +247,13 @@ const BROWSER_APP: ProjectLayout = {
     'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
     '                  betterleaks, paraglide]',
     'packages: {}',
+    `packs: [${OWN_PACK}]`,
     'check: bun run check',
     'overrides:',
     '  - rule: analytics-consent-first',
     '    level: SHOULD',
     '    reason: "Matomo runs without cookies until the consent banner ships"',
     '    until: 2999-12-31',
-    `packs: [${OWN_PACK}]`,
     '',
   ].join('\n'),
   files: PARAGLIDE_FILES,
@@ -266,7 +262,6 @@ const BROWSER_APP: ProjectLayout = {
 // Modelled on nydra, with block sequences.
 const CLI: ProjectLayout = {
   config: [
-    'version: 1.0.0',
     'axes: [architecture, workflow]',
     'domains:',
     '  - version-control',
@@ -276,6 +271,7 @@ const CLI: ProjectLayout = {
     'languages: [typescript]',
     'implementations: [bun, biome, git, betterleaks]',
     'packages: {}',
+    'packs: []',
     'check: bun run check',
     'overrides: []',
     '',
@@ -285,7 +281,6 @@ const CLI: ProjectLayout = {
 // Modelled on devkit: packages as applications, one with its own override.
 const LIBRARY: ProjectLayout = {
   config: [
-    'version: 1.0.0',
     'axes: [architecture, workflow]',
     'domains: [version-control]',
     'platforms: []',
@@ -300,6 +295,7 @@ const LIBRARY: ProjectLayout = {
     '      - rule: four-data-states',
     '        level: MAY',
     '        reason: "The kit renders the states its caller passes"',
+    'packs: []',
     'check: bun run check',
     'overrides: []',
     '',
@@ -320,7 +316,6 @@ const HTML_SITE: ProjectLayout = {
 // one block in an application.
 const PACK_PROJECT: ProjectLayout = {
   config: [
-    'version: 1.0.0',
     'axes: [architecture, workflow]',
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
@@ -330,9 +325,9 @@ const PACK_PROJECT: ProjectLayout = {
     '  packages/web:',
     '    domains: [i18n]',
     '    implementations: [paraglide, lint-kit]',
+    `packs: [${OWN_PACK}]`,
     'check: bun run check',
     'overrides: []',
-    `packs: [${OWN_PACK}]`,
     '',
   ].join('\n'),
   files: {
@@ -396,10 +391,6 @@ const RATIFIED: ProjectLayout = {
   config: fromTemplate({
     fills: [
       [
-        '<installed version>',
-        INSTALLED,
-      ],
-      [
         'domains: []',
         'domains: [i18n, version-control]',
       ],
@@ -412,12 +403,16 @@ const RATIFIED: ProjectLayout = {
         'implementations: [git, betterleaks, paraglide]',
       ],
       [
+        'packs: []',
+        `packs: [${OWN_PACK}]`,
+      ],
+      [
         '<check command>',
         'bun run check',
       ],
     ],
     name: 'constitution.yaml',
-  }).concat(`packs: [${OWN_PACK}]\n`),
+  }),
   files: {
     [packPath({
       id: 'paraglide',
@@ -445,7 +440,6 @@ const RATIFIED: ProjectLayout = {
 // this repository would serve them.
 const REAL_WEB_APP: ProjectLayout = {
   config: [
-    'version: 1.0.0',
     'axes: [architecture, workflow]',
     '',
     'domains: [ui, design-system, remote-data, remote-service, i18n, analytics, privacy,',
@@ -457,6 +451,7 @@ const REAL_WEB_APP: ProjectLayout = {
     '                  matomo, lingui, bun, tsc, biome, dependency-cruiser, knip,',
     '                  syncpack, stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
     'packages: {}',
+    'packs: []',
     'check: bun run check',
     'overrides: []',
     '',
@@ -465,7 +460,6 @@ const REAL_WEB_APP: ProjectLayout = {
 
 const REAL_CLI: ProjectLayout = {
   config: [
-    'version: 1.0.0',
     'axes: [architecture, workflow]',
     '',
     'domains: [convergence, config-file, remote-data, remote-service, version-control]',
@@ -475,6 +469,7 @@ const REAL_CLI: ProjectLayout = {
     '                  knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
     'packages: {}',
+    'packs: []',
     'check: bun run check',
     'overrides: []',
     '',

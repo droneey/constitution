@@ -237,7 +237,7 @@ function top(t,   key, rest) {
   keys++
   app = ""
   print "key" T key
-  if (key == "version" || key == "check") {
+  if (key == "check") {
     KIND[0] = "scalar"
     rest = scalar(rest)
     if (rest == "") print "empty" T T key
