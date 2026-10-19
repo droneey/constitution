@@ -11,14 +11,16 @@ import { pageSlugsOf } from '../../../domain/utils';
  */
 const inRepository = (path = ''): string => resolve('../..', path);
 
-/** the folders of the blocks' layers, by the site's folder of each; a platform and a language sit under contexts/ */
-const BLOCK_LAYERS: Readonly<Record<string, string>> = {
-  core: 'core',
-  domains: 'domains',
-  implementations: 'implementations',
-  languages: 'contexts/languages',
-  platforms: 'contexts/platforms',
-};
+/** the folders of each layer's blocks, the same in blocks/ and on the site; a platform's and a language's sit in contexts/ */
+// Stryker disable StringLiteral: the site's loader and build read the layers, which no spec loads; the specs see contexts/ through either of its layers
+const BLOCK_LAYERS: readonly string[] = [
+  'core',
+  'domains',
+  'contexts/platforms',
+  'contexts/languages',
+  'implementations',
+];
+// Stryker restore StringLiteral
 
 const QUICK_START = 'quick-start';
 
@@ -37,12 +39,14 @@ const DOCS_FOLDER = 'docs/';
 /** the folder of the blocks, every file of them a page of the site */
 const BLOCKS_FOLDER = 'packages/constitution/blocks/';
 
-/** the site's folders of the layers */
-const SITE_LAYERS = Object.keys(BLOCK_LAYERS);
+/** the folders of blocks/ the README lists, each a folder of the site's sidebar: contexts/ holds two layers */
+const SITE_LAYERS: readonly string[] = [
+  ...new Set(BLOCK_LAYERS.map((layer) => layer.replace(/\/.*/, ''))),
+];
 
-/** the site's folder of the layer a path from the root names, when it names a layer's folder */
+/** the sidebar's folder a path from the root names, when it names one of those folders */
 const blockLayerOf = (path: string): string | undefined =>
-  SITE_LAYERS.find((layer) => path === `${BLOCKS_FOLDER}${BLOCK_LAYERS[layer]}`);
+  SITE_LAYERS.find((layer) => path === `${BLOCKS_FOLDER}${layer}`);
 
 const MARKDOWN = '.md';
 

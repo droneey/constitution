@@ -15,6 +15,7 @@ import {
   layerBlocksOf,
   QUICK_START,
   SITE_DOCUMENTS,
+  SITE_LAYERS,
   sidebarOf,
 } from './repository';
 
@@ -24,8 +25,20 @@ interface SidebarFolder {
   title?: string;
 }
 
-/** the title and icon of each layer's folder in the sidebar, by the site's folder */
+/** the title and icon of each folder of blocks in the sidebar, by its folder in blocks/ */
 const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title'>>> = {
+  contexts: {
+    icon: 'Boxes',
+    title: 'Contexts',
+  },
+  'contexts/languages': {
+    icon: 'Code',
+    title: 'Languages',
+  },
+  'contexts/platforms': {
+    icon: 'MonitorSmartphone',
+    title: 'Platforms',
+  },
   core: {
     icon: 'ScrollText',
     title: 'Core',
@@ -37,14 +50,6 @@ const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title
   implementations: {
     icon: 'Wrench',
     title: 'Implementations',
-  },
-  languages: {
-    icon: 'Code',
-    title: 'Languages',
-  },
-  platforms: {
-    icon: 'MonitorSmartphone',
-    title: 'Platforms',
   },
 };
 
@@ -91,7 +96,7 @@ const metaFile = (
 /** what parts an axis from a chapter's name in core's list: `<axis>/<name>` */
 const AXIS_SEPARATOR = '/';
 
-/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, and core's chapters in the order placement lists them */
+/** the sidebar's folders of the blocks: each layer's blocks, an abstract one above those that extend it, a folder of layers by its layers, and core's chapters in the order placement lists them */
 const blockFolders = (): ReturnType<typeof metaFile>[] => {
   const chapters = coreChaptersOf();
   const base = chapters.filter((chapter) => !chapter.includes(AXIS_SEPARATOR));
@@ -104,7 +109,15 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
   ];
 
   return [
-    ...Object.entries(BLOCK_LAYERS).map(([layer, folder]) =>
+    ...SITE_LAYERS.filter((folder) => !BLOCK_LAYERS.includes(folder)).map((folder) =>
+      metaFile(`${folder}/meta.json`, {
+        ...LAYER_FOLDERS[folder],
+        pages: BLOCK_LAYERS.filter((layer) => layer.startsWith(`${folder}/`)).map((layer) =>
+          layer.slice(folder.length + 1),
+        ),
+      }),
+    ),
+    ...BLOCK_LAYERS.map((layer) =>
       metaFile(`${layer}/meta.json`, {
         ...LAYER_FOLDERS[layer],
         pages:
@@ -114,7 +127,7 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
                 ...axes,
               ]
             : [
-                ...layerBlocksOf(folder),
+                ...layerBlocksOf(layer),
               ],
       }),
     ),

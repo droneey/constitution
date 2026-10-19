@@ -137,8 +137,8 @@ describe('addressOf', () => {
       path: 'packages/constitution/blocks/domains/ui/ui.md',
     },
     {
-      address: '/docs/platforms/browser/with/ui',
-      condition: "the link leads to a platform's seam, which the site lifts out of contexts",
+      address: '/docs/contexts/platforms/browser/with/ui',
+      condition: "the link leads to a platform's seam, inside contexts",
       hash: '',
       path: 'packages/constitution/blocks/contexts/platforms/browser/with/ui.md',
     },
@@ -274,34 +274,30 @@ describe('repositoryPathOf', () => {
 describe('blockLayerOf', () => {
   it.each([
     {
-      layer: 'core',
+      folder: 'core',
       path: 'packages/constitution/blocks/core',
     },
     {
-      layer: 'domains',
+      folder: 'domains',
       path: 'packages/constitution/blocks/domains',
     },
     {
-      layer: 'platforms',
-      path: 'packages/constitution/blocks/contexts/platforms',
+      folder: 'contexts',
+      path: 'packages/constitution/blocks/contexts',
     },
     {
-      layer: 'languages',
-      path: 'packages/constitution/blocks/contexts/languages',
-    },
-    {
-      layer: 'implementations',
+      folder: 'implementations',
       path: 'packages/constitution/blocks/implementations',
     },
     {
-      layer: undefined,
-      path: 'packages/constitution/blocks/contexts',
+      folder: undefined,
+      path: 'packages/constitution/blocks/contexts/platforms',
     },
-  ])('should give $layer as the site folder of $path', ({ layer, path }) => {
+  ])('should give $folder as the sidebar folder of $path', ({ folder, path }) => {
     // Act
-    const folder = blockLayerOf(path);
+    const layer = blockLayerOf(path);
 
     // Assert
-    expect(folder).toBe(layer);
+    expect(layer).toBe(folder);
   });
 });

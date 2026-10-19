@@ -81,8 +81,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 - [Core](packages/constitution/blocks/core/core.md) — what holds for any program
 - [Domains](packages/constitution/blocks/domains) — the aspects a product may have, whatever its technology
-- [Platforms](packages/constitution/blocks/contexts/platforms) — where a program runs
-- [Languages](packages/constitution/blocks/contexts/languages) — what a program is written in
+- [Contexts](packages/constitution/blocks/contexts) — the platforms a program runs on and the languages it is written in
 - [Implementations](packages/constitution/blocks/implementations) — the libraries, tools and services a project uses
 
 ## <img src=".brand/diamond.svg" width="18" height="18" alt=""> Contributing

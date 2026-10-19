@@ -230,7 +230,7 @@ const blocks = defineDocs({
         baseUrl: docsRoute,
         blocks: inRepository('packages/constitution/blocks'),
         examples: 'content/examples',
-        folders: Object.values(BLOCK_LAYERS),
+        folders: BLOCK_LAYERS,
       });
 
       return await applyMdxPreset({

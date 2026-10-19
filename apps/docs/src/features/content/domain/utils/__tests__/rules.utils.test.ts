@@ -228,9 +228,10 @@ describe('pageSlugsOf', () => {
       ],
     },
     {
-      condition: "the file is a platform's card, which the site lifts out of contexts",
+      condition: "the file is a platform's card, inside contexts",
       path: 'contexts/platforms/browser/browser.md',
       slugs: [
+        'contexts',
         'platforms',
         'browser',
       ],
