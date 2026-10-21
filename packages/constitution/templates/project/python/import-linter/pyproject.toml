@@ -1,3 +1,13 @@
+# import-linter: pinned in the dev group
+[dependency-groups]
+dev = [
+  "import-linter==2.15",
+]
+
+# import-linter: its tasks
+[tool.poe.tasks]
+"architecture:check" = "lint-imports --no-logo"
+
 # import-linter: the package whose imports the contracts hold
 [tool.importlinter]
 root_packages = ["<package>"]

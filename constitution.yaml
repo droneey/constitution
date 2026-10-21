@@ -9,19 +9,17 @@ platforms: []
 languages:
   - typescript
   - python
+  - json
+  - toml
   - yaml
   - shell
   - markdown
 implementations:
   - bun
-  - bun-test
   - tsc
   - biome
   - dependency-cruiser
   - syncpack
-  - stryker
-  - zod
-  - yaml-js
   - git
   - lefthook
   - betterleaks
@@ -29,14 +27,6 @@ implementations:
   - knip
   - osv-scanner
   - uv
-  - ruff
-  - ty
-  - pytest
-  - mutmut
-  - deptry
-  - vulture
-  - complexipy
-  - python-check
   - shellcheck
   - shfmt
   - rumdl
@@ -50,15 +40,21 @@ packages:
     platforms:
       - browser
     languages:
+      - html
       - css
+      - dockerfile
     implementations:
+      - bun-test
+      - stryker
+      - zod
+      - yaml-js
       - react-dom
       - tailwind
       - tanstack-router
       - tanstack-start
       - testing-library
       - vite
-      - docker
+      - compose
       - hadolint
       - dclint
     overrides:
@@ -68,6 +64,40 @@ packages:
       - rule: utilities-only-from-tokens
         level: SHOULD
         reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"
+  # The archive itself: a link of its own to .droneey/constitution would point at its own folder, so
+  # the root's biome.json serves it.
+  packages/constitution:
+    implementations:
+      - bun-test
+      - stryker
+      - zod
+      - yaml-js
+  packages/mutation-check/languages/python:
+    implementations:
+      - poe
+      - ruff
+      - ty
+      - pytest
+      - mutmut
+      - deptry
+      - vulture
+      - complexipy
+      - python-check
+  packages/mutation-check/languages/typescript:
+    implementations:
+      - bun-test
+      - stryker
+  packages/python-check:
+    implementations:
+      - poe
+      - ruff
+      - ty
+      - pytest
+      - mutmut
+      - deptry
+      - vulture
+      - complexipy
+      - python-check
 packs: []
 check: bun run check
 overrides:

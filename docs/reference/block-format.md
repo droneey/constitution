@@ -17,7 +17,7 @@ blocks/<layer>/<id>/        the layer is its folder
     └── <chapter>.md
 ```
 
-The passport holds the front matter, which covers every axis of the block, the title, one line of what the block is, its setup and, for an implementation, its Requirements; it holds no rule and never names the files that hold the rest, except core's, which lists its chapters in the order they are read. Every rule lives in a chapter of its axis. Every axis has one form: `foundation/`, which every project follows, and `architecture/` and `workflow/`, which a project may leave out, each a folder of chapters and seams, there only when it holds one; a block with no rules is its passport alone. No file inside an axis is named after the block: its id names only the passport. A chapter is one file of one subject, named for it, and a rule's statement opens with the thing it governs. A seam, `<axis>/with/<other>.md`, is titled as the other block's passport, since its folder already names its own block. [Where a rule goes](../../packages/constitution/blocks/core/foundation/placement.md) decides a rule's layer, axis and chapter.
+The passport holds the front matter, which covers every axis of the block, the title, one line of what the block is, its setup and, for an implementation, its Requirements; it holds no rule and never names the files that hold the rest, except core's, which lists its chapters in the order they are read. Every rule lives in a chapter of its axis. Every axis has one form: `foundation/`, which every project follows, and `architecture/` and `workflow/`, which a project may leave out, each a folder of chapters and seams, there only when it holds one; a block with no rules is its passport alone. No file inside an axis is named after the block: its id names only the passport. A chapter is one file of one subject, named for it, and a rule's statement opens with the thing it governs. A seam, `<axis>/with/<other>.md`, is titled as the other block's passport, since its folder already names its own block. It holds a rule that loses its meaning without either block, and sits with the block whose behaviour the rule constrains; its partner is of the holder's layer or a more general one, never core, and never a block the holder requires or extends, or one that requires or extends it, directly or through another. [Where a rule goes](../../packages/constitution/blocks/core/foundation/placement.md) decides a rule's layer, axis and chapter.
 
 ## Naming a chapter
 
@@ -81,12 +81,12 @@ governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 |---|---|
 | `id` | the block's id, its folder's name |
 | `summary` | one sentence of at most 70 characters, ending with a full stop |
-| `requires` | the blocks it needs: of the layers above, or the host it runs on |
+| `requires` | the blocks it needs: of the layers above, or the host it runs on, and the language of each configuration file it governs, unless a block it requires brings it |
 | `extends` | an abstract implementation it is a kind of, or `null` |
 | `abstract` | `true` for a base other blocks extend; its id starts with `_` |
-| `languages` | for a tool, the language blocks whose files its presets cover |
+| `languages` | for a tool, the language blocks whose files its presets cover, `[]` for one that covers no language's files |
 | `dictionary` | the brands, words and file names only this block and the blocks that depend on it may write |
-| `governs` | the globs of the files it governs; a domain and a platform govern `**` |
+| `governs` | the globs of the files it governs; a domain and a platform govern `**`, a language only its files' extensions, never a manifest or a tool's configuration, which the tool's block governs |
 
 Then come the title, `# <Name>`, and one line of what the block is, as a quote: `> The project's only cache of server data.` Plain paragraphs after it give the block's setup — how its tool or library is configured: its preset parts, templates, configuration files and exclusions. An implementation closes its passport with its [Requirements](#requirements). That is the whole passport.
 
@@ -128,11 +128,13 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a passport that holds a rule, and a Requirements table anywhere but an implementation's passport;
 - a front matter that lacks a field, adds one, lists them out of order, breaks a field's form, or fills one its layer leaves empty;
 - a `requires` that points down, or sideways where the layer allows no peer, an `extends` of anything but an abstract implementation, and a cycle between implementations;
+- a block that governs a file of a language it does not require, directly or through the blocks it requires or extends;
 - a link or a slug that names another block anywhere but the front matter, a `with/` name or a heading's arrow;
 - an abstract block without an heir, or one that names its heirs;
 - a word of a block's `dictionary` outside that block and the blocks that depend on it, and a word of `vocabulary.yaml` outside its axis;
 - a rule without a statement, a Why or a known tag, a slug used twice, and a heading or a table that misses the format;
 - a rule that tightens a rule of its own block, or of an axis it may not reach, at a level looser than that rule's or equal to it;
+- a seam named after its own block, after no block or after core, after a block of a layer its block may not pair with, or after a block along a dependency — one its block requires or extends, or one that requires or extends its block, directly or through another — and a seam titled otherwise than the other block's passport;
 - a chapter or a seam that does not open with its title and its Governs line, holds no rule, keeps a rule outside a `##` section, names a section like its title, or puts a section before `General` or after `Requirements for implementation`;
 - a rule of a language's or a platform's chapter that tightens a rule of core outside the chapter titled like its parent's;
 - a list of core's chapters, in core's passport, that leaves one out, names a file that is no chapter of core, or names one twice;

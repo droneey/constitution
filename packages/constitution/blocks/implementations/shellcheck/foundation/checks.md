@@ -12,7 +12,7 @@
 |---|---|
 | `all` turns on checks no rule asks for, such as braces around every variable, and each check a new release adds, so an update fails the check with findings nobody chose. | [] |
 
-### embedded-command-reaches-shellcheck → script-passes-a-shell-analyser · MUST
+### embedded-command-reaches-shellcheck → rule-held-by-a-tool-where-one-can · MUST
 
 A shell command another file holds reaches ShellCheck through the linter of that file, with ShellCheck pinned beside it where that linter runs the one it finds, or through a spec that extracts it from the file; a command neither hands to ShellCheck is moved into a `.sh` file the other file runs.
 

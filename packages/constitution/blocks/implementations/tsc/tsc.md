@@ -1,7 +1,7 @@
 ---
 id: tsc
 summary: The TypeScript compiler checks the types.
-requires: [typescript]
+requires: [typescript, json]
 extends: null
 abstract: false
 languages: [typescript]

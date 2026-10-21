@@ -1,7 +1,7 @@
 ---
 id: betterleaks
 summary: Scans changes and history for committed secrets.
-requires: [git]
+requires: [git, toml]
 extends: null
 abstract: false
 languages: []

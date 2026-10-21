@@ -62,7 +62,7 @@ core:
 fastapi:
   dependencies-declared-in-annotated:
     - FAST
-  http-exception-banned:
+  program-raises-no-http-exception:
     - fastapi.HTTPException
     - starlette.exceptions.HTTPException
   path-parameters-read-by-the-handler:
@@ -113,19 +113,19 @@ python:
   source-folder-is-a-regular-package:
     - INP
 pytest:
-  flaky-mark-banned:
-    - pytest.mark.flaky
-  pytest-asyncio-banned:
+  async-specs-by-anyio:
     - pytest_asyncio
-  skips-and-expected-failures-banned:
+  failed-test-never-retried-by-a-plugin:
+    - pytest.mark.flaky
+  module-never-patched-in-a-spec:
+    - unittest.mock
+  test-never-skipped-or-empty:
     - pytest.importorskip
     - pytest.mark.skip
     - pytest.mark.skipif
     - pytest.mark.xfail
     - pytest.skip
     - pytest.xfail
-  unittest-mock-banned:
-    - unittest.mock
 self:
   noqa-names-its-codes:
     - PGH

@@ -1,7 +1,7 @@
 ---
 id: ruff
 summary: Formats and lints Python, with its rule families chosen by name.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]

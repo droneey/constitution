@@ -7,6 +7,15 @@ path="$(field file_path)" || exit 0
 [ -n "${path}" ] || path="$(field notebook_path)" || exit 0
 [ -n "${path}" ] || exit 0
 
-CONSTITUTION_PATH="${path}" CONSTITUTION_REMINDED="${state}/reminded" \
+# A subagent shares its parent's session_id but not its context, so it keeps a reminded list of its own.
+reminded="${state}/reminded"
+agent="$(field agent_id)" || agent=''
+case "${agent}" in
+  '') ;;
+  *[!A-Za-z0-9_-]*) exit 0 ;;
+  *) reminded="${state}/reminded.${agent}" ;;
+esac
+
+CONSTITUTION_PATH="${path}" CONSTITUTION_REMINDED="${reminded}" \
   awk -f "${lib}/json.awk" -f "${lib}/glob.awk" -f "${lib}/remind.awk" "${state}/active.tsv" 2>/dev/null
 exit 0

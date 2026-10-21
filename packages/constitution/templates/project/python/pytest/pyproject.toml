@@ -1,3 +1,17 @@
+# pytest: pinned in the dev group
+[dependency-groups]
+dev = [
+  "anyio==4.15.1",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "pytest-randomly==5.0.0",
+  "pytest-timeout==2.4.0",
+]
+
+# pytest: its tasks
+[tool.poe.tasks]
+"test" = "pytest --cov"
+
 # pytest: the specs, strict and offline, in a random order
 [tool.pytest]
 minversion = "9.1"
@@ -21,4 +35,4 @@ omit = ["**/main.py", "**/__main__.py", "**/root/wiring.py", "**/*_gen.py", "**/
 fail_under = 100
 show_missing = true
 skip_covered = true
-exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
+exclude_also = ["if TYPE_CHECKING:", "@overload", 'assert_never\(']

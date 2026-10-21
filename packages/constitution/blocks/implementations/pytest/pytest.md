@@ -1,12 +1,12 @@
 ---
 id: pytest
 summary: pytest runs Python's specs and holds the coverage gate.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [pytest, pytest-cov, pytest-randomly, pytest-timeout, anyio, conftest.py]
-governs: ["**/tests/**"]
+governs: ["**/tests/**", "pyproject.toml"]
 ---
 
 # pytest

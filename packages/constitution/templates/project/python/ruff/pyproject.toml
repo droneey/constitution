@@ -1,3 +1,16 @@
+# ruff: pinned in the dev group
+[dependency-groups]
+dev = [
+  "ruff==0.17.0",
+]
+
+# ruff: its tasks
+[tool.poe.tasks]
+"format:check" = "ruff format --check"
+"format:fix" = "ruff format"
+"lint:check" = "ruff check"
+"lint:fix" = "ruff check --fix"
+
 # ruff: the Constitution's parts, each extending the one before; ruff extends the last
 # from <parts>
 [tool.ruff]

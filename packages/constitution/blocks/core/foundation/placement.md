@@ -64,6 +64,24 @@ A chapter and a seam open with their title and a `Governs` line, hold at least o
 |---|---|
 | a reader sees the parts of a subject before its rules, and every file reads the same. | [] |
 
+## Seams
+
+### rule-placed-in-a-seam-only-when-it-needs-both-blocks · MUST
+
+A rule sits in a seam, `<axis>/with/<block>.md`, only when it loses its meaning without either of its two blocks: one that keeps its meaning without one of them sits in the other, and one that tightens a rule of a third block, beyond what the holder requires or extends, sits in a seam with that block. A seam never pairs a block with core, nor with a block it requires or extends, directly or through another.
+
+| Why | Tags |
+|---|---|
+| a rule that one block alone gives meaning to is missed by every project that has that block without the other, and a block already tightens what it requires or extends with its own rules. | [] |
+
+### seam-held-by-the-block-whose-behaviour-it-constrains · MUST
+
+A seam's rules govern how the block that holds it behaves while the other block is active — what a hook runs sits in the hook's block, what a runner loads before the specs in the runner's — and the other block is of the holder's layer or a more general one: a rule about a general block that holds only beside a more specific one is the specific block's, in a chapter of it when it requires the general block, else in its seam with it.
+
+| Why | Tags |
+|---|---|
+| a block shows every way it changes when another joins it, and two blocks of one layer need no third rule to share their seam. | [] |
+
 ## References
 
 ### rule-refers-only-within-its-reach · MUST

@@ -14,11 +14,11 @@ A rule a tool can hold, at a cost its gain repays, is held by one, configured to
 
 ### configuration-takes-every-part-of-its-blocks · MUST
 
-A tool's configuration names, by its path, every part of the shared configuration that the blocks active where it sits give the tool, on the axes the unit follows, and no part of a block that is not active; at the root of a workspace, a tool with a part for the workspace takes that part and its own alone. A part the tool cannot name where it reads its settings is copied under a line that names its path and the release it comes from.
+A tool's configuration names, by its path, every part of the shared configuration that the blocks active in the units it serves give the tool, on the axes those units follow, and no other part. A part the tool cannot name where it reads its settings is copied between two lines that name its path.
 
 | Why | Tags |
 |---|---|
-| the configuration then changes with the blocks: a part missing, or one kept after its block is gone, shows by its path, and a copy that lags its release by the release it names. | [] |
+| the configuration then changes with the blocks: a part missing, or one kept after its block is gone, shows by its path, and a copy that drifts from its part shows by its text. | [] |
 
 ### one-formatter-per-language · MUST
 

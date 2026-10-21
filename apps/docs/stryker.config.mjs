@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
+import { join } from '../../.droneey/constitution/presets/typescript/join.mjs';
 import architectureCore from '../../.droneey/constitution/presets/typescript/stryker/architecture/core.mjs';
 import architectureTanstackStart from '../../.droneey/constitution/presets/typescript/stryker/architecture/tanstack-start.mjs';
 import bunTest from '../../.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
@@ -11,36 +12,7 @@ import tanstackRouter from '../../.droneey/constitution/presets/typescript/stryk
 import tanstackStart from '../../.droneey/constitution/presets/typescript/stryker/foundation/tanstack-start.mjs';
 import uv from '../../.droneey/constitution/presets/typescript/stryker/foundation/uv.mjs';
 
-// Stryker has no extends: the parts are joined, every list after the lists before it and
-// every table merged into the one before it.
-const isRecord = (setting) =>
-  typeof setting === 'object' && setting !== null && !Array.isArray(setting);
-const join = (...parts) => {
-  const joined = {};
-
-  for (const next of parts) {
-    for (const [key, setting] of Object.entries(next)) {
-      const before = joined[key];
-
-      if (Array.isArray(before) && Array.isArray(setting)) {
-        joined[key] = [
-          ...before,
-          ...setting,
-        ];
-      } else if (isRecord(before) && isRecord(setting)) {
-        joined[key] = {
-          ...before,
-          ...setting,
-        };
-      } else {
-        joined[key] = setting;
-      }
-    }
-  }
-
-  return joined;
-};
-
+// Stryker has no extends, so the parts are joined.
 export default {
   ...join(
     self,

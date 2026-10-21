@@ -18,6 +18,7 @@ import {
   bindingsCheck,
   blockFormCheck,
   budgetCheck,
+  configurationLanguagesCheck,
   coreChaptersCheck,
   corePartCheck,
   cyclesCheck,
@@ -39,6 +40,7 @@ import {
 const CHECKS: readonly Check[] = [
   frontMatterCheck,
   requiresCheck,
+  configurationLanguagesCheck,
   seamsCheck,
   cyclesCheck,
   abstractBlocksCheck,

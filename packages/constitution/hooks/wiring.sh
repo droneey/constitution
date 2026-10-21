@@ -27,8 +27,9 @@ today="$(date +%Y-%m-%d)" || fail 'cannot read the date'
 files="$(list_blocks "${records}")" || fail "cannot list the blocks of ${archive}"
 wiring="$(list_wiring "${records}")"
 
-printf '%s\n%s\n%s' "${records}" "${files}" "${wiring}" |
-  CONSTITUTION_ROOT="${archive}" CONSTITUTION_PROJECT="${project}" CONSTITUTION_WIRING=print \
-    CONSTITUTION_TODAY="${today}" \
-    awk -f "${lib}/blocks.awk" -f "${lib}/resolve.awk" -f "${lib}/wiring.awk" |
+export CONSTITUTION_ROOT="${archive}" CONSTITUTION_PROJECT="${project}" CONSTITUTION_TODAY="${today}"
+resolved="$(printf '%s\n%s' "${records}" "${files}" | awk -f "${lib}/blocks.awk" -f "${lib}/resolve.awk")" ||
+  fail 'cannot read the blocks'
+printf '%s\n%s\n' "${resolved}" "${wiring}" |
+  CONSTITUTION_WIRING=print awk -f "${lib}/wiring.awk" |
   awk -F '\t' '$1 == "wiring" { print substr($0, 8) }' || fail 'cannot compute the wiring'

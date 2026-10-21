@@ -34,7 +34,7 @@
     "docker:check": "mise run dockerfile:check && mise run compose:check",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "shell:check": "shellcheck scripts/*.sh && shfmt -d scripts",
-    "audit:check": "docker build --quiet --target base --tag droneey-constitution-docs-base:local --file docker/images/app.Dockerfile ../.. && osv-scanner scan image droneey-constitution-docs-base:local"
+    "audit:check": "mise run audit:check"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

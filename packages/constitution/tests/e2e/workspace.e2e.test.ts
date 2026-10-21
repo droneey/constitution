@@ -42,6 +42,7 @@ const DEPENDENCY_CRUISER = configFromTemplate(
     'self',
     'core',
     'typescript',
+    'workspace',
     'architecture/workspace',
   ].map((part) => `./${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`),
 );

@@ -1,6 +1,6 @@
 # Observability
 
-> Governs the trace a message carries, the span of its handling, the lag of a consumer, and the alerts of a dead letter and of a scheduled run that fails or never runs.
+> Governs the trace a message carries, the span of its handling, and the lag of a consumer and the objective its alerts follow.
 
 ## Traces
 
@@ -22,10 +22,10 @@ Handling a message runs in a consumer span named after its operation and destina
 
 ## Measures
 
-### stalled-message-work-alerted · SHOULD
+### stalled-message-work-alerted → alert-fires-on-what-users-feel · SHOULD
 
-Every consumer is measured by its lag — the age of its oldest waiting message and their count; lag past a bound the project sets, a message arriving in dead letters, and a scheduled run that fails or never runs each alert the operators.
+Every consumer is measured by its lag — the age of its oldest waiting message and their count — and the time from a message's arrival to its effect has an objective, against which a message moved to dead letters and a scheduled run that fails or never runs each count as failed; the operators are alerted as that objective's error budget burns, never on lag past a fixed bound.
 
 | Why | Tags |
 |---|---|
-| a queue hides an outage behind a growing backlog, a dead letter is work the program gave up on, and a job that stops running fails in silence — each noticed only when its work is missed, unless someone is told. | [errors, performance] |
+| a queue hides an outage behind a growing backlog, a dead letter is work the program gave up on, and a job that stops running fails in silence — each felt by users only as an effect that comes late or never, which is what the objective measures. | [errors, performance] |

@@ -154,14 +154,19 @@ const TEMPLATE = readFileSync(
 );
 
 // The template written for the parts at these paths, as /constitution:ratify writes it: one
-// namespace import to a part, and the parts joined in their order.
-const configFromTemplate = (paths: readonly string[]): string => {
+// namespace import to a part, and the parts joined in their order by the release's join.
+const configFromTemplate = (
+  paths: readonly string[],
+  presets = './.droneey/constitution/presets',
+): string => {
   const names = paths.map((_, index) => `part${String(index)}`);
 
-  return TEMPLATE.replace(
-    "import * as part from '<parts>';",
-    paths.map((path, index) => `import * as ${names[index] ?? ''} from '${path}';`).join('\n'),
-  ).replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
+  return TEMPLATE.replace('<presets>', presets)
+    .replace(
+      "import * as part from '<parts>';",
+      paths.map((path, index) => `import * as ${names[index] ?? ''} from '${path}';`).join('\n'),
+    )
+    .replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
 };
 
 const configOf = (parts: readonly string[]): string =>

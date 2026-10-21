@@ -6,11 +6,6 @@ if ((BASH_VERSINFO[0] * 100 + BASH_VERSINFO[1] >= 404)); then
   shopt -s inherit_errexit
 fi
 
-readonly PACKAGES=(
-  packages/python-check
-  packages/mutation-check/languages/python
-)
-
 log() {
   printf '%s\n' "$*" >&2
 }
@@ -21,10 +16,11 @@ main() {
     exit 1
   fi
 
-  local package
-  for package in "${PACKAGES[@]}"; do
+  local packages package
+  packages="$(uv workspace list --paths)"
+  while IFS= read -r -u 3 package; do
     uv run --locked --directory "$package" --project "$PWD" poe "$@"
-  done
+  done 3<<<"$packages"
 }
 
 main "$@"

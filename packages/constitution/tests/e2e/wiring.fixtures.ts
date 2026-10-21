@@ -33,7 +33,7 @@ const RELEASE: Files = {
   'presets/python/import-linter/foundation/core.toml':
     '[[tool.importlinter.contracts]]\nname = "module-imports-form-no-cycle"\nancestors = ["<package>"]\n',
   'presets/common/osv-scanner/foundation/core.txt': 'MIT\n',
-  'presets/common/hadolint/foundation/docker.yaml': 'failure-threshold: style\n',
+  'presets/dockerfile/hadolint/foundation/dockerfile.yaml': 'failure-threshold: style\n',
   'templates/project/common/biome/biome.json': '{ "extends": ["<parts>"] }\n',
   'templates/project/typescript/biome/biome.json': '{ "extends": ["<parts>"] }\n',
   'templates/project/typescript/dependency-cruiser/.dependency-cruiser.mjs':
@@ -48,7 +48,7 @@ const RELEASE: Files = {
   'templates/project/typescript/typescript/.gitignore': 'node_modules/\n',
   'templates/project/common/osv-scanner/mise.toml':
     '[tasks."audit:check"]\nrun = "osv-scanner --licenses=<parts>"\n',
-  'templates/project/common/hadolint/mise.toml':
+  'templates/project/dockerfile/hadolint/mise.toml':
     '[tasks."dockerfile:check"]\nrun = "hadolint --config <parts> Dockerfile"\n',
 };
 
@@ -81,9 +81,6 @@ const vultureCopy = (confidence: number): string =>
 const importLinterCopy = (): string =>
   `# from ${part('python/import-linter/foundation/core.toml')}\n[[tool.importlinter.contracts]]\nname = "module-imports-form-no-cycle"\nancestors = ["shop"]\n# end ${part('python/import-linter/foundation/core.toml')}\n`;
 
-const cruiserConfig = (parts: readonly string[]): string =>
-  `export default { extends: [${parts.map((path) => `'${part(path)}'`).join(', ')}] };\n`;
-
 const write = (input: { files: Files; folder: string }): void => {
   for (const [path, text] of Object.entries(input.files)) {
     mkdirSync(dirname(join(input.folder, path)), {
@@ -105,30 +102,56 @@ const createWiredPluginRoot = (): string => {
 };
 
 interface WiredProject {
+  bare?: boolean;
   config?: string;
+  // files written untracked, over the wired base unless bare
   files?: Files;
-  // staged, so git tracks them, beside the untracked files
+  omit?: readonly string[];
   tracked?: Files;
 }
 
 const LANGUAGES = '[typescript, python]';
-const IMPLEMENTATIONS = '[biome, dependency-cruiser, ruff, vulture, import-linter, osv-scanner]';
+const IMPLEMENTATIONS = 'biome, dependency-cruiser, ruff, vulture, import-linter, osv-scanner';
 
-const wiredConfig = (config: Partial<Record<ConfigKey, string>> = {}): string =>
+const wiredConfig = (
+  config: Partial<Record<ConfigKey, string>> = {},
+  implementations: readonly string[] = [],
+): string =>
   configOf({
     [ConfigKey.Domains]: '[workspace]',
     [ConfigKey.Languages]: LANGUAGES,
-    [ConfigKey.Implementations]: IMPLEMENTATIONS,
+    [ConfigKey.Implementations]: `[${[
+      IMPLEMENTATIONS,
+      ...implementations,
+    ].join(', ')}]`,
     ...config,
   });
+
+// A file for every tool the base configuration makes active, each taking its parts.
+const cruiserConfig = (parts: readonly string[]): string =>
+  `export default { extends: [${parts.map((path) => `'${part(path)}'`).join(', ')}] };\n`;
+const ROOT_CRUISER = cruiserConfig([
+  'typescript/dependency-cruiser/foundation/self.mjs',
+  'typescript/dependency-cruiser/architecture/workspace.mjs',
+]);
+const OSV_TASK = `[tasks."audit:check"]\nrun = "osv-scanner --licenses=${part('common/osv-scanner/foundation/core.txt')}"\n`;
+const WIRED: Files = {
+  '.dependency-cruiser.mjs': ROOT_CRUISER,
+  'biome.json': biomeJson(BIOME_PARTS),
+  'mise.toml': OSV_TASK,
+  'pyproject.toml': `${ruffMarker()}\n${vultureCopy(60)}\n${importLinterCopy()}`,
+};
 
 const createWiredProject = (input: WiredProject): string => {
   const project = createProject({
     config: input.config ?? wiredConfig(),
-    files: {
-      ...input.files,
-      ...input.tracked,
-    },
+    files: Object.fromEntries(
+      Object.entries({
+        ...(input.bare === true ? {} : WIRED),
+        ...input.files,
+        ...input.tracked,
+      }).filter(([path]) => !(input.omit ?? []).includes(path)),
+    ),
   });
 
   if (input.tracked !== undefined) {
@@ -236,10 +259,12 @@ export {
   cruiserConfig,
   digestOf,
   importLinterCopy,
+  OSV_TASK,
   PACK,
   PACK_FILES,
   packConfig,
   part,
+  ROOT_CRUISER,
   ruffMarker,
   vultureCopy,
   wiredConfig,

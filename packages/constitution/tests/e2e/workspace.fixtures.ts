@@ -135,13 +135,17 @@ const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string
     '',
   ].join('\n');
 
-const bunfig = readFileSync(join(TEMPLATES, 'typescript', 'bun', 'bunfig.toml'), 'utf8');
+// bun's fragment and bun-test's, assembled as ratify does
+const bunfig = [
+  readFileSync(join(TEMPLATES, 'typescript', 'bun', 'bunfig.toml'), 'utf8'),
+  readFileSync(join(TEMPLATES, 'typescript', 'bun-test', 'bunfig.toml'), 'utf8'),
+].join('\n');
 const bunfigIntegration = readFileSync(
-  join(TEMPLATES, 'typescript', 'bun', 'bunfig.integration.toml'),
+  join(TEMPLATES, 'typescript', 'bun-test', 'bunfig.integration.toml'),
   'utf8',
 ).replace('coveragePathIgnorePatterns = [\n', 'coveragePathIgnorePatterns = [\n  "../**",\n');
 const sandbox = readFileSync(
-  join(TEMPLATES, 'typescript', 'bun', 'src', '__tests__', 'sandbox.fixtures.ts'),
+  join(TEMPLATES, 'typescript', 'bun-test', 'src', '__tests__', 'sandbox.fixtures.ts'),
   'utf8',
 );
 
@@ -699,6 +703,7 @@ const cruiserOf = (input: { depth: number; parts: readonly string[] }): string =
     input.parts.map(
       (part) => `${'../'.repeat(input.depth)}${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`,
     ),
+    `${'../'.repeat(input.depth)}.droneey/constitution/presets`,
   );
 
 const write = (input: { files: Files; folder: string }): void => {

@@ -4,8 +4,7 @@
 
 ## General
 
-<!-- rumdl-disable-next-line MD033 -->
-### <rule-slug> · MUST
+### <rule slug> · MUST
 
 <The rule, in one or two sentences.>
 

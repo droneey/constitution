@@ -5,6 +5,7 @@ domains: []
 platforms: []
 languages: []
 implementations: []
+# every package of the workspace by its path, "<path>: {}" when it adds no block
 packages: {}
 packs: []
 check: <check command>

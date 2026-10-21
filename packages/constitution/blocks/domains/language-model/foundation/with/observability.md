@@ -1,16 +1,6 @@
 # Observability
 
-> Governs what a model call leaves in logs, traces and metrics.
-
-## Content
-
-### prompt-text-kept-out-of-telemetry → secret-and-personal-data-kept-out-of-output · MUST
-
-The text of prompts and outputs reaches logs, traces and metrics only through a setting that is off by default, and is masked of personal data when the setting is on.
-
-| Why | Tags |
-|---|---|
-| prompts carry what people typed and the documents they hold, and telemetry keeps that text longer and shows it to more people. | [security, data] |
+> Governs the span of a model call.
 
 ## Spans
 

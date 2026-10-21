@@ -1,0 +1,12 @@
+# poe: pinned in the dev group
+[dependency-groups]
+dev = [
+  "poethepoet==0.49.0",
+]
+
+# poe: each task runs in the environment uv entered, and check runs every other one
+[tool.poe]
+executor = "simple"
+
+[tool.poe.tasks.check]
+sequence = ["<every other task the fragments give, in order>"]

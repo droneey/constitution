@@ -13,11 +13,3 @@ The part `presets/common/lefthook/workflow/betterleaks.yaml` runs `betterleaks g
 | Why | Tags |
 |---|---|
 | a secret stopped before the commit never reaches history, where it is compromised for good. | [] |
-
-### commit-scan-redacted → secret-and-personal-data-kept-out-of-output · MUST
-
-The commit hook's scan passes `--redact`.
-
-| Why | Tags |
-|---|---|
-| a finding the hook prints stays in the terminal and in any log that captures it. | [] |

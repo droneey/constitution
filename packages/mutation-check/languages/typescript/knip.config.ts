@@ -1,3 +1,4 @@
+import { join } from '../../../../.droneey/constitution/presets/typescript/join.mjs';
 import architectureCore from '../../../../.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
 import betterleaks from '../../../../.droneey/constitution/presets/typescript/knip/foundation/betterleaks.mjs';
 import core from '../../../../.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
@@ -11,38 +12,7 @@ import uv from '../../../../.droneey/constitution/presets/typescript/knip/founda
 import yamllint from '../../../../.droneey/constitution/presets/typescript/knip/foundation/yamllint.mjs';
 import workflowLefthook from '../../../../.droneey/constitution/presets/typescript/knip/workflow/lefthook.mjs';
 
-// knip has no extends: the parts are joined, every list after the lists before it and
-// every table merged into the one before it.
-type Settings = Record<string, unknown>;
-
-const isRecord = (setting: unknown): setting is Settings =>
-  typeof setting === 'object' && setting !== null && !Array.isArray(setting);
-const join = (...parts: readonly Settings[]): Settings => {
-  const joined: Settings = {};
-
-  for (const next of parts) {
-    for (const [key, setting] of Object.entries(next)) {
-      const before = joined[key];
-
-      if (Array.isArray(before) && Array.isArray(setting)) {
-        joined[key] = [
-          ...before,
-          ...setting,
-        ];
-      } else if (isRecord(before) && isRecord(setting)) {
-        joined[key] = {
-          ...before,
-          ...setting,
-        };
-      } else {
-        joined[key] = setting;
-      }
-    }
-  }
-
-  return joined;
-};
-
+// knip has no extends, so the parts are joined.
 export default join(
   core,
   betterleaks,

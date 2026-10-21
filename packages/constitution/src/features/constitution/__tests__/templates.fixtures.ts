@@ -60,13 +60,8 @@ const PARAGLIDE: ReadonlyArray<
     '<yes, it meets the rule as written; partly, it meets its purpose or part of its letter; no, it cannot meet it>',
     'yes',
   ],
-  // the lint's exception for the placeholder below, which the filled slug no longer needs
   [
-    '<!-- rumdl-disable-next-line MD033 -->\n',
-    '',
-  ],
-  [
-    '<rule-slug>',
+    '<rule slug>',
     'paraglide-messages-by-function',
   ],
   [

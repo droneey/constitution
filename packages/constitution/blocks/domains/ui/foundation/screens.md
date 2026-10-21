@@ -1,6 +1,6 @@
 # Screens
 
-> Governs a screen: its states, its address and view state, loading and response.
+> Governs a screen: its states, its address and view state, loading, images and response.
 
 ## States
 
@@ -11,6 +11,14 @@ A data view shows each state its data can have: loading, failure, content, and t
 | Why | Tags |
 |---|---|
 | an empty view cannot otherwise be told from a slow or a broken one, and the user does not know what to do. | [ux, a11y] |
+
+### data-result-is-union-by-status → illegal-state-unrepresentable · MUST
+
+What a screen or a widget calls to read or write data returns a union keyed by `status`, with only the states its operation has — or suspends to a boundary above it that shows the waiting and the failed states; the data exists only in the success state, or beside the error when a reload of data already shown fails.
+
+| Why | Tags |
+|---|---|
+| a bag of flags allows combinations no state has, and data kept beside a failed reload keeps the screen showing it. | [ux] |
 
 ### failure-contained-to-its-screen → optional-part-isolated-from-its-faults · MUST
 
@@ -72,6 +80,14 @@ Passing state — an open menu, a hover — lives in the component that shows it
 
 ## Loading
 
+### unloaded-data-has-no-stand-in → absence-shown-by-the-type · MUST
+
+No default stands in for data not yet loaded; the waiting state is shown as waiting.
+
+| Why | Tags |
+|---|---|
+| an invented default hides loading and failure behind something that looks like data. | [] |
+
 ### loading-never-replaces-shown-content · SHOULD
 
 Content a screen already shows stays in place while it reloads or the screen moves to its next state; a reload never swaps it for a loading indicator.
@@ -103,6 +119,16 @@ A screen whose work a user waits on past a bound the project sets names what it 
 | Why | Tags |
 |---|---|
 | a wait with no name and no progress looks like a hang, and the user leaves or starts the work again. | [ux] |
+
+## Images
+
+### image-sharp-at-the-pixel-density · SHOULD
+
+Every image a screen shows is sharp at the screen's pixel density, and never fetched larger than that density needs.
+
+| Why | Tags |
+|---|---|
+| one image size is blurry on a dense screen and wasteful on a plain one. | [performance, ux] |
 
 ## Response
 

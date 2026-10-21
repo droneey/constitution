@@ -1,16 +1,8 @@
 # Observability
 
-> Governs what a server's signals say of its copy, and what it sends before it exits.
+> Governs what a server's signals say of its copy.
 
 ## General
-
-### server-signals-flushed-before-exit → program-stops-cleanly · MUST
-
-A server told to stop flushes the log records, spans and metrics it holds in buffers before it exits, within its stop bound.
-
-| Why | Tags |
-|---|---|
-| the signals of the last seconds, often the ones that explain the stop, are otherwise lost with the process. | [errors] |
 
 ### server-signal-names-its-copy → signal-carries-the-service-identity · SHOULD
 

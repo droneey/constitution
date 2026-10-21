@@ -1,10 +1,10 @@
 ---
 id: hadolint
 summary: Lints Dockerfiles, their shell steps included.
-requires: [docker]
+requires: [dockerfile]
 extends: null
 abstract: false
-languages: []
+languages: [dockerfile]
 dictionary: [hadolint]
 governs: []
 ---

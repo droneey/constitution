@@ -346,6 +346,22 @@ function print_active(   check, s, j, k) {
   }
 }
 
+# What wiring.awk reads, in a stage of its own: each block with its layer in the
+# hook's order, each unit with its path and axes, and the units an override lowers.
+function print_units(   j, s, x, axes, key, p) {
+  for (j = 1; j <= nb; j++) print "block" T B[j] T LAYER[B[j]]
+  for (s = 0; s <= napps; s++) {
+    axes = ""
+    for (x = 1; x <= NAXIS; x++) if (ON[s, AXIS[x]]) axes = axes " " AXIS[x]
+    print "unit" T s T (s ? APP[s] : "") T trim(axes)
+    for (j = 1; j <= nb; j++) if (IN[s, B[j]]) print "in" T s T B[j]
+  }
+  for (key in LOWERED) {
+    split(key, p, SUBSEP)
+    print "lowered" T p[1] T p[2]
+  }
+}
+
 function files_of(s, id,   base, out, n, a, k) {
   base = ((id in PACK) ? PACK[id] "/" : "") "blocks/" FOLDER[LAYER[id]] "/" id "/"
   out = base id ".md"
@@ -423,4 +439,5 @@ END {
   print_overrides()
   print_musts()
   print_active()
+  print_units()
 }

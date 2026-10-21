@@ -1,6 +1,6 @@
 # Code
 
-> Governs what a script does, its expansions, its lists and its reads.
+> Governs what a script does, its expansions, its lists and its reads, and the commands other files hold.
 
 ## General
 
@@ -11,6 +11,14 @@ A script runs commands and passes their results along; logic of its own — pars
 | Why | Tags |
 |---|---|
 | the shell has no types and no data structures beyond arrays, so logic written in it grows bugs that nothing catches. | [] |
+
+### command-another-file-holds-kept-short · SHOULD
+
+A shell command another file holds — a manifest's script, a CI step, a hook's command — stays within the number of commands the project sets, and anything longer is a `.sh` file the command runs.
+
+| Why | Tags |
+|---|---|
+| a command embedded in another file runs under options its runner chose and reaches a shell linter only through that file, or not at all, so what grows there grows hard to read and to check. | [] |
 
 ### expansion-double-quoted · MUST
 

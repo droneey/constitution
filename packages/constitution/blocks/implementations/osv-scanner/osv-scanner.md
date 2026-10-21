@@ -1,7 +1,7 @@
 ---
 id: osv-scanner
 summary: Checks the lockfiles for known vulnerabilities and licences.
-requires: []
+requires: [toml]
 extends: null
 abstract: false
 languages: []

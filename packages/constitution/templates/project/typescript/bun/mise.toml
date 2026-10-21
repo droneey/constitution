@@ -1,0 +1,3 @@
+# bun: pinned by mise
+[tools]
+bun = "1.4.3"

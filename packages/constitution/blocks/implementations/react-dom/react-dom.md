@@ -1,7 +1,7 @@
 ---
 id: react-dom
 summary: React in the browser — the DOM, the document, labels and portals.
-requires: [browser]
+requires: [browser, html]
 extends: _react
 abstract: false
 languages: []

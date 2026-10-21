@@ -54,7 +54,7 @@ An element's role and ARIA attributes are valid and fit it: no redundant role, n
 |---|---|
 | a wrong role or attribute is worse than none. | [a11y] |
 
-### ids-from-use-id · MUST
+### ids-from-use-id → id-unique-in-its-document · MUST
 
 An id comes from `useId`, never typed by hand or random — except the id of an element, never a labelled control, that the root renders once and other code must know, a skip link's target or an SVG's shared `<defs>`, which is a constant with a suppression that says so.
 

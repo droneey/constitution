@@ -4,27 +4,3 @@ name = "<name>"
 version = "0.0.0"
 requires-python = ">=3.14"
 dependencies = []
-
-# uv: the build backend
-[build-system]
-requires = ["uv_build>=0.13,<0.14"]
-build-backend = "uv_build"
-
-# uv: the tools, pinned exactly
-[dependency-groups]
-dev = [
-  "anyio==4.15.1",
-  "complexipy==8.0.1",
-  "deptry==0.25.1",
-  "hypothesis==6.169.0",
-  "import-linter==2.15",
-  "mutmut==3.8.0",
-  "poethepoet==0.49.0",
-  "pytest==9.1.1",
-  "pytest-cov==7.1.0",
-  "pytest-randomly==5.0.0",
-  "pytest-timeout==2.4.0",
-  "ruff==0.17.0",
-  "ty==0.0.86",
-  "vulture==2.16",
-]

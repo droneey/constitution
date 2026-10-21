@@ -13,3 +13,7 @@ storybook:
 typescript:
   production-code-imports-no-tool:
     - no-development-dependency-in-production
+workspace:
+  unit-reached-only-through-its-entries:
+    - root-imports-units-by-name
+    - units-imported-by-name

@@ -1,6 +1,6 @@
 # User interface
 
-> Governs a screen in a browser: its document, viewport, pointer, images and speed, and the HTML that carries its accessibility.
+> Governs a screen in a browser: its URL, images and speed, its pointer targets, the focus and announcements its navigation moves, and what it reads while it renders.
 
 ## Screens
 
@@ -12,21 +12,13 @@ View state a link or a reload must reproduce — a filter, a sort, a page, a sel
 |---|---|
 | a view in the URL can be shared, bookmarked and restored with the back button, while a view kept elsewhere is lost on reload. | [ux] |
 
-### image-declares-its-size → late-content-reserves-its-space · SHOULD
+### image-sharp-at-the-screens-density → image-sharp-at-the-pixel-density · SHOULD
 
-An image declares its width and height in its markup.
-
-| Why | Tags |
-|---|---|
-| the page reserves the image's box before it loads, so nothing already shown moves when it arrives. | [performance, ux] |
-
-### image-sharp-at-the-screens-density · SHOULD
-
-An image is drawn for the screen's pixel density: a content image offers its widths by `srcset` and `sizes`, a canvas scales by `devicePixelRatio`, and an icon is SVG.
+A picture the program draws scales its canvas by `devicePixelRatio`, and an icon is SVG.
 
 | Why | Tags |
 |---|---|
-| one image size is blurry on a dense screen and wasteful on a plain one. | [performance, ux] |
+| a canvas sized in CSS pixels holds one device pixel per CSS pixel and is stretched on a dense screen, while an SVG icon is drawn at whatever density it meets. | [performance, ux] |
 
 ### content-image-in-a-modern-format · SHOULD
 
@@ -62,40 +54,6 @@ Code that can render outside the tab — on a server, or in a prerender at build
 |---|---|
 | outside the tab the global does not exist, so the render fails there or produces markup that differs from the tab's. | [errors] |
 
-### dialog-popover-and-details-native → complex-pattern-built-on-accessible-primitives · MUST
-
-Unless another active block brings accessible primitives for these patterns, the browser's own elements carry them: `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
-
-| Why | Tags |
-|---|---|
-| each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong. | [a11y] |
-
-### native-popover-anchored-to-its-trigger · SHOULD
-
-Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning — `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover — where every target browser has it, and otherwise behind `@supports` with a fallback.
-
-| Why | Tags |
-|---|---|
-| the browser keeps the popover beside its trigger through scrolling and resizing, with no positioning library to load. | [ux, performance] |
-
-## Forms
-
-### field-declares-its-autocomplete → field-declares-its-kind · MUST
-
-A field for its user's own data declares its purpose by the `autocomplete` token HTML defines for it.
-
-| Why | Tags |
-|---|---|
-| the browser then fills it in, and assistive technology can tell its user what it is for. | [ux, a11y] |
-
-### busy-submit-marked-aria-disabled → submit-busy-keeps-its-focus · SHOULD
-
-A busy submit button is marked `aria-disabled`, never `disabled`, so it keeps its focus.
-
-| Why | Tags |
-|---|---|
-| a `disabled` button drops its focus to the page and leaves the order of the keyboard, while `aria-disabled` keeps it focusable and says why it does nothing. | [a11y] |
-
 ## Accessibility
 
 ### pointer-target-at-least-24-css-px → target-meets-the-minimum-size · MUST
@@ -122,62 +80,6 @@ Where the primary pointer is fine — `@media (pointer: fine)` — a target is a
 |---|---|
 | the larger a target, the faster and surer a cursor lands on it, and 40 pixels gives a mouse or a trackpad that margin above WCAG's floor. | [a11y, ux] |
 
-### tabindex-only-zero-or-minus-one → focus-order-follows-the-visual-order · MUST
-
-An element's `tabindex` is `0` or `-1`, never a positive number.
-
-| Why | Tags |
-|---|---|
-| a positive `tabindex` moves its element ahead of every other in the order of the keyboard, wherever it sits on the screen. | [a11y] |
-
-### focusable-element-never-aria-hidden → control-operable-by-every-input · MUST
-
-No element that can take focus, or holds one that can, is `aria-hidden`.
-
-| Why | Tags |
-|---|---|
-| a screen reader user then reaches a control their reader cannot name or describe, and hears nothing where focus landed. | [a11y] |
-
-### native-html-elements-first → native-semantics-first · MUST
-
-`<button>` carries an action, `<a>` with a real `href` a move, lists are lists and tables have headers and a caption; ARIA is used only where HTML has no element.
-
-| Why | Tags |
-|---|---|
-| a native element brings its role, its keyboard and its announcement, while ARIA on a generic element brings only a promise. | [a11y] |
-
-### page-marks-its-landmarks → wcag-aa-conformance · MUST
-
-Every page marks its landmarks — its header, navigation, main content and footer, where it has them — by their elements, with one `<main>`.
-
-| Why | Tags |
-|---|---|
-| people using a screen reader or a keyboard move through a page by its landmarks, and a page without them must be read from the top. | [a11y] |
-
-### skip-link-comes-first → wcag-aa-conformance · MUST
-
-A page that repeats blocks before its content — a header, a navigation — offers as its first focusable element a link that skips to the main content.
-
-| Why | Tags |
-|---|---|
-| it spares a keyboard user tabbing through the same navigation on every page. | [a11y] |
-
-### live-region-polite-unless-urgent → status-changes-announced · MUST
-
-A status goes to a polite live region, and only an urgent error to an assertive one.
-
-| Why | Tags |
-|---|---|
-| an assertive announcement interrupts what its listener is hearing, so it is kept for what cannot wait. | [a11y] |
-
-### invalid-field-tied-to-its-message → status-changes-announced · MUST
-
-An invalid field carries `aria-invalid` and an `aria-describedby` that points at its message.
-
-| Why | Tags |
-|---|---|
-| assistive technology then says that the field is wrong and why, when its user reaches it. | [a11y] |
-
 ### live-region-mounted-before-message → status-changes-announced · MUST
 
 A live region is in the document, empty, before a message is put into it.
@@ -201,27 +103,3 @@ Each view declares a title of its own to the head's one writer, which sets it wi
 | Why | Tags |
 |---|---|
 | the title is what a tab, a bookmark, the history and a screen reader name the page by. | [a11y, ux] |
-
-### entry-document-declares-the-viewport → wcag-aa-conformance · MUST
-
-Every entry document declares the responsive viewport: `<meta name="viewport" content="width=device-width, initial-scale=1">`.
-
-| Why | Tags |
-|---|---|
-| without it a phone lays the page out at a desktop's width and shrinks it, so its text is small and its layout never reflows. | [a11y] |
-
-### viewport-never-blocks-zoom → wcag-aa-conformance · MUST
-
-The viewport declaration never blocks zooming: no `user-scalable=no`, and no `maximum-scale` below 5.
-
-| Why | Tags |
-|---|---|
-| a page that cannot be zoomed fails the people who need its text larger. | [a11y] |
-
-### language-declared-by-lang → screen-declares-its-language · MUST
-
-A document declares its language in the `lang` of its root element, and a passage in another language carries its own `lang`.
-
-| Why | Tags |
-|---|---|
-| `lang` is what assistive technology reads to choose how a text is pronounced, and what the browser reads to hyphenate and translate it. | [a11y] |

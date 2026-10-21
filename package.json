@@ -27,7 +27,7 @@
     "mutation:check": "bun run --filter '*' --sequential --bun mutation:check && scripts/poe-each.sh mutation:check",
     "mutation:all": "bun run --filter '*' --sequential --bun mutation:all && scripts/poe-each.sh mutation:all",
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
-    "architecture:check": "depcruise packages/constitution/src packages/constitution/tests packages/mutation-check/languages/typescript/src --config .dependency-cruiser.mjs && bun run --filter '*' architecture:check",
+    "architecture:check": "depcruise apps/docs/src packages/constitution/src packages/constitution/tests packages/mutation-check/languages/typescript/src --config .dependency-cruiser.mjs && bun run --filter '*' architecture:check",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints && bun run --filter '*' unused:check && scripts/poe-each.sh unused:check",
     "audit:check": "mise run audit:check && bun run --filter '*' audit:check",
     "format:check": "scripts/poe-each.sh format:check",

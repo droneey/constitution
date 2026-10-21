@@ -37,6 +37,7 @@ const BLOCKS = [
   'hypothesis',
   'import-linter',
   'mutmut',
+  'poe',
   'pydantic',
   'pytest',
   'python-check',
@@ -102,8 +103,63 @@ const filled = (input: { parts: readonly string[]; text: string }): string => {
     .replaceAll('<package>', 'shop');
 };
 
-const assembled = (path: string): string =>
-  BLOCKS.flatMap((block) => {
+const MERGED_TABLES = [
+  '[dependency-groups]',
+  '[tool.mutmut]',
+  '[tool.poe.tasks]',
+];
+
+const TABLE = z.record(z.string(), z.unknown());
+
+// One table from each fragment that gives it: the keys of every fragment, a
+// list several give holding the entries of each without repeats.
+const mergedTable = (input: { sections: readonly string[]; table: string }): string => {
+  const settings = input.sections
+    .filter((section) => section.startsWith(`${input.table}\n`))
+    .map((section) => TABLE.parse(Bun.TOML.parse(section.slice(input.table.length + 1))));
+  const keys = [
+    ...new Set(settings.flatMap((setting) => Object.keys(setting))),
+  ];
+  const lines = keys.map((key) => {
+    const given = settings.flatMap((setting) =>
+      Object.hasOwn(setting, key)
+        ? [
+            setting[key],
+          ]
+        : [],
+    );
+    const joined = given.every((entry) => Array.isArray(entry))
+      ? [
+          ...new Set(given.flat()),
+        ]
+      : given.at(-1);
+
+    return `${JSON.stringify(key)} = ${JSON.stringify(joined)}`;
+  });
+
+  return `${input.table}\n${lines.join('\n')}\n`;
+};
+
+// The tables several fragments give, joined into one each, as ratify merges them.
+const mergedTables = (text: string): string => {
+  const sections = text.split(/(?=^\[)/mu);
+  const kept = sections.filter(
+    (section) => !MERGED_TABLES.some((table) => section.startsWith(`${table}\n`)),
+  );
+
+  return [
+    ...kept,
+    ...MERGED_TABLES.map((table) =>
+      mergedTable({
+        sections,
+        table,
+      }),
+    ),
+  ].join('\n');
+};
+
+const assembled = (path: string): string => {
+  const text = BLOCKS.flatMap((block) => {
     const fragment = join(TEMPLATES, block, path);
 
     return existsSync(fragment)
@@ -115,6 +171,9 @@ const assembled = (path: string): string =>
         ]
       : [];
   }).join('\n');
+
+  return path.endsWith('.toml') ? mergedTables(text) : text;
+};
 
 const PYPROJECT = assembled('pyproject.toml');
 

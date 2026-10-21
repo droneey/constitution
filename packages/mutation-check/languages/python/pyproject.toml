@@ -36,7 +36,8 @@ skip_covered = true
 source_paths = ["src"]
 do_not_mutate = ["*/main.py"]
 pytest_add_cli_args = ["-p", "no:randomly"]
-type_check_command = ["ty", "check", "--output-format", "gitlab"]
+# mutmut runs the type check from mutants/, so the part's path climbs out of it
+type_check_command = ["ty", "check", "--output-format", "gitlab", "--config-file", "../../../../../.droneey/constitution/presets/python/ty/foundation/self.toml"]
 
 # vulture: the Constitution's parts, copied, each between its two lines, since vulture reads no other file
 # from .droneey/constitution/presets/python/vulture/foundation/core.toml

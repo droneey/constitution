@@ -1,0 +1,7 @@
+# betterleaks: pinned by mise
+[tools]
+betterleaks = "1.9.0"
+
+# betterleaks: the history, the unstaged and the staged changes, every finding redacted
+[tasks."secrets:check"]
+run = "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner"

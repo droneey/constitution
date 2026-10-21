@@ -1,10 +1,10 @@
 ---
 id: dclint
 summary: Lints Docker Compose files.
-requires: [docker]
+requires: [compose]
 extends: null
 abstract: false
-languages: []
+languages: [yaml]
 dictionary: [dclint, DCLint]
 governs: []
 ---

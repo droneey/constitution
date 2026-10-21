@@ -14,7 +14,7 @@ A git range, `origin/main...HEAD` unless you are given another. Read the rules i
 ## What to read first
 
 - `blocks/core/foundation/placement.md`, whose three questions are your test, and `blocks/core/core.md`, above all "Precedence".
-- `DECISIONS.md` ADR-0088, ADR-0089 and ADR-0093: what architecture and workflow mean here, and the tie-breakers.
+- `DECISIONS.md` ADR-0088, ADR-0089 and ADR-0093: what architecture and workflow mean here, and the tie-breakers; ADR-0214: which block holds a seam, and what a seam may hold.
 - For each rule, its whole file and the passport of its block: the block's `requires`, `extends` and summary tell you what the block is.
 
 ## The two questions, asked for each rule
@@ -28,6 +28,13 @@ A git range, `origin/main...HEAD` unless you are given another. Read the rules i
 Also check the arrow: a rule never carries out a rule of its own block; `foundation/` refers only to `foundation/`; `architecture/` and `workflow/` refer to `foundation/`, never to each other. A child states no looser level than its parent.
 
 And check its file: a rule sits in a chapter of its axis, `<axis>/<name>.md`, never in its block's passport. A chapter is one subject, named for it in its block's own terms, never after its block; only a language and a platform mirror core, so a rule of theirs that tightens a rule of core sits in the chapter titled like its parent's — seams are free of that. Within its file the rule sits under the `##` section that names its part of the subject: `General` for the whole subject, first; `Requirements for implementation`, last. Report a rule whose subject is another chapter's, or whose section names another part, with the file and the section it belongs in.
+
+And for a rule in a seam, `<axis>/with/<other>.md`, ask two more questions, as placement's `## Seams` asks them:
+
+1. **Both blocks.** Does the rule lose its meaning without either block? A rule that keeps its meaning without one of them belongs to the other, and one that tightens a rule of a third block, beyond what the holder requires or extends, belongs in a seam with that block.
+2. **Its holder.** Does the seam sit with the block whose behaviour the rule constrains — what a hook runs in the hook's block, what a runner loads before the specs in the runner's — and is its partner of the holder's layer or a more general one? A rule about a general block that holds only beside a more specific one is the specific block's: in a chapter of it when it requires the general block, else in its seam with it.
+
+Report a seam rule that fails either question with the block and the file it belongs in.
 
 Judge the meaning, not the words. A rule of `foundation/` about a network port, a Docker `ENTRYPOINT` or an attack surface is fine; one that says "code talking to the outside world lives apart from the logic" is architecture though it names no folder.
 

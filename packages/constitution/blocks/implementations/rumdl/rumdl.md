@@ -1,7 +1,7 @@
 ---
 id: rumdl
 summary: rumdl lints and formats Markdown.
-requires: [markdown]
+requires: [markdown, toml]
 extends: null
 abstract: false
 languages: [markdown]

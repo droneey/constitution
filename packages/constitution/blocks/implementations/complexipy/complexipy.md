@@ -1,12 +1,12 @@
 ---
 id: complexipy
 summary: complexipy holds the cognitive complexity of Python's functions.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [complexipy, .complexipy_cache]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # complexipy

@@ -17,7 +17,8 @@
     "src/**/*.ts",
     "tests/**/*.ts",
     "presets/typescript/stryker/foundation/bun-test.mjs",
-    "presets/typescript/syncpack/foundation/self.mjs"
+    "presets/json/syncpack/foundation/self.mjs",
+    "presets/typescript/join.mjs"
   ],
   "exclude": [
     "**/coverage"

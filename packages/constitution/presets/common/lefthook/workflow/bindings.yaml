@@ -1,5 +1,5 @@
 betterleaks:
-  commit-scan-redacted:
+  scan-redacted:
     - --redact
   staged-changes-scanned-before-commit:
     - secrets

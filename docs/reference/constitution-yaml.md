@@ -9,12 +9,17 @@ axes:
 domains:
   - ui
   - remote-data
+  - remote-service
+  - untrusted-client
   - version-control
 platforms:
   - browser
 languages:
   - typescript
   - css
+  - html
+  - json
+  - toml
 implementations:
   - react-dom
   - biome
@@ -38,7 +43,7 @@ Every key is required; a missing or an unknown key is a warning in the digest. `
 | `platforms` | the ids of its platform blocks | `[]` |
 | `languages` | the ids of its language blocks | `[]` |
 | `implementations` | the ids of its library, tool and service blocks | `[]` |
-| `packages` | the units of a workspace, each with blocks of its own | `{}` |
+| `packages` | every package of a workspace, each with the blocks it adds | `{}` |
 | `packs` | the folders of blocks it follows beside the Constitution's, relative to the root | `[]` |
 | `check` | the command that runs every check | `null` |
 | `overrides` | the rules it lowers | `[]` |
@@ -79,12 +84,16 @@ packages:
       - untrusted-client
     platforms:
       - browser
+    languages:
+      - html
     implementations:
       - react-dom
     overrides: []
 ```
 
 A unit takes `axes`, `domains`, `platforms`, `languages`, `implementations` and `overrides`. Its `axes` replace the repository's; without them it follows the repository's.
+
+Every package of the workspace is listed, and one that adds nothing is written `<path>: {}`: the hook knows a package's folder only by its path here, so a folder that keeps a tool's configuration of its own and that no path names gets a `wiring` warning in the digest.
 
 ## packs
 

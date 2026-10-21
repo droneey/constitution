@@ -15,9 +15,6 @@
 # core: working notes
 /local/
 
-# the archive's built tools, assembled by bun run build
-/packages/constitution/tools/
-
 # typescript: dependencies
 **/node_modules/
 

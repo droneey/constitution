@@ -13,7 +13,7 @@ governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.contr
 
 > Builds an HTTP server program from modules whose providers the injector wires by their constructors' types.
 
-NestJS's parts of the Constitution's release archive and the template `templates/project/typescript/nestjs/.swcrc` keep the decorator metadata the injector reads.
+NestJS's parts of the Constitution's release archive and the templates `templates/project/typescript/nestjs/.swcrc` and `templates/project/typescript/nestjs/tsconfig.json` keep the decorator metadata the injector reads.
 
 **Vocabulary:** suffixes `.module`, a module; `.controller`, a controller; `.provider`, a token bound to its implementation by `useClass` or `useFactory`; `.filter`, `.pipe`, `.guard` and `.interceptor`, the framework's providers of a request.
 

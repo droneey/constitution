@@ -4,13 +4,13 @@
 
 ## General
 
-### embedded-command-kept-short · SHOULD
+### embedded-command-kept-short → command-another-file-holds-kept-short · SHOULD
 
-A command a YAML file holds — a step of a CI workflow, a hook's command — is kept within the number of commands the project sets; anything longer is a `.sh` file the step runs.
+Each command a YAML file holds — a CI workflow's step, a hook's command — keeps within the project's limit of commands, and a longer one becomes a `.sh` file the step runs.
 
 | Why | Tags |
 |---|---|
-| a command embedded in another file is run by a shell with options its runner chose and reaches an analyser only through the file that holds it, so what grows there grows hard to read and to check. | [] |
+| a command in a YAML file reaches a shell linter only through a tool that reads the file's format, so a long one is checked less than the same lines in a `.sh` file. | [] |
 
 ### embedded-command-expansion-double-quoted → expansion-double-quoted · MUST
 

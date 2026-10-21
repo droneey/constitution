@@ -1,12 +1,12 @@
 ---
 id: vulture
 summary: vulture finds the Python code nothing uses.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [vulture]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # vulture

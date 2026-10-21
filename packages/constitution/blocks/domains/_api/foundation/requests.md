@@ -12,6 +12,14 @@ A handle that relates one request to the next — one an operation minted, a tas
 |---|---|
 | a handle that can be guessed, or that stands in for a credential, lets anyone act as the caller who got it. | [security] |
 
+### unknown-or-expired-handle-answered-as-such · MUST
+
+An expired or unknown handle is answered as an expected failure that says so.
+
+| Why | Tags |
+|---|---|
+| a caller recovers from an expired handle only if the answer says it expired. | [errors] |
+
 ## Cancellation
 
 ### abandoned-request-stops-its-work → outside-call-can-be-cancelled · SHOULD

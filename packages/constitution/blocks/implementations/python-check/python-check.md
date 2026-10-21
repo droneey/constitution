@@ -1,12 +1,12 @@
 ---
 id: python-check
 summary: The Constitution's own check of what no Python tool holds.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [python-check]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # python-check

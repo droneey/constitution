@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: []
 dictionary: [Python, .py, .pyi, __init__.py, __main__.py, main.py, py.typed, pyproject.toml, PEP 695]
-governs: ["**/*.py", "**/*.pyi", pyproject.toml]
+governs: ["**/*.py", "**/*.pyi"]
 ---
 
 # Python

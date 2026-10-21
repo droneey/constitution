@@ -12,6 +12,14 @@ Text goes through Lingui's macros — `t`, `<Trans>`, `msg`, `<Plural>` — as I
 |---|---|
 | the macros extract every message into the catalog, with its parameters and plural forms intact. | [] |
 
+### macros-expanded-by-the-lingui-transform · MUST
+
+Every run that loads code with Lingui's macros — the build and the specs — expands them first with Lingui's own transform.
+
+| Why | Tags |
+|---|---|
+| a macro is no function at run time, so code that reaches a run unexpanded throws there, and a transform borrowed from another tool can stop expanding it without a warning. | [] |
+
 ### source-catalog-current-in-the-check → i18n-missing-key-fails-the-check · MUST
 
 The check extracts the source locale's catalog and fails when it differs from the one committed; a translation another locale lacks falls back to its source message.

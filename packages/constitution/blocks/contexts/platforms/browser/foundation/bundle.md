@@ -6,11 +6,11 @@
 
 ### bundle-within-its-size-budget · SHOULD
 
-Each bundle the tab loads stays within a size budget the project sets for it, and a build that exceeds the budget fails.
+Each bundle the tab loads stays within a size budget the project sets for it, one for each entry, never one for the whole output, and a build that exceeds the budget fails.
 
 | Why | Tags |
 |---|---|
-| size grows one dependency at a time, and only a budget notices the change that crosses the line before people on slow networks and devices do. | [performance] |
+| size grows one dependency at a time, and only a budget notices the change that crosses the line before people on slow networks and devices do; a budget for the whole output lets one entry grow at another's expense. | [performance] |
 
 ### hashed-file-immutable-and-its-pointers-revalidated · SHOULD
 

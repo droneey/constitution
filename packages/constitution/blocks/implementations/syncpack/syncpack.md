@@ -1,10 +1,10 @@
 ---
 id: syncpack
 summary: Holds dependency versions and the shape of every manifest.
-requires: [typescript]
+requires: [_js-runtime]
 extends: null
 abstract: false
-languages: [typescript]
+languages: [json]
 dictionary: [Syncpack, syncpack, .syncpackrc.mjs]
 governs: [".syncpackrc.mjs"]
 ---

@@ -64,7 +64,7 @@ const WELL_FORMED = {
 
 // A workspace of six units, one of them a library whose TypeScript package
 // sits beside its data in no language, each package linked by its name as a
-// package manager links it, with the workspace's architecture part.
+// package manager links it, with the workspace's parts.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'apps/admin',
   eros: 'packages/eros/languages/typescript',
@@ -104,6 +104,7 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
     ]),
   ),
   parts: [
+    'typescript/workspace',
     'typescript/architecture/workspace',
   ],
   roots: [

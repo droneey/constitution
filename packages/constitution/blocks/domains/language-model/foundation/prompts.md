@@ -1,6 +1,6 @@
 # Prompts
 
-> Governs the text a program sends a model: its instructions, the text others wrote, and what it may hold.
+> Governs the text a program sends a model: its instructions, the text others wrote, what it may hold and where its text may go.
 
 ## Instructions
 
@@ -37,6 +37,16 @@ A prompt holds no secret — no key, password, connection string or internal add
 | Why | Tags |
 |---|---|
 | a model can be made to repeat its prompt, so whatever the prompt holds, the person talking to it can read. | [security, data] |
+
+## Telemetry
+
+### prompt-text-kept-out-of-telemetry → secret-and-personal-data-kept-out-of-output · MUST
+
+The text of prompts and outputs reaches logs, traces and metrics only through a setting that is off by default, and is masked of personal data when the setting is on.
+
+| Why | Tags |
+|---|---|
+| prompts carry what people typed and the documents they hold, and telemetry keeps that text longer and shows it to more people. | [security, data] |
 
 ## Caching
 

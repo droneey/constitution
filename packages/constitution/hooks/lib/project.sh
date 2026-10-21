@@ -110,7 +110,7 @@ PACKS
   [ -n "${names}" ] || return 0
   # shellcheck disable=SC2086 # one pathspec to a line, none holding a blank
   configs="$(cd "${project}" && set -f && IFS='
-' && git ls-files --cached -- ${names} 2>/dev/null)"
+' && git -c core.quotePath=false ls-files --cached -- ${names} 2>/dev/null)"
   [ -n "${configs}" ] || return 0
   # shellcheck disable=SC2086 # one path to a line
   (set -f && IFS='

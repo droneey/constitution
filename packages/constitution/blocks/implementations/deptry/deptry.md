@@ -1,12 +1,12 @@
 ---
 id: deptry
 summary: deptry checks the dependencies a Python package declares and imports.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [deptry]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # deptry

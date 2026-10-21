@@ -4,9 +4,9 @@
 
 ## General
 
-### dclint-rules-set-as-errors → docker-files-linted-in-the-check · MUST
+### dclint-rules-set-as-errors → rule-held-by-a-tool-where-one-can · MUST
 
-Every rule the archive's `presets/common/dclint/foundation/docker.yaml` turns on is an error.
+Every rule the part turns on is an error.
 
 | Why | Tags |
 |---|---|

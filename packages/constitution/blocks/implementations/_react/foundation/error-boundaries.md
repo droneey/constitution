@@ -1,6 +1,6 @@
 # Error boundaries
 
-> Governs the failures of rendering, which a boundary catches, and those of a handler and an effect, which it does not.
+> Governs the failures of rendering, which a boundary catches, those of a handler and an effect, which it does not, and the failed state of a data read.
 
 ## General
 
@@ -19,3 +19,11 @@ An expected failure in an event handler or an effect is handled where it happens
 | Why | Tags |
 |---|---|
 | React sends a boundary only the errors of rendering, so an expected failure left to a boundary is never shown, and a defect caught on the spot is hidden from the one handler that reports it. | [errors, ux] |
+
+### data-failures-rendered-as-state → data-result-is-union-by-status · MUST
+
+A component renders the error state a data hook returns where the data would be, and never throws it — or its read suspends, and the boundary above it renders the pending and failed states.
+
+| Why | Tags |
+|---|---|
+| an expected failure is then shown where it belongs, and the boundary is left for what nobody expected. | [errors, ux] |

@@ -1,7 +1,7 @@
 ---
 id: mise
 summary: Pins the developer and CI toolchain to exact, locked versions.
-requires: []
+requires: [toml]
 extends: null
 abstract: false
 languages: []

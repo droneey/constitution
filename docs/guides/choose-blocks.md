@@ -15,12 +15,17 @@ axes:
 domains:
   - ui
   - remote-data
+  - remote-service
+  - untrusted-client
   - version-control
 platforms:
   - browser
 languages:
   - typescript
   - css
+  - html
+  - json
+  - toml
 implementations:
   - react-dom
   - tanstack-router
@@ -33,7 +38,7 @@ implementations:
 |---|---|---|
 | `domains` | has that aspect, whatever its technology | a user interface, data fetched over a network, a public API |
 | `platforms` | runs there | a browser bundle, a command-line entry point, a server |
-| `languages` | is written in it | the source files |
+| `languages` | is written in it, or keeps files in its format | the source files, and files such as `.json`, `.toml`, `.html` or a `Dockerfile` |
 | `implementations` | installs, runs or reaches that library, tool or service | a manifest's dependency, a configuration file |
 | `axes` | follows that optional axis | `architecture`, `workflow`, both, or `[]` for neither |
 
@@ -62,15 +67,19 @@ packages:
       - untrusted-client
     platforms:
       - browser
+    languages:
+      - html
     implementations:
       - react-dom
   apps/api:
     domains:
+      - http-server
       - rest-api
     platforms:
       - server
     implementations:
       - nestjs
+      - tsc
 ```
 
 A repository of one unit writes `packages: {}`. [`packages`](../reference/constitution-yaml.md#packages) lists the keys a unit takes, and how its `axes` replace the repository's.

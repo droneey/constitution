@@ -1,7 +1,7 @@
 ---
 id: knip
 summary: Finds unused files, dependencies and exports.
-requires: [typescript]
+requires: [_js-runtime]
 extends: null
 abstract: false
 languages: [typescript]

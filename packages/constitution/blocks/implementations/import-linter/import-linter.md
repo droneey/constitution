@@ -1,12 +1,12 @@
 ---
 id: import-linter
 summary: import-linter holds the import rules between Python's modules.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [import-linter, lint-imports, .import_linter_cache]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # import-linter

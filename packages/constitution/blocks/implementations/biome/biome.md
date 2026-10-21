@@ -1,10 +1,10 @@
 ---
 id: biome
-summary: Formats and lints TypeScript and CSS, with GritQL rules of our own.
-requires: [typescript]
+summary: Formats and lints code, stylesheets and JSON, with our GritQL rules.
+requires: [json]
 extends: null
 abstract: false
-languages: [typescript, css]
+languages: [typescript, css, json]
 dictionary: [Biome, biome.json, biome-ignore, GritQL, .grit]
 governs: ["biome.json", "**/*.grit"]
 ---

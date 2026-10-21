@@ -1,7 +1,7 @@
 ---
 id: renovate
 summary: Dependency updates proposed by a bot.
-requires: [git]
+requires: [git, json]
 extends: null
 abstract: false
 languages: []
