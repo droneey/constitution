@@ -4,7 +4,7 @@ import type { Finding, Problem } from '#/kernel/types';
 import type { Block, BlockFile } from '../../../../entities';
 import { BlockFileRole } from '../../../../entities';
 import type { BlocksById } from '../../../../utils';
-import { stemOf } from '../../../../utils';
+import { closureOf, stemOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
 import { pairableBy } from '../direction.utils';
 import { aBlock, blocksOf } from '../wording.utils';
@@ -14,6 +14,7 @@ enum SeamsCode {
   BlockPairsWithNone = 'seam-of-unpairing-block',
   NotPair = 'seam-names-no-pair',
   OutOfLayer = 'seam-out-of-layer',
+  AlongDependency = 'seam-along-a-dependency',
   TitleMismatch = 'seam-title-mismatch',
   ChapterNamedAfterBlock = 'chapter-named-after-block',
 }
@@ -27,7 +28,6 @@ const MARKDOWN_EXTENSION = '.md';
 
 const TITLE = '# ';
 
-/** a file's title line, its first first-level heading */
 const titleOf = (body: string): string | undefined =>
   body.split('\n').find((line) => line.startsWith(TITLE));
 
@@ -60,12 +60,29 @@ const pairingProblem = (
     };
   }
 
-  return allowed.includes(target.layer)
-    ? undefined
-    : {
-        code: SeamsCode.OutOfLayer,
-        message: `is named after ${input.other}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} pairs only with ${blocksOf(allowed)}`,
-      };
+  if (!allowed.includes(target.layer)) {
+    return {
+      code: SeamsCode.OutOfLayer,
+      message: `is named after ${input.other}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} pairs only with ${blocksOf(allowed)}`,
+    };
+  }
+
+  const linked =
+    closureOf({
+      blockId: input.block.id,
+      byId: input.byId,
+    }).has(input.other) ||
+    closureOf({
+      blockId: input.other,
+      byId: input.byId,
+    }).has(input.block.id);
+
+  return linked
+    ? {
+        code: SeamsCode.AlongDependency,
+        message: `is named after ${input.other}, which ${input.block.id} requires or extends, or which requires or extends it; such a rule is the dependent block's own`,
+      }
+    : undefined;
 };
 
 /** a seam titled otherwise than the other block's passport, since the seam's folder already names the block it belongs to */

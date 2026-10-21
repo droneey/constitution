@@ -5,7 +5,7 @@ const CODE_SCOPES =
 /** the colour a code theme gives text no scope colours */
 const EDITOR_FOREGROUND = 'editor.foreground';
 
-// The report: the mode padded to the longest one, and a ratio to two places.
+/** the length of the longest mode, `light` */
 const MODE_LABEL_WIDTH = 5;
 const RATIO_DIGITS = 2;
 

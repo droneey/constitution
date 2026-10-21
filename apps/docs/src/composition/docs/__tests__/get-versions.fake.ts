@@ -5,7 +5,7 @@ export const loadedVersions =
   (): Promise<Versions> =>
     Promise.resolve(versions);
 
-/** releases that never arrive */
+/** never settles */
 export const pendingVersions: GetVersions = () => new Promise<Versions>(() => undefined);
 
 export const failedVersions: GetVersions = () =>

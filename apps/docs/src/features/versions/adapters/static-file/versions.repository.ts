@@ -2,7 +2,7 @@ import type { VersionsRepository } from '../../domain/contracts';
 import type { Versions } from '../../domain/entities';
 import { versionsModel } from './models';
 
-/** how the adapter asks for a file: `fetch`, or a transport that serves captured answers */
+/** `fetch`, or a transport that serves captured answers */
 type Transport = (
   address: string,
   init: {
@@ -10,7 +10,7 @@ type Transport = (
   },
 ) => Promise<Response>;
 
-/** the list of releases at the site's root, so an old release's site learns of every later one */
+/** reads the list at the site's root, so an old release's site learns of every later one */
 export const createStaticFileVersionsRepository = (
   address: string,
   transport: Transport = fetch,

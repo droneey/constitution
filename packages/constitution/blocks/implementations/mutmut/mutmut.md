@@ -6,7 +6,7 @@ extends: null
 abstract: false
 languages: [python]
 dictionary: [mutmut, mutants/]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # mutmut

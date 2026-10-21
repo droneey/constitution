@@ -16,7 +16,6 @@ const CORE = 'core';
 /** an item of the passport's list of core's chapters, which opens with its axis folder: "- `foundation/`: …" */
 const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
-/** the chapters the list's items link, each by its path */
 const listedIn = (core: Block): readonly string[] =>
   withoutCodeFences(
     // Stryker disable next-line OptionalChaining,ConditionalExpression,StringLiteral: a block's first file is its passport

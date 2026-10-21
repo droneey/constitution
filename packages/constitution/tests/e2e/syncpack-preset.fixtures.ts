@@ -14,15 +14,18 @@ interface Manifest {
 const REPOSITORY = join(import.meta.dir, '..', '..');
 const SYNCPACK = join(REPOSITORY, 'node_modules', '.bin', 'syncpack');
 
-const CONFIG = `import bun from './.droneey/constitution/presets/typescript/syncpack/foundation/bun.mjs';
-import core from './.droneey/constitution/presets/typescript/syncpack/foundation/core.mjs';
-import distribution from './.droneey/constitution/presets/typescript/syncpack/foundation/distribution.mjs';
-import self from './.droneey/constitution/presets/typescript/syncpack/foundation/self.mjs';
-import typescript from './.droneey/constitution/presets/typescript/syncpack/foundation/typescript.mjs';
+const CONFIG = `import jsRuntime from './.droneey/constitution/presets/json/syncpack/foundation/_js-runtime.mjs';
+import bun from './.droneey/constitution/presets/json/syncpack/foundation/bun.mjs';
+import core from './.droneey/constitution/presets/json/syncpack/foundation/core.mjs';
+import distribution from './.droneey/constitution/presets/json/syncpack/foundation/distribution.mjs';
+import self from './.droneey/constitution/presets/json/syncpack/foundation/self.mjs';
 
 export default {
   ...self,
-  ...typescript,
+  semverGroups: [
+    ...jsRuntime.semverGroups,
+    ...distribution.semverGroups,
+  ],
   versionGroups: [
     ...core.versionGroups,
     ...bun.versionGroups,

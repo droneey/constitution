@@ -59,6 +59,7 @@ describe('loadConstitution', () => {
         ]),
         requirementAnswers: [],
         rules: [],
+        templates: [],
       },
       findings: [],
     });

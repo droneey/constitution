@@ -1,24 +1,6 @@
 # Remote data
 
-> Governs what a screen reads and writes of data another system owns.
-
-## Results
-
-### data-result-is-union-by-status → illegal-state-unrepresentable · MUST
-
-What a screen or a widget calls to read or write data returns a union keyed by `status`, with only the states its operation has — or suspends to a boundary above it that shows the waiting and the failed states; the data exists only in the success state, or beside the error when a reload of data already shown fails.
-
-| Why | Tags |
-|---|---|
-| a bag of flags allows combinations no state has, and data kept beside a failed reload keeps the screen showing it. | [ux] |
-
-### unloaded-data-has-no-stand-in → absence-shown-by-the-type · MUST
-
-No default stands in for data not yet loaded; the waiting state is shown as waiting.
-
-| Why | Tags |
-|---|---|
-| an invented default hides loading and failure behind something that looks like data. | [] |
+> Governs a change a screen shows before the remote system confirms it, and writes that overlap.
 
 ## Writes
 

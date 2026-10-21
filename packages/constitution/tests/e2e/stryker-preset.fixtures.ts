@@ -32,15 +32,13 @@ export default {
 
 const SURVIVED = /\[Survived\]/g;
 
-// The project reaches Stryker's plugins and the specs' runner through this
-// package's node_modules.
 const TOTAL = 'export const total = (price: number, tax: number): number => price + tax;\n';
 
 const mutationOf = (spec: string, source = TOTAL): Mutation => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
   const files = {
     'bunfig.mutation.toml': readFileSync(
-      join(REPOSITORY, 'templates', 'project', 'typescript', 'bun', 'bunfig.mutation.toml'),
+      join(REPOSITORY, 'templates', 'project', 'typescript', 'stryker', 'bunfig.mutation.toml'),
       'utf8',
     ),
     'package.json': JSON.stringify({
@@ -61,6 +59,7 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
 
   mkdirSync(join(folder, '.droneey'));
   symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  // Stryker's plugins and the specs' runner resolve from this package's node_modules.
   symlinkSync(join(REPOSITORY, 'node_modules'), join(folder, 'node_modules'));
 
   const running = spawnSync(

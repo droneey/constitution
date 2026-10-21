@@ -38,10 +38,8 @@ const entriesOf = (
       : entriesOf(node, nodePath);
   });
 
-/** every token of the groups by its dotted path, in the order the source lists them */
 const collectTokens = (group: DesignTokenGroup): DesignTokens => new Map(entriesOf(group, []));
 
-/** the path a value `{group.name}` refers to */
 const referenceOf = (tokenValue: TokenValue): string | undefined =>
   typeof tokenValue === 'string' && tokenValue.startsWith('{')
     ? tokenValue.slice(1, -1)
@@ -61,7 +59,6 @@ const tokenAt = (tokens: DesignTokens, path: string): DesignToken => {
 const valueIn = (token: DesignToken, mode: ThemeMode): TokenValue =>
   mode === ThemeMode.Dark ? (token.$extensions?.mode?.dark ?? token.$value) : token.$value;
 
-/** the tokens of the groups, in the order the source lists them */
 const pathsUnder = (tokens: DesignTokens, groups: readonly string[]): string[] =>
   [
     ...tokens.keys(),
@@ -125,7 +122,7 @@ const curveOf = (tokens: DesignTokens, path: string): readonly number[] => {
   return curve;
 };
 
-/** the pixels of a dimension, through the references that lead to it */
+/** follows the references that lead to the dimension */
 const pixelsOf = (tokens: DesignTokens, path: string): number => {
   const target = referenceOf(tokenAt(tokens, path).$value);
 
@@ -135,7 +132,7 @@ const pixelsOf = (tokens: DesignTokens, path: string): number => {
 const shareOf = (tokens: DesignTokens, path: string): number | undefined =>
   tokenAt(tokens, path).$extensions?.['dev.droneey.share'];
 
-/** an OKLCH colour in linear sRGB, each channel clipped into the gamut */
+/** each channel clipped into the gamut */
 const linearSrgbOf = (oklch: Oklch): PlainColorObject => {
   const linear = to(
     {
@@ -153,7 +150,7 @@ const linearSrgbOf = (oklch: Oklch): PlainColorObject => {
   });
 };
 
-/** the colour a semantic token shows in the mode, laid over the base surface by its share */
+/** laid over the base surface by the token's share */
 const colourOf = (tokens: DesignTokens, path: string, mode: ThemeMode): PlainColorObject => {
   const own = linearSrgbOf(oklchOf(tokens, referenceIn(tokens, path, mode)));
   const share = shareOf(tokens, path) ?? 1;

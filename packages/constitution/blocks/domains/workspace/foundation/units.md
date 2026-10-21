@@ -26,4 +26,12 @@ A package's configuration of a tool sits in the package's own folder, and the ro
 
 | Why | Tags |
 |---|---|
-| a package then carries the rules that hold it, the root names nothing of one package's own, and a package moved to a repository of its own takes its checks with it; a tool that reads one configuration for the whole repository keeps each package's part in the root's under the package's path. | [] |
+| a package then carries the rules that hold it, the root names nothing of one package's own, and a package moved to a repository of its own takes its checks with it. | [] |
+
+### root-configuration-serves-only-what-crosses-the-packages → configuration-takes-every-part-of-its-blocks · MUST
+
+At the root of a workspace, a tool that has a part for the workspace takes only its workspace parts and its own: the root runs it only for what crosses the packages, and each package's configuration takes the parts of its own blocks.
+
+| Why | Tags |
+|---|---|
+| a root that took every part of its packages would hold each package's files to settings written for another's tree, as a path written from one package's `src/` misses or refuses the files of the rest. | [] |

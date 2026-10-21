@@ -1,0 +1,3 @@
+# lefthook: the hooks of the Constitution's release, one part to a line
+extends:
+  - <parts>

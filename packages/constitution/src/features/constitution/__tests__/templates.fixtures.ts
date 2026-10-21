@@ -37,7 +37,7 @@ const PARAGLIDE: ReadonlyArray<
     'Paraglide compiles the messages of each locale into typed functions.',
   ],
   [
-    '<How the library is set up in this repository: its preset parts, templates, configuration files and exclusions.>',
+    '<What its parts and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>',
     'Its compiler runs before the type check, and its output is ignored.',
   ],
   [
@@ -61,7 +61,7 @@ const PARAGLIDE: ReadonlyArray<
     'yes',
   ],
   [
-    '<rule-slug>',
+    '<rule slug>',
     'paraglide-messages-by-function',
   ],
   [
@@ -78,7 +78,6 @@ const PARAGLIDE: ReadonlyArray<
   ],
 ];
 
-/** a file of templates/block/, its placeholders filled for Paraglide */
 const paraglideFromTemplate = (path: string): string => {
   const filled = PARAGLIDE.reduce(
     (text, [placeholder, filling]) => text.replaceAll(placeholder, filling),
@@ -93,10 +92,6 @@ const paraglideFromTemplate = (path: string): string => {
   return filled;
 };
 
-/**
- * the block /ratify writes for Paraglide from templates/block/: block.md named paraglide.md, and
- * chapter.md named after its subject
- */
 const paraglideCard = (): Readonly<Record<string, string>> => ({
   [`${PARAGLIDE_DIR}/paraglide.md`]: paraglideFromTemplate('block.md'),
   [`${PARAGLIDE_DIR}/foundation/messages.md`]: paraglideFromTemplate('foundation/chapter.md'),

@@ -1,10 +1,9 @@
-/** the modes the theme resolves every semantic token in, in the order it reports them */
+/** in the order the report lists them */
 enum ThemeMode {
   Light = 'light',
   Dark = 'dark',
 }
 
-/** the path every token of a group starts with */
 enum TokenGroupPath {
   Colour = 'color.',
   Dimension = 'dimension.',
@@ -22,7 +21,6 @@ enum TokenGroupPath {
 /** the surface a colour with a share of its own is laid over */
 const BASE_SURFACE = `${TokenGroupPath.Colour}surface.base`;
 
-/** the groups whose tokens are sizes, each held to the grid */
 const GRID_GROUPS: readonly TokenGroupPath[] = [
   TokenGroupPath.Spacing,
   TokenGroupPath.Size,

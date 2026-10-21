@@ -1,7 +1,7 @@
 ---
 id: expo
 summary: Expo on React Native — app config, native builds, secure storage.
-requires: [react-native]
+requires: [react-native, json]
 extends: null
 abstract: false
 languages: []

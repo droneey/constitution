@@ -4,9 +4,9 @@
 
 ## General
 
-### hooks-from-the-shared-preset · SHOULD
+### hooks-from-the-shared-preset → configuration-takes-every-part-of-its-blocks · MUST
 
-The hooks come from the shared preset, pinned, never from scripts copied into the repository.
+The hooks come from the shared configuration's parts, never from scripts copied into the repository.
 
 | Why | Tags |
 |---|---|

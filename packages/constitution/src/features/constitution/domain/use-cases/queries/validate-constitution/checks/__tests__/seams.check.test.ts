@@ -52,6 +52,20 @@ describe('seamsCheck', () => {
       path: 'blocks/domains/ui/architecture/with/nowhere.md',
     },
     {
+      code: 'seam-along-a-dependency',
+      names: [
+        'typescript',
+      ],
+      path: 'blocks/implementations/biome/foundation/with/typescript.md',
+    },
+    {
+      code: 'seam-along-a-dependency',
+      names: [
+        'ui',
+      ],
+      path: 'blocks/implementations/react-dom/foundation/with/ui.md',
+    },
+    {
       code: 'seam-of-unpairing-block',
       names: [
         'core',

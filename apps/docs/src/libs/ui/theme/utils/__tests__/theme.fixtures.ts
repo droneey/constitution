@@ -8,7 +8,7 @@ import type {
 } from '../../types';
 import { collectTokens } from '../tokens.utils';
 
-/** a small token source with a token of every group the theme writes, white and black its colours */
+/** a token of every group the theme writes; white and black its colours */
 const createTokenGroup = (overrides: DesignTokenGroup = {}): DesignTokenGroup => ({
   $description: 'A small source.',
   dimension: {
@@ -186,7 +186,7 @@ const createThemeSettings = (overrides: Partial<ThemeSettings> = {}): ThemeSetti
   ...overrides,
 });
 
-/** a code theme whose only colour is its editor's, black */
+/** its only colour is its editor's, black */
 const createCodeTheme = (overrides: Partial<CodeTheme> = {}): CodeTheme => ({
   colors: {
     'editor.foreground': '#000000',
@@ -204,14 +204,12 @@ const createContrastCheck = (overrides: Partial<ContrastCheck> = {}): ContrastCh
   ...overrides,
 });
 
-/** the lines of a stylesheet's block, between the line that opens it and the brace that closes it */
 const blockOf = (lines: readonly string[], opening: string): readonly string[] => {
   const start = lines.indexOf(opening) + 1;
 
   return lines.slice(start, lines.indexOf('}', start));
 };
 
-/** the lines of a stylesheet that declare a property */
 const declarationsOf = (lines: readonly string[], property: string): readonly string[] =>
   lines.filter((line) => line.trimStart().startsWith(`${property}:`));
 

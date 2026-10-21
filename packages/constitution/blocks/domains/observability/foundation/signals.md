@@ -1,6 +1,6 @@
 # Signals
 
-> Governs what every signal carries and how it is emitted.
+> Governs what every signal carries, how it is emitted and how it is flushed.
 
 ## General
 
@@ -19,3 +19,11 @@ Spans and metrics are emitted through OpenTelemetry's API, logs through the prog
 | Why | Tags |
 |---|---|
 | one vendor-neutral API and protocol let the backend change with no change of code and let libraries instrument themselves, and the conventions' names make two services of one project measure alike. | [] |
+
+### signals-flushed-before-exit → program-stops-cleanly · MUST
+
+A program told to stop flushes the log records, spans and metrics it holds in buffers before it exits, within the bound of its stop.
+
+| Why | Tags |
+|---|---|
+| the signals of the last seconds, often the ones that explain the stop, are otherwise lost with the process. | [errors] |

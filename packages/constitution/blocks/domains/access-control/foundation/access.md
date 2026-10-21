@@ -30,6 +30,14 @@ Access to an object a request names — an order by its identifier — is checke
 |---|---|
 | a caller who changes the identifier in a request otherwise reads or changes someone else's object, the most common flaw of an API. | [security] |
 
+### hidden-object-answered-as-not-found · SHOULD
+
+An object the caller may not see is answered as not found, as if it did not exist; where the program declares it, every identifier the caller has no right to is instead refused alike, the right checked before the object is looked up. Otherwise, a refusal of access is answered only for an operation the caller may not perform on an object it may see.
+
+| Why | Tags |
+|---|---|
+| a refusal given only to objects that exist confirms that the object exists, and either answer given alike to all hides it. | [security] |
+
 ### tenant-data-scoped-in-every-read-and-write · MUST
 
 In a program that serves several tenants, every read and write of a tenant's data is scoped to the caller's tenant where it is made, so none can reach another tenant's data.

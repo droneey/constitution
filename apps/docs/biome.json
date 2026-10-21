@@ -3,26 +3,28 @@
   "root": false,
   "extends": [
     "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/common/biome/foundation/git.jsonc",
+    "./.droneey/constitution/presets/css/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/css/biome/foundation/css.jsonc",
+    "./.droneey/constitution/presets/css/biome/foundation/design-system.jsonc",
+    "./.droneey/constitution/presets/css/biome/foundation/browser.jsonc",
+    "./.droneey/constitution/presets/css/biome/foundation/tailwind.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
-    "./.droneey/constitution/presets/common/biome/foundation/git.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/browser.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/css.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/_react.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/bun-test.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/dependency-cruiser.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/browser.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/_react.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/react-dom.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/css.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/tailwind.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/tanstack-router.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/testing-library.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/foundation/zod.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc",
-    "./.droneey/constitution/presets/css/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/css/biome/foundation/css.jsonc",
-    "./.droneey/constitution/presets/css/biome/foundation/browser.jsonc",
-    "./.droneey/constitution/presets/css/biome/foundation/design-system.jsonc",
-    "./.droneey/constitution/presets/css/biome/foundation/tailwind.jsonc"
+    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc"
   ],
   "files": {
     "includes": [
@@ -37,21 +39,6 @@
       ],
       "linter": {
         "rules": {
-          "complexity": {
-            "noExcessiveLinesPerFunction": "off"
-          },
-          "style": {
-            "noExcessiveLinesPerFile": "off",
-            "useFilenamingConvention": {
-              "level": "error",
-              "options": {
-                "filenameCases": [
-                  "kebab-case"
-                ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|fixtures)[.]tsx?)"
-              }
-            }
-          },
           "suspicious": {
             "noTemplateCurlyInString": "off"
           }

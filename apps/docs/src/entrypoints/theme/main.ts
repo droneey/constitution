@@ -1,5 +1,3 @@
-// Reads the design system's tokens, refuses a value off the grid and a pair that
-// loses contrast, and writes the stylesheet the site reads.
 import { readFileSync, writeFileSync } from 'node:fs';
 
 import type { BundledTheme } from 'shiki';
@@ -91,7 +89,6 @@ const settingsSchema = z.strictObject({
   tailwindRadius: z.record(z.string(), z.number()),
 }) satisfies z.ZodType<ThemeSettings>;
 
-// The source's groups sit beside its own description and the settings of the theme.
 const sourceSchema = z
   .strictObject({
     $description: z.string().exactOptional(),
@@ -171,7 +168,7 @@ try {
     refuse(failures);
   }
 } catch (error) {
-  // A source that is no JSON, or tokens that refer to none or hold the wrong kind of value.
+  // A source that is no JSON throws a SyntaxError.
   if (!(error instanceof SyntaxError || error instanceof ThemeTokenError)) {
     throw error;
   }

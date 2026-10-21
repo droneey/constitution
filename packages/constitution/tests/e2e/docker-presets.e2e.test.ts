@@ -47,8 +47,8 @@ const COMPOSE = [
   '',
 ].join('\n');
 
-describe('the hadolint docker part', () => {
-  it('should report nothing when a Dockerfile follows the docker block', () => {
+describe('the hadolint dockerfile part', () => {
+  it('should report nothing when a Dockerfile follows the dockerfile block', () => {
     // Arrange
     const text = DOCKERFILE;
 
@@ -134,8 +134,8 @@ describe('the hadolint docker part', () => {
   });
 });
 
-describe('the dclint docker part', () => {
-  it('should report nothing when a Compose file follows the docker block', () => {
+describe('the dclint compose part', () => {
+  it('should report nothing when a Compose file follows the compose block', () => {
     // Arrange
     const text = COMPOSE;
 

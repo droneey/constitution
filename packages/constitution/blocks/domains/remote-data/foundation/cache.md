@@ -1,6 +1,6 @@
 # Cache
 
-> Governs a read of remote data and the cache that holds it.
+> Governs a read of remote data and the cache that holds it, in the program and in its specs.
 
 ## Reads
 
@@ -11,6 +11,16 @@ A read superseded by one that replaces what is cached for its key — a refetch 
 | Why | Tags |
 |---|---|
 | an answer that arrives late otherwise overwrites a newer one, and the program shows data it no longer asked for. | [data] |
+
+## Specs
+
+### spec-cache-fresh-without-retries → case-independent-of-order · MUST
+
+Each spec builds a cache of its own, with its retries off, and no cache is shared between specs.
+
+| Why | Tags |
+|---|---|
+| nothing leaks from one spec's cache into the next, and a failed answer fails the case at once instead of being retried. | [] |
 
 ## Requirements for implementation
 

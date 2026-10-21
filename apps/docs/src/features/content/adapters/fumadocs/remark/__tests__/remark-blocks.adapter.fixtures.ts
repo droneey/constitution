@@ -4,7 +4,6 @@ import { visit } from 'unist-util-visit';
 
 import { nodesOf, span, text, withoutPositions } from './mdast.fixtures';
 
-/** the mark before a rule's slug: its letter, and its level for a screen reader */
 const markOf = (input: { letter: string; level: string; mark: string }): PhrasingContent =>
   span(
     {
@@ -32,7 +31,6 @@ const markOf = (input: { letter: string; level: string; mark: string }): Phrasin
     ],
   );
 
-/** a rule's level, the first entry of its meta */
 const levelOf = (input: { level: string; mark: string }): PhrasingContent =>
   span(
     {
@@ -43,7 +41,6 @@ const levelOf = (input: { level: string; mark: string }): PhrasingContent =>
     ],
   );
 
-/** one of a rule's tags, after its level */
 const tagOf = (tag: string): PhrasingContent =>
   span(
     {
@@ -54,7 +51,6 @@ const tagOf = (tag: string): PhrasingContent =>
     ],
   );
 
-/** the line of a rule's level and tags, opening its card */
 const metaOf = (children: PhrasingContent[]): RootContent => ({
   children,
   data: {
@@ -65,7 +61,6 @@ const metaOf = (children: PhrasingContent[]): RootContent => ({
   type: 'paragraph',
 });
 
-/** a rule's heading as the plugin renders it */
 const headingOf = (children: PhrasingContent[]): RootContent => ({
   children,
   data: {
@@ -77,7 +72,6 @@ const headingOf = (children: PhrasingContent[]): RootContent => ({
   type: 'heading',
 });
 
-/** the line under a rule's heading that names the rule it tightens */
 const parentLineOf = (children: PhrasingContent[]): RootContent => ({
   children,
   data: {
@@ -88,7 +82,6 @@ const parentLineOf = (children: PhrasingContent[]): RootContent => ({
   type: 'paragraph',
 });
 
-/** a rule's why, under its label */
 const whyOf = (children: PhrasingContent[]): RootContent => ({
   children: [
     span(
@@ -109,7 +102,6 @@ const whyOf = (children: PhrasingContent[]): RootContent => ({
   type: 'paragraph',
 });
 
-/** a rule's card */
 const cardOf = (children: RootContent[]): RootContent => ({
   children,
   data: {
@@ -121,7 +113,6 @@ const cardOf = (children: RootContent[]): RootContent => ({
   type: 'ruleCard',
 });
 
-/** a part of an example, a `div` marked by its attributes */
 const boxOf = (
   attributes: Readonly<Record<string, string>>,
   children: RootContent[],
@@ -136,7 +127,6 @@ const boxOf = (
   type: 'box',
 });
 
-/** a column of an example: the label of its tone above its code, written in Markdown */
 const columnOf = (input: { code: string; title: string; tone: string }): RootContent =>
   boxOf(
     {
@@ -160,7 +150,6 @@ const columnOf = (input: { code: string; title: string; tone: string }): RootCon
     ],
   );
 
-/** a rule's table whose rows hold no cell */
 const cellLessTable = (): Table => ({
   align: [],
   children: [
@@ -176,11 +165,10 @@ const cellLessTable = (): Table => ({
   type: 'table',
 });
 
-/** the value of a node's data attribute `data-<name>`, absent when the node is no such part */
 const attributeOf = (node: Nodes, name: string): unknown =>
   node.data?.hProperties?.[`data-${name}`];
 
-/** every part of a tree marked by `data-<name>`, in reading order, without positions */
+/** in reading order, without positions */
 const partsOf = (tree: Nodes, name: string): Nodes[] => {
   const parts: Nodes[] = [];
 
@@ -193,14 +181,11 @@ const partsOf = (tree: Nodes, name: string): Nodes[] => {
   return parts;
 };
 
-/** the first part of a tree marked by `data-<name>`, without positions */
 const partOf = (tree: Nodes, name: string): Nodes | undefined => partsOf(tree, name)[0];
 
-/** the text a reader sees in each node */
 const textsOf = (nodes: readonly Nodes[]): readonly string[] =>
   nodes.map((node) => plainText(node));
 
-/** the slug a card's heading names */
 const slugOf = (card: Nodes): string => {
   const heading = partOf(card, 'rule');
   const slugs: string[] = [];
@@ -214,17 +199,15 @@ const slugOf = (card: Nodes): string => {
   return slugs.join('');
 };
 
-/** a node the author wrote, which the plugin marks as no part of a card */
+/** the plugin marks every part of a card, so a node without marks is the author's */
 const isAuthored = (node: RootContent): boolean =>
   Object.keys(node.data?.hProperties ?? {}).length === 0;
 
-/** a card, by the rule it names and the text of what its author wrote under the heading */
 interface CardOutline {
   readonly body: readonly string[];
   readonly rule: string;
 }
 
-/** the top of a tree: each card by its rule and body, every other node by its text */
 const outlineOf = (tree: Root): ReadonlyArray<CardOutline | string> =>
   tree.children.map((node) =>
     node.type === 'ruleCard'
@@ -235,13 +218,11 @@ const outlineOf = (tree: Root): ReadonlyArray<CardOutline | string> =>
       : plainText(node),
   );
 
-/** a link by the text it shows and its address */
 interface LinkOutline {
   readonly text: string;
   readonly url: string;
 }
 
-/** every link of a tree, in reading order */
 const linksOf = (tree: Root): readonly LinkOutline[] => {
   const links: LinkOutline[] = [];
 

@@ -1,7 +1,7 @@
 ---
 id: betterleaks
 summary: Scans changes and history for committed secrets.
-requires: [git]
+requires: [git, toml]
 extends: null
 abstract: false
 languages: []
@@ -13,4 +13,4 @@ governs: [".betterleaks.toml", ".betterleaksignore"]
 
 > Finds secrets in changes and history.
 
-`.betterleaks.toml` extends `presets/common/betterleaks/foundation/core.toml` of the Constitution's release archive — betterleaks' default rules: cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — and holds every active rule on committed secrets.
+Its default rules — cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — hold every active rule on committed secrets.

@@ -1,9 +1,8 @@
-import core from './.droneey/constitution/presets/typescript/syncpack/foundation/core.mjs';
-import self from './.droneey/constitution/presets/typescript/syncpack/foundation/self.mjs';
-import typescript from './.droneey/constitution/presets/typescript/syncpack/foundation/typescript.mjs';
+import jsRuntime from './.droneey/constitution/presets/json/syncpack/foundation/_js-runtime.mjs';
+import bun from './.droneey/constitution/presets/json/syncpack/foundation/bun.mjs';
+import core from './.droneey/constitution/presets/json/syncpack/foundation/core.mjs';
+import self from './.droneey/constitution/presets/json/syncpack/foundation/self.mjs';
+import { join } from './.droneey/constitution/presets/typescript/join.mjs';
 
-export default {
-  ...self,
-  ...typescript,
-  ...core,
-};
+// syncpack has no extends, so the parts are joined.
+export default join(self, core, jsRuntime, bun);

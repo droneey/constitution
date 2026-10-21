@@ -1,12 +1,13 @@
-// biome-ignore lint/style/noDefaultExport: dependency-cruiser reads a preset's default export
-export default {
+// A production file imports no development dependency. The configuration builds the rule over the
+// development files every part names, the files that never ship.
+export const settingsOver = (developmentFiles) => ({
   forbidden: [
     {
       name: 'no-development-dependency-in-production',
       severity: 'error',
       from: {
         path: '^src/',
-        pathNot: '(^|/)(__tests__|e2e)/|^tests/',
+        pathNot: developmentFiles,
       },
       to: {
         dependencyTypes: [
@@ -20,4 +21,4 @@ export default {
       },
     },
   ],
-};
+});

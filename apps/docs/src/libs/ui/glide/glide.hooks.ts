@@ -88,7 +88,7 @@ function glide(area: HTMLElement, { rows, marked, filled }: GlideList): void {
   });
 }
 
-/** gives each list under the root, the root among them, its block once, though the page that uses it mounts again */
+/** gives each list its block once, though the page that uses it mounts again */
 function scan(root: Element): void {
   for (const [selector, list] of Object.entries(GLIDE_LISTS)) {
     const areas = root.matches(selector)
@@ -105,7 +105,7 @@ function scan(root: Element): void {
   }
 }
 
-/** gives every list on the page, and each one that opens later, its sliding block; called by the page whose lists it serves, once they are hydrated, since React hydrates no element it did not render */
+/** called by the page whose lists it serves, once they are hydrated, since React hydrates no element it did not render */
 export function useGlide(): void {
   // Stryker disable ArrayDeclaration: the effect reads nothing that changes, so any dependencies that never change run it once
   useEffect((): (() => void) => {

@@ -1,8 +1,8 @@
 ---
 id: bun
 summary: Bun as runtime, package manager and script runner.
-requires: [typescript]
-extends: null
+requires: [toml]
+extends: _js-runtime
 abstract: false
 languages: []
 dictionary: [Bun, bun, bunx, bun.lock, bunfig.toml, trustedDependencies]

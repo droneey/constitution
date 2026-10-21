@@ -1,12 +1,10 @@
-/** the page as the reader scrolls it: which sections are on screen */
 export interface ViewportFake {
-  /** gives the browser its own observer back */
   restore: () => void;
-  /** puts these sections on screen and every other one off it */
+  /** every other section goes off screen */
   show: (...ids: string[]) => void;
 }
 
-/** replaces the browser's intersection observer with one the spec moves */
+/** replaces the browser's intersection observer until restored */
 export const viewportFake = (): ViewportFake => {
   const original = globalThis.IntersectionObserver;
   const observers: IntersectionObserverFake[] = [];

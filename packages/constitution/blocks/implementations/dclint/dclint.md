@@ -1,16 +1,16 @@
 ---
 id: dclint
 summary: Lints Docker Compose files.
-requires: [docker]
+requires: [compose]
 extends: null
 abstract: false
-languages: []
-dictionary: [dclint, DCLint, .dclintrc]
-governs: [".dclintrc"]
+languages: [yaml]
+dictionary: [dclint, DCLint]
+governs: []
 ---
 
 # DCLint
 
 > Lints Docker Compose files.
 
-DCLint is a development dependency in a JavaScript repository and a pinned tool in any other. It has no `extends`: its configuration is `presets/common/dclint/foundation/docker.yaml` of the Constitution's release archive, with every rule an error, and it holds every active rule of a Compose file that a linter can see.
+DCLint is a development dependency in a JavaScript repository and a pinned tool in any other. It reads its configuration from the command line, every rule an error, and holds every active rule of a Compose file that a linter can see.

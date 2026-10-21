@@ -1,7 +1,7 @@
 ---
 id: uv
 summary: uv as Python's package manager, resolver and build backend.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: []

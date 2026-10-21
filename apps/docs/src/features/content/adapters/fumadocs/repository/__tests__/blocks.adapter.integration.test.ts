@@ -7,7 +7,7 @@ import { enterRepository } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
 
-// core's passport lists its chapters; a link in its prose, or in an item that names no axis folder, is no entry
+// a link in the passport's prose, or in an item that names no axis folder, is no entry
 const PASSPORT = [
   '# Core',
   '',

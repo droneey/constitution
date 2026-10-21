@@ -6,7 +6,7 @@
 
 ### biome-formats-every-file-it-reads → one-formatter-per-language · MUST
 
-Biome formats every TypeScript, CSS and JSON file: two spaces, lines of at most 100, single quotes in TypeScript and CSS.
+Biome formats every file of the languages it covers: two spaces, lines of at most 100, single quotes in code and stylesheets.
 
 | Why | Tags |
 |---|---|

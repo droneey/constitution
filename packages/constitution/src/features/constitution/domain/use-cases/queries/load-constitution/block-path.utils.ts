@@ -28,7 +28,6 @@ type BlockPath = PathInBlock & {
   layer: Layer;
 };
 
-/** a block file in its place: the passport, a chapter or a seam */
 type PlacedPath = Extract<
   BlockPath,
   {
@@ -142,8 +141,6 @@ const layerFolder = (segments: readonly string[]): Folder | undefined => {
       };
 };
 
-// The block's root holds only its passport, <id>.md; each axis keeps a folder of one form: its named
-// chapters and its with/ seams, and the block's id names no file in it.
 const fileOf = (folder: Folder): PathInBlock => {
   // Stryker disable next-line StringLiteral: the depth check guards every read
   const [first = '', name = '', seam = ''] = folder.rest;

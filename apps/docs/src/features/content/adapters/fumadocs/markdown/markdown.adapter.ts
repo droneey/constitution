@@ -4,7 +4,7 @@ import { toString as mdastTextOf } from 'mdast-util-to-string';
 
 const plainTextOf = (markdown: string): string => mdastTextOf(fromMarkdown(markdown));
 
-/** a heading's text as a reader sees it, without the HTML it holds, such as the README's marks */
+/** without the HTML a heading holds, such as the README's marks */
 const headingTextOf = (heading: Heading): string =>
   mdastTextOf(heading, {
     includeHtml: false,

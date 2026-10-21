@@ -27,6 +27,7 @@
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
     "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
+    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "shell:check": "shellcheck hooks/*.sh hooks/lib/*.sh && shfmt -d hooks"
   },
   "dependencies": {

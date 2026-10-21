@@ -1,0 +1,7 @@
+# yamlfmt: pinned by mise
+[tools]
+yamlfmt = "0.21.0"
+
+# yamlfmt: the YAML files, by the part it takes on the command line
+[tasks."yaml:format:check"]
+run = "yamlfmt -lint -conf <parts> ."

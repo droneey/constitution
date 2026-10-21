@@ -3,39 +3,6 @@
 export default {
   forbidden: [
     {
-      name: 'units-imported-by-name',
-      severity: 'error',
-      from: {
-        path: '^((?:apps|packages)/[^/]+)/',
-      },
-      to: {
-        path: '^(?:apps|packages)/',
-        pathNot: '^$1/',
-        dependencyTypes: [
-          'local',
-        ],
-        dependencyTypesNot: [
-          'aliased-workspace',
-        ],
-      },
-    },
-    {
-      name: 'root-imports-units-by-name',
-      severity: 'error',
-      from: {
-        pathNot: '^(?:apps|packages)/',
-      },
-      to: {
-        path: '^(?:apps|packages)/',
-        dependencyTypes: [
-          'local',
-        ],
-        dependencyTypesNot: [
-          'aliased-workspace',
-        ],
-      },
-    },
-    {
       name: 'apps-blind-to-each-other',
       severity: 'error',
       from: {

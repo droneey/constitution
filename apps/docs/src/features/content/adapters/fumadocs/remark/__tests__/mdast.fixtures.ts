@@ -2,7 +2,7 @@ import type { Emphasis, InlineCode, Link, Nodes, PhrasingContent, Root, Table, T
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
 
-/** a tree without the positions the parser marks, so a case can state it as written */
+/** so a case can state the tree as written */
 export const withoutPositions = <TNode extends Nodes>(tree: TNode): TNode => {
   visit(tree, (node) => {
     Reflect.deleteProperty(node, 'position');
@@ -11,10 +11,8 @@ export const withoutPositions = <TNode extends Nodes>(tree: TNode): TNode => {
   return tree;
 };
 
-/** a tree of Markdown, without positions */
 export const treeOf = (markdown: string): Root => withoutPositions(fromMarkdown(markdown));
 
-/** the children of a tree of Markdown, without positions */
 export const nodesOf = (markdown: string): Root['children'] => treeOf(markdown).children;
 
 export const text = (words: string): Text => ({
@@ -27,14 +25,13 @@ export const inlineCode = (slug: string): InlineCode => ({
   value: slug,
 });
 
-/** a link the plugin makes, which carries no title */
+/** without a title, as the plugin makes it */
 export const link = (url: string, children: PhrasingContent[]): Link => ({
   children,
   type: 'link',
   url,
 });
 
-/** a part of a rendered rule, a `span` marked by its attributes */
 export const span = (
   attributes: Readonly<Record<string, string | string[]>>,
   children: PhrasingContent[],
@@ -49,7 +46,7 @@ export const span = (
   type: 'emphasis',
 });
 
-/** a rule's table, `| Why | Tags |`, with its row; GitHub's tables need an extension the parser lacks */
+/** built by hand, since GitHub's tables need an extension the parser lacks */
 export const ruleTable = (row?: { tags: string; why: PhrasingContent[] }): Table => ({
   align: [
     null,

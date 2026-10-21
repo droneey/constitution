@@ -11,10 +11,8 @@ import { BLOCKS_FOLDER, inRepository } from './repository.adapter';
 
 const MARKDOWN = '.md';
 
-/** core's passport, whose list of core's chapters gives the order they are read in */
 const PASSPORT = `core${MARKDOWN}`;
 
-/** an item of that list, which opens with its axis folder: "- `foundation/`: …" */
 const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
 const FRONT_MATTER = /---\n([\s\S]*?)\n---\n/;
@@ -30,7 +28,6 @@ const linksIn = (node: Nodes): readonly string[] => [
   ...('children' in node ? node.children.flatMap(linksIn) : []),
 ];
 
-/** core's chapters by their paths in core's folder, without `.md`; its passport, `core.md`, left out */
 const coreChapterFilesOf = (): readonly string[] =>
   readdirSync(inBlocks('core'), {
     recursive: true,
@@ -39,7 +36,7 @@ const coreChapterFilesOf = (): readonly string[] =>
     .filter((path) => path.endsWith(MARKDOWN) && path !== PASSPORT)
     .map((path) => path.slice(0, -MARKDOWN.length));
 
-/** core's chapters in the order its passport lists them, which a chapter added without a place in that list stops */
+/** in the order core's passport lists them; throws when that list and the chapters on disk differ */
 const coreChaptersOf = (): readonly string[] => {
   const listed = readFileSync(inBlocks('core', PASSPORT), 'utf8')
     .split('\n')
@@ -63,7 +60,7 @@ const coreChaptersOf = (): readonly string[] => {
   return listed;
 };
 
-/** the abstract block a block's passport extends, if any; the Constitution's check sees every passport opens with its front matter */
+/** the Constitution's check sees every passport opens with its front matter */
 const baseOf = (layer: string, id: string): string | undefined =>
   passportModel.parse(
     parse(
@@ -72,7 +69,6 @@ const baseOf = (layer: string, id: string): string | undefined =>
     ),
   ).extends;
 
-/** a layer's blocks, each a folder, in the order the site lists them */
 const layerBlocksOf = (layer: string): readonly string[] =>
   readingOrderOf(
     readdirSync(inBlocks(layer)).map((id) => ({
@@ -81,7 +77,6 @@ const layerBlocksOf = (layer: string): readonly string[] =>
     })),
   );
 
-/** the axis folders of a layer's blocks, each by its path from blocks/: `<layer>/<id>/<axis>` */
 const axisFoldersOf = (layer: string): readonly string[] =>
   readdirSync(inBlocks(layer)).flatMap((id) =>
     AXIS_FOLDERS.filter((axis) => existsSync(inBlocks(layer, id, axis))).map(
@@ -92,7 +87,6 @@ const axisFoldersOf = (layer: string): readonly string[] =>
 /** the folder of an axis's seams */
 const SEAMS = 'with';
 
-/** the axis folders of a layer's blocks that hold seams, each by its path from blocks/ */
 const seamHoldersOf = (layer: string): readonly string[] =>
   axisFoldersOf(layer).filter((folder) => existsSync(inBlocks(folder, SEAMS)));
 

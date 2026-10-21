@@ -1,34 +1,34 @@
 import { fileURLToPath } from 'node:url';
 
-import architecture from '../../.droneey/constitution/presets/typescript/stryker/architecture/core.mjs';
+import { join } from '../../.droneey/constitution/presets/typescript/join.mjs';
+import architectureCore from '../../.droneey/constitution/presets/typescript/stryker/architecture/core.mjs';
 import architectureTanstackStart from '../../.droneey/constitution/presets/typescript/stryker/architecture/tanstack-start.mjs';
 import bunTest from '../../.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
 import core from '../../.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
 import git from '../../.droneey/constitution/presets/typescript/stryker/foundation/git.mjs';
 import mise from '../../.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
 import self from '../../.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
+import tanstackRouter from '../../.droneey/constitution/presets/typescript/stryker/foundation/tanstack-router.mjs';
 import tanstackStart from '../../.droneey/constitution/presets/typescript/stryker/foundation/tanstack-start.mjs';
+import uv from '../../.droneey/constitution/presets/typescript/stryker/foundation/uv.mjs';
 
+// Stryker has no extends, so the parts are joined.
 export default {
-  ...self,
-  ...git,
-  ...mise,
-  ...bunTest,
-  ...core,
-  ignorePatterns: [
-    ...git.ignorePatterns,
-    ...mise.ignorePatterns,
-    '.output',
-    '.tanstack',
-  ],
+  ...join(
+    self,
+    core,
+    bunTest,
+    git,
+    mise,
+    tanstackRouter,
+    tanstackStart,
+    uv,
+    architectureCore,
+    architectureTanstackStart,
+  ),
+  // this repository runs the mutation check from its source, not from the archive's build
   plugins: [
     fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner')),
     fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers')),
-  ],
-  mutate: [
-    ...core.mutate,
-    ...tanstackStart.mutate,
-    ...architecture.mutate,
-    ...architectureTanstackStart.mutate,
   ],
 };

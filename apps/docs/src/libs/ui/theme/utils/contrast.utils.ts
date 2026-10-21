@@ -18,7 +18,6 @@ import type {
 } from '../types';
 import { colourOf } from './tokens.utils';
 
-/** a colour a code theme writes in hex */
 const hexColourOf = (hex: string): PlainColorObject => {
   // The functional API parses only the formats of the spaces registered with it; hex is sRGB's.
   ColorSpace.register(sRGB);
@@ -45,7 +44,6 @@ const checkPair = (
   };
 };
 
-/** the colours code text is written in: the editor's own, and those of the scopes code shows */
 const codeForegroundsOf = (theme: CodeTheme): string[] =>
   [
     theme.colors?.[EDITOR_FOREGROUND],
@@ -82,18 +80,15 @@ const checkCode = (
   };
 };
 
-/** every pair the settings name and the code of each mode on each code background, mode by mode */
 const checkThemeContrast = (input: ThemeContrastInput): ContrastCheck[] =>
   Object.values(ThemeMode).flatMap((mode) => [
     ...input.settings.contrast.map((pair) => checkPair(input.tokens, pair, mode)),
     ...input.settings.code.backgrounds.map((background) => checkCode(input, mode, background)),
   ]);
 
-/** a line of the report: the mode, the pair, the ratio it reached and the one it needs */
 const formatContrastReport = ({ mode, label, ratio, minimum }: ContrastCheck): string =>
   `${mode.padEnd(MODE_LABEL_WIDTH)} ${label}: ${ratio.toFixed(RATIO_DIGITS)} (needs ${minimum})`;
 
-/** a refusal for each check below its minimum */
 const listContrastFailures = (checks: readonly ContrastCheck[]): string[] =>
   checks
     .filter(({ ratio, minimum }) => ratio < minimum)

@@ -4,9 +4,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { branchIn } from './branch.ts';
-import { mutateTargets } from './changes.ts';
-import { importsOf, loaderOf } from './imports.ts';
+import { mutateTargets } from '#/features/targets';
+import { branchIn } from '#/libs/git';
+import { importsOf, loaderOf } from '#/libs/imports';
 
 const CONFIG_FILES = [
   'stryker.config.mjs',

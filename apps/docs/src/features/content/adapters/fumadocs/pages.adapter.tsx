@@ -14,10 +14,10 @@ interface MarkdownPage {
   url: string;
 }
 
-/** the paths the collections know their pages by, by the path the site serves each one under */
+/** a page's path in its collection, by the path the site serves it under */
 const collectionPaths = new Map<string, string>();
 
-/** a source whose files are served under other paths: the README's parts, and a block's passport as its folder's index */
+/** records each file's path in its collection, for `collectionPathOf` */
 const renamed = <
   TSource extends {
     files: {
@@ -40,17 +40,14 @@ const renamed = <
   }),
 });
 
-/** a block's file by the path the site serves it under: its passport as its folder's index */
 const passportAsIndex = (path: string): string =>
   `${pageSlugsOf(path).join('/')}${isPassportPath(path) ? '/index' : ''}.md`;
 
 const collectionPathOf = (path: string): string => collectionPaths.get(path) ?? path;
 
 /**
- * A sidebar entry that leads to a page of another section carries an arrow after its name. One that
- * leads to a whole page leads to its main region, so the page is found where it lives: the library
- * places a page, for its breadcrumbs, its neighbours and the open folder, at the first entry of its
- * address.
+ * A link to a whole page leads to its main region, since the library places a page, for its
+ * breadcrumbs, its neighbours and the open folder, at the first entry of its address.
  */
 const crossLinked = (node: Item, path: string | undefined): Item => {
   if (path !== undefined || node.external === true || !node.url.startsWith(docsRoute)) {

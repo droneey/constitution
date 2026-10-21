@@ -1,6 +1,6 @@
 # Locale
 
-> Governs how the locale is chosen and what falls back.
+> Governs how the locale is chosen, and what falls back.
 
 ## Choice and fallback
 

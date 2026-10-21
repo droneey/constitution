@@ -1,0 +1,11 @@
+# uv: installs
+[tool.uv]
+exclude-newer = "3 days"
+no-build = true
+python-downloads = "never"
+python-preference = "only-system"
+
+# uv: the build backend
+[build-system]
+requires = ["uv_build>=0.13,<0.14"]
+build-backend = "uv_build"

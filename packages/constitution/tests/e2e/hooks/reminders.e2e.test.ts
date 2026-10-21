@@ -52,9 +52,22 @@ const startSession = (
   };
 };
 
-const touch = (input: { filePath: string; session: string; toolName?: string }): string =>
+const touch = (input: {
+  agent?: string | undefined;
+  filePath: string;
+  session: string;
+  toolName?: string;
+}): string =>
   runScript({
     event: Object.fromEntries([
+      ...(input.agent === undefined
+        ? []
+        : [
+            [
+              'agent_id',
+              input.agent,
+            ],
+          ]),
       [
         'hook_event_name',
         'PostToolUse',
@@ -263,6 +276,74 @@ describe('the reminders of the post-tool-use hook', () => {
       filePath: join(project, 'src/shared/components/button.tsx'),
       session,
       toolName: 'Edit',
+    });
+
+    // Assert
+    expect(reminder).toBe('');
+  });
+
+  it.each([
+    {
+      first: undefined,
+      name: 'a subagent touches it after its parent',
+      second: 'subagent-1',
+    },
+    {
+      first: 'subagent-1',
+      name: 'the parent touches it after a subagent',
+      second: undefined,
+    },
+    {
+      first: 'subagent-1',
+      name: 'a subagent touches it after another subagent',
+      second: 'subagent-2',
+    },
+  ])('should name the block again when $name', ({ first, second }) => {
+    // Arrange
+    const { project, session } = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    touch({
+      agent: first,
+      filePath: join(project, ORDER_CARD),
+      session,
+    });
+
+    // Act
+    const reminder = touch({
+      agent: second,
+      filePath: join(project, ORDER_CARD),
+      session,
+    });
+
+    // Assert
+    expect(remindedOf(reminder)).toStrictEqual([
+      'ui',
+    ]);
+  });
+
+  it('should say nothing when a subagent touches a file whose block it was reminded of', () => {
+    // Arrange
+    const { project, session } = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    touch({
+      agent: 'subagent-1',
+      filePath: join(project, ORDER_CARD),
+      session,
+    });
+
+    // Act
+    const reminder = touch({
+      agent: 'subagent-1',
+      filePath: join(project, ORDER_CARD),
+      session,
     });
 
     // Assert

@@ -3,7 +3,6 @@ import { fromHtml } from 'hast-util-from-html';
 import type { Data, Node, Root } from 'mdast';
 import { visit } from 'unist-util-visit';
 
-/** a diagram drawn at build time: a figure whose children are the elements of its SVG */
 interface Diagram extends Node {
   data: Data;
   type: 'diagram';
@@ -18,12 +17,11 @@ declare module 'mdast' {
   }
 }
 
-/** what a figure of the page holds: an element, a text or a comment */
 type FigureContent = NonNullable<Data['hChildren']>[number];
 
 type ParsedContent = ReturnType<typeof fromHtml>['children'][number];
 
-/** the space between the nodes of a diagram, its layers and its edge, in pixels */
+/** in pixels, between the nodes of a diagram, its layers and its edge */
 const SPACING = 32;
 
 const COLOURS = {
@@ -77,8 +75,7 @@ const diagramOf = (chart: string): Diagram => {
   };
 };
 
-// A Mermaid block becomes its SVG at build time, as elements of the page rather
-// than injected markup, coloured by the theme's tokens.
+// The SVG joins the page as its elements rather than as injected markup.
 const remarkDiagrams =
   () =>
   (tree: Root): void => {

@@ -42,6 +42,11 @@ describe('presetsCheck', () => {
       'presets/typescript/biome/workflow/self.config.jsonc',
       'presets/common/biome/foundation/bindings.yaml',
       'presets/css/lingui/foundation/core.jsonc',
+      'presets/typescript/join.mjs',
+      'presets/common/join.mjs',
+      'presets/common/join.js',
+      'presets/common/join.ts',
+      'presets/common/join.py',
     ];
 
     // Act
@@ -86,6 +91,42 @@ describe('presetsCheck', () => {
       name: 'a part sits in a presets folder of a tool folder',
       names: [],
       path: 'presets/typescript/biome/nested/presets/common/biome/foundation/core.jsonc',
+    },
+    {
+      code: 'stray-preset-file',
+      name: 'a shared module sits in a domain',
+      names: [],
+      path: 'presets/ui/join.mjs',
+    },
+    {
+      code: 'stray-preset-file',
+      name: 'a shared module sits in a scope that names no block',
+      names: [],
+      path: 'presets/nowhere/join.mjs',
+    },
+    {
+      code: 'stray-preset-file',
+      name: 'a shared module sits in a presets folder of a tool folder',
+      names: [],
+      path: 'presets/typescript/biome/presets/common/join.mjs',
+    },
+    {
+      code: 'stray-preset-file',
+      name: 'a folder is named like a shared module',
+      names: [],
+      path: 'presets/typescript/join.mjs/notes.txt',
+    },
+    {
+      code: 'stray-preset-file',
+      name: 'a shared module is hidden',
+      names: [],
+      path: 'presets/typescript/.join.mjs',
+    },
+    {
+      code: 'stray-preset-file',
+      name: 'a shared module has no extension',
+      names: [],
+      path: 'presets/typescript/join',
     },
     {
       code: 'stray-preset-file',

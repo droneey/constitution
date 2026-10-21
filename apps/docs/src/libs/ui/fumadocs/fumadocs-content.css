@@ -1,10 +1,4 @@
-/* The library's page parts on the site's tokens: the table of contents, the content, the search
-   dialog and the lists every menu shares. Hooks are the library's ids, data and aria attributes. */
-
-/* -------------------------------------------------------------------------- */
-/* TABLE OF CONTENTS                                                          */
-/* Desktop, the mobile bar and the header dropdown list the same rows.        */
-/* -------------------------------------------------------------------------- */
+/* Hooks are the library's ids, data and aria attributes. */
 
 @layer overrides {
   /* it opens from its trigger's edge as wide as the screen leaves it room for, and passes the edge
@@ -145,10 +139,6 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* CONTENT                                                                    */
-/* -------------------------------------------------------------------------- */
-
 @layer overrides {
   a[data-card] + button[aria-live] {
     &:focus-visible {
@@ -160,7 +150,6 @@
     }
   }
 
-  /* the previous and next pages, filled as the fields are, whatever level they lie on */
   [role='main'] > nav:last-child > a {
     background-color: var(--color-fill-field);
     transition: background-color var(--duration-fast) var(--ease-standard);
@@ -170,10 +159,6 @@
     }
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/* SEARCH DIALOG                                                              */
-/* -------------------------------------------------------------------------- */
 
 @layer overrides {
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
@@ -252,7 +237,6 @@
         margin: 0;
       }
 
-      /* the page's breadcrumb above its title */
       & > div:first-child:not(:empty) {
         gap: var(--spacing-2xs);
         margin-bottom: var(--spacing-2xs);
@@ -305,19 +289,13 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* LISTS                                                                      */
-/* One muted block slides to the row under the pointer or the keyboard: the   */
-/* library's in the sidebar, the glide hook's everywhere else.               */
-/* A press shrinks a row, a button or a segment a little, with its block.     */
-/* -------------------------------------------------------------------------- */
-
 @layer overrides {
-  /* no dropdown opens narrower than the narrowest */
   [data-side] > [role='menu'][data-side] {
     min-width: var(--spacing-popup-min);
   }
 
+  /* one muted block slides to the row under the pointer or the keyboard: the library's in the
+     sidebar, the glide hook's everywhere else */
   [data-glide],
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
     #nd-sidebar
@@ -398,7 +376,6 @@
 }
 
 @layer overrides {
-  /* an entry that leads to another section's page ends on an arrow */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-cross-link] {
     margin-inline-start: auto;

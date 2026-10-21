@@ -1,0 +1,4 @@
+[[tool.importlinter.contracts]]
+name = "module-imports-form-no-cycle"
+type = "acyclic_siblings"
+ancestors = ["<package>"]

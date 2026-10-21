@@ -14,7 +14,7 @@ export type Releases =
       status: 'loaded';
     } & Versions);
 
-/** the releases this site knows of, read once the caller mounts */
+/** read once the caller mounts */
 export function useVersions(): Releases {
   const getVersions = use(GetVersionsContext);
   const [releases, setReleases] = useState<Releases>({

@@ -36,7 +36,6 @@ const guide = pageEntryFixture({
   title: 'Write a pack',
 });
 
-/** the screen on the overview, as its route hands it over */
 const overviewPage = (): ReactElement => (
   <DocsPageScreen
     href='/docs'
@@ -46,7 +45,6 @@ const overviewPage = (): ReactElement => (
   />
 );
 
-/** the same screen on a guide, as its route hands it over after a navigation */
 const guidePage = (): ReactElement => (
   <DocsPageScreen
     href='/docs/guides/write-a-pack'
@@ -62,7 +60,7 @@ const headingOf = (title: string): Promise<HTMLElement> =>
     name: title,
   });
 
-/** the router hands the screen the next page, whose contents load before it shows */
+/** the next page's contents load before it shows */
 const navigate = (rendered: RenderResult, page: ReactElement): Promise<void> =>
   act(() => Promise.resolve(rendered.rerender(page)));
 
@@ -157,6 +155,7 @@ describe('DocsPageScreen', () => {
     await headingOf('Overview');
 
     // Assert
+    // biome-ignore lint/plugin/queries-by-role-label-text: the page's scroller is a layout element of Fumadocs, which no role, label or text names
     expect(document.querySelector(pageScrollerSelector)?.contains(screen.getByRole('main'))).toBe(
       true,
     );
@@ -242,6 +241,7 @@ describe('DocsPageScreen', () => {
     await headingOf('Overview');
 
     // Assert
+    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
     expect(document.querySelectorAll('[data-toc-list] > [data-glide]').length).toBe(1);
   });
 

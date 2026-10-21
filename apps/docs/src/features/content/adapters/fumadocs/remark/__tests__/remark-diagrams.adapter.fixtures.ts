@@ -1,6 +1,6 @@
 import { fromHtml } from 'hast-util-from-html';
 
-/** the SVG a small flowchart, `A[Rule] --> B[Block]`, draws in the site's colours, as beautiful-mermaid wrote it */
+/** what beautiful-mermaid drew for `A[Rule] --> B[Block]` in the site's colours */
 const GOLDEN_FLOWCHART = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240.662 100.9" width="240.662" height="100.9" style="--bg:var(--color-surface-base);--fg:var(--color-text-primary);--line:color-mix(in oklch, var(--color-accent-solid) 60%, var(--color-text-muted));--accent:var(--color-accent-solid);--muted:var(--color-text-muted);--surface:color-mix(in oklch, var(--color-accent-solid) 7%, var(--color-surface-level-1));--border:color-mix(in oklch, var(--color-accent-solid) 45%, transparent)">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
@@ -40,7 +40,6 @@ const GOLDEN_FLOWCHART = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 </g>
 </svg>`;
 
-/** the elements of the golden flowchart, as a figure holds them */
 export const goldenFlowchart = (): ReturnType<typeof fromHtml>['children'] =>
   fromHtml(GOLDEN_FLOWCHART, {
     fragment: true,

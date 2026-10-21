@@ -1,7 +1,7 @@
 ---
 id: shadcn
 summary: UI kit from shadcn source on Base UI primitives, adapted on arrival.
-requires: [react-dom, tailwind]
+requires: [react-dom, tailwind, json]
 extends: null
 abstract: false
 languages: []

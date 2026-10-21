@@ -1,6 +1,6 @@
 # Types
 
-> Governs scalars and keys: booleans, quoting, unique and merge keys, and the schema a reader resolves by.
+> Governs scalars and keys: booleans, quoting, merge keys and the schema a reader resolves by.
 
 ## General
 
@@ -20,17 +20,9 @@ A plain scalar meant as text that any reader might resolve to another type is qu
 |---|---|
 | a YAML 1.1 reader turns `no` into false, `0755` into 493, `1:20` into 80 and a date into a timestamp, and every reader turns `3.10` into 3.1, so the value changes with no error. | [data] |
 
-### mapping-key-unique · MUST
-
-A key appears once in its mapping.
-
-| Why | Tags |
-|---|---|
-| the specification forbids a repeated key, yet many parsers keep the last value silently, so the first one reads as set while it does nothing. | [data] |
-
 ### merge-key-never-used · SHOULD
 
-A mapping never uses the merge key `<<`, save in a format whose own reader defines it, as Compose's does.
+A mapping never uses the merge key `<<`, save in a format whose own reader defines it.
 
 | Why | Tags |
 |---|---|

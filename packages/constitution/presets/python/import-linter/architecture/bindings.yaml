@@ -1,0 +1,38 @@
+core:
+  kernel-imports-only-itself:
+    - kernel-imports-only-itself
+  libs-import-no-application-code:
+    - libs-import-no-application-code
+  shared-imports-no-feature-adapter-contract-or-root:
+    - shared-imports-no-feature-adapter-contract-or-root
+  domain-imports-only-itself-and-the-kernel:
+    - domain-imports-only-itself-and-the-kernel
+  effects-held-only-by-the-edge:
+    - effects-held-only-by-the-edge
+  feature-never-imports-a-feature:
+    - feature-never-imports-a-feature
+  binding-unit-calls-only-use-cases:
+    - binding-unit-calls-only-use-cases
+  composition-module-never-imports-another:
+    - composition-module-never-imports-another
+  adapter-imports-only-its-owners-domain-and-shared-layers:
+    - adapter-imports-only-its-owners-domain-and-shared-layers
+  root-imported-only-by-entries:
+    - root-imported-only-by-entries
+  adapter-imported-only-by-the-root:
+    - adapter-imported-only-by-the-root
+  entrypoint-never-imported:
+    - entrypoint-never-imported
+  integration-never-imported:
+    - integration-never-imported
+  import-points-inward:
+    - import-points-inward
+  query-and-command-apart:
+    - query-and-command-apart
+  surface-only-on-a-module-or-one-kind:
+    - surface-only-on-a-module-or-one-kind
+  module-reached-only-through-its-surface:
+    - module-reached-only-through-its-surface
+python:
+  domain-imports-no-logging:
+    - domain-imports-no-logging

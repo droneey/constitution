@@ -1,0 +1,5 @@
+[test]
+preload = [
+  # lingui: its macros and catalogs, compiled
+  "./src/__tests__/lingui.fixtures.ts",
+]

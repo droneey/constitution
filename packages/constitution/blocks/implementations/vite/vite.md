@@ -1,7 +1,7 @@
 ---
 id: vite
 summary: Vite builds and serves the bundle.
-requires: [typescript]
+requires: [_js-runtime]
 extends: null
 abstract: false
 languages: []

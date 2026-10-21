@@ -24,7 +24,7 @@ function DocsRoute(): ReactElement {
   );
 }
 
-/** the page at the address, its body loaded before it renders */
+/** loads the body before the page renders */
 const loadDocsPage = async ({
   context,
   params,
@@ -48,7 +48,6 @@ const loadDocsPage = async ({
   return loaded;
 };
 
-/** the page's title in the tab, after the loader, whose data names it */
 const headOf = ({
   loaderData,
 }: {

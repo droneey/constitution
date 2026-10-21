@@ -1,0 +1,12 @@
+[tasks."dockerfile:check"]
+run = "hadolint --config ../../.droneey/constitution/presets/dockerfile/hadolint/foundation/dockerfile.yaml docker/images/app.Dockerfile"
+
+[tasks."compose:check"]
+run = "dclint --config ../../.droneey/constitution/presets/yaml/dclint/foundation/compose.yaml compose.yaml docker/compose/app.yaml"
+
+# the image's system packages are GPL; the licence allowlist holds the dependencies, checked from the root
+[tasks."audit:check"]
+run = [
+  "docker build --quiet --target base --tag droneey-constitution-docs-base:local --file docker/images/app.Dockerfile ../..",
+  "osv-scanner scan image droneey-constitution-docs-base:local",
+]

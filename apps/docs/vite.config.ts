@@ -10,7 +10,6 @@ import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import { z } from 'zod';
 
-// the site builds from its own folder, two levels below the repository's root
 const CONSTITUTION_MANIFEST = new URL('../../packages/constitution/package.json', import.meta.url);
 
 const manifestShape = z.object({

@@ -18,7 +18,9 @@ enum PresetsCode {
 const SELF = 'self';
 const COMMON = 'common';
 const LAYOUT =
-  'is not a part of a preset: presets/<scope>/<tool>/<axis>/<block>.<extension>, presets/<scope>/<tool>/<axis>/plugins/<rule>.grit or presets/<scope>/<tool>/<axis>/bindings.yaml, the axis foundation, architecture or workflow';
+  'is not a part of a preset: presets/<scope>/<tool>/<axis>/<block>.<extension>, presets/<scope>/<tool>/<axis>/plugins/<rule>.grit, presets/<scope>/<tool>/<axis>/bindings.yaml, the axis foundation, architecture or workflow, or a module the configurations of a scope share, presets/<scope>/<name>.<extension>';
+// a module the configurations of a scope import, beside its tools' folders
+const SHARED = /^presets\/([^/]+)\/[^/.][^/]*\.[^/.]+$/;
 
 type PartPath = Exclude<
   PresetPath,
@@ -60,7 +62,6 @@ const nameProblem = (input: {
       };
 };
 
-// A scope is common to every language the tool reads, or one of them.
 const scopeProblem = (input: { byId: BlocksById; preset: PresetPath }): Problem | undefined => {
   const { scope, tool } = input.preset;
   const covered = input.byId.get(tool)?.frontMatter.languages ?? [];
@@ -86,6 +87,13 @@ const presetsCheck: Check = ({ byId, constitution }: CheckInput): readonly Findi
   const isBlock = (id: string): boolean => byId.has(id);
 
   return constitution.presets.flatMap(({ path }) => {
+    const shared = SHARED.exec(path)?.[1];
+
+    // Stryker disable next-line ConditionalExpression: no block has an undefined id, so the test only narrows the type
+    if (shared === COMMON || (shared !== undefined && byId.get(shared)?.layer === Layer.Language)) {
+      return [];
+    }
+
     const preset = presetPathOf(path);
 
     if (preset === undefined) {

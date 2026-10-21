@@ -23,15 +23,12 @@ import { DocsSidebarWidget } from '../../widgets/docs-sidebar-widget';
 import { DocsVersionWidget } from '../../widgets/docs-version-widget';
 
 interface DocsPageScreenProps {
-  /** the address the browser shows */
   href: string;
   page: DocsPageEntry;
   pageTree: PageTreeRoot;
-  /** the page's path in its collection */
   path: string;
 }
 
-/** the sidebar's fields: the version menu above the library's search field */
 function SidebarFields(props: FullSearchTriggerProps): ReactElement {
   return (
     <>
@@ -123,7 +120,7 @@ export interface DocsPageEntry {
   load: () => Promise<{
     toc: TOCItemType[];
   }>;
-  /** the body's outline once loaded, which the page reads without waiting */
+  /** undefined until the body has loaded */
   loaded: () =>
     | {
         toc: TOCItemType[];
@@ -132,7 +129,7 @@ export interface DocsPageEntry {
   title: string;
 }
 
-/** a page of the documentation; a navigation inside the site moves focus to its heading, the first load keeps it */
+/** a navigation inside the site moves focus to the page's heading; the first load leaves focus where it is */
 export function DocsPageScreen({ href, page, pageTree, path }: DocsPageScreenProps): ReactElement {
   const [shown, setShown] = useState({
     navigated: false,

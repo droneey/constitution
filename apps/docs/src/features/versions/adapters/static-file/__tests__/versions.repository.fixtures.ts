@@ -1,4 +1,3 @@
-/** what the site serves, by address: a status and a body as JSON */
 type Served = Readonly<
   Record<
     string,
@@ -9,7 +8,7 @@ type Served = Readonly<
   >
 >;
 
-/** a transport that serves captured answers; one it has none for is 404, and an aborted request rejects as `fetch` does */
+/** an address it has no answer for is 404, and an aborted request rejects as `fetch` does */
 export const transportServing =
   (served: Served) =>
   (
@@ -32,7 +31,6 @@ export const transportServing =
         );
   };
 
-/** versions.json as the site publishes it */
 export const versionsFileOf = (overrides: Readonly<Record<string, unknown>> = {}): unknown => ({
   latest: '0.70.0',
   versions: [

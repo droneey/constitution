@@ -3,13 +3,13 @@ import type { Heading, Root, RootContent } from 'mdast';
 import { headingTextOf, isHeading } from '../markdown';
 
 interface SectionsOptions {
-  /** the second-level sections the page leaves out, by the text of their headings */
+  /** by the text of their headings */
   drop?: readonly string[];
-  /** the one second-level section the page shows, without its heading */
+  /** the one section the page shows, without its heading */
   keep?: string;
 }
 
-/** a second-level section of a file, or what comes before the first one */
+/** without a heading, what comes before the first section */
 interface Section {
   body: RootContent[];
   heading: Heading | undefined;
@@ -41,7 +41,6 @@ const sectionsOf = (children: readonly RootContent[]): Section[] => {
   return sections;
 };
 
-/** a page made of a part of a longer file, as the site splits the README into its first pages */
 const remarkSections =
   ({ drop, keep }: SectionsOptions) =>
   (tree: Root): void => {

@@ -130,6 +130,14 @@ A shape the program owns is parsed strictly — an unknown key, a value of anoth
 
 ## Kinds of value
 
+### mapping-key-unique · MUST
+
+A key appears once in its mapping — an object, a table, a dictionary written as data.
+
+| Why | Tags |
+|---|---|
+| most parsers keep the last value of a repeated key silently, so the first one reads as set while it does nothing. | [data] |
+
 ### absence-shown-by-the-type · MUST
 
 Absence is spelled by one value, which the language block names, and shown in the type; no other value — an empty string, a minus one, a zero date — stands for it, and an empty collection is empty, not absent. Another spelling appears only where an outside format or an API the code calls imposes it.

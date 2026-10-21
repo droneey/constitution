@@ -1,7 +1,7 @@
 ---
 id: rumdl
 summary: rumdl lints and formats Markdown.
-requires: [markdown]
+requires: [markdown, toml]
 extends: null
 abstract: false
 languages: [markdown]
@@ -13,4 +13,4 @@ governs: [".rumdl.toml"]
 
 > Lints and formats Markdown.
 
-`.rumdl.toml` extends `presets/markdown/rumdl/foundation/core.toml` of the Constitution's release archive, which extends `self.toml` — rumdl's default rules, the opt-in ones the rules of `markdown` and of core need, and its defaults that are stricter than those rules turned off — and `presets/markdown/rumdl/foundation/bindings.yaml` says which code holds which rule. It fails on a finding of any severity.
+`extends` names one file, so the parts form a chain, each extending the one before. rumdl reads one configuration for the whole repository and ignores a nested `.rumdl.toml`. It fails on a finding of any severity.

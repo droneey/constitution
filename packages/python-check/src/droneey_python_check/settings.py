@@ -52,9 +52,6 @@ def _import_name(distribution: str) -> str:
   return re.sub(r'[-.]+', '_', distribution).lower()
 
 
-# The project's pyproject.toml names the parts that give packages their homes,
-# in `[tool.python-check]`, and may add homes of its own; its workspace sources
-# name the units that are the repository's own code.
 def settings_of(folder: Path) -> Settings:
   path = folder / PYPROJECT
 

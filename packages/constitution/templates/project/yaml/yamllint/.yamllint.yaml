@@ -1,0 +1,2 @@
+# yamllint: the part of the Constitution's release it extends
+extends: <parts>

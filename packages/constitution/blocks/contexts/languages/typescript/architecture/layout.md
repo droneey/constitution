@@ -1,16 +1,8 @@
 # Layout
 
-> Governs hash imports, role suffixes, surfaces and further entries.
+> Governs role suffixes and surfaces.
 
 ## Surfaces
-
-### hash-imports-leave-the-module → module-files-import-each-other-directly · MUST
-
-An import that leaves its module is written from `#/`, and an import inside its module by a relative path.
-
-| Why | Tags |
-|---|---|
-| the specifier then shows at a glance whether an import crosses a module's border. | [] |
 
 ### surface-is-the-folders-index-ts → surface-only-on-a-module-or-one-kind · MUST
 
@@ -20,17 +12,9 @@ A surface is the `index.ts` of its folder, and a folder that has no surface — 
 |---|---|
 | `index.ts` is the file a folder's import resolves to, so one placed in a layer folder opens a door core keeps shut. | [] |
 
-### further-entry-is-a-subpath-named-after-what-it-offers → further-entry-sits-beside-the-surface · SHOULD
-
-A further entry is an `exports` subpath named after what it offers, `./testing`, mapped to its file beside `src/index.ts`.
-
-| Why | Tags |
-|---|---|
-| the specifier `@<scope>/<name>/testing` then names the door, and its file is found beside the surface it stands next to. | [] |
-
 ### surface-imported-by-its-folders-path → module-reached-only-through-its-surface · MUST
 
-An import of a surface names its folder — `#/features/orders`, `#/kernel/errors` — never its `index` or a file below it; code that runs on a runtime that maps no folder to its surface, or resolves no `#/` specifier, is bundled first.
+An import of a surface ends at its folder — `…/features/orders`, `…/kernel/errors` — never at its `index` or a file below it; code that runs on a runtime that maps no folder to its surface is bundled first.
 
 | Why | Tags |
 |---|---|

@@ -49,7 +49,7 @@ import {
   createProject,
   HTML_SITE,
   LIBRARY,
-  lineOf,
+  lineNumberOf,
   OWN_PACK,
   PACK_PROJECT,
   packBlockFiles,
@@ -274,7 +274,6 @@ const axesConfigOf = (input: { axes: string; packages?: string }): string =>
     domains: '[ui, version-control]',
   });
 
-// Where the hook finds the archive the project pins.
 const archiveIn = (project: string): string => join(project, LINK);
 
 let root = '';
@@ -603,7 +602,7 @@ describe('session-start hook', () => {
     }).toStrictEqual<UnparsedView>({
       core: true,
       index: [],
-      line: lineOf({
+      line: lineNumberOf({
         at,
         config,
       }),
@@ -1553,7 +1552,7 @@ describe('session-start hook', () => {
     {
       context: (archive): string =>
         unparsedContext({
-          line: lineOf({
+          line: lineNumberOf({
             at: '&check',
             config: UNPARSED_CONFIG,
           }),

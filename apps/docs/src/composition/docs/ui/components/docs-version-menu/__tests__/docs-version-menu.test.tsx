@@ -226,7 +226,9 @@ describe('DocsVersionMenu', () => {
 
     // Assert
     expect([
+      // biome-ignore lint/plugin/queries-by-role-label-text: the release's mark is an icon hidden from assistive technology, which no role, label or text names
       linkTo('0.70.0').querySelector('svg') === null,
+      // biome-ignore lint/plugin/queries-by-role-label-text: the release's mark is an icon hidden from assistive technology, which no role, label or text names
       linkTo('0.69.2').querySelector('svg') === null,
     ]).toStrictEqual([
       true,

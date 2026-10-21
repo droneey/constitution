@@ -64,7 +64,7 @@ const WELL_FORMED = {
 
 // A workspace of six units, one of them a library whose TypeScript package
 // sits beside its data in no language, each package linked by its name as a
-// package manager links it, with the workspace's architecture part.
+// package manager links it, with the workspace's parts.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'apps/admin',
   eros: 'packages/eros/languages/typescript',
@@ -104,6 +104,7 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
     ]),
   ),
   parts: [
+    'typescript/workspace',
     'typescript/architecture/workspace',
   ],
   roots: [
@@ -1325,6 +1326,40 @@ describe('the dependency-cruiser layer set', () => {
     // Assert
     expect(violations).toStrictEqual([]);
   });
+});
+
+describe('the development files the parts name', () => {
+  it.each([
+    {
+      condition: 'a story renders with a development dependency',
+      file: 'src/libs/ui/button.stories.tsx',
+      reported: false,
+    },
+    {
+      condition: 'production code beside the story imports the development dependency',
+      file: 'src/libs/ui/button.tsx',
+      reported: true,
+    },
+  ])(
+    'should report no-development-dependency-in-production only for production code when $condition',
+    ({ file, reported }) => {
+      // Arrange
+      const project = {
+        files: {
+          [file]: "import { devtool } from 'devtool';\nexport const shown = devtool;\n",
+        },
+        parts: [
+          'typescript/storybook',
+        ],
+      };
+
+      // Act
+      const { violations } = cruise(project);
+
+      // Assert
+      expect(violations.includes('no-development-dependency-in-production')).toBe(reported);
+    },
+  );
 });
 
 describe("the parts of dependency-cruiser's base", () => {

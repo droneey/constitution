@@ -3,7 +3,7 @@
 const DRAWER_QUERY = '(width < 768px)';
 const QUERY_MATCHING_NOTHING = 'not all';
 
-/** keeps the library's layout at every width; called before the first render */
+/** called before the first render */
 export function keepOneLayout(): void {
   const matchMedia = globalThis.matchMedia.bind(globalThis);
 

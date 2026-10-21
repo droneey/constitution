@@ -1,6 +1,6 @@
 # Distribution
 
-> Governs which tool publishes the units a Bun repository distributes.
+> Governs the tool that publishes a package a Bun repository distributes.
 
 ## General
 

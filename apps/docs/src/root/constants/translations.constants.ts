@@ -1,4 +1,4 @@
-/** the library's labels in sentence case, by the keys it asks for them */
+/** the library's labels in sentence case */
 export const translations: Readonly<Record<string, string>> = {
   'Back to Home(404 not found page)': 'Back to home',
   'Close Banner(banner)(aria-label)': 'Close banner',

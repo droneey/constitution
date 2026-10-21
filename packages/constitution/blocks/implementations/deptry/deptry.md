@@ -1,16 +1,16 @@
 ---
 id: deptry
 summary: deptry checks the dependencies a Python package declares and imports.
-requires: [python]
+requires: [python, toml]
 extends: null
 abstract: false
 languages: [python]
 dictionary: [deptry]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # deptry
 
 > Compares what a package's `src/` imports with what its `pyproject.toml` declares.
 
-deptry fails on a dependency declared and never imported, one imported and never declared, and a tool of the `dev` group the program imports. `[tool.deptry]` of `pyproject.toml` starts from the template `templates/project/python/python/pyproject.toml` of the Constitution's release archive, which copies the part `presets/python/deptry/foundation/core.toml`, and `presets/python/deptry/foundation/bindings.yaml` says which setting holds which rule.
+deptry fails on a dependency declared and never imported, one imported and never declared, and a tool of the `dev` group the program imports. It reads only its table of `pyproject.toml`, so the parts are copied into it.

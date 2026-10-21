@@ -1,7 +1,7 @@
 ---
 id: tailwind
 summary: Styling with Tailwind — tokens, variant maps and class merging.
-requires: [ui, browser, typescript, css]
+requires: [ui, browser, typescript, css, html]
 extends: null
 abstract: false
 languages: []

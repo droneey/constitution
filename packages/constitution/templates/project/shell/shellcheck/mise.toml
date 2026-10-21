@@ -1,0 +1,3 @@
+# shellcheck: pinned by mise
+[tools]
+shellcheck = "0.11.0"

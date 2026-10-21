@@ -1,0 +1,190 @@
+[[tool.importlinter.contracts]]
+name = "kernel-imports-only-itself"
+type = "forbidden"
+source_modules = ["*.kernel"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.libs", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "libs-import-no-application-code"
+type = "forbidden"
+source_modules = ["*.libs"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features", "*.integrations", "*.kernel", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+name = "shared-imports-no-feature-adapter-contract-or-root"
+type = "forbidden"
+source_modules = ["*.shared"]
+forbidden_modules = ["*.adapters", "*.composition", "*.features", "*.integrations", "*.kernel.contracts", "*.root"]
+
+[[tool.importlinter.contracts]]
+name = "domain-imports-only-itself-and-the-kernel"
+type = "forbidden"
+source_modules = ["*.features.*.domain"]
+forbidden_modules = ["*.adapters", "*.composition", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.integrations", "*.libs", "*.root", "*.shared"]
+
+[[tool.importlinter.contracts]]
+# python-check refuses an effect imported below the edge; this contract follows the imports through a lib.
+name = "effects-held-only-by-the-edge"
+type = "forbidden"
+source_modules = ["*.composition.*.app", "*.composition.*.domain", "*.features.*.app", "*.features.*.domain", "*.kernel", "*.shared"]
+forbidden_modules = ["ctypes", "curses", "dbm", "fcntl", "fileinput", "ftplib", "getpass", "glob", "grp", "imaplib", "mmap", "multiprocessing", "os", "platform", "poplib", "pty", "pwd", "random", "resource", "runpy", "secrets", "select", "selectors", "shelve", "shutil", "signal", "smtplib", "socket", "socketserver", "sqlite3", "ssl", "subprocess", "syslog", "tempfile", "termios", "time", "tty", "webbrowser", "wsgiref", "xmlrpc"]
+
+[[tool.importlinter.contracts]]
+name = "feature-never-imports-a-feature"
+type = "independence"
+modules = ["*.features.*"]
+
+# a binding unit receives the use case the root built over the port, never the port
+[[tool.importlinter.contracts]]
+name = "binding-unit-calls-only-use-cases"
+type = "forbidden"
+source_modules = ["*.composition.*.app", "*.features.*.app"]
+forbidden_modules = ["*.composition.*.domain.contracts", "*.features.*.domain.contracts"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "composition-module-never-imports-another"
+type = "independence"
+modules = ["*.composition.*"]
+
+[[tool.importlinter.contracts]]
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
+type = "independence"
+modules = ["*.adapters.*", "*.composition.*.adapters.*", "*.features.*.adapters.*"]
+
+[[tool.importlinter.contracts]]
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
+type = "forbidden"
+source_modules = ["*.adapters", "*.features.*.adapters"]
+forbidden_modules = ["*.composition", "*.entrypoints", "*.features.*.app", "*.root"]
+
+[[tool.importlinter.contracts]]
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
+type = "forbidden"
+source_modules = ["*.adapters"]
+forbidden_modules = ["*.features"]
+
+# composition implements a feature's contract through another feature's surface
+[[tool.importlinter.contracts]]
+name = "adapter-imports-only-its-owners-domain-and-shared-layers"
+type = "forbidden"
+source_modules = ["*.composition.*.adapters"]
+forbidden_modules = ["*.composition.*.app", "*.entrypoints", "*.features.*.adapters", "*.features.*.app", "*.root"]
+
+[[tool.importlinter.contracts]]
+name = "root-imported-only-by-entries"
+type = "protected"
+protected_modules = ["*.root"]
+allowed_importers = ["*.main", "*.entrypoints.*.main"]
+
+# the root reaches an adapter through its own surface; the package's surface may offer one to its consumers
+[[tool.importlinter.contracts]]
+name = "adapter-imported-only-by-the-root"
+type = "protected"
+protected_modules = ["*.adapters", "*.adapters.**", "*.composition.*.adapters", "*.composition.*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+allowed_importers = ["*", "*.root", "*.root.**", "*.adapters", "*.adapters.**", "*.composition.*.adapters", "*.composition.*.adapters.**", "*.features.*.adapters", "*.features.*.adapters.**"]
+as_packages = false
+
+[[tool.importlinter.contracts]]
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.entrypoints"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "entrypoint-never-imported"
+type = "independence"
+modules = ["*.entrypoints.*"]
+
+[[tool.importlinter.contracts]]
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.__main__"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "entrypoint-never-imported"
+type = "protected"
+protected_modules = ["*.main"]
+allowed_importers = ["*.__main__"]
+
+[[tool.importlinter.contracts]]
+name = "integration-never-imported"
+type = "protected"
+protected_modules = ["*.integrations"]
+allowed_importers = []
+
+[[tool.importlinter.contracts]]
+name = "integration-never-imported"
+type = "independence"
+modules = ["*.integrations.*"]
+
+[[tool.importlinter.contracts]]
+name = "import-points-inward"
+type = "forbidden"
+source_modules = ["*.adapters", "*.features", "*.kernel", "*.libs", "*.shared"]
+forbidden_modules = ["*.composition"]
+
+[[tool.importlinter.contracts]]
+name = "query-and-command-apart"
+type = "forbidden"
+source_modules = ["**.repositories.queries", "**.use_cases.queries"]
+forbidden_modules = ["**.repositories.commands", "**.use_cases.commands"]
+
+[[tool.importlinter.contracts]]
+name = "query-and-command-apart"
+type = "forbidden"
+source_modules = ["**.repositories.commands", "**.use_cases.commands"]
+forbidden_modules = ["**.repositories.queries", "**.use_cases.queries"]
+
+# a layer folder's __init__.py, the import package's own among them, is never imported
+[[tool.importlinter.contracts]]
+name = "surface-only-on-a-module-or-one-kind"
+type = "forbidden"
+source_modules = ["**"]
+forbidden_modules = ["<package>", "*.adapters", "*.composition", "*.composition.*.adapters", "*.composition.*.app", "*.composition.*.domain", "*.features", "*.features.*.adapters", "*.features.*.app", "*.features.*.domain", "*.integrations", "*.kernel", "*.libs", "*.shared"]
+as_packages = false
+allow_indirect_imports = true
+
+# a role folder of the kernel and a module of each layer are reached from outside only through their __init__.py
+[[tool.importlinter.contracts]]
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.kernel.*.*"]
+allowed_importers = ["*.kernel.*"]
+
+[[tool.importlinter.contracts]]
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.adapters.*.*"]
+allowed_importers = ["*.adapters.*"]
+
+[[tool.importlinter.contracts]]
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.composition.*.*"]
+allowed_importers = ["*.composition.*"]
+# the root and the package's surface reach a composition module's adapter through the adapter's own surface
+ignore_imports = ["*.root -> *.composition.*.adapters.*", "*.root.** -> *.composition.*.adapters.*", "* -> *.composition.*.adapters.*"]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.features.*.*"]
+allowed_importers = ["*.features.*"]
+# the root and the package's surface reach a feature's adapter through the adapter's own surface
+ignore_imports = ["*.root -> *.features.*.adapters.*", "*.root.** -> *.features.*.adapters.*", "* -> *.features.*.adapters.*"]
+unmatched_ignore_imports_alerting = "none"
+
+[[tool.importlinter.contracts]]
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.libs.*.*"]
+allowed_importers = ["*.libs.*"]
+
+[[tool.importlinter.contracts]]
+name = "module-reached-only-through-its-surface"
+type = "protected"
+protected_modules = ["*.shared.*.*"]
+allowed_importers = ["*.shared.*"]

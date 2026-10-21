@@ -5,14 +5,12 @@ import { addressIn } from '#/features/versions';
 import { Check, ChevronsUpDown, Popover, Tag } from '#/libs/ui';
 
 interface DocsVersionMenuProps {
-  /** the release this site belongs to */
   current: string;
-  /** the address of the page the reader is on */
   href: string;
   releases: Releases;
 }
 
-/** the releases this site has; until they load, only the one the page belongs to */
+/** until the releases load, it lists only the one the page belongs to */
 export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProps): ReactElement {
   const { latest, versions } =
     releases.status === 'loaded'

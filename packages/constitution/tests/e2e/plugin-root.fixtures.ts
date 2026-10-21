@@ -23,6 +23,7 @@ enum Breakage {
   Format = 'constitutionFormat',
   Manifest = 'package.json',
   Resolve = 'hooks/lib/resolve.awk',
+  Wiring = 'hooks/lib/wiring.awk',
   Version = 'version',
 }
 
@@ -133,7 +134,7 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
     });
   }
 
-  if (breakage === Breakage.Resolve) {
+  if (breakage === Breakage.Resolve || breakage === Breakage.Wiring) {
     rmSync(join(root, breakage));
   }
 

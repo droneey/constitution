@@ -5,12 +5,12 @@ requires: [python]
 extends: null
 abstract: false
 languages: [python]
-dictionary: [ty, ty.toml]
-governs: ["ty.toml"]
+dictionary: [ty]
+governs: []
 ---
 
 # ty
 
 > The type checker checks the types of the program and its specs.
 
-ty has no `extends`: its configuration file is the part `presets/python/ty/foundation/self.toml` of the Constitution's release archive, taken whole, beside which ty reads no `[tool.ty]` of `pyproject.toml`. The part turns every rule into an error, fails the run on a warning and leaves `# type: ignore` unread; `presets/python/ty/foundation/bindings.yaml` says which setting holds which rule. ty is in beta: a release may add rules, and the part makes each an error at once.
+ty takes its configuration file on the command line, beside which it reads no `[tool.ty]` of `pyproject.toml`, so the part is taken whole. ty is in beta: a release may add rules, and the part makes each an error at once.

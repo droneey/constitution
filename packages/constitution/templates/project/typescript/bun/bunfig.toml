@@ -1,9 +1,3 @@
-[test]
-preload = ["./src/__tests__/sandbox.fixtures.ts"]
-randomize = true
-pathIgnorePatterns = ["tests/**", "**/*.integration.test.*"]
-coverage = false
-
 [install]
 minimumReleaseAge = 259200 # three days, in seconds
 

@@ -335,6 +335,12 @@ url = "https://github.com/evilmartians/lefthook/releases/download/v2.2.2/lefthoo
 url_api = "https://api.github.com/repos/evilmartians/lefthook/releases/assets/636518867"
 provenance = "github-attestations"
 
+[[tools."npm:dclint"]]
+version = "3.1.0"
+aube = { path = ".mise/locks/npm-dclint/3.1.0", digest = "sha256:29757c8842f983241f24f4c4eb484a779db1a70e636fb09fa9db408ce5cb6f24" }
+backend = "npm:dclint"
+specifiers = ["3.1.0"]
+
 [[tools."npm:renovate"]]
 version = "44.155.7"
 aube = { path = ".mise/locks/npm-renovate/44.155.7~aa673d8d", digest = "sha256:7c546236dbcdcca40b80413ae7dfc781ce7bed0652eccaa9f08805e53355906b" }

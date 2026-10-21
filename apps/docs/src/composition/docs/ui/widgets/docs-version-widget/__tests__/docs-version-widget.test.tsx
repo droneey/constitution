@@ -24,7 +24,7 @@ afterEach(() => {
   process.env.VITE_CONSTITUTION_VERSION = BUILT_VERSION;
 });
 
-/** the widget on a guide of an older release's site */
+/** on an older release's site */
 const onGuidePage = (): ReactElement => (
   <DocsLocationContext
     value={{

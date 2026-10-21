@@ -13,7 +13,6 @@ import {
   useStaticSearch,
 } from '#/libs/ui';
 
-/** the search dialog over the index the site prerenders */
 export function DocsSearchWidget(props: SharedProps): ReactElement {
   const search = useStaticSearch({});
 

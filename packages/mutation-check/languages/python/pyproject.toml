@@ -36,18 +36,34 @@ skip_covered = true
 source_paths = ["src"]
 do_not_mutate = ["*/main.py"]
 pytest_add_cli_args = ["-p", "no:randomly"]
-type_check_command = ["ty", "check", "--output-format", "gitlab"]
+# mutmut runs the type check from mutants/, so the part's path climbs out of it
+type_check_command = ["ty", "check", "--output-format", "gitlab", "--config-file", "../../../../../.droneey/constitution/presets/python/ty/foundation/self.toml"]
 
+# vulture: the Constitution's parts, copied, each between its two lines, since vulture reads no other file
+# from .droneey/constitution/presets/python/vulture/foundation/core.toml
 [tool.vulture]
 paths = ["src"]
+min_confidence = 60
+# end .droneey/constitution/presets/python/vulture/foundation/core.toml
 ignore_names = [
   "main", # the entry of the zipapp in the archive and of the console script
 ]
-min_confidence = 60
 
+# complexipy: the Constitution's parts, copied, each between its two lines, since complexipy reads no other file
+# from .droneey/constitution/presets/python/complexipy/foundation/core.toml
 [tool.complexipy]
 max-complexity-allowed = 15
+# end .droneey/constitution/presets/python/complexipy/foundation/core.toml
 
+# deptry: the Constitution's parts, copied, each between its two lines, since deptry reads no other file
+# from .droneey/constitution/presets/python/deptry/foundation/core.toml
+# deptry: no issue code lifted, so each fails the check
+[tool.deptry]
+ignore = []
+# end .droneey/constitution/presets/python/deptry/foundation/core.toml
+
+# ruff: the Constitution's parts, each extending the one before; ruff extends the last
+# from .droneey/constitution/presets/python/ruff/foundation/self.toml, .droneey/constitution/presets/python/ruff/foundation/core.toml, .droneey/constitution/presets/python/ruff/foundation/python.toml, .droneey/constitution/presets/python/ruff/foundation/pytest.toml
 [tool.ruff]
 extend = "../../../../.droneey/constitution/presets/python/ruff/foundation/pytest.toml"
 target-version = "py314"
@@ -59,7 +75,6 @@ target-version = "py314"
   "S101",
 ]
 
-# poethepoet: each tool's check as a task of the package, named for what it checks
 # `uv run poe` has already entered the environment, so a task runs in it rather than through uv again
 [tool.poe]
 executor = "simple"

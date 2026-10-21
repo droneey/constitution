@@ -1,0 +1,18 @@
+# mutmut: pinned in the dev group
+[dependency-groups]
+dev = [
+  "mutmut==3.8.0",
+]
+
+# mutmut: its tasks
+[tool.poe.tasks]
+"mutation:check" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz"
+"mutation:all" = "python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz all"
+
+# mutmut: the mutants, each one killed
+[tool.mutmut]
+source_paths = ["src"]
+do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
+# a log call's text and level are no behaviour a caller relies on
+do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
+pytest_add_cli_args = ["-p", "no:randomly"]

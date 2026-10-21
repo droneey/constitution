@@ -9,7 +9,7 @@ import {
   createTokens,
 } from './theme.fixtures';
 
-/** the decimal places a ratio is matched to, past the rounding of the colour maths */
+/** past the rounding of the colour maths */
 const RATIO_PLACES = 3;
 
 describe('checkThemeContrast', () => {

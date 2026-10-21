@@ -1,5 +1,9 @@
-# tanstack-start: the build and the generated sources
+# tanstack-router: the generator's temporary files
+.tanstack/
+
+# tanstack-start: the build
 .output/
 .nitro/
-.tanstack/
+
+# fumadocs-mdx: the collections it generates
 .source/

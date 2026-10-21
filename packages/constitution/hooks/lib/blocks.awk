@@ -1,8 +1,6 @@
-# Runs before resolve.awk. The hook reads the blocks from their Markdown: the
-# Constitution's, then those of each pack the project lists under packs:. A
-# "blockfile" record names the source — empty for the Constitution, the pack's
-# path for a pack — the file's path inside it and the file, in the order
-# order.awk gives.
+# Runs before resolve.awk. A "blockfile" record names the source — empty for
+# the Constitution, the pack's path for a pack — the file's path inside it and
+# the file, in the order order.awk gives.
 
 function unquote(v,   c, n) {
   c = substr(v, 1, 1)
@@ -98,10 +96,8 @@ function requirement_row(id, line,   n, f, requirement, met) {
   AMET[nanswers] = met
 }
 
-# Its rule headings: "### <slug> · <LEVEL>", or "### <slug> → <parent>" with a
-# level after the parent or none, which the parent's level then gives; its
-# Requirements rows, which an implementation's passport holds. A heading in a
-# code fence is an example.
+# A heading "### <slug> → <parent>" may state no level, which the parent's then
+# gives. A heading in a code fence is an example.
 function block_text(source, rel, file, id, name, axis, seam,   line, r, first, in_fence, in_front, in_answers, rest, arrow, dot, at, slug, parent, level) {
   arrow = " → "
   dot = " · "
@@ -242,8 +238,6 @@ function ancestors_of(id,   base) {
   return ANCESTORS[id]
 }
 
-# Once every file is read: a block's bases through extends, its place among a
-# base's heirs, and each rule's level from its parent where it states none.
 function finish_blocks(   j, id, i, pass, parent, open, n, a, k) {
   for (j = 1; j <= nb; j++) {
     id = B[j]

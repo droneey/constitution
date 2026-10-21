@@ -1,12 +1,12 @@
 # Relations
 
-> Governs modules, imports and their aliases, exports, module-level values and overrides.
+> Governs modules, imports, exports, module-level values and overrides.
 
 ## Modules
 
 ### package-is-an-es-module · MUST
 
-Every package is an ES module: its `package.json` sets `"type": "module"`, and no file uses `require`, `module.exports`, `__dirname`, `import … = require()` or `export =`.
+Every package is an ES module: no file uses `require`, `module.exports`, `__dirname`, `import … = require()` or `export =`.
 
 | Why | Tags |
 |---|---|
@@ -27,22 +27,6 @@ The names an import or a re-export uses only as types are written in an `import 
 | Why | Tags |
 |---|---|
 | the line then says it vanishes from the running program, so it never loads a module for its side effects nor closes a cycle at run time. | [] |
-
-### alias-declared-in-package-imports · MUST
-
-Every import alias is declared once, in `imports` of `package.json`; a tool that cannot read `imports` mirrors it word for word, and no configuration declares an alias of its own.
-
-| Why | Tags |
-|---|---|
-| one declaration is the source and a mirror is checked against it on sight; an alias declared elsewhere drifts unseen. Node.js and the compiler read `imports`, and a runtime that reads a `#/` alias only through `paths` takes it from the mirror. | [] |
-
-### hash-alias-for-the-source-root · MUST
-
-The source root is aliased `#/`: `"#/*": "./src/*"` in `imports`.
-
-| Why | Tags |
-|---|---|
-| an import from the source root then reads the same in every program, and `#` is the prefix `imports` requires. | [] |
 
 ### module-exports-by-name · MUST
 

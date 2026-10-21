@@ -15,12 +15,17 @@ axes:
 domains:
   - ui
   - remote-data
+  - remote-service
+  - untrusted-client
   - version-control
 platforms:
   - browser
 languages:
   - typescript
   - css
+  - html
+  - json
+  - toml
 implementations:
   - react-dom
   - tanstack-router
@@ -33,7 +38,7 @@ implementations:
 |---|---|---|
 | `domains` | has that aspect, whatever its technology | a user interface, data fetched over a network, a public API |
 | `platforms` | runs there | a browser bundle, a command-line entry point, a server |
-| `languages` | is written in it | the source files |
+| `languages` | is written in it, or keeps files in its format | the source files, and files such as `.json`, `.toml`, `.html` or a `Dockerfile` |
 | `implementations` | installs, runs or reaches that library, tool or service | a manifest's dependency, a configuration file |
 | `axes` | follows that optional axis | `architecture`, `workflow`, both, or `[]` for neither |
 
@@ -48,6 +53,7 @@ A new session reads `constitution.yaml` and reports what does not hold, at the t
 | `wrong-key: X is an implementation — move it from languages to implementations` | move the id to its layer's key |
 | `abstract: _x cannot be listed — list <heirs>` | list the block that extends it instead |
 | `not-met: X does not meet <rule>` | read X's Requirements table: another rule stands in, or the block does not fit |
+| `wiring: <file> lacks <part> — run /constitution:ratify` | run `/constitution:ratify`, which wires the file with [the parts](../reference/presets.md#the-parts-a-project-takes) of its blocks |
 
 ## Give a part of a workspace its own blocks
 
@@ -61,15 +67,19 @@ packages:
       - untrusted-client
     platforms:
       - browser
+    languages:
+      - html
     implementations:
       - react-dom
   apps/api:
     domains:
+      - http-server
       - rest-api
     platforms:
       - server
     implementations:
       - nestjs
+      - tsc
 ```
 
 A repository of one unit writes `packages: {}`. [`packages`](../reference/constitution-yaml.md#packages) lists the keys a unit takes, and how its `axes` replace the repository's.

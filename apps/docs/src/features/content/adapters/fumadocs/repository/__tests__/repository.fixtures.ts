@@ -2,14 +2,13 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-/** a repository in a temporary folder, entered from its site's folder as the build enters it */
+/** entered from its site's folder, as the build enters it */
 interface TemporaryRepository {
   /** goes back to the folder the case started in and removes the repository */
   leave: () => void;
   root: string;
 }
 
-/** the repository with its files, by their paths from its root, and its folders, which may be empty */
 export const enterRepository = (input: {
   files?: Readonly<Record<string, string>>;
   folders?: readonly string[];

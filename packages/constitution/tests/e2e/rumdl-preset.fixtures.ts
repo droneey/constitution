@@ -22,7 +22,6 @@ const REPOSITORY = join(import.meta.dir, '..', '..');
 const PRESET = join(REPOSITORY, 'presets', 'markdown', 'rumdl', 'foundation', 'core.toml');
 const RUMDL = miseBinary('rumdl');
 
-// A project whose .rumdl.toml extends the archive's preset, with its documents.
 const inProject = <TResult>(input: {
   files: Readonly<Record<string, string>>;
   run: (folder: string) => TResult;

@@ -1,0 +1,14 @@
+# deptry: pinned in the dev group
+[dependency-groups]
+dev = [
+  "deptry==0.25.1",
+]
+
+# deptry: its tasks
+[tool.poe.tasks]
+"dependencies:check" = "deptry src"
+
+# deptry: the Constitution's parts, copied, each between its two lines, since deptry reads no other file
+# from <parts>
+<copied parts>
+# end <parts>

@@ -25,7 +25,6 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-/** the versions' navigation on the page, each link laid out in a row below the last */
 const mountVersions = (style = ''): HTMLElement => {
   const nav = mountElement(versionsSpec(style));
   const links = within(nav);
@@ -676,6 +675,7 @@ describe('useGlide', () => {
     renderHook(() => useGlide());
 
     // Assert
+    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
     expect(picture.querySelectorAll('[data-glide]').length).toBe(0);
   });
 

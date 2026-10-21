@@ -7,7 +7,6 @@ import type { MDXComponents } from 'mdx/types';
 
 import browserCollections from '#collections/browser';
 
-/** a body once loaded: the outline of its headings */
 interface Loaded {
   toc: TOCItemType[];
 }
@@ -16,14 +15,12 @@ interface BodyProps {
   components?: MDXComponents;
 }
 
-/** a page's body as the browser loads it: its component, its loading, which gives its outline, and that outline once loaded */
 interface PageBody {
   body: FC<BodyProps>;
   load: () => Promise<Loaded>;
   loaded: () => Loaded | undefined;
 }
 
-/** the bodies of one collection, by their paths in it */
 interface Bodies {
   loader: {
     getComponent: (path: string) => FC<BodyProps>;
@@ -93,12 +90,11 @@ const COLLECTIONS: ReadonlyMap<string, Bodies> = new Map([
   ],
 ]);
 
-/** the loading of each body, by its collection and path, so a render that asks again waits on the same */
 const loadings = new Map<string, Promise<Loaded>>();
 
 /**
- * Each body once loaded, which a render reads at once, as the library's own renderer does: a page whose
- * route loaded its body renders whole in its first commit, so the router finds a heading the address names.
+ * Read at once, as the library's own renderer does: a page whose route loaded its body renders whole
+ * in its first commit, so the router finds a heading the address names.
  */
 const loadedBodies = new Map<string, Loaded>();
 

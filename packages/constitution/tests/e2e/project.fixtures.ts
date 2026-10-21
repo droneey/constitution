@@ -77,8 +77,7 @@ const configOf = (config: Config): string =>
     .join('\n')
     .concat('\n');
 
-// The line of a config that holds `at`, counted from 1.
-const lineOf = (input: { at: string; config: string }): number =>
+const lineNumberOf = (input: { at: string; config: string }): number =>
   input.config.slice(0, input.config.indexOf(input.at)).split('\n').length;
 
 const write = (input: { path: string; text: string }): void => {
@@ -455,7 +454,7 @@ const REAL_WEB_APP: ProjectLayout = {
     'domains: [ui, design-system, remote-data, remote-service, i18n, analytics, privacy,',
     '          version-control, untrusted-client]',
     'platforms: [browser, server]',
-    'languages: [typescript, css]',
+    'languages: [typescript, css, html, json, toml, yaml]',
     'implementations: [react-dom, tanstack-router, tanstack-start, tanstack-query, tanstack-form,',
     '                  tailwind, shadcn, storybook, ky, zod, vite, bun-test, testing-library,',
     '                  matomo, lingui, bun, tsc, biome, dependency-cruiser, knip,',
@@ -474,7 +473,7 @@ const REAL_CLI: ProjectLayout = {
     '',
     'domains: [convergence, config-file, remote-data, remote-service, version-control]',
     'platforms: [cli]',
-    'languages: [typescript, yaml]',
+    'languages: [typescript, json, toml, yaml]',
     'implementations: [bun, bun-test, bunli, zod, yaml-js, yamllint, tsc, biome, dependency-cruiser,',
     '                  knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
@@ -495,7 +494,7 @@ export {
   createProject,
   HTML_SITE,
   LIBRARY,
-  lineOf,
+  lineNumberOf,
   OWN_PACK,
   PACK_PROJECT,
   packBlockFiles,

@@ -1,9 +1,5 @@
-/* The library's spacious layout on the site's tokens. Hooks are the library's ids, data and aria
-   attributes, roles and element structure, never its generated class names. */
-
-/* -------------------------------------------------------------------------- */
-/* FOCUS                                                                      */
-/* -------------------------------------------------------------------------- */
+/* Hooks are the library's ids, data and aria attributes, roles and element structure, never its
+   generated class names. */
 
 @layer base {
   /* the ring's colour is set before focus, so a colour transition never fades it in from the text's */
@@ -68,10 +64,6 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* FRAME                                                                      */
-/* -------------------------------------------------------------------------- */
-
 @layer overrides {
   /* a navigation's cross-fade lets the pointer through, or the sidebar loses its hover and its
      scrollbar fades out and back on every page */
@@ -83,9 +75,8 @@
     }
   }
 
-  /* One layout at every width. The sidebar opens beside the page and pushes it along; the page
-     is never narrower than a phone, so on a narrow screen it slides out under the edge. With the
-     sidebar open the page sits in a panel; with it collapsed it fills the window. */
+  /* The page is never narrower than a phone, so on a narrow screen the open sidebar pushes it out
+     under the edge. */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #fd-spacious-layout {
     --fd-page-width: var(--spacing-layout-page);
@@ -140,10 +131,9 @@
     }
   }
 
-  /* The page's gutter widens on a wider panel. The bar's controls overhang it by the space around
-     their icons, so an icon stands a gutter from the panel's sides; the bar centres them in the
-     padding above and below, is as tall as the two make it, and the page starts under it by the
-     same sum. */
+  /* The bar's controls overhang the gutter by the space around their icons, so an icon stands a
+     gutter from the panel's sides; the bar centres them in the padding above and below, is as tall
+     as the two make it, and the page starts under it by the same sum. */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
@@ -180,7 +170,6 @@
     padding: var(--nd-bar-padding) calc(var(--nd-gutter) - var(--nd-overhang));
     background: none;
 
-    /* the trail keeps its length; the heading after it gives way */
     & nav {
       flex-shrink: 0;
     }
@@ -205,7 +194,6 @@
     }
   }
 
-  /* the trail stands apart from the expand button, the heading close to its slash */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header > button + nav {
     margin-inline-start: var(--spacing-xs);
@@ -248,10 +236,6 @@
     padding-inline: var(--nd-overhang);
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/* SIDEBAR                                                                    */
-/* -------------------------------------------------------------------------- */
 
 @layer overrides {
   /* the logo's icon on the fields' leading icons, the collapse icon on their trailing ones */
@@ -366,10 +350,6 @@
     }
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/* HEADER MENU AND THEME                                                      */
-/* -------------------------------------------------------------------------- */
 
 @layer overrides {
   [role='menu'] {
