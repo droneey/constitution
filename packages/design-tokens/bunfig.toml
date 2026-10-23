@@ -1,0 +1,18 @@
+[test]
+root = "."
+preload = ["./tests/sandbox.fixtures.ts"]
+randomize = true
+coverage = true
+coverageReporter = ["text"]
+coverageSkipTestFiles = true
+coverageThreshold = { functions = 1.0, lines = 1.0 }
+coveragePathIgnorePatterns = [
+  "**/__tests__/**",
+  "tests/**",
+]
+
+[install]
+minimumReleaseAge = 259200 # three days, in seconds
+
+[run]
+bun = true

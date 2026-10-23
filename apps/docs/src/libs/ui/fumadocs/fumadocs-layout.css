@@ -16,8 +16,8 @@
 @layer overrides {
   :focus-visible {
     --tw-ring-shadow: 0 0 transparent;
-    outline: 2px solid var(--color-fd-ring);
-    outline-offset: 2px;
+    outline: var(--ring-focus-width) solid var(--color-fd-ring);
+    outline-offset: var(--ring-focus-offset);
   }
 
   :focus:not(:focus-visible),
@@ -32,7 +32,7 @@
   [role='menu'] [role='menuitem'],
   nav[aria-label='Versions'] a {
     &:focus-visible {
-      outline-offset: -2px;
+      outline-offset: calc(-1 * var(--ring-focus-width));
     }
   }
 
@@ -46,8 +46,8 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar :has(> [data-id$='-viewport']:focus-visible) {
     border-radius: var(--radius-lg);
-    outline: 2px solid var(--color-fd-ring);
-    outline-offset: -2px;
+    outline: var(--ring-focus-width) solid var(--color-fd-ring);
+    outline-offset: calc(-1 * var(--ring-focus-width));
   }
 
   /* the page, taller than the window, would show only the sides of its ring; its panel draws it */
@@ -59,8 +59,8 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :has(> [role='main']:focus-visible) {
     border-radius: inherit;
-    outline: 2px solid var(--color-fd-ring);
-    outline-offset: -2px;
+    outline: var(--ring-focus-width) solid var(--color-fd-ring);
+    outline-offset: calc(-1 * var(--ring-focus-width));
   }
 }
 
@@ -183,7 +183,7 @@
       content: '';
       position: absolute;
       inset: 0 0 auto;
-      z-index: -1;
+      z-index: var(--layer-surface-below);
       height: calc(100% + var(--spacing-lg));
       background: linear-gradient(
         to bottom,
@@ -432,7 +432,7 @@
       }
 
       &:focus-visible {
-        outline-offset: -2px;
+        outline-offset: calc(-1 * var(--ring-focus-width));
       }
 
       & > svg {

@@ -1,0 +1,81 @@
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './fumadocs-layout.css';
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './fumadocs-content.css';
+
+/* biome-ignore lint/plugin/utilities-only-from-tokens: Fumadocs needs Tailwind's default scales */
+@theme {
+  /* One layout at every width: the library's medium breakpoint, where it switches to its phone
+     layout, is the smallest screen. */
+  --breakpoint-md: 0rem;
+
+  /* The search dialog opens from the keyboard many times a day, so it does not animate. */
+  --animate-fd-fade-in: fd-fade-in var(--duration-base) var(--ease-out);
+  --animate-fd-fade-out: fd-fade-out var(--duration-base) var(--ease-out);
+  --animate-fd-roll-in: fd-roll-in var(--duration-base) var(--ease-out);
+  --animate-fd-popover-in: fd-popover-in var(--duration-base) var(--ease-out);
+  --animate-fd-popover-out: fd-popover-out var(--duration-base) var(--ease-out);
+  --animate-fd-sidebar-in: fd-sidebar-in var(--duration-base) var(--ease-out);
+  --animate-fd-sidebar-out: fd-sidebar-out var(--duration-base) var(--ease-out);
+  --animate-fd-dialog-in: none;
+  --animate-fd-dialog-out: none;
+
+  /* The library's colour names on the site's tokens, in place of its default palette, whose
+     unlayered `.dark` block would beat every layer; the callout hues keep the library's values. */
+  --color-fd-background: var(--color-surface-base);
+  --color-fd-foreground: var(--color-text-primary);
+  --color-fd-muted: var(--color-fill-muted);
+  --color-fd-muted-foreground: var(--color-text-muted);
+  --color-fd-card: var(--color-surface-canvas);
+  --color-fd-card-foreground: var(--color-text-primary);
+  --color-fd-popover: var(--color-surface-level-1);
+  --color-fd-popover-foreground: var(--color-text-primary);
+  --color-fd-border: var(--color-border-base);
+  --color-fd-primary: var(--color-accent-solid);
+  --color-fd-primary-foreground: var(--color-accent-on-solid);
+  --color-fd-secondary: var(--color-fill-muted);
+  --color-fd-secondary-foreground: var(--color-text-primary);
+  --color-fd-accent: var(--color-fill-hover);
+  --color-fd-accent-foreground: var(--color-text-primary);
+  --color-fd-ring: var(--color-ring-focus);
+  --color-fd-overlay: hsla(0, 0%, 0%, 0.2);
+  --color-fd-info: oklch(62.3% 0.214 259.815);
+  --color-fd-warning: oklch(76.9% 0.188 70.08);
+  --color-fd-idea: oklch(70.5% 0.209 60.849);
+  --color-fd-error: var(--color-text-danger);
+  --color-fd-success: var(--color-text-success);
+  --color-fd-diff-remove: var(--color-fill-danger);
+  --color-fd-diff-remove-symbol: var(--color-text-danger);
+  --color-fd-diff-add: var(--color-fill-success);
+  --color-fd-diff-add-symbol: var(--color-text-success);
+}
+
+/* after the utilities it remaps */
+@layer overrides {
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-100,
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-150 {
+    transition-duration: var(--duration-fast);
+  }
+
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-200,
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-250,
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-300,
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-400,
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .duration-450 {
+    transition-duration: var(--duration-base);
+  }
+
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .ease-out,
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
+  .ease-in-out {
+    transition-timing-function: var(--ease-out);
+  }
+}

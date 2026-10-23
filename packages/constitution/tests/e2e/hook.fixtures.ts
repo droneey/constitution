@@ -1,9 +1,10 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { CLI_FOLDER } from './cli.fixtures';
 import { CORE_TEXT } from './constitution.fixtures';
 import { archiveOf, coreBodyOfBytes, createPluginRoot, linkArchive } from './plugin-root.fixtures';
 
@@ -54,9 +55,9 @@ const PLACEHOLDER = '@';
 const NOT_UTF8 = 0xe9;
 // A hook that blocks, on a named pipe say, fails its case instead of the run.
 const TIMEOUT_MS = 20_000;
-// The day the hook's `date` prints: the spec never reads the real clock.
-const HOOK_TODAY = '2026-06-15';
-const EXECUTABLE = 0o755;
+// The day the program reads where it runs, the one an override that ends today names.
+const HOOK_TODAY = Temporal.Now.plainDateISO().toString();
+const HOOK = 'hook.sh';
 
 // Claude Code names the event's fields in snake case.
 const eventOf = (input: {
@@ -120,23 +121,10 @@ const inputOf = (input: {
   return bytes;
 };
 
-// A `date` of the test's own, first on the hook's PATH, in a folder of its own:
-// the plugin root may be this repository, which a spec never writes to.
-const createFakeClock = (): string => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-clock-'));
-  const date = join(folder, 'date');
-
-  writeFileSync(date, `#!/bin/sh\necho ${HOOK_TODAY}\n`);
-  chmodSync(date, EXECUTABLE);
-
-  return folder;
-};
-
 // A clean environment: the session that runs the tests sets CLAUDE_PROJECT_DIR
 // and CLAUDE_PLUGIN_ROOT of its own.
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
-  const clock = createFakeClock();
 
   if (call.unlinked !== true) {
     linkArchive({
@@ -147,7 +135,8 @@ const runHook = (call: HookCall): HookRun => {
   const hookRun = spawnSync(
     SHELL,
     [
-      join(call.root, 'hooks', 'session-start.sh'),
+      join(call.root, 'hooks', HOOK),
+      'session-start',
     ],
     {
       cwd: call.spawnOutside !== true && existsSync(cwd) ? cwd : tmpdir(),
@@ -156,7 +145,7 @@ const runHook = (call: HookCall): HookRun => {
       env: Object.fromEntries([
         [
           'PATH',
-          `${clock}:${process.env['PATH'] ?? ''}`,
+          `${CLI_FOLDER}:${process.env['PATH'] ?? ''}`,
         ],
         [
           'LANG',
@@ -191,11 +180,6 @@ const runHook = (call: HookCall): HookRun => {
       }),
     },
   );
-
-  rmSync(clock, {
-    force: true,
-    recursive: true,
-  });
 
   return {
     exitCode: hookRun.status ?? undefined,
@@ -476,7 +460,8 @@ const runScript = (call: {
   const hookRun = spawnSync(
     SHELL,
     [
-      join(call.root, 'hooks', call.script),
+      join(call.root, 'hooks', HOOK),
+      call.script.replace(/\.sh$/u, ''),
     ],
     {
       cwd: tmpdir(),
@@ -497,7 +482,7 @@ const runScript = (call: {
         ],
         [
           'PATH',
-          process.env['PATH'] ?? '',
+          `${CLI_FOLDER}:${process.env['PATH'] ?? ''}`,
         ],
       ]),
       input: JSON.stringify(call.event),

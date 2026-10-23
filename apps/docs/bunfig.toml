@@ -13,7 +13,8 @@ coveragePathIgnorePatterns = [
   "src/root/router.tsx",
   "src/root/routes/__root.tsx",
   "src/root/routeTree.gen.ts",
-  "src/entrypoints/*/main.ts",
+  # Another unit of the workspace, which its own specs cover.
+  "**/packages/**",
 ]
 
 [install]

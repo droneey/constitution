@@ -1,4 +1,5 @@
 export { mayReachAxis } from './axes.utils';
+export { checksumOf } from './checksum.utils';
 export type { BlocksById, Place } from './closure.utils';
 export {
   byIdOf,
@@ -11,6 +12,7 @@ export {
 export { withoutCodeFences } from './code-fences.utils';
 export type { MarkdownDocument } from './front-matter.utils';
 export { splitFrontMatter } from './front-matter.utils';
+export { governingOf } from './governing.utils';
 export {
   inlineCodeSpans,
   withoutInlineCode,
@@ -28,3 +30,4 @@ export type { PresetPath } from './preset-paths.utils';
 export { PresetFileKind, presetPathOf } from './preset-paths.utils';
 export type { MarkdownSection } from './sections.utils';
 export { isHeading, sectionsOf } from './sections.utils';
+export { isPlainName } from './session-names.utils';

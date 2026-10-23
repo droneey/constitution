@@ -1,6 +1,6 @@
 # Exit codes
 
-> Governs a command's exit codes.
+> Governs a command's exit codes and the one handler its failures reach.
 
 ## General
 
@@ -19,3 +19,11 @@ The program's entry adds a listener to the process's `exit` that turns an exit `
 | Why | Tags |
 |---|---|
 | bunli ends its own usage failures with `process.exit(1)`, the code the map gives to a failure the user can act on, and offers no hook to change it. | [] |
+
+### bunli-handler-through-the-error-handler → last-resort-handler-one-per-entry · MUST
+
+Every handler runs its work through the program's one error handler, which maps a failure to the exit map.
+
+| Why | Tags |
+|---|---|
+| every command then exits by the same map, whatever fails. | [] |

@@ -1,5 +1,5 @@
 // A production file imports no development dependency. The configuration builds the rule over the
-// development files every part names, the files that never ship.
+// development files every part and the project's own settings name, the files that never ship.
 export const settingsOver = (developmentFiles) => ({
   forbidden: [
     {

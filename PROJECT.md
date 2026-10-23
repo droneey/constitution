@@ -17,7 +17,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
 - **Validation** — the checks that keep every block sound and consistent with the others.
 - **Presets** — the tool configurations that hold the tool-checked rules, split into parts by scope, tool and axis, with the bindings that say which setting holds which rule.
-- **Delivery** — the release archive `constitution.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets and the templates; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
+- **Delivery** — the release archive `constitution.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets and the templates; the `constitution` program of the same release, compiled for each platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
 
 ## Core entities and relationships
 
@@ -65,6 +65,6 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Non-functional notes
 
-- The hook runs on bash 3.2 and any POSIX awk, with no other runtime, on macOS and Linux.
+- The hooks run the `constitution` program, compiled for each platform and installed by mise, through a wrapper bash 3.2 runs; a project needs no other runtime, on macOS, Linux and Windows.
 - The digest stays within 9,400 bytes after its header; core's part within 3,500.
 - The repository is public: no private project is named in a committed file.

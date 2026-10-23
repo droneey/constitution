@@ -3,6 +3,8 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { CLI_PATH } from './cli.fixtures';
+
 type Files = Readonly<Record<string, string>>;
 
 interface Run {
@@ -93,9 +95,9 @@ const createPack = (parent = 'dependency-reached-through-its-public-entry'): str
 // base, as a pack's author runs the one its base's archive carries.
 const checkPack = (pack: string): Run => {
   const run = spawnSync(
-    'bun',
+    CLI_PATH,
     [
-      join(REPOSITORY, 'src', 'entrypoints', 'blocks-check', 'main.ts'),
+      'check',
       '--base',
       REPOSITORY,
     ],

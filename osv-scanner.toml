@@ -13,11 +13,27 @@ id = "GHSA-x5fp-wj9c-mxmx"
 ignoreUntil = 2026-12-28
 reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
 
+[[IgnoredVulns]]
+id = "GHSA-73rr-hh4g-fpgx"
+ignoreUntil = 2026-12-28
+reason = "diff 8.0.2 comes only with @opentui/core, which pins it, the terminal runtime bunli loads; the constitution program renders no diff"
+
+[[IgnoredVulns]]
+id = "GHSA-5v7r-6r5c-r473"
+ignoreUntil = 2026-12-28
+reason = "file-type 16.5.4 comes only with jimp, which @opentui/core loads for bunli's terminal images; the constitution program reads no image"
+
 [[PackageOverrides]]
 name = "is-core-module"
 ecosystem = "npm"
 license.override = ["MIT"]
 reason = "deps.dev reports no licence for is-core-module; its package.json declares MIT"
+
+[[PackageOverrides]]
+name = "exif-parser"
+ecosystem = "npm"
+license.override = ["MIT"]
+reason = "exif-parser's package.json declares no licence; its LICENSE.md is MIT. bunli's terminal runtime brings it through jimp"
 
 [[PackageOverrides]]
 name = "caniuse-lite"
@@ -66,6 +82,24 @@ name = "@droneey/constitution"
 ecosystem = "npm"
 license.ignore = true
 reason = "this repository's own package, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/design-terminal"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own design system for the command line, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/design-tokens"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own design tokens, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/design-web"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own design system for the web, a member of its Bun workspace, under the repository's LICENSE.md"
 
 [[PackageOverrides]]
 name = "@droneey/docs"

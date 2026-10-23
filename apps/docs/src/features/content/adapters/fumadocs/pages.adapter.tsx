@@ -1,6 +1,6 @@
+import { Icon, IconName } from '@droneey/design-web/react-dom';
 import type { Item } from 'fumadocs-core/page-tree';
 import type { LoaderPlugin } from 'fumadocs-core/source';
-import { ArrowRight } from 'lucide-react';
 
 import { docsRoute, mainContentId } from '#/shared/constants';
 
@@ -60,9 +60,9 @@ const crossLinked = (node: Item, path: string | undefined): Item => {
     name: (
       <>
         {node.name}
-        <ArrowRight
-          aria-hidden
+        <Icon
           data-cross-link=''
+          name={IconName.Forward}
         />
       </>
     ),

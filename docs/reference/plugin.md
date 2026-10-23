@@ -1,6 +1,6 @@
 # The plugin
 
-> The engine of the Constitution in Claude Code: three skills, a reviewer and the hooks. The rules themselves come from the project's release.
+> The engine of the Constitution in Claude Code: three skills, a reviewer and the hooks. The rules themselves come from the project's release, and the hooks' work from the `constitution` program the project installs with it.
 
 ## Skills
 
@@ -49,4 +49,14 @@ A repository without `constitution.yaml` gets nothing. Without `.droneey/constit
 
 ### What the hooks need
 
-bash 3.2 and any POSIX awk, nothing else in the project, so a project in any language can follow the Constitution. The resolved set of blocks is kept outside the project, in `/tmp/droneey-constitution-<uid>/<session>/`, for the later hooks and the skills.
+bash and the `constitution` program on `PATH`, which mise installs from the release the project pins ([the quick start](../../README.md#-quick-start)); nothing else in the project, so a project in any language can follow the Constitution. Each hook of `hooks.json` runs `hooks/hook.sh <event>`, which hands Claude Code's event on standard input to `constitution hook <event>`: `session-start`, `post-tool-use`, `record-check`, `user-prompt-submit` or `stop`. Without the program a hook prints one line that says to install it, and never fails the session.
+
+The resolved set of blocks is kept outside the project, in `/tmp/droneey-constitution-<uid>/<session>/`, for the later hooks and the skills.
+
+### The program
+
+`constitution` is the same program outside a session:
+
+- `constitution check` checks the blocks of the folder it runs in when it holds a Constitution or a pack (`--base <folder>` names the Constitution a pack extends), then the project around it: the warnings of `constitution.yaml` and of the wiring that the digest gives. It exits 1 on a finding or a warning.
+- `constitution wiring` prints the configuration files the project's tools read, each with the units it serves, its template and the parts it takes, which `/constitution:ratify` writes.
+- `constitution hook <event>` is what the hooks run.

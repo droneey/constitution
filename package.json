@@ -23,11 +23,12 @@
     "test": "bun run --filter '*' test && scripts/poe-each.sh test",
     "test:hooks": "bun --cwd=packages/constitution run test:hooks",
     "blocks:check": "bun --cwd=packages/constitution run blocks:check",
-    "build": "bun build --target=bun ./packages/constitution/src/entrypoints/blocks-check/main.ts --outfile packages/constitution/tools/constitution/dist/blocks-check.js && bun build --target=bun --packages=external ./packages/mutation-check/languages/typescript/src/main.ts --outdir packages/constitution/tools/mutation-check/dist && bun build --target=bun ./packages/mutation-check/languages/typescript/src/integrations/stryker/runner.ts ./packages/mutation-check/languages/typescript/src/integrations/stryker/ignorers.ts --outdir packages/constitution/tools/mutation-check/dist && mkdir -p packages/constitution/tools/python-check/dist packages/constitution/tools/mutmut-check/dist && python3 -m zipapp packages/python-check/src -m droneey_python_check.main:main -o packages/constitution/tools/python-check/dist/python-check.pyz && python3 -m zipapp packages/mutation-check/languages/python/src -m droneey_mutation_check.main:main -o packages/constitution/tools/mutmut-check/dist/mutmut-check.pyz",
+    "build": "bun build --target=bun --packages=external ./packages/mutation-check/languages/typescript/src/main.ts --outdir packages/constitution/tools/mutation-check/dist && bun build --target=bun ./packages/mutation-check/languages/typescript/src/integrations/stryker/runner.ts ./packages/mutation-check/languages/typescript/src/integrations/stryker/ignorers.ts --outdir packages/constitution/tools/mutation-check/dist && mkdir -p packages/constitution/tools/python-check/dist packages/constitution/tools/mutmut-check/dist && python3 -m zipapp packages/python-check/src -m droneey_python_check.main:main -o packages/constitution/tools/python-check/dist/python-check.pyz && python3 -m zipapp packages/mutation-check/languages/python/src -m droneey_mutation_check.main:main -o packages/constitution/tools/mutmut-check/dist/mutmut-check.pyz",
+    "build:cli": "scripts/build-cli.sh",
     "mutation:check": "bun run --filter '*' --sequential --bun mutation:check && scripts/poe-each.sh mutation:check",
     "mutation:all": "bun run --filter '*' --sequential --bun mutation:all && scripts/poe-each.sh mutation:all",
     "secrets:check": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
-    "architecture:check": "depcruise apps/docs/src packages/constitution/src packages/constitution/tests packages/mutation-check/languages/typescript/src --config .dependency-cruiser.mjs && bun run --filter '*' architecture:check",
+    "architecture:check": "depcruise apps/docs/src packages/constitution/src packages/constitution/tests packages/design-terminal/src packages/design-tokens/tests packages/design-web/src packages/mutation-check/languages/typescript/src --config .dependency-cruiser.mjs && bun run --filter '*' architecture:check",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints && bun run --filter '*' unused:check && scripts/poe-each.sh unused:check",
     "audit:check": "mise run audit:check && bun run --filter '*' audit:check",
     "format:check": "scripts/poe-each.sh format:check",
@@ -40,7 +41,8 @@
     "markdown:check": "rumdl check . && rumdl fmt --check .",
     "yaml:check": "yamllint --strict .",
     "renovate:check": "renovate-config-validator --strict",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
+    "design:check": "bun run --filter '*' design:check",
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run design:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
   },
   "workspaces": [
     "apps/*",

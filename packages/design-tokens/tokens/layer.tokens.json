@@ -1,0 +1,29 @@
+{
+  "layer": {
+    "$type": "number",
+    "$description": "The stacking order, as a z-index: the primitives, and the roles that read them. A role places a surface among what shares its stacking context.",
+    "-1": {
+      "$value": -1
+    },
+    "50": {
+      "$value": 50
+    },
+    "60": {
+      "$value": 60
+    },
+    "surface": {
+      "below": {
+        "$value": "{layer.-1}",
+        "$description": "A surface drawn under its siblings, such as the block that slides under a list's rows."
+      },
+      "raised": {
+        "$value": "{layer.50}",
+        "$description": "A surface raised over the page, such as a popup."
+      },
+      "top": {
+        "$value": "{layer.60}",
+        "$description": "A surface over every raised one, such as the link that skips to the content."
+      }
+    }
+  }
+}

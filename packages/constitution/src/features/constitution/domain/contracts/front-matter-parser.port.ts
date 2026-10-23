@@ -11,6 +11,16 @@ interface FrontMatterFields {
   summary: string;
 }
 
+// The fields a project reads from a block's card, each empty where the card leaves it out or
+// gives it in another form.
+interface BlockCard {
+  extends: string | undefined;
+  governs: readonly string[];
+  isAbstract: boolean;
+  requires: readonly string[];
+  summary: string;
+}
+
 type FrontMatterRead =
   | {
       line: number | undefined;
@@ -28,8 +38,9 @@ type FrontMatterRead =
     };
 
 interface FrontMatterParser {
+  card: (yaml: string) => BlockCard;
   parse: (yaml: string) => FrontMatterRead;
   skill: (yaml: string) => SkillFrontMatterRead;
 }
 
-export type { FrontMatterFields, FrontMatterParser, FrontMatterRead };
+export type { BlockCard, FrontMatterFields, FrontMatterParser, FrontMatterRead };

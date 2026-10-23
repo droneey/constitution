@@ -22,8 +22,6 @@ enum Breakage {
   Core = 'blocks/core/core.md',
   Format = 'constitutionFormat',
   Manifest = 'package.json',
-  Resolve = 'hooks/lib/resolve.awk',
-  Wiring = 'hooks/lib/wiring.awk',
   Version = 'version',
 }
 
@@ -44,7 +42,6 @@ const FORMAT = Number(
   )?.[1],
 );
 const HOOKS = 'hooks';
-const LIBRARY = 'hooks/lib';
 
 const created: string[] = [];
 
@@ -58,15 +55,11 @@ const writeFiles = (input: { files: Readonly<Files>; root: string }): void => {
 };
 
 const copyHook = (root: string): void => {
-  mkdirSync(join(root, LIBRARY), {
+  mkdirSync(join(root, HOOKS), {
     recursive: true,
   });
   for (const name of readdirSync(join(REPOSITORY, HOOKS)).filter((file) => file.endsWith('.sh'))) {
     copyFileSync(join(REPOSITORY, HOOKS, name), join(root, HOOKS, name));
-  }
-
-  for (const name of readdirSync(join(REPOSITORY, LIBRARY))) {
-    copyFileSync(join(REPOSITORY, LIBRARY, name), join(root, LIBRARY, name));
   }
 };
 
@@ -132,10 +125,6 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
       format: breakage === Breakage.Format ? undefined : format,
       version: breakage !== Breakage.Version,
     });
-  }
-
-  if (breakage === Breakage.Resolve || breakage === Breakage.Wiring) {
-    rmSync(join(root, breakage));
   }
 
   if (breakage === Breakage.Core) {

@@ -12,6 +12,15 @@
       "path": "./packages/constitution"
     },
     {
+      "path": "./packages/design-terminal"
+    },
+    {
+      "path": "./packages/design-tokens"
+    },
+    {
+      "path": "./packages/design-web"
+    },
+    {
       "path": "./packages/mutation-check/languages/typescript"
     }
   ]

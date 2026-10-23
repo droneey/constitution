@@ -10,13 +10,13 @@
 @import '@fontsource-variable/geist';
 /* biome-ignore lint/nursery/useLayeredStyles: the font faces it declares belong to no layer */
 @import '@fontsource-variable/geist-mono';
+/* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
+@import '@droneey/design-web/styles.css';
 /* biome-ignore lint/nursery/useLayeredStyles: Tailwind reads @theme only outside a layer */
-@import '../libs/ui/theme/theme.gen.css';
+@import '@droneey/design-web/tailwind.css';
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
-@import '../libs/ui/theme/theme.css';
-/* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
-@import '../libs/ui/fumadocs/fumadocs-layout.css';
-/* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
-@import '../libs/ui/fumadocs/fumadocs-content.css';
+@import '@droneey/design-web/react-dom/styles.css';
+/* biome-ignore lint/nursery/useLayeredStyles: Tailwind reads @theme only outside a layer */
+@import '../libs/ui/fumadocs/fumadocs.css';
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
 @import '../composition/docs/ui/docs.css';

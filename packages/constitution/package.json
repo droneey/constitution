@@ -15,6 +15,9 @@
     "directory": "packages/constitution"
   },
   "type": "module",
+  "bin": {
+    "constitution": "./src/main.ts"
+  },
   "imports": {
     "#/*": "./src/*"
   },
@@ -23,14 +26,15 @@
     "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test",
     "test:hooks": "CI=1 bun --config=./bunfig.e2e.toml test tests/e2e/hooks",
     "test": "bun run test:unit && bun run test:e2e",
-    "blocks:check": "bun run ./src/entrypoints/blocks-check/main.ts",
+    "blocks:check": "bun run ./src/main.ts check",
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
     "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
-    "shell:check": "shellcheck hooks/*.sh hooks/lib/*.sh && shfmt -d hooks"
+    "shell:check": "shellcheck hooks/*.sh && shfmt -d hooks"
   },
   "dependencies": {
+    "@bunli/core": "^0.9.1",
     "yaml": "^2.9.1",
     "zod": "^4.6.7"
   },

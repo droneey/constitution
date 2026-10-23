@@ -3,16 +3,22 @@ import https from 'node:https';
 import net from 'node:net';
 import tls from 'node:tls';
 
+const REFUSAL = 'A spec reached the network: give it the fake of its transport';
+
 // A declaration, not an arrow, so that `new WebSocket()` and `new Bun.SQL()` throw this error too.
 function refuseNetwork(): never {
-  throw new Error('A spec reached the network: give it the fake of its transport');
+  throw new Error(REFUSAL);
 }
 
+// fetch refuses by a rejected promise, as a fetch fails: yoga-layout, under bunli's terminal
+// renderer, loads its WebAssembly from a data: URL and decodes it itself only when fetch rejects.
+const refuseFetch = async (): Promise<never> => await Promise.reject(new Error(REFUSAL));
+
+Object.defineProperty(globalThis, 'fetch', {
+  value: refuseFetch,
+});
+
 for (const [owner, name] of [
-  [
-    globalThis,
-    'fetch',
-  ],
   [
     globalThis,
     'WebSocket',

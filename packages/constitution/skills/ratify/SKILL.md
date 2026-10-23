@@ -38,7 +38,30 @@ Work in this order, and keep the owner in the loop: propose, let them confirm or
 
 ### 1. Check what is there
 
-If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `"github:droneey/constitution" = { version = "<plugin version>", asset_pattern = "constitution.tar.gz", strip_components = 0 }` and the `postinstall` hooks `mkdir -p .droneey` and `ln -sfn "$(mise where github:droneey/constitution)" .droneey/constitution`, with the installed plugin's version above; and `/.droneey` in `.gitignore`. After the owner's yes, write them, run `mise install`, and ask the owner to run `/constitution:ratify` again, which then reads the release's blocks. Stop here until then.
+If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `github:droneey/constitution` with the release's archive and, for each platform, its `constitution` program, which the hooks run, and the `postinstall` hooks that link the release, with the installed plugin's version above:
+
+```toml
+[tools."github:droneey/constitution"]
+version = "<plugin version>"
+asset_pattern = "constitution.tar.gz"
+strip_components = 0
+bin_path = "bin"
+
+[tools."github:droneey/constitution".platforms]
+linux-x64 = { additional_asset_patterns = ["constitution-linux-x64.tar.gz"] }
+linux-arm64 = { additional_asset_patterns = ["constitution-linux-arm64.tar.gz"] }
+macos-x64 = { additional_asset_patterns = ["constitution-macos-x64.tar.gz"] }
+macos-arm64 = { additional_asset_patterns = ["constitution-macos-arm64.tar.gz"] }
+windows-x64 = { additional_asset_patterns = ["constitution-windows-x64.tar.gz"] }
+
+[hooks]
+postinstall = [
+  "mkdir -p .droneey",
+  "ln -sfn \"$(mise where github:droneey/constitution)\" .droneey/constitution",
+]
+```
+
+and `/.droneey` in `.gitignore`. After the owner's yes, write them, run `mise install`, and ask the owner to run `/constitution:ratify` again, which then reads the release's blocks. Stop here until then.
 
 If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, say so and ask whether to replace it. If decisions are kept elsewhere — `docs/adr/`, `docs/decisions/` — say so and ask whether to move them into `DECISIONS.md` or leave them and write none. With a no, leave that file alone: do not write it and skip its part of the work. Either way, build the proposal from the repository and the owner, not from files already there.
 
@@ -151,7 +174,7 @@ Write only after the owner's yes, and only the files the owner agreed to.
 Once `constitution.yaml` is written, run, from the repository root:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/hooks/wiring.sh"
+constitution wiring
 ```
 
 It prints each file the active blocks give — `<path> for <units>` at each folder that holds one, `(new)` at the root when none does there — with the units it serves, `.` for the repository: for each tool, the units whose nearest file at or above their folder names that tool's parts, and, where no file names them yet, the unit its folder lies in and each beneath it without a nearer file of that name. Under the file come the fragment of each block, `.droneey/constitution/templates/project/<scope>/<block>/<path>`, and under a tool's fragment the parts it takes, in order. Each package keeps its tools' configurations in its own folder; the root of a workspace keeps the tools that run once for the whole repository — the commit hooks, the secrets scan, the manifests' check, a scan of every lockfile — and, of each other tool, only its own part and its workspace part. Keep the repository's layout where it already follows this: update each file that exists, and write a new one where its package needs it. A tool that takes no part on the axes its unit follows gets no file. Ask the owner for what only they know: `<name>`, the project's name; `<package>`, the import package of its Python code; the paths a task of `mise.toml` names, such as a Dockerfile or a Compose file, which you propose from the repository. Write each file from it:
@@ -169,7 +192,7 @@ Show the owner the diff of every file you will write, write only after the owner
 Run the hook as a session start would, from the repository root:
 
 ```bash
-printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT}" bash "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | constitution hook session-start
 ```
 
 It prints the digest as JSON. The digest's second line must say `constitution.yaml makes <n> blocks active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the files, a `wiring` warning included, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.

@@ -1,4 +1,5 @@
 import * as architectureBun from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/bun.mjs';
+import * as architectureBunli from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/bunli.mjs';
 import * as architectureCore from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/core.mjs';
 import * as architectureWorkspace from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/workspace.mjs';
 import * as architectureYamlJs from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/yaml-js.mjs';
@@ -20,6 +21,7 @@ export default join(
   architectureCore,
   architectureWorkspace,
   architectureBun,
+  architectureBunli,
   architectureYamlJs,
   architectureZod,
   // the project's own settings, joined after the parts

@@ -1,0 +1,63 @@
+{
+  "name": "@droneey/design-terminal",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The design system of every droneey command line: its theme, glyphs and plain formatters, and its components and prompts on Ink.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "Dmytro Kurovskyi",
+    "email": "me@kurovskyi.dev",
+    "url": "https://kurovskyi.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/droneey/constitution.git",
+    "directory": "packages/design-terminal"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./ink": "./src/integrations/ink/index.ts"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {
+    "design:build": "bun src/entrypoints/design-build/main.ts",
+    "design:check": "bun src/entrypoints/design-build/main.ts check",
+    "test": "CI=1 bun test",
+    "mutation:check": "mutation-check",
+    "mutation:all": "mutation-check all",
+    "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
+    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints"
+  },
+  "dependencies": {
+    "ansis": "^4.4.0"
+  },
+  "devDependencies": {
+    "@droneey/design-tokens": "workspace:*",
+    "@droneey/mutation-check": "workspace:*",
+    "@stryker-mutator/core": "10.0.0",
+    "@types/bun": "1.4.3",
+    "@types/react": "19.3.0",
+    "dependency-cruiser": "18.6.0",
+    "ink": "8.0.0",
+    "ink-testing-library": "4.0.0",
+    "knip": "6.41.0",
+    "react": "19.3.1",
+    "style-dictionary": "5.7.0",
+    "typescript": "7.0.2"
+  },
+  "peerDependencies": {
+    "ink": "^8.0.0",
+    "react": "^19.3.1"
+  },
+  "peerDependenciesMeta": {
+    "ink": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  }
+}

@@ -64,14 +64,49 @@ packages:
       - rule: utilities-only-from-tokens
         level: SHOULD
         reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"
+  packages/design-tokens:
+    domains:
+      - ui
+      - design-system
+    implementations:
+      - bun-test
+  packages/design-terminal:
+    domains:
+      - ui
+      - design-system
+    platforms:
+      - cli
+    implementations:
+      - bun-test
+      - stryker
+      - ink
+  packages/design-web:
+    domains:
+      - ui
+      - design-system
+      - untrusted-client
+    platforms:
+      - browser
+    languages:
+      - html
+      - css
+    implementations:
+      - bun-test
+      - stryker
+      - react-dom
+      - tailwind
+      - testing-library
   # The archive itself: a link of its own to .droneey/constitution would point at its own folder, so
   # the root's biome.json serves it.
   packages/constitution:
+    platforms:
+      - cli
     implementations:
       - bun-test
       - stryker
       - zod
       - yaml-js
+      - bunli
   packages/mutation-check/languages/python:
     implementations:
       - poe

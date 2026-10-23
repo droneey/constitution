@@ -29,11 +29,21 @@ You need Claude Code and [mise](https://mise.jdx.dev).
    claude plugin install constitution@droneey
    ```
 
-2. Pin a release in the project's `mise.toml`, add `/.droneey` to its `.gitignore` and run `mise install`. The release lands in `.droneey/constitution/`:
+2. Pin a release in the project's `mise.toml`, add `/.droneey` to its `.gitignore` and run `mise install`. The release lands in `.droneey/constitution/`, and its `constitution` program for your platform on `PATH`, which the hooks run:
 
    ```toml
-   [tools]
-   "github:droneey/constitution" = { version = "<version>", asset_pattern = "constitution.tar.gz", strip_components = 0 }
+   [tools."github:droneey/constitution"]
+   version = "<version>"
+   asset_pattern = "constitution.tar.gz"
+   strip_components = 0
+   bin_path = "bin"
+
+   [tools."github:droneey/constitution".platforms]
+   linux-x64 = { additional_asset_patterns = ["constitution-linux-x64.tar.gz"] }
+   linux-arm64 = { additional_asset_patterns = ["constitution-linux-arm64.tar.gz"] }
+   macos-x64 = { additional_asset_patterns = ["constitution-macos-x64.tar.gz"] }
+   macos-arm64 = { additional_asset_patterns = ["constitution-macos-arm64.tar.gz"] }
+   windows-x64 = { additional_asset_patterns = ["constitution-windows-x64.tar.gz"] }
 
    [hooks]
    postinstall = [

@@ -95,7 +95,7 @@ The hook reads a fixed subset of YAML, so keep this form exactly:
 Run the hook as a session start would, from the repository root:
 
 ```bash
-printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT}" bash "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | constitution hook session-start
 ```
 
 The digest it prints lists the override under the overrides, and no warning names it. A `config` or `override` warning about it means the entry is wrong: fix it and show the owner. The change reaches the main branch through a pull request like any other, and git history keeps its record.

@@ -2112,12 +2112,6 @@ describe('session-start hook', () => {
         `constitution hook: ${archive}/package.json has no version\n`,
     },
     {
-      breakage: Breakage.Resolve,
-      condition: 'an awk program in the middle of the pipeline fails',
-      layout: CLI,
-      stderr: (): string => 'constitution hook: cannot build the digest\n',
-    },
-    {
       condition: 'constitution.yaml cannot be read',
       layout: {
         ...CLI,

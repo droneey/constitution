@@ -22,6 +22,8 @@ interface Project {
   files: Readonly<Record<string, string>>;
   // A link's path, then the folder it points to, as a package manager links a workspace's units.
   links?: Readonly<Record<string, string>>;
+  // The project's own settings, joined after the parts.
+  own?: Readonly<Record<string, unknown>>;
   parts?: readonly string[];
   roots?: readonly string[];
   workspaces?: readonly string[];
@@ -169,7 +171,7 @@ const configFromTemplate = (
     .replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
 };
 
-const configOf = (parts: readonly string[]): string =>
+const configOf = (parts: readonly string[], own: Readonly<Record<string, unknown>> = {}): string =>
   configFromTemplate(
     [
       ...BASE_PARTS,
@@ -178,7 +180,7 @@ const configOf = (parts: readonly string[]): string =>
       (part) =>
         `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/').replace(/\/dependency-cruiser\/(?!architecture\/|workflow\/)/, '/dependency-cruiser/foundation/')}.mjs`,
     ),
-  );
+  ).replace('  {},\n', `  ${JSON.stringify(own)},\n`);
 
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
@@ -189,6 +191,7 @@ const cruise = (project: Project): Cruise => {
       project.parts ?? [
         'typescript/architecture/core',
       ],
+      project.own,
     ),
     'package.json': JSON.stringify({
       dependencies: declared([

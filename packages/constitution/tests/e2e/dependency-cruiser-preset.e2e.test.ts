@@ -1360,6 +1360,41 @@ describe('the development files the parts name', () => {
       expect(violations.includes('no-development-dependency-in-production')).toBe(reported);
     },
   );
+
+  it.each([
+    {
+      condition: 'a build tool the project names imports a development dependency',
+      file: 'src/entrypoints/build/main.ts',
+      reported: false,
+    },
+    {
+      condition: 'production code beside the build tool imports the development dependency',
+      file: 'src/libs/ui/button.ts',
+      reported: true,
+    },
+  ])(
+    "should report no-development-dependency-in-production only for production code when $condition by the project's own settings",
+    ({ file, reported }) => {
+      // Arrange
+      const project = {
+        files: {
+          [file]: "import { devtool } from 'devtool';\nexport const shown = devtool;\n",
+        },
+        own: {
+          developmentFiles: [
+            '^src/entrypoints/build/',
+          ],
+        },
+        parts: [],
+      };
+
+      // Act
+      const { violations } = cruise(project);
+
+      // Assert
+      expect(violations.includes('no-development-dependency-in-production')).toBe(reported);
+    },
+  );
 });
 
 describe("the parts of dependency-cruiser's base", () => {

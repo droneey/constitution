@@ -14,8 +14,7 @@ permissions:
 
 jobs:
   # The project's one check, the same command an agent runs before it hands a
-  # change back; Ubuntu's awk is mawk unless gawk is installed, so the hook's
-  # specs inside it run under mawk.
+  # change back.
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -35,12 +34,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Put mawk first as awk
-        run: |
-          mkdir -p "${RUNNER_TEMP}/mawk"
-          ln -s "$(command -v mawk)" "${RUNNER_TEMP}/mawk/awk"
-          echo "${RUNNER_TEMP}/mawk" >> "${GITHUB_PATH}"
-
       - name: Check
         run: bun run check
 
@@ -50,22 +43,11 @@ jobs:
       - name: Lint the workflows
         run: actionlint -color
 
-  # The hook must run under every shell and awk a project may have: its specs
-  # again under gawk, whose length() counts bytes under the hook's LC_ALL=C as
-  # mawk's and BSD awk's do, and under the bash 3.2 and the awk macOS ships.
+  # The hook's wrapper must run under the bash 3.2 macOS ships, so its specs
+  # run again there.
   test-hooks:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - environment: gawk
-            os: ubuntu-latest
-            shell: bash
-          - environment: macOS bash 3.2 and awk
-            os: macos-latest
-            shell: /bin/bash
-    name: test:hooks (${{ matrix.environment }})
-    runs-on: ${{ matrix.os }}
+    name: test:hooks (macOS bash 3.2)
+    runs-on: macos-latest
     timeout-minutes: 15
     permissions:
       contents: read
@@ -81,16 +63,7 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Put gawk first as awk
-        if: matrix.environment == 'gawk'
-        run: |
-          sudo apt-get update --quiet
-          sudo apt-get install --yes gawk
-          mkdir -p "${RUNNER_TEMP}/gawk"
-          ln -s "$(command -v gawk)" "${RUNNER_TEMP}/gawk/awk"
-          echo "${RUNNER_TEMP}/gawk" >> "${GITHUB_PATH}"
-
       - name: Run the hook's specs
         env:
-          HOOK_SHELL: ${{ matrix.shell }}
+          HOOK_SHELL: /bin/bash
         run: bun run test:hooks

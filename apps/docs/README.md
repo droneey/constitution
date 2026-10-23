@@ -9,7 +9,6 @@ The site reads the repository's Markdown as GitHub shows it — the README, `doc
 ```bash
 bun --cwd=apps/docs run dev       # the site with live reload, at localhost:3000
 bun --cwd=apps/docs run build     # the static site, in apps/docs/.output/public
-bun --cwd=apps/docs run theme:build   # the theme's stylesheet, from its tokens
 ```
 
 The site builds from its own folder, two levels below the repository's root, where it finds the files it renders.
@@ -32,7 +31,8 @@ Both listen on `127.0.0.1:3000`, or on `DOCS_PORT`. The image builds from the re
 | `src/composition/docs` | the documentation's screens, widgets and components, and the styles of rendered rules |
 | `src/features/content` | the content pipeline: the collections, the loader, the remark plugins, the sidebar read from the README |
 | `src/features/versions` | the releases the version menu lists, read from `versions.json` |
-| `src/libs/ui` | the design system's theme, generated from `theme.tokens.json`, and the library parts the interface uses |
-| `src/entrypoints/theme` | the command that checks the tokens and writes the theme's stylesheet |
+| `src/libs/ui` | the Fumadocs components the site composes, from the library it installs, and its skin: the stylesheets that map Fumadocs onto the design system's tokens, and `keepOneLayout` |
 | `content/examples` | one example per rule, `<slug>.md`, shown at the foot of its card |
 | `docker`, `compose.yaml`, `scripts` | the image, its Compose services and the script that runs them |
+
+The site's look is `@droneey/design-web`'s: its stylesheet, its Tailwind theme and its components, icons and popover through `@droneey/design-web/react-dom`, with the site's own Fumadocs skin over them, and the repository's accent, `brand.tokens.json` at its root, which the root route hands to its `ThemeProvider`.

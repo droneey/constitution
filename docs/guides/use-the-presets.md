@@ -4,10 +4,10 @@
 
 ## Let ratify wire them
 
-[`/constitution:ratify`](../reference/skills.md#constitutionratify) writes each tool's configuration from its [template](../reference/templates.md), with the parts the project's blocks take, shows the diff and writes it after your yes. To see what it computes, run the plugin's script from the project:
+[`/constitution:ratify`](../reference/skills.md#constitutionratify) writes each tool's configuration from its [template](../reference/templates.md), with the parts the project's blocks take, shows the diff and writes it after your yes. To see what it computes, run the `constitution` program the project installs with the release, from the project:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/hooks/wiring.sh"
+constitution wiring
 ```
 
 It prints each file the active blocks give, with the units it serves, the template of each block's fragment and the parts each tool's fragment takes, in order:

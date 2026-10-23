@@ -1,5 +1,6 @@
+import { Icon, IconName } from '@droneey/design-web/react-dom';
+
 import type { BaseLayoutProps } from '#/libs/ui';
-import { Landmark } from '#/libs/ui';
 import { appName, gitConfig } from '#/shared/constants';
 
 /** the shape the library draws for its repository link */
@@ -31,9 +32,9 @@ export const layoutOptions: BaseLayoutProps = {
   nav: {
     title: (
       <>
-        <Landmark
-          aria-hidden
-          className='size-icon-md text-fd-primary'
+        <Icon
+          className='text-fd-primary'
+          name={IconName.Home}
         />
         <span className='text-gradient-accent'>{appName}</span>
       </>

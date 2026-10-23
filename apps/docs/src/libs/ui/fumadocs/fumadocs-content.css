@@ -1,12 +1,6 @@
 /* Hooks are the library's ids, data and aria attributes. */
 
 @layer overrides {
-  /* it opens from its trigger's edge as wide as the screen leaves it room for, and passes the edge
-     only when that room is narrower than any dropdown */
-  [data-toc-dropdown] {
-    width: clamp(var(--spacing-popup-min), var(--available-width), var(--spacing-popup-max));
-  }
-
   [data-toc-dropdown] [data-toc-list],
   [data-toc-dropdown] :has(> [data-toc-list]) {
     padding-block: 0;
@@ -315,7 +309,7 @@
     top: 0;
     left: 0;
     margin: var(--glide-inset);
-    z-index: -1;
+    z-index: var(--layer-surface-below);
     opacity: 0;
     pointer-events: none;
     transition-property: translate, width, height, opacity, scale;
@@ -353,7 +347,7 @@
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
     :is(a, button, [role='menuitemradio']):active {
-      transform: scale(0.98);
+      transform: scale(var(--scale-control-pressed));
       transition-property: color, background-color, border-color, transform;
       transition-duration: var(--duration-fast);
       transition-timing-function: var(--ease-out);
@@ -365,7 +359,7 @@
     [role='group']:has(> [aria-checked='true']:active) > span[aria-hidden],
     /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
       #fd-search-list:has(:active) > [data-glide] {
-      scale: 0.98;
+      scale: var(--scale-control-pressed);
       transition-duration: var(--duration-fast);
     }
 

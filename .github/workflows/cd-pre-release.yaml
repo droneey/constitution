@@ -20,4 +20,11 @@ jobs:
         && tar -czf constitution.tar.gz -C packages/constitution
         package.json blocks presets templates tools vocabulary.yaml
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
-      assets: constitution.tar.gz constitution.tar.gz.sha256
+        && npx --yes bun@1.4.3 run build:cli
+      # The constitution program for each platform, an archive of bin/constitution that mise
+      # unpacks beside the Constitution's as its additional asset.
+      assets: >-
+        constitution.tar.gz constitution.tar.gz.sha256
+        dist/cli/constitution-linux-x64.tar.gz dist/cli/constitution-linux-arm64.tar.gz
+        dist/cli/constitution-macos-x64.tar.gz dist/cli/constitution-macos-arm64.tar.gz
+        dist/cli/constitution-windows-x64.tar.gz

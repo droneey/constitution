@@ -1,0 +1,42 @@
+import * as architectureReact from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/_react.mjs';
+import * as architectureBun from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/bun.mjs';
+import * as architectureCore from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/core.mjs';
+import * as architectureInk from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/ink.mjs';
+import * as architectureUi from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/ui.mjs';
+import * as architectureWorkspace from '../../.droneey/constitution/presets/typescript/dependency-cruiser/architecture/workspace.mjs';
+import * as bun from '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/bun.mjs';
+import * as core from '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/core.mjs';
+import * as self from '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/self.mjs';
+import * as typescript from '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/typescript.mjs';
+import * as workspace from '../../.droneey/constitution/presets/typescript/dependency-cruiser/foundation/workspace.mjs';
+import { join } from '../../.droneey/constitution/presets/typescript/join.mjs';
+
+// dependency-cruiser's extends keeps the first of two rules of one name, so the parts are joined.
+export default join(
+  self,
+  core,
+  typescript,
+  workspace,
+  bun,
+  architectureCore,
+  architectureUi,
+  architectureWorkspace,
+  architectureReact,
+  architectureBun,
+  architectureInk,
+  // the project's own settings, joined after the parts
+  {
+    // the design build is a tool the package never exports
+    developmentFiles: [
+      '^src/entrypoints/design-build/',
+    ],
+    options: {
+      doNotFollow: {
+        path: [
+          'node_modules',
+          '^\\.\\./',
+        ],
+      },
+    },
+  },
+);

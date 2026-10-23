@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
+  ],
+  "include": [
+    "tests/**/*.ts"
+  ]
+}

@@ -1,16 +1,17 @@
 import type { ReactElement, ReactNode } from 'react';
 import { useState } from 'react';
 
-import type { TOCItemType } from '#/libs/ui';
 import {
-  ChevronDown,
+  Icon,
+  IconName,
   Popover,
-  TextIcon,
-  TOCItem,
-  TOCScrollArea,
-  useTOCItems,
-  useTOCSelector,
-} from '#/libs/ui';
+  PopoverPanel,
+  PopoverTrigger,
+  PopoverWidth,
+} from '@droneey/design-web/react-dom';
+
+import type { TOCItemType } from '#/libs/ui';
+import { TOCItem, TOCScrollArea, useTOCItems, useTOCSelector } from '#/libs/ui';
 
 declare module 'react' {
   /** a value handed to the styles is a custom property, which an inline style may hold */
@@ -160,10 +161,7 @@ export function DocsToc(): ReactElement | undefined {
       id='nd-toc'
     >
       <h3 className='inline-flex items-center text-sm text-fd-muted-foreground'>
-        <TextIcon
-          aria-hidden
-          className='size-icon-md'
-        />
+        <Icon name={IconName.Page} />
         {ON_THIS_PAGE}
       </h3>
       <TocList />
@@ -175,39 +173,33 @@ export function DocsTocDropdown(): ReactElement {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover.Root
+    <Popover
       onOpenChange={setOpen}
       open={open}
     >
-      <Popover.Trigger className='flex min-w-0 items-center rounded-lg text-start text-sm text-fd-muted-foreground transition-colors duration-(--duration-fast) ease-(--ease-standard) hover:bg-fd-accent hover:text-fd-accent-foreground data-popup-open:bg-fd-accent data-popup-open:text-fd-accent-foreground'>
+      <PopoverTrigger className='flex min-w-0 items-center rounded-lg text-start text-sm text-fd-muted-foreground transition-colors duration-(--duration-fast) ease-(--ease-standard) hover:bg-fd-accent hover:text-fd-accent-foreground data-popup-open:bg-fd-accent data-popup-open:text-fd-accent-foreground'>
         <Progress />
         <ActiveHeading fallback={ON_THIS_PAGE} />
-        <ChevronDown
-          aria-hidden
-          className='size-icon-md shrink-0 transition-transform duration-(--duration-base) ease-(--ease-out) in-data-popup-open:rotate-180'
+        <Icon
+          className='transition-transform duration-(--duration-base) ease-(--ease-out) in-data-popup-open:rotate-180'
+          name={IconName.Expand}
         />
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner
-          align='start'
-          className='z-50'
-          // Stryker disable ObjectLiteral,StringLiteral: the popup stays on its trigger's edge and side only when it would overflow the viewport, which a document without layout never reports
-          collisionAvoidance={{
-            align: 'none',
-            fallbackAxisSide: 'none',
-          }}
-          // Stryker restore ObjectLiteral,StringLiteral
-          positionMethod='fixed'
-          sideOffset={8}
-        >
-          <Popover.Popup
-            className='focusable flex max-h-(--available-height) flex-col rounded-xl border bg-fd-popover p-2xs text-fd-popover-foreground shadow-lg origin-(--transform-origin) data-closed:animate-fd-popover-out data-open:animate-fd-popover-in'
-            data-toc-dropdown=''
-          >
-            <TocList onSelect={(): void => setOpen(false)} />
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
+      </PopoverTrigger>
+      <PopoverPanel
+        align='start'
+        // Stryker disable ObjectLiteral,StringLiteral: the popup stays on its trigger's edge and side only when it would overflow the viewport, which a document without layout never reports
+        collisionAvoidance={{
+          align: 'none',
+          fallbackAxisSide: 'none',
+        }}
+        // Stryker restore ObjectLiteral,StringLiteral
+        data-toc-dropdown=''
+        positionMethod='fixed'
+        sideOffset={8}
+        width={PopoverWidth.Available}
+      >
+        <TocList onSelect={(): void => setOpen(false)} />
+      </PopoverPanel>
+    </Popover>
   );
 }

@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { mentionedOf } from '../hook.fixtures';
-import { Breakage, createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
-import { ConfigKey, configOf, createProject, removeProjects } from '../project.fixtures';
+import { removePluginRoots } from '../plugin-root.fixtures';
+import { ConfigKey, removeProjects } from '../project.fixtures';
 import {
   BIOME_PARTS,
   biomeJson,
@@ -497,27 +497,6 @@ describe('the wiring of a project', () => {
         'packages/kit',
       ],
     ]);
-  });
-
-  it('should give the digest and say the wiring could not be checked when its program fails', () => {
-    // Arrange
-    const broken = createPluginRoot({
-      breakage: Breakage.Wiring,
-    });
-    const project = createProject({
-      config: configOf({}),
-    });
-
-    // Act
-    const wiring = wiringOf(
-      digestOf({
-        project,
-        root: broken,
-      }),
-    );
-
-    // Assert
-    expect(wiring.length).toBe(1);
   });
 
   it('should warn of nothing when an override lowers the rule the wiring holds', () => {

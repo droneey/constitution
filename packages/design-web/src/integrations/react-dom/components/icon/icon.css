@@ -1,0 +1,8 @@
+@layer components {
+  [data-icon] {
+    flex-shrink: 0;
+    width: var(--size-icon-md);
+    height: var(--size-icon-md);
+    stroke-width: var(--stroke-icon);
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@droneey/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The tokens every droneey interface is drawn with, in the W3C Design Tokens format, and the resolver of their modes.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "Dmytro Kurovskyi",
+    "email": "me@kurovskyi.dev",
+    "url": "https://kurovskyi.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/droneey/constitution.git",
+    "directory": "packages/design-tokens"
+  },
+  "type": "module",
+  "exports": {
+    "./tokens/*": "./tokens/*"
+  },
+  "scripts": {
+    "test": "CI=1 bun test",
+    "architecture:check": "depcruise tests --config .dependency-cruiser.mjs",
+    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.3",
+    "colorjs.io": "0.7.1",
+    "dependency-cruiser": "18.6.0",
+    "knip": "6.41.0",
+    "style-dictionary": "5.7.0",
+    "typescript": "7.0.2"
+  }
+}

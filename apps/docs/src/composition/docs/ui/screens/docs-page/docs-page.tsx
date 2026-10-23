@@ -1,6 +1,8 @@
 import type { ComponentType, ReactElement, RefCallback } from 'react';
 import { Suspense, use, useState } from 'react';
 
+import { useGlide } from '@droneey/design-web/react-dom';
+
 import type { BaseSlots, FullSearchTriggerProps, PageTreeRoot, TOCItemType } from '#/libs/ui';
 import {
   DocsBody,
@@ -12,13 +14,12 @@ import {
   SearchTrigger,
   SidebarProvider,
   TOCProvider,
-  useGlide,
 } from '#/libs/ui';
 import { mainContentId } from '#/shared/constants';
 
 import { DocsLocationContext } from '../../../app/providers';
 import { DocsToc, DocsTocDropdown } from '../../components/docs-toc';
-import { layoutOptions, mdxComponents } from '../../constants';
+import { glideLists, layoutOptions, mdxComponents } from '../../constants';
 import { DocsSidebarWidget } from '../../widgets/docs-sidebar-widget';
 import { DocsVersionWidget } from '../../widgets/docs-version-widget';
 
@@ -80,7 +81,7 @@ function DocsContent({
   const { toc } = page.loaded() ?? use(page.load());
   const Body = page.body;
   // here, not in the root: its lists are on the page only once this content, which waits for its body, is hydrated
-  useGlide();
+  useGlide(glideLists);
 
   // the page panel remounts on each page, so the TOC's observer does too, or it watches the old headings;
   // the page is a stop of the keyboard, as the sidebar's list is, so the arrows scroll its panel

@@ -1,0 +1,59 @@
+{
+  "duration": {
+    "$type": "duration",
+    "$description": "How long motion takes and how it eases.",
+    "fast": {
+      "$value": {
+        "unit": "ms",
+        "value": 100
+      }
+    },
+    "base": {
+      "$value": {
+        "unit": "ms",
+        "value": 200
+      }
+    }
+  },
+  "ease": {
+    "$type": "cubicBezier",
+    "standard": {
+      "$value": [
+        0.25,
+        0.1,
+        0.25,
+        1
+      ]
+    },
+    "out": {
+      "$value": [
+        0.23,
+        1,
+        0.32,
+        1
+      ]
+    }
+  },
+  "scale": {
+    "$type": "number",
+    "$description": "How far an element shrinks as it moves: the primitives, a share of its size each, and the roles that read them.",
+    "90": {
+      "$value": 0.9
+    },
+    "98": {
+      "$value": 0.98
+    },
+    "surface": {
+      "enter": {
+        "$value": "{scale.90}",
+        "$description": "The size a raised surface grows from as it opens, and shrinks to as it closes."
+      }
+    },
+    "control": {
+      "pressed": {
+        "$value": "{scale.98}",
+        "$description": "The size a control, and the block under it, shrinks to while it is pressed."
+      }
+    }
+  }
+}

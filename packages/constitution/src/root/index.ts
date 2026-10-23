@@ -1,2 +1,3 @@
-export type { Wiring } from './wiring';
-export { createWiring } from './wiring';
+export { ExitCode } from './exit-codes';
+export type { Program, ProgramInput } from './wiring';
+export { createProgram } from './wiring';

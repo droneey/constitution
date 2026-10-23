@@ -2,6 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
+import { CLI_PATH } from './cli.fixtures';
 import type { Files } from './constitution.fixtures';
 import { contextOf, HookEvent, runHook } from './hook.fixtures';
 import { archiveOf, createRealPluginRoot, LINK, linkArchive } from './plugin-root.fixtures';
@@ -227,9 +228,9 @@ const wiringListOf = (input: { project: string; root: string }): readonly string
   });
 
   return spawnSync(
-    process.env['HOOK_SHELL'] ?? 'bash',
+    CLI_PATH,
     [
-      join(input.root, 'hooks', 'wiring.sh'),
+      'wiring',
     ],
     {
       cwd: input.project,

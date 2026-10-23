@@ -1,0 +1,76 @@
+import { afterEach, describe, expect, it } from 'bun:test';
+
+import { cleanup, render, screen } from '@testing-library/react';
+
+import { Icon } from '../components';
+import { IconName } from '../icons';
+import { applyStylesheet, TOKENS } from './styles.fixtures';
+
+afterEach(() => {
+  cleanup();
+  document.head.replaceChildren();
+});
+
+describe('Icon', () => {
+  it.each(Object.values(IconName))('should draw %s hidden from assistive technology', (name) => {
+    // Arrange
+    const tree = (
+      <p>
+        Rules
+        <Icon name={name} />
+      </p>
+    );
+
+    // Act
+    render(tree);
+
+    // Assert
+    expect(screen.getByText('Rules').lastElementChild?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('should name what it means to assistive technology when it has a label', () => {
+    // Arrange
+    const tree = (
+      <Icon
+        label='Current version'
+        name={IconName.Selected}
+      />
+    );
+
+    // Act
+    render(tree);
+
+    // Assert
+    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Current version');
+  });
+
+  it("should take its size and stroke from the theme's tokens and keep the caller's own class", async () => {
+    // Arrange
+    await applyStylesheet(new URL('../components/icon/icon.css', import.meta.url));
+    const tree = (
+      <Icon
+        className='spins'
+        label='Expand'
+        name={IconName.Expand}
+      />
+    );
+
+    // Act
+    render(tree);
+
+    // Assert
+    const icon = screen.getByRole('img');
+    const style = getComputedStyle(icon);
+    expect({
+      hasOwnClass: icon.classList.contains('spins'),
+      height: style.height,
+      strokeWidth: style.getPropertyValue('stroke-width'),
+      width: style.width,
+    }).toStrictEqual({
+      hasOwnClass: true,
+      height: TOKENS['--size-icon-md'],
+      strokeWidth: TOKENS['--stroke-icon'],
+      width: TOKENS['--size-icon-md'],
+    });
+  });
+});

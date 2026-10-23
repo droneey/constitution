@@ -122,7 +122,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 
 ## What the check refuses
 
-`blocks-check` fails on:
+`constitution check` fails on:
 
 - a file outside a block folder, a stray file inside one, a file of an axis named after its block, or two blocks with one id;
 - a passport that holds a rule, and a Requirements table anywhere but an implementation's passport;

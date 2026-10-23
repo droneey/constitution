@@ -1,12 +1,14 @@
 import type { ReactElement } from 'react';
 
-import { DefaultNotFound, HomeLayout, useGlide } from '#/libs/ui';
+import { useGlide } from '@droneey/design-web/react-dom';
+
+import { DefaultNotFound, HomeLayout } from '#/libs/ui';
 import { mainContentId } from '#/shared/constants';
 
-import { layoutOptions } from '../../constants';
+import { glideLists, layoutOptions } from '../../constants';
 
 export function DocsNotFoundScreen(): ReactElement {
-  useGlide();
+  useGlide(glideLists);
 
   return (
     <HomeLayout
