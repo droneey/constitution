@@ -27,7 +27,7 @@
     "type:check": "tsc -b",
     "test:unit": "CI=1 bun test",
     "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test",
-    "test:hooks": "CI=1 bun --config=./bunfig.e2e.toml test tests/e2e/hooks",
+    "test:program": "CI=1 bun --config=./bunfig.e2e.toml test tests/e2e/hooks tests/e2e/cli.e2e.test.ts",
     "test": "bun run test:unit && bun run test:e2e",
     "blocks:check": "bun run ./src/main.ts check",
     "mutation:check": "mutation-check",

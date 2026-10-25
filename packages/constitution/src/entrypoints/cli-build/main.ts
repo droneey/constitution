@@ -20,7 +20,6 @@ const TARGETS: readonly Bun.Build.CompileTarget[] = [
   'bun-linux-arm64',
   'bun-darwin-x64',
   'bun-darwin-arm64',
-  'bun-windows-x64',
 ] as const;
 const COMPONENTS = /\/packages\/[^/]+\/src\/.+\.(?:tsx|hooks\.ts)$/;
 const DEVTOOLS = /^react-devtools-core$/;

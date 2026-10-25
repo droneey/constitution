@@ -228,6 +228,28 @@ describe('the Biome preset', () => {
       },
       message: 'A closed set of named values is a string enum, not a union of string literals',
     },
+    {
+      condition: 'a module-level constant holding a literal is camelCase',
+      files: {
+        'src/features/orders/order.ts': 'export const maxItems = 5;\n',
+      },
+      message: 'A module-level constant holding a literal is SCREAMING_SNAKE_CASE',
+    },
+    {
+      condition: 'a module-level constant computed at run time is SCREAMING_SNAKE_CASE',
+      files: {
+        'src/features/orders/order.ts': "export const MAX_ITEMS = Number('5');\n",
+      },
+      message: 'A module-level constant computed at run time is camelCase',
+    },
+    {
+      condition: 'a module exports a value beside its component',
+      files: {
+        'src/Panel.tsx':
+          "export const PANEL_WIDTH = 4;\n\nexport function Panel(): string {\n  return 'panel';\n}\n",
+      },
+      message: 'A module that exports a component exports only components',
+    },
   ])('should report a plugin finding when $condition', ({ files, message }) => {
     // Arrange
     const project = {

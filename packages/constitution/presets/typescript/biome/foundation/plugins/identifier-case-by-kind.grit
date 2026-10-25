@@ -16,7 +16,7 @@ pattern primitive_literal() {
       JsBigintLiteralExpression()
     }),
     JsTemplateExpression() as $template where {
-      $template <: r"(?s)`.*",
+      $template <: includes r"^`",
       $template <: not contains JsTemplateElement()
     }
   }
@@ -27,7 +27,7 @@ pattern as_const() {
     primitive_literal(),
     JsObjectExpression(),
     JsArrayExpression()
-  }) as $fixed where { $fixed <: r"(?s).*\bas\s+const" }
+  }) as $fixed where { $fixed <: includes r"\bas\s+const$" }
 }
 
 pattern literal() {
@@ -51,26 +51,23 @@ pattern component_value() {
 pattern companion_of_a_type($module) {
   $name where {
     $module <: contains or {
-      TsTypeAliasDeclaration(binding_identifier=$type),
-      TsInterfaceDeclaration(id=$type)
-    } where { $type <: $name }
+      TsTypeAliasDeclaration(binding_identifier=$name),
+      TsInterfaceDeclaration(id=$name)
+    }
   }
 }
 
 pattern exported_by_a_clause($module) {
   $name where {
     $module <: contains or {
-      JsExportNamedShorthandSpecifier(name=$exported),
-      JsExportNamedSpecifier(local_name=$exported)
-    } where { $exported <: $name }
+      JsExportNamedShorthandSpecifier(name=$name),
+      JsExportNamedSpecifier(local_name=$name)
+    }
   }
 }
 
 JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value)) as $constant where {
   $name <: JsIdentifierBinding(),
-  $constant <: within JsVariableDeclaration() as $declaration where {
-    $declaration <: r"(?s)const\s.*"
-  },
   $constant <: not within or {
     JsFunctionBody(),
     JsBlockStatement(),
@@ -78,6 +75,9 @@ JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value
     JsForStatement(),
     JsForOfStatement(),
     JsForInStatement()
+  },
+  $constant <: within JsVariableDeclaration() as $declaration where {
+    $declaration <: includes r"^const\s"
   },
   $constant <: within JsModule() as $module,
   or {
@@ -94,13 +94,17 @@ JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value
         and {
           $name <: pascal_case(),
           $value <: not component_value(),
-          $name <: not companion_of_a_type($module),
           // An exported name may be one a framework reads by its spelling.
           $constant <: not within JsExport(),
+          $name <: not companion_of_a_type($module),
           $name <: not exported_by_a_clause($module)
         }
       },
       register_diagnostic(span=$name, message="A module-level constant computed at run time is camelCase, or PascalCase for a component or the companion of a type of its name", severity="error")
     }
-  }
+  },
+  // Biome keeps what a match adds to its matching state and copies that state
+  // before every declarator, so each match would slow the next: the diagnostic
+  // stays, the match fails.
+  false
 }

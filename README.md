@@ -43,7 +43,6 @@ You need Claude Code and [mise](https://mise.jdx.dev).
    linux-arm64 = { additional_asset_patterns = ["constitution-linux-arm64.tar.gz"] }
    macos-x64 = { additional_asset_patterns = ["constitution-macos-x64.tar.gz"] }
    macos-arm64 = { additional_asset_patterns = ["constitution-macos-arm64.tar.gz"] }
-   windows-x64 = { additional_asset_patterns = ["constitution-windows-x64.tar.gz"] }
 
    [hooks]
    postinstall = [

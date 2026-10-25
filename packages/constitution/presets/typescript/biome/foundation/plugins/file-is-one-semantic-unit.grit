@@ -13,9 +13,9 @@ pattern component_function() {
 pattern declared_function($module) {
   $name where {
     $module <: contains or {
-      JsFunctionDeclaration(id=$id),
-      JsVariableDeclarator(id=$id, initializer=JsInitializerClause(expression=component_function()))
-    } where { $id <: $name }
+      JsFunctionDeclaration(id=$name),
+      JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=component_function()))
+    }
   }
 }
 
@@ -37,29 +37,29 @@ pattern component_named($module) {
   $name where {
     $name <: pascal_case(),
     $module <: contains or {
-      JsFunctionDeclaration(id=$id),
-      JsVariableDeclarator(id=$id, initializer=JsInitializerClause(expression=component_value($module)))
-    } where { $id <: $name }
+      JsFunctionDeclaration(id=$name),
+      JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=component_value($module)))
+    }
   }
 }
 
 pattern value_declared($module) {
   $name where {
     $module <: contains or {
-      JsFunctionDeclaration(id=$id),
-      JsVariableDeclarator(id=$id),
-      JsClassDeclaration(id=$id),
-      TsEnumDeclaration(id=$id)
-    } where { $id <: $name }
+      JsFunctionDeclaration(id=$name),
+      JsVariableDeclarator(id=$name),
+      JsClassDeclaration(id=$name),
+      TsEnumDeclaration(id=$name)
+    }
   }
 }
 
 pattern type_declared($module) {
   $name where {
     $module <: contains or {
-      TsTypeAliasDeclaration(binding_identifier=$id),
-      TsInterfaceDeclaration(id=$id)
-    } where { $id <: $name }
+      TsTypeAliasDeclaration(binding_identifier=$name),
+      TsInterfaceDeclaration(id=$name)
+    }
   }
 }
 
@@ -87,43 +87,56 @@ pattern exports_component($module) {
 
 pattern type_only_export() {
   or {
-    r"(?s)type\s.*",
-    within JsExportNamedClause() as $clause where { $clause <: r"(?s)type\s.*" },
-    within JsExportNamedFromClause() as $clause where { $clause <: r"(?s)type\s.*" }
+    includes r"^type\s",
+    within JsExportNamedClause() as $clause where { $clause <: includes r"^type\s" },
+    within JsExportNamedFromClause() as $clause where { $clause <: includes r"^type\s" }
   }
 }
 
-or {
+// A value a module exports beside its components.
+pattern non_component_export($module) {
   or {
-    JsExportNamedShorthandSpecifier(name=$name),
-    JsExportNamedSpecifier(local_name=$name)
-  } as $export where {
-    $export <: not type_only_export(),
-    $export <: within JsModule() as $module,
-    $name <: non_component_name($module)
-  },
-  JsExportNamedFromSpecifier(source_name=$name) as $export where {
-    $export <: not type_only_export(),
-    $name <: not pascal_case(),
-    $export <: within JsModule() as $module
-  },
-  JsExport(export_clause=JsFunctionDeclaration(id=$name)) as $export where {
-    $name <: not pascal_case(),
-    $export <: within JsModule() as $module
-  },
-  JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value)) as $export where {
-    $export <: within JsExport(),
-    $export <: not within JsFunctionBody(),
-    $export <: within JsModule() as $module,
-    not and { $name <: pascal_case(), $value <: component_value($module) }
-  },
-  JsExport(export_clause=or {
-    JsClassDeclaration(),
-    TsEnumDeclaration(),
-    JsExportDefaultExpressionClause(),
-    JsExportFromClause()
-  }) as $export where { $export <: within JsModule() as $module }
-} where {
+    or {
+      JsExportNamedShorthandSpecifier(name=$name),
+      JsExportNamedSpecifier(local_name=$name)
+    } as $export where { $export <: not type_only_export(), $name <: non_component_name($module) },
+    JsExportNamedFromSpecifier(source_name=$name) as $export where {
+      $export <: not type_only_export(),
+      $name <: not pascal_case()
+    },
+    JsExport(export_clause=JsFunctionDeclaration(id=$name)) where { $name <: not pascal_case() },
+    JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value)) as $export where {
+      $export <: within JsExport(),
+      $export <: not within JsFunctionBody(),
+      not and { $name <: pascal_case(), $value <: component_value($module) }
+    },
+    JsExport(export_clause=or {
+      JsClassDeclaration(),
+      TsEnumDeclaration(),
+      JsExportDefaultExpressionClause(),
+      JsExportFromClause()
+    })
+  }
+}
+
+// Whether the module exports a component is asked once, before its exports,
+// whose kinds come first since Biome tells a kind apart without copying its
+// matching state.
+file(body=$module) where {
+  $module <: JsModule(),
   $module <: exports_component($module),
-  register_diagnostic(span=$export, message="A module that exports a component exports only components, so Fast Refresh can swap it: move this value into a file of its own", severity="error")
+  $module <: contains or {
+    JsExportNamedShorthandSpecifier(),
+    JsExportNamedSpecifier(),
+    JsExportNamedFromSpecifier(),
+    JsExport(),
+    JsVariableDeclarator()
+  } as $export where {
+    $export <: non_component_export($module),
+    register_diagnostic(span=$export, message="A module that exports a component exports only components, so Fast Refresh can swap it: move this value into a file of its own", severity="error"),
+    // Biome keeps what a match adds to its matching state and copies that
+    // state at every node, so each match would slow the next: the diagnostic
+    // stays, the match fails.
+    false
+  }
 }
