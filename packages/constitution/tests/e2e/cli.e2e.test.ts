@@ -245,7 +245,7 @@ describe('the constitution program', () => {
     // Assert
     expect({
       exitCode: ran.exitCode,
-      named: ran.stdout.includes('unknown: nonesuch'),
+      named: ran.stdout.includes('blocks: nonesuch'),
     }).toStrictEqual({
       exitCode: 1,
       named: true,

@@ -1,4 +1,4 @@
-import { StatedRule, WarningCode, WarningKind } from '#/kernel/entities';
+import { StatedRule, WarningKind } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
@@ -7,7 +7,7 @@ import type { Catalogue, CatalogueSource } from '../../../../../../../entities';
 import { CatalogueBlock, CatalogueRule } from '../../../../../../../entities';
 import type { WarningLog } from '../../shared/warning-log';
 import type { BlockDraft, ReadState } from './catalogue.utils';
-import { codeOfSource, readFile } from './catalogue.utils';
+import { readFile } from './catalogue.utils';
 import { inCatalogueOrder } from './catalogue-order.utils';
 
 const MARKDOWN = '.md';
@@ -77,10 +77,10 @@ const checkBase = (input: {
 
   if (baseDraft === undefined) {
     log.add({
-      code: codeOfSource(draft.source),
       details: {
         base,
         block: draft.id,
+        source: draft.source.kind,
       },
       kind: WarningKind.BaseNoBlock,
     });
@@ -90,10 +90,10 @@ const checkBase = (input: {
 
   if (!baseDraft.card.isAbstract) {
     log.add({
-      code: codeOfSource(draft.source),
       details: {
         base,
         block: draft.id,
+        source: draft.source.kind,
       },
       kind: WarningKind.BaseConcrete,
     });
@@ -119,10 +119,10 @@ const checkLinks = (input: {
         }) === undefined
       ) {
         log.add({
-          code: codeOfSource(draft.source),
           details: {
             block: draft.id,
             required,
+            source: draft.source.kind,
           },
           kind: WarningKind.RequiredNoBlock,
         });
@@ -155,9 +155,9 @@ const checkTightened = (input: {
     for (const rule of input.rules.filter((stated) => BlockId.equals(stated.block, draft.id))) {
       if (rule.tightens !== undefined && !slugs.has(rule.tightens)) {
         input.log.add({
-          code: codeOfSource(draft.source),
           details: {
             rule: rule.slug,
+            source: draft.source.kind,
             tightens: rule.tightens,
           },
           kind: WarningKind.TightensUnknownRule,
@@ -211,7 +211,6 @@ const readCatalogue = (input: {
   for (const source of input.sources) {
     if (source.files === undefined) {
       input.log.add({
-        code: WarningCode.Pack,
         details: {
           where: source.where,
         },

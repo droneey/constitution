@@ -1,21 +1,20 @@
 import type { Layer } from '../constants';
 import type { BlockId, PackPath, RuleSlug, UnitPath } from '../value-objects';
+import { SourceKind } from '../value-objects';
 import type { WiringProblem } from './wiring-problem.entity';
 
-// The codes of a project's warnings, in the order the digest gives them.
+// The codes of a project's warnings, one for each subject a reader fixes, in the order a
+// declaration's warnings are grouped.
 enum WarningCode {
-  Missing = 'missing',
-  Abstract = 'abstract',
-  Unknown = 'unknown',
-  WrongKey = 'wrong-key',
   Config = 'config',
-  Pack = 'pack',
-  Constitution = 'constitution',
-  NotMet = 'not-met',
-  Override = 'override',
-  Unlisted = 'unlisted',
+  Blocks = 'blocks',
+  Requirements = 'requirements',
+  Overrides = 'overrides',
+  Workspace = 'workspace',
+  Installation = 'installation',
   Wiring = 'wiring',
-  Loop = 'loop',
+  Packs = 'packs',
+  Constitution = 'constitution',
 }
 
 /** What a warning says, finer than its code: each kind names its own details. */
@@ -82,6 +81,11 @@ interface OverrideNamed {
   readonly rule: string;
 }
 
+/** The block set a catalogue's warning is in: the Constitution's release or one of the packs. */
+interface SourceNamed {
+  readonly source: SourceKind;
+}
+
 interface WarningDetails {
   readonly [WarningKind.MemberWithoutConfig]: {
     readonly member: UnitPath;
@@ -135,30 +139,32 @@ interface WarningDetails {
     /** the pack's folder as constitution.yaml lists it */
     readonly where: string;
   };
-  readonly [WarningKind.FileUnreadable]: FileNamed;
-  readonly [WarningKind.RuleRepeated]: FileNamed & {
-    readonly rule: RuleSlug;
-  };
-  readonly [WarningKind.FrontMatterMissing]: FileNamed;
-  readonly [WarningKind.NotBlockFile]: FileNamed;
-  readonly [WarningKind.BlockRepeated]: FileNamed & {
-    readonly block: BlockId;
-  };
-  readonly [WarningKind.OutsideBlockFolder]: FileNamed;
-  readonly [WarningKind.FolderMisnamed]: FileNamed;
-  readonly [WarningKind.BaseNoBlock]: {
+  readonly [WarningKind.FileUnreadable]: FileNamed & SourceNamed;
+  readonly [WarningKind.RuleRepeated]: FileNamed &
+    SourceNamed & {
+      readonly rule: RuleSlug;
+    };
+  readonly [WarningKind.FrontMatterMissing]: FileNamed & SourceNamed;
+  readonly [WarningKind.NotBlockFile]: FileNamed & SourceNamed;
+  readonly [WarningKind.BlockRepeated]: FileNamed &
+    SourceNamed & {
+      readonly block: BlockId;
+    };
+  readonly [WarningKind.OutsideBlockFolder]: FileNamed & SourceNamed;
+  readonly [WarningKind.FolderMisnamed]: FileNamed & SourceNamed;
+  readonly [WarningKind.BaseNoBlock]: SourceNamed & {
     readonly base: string;
     readonly block: BlockId;
   };
-  readonly [WarningKind.BaseConcrete]: {
+  readonly [WarningKind.BaseConcrete]: SourceNamed & {
     readonly base: string;
     readonly block: BlockId;
   };
-  readonly [WarningKind.RequiredNoBlock]: {
+  readonly [WarningKind.RequiredNoBlock]: SourceNamed & {
     readonly block: BlockId;
     readonly required: string;
   };
-  readonly [WarningKind.TightensUnknownRule]: {
+  readonly [WarningKind.TightensUnknownRule]: SourceNamed & {
     readonly rule: RuleSlug;
     readonly tightens: RuleSlug;
   };
@@ -211,16 +217,81 @@ interface WarningDetails {
 }
 
 /**
- * What is wrong with a project, by its code — the group a reader scripts against — its kind and
- * the values it names; the text a reader sees is rendered from them at the edge.
+ * What is wrong with a project, by its kind and the values it names; its code and the text a reader
+ * sees follow from them.
  */
 type ProjectWarning<TKind extends WarningKind = WarningKind> = {
   readonly [TEach in TKind]: {
-    readonly code: WarningCode;
     readonly details: WarningDetails[TEach];
     readonly kind: TEach;
   };
 }[TKind];
 
-export type { ProjectWarning, WarningDetails };
-export { WarningCode, WarningKind };
+// The kinds a block set's own files give, whose code is the set's.
+type CatalogueKind =
+  | WarningKind.FileUnreadable
+  | WarningKind.RuleRepeated
+  | WarningKind.FrontMatterMissing
+  | WarningKind.NotBlockFile
+  | WarningKind.BlockRepeated
+  | WarningKind.OutsideBlockFolder
+  | WarningKind.FolderMisnamed
+  | WarningKind.BaseNoBlock
+  | WarningKind.BaseConcrete
+  | WarningKind.RequiredNoBlock
+  | WarningKind.TightensUnknownRule;
+
+const codeOfKind: {
+  readonly [TKind in Exclude<WarningKind, CatalogueKind>]: WarningCode;
+} = {
+  [WarningKind.KeyMissing]: WarningCode.Config,
+  [WarningKind.KeyUnknown]: WarningCode.Config,
+  [WarningKind.KeyEmpty]: WarningCode.Config,
+  [WarningKind.FoundationListed]: WarningCode.Config,
+  [WarningKind.AxisUnknown]: WarningCode.Config,
+  [WarningKind.MemberConfigUnparsed]: WarningCode.Config,
+  [WarningKind.MemberConfigUnreadable]: WarningCode.Config,
+  [WarningKind.NameIsPath]: WarningCode.Blocks,
+  [WarningKind.NameUnknown]: WarningCode.Blocks,
+  [WarningKind.CoreListed]: WarningCode.Blocks,
+  [WarningKind.BlockUnderWrongKey]: WarningCode.Blocks,
+  [WarningKind.AbstractListed]: WarningCode.Blocks,
+  [WarningKind.PackUnlisted]: WarningCode.Blocks,
+  [WarningKind.BlockNeeded]: WarningCode.Requirements,
+  [WarningKind.RequirementNotMet]: WarningCode.Requirements,
+  [WarningKind.OverrideIncomplete]: WarningCode.Overrides,
+  [WarningKind.OverrideLevelNotLowered]: WarningCode.Overrides,
+  [WarningKind.OverrideUntilMalformed]: WarningCode.Overrides,
+  [WarningKind.OverrideNamesNoRule]: WarningCode.Overrides,
+  [WarningKind.OverrideExpired]: WarningCode.Overrides,
+  [WarningKind.MemberWithoutConfig]: WarningCode.Workspace,
+  [WarningKind.FolderKeepsConfig]: WarningCode.Workspace,
+  [WarningKind.PackNotInstalled]: WarningCode.Installation,
+  [WarningKind.ReleaseLinkLoops]: WarningCode.Installation,
+  [WarningKind.ToolWiredNowhere]: WarningCode.Wiring,
+  [WarningKind.FileMiswired]: WarningCode.Wiring,
+  [WarningKind.SkipOfNoMember]: WarningCode.Wiring,
+  [WarningKind.MemberNotSkipped]: WarningCode.Wiring,
+  [WarningKind.WiringUnchecked]: WarningCode.Wiring,
+};
+
+const codeOfSource: {
+  readonly [TKind in SourceKind]: WarningCode;
+} = {
+  [SourceKind.Release]: WarningCode.Constitution,
+  [SourceKind.Pack]: WarningCode.Packs,
+};
+
+const isOfCatalogue = (warning: ProjectWarning): warning is ProjectWarning<CatalogueKind> =>
+  !Object.hasOwn(codeOfKind, warning.kind);
+
+/** The code of a warning, the subject a reader fixes and scripts against. */
+const codeOf = (warning: ProjectWarning): WarningCode =>
+  isOfCatalogue(warning) ? codeOfSource[warning.details.source] : codeOfKind[warning.kind];
+
+const ProjectWarning = {
+  codeOf,
+} as const;
+
+export type { WarningDetails };
+export { ProjectWarning, WarningCode, WarningKind };

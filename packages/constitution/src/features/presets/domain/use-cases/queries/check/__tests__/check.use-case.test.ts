@@ -3,13 +3,12 @@ import { describe, expect, it } from 'bun:test';
 import { PROJECT } from '#/__tests__/project-place.fixtures';
 import { createFakeProjectSource } from '#/__tests__/project-source.fake';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ConfigReadStatus, WarningCode, WarningKind } from '#/kernel/entities';
+import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
 
 import { toolWiredNowhere, UNBIOMED, wiringOf } from '../../../../../__tests__/wiring.fixtures';
 import { checkPresets } from '../check.use-case';
 
 const unknownBlock: ProjectWarning = {
-  code: WarningCode.Unknown,
   details: {
     name: 'acme',
   },

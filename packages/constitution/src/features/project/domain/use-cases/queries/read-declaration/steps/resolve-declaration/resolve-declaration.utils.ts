@@ -1,5 +1,5 @@
 import type { ProjectWarning } from '#/kernel/entities';
-import { ProjectUnit, Resolution, WarningCode, WarningKind } from '#/kernel/entities';
+import { ProjectUnit, Resolution, WarningKind } from '#/kernel/entities';
 
 import type { BlockCardParser } from '../../../../../contracts';
 import type { CatalogueSource, ProjectConfig, UnreadMember } from '../../../../../entities';
@@ -17,14 +17,12 @@ const memberWarnings: {
   readonly [TProblem in MemberProblem]: (member: UnreadMember) => ProjectWarning;
 } = {
   [MemberProblem.Missing]: (member) => ({
-    code: WarningCode.Config,
     details: {
       member: member.path,
     },
     kind: WarningKind.MemberWithoutConfig,
   }),
   [MemberProblem.Unparsed]: (member) => ({
-    code: WarningCode.Config,
     details: {
       ...(member.line === undefined
         ? {}
@@ -36,7 +34,6 @@ const memberWarnings: {
     kind: WarningKind.MemberConfigUnparsed,
   }),
   [MemberProblem.Unreadable]: (member) => ({
-    code: WarningCode.Config,
     details: {
       member: member.path,
     },

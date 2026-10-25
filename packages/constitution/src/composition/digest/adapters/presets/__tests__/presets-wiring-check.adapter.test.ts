@@ -7,7 +7,7 @@ import { WiringCheckStatus } from '#/features/session';
 import { Axis, Layer } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { OpenedProject } from '#/kernel/entities';
-import { BlockListing, ProjectUnit, Resolution, WarningCode, WarningKind } from '#/kernel/entities';
+import { BlockListing, ProjectUnit, Resolution, WarningKind } from '#/kernel/entities';
 import { BlockId, coreBlockId, repositoryUnit } from '#/kernel/value-objects';
 
 import { createPresetsWiringCheck } from '../presets-wiring-check.adapter';
@@ -97,7 +97,6 @@ describe('createPresetsWiringCheck', () => {
       status: WiringCheckStatus.Checked,
       warnings: [
         {
-          code: WarningCode.Wiring,
           details: {
             tool: 'biome',
             unit: repositoryUnit,

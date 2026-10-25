@@ -2,8 +2,15 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis, Layer, Level } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode, WarningKind } from '#/kernel/entities';
-import { BlockId, BlockSource, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
+import { WarningKind } from '#/kernel/entities';
+import {
+  BlockId,
+  BlockSource,
+  PackPath,
+  RuleSlug,
+  SourceKind,
+  UnitPath,
+} from '#/kernel/value-objects';
 
 import type { BlockFixture } from '../../../../../../../__tests__/project.fixtures';
 import { Folder, parsers, ruleOf } from '../../../../../../../__tests__/project.fixtures';
@@ -146,7 +153,6 @@ describe('resolveDeclaration', () => {
       unread: [],
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'axes',
@@ -154,7 +160,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'domains',
@@ -162,7 +167,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'platforms',
@@ -170,7 +174,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'languages',
@@ -178,7 +181,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'implementations',
@@ -186,7 +188,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'packs',
@@ -194,7 +195,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'check',
@@ -202,7 +202,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'overrides',
@@ -210,7 +209,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'colour',
@@ -226,7 +224,6 @@ describe('resolveDeclaration', () => {
       unread: [],
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'axes',
@@ -234,7 +231,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'domains',
@@ -242,7 +238,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'platforms',
@@ -250,7 +245,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'languages',
@@ -258,7 +252,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'implementations',
@@ -266,7 +259,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'packs',
@@ -274,7 +266,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'check',
@@ -282,7 +273,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyEmpty,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'overrides',
@@ -302,7 +292,6 @@ describe('resolveDeclaration', () => {
       unread: [],
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'domains',
@@ -320,7 +309,6 @@ describe('resolveDeclaration', () => {
       unread: [],
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'axes',
@@ -328,7 +316,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'platforms',
@@ -336,7 +323,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'languages',
@@ -344,7 +330,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'implementations',
@@ -352,7 +337,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'packs',
@@ -360,7 +344,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'overrides',
@@ -368,7 +351,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyMissing,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'check',
@@ -376,7 +358,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.KeyUnknown,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
             key: 'colour',
@@ -394,7 +375,6 @@ describe('resolveDeclaration', () => {
       unread: [],
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
             key: 'packages',
@@ -416,21 +396,18 @@ describe('resolveDeclaration', () => {
       unread: [],
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             file: 'constitution.yaml',
           },
           kind: WarningKind.FoundationListed,
         },
         {
-          code: WarningCode.Config,
           details: {
             axis: 'colour',
           },
           kind: WarningKind.AxisUnknown,
         },
         {
-          code: WarningCode.Config,
           details: {
             file: 'apps/web/constitution.yaml',
           },
@@ -463,14 +440,6 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [
         {
-          code: WarningCode.Config,
-          details: {
-            member: UnitPath.create('apps/web'),
-          },
-          kind: WarningKind.MemberWithoutConfig,
-        },
-        {
-          code: WarningCode.Config,
           details: {
             line: 3,
             member: UnitPath.create('apps/api'),
@@ -478,18 +447,22 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.MemberConfigUnparsed,
         },
         {
-          code: WarningCode.Config,
           details: {
             member: UnitPath.create('packages/ui'),
           },
           kind: WarningKind.MemberConfigUnreadable,
         },
         {
-          code: WarningCode.Config,
           details: {
             member: UnitPath.create('packages/cli'),
           },
           kind: WarningKind.MemberConfigUnparsed,
+        },
+        {
+          details: {
+            member: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.MemberWithoutConfig,
         },
       ],
     },
@@ -525,7 +498,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.Unknown,
           details: {
             name: 'rules/ui',
           },
@@ -543,7 +515,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.Unknown,
           details: {
             name: 'forms',
           },
@@ -561,7 +532,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.WrongKey,
           details: {
             key: 'platforms',
           },
@@ -579,7 +549,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.Abstract,
           details: {
             heirs: [
               BlockId.create('mobx'),
@@ -591,7 +560,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.AbstractListed,
         },
         {
-          code: WarningCode.Abstract,
           details: {
             heirs: [
               BlockId.create('store'),
@@ -621,7 +589,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.WrongKey,
           details: {
             key: 'domains',
             layer: Layer.Platform,
@@ -631,7 +598,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockUnderWrongKey,
         },
         {
-          code: WarningCode.WrongKey,
           details: {
             key: 'platforms',
             layer: Layer.Implementation,
@@ -641,7 +607,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockUnderWrongKey,
         },
         {
-          code: WarningCode.WrongKey,
           details: {
             key: 'languages',
             layer: Layer.Domain,
@@ -651,7 +616,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockUnderWrongKey,
         },
         {
-          code: WarningCode.WrongKey,
           details: {
             key: 'implementations',
             layer: Layer.Language,
@@ -720,7 +684,6 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [
         {
-          code: WarningCode.Missing,
           details: {
             block: BlockId.create('vite'),
             heirs: [],
@@ -768,7 +731,6 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [
         {
-          code: WarningCode.Missing,
           details: {
             block: BlockId.create('vite'),
             key: 'domains',
@@ -778,7 +740,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockNeeded,
         },
         {
-          code: WarningCode.Missing,
           details: {
             block: BlockId.create('nest'),
             heirs: [],
@@ -789,7 +750,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockNeeded,
         },
         {
-          code: WarningCode.Missing,
           details: {
             block: BlockId.create('nest'),
             key: 'platforms',
@@ -799,7 +759,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockNeeded,
         },
         {
-          code: WarningCode.Missing,
           details: {
             block: BlockId.create('vite'),
             key: 'domains',
@@ -809,10 +768,10 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.BlockNeeded,
         },
         {
-          code: WarningCode.Constitution,
           details: {
             block: BlockId.create('nest'),
             required: 'typescript',
+            source: SourceKind.Release,
           },
           kind: WarningKind.RequiredNoBlock,
         },
@@ -851,7 +810,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.NotMet,
           details: {
             block: BlockId.create('react'),
             requirement: RuleSlug.create('inputs-are-labelled'),
@@ -860,7 +818,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.RequirementNotMet,
         },
         {
-          code: WarningCode.NotMet,
           details: {
             block: BlockId.create('react'),
             requirement: RuleSlug.create('inputs-are-labelled'),
@@ -869,7 +826,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.RequirementNotMet,
         },
         {
-          code: WarningCode.NotMet,
           details: {
             block: BlockId.create('react'),
             requirement: RuleSlug.create('screens-are-reviewed'),
@@ -894,7 +850,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.NotMet,
           details: {
             block: BlockId.create('vite'),
             requirement: RuleSlug.create('inputs-are-labelled'),
@@ -903,7 +858,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.RequirementNotMet,
         },
         {
-          code: WarningCode.NotMet,
           details: {
             block: BlockId.create('vite'),
             requirement: RuleSlug.create('inputs-are-labelled'),
@@ -929,7 +883,6 @@ describe('resolveDeclaration', () => {
       },
       warnings: [
         {
-          code: WarningCode.NotMet,
           details: {
             block: BlockId.create('vite'),
             requirement: RuleSlug.create('inputs-are-labelled'),
@@ -982,7 +935,6 @@ describe('resolveDeclaration', () => {
         'overrides:\n  - rule: inputs-are-labelled\n  - level: SHOULD\n  - reason: A reason.\n    until: 2026-07-01',
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             line: 9,
             missing: [
@@ -993,7 +945,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideIncomplete,
         },
         {
-          code: WarningCode.Config,
           details: {
             line: 10,
             missing: [
@@ -1004,7 +955,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideIncomplete,
         },
         {
-          code: WarningCode.Config,
           details: {
             line: 11,
             missing: [
@@ -1021,7 +971,6 @@ describe('resolveDeclaration', () => {
       overrides: 'overrides:\n  - level: SHOULD\n    reason: A reason.',
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             line: 9,
             missing: [
@@ -1037,7 +986,6 @@ describe('resolveDeclaration', () => {
       overrides: 'overrides:\n  - rule: inputs-are-labelled\n    reason: A reason.',
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             line: 9,
             missing: [
@@ -1053,7 +1001,6 @@ describe('resolveDeclaration', () => {
       overrides: 'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD',
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             line: 9,
             missing: [
@@ -1070,7 +1017,6 @@ describe('resolveDeclaration', () => {
         'overrides:\n  - rule: inputs-are-labelled\n    level: MUST\n    reason: A reason.',
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             level: 'MUST',
             rule: 'inputs-are-labelled',
@@ -1085,7 +1031,6 @@ describe('resolveDeclaration', () => {
         'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: soon\n  - rule: focus-is-shown\n    level: SHOULD\n    reason: A reason.\n    until: x2026-07-01\n  - rule: themes-are-tokens\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01x\n  - rule: hooks-at-top-level\n    level: SHOULD\n    reason: A reason.\n    until: 2026-02-30\n  - rule: screens-are-reviewed\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01T10:00\n  - rule: state-is-not-in-screens\n    level: SHOULD\n    reason: A reason.\n    until: +002026-07-01',
       warnings: [
         {
-          code: WarningCode.Config,
           details: {
             rule: 'inputs-are-labelled',
             until: 'soon',
@@ -1093,7 +1038,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideUntilMalformed,
         },
         {
-          code: WarningCode.Config,
           details: {
             rule: 'focus-is-shown',
             until: 'x2026-07-01',
@@ -1101,7 +1045,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideUntilMalformed,
         },
         {
-          code: WarningCode.Config,
           details: {
             rule: 'themes-are-tokens',
             until: '2026-07-01x',
@@ -1109,7 +1052,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideUntilMalformed,
         },
         {
-          code: WarningCode.Config,
           details: {
             rule: 'hooks-at-top-level',
             until: '2026-02-30',
@@ -1117,7 +1059,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideUntilMalformed,
         },
         {
-          code: WarningCode.Config,
           details: {
             rule: 'screens-are-reviewed',
             until: '2026-07-01T10:00',
@@ -1125,7 +1066,6 @@ describe('resolveDeclaration', () => {
           kind: WarningKind.OverrideUntilMalformed,
         },
         {
-          code: WarningCode.Config,
           details: {
             rule: 'state-is-not-in-screens',
             until: '+002026-07-01',
@@ -1140,14 +1080,12 @@ describe('resolveDeclaration', () => {
         'overrides:\n  - rule: no-such-rule\n    level: MAY\n    reason: A reason.\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: 2026-06-14\n  - rule: focus-is-shown\n    level: MAY\n    reason: A reason.\n    until: 2026-06-15',
       warnings: [
         {
-          code: WarningCode.Override,
           details: {
             rule: 'no-such-rule',
           },
           kind: WarningKind.OverrideNamesNoRule,
         },
         {
-          code: WarningCode.Override,
           details: {
             rule: 'inputs-are-labelled',
             until: '2026-06-14',
@@ -1499,10 +1437,10 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [
         {
-          code: WarningCode.Constitution,
           details: {
             base: 'gone',
             block: BlockId.create('cache'),
+            source: SourceKind.Release,
           },
           kind: WarningKind.BaseNoBlock,
         },
@@ -2268,7 +2206,6 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [
         {
-          code: WarningCode.Pack,
           details: {
             file: 'apps/web/constitution.yaml',
             name: 'lint',

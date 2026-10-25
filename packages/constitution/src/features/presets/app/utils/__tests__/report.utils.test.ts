@@ -3,13 +3,12 @@ import { describe, expect, it } from 'bun:test';
 import { StepStatus, Tone } from '@droneey/design-cli';
 
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode, WarningKind } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import { noteSection, warningTextOf } from '#/shared/cli';
 
 import { presetsOutcomeOf, presetsSectionsOf } from '../report.utils';
 
 const warning: ProjectWarning = {
-  code: WarningCode.Unknown,
   details: {
     name: 'nope',
   },
@@ -71,8 +70,8 @@ describe('presetsSectionsOf', () => {
     expect(sections).toStrictEqual([
       noteSection({
         lines: [
-          `unknown: ${warningTextOf(warning)}`,
-          `unknown: ${warningTextOf(warning)}`,
+          `blocks: ${warningTextOf(warning)}`,
+          `blocks: ${warningTextOf(warning)}`,
         ],
         title: '2 warnings in the project',
         tone: Tone.Warning,

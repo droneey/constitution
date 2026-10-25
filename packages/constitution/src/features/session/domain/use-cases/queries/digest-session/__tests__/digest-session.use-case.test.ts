@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { CORE_TEXT } from '#/__tests__/project-source.fake';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ConfigReadStatus, ReleaseStatus, WarningCode, WarningKind } from '#/kernel/entities';
+import { ConfigReadStatus, ReleaseStatus, WarningKind } from '#/kernel/entities';
 import { isProjectError, ProjectError, ProjectFailure } from '#/kernel/errors';
 import { PackPath, repositoryUnit, Version } from '#/kernel/value-objects';
 
@@ -25,7 +25,6 @@ const kept = {
   ],
 };
 const unchecked: ProjectWarning = {
-  code: WarningCode.Wiring,
   details: {},
   kind: WarningKind.WiringUnchecked,
 };
@@ -105,7 +104,6 @@ describe('digestSession', () => {
   it('should give the warnings of constitution.yaml before those of the wiring when both warn', () => {
     // Arrange
     const unknown: ProjectWarning = {
-      code: WarningCode.Unknown,
       details: {
         name: 'nope',
       },
@@ -128,7 +126,6 @@ describe('digestSession', () => {
       },
       wiring: wiringOf((opened) => [
         {
-          code: WarningCode.Wiring,
           details: {
             member: opened.project,
             path: opened.releaseFolder,
@@ -158,7 +155,6 @@ describe('digestSession', () => {
       warnings: [
         unknown,
         {
-          code: WarningCode.Wiring,
           details: {
             member: PROJECT,
             path: releaseFolderPath,

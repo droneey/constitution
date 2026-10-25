@@ -771,14 +771,14 @@ describe('session-start hook', () => {
         context,
         like: [
           [
-            'unknown',
+            'blocks',
             name,
           ],
         ],
       }),
     ).toStrictEqual([
       [
-        'unknown',
+        'blocks',
         name,
       ],
     ]);
@@ -829,7 +829,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'missing',
+          'requirements',
           '_react',
           'ui',
         ],
@@ -845,7 +845,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'missing',
+          'requirements',
           'tanstack-query',
           '_react',
           'react-dom',
@@ -866,7 +866,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'missing',
+          'requirements',
           '_react',
           'web',
           'ui',
@@ -882,7 +882,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'wrong-key',
+          'blocks',
           'core',
           'domains',
         ],
@@ -926,7 +926,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'config',
+          'overrides',
           'reason',
         ],
       ],
@@ -941,7 +941,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'config',
+          'overrides',
           'four-data-states',
           'MUST',
         ],
@@ -956,7 +956,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'unknown',
+          'blocks',
           './rules/implementations/paraglide.md',
         ],
       ],
@@ -988,7 +988,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'missing',
+          'requirements',
           'alpha',
           'beta',
         ],
@@ -1009,7 +1009,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'unknown',
+          'blocks',
           'folder',
         ],
       ],
@@ -1032,7 +1032,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'unknown',
+          'blocks',
           'pipe',
         ],
       ],
@@ -1046,7 +1046,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'unknown',
+          'blocks',
           'nope',
         ],
       ],
@@ -1067,7 +1067,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'missing',
+          'requirements',
           '_react',
           'ui',
         ],
@@ -1078,42 +1078,42 @@ describe('session-start hook', () => {
       layout: everyCode,
       warnings: [
         [
-          'missing',
-          'react-dom',
-          'browser',
+          'config',
+          'platforms',
         ],
         [
-          'abstract',
+          'blocks',
           '_react',
           'react-dom',
         ],
         [
-          'unknown',
+          'blocks',
           'tanstak-query',
         ],
         [
-          'wrong-key',
+          'blocks',
           'ui',
           'implementations',
           'domains',
         ],
         [
-          'config',
-          'platforms',
+          'requirements',
+          'react-dom',
+          'browser',
         ],
         [
-          'pack',
-          'packs/gone',
-        ],
-        [
-          'not-met',
+          'requirements',
           'matomo',
           'analytics-consent-first',
         ],
         [
-          'override',
+          'overrides',
           'four-data-states',
           '2020-01-01',
+        ],
+        [
+          'installation',
+          'packs/gone',
         ],
       ],
     },
@@ -1218,7 +1218,7 @@ describe('session-start hook', () => {
           '1',
         ],
         [
-          'config',
+          'workspace',
           'web',
           'constitution.yaml',
         ],
@@ -1234,7 +1234,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'config',
+          'overrides',
           'four-data-states',
           'soon',
         ],
@@ -1249,7 +1249,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'config',
+          'overrides',
           'rule',
           'level',
         ],
@@ -1269,7 +1269,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'wrong-key',
+          'blocks',
           'kit',
           'implementations',
           'domains',
@@ -1290,7 +1290,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'pack',
+          'packs',
           packPath({
             id: 'git',
           }),
@@ -1339,7 +1339,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'pack',
+          'packs',
           packPath({
             id: 'kit',
           }),
@@ -1364,7 +1364,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'pack',
+          'packs',
           packPath({
             id: 'kit',
           }),
@@ -1395,22 +1395,22 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'missing',
+          'requirements',
           'git',
           'version-control',
         ],
         [
-          'pack',
+          'packs',
           'kit',
           'nothing-here',
         ],
         [
-          'pack',
+          'packs',
           'kit',
           'ghost',
         ],
         [
-          'pack',
+          'packs',
           'tool',
           'git',
         ],
@@ -1458,7 +1458,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'not-met',
+          'requirements',
           'matomo',
           'analytics-consent-first',
         ],
@@ -1473,7 +1473,7 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'override',
+          'overrides',
           'four-states',
         ],
       ],
@@ -1490,12 +1490,12 @@ describe('session-start hook', () => {
       },
       warnings: [
         [
-          'not-met',
+          'requirements',
           'matomo',
           'analytics-consent-first',
         ],
         [
-          'override',
+          'overrides',
           'analytics-consent-first',
           '2020-01-01',
         ],
@@ -1819,7 +1819,7 @@ describe('session-start hook', () => {
           context: output.context,
           like: [
             [
-              'unknown',
+              'blocks',
               shown,
             ],
           ],
@@ -1828,7 +1828,7 @@ describe('session-start hook', () => {
         event: 'SubagentStart',
         warnings: [
           [
-            'unknown',
+            'blocks',
             shown,
           ],
         ],

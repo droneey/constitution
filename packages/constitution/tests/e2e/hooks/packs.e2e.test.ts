@@ -31,11 +31,11 @@ const acmeNames = [
 // The warnings of the project whose pack's rule carries out no rule, in their order.
 const unknownParent = [
   [
-    'pack',
+    'installation',
     'packs/gone',
   ],
   [
-    'pack',
+    'packs',
     'acme-reached-through-its-entry',
     'no-such-rule',
   ],
@@ -136,7 +136,7 @@ describe('a pack in a project', () => {
         context,
         like: [
           [
-            'pack',
+            'installation',
             'packs/gone',
           ],
         ],
@@ -145,7 +145,7 @@ describe('a pack in a project', () => {
       listed: true,
       warnings: [
         [
-          'pack',
+          'installation',
           'packs/gone',
         ],
       ],

@@ -1,5 +1,5 @@
 import type { ProjectWarning, WiringProblem } from '#/kernel/entities';
-import { ProjectUnit, WarningCode, WarningKind, WiringProblemKind } from '#/kernel/entities';
+import { ProjectUnit, WarningKind, WiringProblemKind } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { PartAddress } from '#/kernel/value-objects';
 
@@ -176,7 +176,6 @@ const nowhereOf = (input: {
       )
       .map(
         (tool): ProjectWarning => ({
-          code: WarningCode.Wiring,
           details: {
             tool,
             unit: unit.path,
@@ -434,7 +433,6 @@ const fileWarningsOf = (
     ...(isUnlisted
       ? [
           {
-            code: WarningCode.Unlisted,
             details: {
               folder,
               path,
@@ -447,7 +445,6 @@ const fileWarningsOf = (
       ? []
       : [
           {
-            code: WarningCode.Wiring,
             details: {
               file: fileOf(input),
               problems: checked.problems,

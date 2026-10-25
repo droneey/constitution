@@ -4,9 +4,9 @@ import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { Axis, Layer } from '#/kernel/constants';
 import type { Declaration } from '#/kernel/entities';
-import { ConfigReadStatus, WarningCode, WarningKind } from '#/kernel/entities';
+import { ConfigReadStatus, ProjectWarning, WarningCode, WarningKind } from '#/kernel/entities';
 import { ProjectFailure } from '#/kernel/errors';
-import { PackPath } from '#/kernel/value-objects';
+import { PackPath, SourceKind } from '#/kernel/value-objects';
 
 import { createFakeClock } from '../../../../../__tests__/clock.fake';
 import {
@@ -49,7 +49,7 @@ const membersReadOf = (declaration: Declaration): unknown =>
           (block) => `${block.unit}: ${block.files[0] ?? ''}`,
         ),
         packs: declaration.packs,
-        warnings: declaration.resolution.warnings.map((warning) => warning.code),
+        warnings: declaration.resolution.warnings.map(ProjectWarning.codeOf),
       }
     : declaration;
 
@@ -180,40 +180,38 @@ describe('readDeclaration', () => {
         ],
         warnings: [
           {
-            code: WarningCode.Pack,
             details: {
-              file: './rules/blocks/implementations/lint/foundation/style.md',
+              rule: 'inputs-are-labelled',
+              until: '2026-06-14',
             },
-            kind: WarningKind.FileUnreadable,
+            kind: WarningKind.OverrideExpired,
           },
           {
-            code: WarningCode.Pack,
             details: {
               where: 'extra',
             },
             kind: WarningKind.PackNotInstalled,
           },
           {
-            code: WarningCode.Constitution,
             details: {
-              file: '/work/project/.droneey/constitution/blocks/core/core.md',
-            },
-            kind: WarningKind.FrontMatterMissing,
-          },
-          {
-            code: WarningCode.Constitution,
-            details: {
-              file: '/work/project/.droneey/constitution/blocks/domains/ui/foundation/forms.md',
+              file: './rules/blocks/implementations/lint/foundation/style.md',
+              source: SourceKind.Pack,
             },
             kind: WarningKind.FileUnreadable,
           },
           {
-            code: WarningCode.Override,
             details: {
-              rule: 'inputs-are-labelled',
-              until: '2026-06-14',
+              file: '/work/project/.droneey/constitution/blocks/core/core.md',
+              source: SourceKind.Release,
             },
-            kind: WarningKind.OverrideExpired,
+            kind: WarningKind.FrontMatterMissing,
+          },
+          {
+            details: {
+              file: '/work/project/.droneey/constitution/blocks/domains/ui/foundation/forms.md',
+              source: SourceKind.Release,
+            },
+            kind: WarningKind.FileUnreadable,
           },
         ],
       },
@@ -284,7 +282,7 @@ describe('readDeclaration', () => {
       warnings: [
         WarningCode.Config,
         WarningCode.Config,
-        WarningCode.Config,
+        WarningCode.Workspace,
         WarningCode.Constitution,
       ],
     });

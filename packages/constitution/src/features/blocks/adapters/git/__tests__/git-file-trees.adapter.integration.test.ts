@@ -195,8 +195,8 @@ describe('createGitFileTrees: installed', () => {
       text: '# Layout\n',
     });
     write({
-      path: 'vocabulary.yaml',
-      text: 'architecture: {}\n',
+      path: 'notes.yaml',
+      text: 'topics: {}\n',
     });
 
     const tree = createGitFileTrees(gitOptions).installed(root);

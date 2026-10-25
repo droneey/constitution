@@ -1,12 +1,6 @@
 import type { ProjectSource } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
-import {
-  ConfigReadStatus,
-  ReleaseStatus,
-  Resolution,
-  WarningCode,
-  WarningKind,
-} from '#/kernel/entities';
+import { ConfigReadStatus, ReleaseStatus, Resolution, WarningKind } from '#/kernel/entities';
 
 import type { WiringCheck, WiringReport } from '../../../contracts';
 import { WiringCheckStatus } from '../../../contracts';
@@ -25,7 +19,6 @@ interface DigestSessionPorts {
 }
 
 const uncheckedWiring: ProjectWarning = {
-  code: WarningCode.Wiring,
   details: {},
   kind: WarningKind.WiringUnchecked,
 };

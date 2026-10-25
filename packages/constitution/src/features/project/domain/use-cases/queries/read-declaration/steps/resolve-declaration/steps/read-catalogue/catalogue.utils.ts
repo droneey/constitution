@@ -1,5 +1,5 @@
 import { Axis, Layer } from '#/kernel/constants';
-import { RequirementAnswer, StatedRule, WarningCode, WarningKind } from '#/kernel/entities';
+import { RequirementAnswer, StatedRule, WarningKind } from '#/kernel/entities';
 import { splitFrontMatter, withoutCodeFences } from '#/kernel/utils';
 import type { FileInBlock, RuleSlug } from '#/kernel/value-objects';
 import {
@@ -60,11 +60,6 @@ const EMPTY_CARD: BlockCard = {
   summary: '',
 } as const;
 
-// The code of a problem in a source's files: the Constitution's own, which its release checks, or a
-// pack's.
-const codeOfSource = (source: BlockSource): WarningCode =>
-  source.kind === SourceKind.Release ? WarningCode.Constitution : WarningCode.Pack;
-
 const whereOf = (input: { path: string; source: CatalogueSource }): string =>
   `${input.source.where}/${input.path}`;
 
@@ -80,12 +75,12 @@ const readRules = (
 
   if (file.text === undefined) {
     state.log.add({
-      code: codeOfSource(source.source),
       details: {
         file: whereOf({
           path: file.path,
           source,
         }),
+        source: source.source.kind,
       },
       kind: WarningKind.FileUnreadable,
     });
@@ -111,13 +106,13 @@ const readRules = (
   }).rules) {
     if (state.slugs.has(rule.slug)) {
       state.log.add({
-        code: codeOfSource(source.source),
         details: {
           file: whereOf({
             path: file.path,
             source,
           }),
           rule: rule.slug,
+          source: source.source.kind,
         },
         kind: WarningKind.RuleRepeated,
       });
@@ -158,9 +153,9 @@ const readPassport = (
 
   if (file.text === undefined) {
     state.log.add({
-      code: codeOfSource(source.source),
       details: {
         file: where,
+        source: source.source.kind,
       },
       kind: WarningKind.FileUnreadable,
     });
@@ -172,9 +167,9 @@ const readPassport = (
 
   if (frontMatter === undefined) {
     state.log.add({
-      code: codeOfSource(source.source),
       details: {
         file: where,
+        source: source.source.kind,
       },
       kind: WarningKind.FrontMatterMissing,
     });
@@ -220,12 +215,12 @@ const readPart = (
     });
   } else {
     input.state.log.add({
-      code: codeOfSource(input.source.source),
       details: {
         file: whereOf({
           path: input.sourceFile.path,
           source: input.source,
         }),
+        source: input.source.source.kind,
       },
       kind: WarningKind.NotBlockFile,
     });
@@ -270,13 +265,13 @@ const draftOf = (
   }
 
   state.log.add({
-    code: codeOfSource(source.source),
     details: {
       block: id,
       file: whereOf({
         path: input.sourceFile.path,
         source,
       }),
+      source: source.source.kind,
     },
     kind: WarningKind.BlockRepeated,
   });
@@ -303,9 +298,9 @@ const readFile = (input: FileInput): void => {
       input.source.source.kind !== SourceKind.Release)
   ) {
     input.state.log.add({
-      code: codeOfSource(input.source.source),
       details: {
         file: where,
+        source: input.source.source.kind,
       },
       kind: WarningKind.OutsideBlockFolder,
     });
@@ -315,9 +310,9 @@ const readFile = (input: FileInput): void => {
 
   if (place.placement === Placement.MisnamedFolder) {
     input.state.log.add({
-      code: codeOfSource(input.source.source),
       details: {
         file: where,
+        source: input.source.source.kind,
       },
       kind: WarningKind.FolderMisnamed,
     });
@@ -354,4 +349,4 @@ const readFile = (input: FileInput): void => {
 };
 
 export type { BlockDraft, ReadState };
-export { codeOfSource, readFile };
+export { readFile };
