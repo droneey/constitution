@@ -17,7 +17,7 @@ export { CyclesCode, cyclesCheck } from './cycles';
 export type { DecisionsDetails } from './decisions';
 export { DecisionsCode, decisionsCheck } from './decisions';
 export type { FrontMatterDetails } from './front-matter';
-export { FrontMatterCode, frontMatterCheck, LayerField } from './front-matter';
+export { FrontMatterCode, frontMatterCheck } from './front-matter';
 export type { LinksDetails } from './links';
 export { LinksCode, linksCheck } from './links';
 export type { PluginDetails } from './plugin';

@@ -1,8 +1,8 @@
-import { RELEASE_FOLDER } from '#/kernel/constants';
+import { CONFIG_FILE, RELEASE_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import { ProjectPlace } from '#/kernel/entities';
 
-import { CONFIG, joinPath, ROOT } from '../shared/project-paths';
+import { joinPath, ROOT } from '../shared/project-paths';
 
 const REPOSITORY = '.git';
 
@@ -38,7 +38,7 @@ const findProject = (input: { files: ProjectFiles; start: string }): ProjectPlac
     files.isFile(
       joinPath({
         folder,
-        name: CONFIG,
+        name: CONFIG_FILE,
       }),
     );
 

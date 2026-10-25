@@ -3,15 +3,14 @@ import { beforeAll, describe, expect, it } from 'bun:test';
 import {
   baseParts,
   blockCode,
+  createLintBatch,
   formattedText,
-  lintCase,
-  lintCases,
-  lintFindings,
-  lintRegistered,
   presetFiles,
   presetText,
   presetWords,
 } from './biome-preset.fixtures';
+
+const { lintCase, lintCases, lintFindings, lintRegistered } = createLintBatch();
 
 const ROOM_HOOK = `import { useEffect, useEffectEvent } from 'react';
 

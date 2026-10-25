@@ -7,6 +7,7 @@ import {
   readFileSync,
   renameSync,
   rmSync,
+  watch,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -18,7 +19,6 @@ const workspace = join(import.meta.dir, '..', '..', '..', '..');
 const PROGRAM = 'constitution';
 const FAILED = 'failed';
 const BUILD_WAIT_MS = 300_000;
-const POLL_MS = 100;
 
 /** @throws Error when the program does not build. */
 const buildInto = (folder: string): void => {
@@ -71,25 +71,55 @@ const sharedFolder = (): string | undefined => {
     : join(tmpdir(), `constitution-cli-${String(process.ppid)}-${Bun.hash(started).toString(36)}`);
 };
 
-/** @throws Error when the worker that builds the program fails or takes past the deadline. */
-const awaitBuild = async (input: { deadline: number; folder: string }): Promise<void> => {
-  if (existsSync(join(input.folder, PROGRAM))) {
-    return;
+/** @throws Error when the worker that builds the program has failed. */
+const isBuilt = (folder: string): boolean => {
+  if (existsSync(join(folder, PROGRAM))) {
+    return true;
   }
 
-  if (existsSync(join(input.folder, FAILED))) {
-    throw new Error(
-      `The program does not build: ${readFileSync(join(input.folder, FAILED), 'utf8')}`,
-    );
+  if (existsSync(join(folder, FAILED))) {
+    throw new Error(`The program does not build: ${readFileSync(join(folder, FAILED), 'utf8')}`);
   }
 
-  if (Date.now() > input.deadline) {
-    throw new Error(`No worker built the program into ${input.folder}`);
-  }
-
-  await Bun.sleep(POLL_MS);
-  await awaitBuild(input);
+  return false;
 };
+
+// The folder is watched before it is first looked at, so a build that ends between the two is
+// still seen; the building worker renames the program into it, or writes the failure there.
+/** Rejects when the worker that builds the program fails or takes past the deadline. */
+const awaitBuild = (folder: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const watcher = watch(folder);
+
+    const settle = (error?: unknown): void => {
+      clearTimeout(deadline);
+      watcher.close();
+
+      if (error === undefined) {
+        resolve();
+      } else {
+        reject(error);
+      }
+    };
+
+    const look = (): void => {
+      try {
+        if (isBuilt(folder)) {
+          settle();
+        }
+      } catch (error) {
+        settle(error);
+      }
+    };
+
+    const deadline = setTimeout(() => {
+      settle(new Error(`No worker built the program into ${folder}`));
+    }, BUILD_WAIT_MS);
+
+    watcher.on('change', look);
+    watcher.on('error', settle);
+    look();
+  });
 
 const hasCode = (error: unknown, code: string): boolean =>
   error instanceof Error && 'code' in error && error.code === code;
@@ -158,10 +188,7 @@ const build = async (): Promise<string> => {
     removeFinishedRuns();
     buildInto(shared);
   } else {
-    await awaitBuild({
-      deadline: Date.now() + BUILD_WAIT_MS,
-      folder: shared,
-    });
+    await awaitBuild(shared);
   }
 
   return shared;

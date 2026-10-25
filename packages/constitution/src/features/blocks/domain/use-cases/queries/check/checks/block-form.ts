@@ -1,3 +1,4 @@
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { withoutCodeFences } from '#/kernel/utils';
@@ -36,12 +37,7 @@ type BlockFormProblem = ProblemOf<BlockFormDetails>;
 
 const RULE_HEADING = '### ';
 const TITLE = /^# (.+)/;
-const GOVERNS = '> Governs ';
 const SECTION = /^## (.+)/;
-/** first in a file that holds it */
-const GENERAL = 'General';
-/** last in a file that holds it */
-const REQUIREMENTS = 'Requirements for implementation';
 
 const linesOf = (file: BlockFile): readonly string[] => withoutCodeFences(file.body).split('\n');
 
@@ -76,7 +72,7 @@ const openingProblems = (opening: {
   governs: string | undefined;
   title: string | undefined;
 }): readonly BlockFormProblem[] =>
-  opening.title !== undefined && opening.governs?.startsWith(GOVERNS) === true
+  opening.title !== undefined && opening.governs?.startsWith(GOVERNS_LINE) === true
     ? []
     : [
         {
@@ -90,7 +86,7 @@ const sectionProblems = (input: {
   title: string | undefined;
 }): readonly BlockFormProblem[] => {
   const { sections, title } = input;
-  const requirements = sections.indexOf(REQUIREMENTS);
+  const requirements = sections.indexOf(REQUIREMENTS_SECTION);
 
   return [
     ...sections
@@ -111,7 +107,7 @@ const sectionProblems = (input: {
             details: {},
           } satisfies BlockFormProblem,
         ]),
-    ...(sections.indexOf(GENERAL) > 0
+    ...(sections.indexOf(GENERAL_SECTION) > 0
       ? [
           {
             code: BlockFormCode.GeneralNotFirst,

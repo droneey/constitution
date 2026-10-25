@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { afterAll, describe, expect, test } from 'bun:test';
 
 import { branchIn } from '../branch.ts';
-import { GitFailure, isGitError } from '../git.error.ts';
+import { GitError, GitFailure } from '../git.error.ts';
 
 type Files = Readonly<Record<string, string>>;
 
@@ -131,7 +131,7 @@ const failureOf = (read: () => unknown): Failure | undefined => {
   try {
     read();
   } catch (error) {
-    if (isGitError(error)) {
+    if (error instanceof GitError) {
       return {
         causeCode:
           error.cause instanceof Error && 'code' in error.cause ? error.cause.code : undefined,

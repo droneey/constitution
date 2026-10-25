@@ -1,3 +1,4 @@
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
 import type {
@@ -40,16 +41,16 @@ const structureTexts: TextsOf<
   [BlockFormCode.PassportHoldsRules]: () =>
     "holds rules; a block's passport holds its front matter, its title, what the block is, its setup and an implementation's Requirements, and its rules live in the chapters of its axes",
   [BlockFormCode.WithoutGoverns]: () =>
-    'opens without its "# <Title>" and a "> Governs …" line; a chapter or a seam opens with both',
+    `opens without its "# <Title>" and a "${GOVERNS_LINE}…" line; a chapter or a seam opens with both`,
   [BlockFormCode.WithoutRules]: () => 'holds no rule; a chapter or a seam holds at least one',
   [BlockFormCode.RuleOutsideSection]: ({ slug }) =>
     `has the rule "${slug}" under no section; every rule sits under a "## " section`,
   [BlockFormCode.SectionRepeatsTitle]: ({ section }) =>
     `has the section "${section}", named like the file's title; a section names a part of the file's subject`,
   [BlockFormCode.RequirementsNotLast]: () =>
-    'has sections after "Requirements for implementation", which is the last section',
+    `has sections after "${REQUIREMENTS_SECTION}", which is the last section`,
   [BlockFormCode.GeneralNotFirst]: () =>
-    'has sections before "General", which is the first section',
+    `has sections before "${GENERAL_SECTION}", which is the first section`,
   [ConfigurationLanguagesCode.NotRequired]: ({ glob, language }) =>
     `governs ${glob}, a file of ${language}, without requiring ${language} directly or through the blocks it requires or extends`,
   [CoreChaptersCode.ChapterUnlisted]: ({ chapter }) =>

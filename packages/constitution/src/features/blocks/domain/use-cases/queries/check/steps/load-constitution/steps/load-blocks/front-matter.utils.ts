@@ -7,7 +7,7 @@ import { BlockId, Glob } from '#/kernel/value-objects';
 
 import type { FrontMatterFields, FrontMatterParser } from '../../../../../../../contracts';
 import type { FieldIssue } from '../../../../../../../entities';
-import { FrontMatter, ReadStatus } from '../../../../../../../entities';
+import { FrontMatter, FrontMatterField, ReadStatus } from '../../../../../../../entities';
 
 enum FrontMatterReadCode {
   Missing = 'front-matter-missing',
@@ -22,16 +22,6 @@ enum FrontMatterReadCode {
   NotBlockId = 'entry-not-block-id',
   EntryEmpty = 'entry-empty',
   EntryRepeated = 'entry-repeated',
-}
-
-enum FrontMatterField {
-  Id = 'id',
-  Summary = 'summary',
-  Requires = 'requires',
-  Extends = 'extends',
-  Abstract = 'abstract',
-  Languages = 'languages',
-  Governs = 'governs',
 }
 
 type ListField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Governs;
@@ -412,4 +402,4 @@ const readFrontMatter = (input: {
 };
 
 export type { FrontMatterReadDetails, FrontMatterReadFinding };
-export { FrontMatterField, FrontMatterReadCode, readFrontMatter };
+export { FrontMatterReadCode, readFrontMatter };

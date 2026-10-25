@@ -3,6 +3,7 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Block, BlockGraph, FrontMatter } from '../../../../entities';
+import { FrontMatterField } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../shared/layers';
 
@@ -14,12 +15,12 @@ enum FrontMatterCode {
   UnderscoreNotAbstract = 'underscore-id-not-abstract',
 }
 
-enum LayerField {
-  Requires = 'requires',
-  Extends = 'extends',
-  Abstract = 'abstract',
-  Languages = 'languages',
-}
+/** a field of the front matter that only some layers fill */
+type LayerField =
+  | FrontMatterField.Requires
+  | FrontMatterField.Extends
+  | FrontMatterField.Abstract
+  | FrontMatterField.Languages;
 
 interface FrontMatterDetails {
   readonly [FrontMatterCode.IdMismatch]: {
@@ -40,21 +41,21 @@ interface FrontMatterDetails {
 type FrontMatterFinding = FindingOf<FrontMatterDetails>;
 
 const LAYER_FIELDS: readonly LayerField[] = [
-  LayerField.Requires,
-  LayerField.Extends,
-  LayerField.Abstract,
-  LayerField.Languages,
+  FrontMatterField.Requires,
+  FrontMatterField.Extends,
+  FrontMatterField.Abstract,
+  FrontMatterField.Languages,
 ] as const;
 
 const builtOn: readonly Layer[] = LAYERS.filter((layer) => layer !== Layer.Core);
 
 const filledOn: Readonly<Record<LayerField, readonly Layer[]>> = {
-  [LayerField.Abstract]: builtOn,
-  [LayerField.Extends]: builtOn,
-  [LayerField.Languages]: [
+  [FrontMatterField.Abstract]: builtOn,
+  [FrontMatterField.Extends]: builtOn,
+  [FrontMatterField.Languages]: [
     Layer.Implementation,
   ],
-  [LayerField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
+  [FrontMatterField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
 };
 
 const isEmpty = (field: FrontMatter[LayerField]): boolean =>
@@ -92,7 +93,7 @@ const languageFindings = (input: {
   block: Block;
   graph: BlockGraph;
 }): readonly FrontMatterFinding[] =>
-  filledOn[LayerField.Languages].includes(input.block.layer)
+  filledOn[FrontMatterField.Languages].includes(input.block.layer)
     ? input.block.frontMatter.languages
         .filter((id) => input.graph.get(id)?.layer !== Layer.Language)
         .map((listed) => ({
@@ -135,4 +136,4 @@ const frontMatterCheck: Check<FrontMatterFinding> = ({
   ]);
 
 export type { FrontMatterDetails };
-export { FrontMatterCode, frontMatterCheck, LayerField };
+export { FrontMatterCode, frontMatterCheck };

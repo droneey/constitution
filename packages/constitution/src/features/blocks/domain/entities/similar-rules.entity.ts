@@ -11,4 +11,4 @@ interface SimilarRules {
   readonly right: RuleNamed;
 }
 
-export type { RuleNamed, SimilarRules };
+export type { SimilarRules };

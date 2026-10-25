@@ -7,8 +7,9 @@ import { BlockId } from '#/kernel/value-objects';
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
 import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { FrontMatterField } from '../../../../../entities';
 import type { FrontMatterDetails } from '../front-matter';
-import { FrontMatterCode, frontMatterCheck, LayerField } from '../front-matter';
+import { FrontMatterCode, frontMatterCheck } from '../front-matter';
 
 const UI = 'blocks/domains/ui/ui.md';
 const CORE = 'blocks/core/core.md';
@@ -36,7 +37,7 @@ describe('frontMatterCheck', () => {
       {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
-          field: LayerField.Abstract,
+          field: FrontMatterField.Abstract,
           layer: Layer.Core,
         },
         path: CORE,
@@ -78,7 +79,7 @@ describe('frontMatterCheck', () => {
       finding: {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
-          field: LayerField.Requires,
+          field: FrontMatterField.Requires,
           layer: Layer.Core,
         },
         path: CORE,
@@ -93,7 +94,7 @@ describe('frontMatterCheck', () => {
       finding: {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
-          field: LayerField.Extends,
+          field: FrontMatterField.Extends,
           layer: Layer.Core,
         },
         path: CORE,
@@ -110,7 +111,7 @@ describe('frontMatterCheck', () => {
       finding: {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
-          field: LayerField.Languages,
+          field: FrontMatterField.Languages,
           layer: Layer.Language,
         },
         path: TYPESCRIPT,
@@ -127,7 +128,7 @@ describe('frontMatterCheck', () => {
       finding: {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
-          field: LayerField.Languages,
+          field: FrontMatterField.Languages,
           layer: Layer.Platform,
         },
         path: BROWSER,

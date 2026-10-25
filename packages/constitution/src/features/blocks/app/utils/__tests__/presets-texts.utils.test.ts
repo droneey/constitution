@@ -1,305 +1,280 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
+import type { ProblemOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
+import { textOf } from '#/shared/cli';
 
-import type { BlockFinding } from '../../../domain/use-cases/queries/check';
+import { SkillField } from '../../../domain/entities';
+import type {
+  BindingsDetails,
+  PluginDetails,
+  PresetsDetails,
+  TemplatesDetails,
+} from '../../../domain/use-cases/queries/check';
 import {
   BindingsCode,
   PluginCode,
   PresetsCode,
   TemplatesCode,
 } from '../../../domain/use-cases/queries/check';
-import { findingTextOf } from '../finding-text.utils';
-
-const PATH = '.claude-plugin/plugin.json';
+import { presetsTexts } from '../presets-texts.utils';
 
 describe('presetsTexts', () => {
   it.each<{
-    finding: BlockFinding;
+    problem: ProblemOf<BindingsDetails & PluginDetails & PresetsDetails & TemplatesDetails>;
     text: string;
   }>([
     {
-      finding: {
+      problem: {
         code: PluginCode.ManifestMissing,
         details: {},
-        path: PATH,
       },
       text: 'is missing; the Constitution ships as a plugin and needs its manifest',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.MarketplaceMissing,
         details: {},
-        path: PATH,
       },
       text: 'is missing; the Constitution ships as a plugin and needs its marketplace',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.NotJson,
         details: {
           reason: "JSON Parse error: Expected '}'",
         },
-        path: PATH,
       },
       text: "is not valid JSON: JSON Parse error: Expected '}'",
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.OffSchema,
         details: {
           field: '',
           reason: 'Invalid input: expected object, received array',
         },
-        path: PATH,
       },
       text: 'does not match its schema: <root>: Invalid input: expected object, received array',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.OffSchema,
         details: {
           field: 'plugins',
           reason: 'Too small: expected array to have >=1 items',
         },
-        path: PATH,
       },
       text: 'does not match its schema: plugins: Too small: expected array to have >=1 items',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.SkillsDirectoryEmpty,
         details: {
           directory: 'skills/',
         },
-        path: PATH,
       },
       text: 'lists the skills directory "./skills/", which holds no <skill>/SKILL.md',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.SkillsDirectoryUnlisted,
         details: {
           directory: 'tools/skills/',
         },
-        path: PATH,
       },
       text: 'does not list "./tools/skills/", which holds skills',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.SkillWithoutFile,
         details: {},
-        path: PATH,
       },
       text: 'holds no SKILL.md; a skill is a folder with SKILL.md in it',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.SkillWithoutFrontMatter,
         details: {},
-        path: PATH,
       },
       text: 'has no front matter; a skill names itself and says when to use it there',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.SkillFrontMatterNotYaml,
         details: {
           reason: 'Nested mappings are not allowed in compact mappings',
         },
-        path: PATH,
       },
       text: 'front matter is not valid YAML: Nested mappings are not allowed in compact mappings',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.SkillFieldMissing,
         details: {
-          field: 'name',
+          field: SkillField.Name,
         },
-        path: PATH,
       },
       text: 'front matter lacks "name"; a skill declares its name and description',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.AgentWithoutFrontMatter,
         details: {},
-        path: PATH,
       },
       text: 'has no front matter; an agent names itself and says when to use it there',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.AgentFrontMatterNotYaml,
         details: {
           reason: 'Implicit keys need to be on a single line',
         },
-        path: PATH,
       },
       text: 'front matter is not valid YAML: Implicit keys need to be on a single line',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.AgentFieldMissing,
         details: {
-          field: 'description',
+          field: SkillField.Description,
         },
-        path: PATH,
       },
       text: 'front matter lacks "description"; an agent declares its name and description',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.AgentNameMismatch,
         details: {
           file: 'reviewer',
           name: 'critic',
         },
-        path: PATH,
       },
       text: 'is named "critic" in its front matter; an agent is named after its file, reviewer',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.TemplateMissing,
         details: {},
-        path: PATH,
       },
       text: 'is missing; /ratify writes a project from the templates',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.MarketplaceOmitsPlugin,
         details: {
           plugin: 'constitution',
           repo: 'droneey/constitution',
         },
-        path: PATH,
       },
       text: 'does not list the plugin "constitution" from the GitHub repository its manifest names (droneey/constitution), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.MarketplaceOmitsPlugin,
-        details: {
-          plugin: undefined,
-          repo: undefined,
-        },
-        path: PATH,
+        details: {},
       },
       text: 'does not list the plugin "" from the GitHub repository its manifest names (none), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest',
     },
     {
-      finding: {
+      problem: {
         code: PluginCode.HookFileMissing,
         details: {
           file: 'hooks/session-start.sh',
         },
-        path: PATH,
       },
       text: 'runs "hooks/session-start.sh", which is missing',
     },
     {
-      finding: {
+      problem: {
         code: PresetsCode.StrayFile,
         details: {},
-        path: PATH,
       },
       text: 'is not a part of a preset: presets/<scope>/<tool>/<axis>/<block>.<extension>, presets/<scope>/<tool>/<axis>/plugins/<rule>.grit, presets/<scope>/<tool>/<axis>/bindings.yaml, the axis foundation, architecture or workflow, or a module the configurations of a scope share, presets/<scope>/<name>.<extension>',
     },
     {
-      finding: {
+      problem: {
         code: PresetsCode.ToolNamesNoBlock,
         details: {
           scope: 'typescript',
           tool: 'eslint',
         },
-        path: PATH,
       },
       text: 'is in presets/typescript/eslint/, which names no block',
     },
     {
-      finding: {
+      problem: {
         code: PresetsCode.ScopeNotCovered,
         details: {
           scope: 'css',
           tool: 'biome',
         },
-        path: PATH,
       },
       text: 'is in presets/css/, which is neither common nor a language biome covers',
     },
     {
-      finding: {
+      problem: {
         code: PresetsCode.PartNamesNoBlock,
         details: {
           name: 'react',
         },
-        path: PATH,
       },
       text: 'is named "react", which is neither a block nor self',
     },
     {
-      finding: {
+      problem: {
         code: PresetsCode.PluginNamesNoRule,
         details: {
           rule: 'null-free',
         },
-        path: PATH,
       },
       text: 'is named "null-free", which is not a rule; a plugin is named after the rule it holds',
     },
     {
-      finding: {
+      problem: {
         code: PresetsCode.PluginOffAxis,
         details: {
           axis: Axis.Foundation,
           rule: RuleSlug.create('reads-are-cancellable'),
           ruleAxis: Axis.Architecture,
         },
-        path: PATH,
       },
       text: 'holds reads-are-cancellable, a rule of architecture, in foundation/plugins/',
     },
     {
-      finding: {
+      problem: {
         code: BindingsCode.NotRule,
         details: {
           rule: RuleSlug.create('hooks-anywhere'),
         },
-        path: PATH,
       },
       text: 'binds "hooks-anywhere", which is not a rule',
     },
     {
-      finding: {
+      problem: {
         code: BindingsCode.OffAxis,
         details: {
           axis: Axis.Foundation,
           rule: RuleSlug.create('reads-are-cancellable'),
           ruleAxis: Axis.Architecture,
         },
-        path: PATH,
       },
       text: 'binds reads-are-cancellable, a rule of architecture, under foundation',
     },
     {
-      finding: {
+      problem: {
         code: BindingsCode.OutOfReach,
         details: {
           part: 'ui',
           rule: RuleSlug.create('hooks-at-top-level'),
           ruleBlock: BlockId.create('_react'),
         },
-        path: PATH,
       },
       text: 'binds hooks-at-top-level, a rule of _react, to the part ui, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool',
     },
     {
-      finding: {
+      problem: {
         code: BindingsCode.PartMissing,
         details: {
           axis: Axis.Architecture,
@@ -308,68 +283,62 @@ describe('presetsTexts', () => {
           scope: 'typescript',
           tool: 'biome',
         },
-        path: PATH,
       },
       text: 'binds four-data-states to the part ui, which presets/typescript/biome/architecture/ does not hold',
     },
     {
-      finding: {
+      problem: {
         code: BindingsCode.SettingMissing,
         details: {
           file: 'presets/typescript/biome/foundation/_react.jsonc',
           rule: RuleSlug.create('four-data-states'),
           setting: 'noUselessFragments',
         },
-        path: PATH,
       },
       text: 'binds four-data-states to "noUselessFragments", which presets/typescript/biome/foundation/_react.jsonc does not hold',
     },
     {
-      finding: {
+      problem: {
         code: TemplatesCode.StrayFile,
         details: {},
-        path: PATH,
       },
       text: 'is not a fragment of a block: templates/project/<scope>/<block>/<path>, the scope common or a language',
     },
     {
-      finding: {
+      problem: {
         code: TemplatesCode.ToolWithoutTemplate,
         details: {
           scope: 'typescript',
           tool: 'biome',
         },
-        path: PATH,
       },
       text: 'has parts and no template in templates/project/typescript/biome/ that takes them by <parts>',
     },
     {
-      finding: {
+      problem: {
         code: TemplatesCode.NamesNoBlock,
         details: {
           scope: 'common',
           tool: 'nowhere',
         },
-        path: PATH,
       },
       text: 'is in templates/project/common/nowhere/, which names no block; a template is a fragment its block owns',
     },
     {
-      finding: {
+      problem: {
         code: TemplatesCode.ScopeNotCovered,
         details: {
           scope: 'biome',
         },
-        path: PATH,
       },
       text: 'is in templates/project/biome/, which is neither common nor a language',
     },
-  ])('should say $finding.code as the report words it', ({ finding, text }) => {
+  ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Arrange
-    const reported = finding;
+    const reported = problem;
 
     // Act
-    const said = findingTextOf(reported);
+    const said = textOf(presetsTexts, reported.code, reported.details);
 
     // Assert
     expect(said).toBe(text);

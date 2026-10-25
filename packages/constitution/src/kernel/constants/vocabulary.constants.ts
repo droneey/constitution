@@ -97,6 +97,17 @@ const LOWERED_LEVELS: readonly LoweredLevel[] = [
 const RULE_TABLE_HEADER = '| Why | Tags |';
 const RULE_TABLE_CELLS = 2;
 
+// A chapter or a seam opens with its title and a line that starts so; its first section, if it has
+// one, is the general one, and its last, if it has one, the requirements for implementation.
+const GOVERNS_LINE = '> Governs ';
+const GENERAL_SECTION = 'General';
+const REQUIREMENTS_SECTION = 'Requirements for implementation';
+
+// An implementation answers the requirements of the blocks above it in its passport, under this
+// heading, in a table of this header.
+const REQUIREMENTS_HEADING = '## Requirements';
+const REQUIREMENTS_TABLE_HEADER = '| Requirement | How | Met |';
+
 // A lens names a concern a review reads every block for; a rule's Tags list its lenses.
 enum Lens {
   Security = 'security',
@@ -113,6 +124,8 @@ export {
   AXES,
   Axis,
   BLOCKS_FOLDER,
+  GENERAL_SECTION,
+  GOVERNS_LINE,
   KIND_OF_LAYER,
   Kind,
   LAYER_ARTICLE,
@@ -125,6 +138,9 @@ export {
   Level,
   LOWERED_LEVELS,
   OPTIONAL_AXES,
+  REQUIREMENTS_HEADING,
+  REQUIREMENTS_SECTION,
+  REQUIREMENTS_TABLE_HEADER,
   RULE_TABLE_CELLS,
   RULE_TABLE_HEADER,
 };

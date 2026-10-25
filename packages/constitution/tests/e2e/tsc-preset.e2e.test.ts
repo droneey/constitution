@@ -1,11 +1,8 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
-import {
-  presetParts,
-  typeCheckCases,
-  typeCheckRegistered,
-  typeChecks,
-} from './tsc-preset.fixtures';
+import { createTypeCheckBatch, presetParts } from './tsc-preset.fixtures';
+
+const { typeCheckCases, typeCheckRegistered, typeChecks } = createTypeCheckBatch();
 
 const EMPTY = 'export {};\n';
 const CHECK_TIMEOUT = 60_000;

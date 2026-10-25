@@ -87,9 +87,10 @@ interface RulesDetails {
   };
   readonly [RulesCode.OutsideParentChapter]: {
     /** the title of the rule's chapter, if it has one */
-    readonly chapter: string | undefined;
+    readonly chapter?: string;
     readonly parent: RuleSlug;
-    readonly parentChapter: string | undefined;
+    /** the title of the parent's chapter, if it has one */
+    readonly parentChapter?: string;
     readonly slug: RuleSlug;
   };
 }
@@ -244,9 +245,17 @@ const chapterProblem = (input: {
     ? {
         code: RulesCode.OutsideParentChapter,
         details: {
-          chapter: rule.chapterTitle,
+          ...(rule.chapterTitle === undefined
+            ? {}
+            : {
+                chapter: rule.chapterTitle,
+              }),
           parent: target.slug,
-          parentChapter: target.chapterTitle,
+          ...(target.chapterTitle === undefined
+            ? {}
+            : {
+                parentChapter: target.chapterTitle,
+              }),
           slug: rule.slug,
         },
       }

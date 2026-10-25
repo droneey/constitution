@@ -35,7 +35,6 @@ export {
   CyclesCode,
   DecisionsCode,
   FrontMatterCode,
-  LayerField,
   LinksCode,
   PluginCode,
   PresetsCode,
@@ -47,12 +46,10 @@ export {
   TemplatesCode,
   TermsCode,
 } from './checks';
-export { TermKind } from './shared/terms';
 export type { LoadFindingDetails } from './steps/load-constitution';
 export {
   BindingsFileCode,
   BlockLoadCode,
-  FrontMatterField,
   FrontMatterReadCode,
   LoadCode,
   PlaceCode,

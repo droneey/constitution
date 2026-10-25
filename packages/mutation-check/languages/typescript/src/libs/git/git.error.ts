@@ -29,6 +29,4 @@ class GitError extends Error {
   }
 }
 
-const isGitError = (error: unknown): error is GitError => error instanceof GitError;
-
-export { GitError, GitFailure, isGitError };
+export { GitError, GitFailure };

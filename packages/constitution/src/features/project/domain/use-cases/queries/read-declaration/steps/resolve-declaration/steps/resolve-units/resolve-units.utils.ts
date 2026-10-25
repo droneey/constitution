@@ -1,11 +1,10 @@
-import { Axis, Layer, OPTIONAL_AXES } from '#/kernel/constants';
+import { Axis, CHECK_KEY, CONFIG_FILE, Layer, OPTIONAL_AXES } from '#/kernel/constants';
 import { WarningCode, WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { coreBlockId, SourceKind, UnitPath } from '#/kernel/value-objects';
 
 import type { ConfigItem, ProjectConfig, ResolvedUnits } from '../../../../../../../entities';
 import { DeclaredUnit, ProjectModel, ResolvedUnit } from '../../../../../../../entities';
-import { CONFIG } from '../../../../../shared/project-paths';
 import { keyOfLayer, layerOfKey } from '../../shared/layer-keys';
 import type { WarningLog } from '../../shared/warning-log';
 
@@ -21,9 +20,8 @@ const KEYS: readonly string[] = [
 ] as const;
 const AXES_KEY = 'axes';
 const PACKS_KEY = 'packs';
-const CHECK_KEY = 'check';
 
-const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG);
+const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG_FILE);
 
 // A member names no check: the repository's is the one check of the whole tree.
 const keysOf = (unit: DeclaredUnit): readonly string[] =>

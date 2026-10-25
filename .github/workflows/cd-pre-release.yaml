@@ -6,10 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  # Every file the release carries, built before it opens: an immutable release
-  # takes no file after. The Constitution's archive with its checksum, and the
-  # constitution program for each platform, an archive of bin/constitution that
-  # mise unpacks beside it; Bun builds every platform's from one runner.
+  # Built before the release opens: an immutable release takes no file after.
   assets:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -24,8 +21,7 @@ jobs:
         with:
           version: 2026.10.9
 
-      # The build of the program runs the React Compiler, a development
-      # dependency.
+      # Not --production: the program's build needs the React Compiler.
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 

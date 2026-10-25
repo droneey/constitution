@@ -1,6 +1,8 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
-import { lintCases, lintFindings, lintRegistered } from './biome-preset.fixtures';
+import { createLintBatch } from './biome-preset.fixtures';
+
+const { lintCases, lintFindings, lintRegistered } = createLintBatch();
 
 const SLUG = 'case-pins-meaning-never-wording';
 const LINT_TIMEOUT = 60_000;

@@ -48,17 +48,14 @@ const writeFiles = (folder: string, files: Files): void => {
   }
 };
 
-const builtTools = new Map<string, Buffer>();
+// A tool as the release builds it, which a project with tools holds.
+interface BuiltTool {
+  readonly archive: Buffer;
+  readonly tool: string;
+}
 
-// A tool is built once for the specs of a file, as the release builds it.
 /** @throws Error when the tool does not build. */
-const toolArchive = (input: { module: string; tool: string }): Buffer => {
-  const cached = builtTools.get(input.tool);
-
-  if (cached !== undefined) {
-    return cached;
-  }
-
+const builtTool = (input: { module: string; tool: string }): BuiltTool => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-tool-'));
   const archive = join(folder, `${input.tool}.pyz`);
 
@@ -83,11 +80,10 @@ const toolArchive = (input: { module: string; tool: string }): Buffer => {
       throw new Error(`${input.tool} did not build: ${building.stderr}`);
     }
 
-    const built = readFileSync(archive);
-
-    builtTools.set(input.tool, built);
-
-    return built;
+    return {
+      archive: readFileSync(archive),
+      tool: input.tool,
+    };
   } finally {
     rmSync(folder, {
       force: true,
@@ -96,10 +92,13 @@ const toolArchive = (input: { module: string; tool: string }): Buffer => {
   }
 };
 
+/** @throws Error when a tool does not build. */
+const buildTools = (): readonly BuiltTool[] => tools.map(builtTool);
+
 // The Constitution is linked where a project links it: its presets and
 // templates from this package, and its tools, when the project runs them,
 // written into the project's folder.
-const linkConstitution = (input: { folder: string; withTools: boolean }): void => {
+const linkConstitution = (input: { folder: string; tools: readonly BuiltTool[] }): void => {
   const { folder } = input;
   const constitution = join(folder, '.droneey', 'constitution');
 
@@ -114,13 +113,13 @@ const linkConstitution = (input: { folder: string; withTools: boolean }): void =
     symlinkSync(join(repository, entry), join(constitution, entry));
   }
 
-  for (const tool of input.withTools ? tools : []) {
+  for (const tool of input.tools) {
     const dist = join(constitution, 'tools', tool.tool, 'dist');
 
     mkdirSync(dist, {
       recursive: true,
     });
-    writeFileSync(join(dist, `${tool.tool}.pyz`), toolArchive(tool));
+    writeFileSync(join(dist, `${tool.tool}.pyz`), tool.archive);
   }
 };
 
@@ -128,12 +127,12 @@ const fillPythonProject = (
   folder: string,
   input: {
     files: Files;
-    withTools?: boolean;
+    tools?: readonly BuiltTool[];
   },
 ): void => {
   linkConstitution({
     folder,
-    withTools: input.withTools ?? false,
+    tools: input.tools ?? [],
   });
   writeFiles(folder, {
     ...SHOP_PACKAGE,
@@ -144,7 +143,7 @@ const fillPythonProject = (
 const inPythonProject = <TResult>(input: {
   files: Files;
   run: (folder: string) => TResult;
-  withTools?: boolean;
+  tools?: readonly BuiltTool[];
 }): TResult => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
 
@@ -163,7 +162,7 @@ const inPythonProject = <TResult>(input: {
 const inPythonProjectAsync = async <TResult>(input: {
   files: Files;
   run: (folder: string) => Promise<TResult>;
-  withTools?: boolean;
+  tools?: readonly BuiltTool[];
 }): Promise<TResult> => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
 
@@ -179,5 +178,5 @@ const inPythonProjectAsync = async <TResult>(input: {
   }
 };
 
-export type { Files };
-export { inPythonProject, inPythonProjectAsync, repository, writeFiles };
+export type { BuiltTool, Files };
+export { buildTools, inPythonProject, inPythonProjectAsync, repository, writeFiles };

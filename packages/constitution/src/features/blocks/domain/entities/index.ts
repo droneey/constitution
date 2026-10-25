@@ -9,7 +9,7 @@ export type { Constitution, Documents } from './constitution.entity';
 export { DocumentPath } from './constitution.entity';
 export type { FieldIssue } from './document-read.entity';
 export { ReadStatus } from './document-read.entity';
-export { FrontMatter } from './front-matter.entity';
+export { FrontMatter, FrontMatterField } from './front-matter.entity';
 export type {
   HooksManifest,
   ManifestRead,
@@ -17,5 +17,6 @@ export type {
   MarketplacePlugin,
   PluginManifest,
 } from './manifest.entity';
-export type { RuleNamed, SimilarRules } from './similar-rules.entity';
+export type { SimilarRules } from './similar-rules.entity';
 export type { Agent, Skill, SkillFrontMatterRead } from './skill.entity';
+export { SkillField } from './skill.entity';

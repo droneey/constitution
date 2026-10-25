@@ -5,14 +5,10 @@ import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { checkSourceOf, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { ACME, packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
+import { FrontMatterField } from '../../../../entities';
 import { checkBlocks } from '../check.use-case';
 import { BudgetCode, RulesCode } from '../checks';
-import {
-  FrontMatterField,
-  FrontMatterReadCode,
-  LoadCode,
-  PlaceCode,
-} from '../steps/load-constitution';
+import { FrontMatterReadCode, LoadCode, PlaceCode } from '../steps/load-constitution';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
 const UI = 'blocks/domains/ui/foundation/screens.md';

@@ -4,8 +4,13 @@ import { delimiter, join } from 'node:path';
 
 import { z } from 'zod';
 
-import type { Files } from './python-project.fixtures';
-import { inPythonProjectAsync, repository, writeFiles } from './python-project.fixtures';
+import type { BuiltTool, Files } from './python-project.fixtures';
+import {
+  buildTools,
+  inPythonProjectAsync,
+  repository,
+  writeFiles,
+} from './python-project.fixtures';
 import { uvEnvironment } from './uv.fixtures';
 
 interface Run {
@@ -269,7 +274,11 @@ const git = (folder: string, args: readonly string[]): void => {
 // origin/main; the files a case changes are written over it. The package
 // stands in for its install by PYTHONPATH, and the tools are the repository's
 // own, pinned to the template's versions.
-const runInTemplate = (input: { changes: Files; command: readonly string[] }): Promise<Run> =>
+const runInTemplate = (input: {
+  changes: Files;
+  command: readonly string[];
+  tools: readonly BuiltTool[];
+}): Promise<Run> =>
   inPythonProjectAsync({
     files: {
       ...templateFiles,
@@ -330,7 +339,7 @@ const runInTemplate = (input: { changes: Files; command: readonly string[] }): P
         output: `${stdout}${stderr}`,
       };
     },
-    withTools: true,
+    tools: input.tools,
   });
 
 // The command of each area a project's check runs over the template's
@@ -360,21 +369,19 @@ const commandOf = (task: string): string => {
 };
 
 // One area of the check, or the whole of it, over the template.
-const runTask = (input: TaskRun): Promise<Run> =>
+const runTask = (input: { run: TaskRun; tools: readonly BuiltTool[] }): Promise<Run> =>
   runInTemplate({
-    changes: input.changes,
+    changes: input.run.changes,
     command: [
       'sh',
       '-c',
-      commandOf(input.task),
+      commandOf(input.run.task),
     ],
+    tools: input.tools,
   });
 
 // The runs take seconds each, mutmut's above all, so this many run at a time.
 const RUNS_AT_ONCE = 4;
-
-const registered = new Map<string, TaskRun>();
-const ran = new Map<string, Run>();
 
 const keyOf = (input: TaskRun): string =>
   JSON.stringify([
@@ -382,32 +389,44 @@ const keyOf = (input: TaskRun): string =>
     Object.entries(input.changes).toSorted(([left], [right]) => left.localeCompare(right)),
   ]);
 
-// A table registers its runs while the file is collected.
-const taskCase = <TRow extends TaskRun>(row: TRow): TRow => {
-  registered.set(keyOf(row), row);
+// Runs every run given, a few at a time, with the tools built once for them all.
+const runAll = async (
+  entries: readonly (readonly [
+    string,
+    TaskRun,
+  ])[],
+): Promise<ReadonlyMap<string, Run>> => {
+  const tools = buildTools();
+  const queue = entries.values();
 
-  return row;
-};
-
-const taskCases = <TRow extends TaskRun>(rows: readonly TRow[]): readonly TRow[] =>
-  rows.map(taskCase);
-
-// Runs every registered run, once the tables are collected.
-const runRegistered = async (): Promise<void> => {
-  const queue = registered.entries();
-
-  const runNext = async (): Promise<void> => {
+  const runNext = async (): Promise<
+    readonly (readonly [
+      string,
+      Run,
+    ])[]
+  > => {
     const next = queue.next();
 
-    if (next.done !== true) {
-      const [key, input] = next.value;
-
-      ran.set(key, await runTask(input));
-      await runNext();
+    if (next.done === true) {
+      return [];
     }
+
+    const [key, run] = next.value;
+    const outcome = await runTask({
+      run,
+      tools,
+    });
+
+    return [
+      [
+        key,
+        outcome,
+      ],
+      ...(await runNext()),
+    ];
   };
 
-  await Promise.all(
+  const runs = await Promise.all(
     Array.from(
       {
         length: RUNS_AT_ONCE,
@@ -415,17 +434,55 @@ const runRegistered = async (): Promise<void> => {
       runNext,
     ),
   );
+
+  return new Map(runs.flat());
 };
 
-/** @throws Error when no table registered the run. */
-const runOf = (input: TaskRun): Run => {
-  const run = ran.get(keyOf(input));
+interface TaskBatch {
+  /** @throws Error when no table registered the run, or before the batch is run. */
+  readonly runOf: (input: TaskRun) => Run;
+  readonly runRegistered: () => Promise<void>;
+  readonly taskCase: <TRow extends TaskRun>(row: TRow) => TRow;
+  readonly taskCases: <TRow extends TaskRun>(rows: readonly TRow[]) => readonly TRow[];
+}
 
-  if (run === undefined) {
-    throw new Error(`No table registered the run of ${input.task}`);
-  }
+// The tables of a spec file register their runs while the file is collected, and they all run
+// before the first case: a spec file makes its own batch, so no state outlives it.
+const createTaskBatch = (): TaskBatch => {
+  const registered = new Map<string, TaskRun>();
+  let ran: ReadonlyMap<string, Run> = new Map();
 
-  return run;
+  const taskCase = <TRow extends TaskRun>(row: TRow): TRow => {
+    registered.set(keyOf(row), row);
+
+    return row;
+  };
+
+  const taskCases = <TRow extends TaskRun>(rows: readonly TRow[]): readonly TRow[] =>
+    rows.map(taskCase);
+
+  const runOf = (input: TaskRun): Run => {
+    const run = ran.get(keyOf(input));
+
+    if (run === undefined) {
+      throw new Error(`No table registered the run of ${input.task}`);
+    }
+
+    return run;
+  };
+
+  const runRegistered = async (): Promise<void> => {
+    ran = await runAll([
+      ...registered,
+    ]);
+  };
+
+  return {
+    runOf,
+    runRegistered,
+    taskCase,
+    taskCases,
+  };
 };
 
 const settingsSchema = z.object({
@@ -447,4 +504,4 @@ const partTable = (tool: string): unknown =>
 const isFoundIn = (input: { finding: readonly string[]; output: string }): boolean =>
   input.output.split('\n').some((line) => input.finding.every((text) => line.includes(text)));
 
-export { isFoundIn, partTable, python, runOf, runRegistered, taskCase, taskCases, templateTable };
+export { createTaskBatch, isFoundIn, partTable, python, templateTable };

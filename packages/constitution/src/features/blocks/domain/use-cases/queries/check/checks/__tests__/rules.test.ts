@@ -549,7 +549,6 @@ describe('rulesCheck', () => {
       }),
       condition: 'of a language sits in a file with no title',
       details: {
-        chapter: undefined,
         parent: RuleSlug.create('dependencies-point-inward'),
         parentChapter: 'Principles',
         slug: RuleSlug.create('types-point-inward'),
@@ -604,7 +603,6 @@ describe('rulesCheck', () => {
         details: {
           chapter: 'Types',
           parent: RuleSlug.create('bare-rule'),
-          parentChapter: undefined,
           slug: RuleSlug.create('types-point-inward'),
         },
         path: TYPES,

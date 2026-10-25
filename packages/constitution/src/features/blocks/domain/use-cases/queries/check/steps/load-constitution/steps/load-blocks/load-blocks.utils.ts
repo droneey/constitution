@@ -176,5 +176,5 @@ const loadBlocks = (input: { parser: FrontMatterParser; tree: FileTree }): Block
   };
 };
 
-export type { BlocksLoaded, BlocksLoadedFinding, PlaceDetails };
+export type { BlocksLoaded, PlaceDetails };
 export { loadBlocks, PlaceCode };

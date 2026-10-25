@@ -21,9 +21,6 @@ import {
   write,
 } from './workspace.fixtures';
 
-// One cruise per unit, one after another, slower while other spec files run beside it.
-const CRUISE_EVERY_UNIT_TIMEOUT = 30_000;
-
 const workspaces: string[] = [];
 
 const workspace = (changes?: Parameters<typeof createWorkspace>[0]): string => {
@@ -247,31 +244,27 @@ describe('a workspace on the presets', () => {
     expect(output).toContain('units-imported-by-name');
   });
 
-  it(
-    'should report no violation when each package is cruised from its folder by its own parts',
-    () => {
-      // Arrange
-      const folder = workspace(cruisers);
+  it('should report no violation when each package is cruised from its folder by its own parts', () => {
+    // Arrange
+    const folder = workspace(cruisers);
 
-      // Act
-      const runs = Object.values(UNITS).map((unit) => ({
-        unit,
-        ...runTool(folder, {
-          args: [
-            'src',
-            '--config',
-            '.dependency-cruiser.mjs',
-          ],
-          folder: unit,
-          program: 'depcruise',
-        }),
-      }));
+    // Act
+    const runs = Object.values(UNITS).map((unit) => ({
+      unit,
+      ...runTool(folder, {
+        args: [
+          'src',
+          '--config',
+          '.dependency-cruiser.mjs',
+        ],
+        folder: unit,
+        program: 'depcruise',
+      }),
+    }));
 
-      // Assert
-      expect(runs.filter(({ passed }) => !passed)).toStrictEqual([]);
-    },
-    CRUISE_EVERY_UNIT_TIMEOUT,
-  );
+    // Assert
+    expect(runs.filter(({ passed }) => !passed)).toStrictEqual([]);
+  });
 
   it('should report not-in-allowed when a binding unit imports a package built into its dist/ and cruised from its folder', () => {
     // Arrange

@@ -3,7 +3,7 @@ import { LEVELS, Level, RULE_TABLE_CELLS, RULE_TABLE_HEADER } from '../constants
 import { ValueFailure } from '../errors';
 import type { FindingOf, ProblemOf } from '../types';
 import type { MarkdownSection } from '../utils';
-import { sectionsOf } from '../utils';
+import { cellsOf, isTableLine, sectionsOf, tablesOf } from '../utils';
 import type { BlockId } from '../value-objects';
 import { RuleSlug } from '../value-objects';
 import type { RulePlace, RuleText } from './rule.entity';
@@ -104,7 +104,6 @@ const HEADING = /^### (\S+)(?: → (\S+))?(?: · (\S+))?$/;
 const TITLE = /^# (.+)/;
 const SECTION = /^## (.+)/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
-const TABLE_LINE = /^\|/;
 const DASHES = /^:?-+:?$/;
 const LABEL_LINE = /^\*\*([^*]+):\*\*/;
 const EXAMPLE = 'Example';
@@ -140,34 +139,6 @@ const headingOf = (text: string): Heading | undefined => {
           tightens,
         }),
   };
-};
-
-const cellsOf = (line: string): readonly string[] =>
-  line
-    .split('|')
-    .slice(1, -1)
-    .map((cell) => cell.trim());
-
-const tablesOf = (lines: readonly string[]): readonly (readonly string[])[] => {
-  const tables: string[][] = [];
-  let current: string[] | undefined;
-
-  for (const line of lines) {
-    if (!TABLE_LINE.test(line)) {
-      current = undefined;
-
-      continue;
-    }
-
-    if (current === undefined) {
-      current = [];
-      tables.push(current);
-    }
-
-    current.push(line);
-  }
-
-  return tables;
 };
 
 const tableOf = (input: { lines: readonly string[]; slug: RuleSlug }): Table => {
@@ -262,7 +233,7 @@ const labelProblems = (input: {
   });
 
 const statementOf = (lines: readonly string[]): string => {
-  const end = lines.findIndex((line) => TABLE_LINE.test(line) || LABEL_LINE.test(line));
+  const end = lines.findIndex((line) => isTableLine(line) || LABEL_LINE.test(line));
 
   return (end === -1 ? lines : lines.slice(0, end))
     .map((line) => line.trim())

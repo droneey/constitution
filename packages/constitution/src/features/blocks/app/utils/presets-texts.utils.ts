@@ -1,4 +1,11 @@
-import { COMMON_SCOPE, Placeholder, SELF_PART, TEMPLATES_FOLDER } from '#/kernel/constants';
+import {
+  COMMON_SCOPE,
+  Placeholder,
+  RELATIVE_PREFIX,
+  SELF_PART,
+  SKILL_FILE,
+  TEMPLATES_FOLDER,
+} from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
 import type {
@@ -30,10 +37,11 @@ const pluginTexts: TextsOf<PluginDetails> = {
   [PluginCode.OffSchema]: ({ field, reason }) =>
     `does not match its schema: ${field === '' ? ROOT_FIELD : field}: ${reason}`,
   [PluginCode.SkillsDirectoryEmpty]: ({ directory }) =>
-    `lists the skills directory "./${directory}", which holds no <skill>/SKILL.md`,
+    `lists the skills directory "${RELATIVE_PREFIX}${directory}", which holds no <skill>/${SKILL_FILE}`,
   [PluginCode.SkillsDirectoryUnlisted]: ({ directory }) =>
-    `does not list "./${directory}", which holds skills`,
-  [PluginCode.SkillWithoutFile]: () => 'holds no SKILL.md; a skill is a folder with SKILL.md in it',
+    `does not list "${RELATIVE_PREFIX}${directory}", which holds skills`,
+  [PluginCode.SkillWithoutFile]: () =>
+    `holds no ${SKILL_FILE}; a skill is a folder with ${SKILL_FILE} in it`,
   [PluginCode.SkillWithoutFrontMatter]: () =>
     'has no front matter; a skill names itself and says when to use it there',
   [PluginCode.SkillFrontMatterNotYaml]: ({ reason }) => `front matter is not valid YAML: ${reason}`,

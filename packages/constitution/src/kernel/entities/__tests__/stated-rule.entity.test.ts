@@ -395,6 +395,32 @@ describe('StatedRule.parse', () => {
       rule: {},
     },
     {
+      findings: [
+        {
+          code: RuleFormCode.HeaderMisshapen,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+        {
+          code: RuleFormCode.CellsMiscounted,
+          details: {
+            count: 1,
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+      ],
+      lines: [
+        '| Why | Tags',
+        '|---|---',
+        '| it keeps the code honest. | []',
+      ],
+      name: 'a table whose lines lack their closing pipe',
+      rule: {},
+    },
+    {
       findings: [],
       lines: [
         '| Why | Tags |',

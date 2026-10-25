@@ -1,3 +1,4 @@
+import { RELATIVE_PREFIX, SKILL_FILE } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 
 import type {
@@ -8,7 +9,7 @@ import type {
   MarketplaceManifest,
   Skill,
 } from '../../../../entities';
-import { DocumentPath, ReadStatus } from '../../../../entities';
+import { DocumentPath, ReadStatus, SkillField } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 
 enum PluginCode {
@@ -29,11 +30,6 @@ enum PluginCode {
   TemplateMissing = 'template-missing',
   MarketplaceOmitsPlugin = 'marketplace-omits-plugin',
   HookFileMissing = 'hook-runs-missing-file',
-}
-
-enum SkillField {
-  Name = 'name',
-  Description = 'description',
 }
 
 interface PluginDetails {
@@ -60,14 +56,14 @@ interface PluginDetails {
     readonly reason: string;
   };
   readonly [PluginCode.SkillFieldMissing]: {
-    readonly field: `${SkillField}`;
+    readonly field: SkillField;
   };
   readonly [PluginCode.AgentWithoutFrontMatter]: object;
   readonly [PluginCode.AgentFrontMatterNotYaml]: {
     readonly reason: string;
   };
   readonly [PluginCode.AgentFieldMissing]: {
-    readonly field: `${SkillField}`;
+    readonly field: SkillField;
   };
   readonly [PluginCode.AgentNameMismatch]: {
     readonly file: string;
@@ -75,9 +71,10 @@ interface PluginDetails {
   };
   readonly [PluginCode.TemplateMissing]: object;
   readonly [PluginCode.MarketplaceOmitsPlugin]: {
-    readonly plugin: string | undefined;
-    /** the owner/name of the GitHub repository the plugin manifest names */
-    readonly repo: string | undefined;
+    /** the name the plugin manifest gives, if it gives one */
+    readonly plugin?: string;
+    /** the owner/name of the GitHub repository the plugin manifest names, if it names one */
+    readonly repo?: string;
   };
   readonly [PluginCode.HookFileMissing]: {
     readonly file: string;
@@ -96,10 +93,8 @@ type Unread = Exclude<
 const PLUGIN_FILE = /\$\{CLAUDE_PLUGIN_ROOT\}\/([^"'\s]+)/g;
 const GITHUB_URL = 'https://github.com/';
 const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
-const RELATIVE_PREFIX = './';
 // Claude Code scans it whether or not the manifest lists it.
 const DEFAULT_SKILLS = 'skills/';
-const SKILL_FILE = 'SKILL.md';
 const SKILL_FOLDER = /^([^./][^/]*)\//;
 enum Template {
   Project = 'templates/PROJECT.md',
@@ -407,8 +402,16 @@ const checkMarketplace = (input: {
         {
           code: PluginCode.MarketplaceOmitsPlugin,
           details: {
-            plugin: input.pluginName,
-            repo,
+            ...(input.pluginName === undefined
+              ? {}
+              : {
+                  plugin: input.pluginName,
+                }),
+            ...(repo === undefined
+              ? {}
+              : {
+                  repo,
+                }),
           },
           path: DocumentPath.Marketplace,
         },

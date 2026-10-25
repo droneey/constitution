@@ -21,5 +21,7 @@ export {
   outputFlagsOf,
   pairsSection,
   stepsSection,
+  textOf,
+  unitText,
   warningTextOf,
 } from './utils';

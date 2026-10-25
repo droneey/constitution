@@ -23,10 +23,12 @@ import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
 import { paraglideCard } from '../../../../../../../__tests__/templates.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
 import { Binding, Block, BlockFile, ReadStatus } from '../../../../../../entities';
-import type { LoadFinding } from '../load-constitution.utils';
+import type { ConstitutionLoaded } from '../load-constitution.utils';
 import { LoadCode, loadConstitution } from '../load-constitution.utils';
 import { BlockLoadCode, FrontMatterReadCode, PlaceCode } from '../steps/load-blocks';
 import { BindingsFileCode } from '../steps/read-bindings';
+
+type LoadFinding = ConstitutionLoaded['findings'][number];
 
 const uiPassport = passportFile({
   body: '# UI\n',

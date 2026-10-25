@@ -1,3 +1,4 @@
+import { CONFIG_FILE } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { Declaration, ProjectPlace } from '#/kernel/entities';
 import { ConfigReadStatus, FileRead, FileReadStatus } from '#/kernel/entities';
@@ -7,7 +8,7 @@ import { BlockSource, repositoryUnit } from '#/kernel/value-objects';
 
 import type { BlockCardParser, Clock, ConfigParser, Workspace } from '../../../contracts';
 import { ProjectConfig } from '../../../entities';
-import { CONFIG, joinPath } from '../shared/project-paths';
+import { joinPath } from '../shared/project-paths';
 import { readMembers } from './steps/read-members';
 import { readSource } from './steps/read-source';
 import { resolveDeclaration } from './steps/resolve-declaration';
@@ -36,7 +37,7 @@ const readDeclaration = (
   const { project, releaseFolder } = input.place;
   const path = joinPath({
     folder: project,
-    name: CONFIG,
+    name: CONFIG_FILE,
   });
   const written = files.read(path);
 

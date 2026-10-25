@@ -1,16 +1,15 @@
-import { LAYER_ARTICLE, RELEASE_FOLDER } from '#/kernel/constants';
+import { CHECK_KEY, CONFIG_FILE, LAYER_ARTICLE, RELEASE_FOLDER } from '#/kernel/constants';
 import type { ProjectWarning, WarningDetails, WiringProblem } from '#/kernel/entities';
 import { WarningKind, WiringProblemKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { UnitPath } from '#/kernel/value-objects';
 
 import type { TextsOf } from '../types';
+import { textOf } from './texts.utils';
+import { unitText } from './unit-text.utils';
 
-const CONFIG = 'constitution.yaml';
 const RATIFY = ' — run /constitution:ratify';
-const REPOSITORY_NAME = '.';
 const PACKAGES_KEY = 'packages';
-const CHECK_KEY = 'check';
 const SHOWN = 3;
 const ADD: Readonly<Record<string, string>> = {
   axes: 'axes: [architecture, workflow]',
@@ -42,8 +41,9 @@ const heirsText = (heirs: readonly BlockId[]): string =>
 /** " in <unit>" for a member, as a warning names where it holds; nothing for the repository. */
 const whereText = (unit: UnitPath): string => (UnitPath.isRepository(unit) ? '' : ` in ${unit}`);
 
-/** The unit's folder as a warning names it: "." for the repository. */
-const unitText = (unit: UnitPath): string => (UnitPath.isRepository(unit) ? REPOSITORY_NAME : unit);
+/** " at line <n>" where the parser says where it stopped; nothing where it does not. */
+const atLineText = (line: number | undefined): string =>
+  line === undefined ? '' : ` at line ${String(line)}`;
 
 const partsText = (parts: readonly string[]): string =>
   `${parts.slice(0, SHOWN).join(', ')}${parts.length > SHOWN ? ` and ${parts.length - SHOWN} more` : ''}`;
@@ -76,17 +76,17 @@ const unknownKeyText = ({ file, key }: WarningDetails[WarningKind.KeyUnknown]): 
 
   // the repository's check is known, so a check that reaches here is a member's
   return key === CHECK_KEY
-    ? `${file} names a check, which only the repository's ${CONFIG} names — remove it`
+    ? `${file} names a check, which only the repository's ${CONFIG_FILE} names — remove it`
     : `${file} has the unknown key ${key} — remove it`;
 };
 
 const warningTexts: TextsOf<WarningDetails> = {
   [WarningKind.MemberWithoutConfig]: ({ member }) =>
-    `${member} is a member of the workspace with no ${CONFIG} — write one that lists the blocks it follows`,
+    `${member} is a member of the workspace with no ${CONFIG_FILE} — write one that lists the blocks it follows`,
   [WarningKind.MemberConfigUnparsed]: ({ line, member }) =>
-    `${member}/${CONFIG} does not parse at line ${String(line ?? 0)} — fix it, as its blocks are left out`,
+    `${member}/${CONFIG_FILE} does not parse${atLineText(line)} — fix it, as its blocks are left out`,
   [WarningKind.MemberConfigUnreadable]: ({ member }) =>
-    `cannot read ${member}/${CONFIG} — make it readable, as its blocks are left out`,
+    `cannot read ${member}/${CONFIG_FILE} — make it readable, as its blocks are left out`,
   [WarningKind.KeyMissing]: ({ file, key }) =>
     `${file} has no ${key} key — add ${ADD[key] ?? `${key}: []`}`,
   [WarningKind.KeyUnknown]: unknownKeyText,
@@ -141,7 +141,7 @@ const warningTexts: TextsOf<WarningDetails> = {
   [WarningKind.OverrideExpired]: ({ rule, until }) =>
     `${rule} expired on ${until} — renew or remove it`,
   [WarningKind.FolderKeepsConfig]: ({ folder, path }) =>
-    `${folder} keeps its own ${path} — declare the folder a member, with a ${CONFIG} of its own`,
+    `${folder} keeps its own ${path} — declare the folder a member, with a ${CONFIG_FILE} of its own`,
   [WarningKind.ToolWiredNowhere]: ({ tool, unit }) =>
     `${tool} is wired nowhere for ${unitText(unit)}${RATIFY}`,
   [WarningKind.FileMiswired]: ({ file, problems }) =>
@@ -155,10 +155,8 @@ const warningTexts: TextsOf<WarningDetails> = {
     `${unitText(unit)}/${RELEASE_FOLDER} leads back into a folder that holds it — link it to the release outside the unit`,
 };
 
-const textOf = <TKind extends WarningKind>(kind: TKind, details: WarningDetails[TKind]): string =>
-  warningTexts[kind](details);
-
 /** What a warning of a project says, as every report of warnings words it. */
-const warningTextOf = (warning: ProjectWarning): string => textOf(warning.kind, warning.details);
+const warningTextOf = (warning: ProjectWarning): string =>
+  textOf(warningTexts, warning.kind, warning.details);
 
 export { warningTextOf };

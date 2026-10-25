@@ -34,7 +34,7 @@ describe('warningTextOf', () => {
       },
     },
     {
-      text: 'apps/web/constitution.yaml does not parse at line 0 — fix it, as its blocks are left out',
+      text: 'apps/web/constitution.yaml does not parse — fix it, as its blocks are left out',
       warning: {
         code: WarningCode.Config,
         details: {

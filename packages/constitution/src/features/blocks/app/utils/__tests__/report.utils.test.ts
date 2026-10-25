@@ -7,6 +7,7 @@ import { noteSection } from '#/shared/cli';
 
 import type { BlockFinding, Validation } from '../../../domain/use-cases/queries/check';
 import { RequiresCode } from '../../../domain/use-cases/queries/check';
+import { findingTextOf } from '../finding-text.utils';
 import { blocksOutcomeOf, blocksSectionsOf } from '../report.utils';
 
 const finding: BlockFinding = {
@@ -90,7 +91,7 @@ describe('blocksSectionsOf', () => {
     expect(sections).toStrictEqual([
       noteSection({
         lines: [
-          'blocks/domains/ui/ui.md: requires itself [requires-itself]',
+          `blocks/domains/ui/ui.md: ${findingTextOf(finding)} [requires-itself]`,
         ],
         title: '1 finding in the blocks',
         tone: Tone.Error,
@@ -107,33 +108,32 @@ describe('blocksSectionsOf', () => {
 
   it('should give the findings by file, then by code, then by their text', () => {
     // Arrange
+    const webgl: BlockFinding = {
+      code: RequiresCode.RequiresNoBlock,
+      details: {
+        required: BlockId.create('webgl'),
+      },
+      path: 'blocks/domains/ui/ui.md',
+    };
+    const i18n: BlockFinding = {
+      code: RequiresCode.RequiresItself,
+      details: {},
+      path: 'blocks/domains/i18n/i18n.md',
+    };
+    const canvas: BlockFinding = {
+      code: RequiresCode.RequiresNoBlock,
+      details: {
+        required: BlockId.create('canvas'),
+      },
+      path: 'blocks/domains/ui/ui.md',
+    };
     const validation = {
       advice: [],
       findings: [
-        {
-          code: RequiresCode.RequiresNoBlock,
-          details: {
-            required: BlockId.create('webgl'),
-          },
-          path: 'blocks/domains/ui/ui.md',
-        },
-        {
-          code: RequiresCode.RequiresItself,
-          details: {},
-          path: 'blocks/domains/i18n/i18n.md',
-        },
-        {
-          code: RequiresCode.RequiresNoBlock,
-          details: {
-            required: BlockId.create('canvas'),
-          },
-          path: 'blocks/domains/ui/ui.md',
-        },
-        {
-          code: RequiresCode.RequiresItself,
-          details: {},
-          path: 'blocks/domains/ui/ui.md',
-        },
+        webgl,
+        i18n,
+        canvas,
+        finding,
       ],
     } satisfies Validation;
 
@@ -144,10 +144,10 @@ describe('blocksSectionsOf', () => {
     expect(sections).toStrictEqual([
       noteSection({
         lines: [
-          'blocks/domains/i18n/i18n.md: requires itself [requires-itself]',
-          'blocks/domains/ui/ui.md: requires itself [requires-itself]',
-          'blocks/domains/ui/ui.md: requires canvas, which is not a block [requires-no-block]',
-          'blocks/domains/ui/ui.md: requires webgl, which is not a block [requires-no-block]',
+          `blocks/domains/i18n/i18n.md: ${findingTextOf(i18n)} [requires-itself]`,
+          `blocks/domains/ui/ui.md: ${findingTextOf(finding)} [requires-itself]`,
+          `blocks/domains/ui/ui.md: ${findingTextOf(canvas)} [requires-no-block]`,
+          `blocks/domains/ui/ui.md: ${findingTextOf(webgl)} [requires-no-block]`,
         ],
         title: '4 findings in the blocks',
         tone: Tone.Error,

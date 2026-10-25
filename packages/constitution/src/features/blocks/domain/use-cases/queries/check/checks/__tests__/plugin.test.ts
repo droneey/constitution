@@ -5,6 +5,7 @@ import type { FindingOf } from '#/kernel/types';
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
 import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { SkillField } from '../../../../../entities';
 import type { PluginDetails } from '../plugin';
 import { PluginCode, pluginCheck } from '../plugin';
 
@@ -15,11 +16,13 @@ const MARKETPLACE = '.claude-plugin/marketplace.json';
 const SKILL = 'skills/ratify/SKILL.md';
 const AGENT = 'agents/reviewer.md';
 
-const unserved = (repo: string | undefined): PluginFinding => ({
+const unserved = (
+  overrides: Partial<PluginDetails[PluginCode.MarketplaceOmitsPlugin]> = {},
+): PluginFinding => ({
   code: PluginCode.MarketplaceOmitsPlugin,
   details: {
     plugin: 'constitution',
-    repo,
+    ...overrides,
   },
   path: MARKETPLACE,
 });
@@ -118,10 +121,7 @@ describe('pluginCheck', () => {
         ...expected,
         {
           code: PluginCode.MarketplaceOmitsPlugin,
-          details: {
-            plugin: undefined,
-            repo: undefined,
-          },
+          details: {},
           path: MARKETPLACE,
         },
       ]);
@@ -259,7 +259,7 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.SkillFieldMissing,
           details: {
-            field: 'name',
+            field: SkillField.Name,
           },
           path: SKILL,
         },
@@ -272,7 +272,7 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.SkillFieldMissing,
           details: {
-            field: 'description',
+            field: SkillField.Description,
           },
           path: SKILL,
         },
@@ -285,14 +285,14 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.SkillFieldMissing,
           details: {
-            field: 'name',
+            field: SkillField.Name,
           },
           path: SKILL,
         },
         {
           code: PluginCode.SkillFieldMissing,
           details: {
-            field: 'description',
+            field: SkillField.Description,
           },
           path: SKILL,
         },
@@ -352,7 +352,7 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.AgentFieldMissing,
           details: {
-            field: 'name',
+            field: SkillField.Name,
           },
           path: AGENT,
         },
@@ -365,7 +365,7 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.AgentFieldMissing,
           details: {
-            field: 'description',
+            field: SkillField.Description,
           },
           path: AGENT,
         },
@@ -453,7 +453,9 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       name: 'a folder that holds no plugin manifest',
       source: {
@@ -463,7 +465,9 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       name: 'the root of a repository that holds the manifest in a folder',
       source: {
@@ -472,7 +476,9 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       name: 'a folder of no named repository',
       source: {
@@ -522,7 +528,9 @@ describe('pluginCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      unserved('droneey/constitution'),
+      unserved({
+        repo: 'droneey/constitution',
+      }),
     ]);
   });
 
@@ -543,7 +551,9 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       files: withFiles({
         [MARKETPLACE]: listed('./'),
@@ -552,7 +562,9 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       files: withFiles({
         [MARKETPLACE]: listed({
@@ -569,7 +581,9 @@ describe('pluginCheck', () => {
       undefined,
     ].map((ref) => ({
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       files: withFiles({
         [MARKETPLACE]: listed({
@@ -581,7 +595,7 @@ describe('pluginCheck', () => {
     })),
     {
       expected: [
-        unserved(undefined),
+        unserved(),
       ],
       files: withFiles({
         '.claude-plugin/plugin.json': '{"name":"constitution"}',
@@ -594,7 +608,7 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved(undefined),
+        unserved(),
       ],
       files: withFiles({
         '.claude-plugin/plugin.json':
@@ -608,7 +622,9 @@ describe('pluginCheck', () => {
     },
     {
       expected: [
-        unserved('droneey/constitution'),
+        unserved({
+          repo: 'droneey/constitution',
+        }),
       ],
       files: withFiles({
         [MARKETPLACE]:

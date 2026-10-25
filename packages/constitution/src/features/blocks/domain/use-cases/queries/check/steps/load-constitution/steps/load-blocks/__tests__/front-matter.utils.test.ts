@@ -6,9 +6,9 @@ import { BlockId, Glob } from '#/kernel/value-objects';
 
 import { createFakeFrontMatterParser } from '../../../../../../../../../__tests__/front-matter-parser.fake';
 import type { FrontMatterFields, FrontMatterRead } from '../../../../../../../../contracts';
-import { FrontMatter, ReadStatus } from '../../../../../../../../entities';
+import { FrontMatter, FrontMatterField, ReadStatus } from '../../../../../../../../entities';
 import type { FrontMatterReadFinding } from '../front-matter.utils';
-import { FrontMatterField, FrontMatterReadCode, readFrontMatter } from '../front-matter.utils';
+import { FrontMatterReadCode, readFrontMatter } from '../front-matter.utils';
 
 const PATH = 'blocks/domains/ui/ui.md';
 const TEXT = '---\nid: ui\n---\n# UI\n';

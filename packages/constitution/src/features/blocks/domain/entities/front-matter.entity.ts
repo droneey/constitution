@@ -1,5 +1,16 @@
 import type { BlockId, Glob } from '#/kernel/value-objects';
 
+/** The fields of a passport's front matter, in the order it lists them. */
+enum FrontMatterField {
+  Id = 'id',
+  Summary = 'summary',
+  Requires = 'requires',
+  Extends = 'extends',
+  Abstract = 'abstract',
+  Languages = 'languages',
+  Governs = 'governs',
+}
+
 interface FrontMatter {
   readonly abstract: boolean;
   readonly extends?: BlockId;
@@ -26,4 +37,4 @@ const FrontMatter = {
   }),
 } as const;
 
-export { FrontMatter };
+export { FrontMatter, FrontMatterField };

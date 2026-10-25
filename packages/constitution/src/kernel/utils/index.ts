@@ -22,3 +22,4 @@ export {
 } from './paths.utils';
 export type { MarkdownSection } from './sections.utils';
 export { isHeading, sectionsOf } from './sections.utils';
+export { cellsOf, isTableLine, tablesOf } from './tables.utils';

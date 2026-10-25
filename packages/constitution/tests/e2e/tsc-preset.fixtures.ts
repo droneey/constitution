@@ -18,22 +18,11 @@ const presetParts = (): readonly string[] =>
     .map((name) => name.replace(/\.json$/, ''))
     .toSorted((left, right) => left.localeCompare(right));
 
-const registered = new Map<string, Project>();
-const checked = new Map<string, boolean>();
-
 const keyOf = (project: Project): string =>
   JSON.stringify([
     project.parts,
     project.main,
   ]);
-
-// A table registers its projects while the file is collected.
-const typeCheckCases = <TRow extends Project>(rows: readonly TRow[]): readonly TRow[] =>
-  rows.map((row) => {
-    registered.set(keyOf(row), row);
-
-    return row;
-  });
 
 // The project's types resolve from this repository's node_modules.
 const writeProject = (folder: string, project: Project): void => {
@@ -64,15 +53,17 @@ const writeProject = (folder: string, project: Project): void => {
   writeFileSync(join(folder, 'main.ts'), project.main);
 };
 
-// One build checks every registered project, each in a folder named by its index; tsc writes a
+// One build checks every project given, each in a folder named by its index; tsc writes a
 // diagnostic as <path>(<line>,<column>): error TS<code>, so a project is clean when no error
 // names its folder.
 /** @throws Error when tsc leaves a project unbuilt or reports an error outside every project. */
-const typeCheckRegistered = (): void => {
+const typeCheckAll = (
+  entries: readonly (readonly [
+    string,
+    Project,
+  ])[],
+): ReadonlyMap<string, boolean> => {
   const root = mkdtempSync(join(tmpdir(), 'constitution-tsconfig-'));
-  const entries = [
-    ...registered,
-  ];
 
   entries.forEach(([, project], index) => {
     writeProject(join(root, String(index)), project);
@@ -119,20 +110,55 @@ const typeCheckRegistered = (): void => {
     throw new Error(`tsc reported an error outside every project: ${compilation.stdout}`);
   }
 
-  entries.forEach(([key], index) => {
-    checked.set(key, !failing.includes(String(index)));
-  });
+  return new Map(
+    entries.map(([key], index) => [
+      key,
+      !failing.includes(String(index)),
+    ]),
+  );
 };
 
-/** @throws Error when no table registered the project. */
-const typeChecks = (project: Project): boolean => {
-  const isClean = checked.get(keyOf(project));
+interface TscBatch {
+  readonly typeCheckCases: <TRow extends Project>(rows: readonly TRow[]) => readonly TRow[];
+  readonly typeCheckRegistered: () => void;
+  /** @throws Error when no table registered the project, or before the batch is checked. */
+  readonly typeChecks: (project: Project) => boolean;
+}
 
-  if (isClean === undefined) {
-    throw new Error(`No table registered the project of ${project.parts.join(', ')}`);
-  }
+// The tables of a spec file register their projects while the file is collected, and one build
+// checks them all before the first case: a spec file makes its own batch, so no state outlives it.
+const createTypeCheckBatch = (): TscBatch => {
+  const registered = new Map<string, Project>();
+  let checked: ReadonlyMap<string, boolean> = new Map();
 
-  return isClean;
+  const typeCheckCases = <TRow extends Project>(rows: readonly TRow[]): readonly TRow[] =>
+    rows.map((row) => {
+      registered.set(keyOf(row), row);
+
+      return row;
+    });
+
+  const typeCheckRegistered = (): void => {
+    checked = typeCheckAll([
+      ...registered,
+    ]);
+  };
+
+  const typeChecks = (project: Project): boolean => {
+    const isClean = checked.get(keyOf(project));
+
+    if (isClean === undefined) {
+      throw new Error(`No table registered the project of ${project.parts.join(', ')}`);
+    }
+
+    return isClean;
+  };
+
+  return {
+    typeCheckCases,
+    typeCheckRegistered,
+    typeChecks,
+  };
 };
 
-export { presetParts, typeCheckCases, typeCheckRegistered, typeChecks };
+export { createTypeCheckBatch, presetParts };

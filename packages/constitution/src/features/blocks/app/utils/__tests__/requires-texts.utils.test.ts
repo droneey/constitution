@@ -1,47 +1,44 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
+import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
+import { textOf } from '#/shared/cli';
 
-import type { BlockFinding } from '../../../domain/use-cases/queries/check';
+import type { RequiresDetails } from '../../../domain/use-cases/queries/check';
 import { RequiresCode } from '../../../domain/use-cases/queries/check';
-import { findingTextOf } from '../finding-text.utils';
-
-const PATH = 'blocks/domains/ui/ui.md';
+import { requiresTexts } from '../requires-texts.utils';
 
 describe('requiresTexts', () => {
   it.each<{
-    finding: BlockFinding;
+    problem: ProblemOf<RequiresDetails>;
     text: string;
   }>([
     {
-      finding: {
+      problem: {
         code: RequiresCode.RequiresCore,
         details: {},
-        path: PATH,
       },
       text: 'requires core, which is always active',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.RequiresNoBlock,
         details: {
           required: BlockId.create('webgl'),
         },
-        path: PATH,
       },
       text: 'requires webgl, which is not a block',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.RequiresItself,
         details: {},
-        path: PATH,
       },
       text: 'requires itself',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.RequiresOutOfLayer,
         details: {
           allowed: [
@@ -52,12 +49,11 @@ describe('requiresTexts', () => {
           required: BlockId.create('typescript'),
           requiredLayer: Layer.Language,
         },
-        path: PATH,
       },
       text: 'requires typescript, a language block; a platform block requires only domain blocks or platform blocks',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.RequiresOutOfLayer,
         details: {
           allowed: [
@@ -67,12 +63,11 @@ describe('requiresTexts', () => {
           required: BlockId.create('biome'),
           requiredLayer: Layer.Implementation,
         },
-        path: PATH,
       },
       text: 'requires biome, an implementation block; a domain block requires only domain blocks',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.RequiresOutOfLayer,
         details: {
           allowed: [
@@ -84,55 +79,50 @@ describe('requiresTexts', () => {
           required: BlockId.create('core'),
           requiredLayer: Layer.Core,
         },
-        path: PATH,
       },
       text: 'requires core, a core block; an implementation block requires only domain blocks, platform blocks or language blocks',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.ExtendsNoBlock,
         details: {
           base: BlockId.create('eslint'),
         },
-        path: PATH,
       },
       text: 'extends eslint, which is not a block',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.ExtendsItself,
         details: {},
-        path: PATH,
       },
       text: 'extends itself',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.ExtendsOtherLayer,
         details: {
           base: BlockId.create('ui'),
           baseLayer: Layer.Domain,
         },
-        path: PATH,
       },
       text: 'extends ui, a domain block; a block extends only a base of its own layer',
     },
     {
-      finding: {
+      problem: {
         code: RequiresCode.ExtendsConcrete,
         details: {
           base: BlockId.create('lingui'),
         },
-        path: PATH,
       },
       text: 'extends lingui, a concrete block; a block extends only an abstract base — require it instead',
     },
-  ])('should say $finding.code as the report words it', ({ finding, text }) => {
+  ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Arrange
-    const reported = finding;
+    const reported = problem;
 
     // Act
-    const said = findingTextOf(reported);
+    const said = textOf(requiresTexts, reported.code, reported.details);
 
     // Assert
     expect(said).toBe(text);

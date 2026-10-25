@@ -1,3 +1,4 @@
+import { REQUIREMENTS_HEADING, REQUIREMENTS_TABLE_HEADER } from '../constants';
 import type { FindingOf } from '../types';
 import type { MarkdownSection } from '../utils';
 import { sectionsOf } from '../utils';
@@ -50,13 +51,20 @@ interface RequirementsParsed {
   readonly findings: readonly FindingOf<RequirementsTableDetails>[];
 }
 
-const SECTION = '## Requirements';
 const NEAR_SECTION = /^#{1,6}\s*requirements$/i;
 const ROW = /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|$/;
 const SEPARATOR = /^\|?[\s:|-]+\|?$/;
-const HEADER = /^\|\s*Requirement\s*\|\s*How\s*\|\s*Met\s*\|$/;
 const NEAR_HEADER = /^\|\s*Requirement\s*\|/;
 const PIPE = '|';
+
+// A row without the padding of its cells, so the header is known however its columns are aligned.
+const unpadded = (row: string): string =>
+  row
+    .split(PIPE)
+    .map((cell) => cell.trim())
+    .join(PIPE);
+
+const headerRow = unpadded(REQUIREMENTS_TABLE_HEADER);
 
 const create = (input: RequirementAnswer): RequirementAnswer => ({
   block: input.block,
@@ -74,7 +82,7 @@ const create = (input: RequirementAnswer): RequirementAnswer => ({
 const rowsOf = (input: { section: MarkdownSection; source: AnswerSource }): RequirementsParsed => {
   const rows = input.section.lines
     .map((line) => line.trim())
-    .filter((line) => line.includes(PIPE) && !SEPARATOR.test(line) && !HEADER.test(line));
+    .filter((line) => line.includes(PIPE) && !SEPARATOR.test(line) && unpadded(line) !== headerRow);
 
   return {
     answers: rows.flatMap((row) => {
@@ -123,7 +131,7 @@ const readSection = (input: {
 }): RequirementsParsed => {
   const heading = input.section.heading.trim();
 
-  if (heading === SECTION) {
+  if (heading === REQUIREMENTS_HEADING) {
     return rowsOf(input);
   }
 

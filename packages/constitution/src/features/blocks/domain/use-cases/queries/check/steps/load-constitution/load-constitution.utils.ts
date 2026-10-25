@@ -181,5 +181,5 @@ const loadConstitution = (input: {
   };
 };
 
-export type { Base, ConstitutionLoaded, LoadFinding, LoadFindingDetails };
+export type { Base, ConstitutionLoaded, LoadFindingDetails };
 export { LoadCode, loadConstitution };

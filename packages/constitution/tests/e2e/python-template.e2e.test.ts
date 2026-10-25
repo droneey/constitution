@@ -1,15 +1,14 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
 import {
+  createTaskBatch,
   isFoundIn,
   partTable,
   python,
-  runOf,
-  runRegistered,
-  taskCase,
-  taskCases,
   templateTable,
 } from './python-template.fixtures';
+
+const { runOf, runRegistered, taskCase, taskCases } = createTaskBatch();
 
 // The runs of the check, mutmut's above all, take seconds each, not milliseconds.
 const RUNS_MS = 600_000;

@@ -1,4 +1,9 @@
-import { RULE_TABLE_CELLS, RULE_TABLE_HEADER } from '#/kernel/constants';
+import {
+  REQUIREMENTS_HEADING,
+  REQUIREMENTS_TABLE_HEADER,
+  RULE_TABLE_CELLS,
+  RULE_TABLE_HEADER,
+} from '#/kernel/constants';
 import type { RequirementsTableDetails, RuleFormDetails } from '#/kernel/entities';
 import { RequirementsTableCode, RuleFormCode } from '#/kernel/entities';
 import type { TextsOf } from '#/shared/cli';
@@ -20,11 +25,11 @@ const ruleFormTexts: TextsOf<RequirementsTableDetails & RuleFormDetails> = {
   [RuleFormCode.HoldsLabel]: ({ label, slug }) =>
     `rule "${slug}" has the label "${label}"; a rule states Why and Tags in its table and holds no label but Example`,
   [RequirementsTableCode.HeaderMisshapen]: ({ row }) =>
-    `has the header "${row}" in its Requirements; it is "| Requirement | How | Met |"`,
+    `has the header "${row}" in its Requirements; it is "${REQUIREMENTS_TABLE_HEADER}"`,
   [RequirementsTableCode.RowMisshapen]: ({ row }) =>
     `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <met> |"`,
   [RequirementsTableCode.HeadingMisshapen]: ({ heading }) =>
-    `has the heading "${heading}", which names the Requirements section; it is "## Requirements"`,
+    `has the heading "${heading}", which names the Requirements section; it is "${REQUIREMENTS_HEADING}"`,
 };
 
 export { ruleFormTexts };

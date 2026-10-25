@@ -159,5 +159,5 @@ const readBindings = (input: {
   };
 };
 
-export type { BindingsFileDetails, BindingsFileFinding };
+export type { BindingsFileDetails };
 export { BindingsFileCode, readBindings };

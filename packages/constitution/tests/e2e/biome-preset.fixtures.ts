@@ -133,9 +133,6 @@ const groupKeyOf = (key: string, project: Project): string => {
   ]);
 };
 
-const registered = new Map<string, Project>();
-const linted = new Map<string, Findings>();
-
 // The folder of a project's files, relative to its group's.
 interface Member {
   readonly folder: string;
@@ -207,14 +204,15 @@ const writeGroups = (root: string, entries: readonly Entry[]): readonly Group[] 
 
 const inRoot = async <T>(run: (root: string) => Promise<T>): Promise<T> => {
   const root = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
-  const outcome = await run(root);
 
-  rmSync(root, {
-    force: true,
-    recursive: true,
-  });
-
-  return outcome;
+  try {
+    return await run(root);
+  } finally {
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
+  }
 };
 
 const findingsOf = (
@@ -235,7 +233,14 @@ const findingsOf = (
   };
 };
 
-const lintGroup = async (group: Group): Promise<void> => {
+const lintGroup = async (
+  group: Group,
+): Promise<
+  readonly (readonly [
+    string,
+    Findings,
+  ])[]
+> => {
   const linting = Bun.spawn(
     [
       biome,
@@ -251,27 +256,35 @@ const lintGroup = async (group: Group): Promise<void> => {
   );
   const { diagnostics } = report.parse(JSON.parse(await new Response(linting.stdout).text()));
 
-  for (const member of group.members) {
-    linted.set(member.key, findingsOf(diagnostics, member));
-  }
+  return group.members.map((member) => [
+    member.key,
+    findingsOf(diagnostics, member),
+  ]);
 };
 
 // Each group is a project of its own, for Biome checks types and the module graph only in the
 // project of its root configuration; a few run at a time.
-const lintAll = (entries: readonly Entry[]): Promise<void> =>
+const lintAll = (entries: readonly Entry[]): Promise<ReadonlyMap<string, Findings>> =>
   inRoot(async (root) => {
     const queue = writeGroups(root, entries).values();
 
-    const lintNext = async (): Promise<void> => {
+    const lintNext = async (): Promise<
+      readonly (readonly [
+        string,
+        Findings,
+      ])[]
+    > => {
       const next = queue.next();
 
-      if (next.done !== true) {
-        await lintGroup(next.value);
-        await lintNext();
-      }
+      return next.done === true
+        ? []
+        : [
+            ...(await lintGroup(next.value)),
+            ...(await lintNext()),
+          ];
     };
 
-    await Promise.all(
+    const runs = await Promise.all(
       Array.from(
         {
           length: RUNS_AT_ONCE,
@@ -279,45 +292,73 @@ const lintAll = (entries: readonly Entry[]): Promise<void> =>
         lintNext,
       ),
     );
+
+    return new Map(runs.flat());
   });
 
-const lintCase = <TProject extends Project>(project: TProject): TProject => {
-  registered.set(keyOf(project), project);
+interface LintBatch {
+  readonly lintCase: <TProject extends Project>(project: TProject) => TProject;
+  readonly lintCases: <TRow extends Partial<Project>>(
+    rows: readonly TRow[],
+    base?: Partial<Project>,
+  ) => readonly (Omit<TRow, keyof Project> & Required<Project>)[];
+  /** @throws Error when no table registered the project, or before the batch is linted. */
+  readonly lintFindings: (project: Project) => Findings;
+  readonly lintRegistered: () => Promise<void>;
+}
 
-  return project;
-};
+// The tables of a spec file register their projects while the file is collected, and one run lints
+// them all before the first case: a spec file makes its own batch, so no state outlives it.
+const createLintBatch = (): LintBatch => {
+  const registered = new Map<string, Project>();
+  let linted: ReadonlyMap<string, Findings> = new Map();
 
-// A row names the files its case adds to the table's and, where they differ, its parts.
-const lintCases = <TRow extends Partial<Project>>(
-  rows: readonly TRow[],
-  base: Partial<Project> = {},
-): readonly (Omit<TRow, keyof Project> & Required<Project>)[] =>
-  rows.map((row) =>
-    lintCase({
-      ...row,
-      files: {
-        ...base.files,
-        ...row.files,
-      },
-      parts: row.parts ?? base.parts ?? PARTS,
-    }),
-  );
+  const lintCase = <TProject extends Project>(project: TProject): TProject => {
+    registered.set(keyOf(project), project);
 
-// Lints every registered project, once the tables are collected.
-const lintRegistered = (): Promise<void> =>
-  lintAll([
-    ...registered,
-  ]);
+    return project;
+  };
 
-/** @throws Error when no table registered the project. */
-const lintFindings = (project: Project): Findings => {
-  const findings = linted.get(keyOf(project));
+  // A row names the files its case adds to the table's and, where they differ, its parts.
+  const lintCases = <TRow extends Partial<Project>>(
+    rows: readonly TRow[],
+    base: Partial<Project> = {},
+  ): readonly (Omit<TRow, keyof Project> & Required<Project>)[] =>
+    rows.map((row) =>
+      lintCase({
+        ...row,
+        files: {
+          ...base.files,
+          ...row.files,
+        },
+        parts: row.parts ?? base.parts ?? PARTS,
+      }),
+    );
 
-  if (findings === undefined) {
-    throw new Error(`No table registered the project of ${Object.keys(project.files).join(', ')}`);
-  }
+  const lintFindings = (project: Project): Findings => {
+    const findings = linted.get(keyOf(project));
 
-  return findings;
+    if (findings === undefined) {
+      throw new Error(
+        `No table registered the project of ${Object.keys(project.files).join(', ')}`,
+      );
+    }
+
+    return findings;
+  };
+
+  const lintRegistered = async (): Promise<void> => {
+    linted = await lintAll([
+      ...registered,
+    ]);
+  };
+
+  return {
+    lintCase,
+    lintCases,
+    lintFindings,
+    lintRegistered,
+  };
 };
 
 // Biome rewrites the file in place; the case reads back what it wrote.
@@ -391,11 +432,8 @@ const blockCode = (): readonly string[] =>
 export {
   baseParts,
   blockCode,
+  createLintBatch,
   formattedText,
-  lintCase,
-  lintCases,
-  lintFindings,
-  lintRegistered,
   presetFiles,
   presetText,
   presetWords,

@@ -1,12 +1,9 @@
-import { UnitPath } from '#/kernel/value-objects';
+import { unitText } from '#/shared/cli';
 
 import type { PlannedFile, PlannedTool, UntemplatedTool, WiringPlan } from '../../domain/entities';
 
 const SCOPE_INDENT = '  ';
 const PART_INDENT = '    ';
-const REPOSITORY_NAME = '.';
-
-const unitText = (unit: UnitPath): string => (UnitPath.isRepository(unit) ? REPOSITORY_NAME : unit);
 
 const toolLines = (tool: PlannedTool): readonly string[] => [
   `${SCOPE_INDENT}${tool.tool} ${tool.template}${tool.isAdded ? ' (the folder adds it)' : ''}`,
