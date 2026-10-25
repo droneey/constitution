@@ -1,9 +1,10 @@
-import { CHECK_KEY, CONFIG_FILE, LAYER_ARTICLE, RELEASE_FOLDER } from '#/kernel/constants';
+import { CHECK_KEY, CONFIG_FILE, RELEASE_FOLDER } from '#/kernel/constants';
 import type { ProjectWarning, WarningDetails, WiringProblem } from '#/kernel/entities';
 import { WarningKind, WiringProblemKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { UnitPath } from '#/kernel/value-objects';
 
+import { LAYER_ARTICLE } from '../constants';
 import type { TextsOf } from '../types';
 import { textOf } from './texts.utils';
 import { unitText } from './unit-text.utils';
@@ -146,6 +147,8 @@ const warningTexts: TextsOf<WarningDetails> = {
     `${tool} is wired nowhere for ${unitText(unit)}${RATIFY}`,
   [WarningKind.FileMiswired]: ({ file, problems }) =>
     `${file} ${problems.map(problemTextOf).join('; ')}${RATIFY}`,
+  [WarningKind.WiringFileUnreadable]: ({ file }) =>
+    `${file} cannot be read, so the wiring it holds is left unchecked — make it readable`,
   [WarningKind.SkipOfNoMember]: ({ folder, path }) =>
     `${path} skips ${folder}, which holds no member of the workspace${RATIFY}`,
   [WarningKind.MemberNotSkipped]: ({ member, path, tool }) =>

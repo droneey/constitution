@@ -50,11 +50,8 @@ describe('BuildError', () => {
       isBuild: false,
     },
   ])('should say $isBuild when $condition', ({ error, isBuild }) => {
-    // Arrange
-    const thrown: unknown = error;
-
     // Act
-    const answer = isBuildError(thrown);
+    const answer = isBuildError(error);
 
     // Assert
     expect(answer).toBe(isBuild);

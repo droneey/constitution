@@ -21,25 +21,25 @@ const GITHUB_URL = /^https:\/\/github\.com\/|\.git$/g;
 
 type JsonParsed =
   | {
-      readonly isParsed: true;
+      readonly status: ReadStatus.Parsed;
       readonly value: unknown;
     }
   | {
-      readonly isParsed: false;
       readonly reason: string;
+      readonly status: ReadStatus.NotJson;
     };
 
 const parseJson = (json: string): JsonParsed => {
   try {
     return {
-      isParsed: true,
+      status: ReadStatus.Parsed,
       value: JSON.parse(json),
     };
   } catch (error) {
     return {
-      isParsed: false,
       // Stryker disable next-line StringLiteral: split always yields a first part
       reason: syntaxErrorOf(error).message.split('\n')[0] ?? '',
+      status: ReadStatus.NotJson,
     };
   }
 };
@@ -51,11 +51,8 @@ const readManifest = <TWire, TManifest>(input: {
 }): ManifestRead<TManifest> => {
   const parsed = parseJson(input.json);
 
-  if (!parsed.isParsed) {
-    return {
-      reason: parsed.reason,
-      status: ReadStatus.NotJson,
-    };
+  if (parsed.status === ReadStatus.NotJson) {
+    return parsed;
   }
 
   const parsing = input.model.safeParse(parsed.value);
@@ -74,6 +71,23 @@ const readManifest = <TWire, TManifest>(input: {
       };
 };
 
+// A source that names no ref or repository leaves it out.
+const sourceOf = (input: {
+  ref: string | undefined;
+  repo: string | undefined;
+}): Pick<MarketplacePlugin, 'ref' | 'repo'> => ({
+  ...(input.ref === undefined
+    ? {}
+    : {
+        ref: input.ref,
+      }),
+  ...(input.repo === undefined
+    ? {}
+    : {
+        repo: input.repo,
+      }),
+});
+
 const marketplacePluginOf = (plugin: MarketplaceWire['plugins'][number]): MarketplacePlugin => {
   const { source } = plugin;
 
@@ -82,8 +96,10 @@ const marketplacePluginOf = (plugin: MarketplaceWire['plugins'][number]): Market
     return {
       name: plugin.name,
       path: '',
-      ref: source.ref,
-      repo: source.repo,
+      ...sourceOf({
+        ref: source.ref,
+        repo: source.repo,
+      }),
     };
   }
 
@@ -92,14 +108,14 @@ const marketplacePluginOf = (plugin: MarketplaceWire['plugins'][number]): Market
     ? {
         name: plugin.name,
         path: source.path ?? '',
-        ref: source.ref,
-        repo: source.url?.replaceAll(GITHUB_URL, ''),
+        ...sourceOf({
+          ref: source.ref,
+          repo: source.url?.replaceAll(GITHUB_URL, ''),
+        }),
       }
     : {
         name: plugin.name,
         path: '',
-        ref: undefined,
-        repo: undefined,
       };
 };
 
@@ -134,7 +150,11 @@ const createJsonManifestParser = (): ManifestParser => ({
       json,
       map: (wire: PluginWire): PluginManifest => ({
         name: wire.name,
-        repository: wire.repository,
+        ...(wire.repository === undefined
+          ? {}
+          : {
+              repository: wire.repository,
+            }),
         skills:
           typeof wire.skills === 'string'
             ? [

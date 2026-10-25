@@ -1,9 +1,10 @@
 import re
 from pathlib import Path
+from typing import Final
 
-SECTION = re.compile(r'^diff --git ', re.MULTILINE)
-FILE = re.compile(r'^\+\+\+ b/(.+)$', re.MULTILINE)
-HUNK = re.compile(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@', re.MULTILINE)
+SECTION: Final = re.compile(r'^diff --git ', re.MULTILINE)
+FILE: Final = re.compile(r'^\+\+\+ b/(.+)$', re.MULTILINE)
+HUNK: Final = re.compile(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@', re.MULTILINE)
 
 
 def _ranges(section: str) -> tuple[range, ...]:

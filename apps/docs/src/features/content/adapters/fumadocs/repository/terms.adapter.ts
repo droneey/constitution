@@ -6,8 +6,9 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
-import { MARKDOWN_EXTENSION, pageSlugsOf, ruleOf, Term } from '../../../domain/entities';
+import { MARKDOWN_EXTENSION, pageSlugsOf, Rule, Term } from '../../../domain/entities';
 import { headingTextOf, SUBSECTION_HEADING_DEPTH } from '../markdown';
+import { FRONT_MATTER } from './blocks.constants';
 import { inRepository } from './repository.adapter';
 import { BLOCKS_FOLDER } from './repository.constants';
 
@@ -15,8 +16,6 @@ interface Bold {
   readonly isCode: boolean;
   readonly text: string;
 }
-
-const FRONT_MATTER_AT_START = /^---\n[\s\S]*?\n---\n/;
 
 const isText = (node: PhrasingContent): node is Text => node.type === 'text';
 
@@ -49,12 +48,13 @@ const ruleAt = (input: { index: number; nodes: readonly RootContent[] }): string
   const heading = input.nodes.slice(0, input.index + 1).findLast(isSectionHeading);
 
   return heading?.depth === SUBSECTION_HEADING_DEPTH
-    ? ruleOf(headingTextOf(heading))?.slug
+    ? Rule.of(headingTextOf(heading))?.slug
     : undefined;
 };
 
 const termsUnder = (input: {
   address: string;
+  block: string;
   body: string;
   node: RootContent;
   path: string;
@@ -77,7 +77,7 @@ const termsUnder = (input: {
         ...Term.nameOf(bold),
         address: input.address,
         axis: Term.axisOf(input.path),
-        block: Term.blockOf(input.path),
+        block: input.block,
         sentence: Term.sentenceAround({
           // Stryker disable next-line OptionalChaining: the parser places every node it reads
           offset: (strong.position?.start.offset ?? 0) - start,
@@ -91,9 +91,15 @@ const termsUnder = (input: {
   return terms;
 };
 
-/** the terms one block file defines, `path` below the blocks folder */
+/** the terms one block file defines, `path` below the blocks folder; a file of no block defines none */
 const termsIn = (input: { baseUrl: string; markdown: string; path: string }): readonly Term[] => {
-  const body = input.markdown.slice(FRONT_MATTER_AT_START.exec(input.markdown)?.[0].length);
+  const block = Term.blockOf(input.path);
+
+  if (block === undefined) {
+    return [];
+  }
+
+  const body = input.markdown.slice(FRONT_MATTER.exec(input.markdown)?.[0].length);
   const page = [
     input.baseUrl,
     ...pageSlugsOf(input.path),
@@ -108,6 +114,7 @@ const termsIn = (input: { baseUrl: string; markdown: string; path: string }): re
 
     return termsUnder({
       address: rule === undefined ? page : `${page}#${rule}`,
+      block,
       body,
       node,
       path: input.path,

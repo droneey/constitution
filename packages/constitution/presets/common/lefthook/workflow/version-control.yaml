@@ -3,7 +3,7 @@ pre-commit:
   jobs:
     - name: validate-branch
       run: |
-        BRANCH=$(git branch --show-current)
+        BRANCH="$(git branch --show-current)"
         if [ -z "$BRANCH" ]; then
           exit 0
         fi
@@ -16,15 +16,15 @@ commit-msg:
   jobs:
     - name: commit-message
       run: |
-        MSG=$(head -1 {1})
+        MSG="$(head -1 {1})"
 
-        if [ ${#MSG} -gt 100 ]; then
+        if [ "${#MSG}" -gt 100 ]; then
           echo "Header must be 100 characters or less (got ${#MSG})"
           exit 1
         fi
 
-        TYPE=$(printf '%s\n' "$MSG" | sed -n 's/^\([a-z]*\)!\{0,1\}: .*/\1/p')
-        SUBJECT=$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')
+        TYPE="$(printf '%s\n' "$MSG" | sed -n 's/^\([a-z]*\)!\{0,1\}: .*/\1/p')"
+        SUBJECT="$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')"
 
         if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
           echo "Commit must match format: type: Subject, or type!: Subject for a breaking change"
@@ -36,7 +36,7 @@ commit-msg:
           *) echo "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"; exit 1 ;;
         esac
 
-        FIRST_CHAR=$(printf '%s' "$SUBJECT" | cut -c1)
+        FIRST_CHAR="$(printf '%s' "$SUBJECT" | cut -c1)"
         if ! printf '%s' "$FIRST_CHAR" | grep -q '[A-Z]'; then
           echo "Subject must start with an uppercase letter (sentence-case)"
           exit 1
@@ -49,7 +49,7 @@ commit-msg:
             ;;
         esac
 
-        BODY=$(sed '1d;/^#/d;/^$/d' {1} | grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)
+        BODY="$(sed '1d;/^#/d;/^$/d' {1} | grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
         if [ -n "$BODY" ]; then
           echo "Body must be empty; a footer holds only trailers"
           exit 1

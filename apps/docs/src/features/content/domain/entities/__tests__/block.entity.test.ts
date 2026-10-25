@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { chapterListGapsOf, readingOrderOf } from '../block.entity';
+import { Block } from '../block.entity';
 
-describe('readingOrderOf', () => {
+describe('Block.readingOrderOf', () => {
   it('should list the blocks by their names, an abstract one right above the blocks that extend it', () => {
     // Arrange
     const blocks = [
@@ -11,11 +11,9 @@ describe('readingOrderOf', () => {
         id: 'rest-api',
       },
       {
-        extends: undefined,
         id: 'ui',
       },
       {
-        extends: undefined,
         id: '_api',
       },
       {
@@ -23,7 +21,6 @@ describe('readingOrderOf', () => {
         id: 'mcp-api',
       },
       {
-        extends: undefined,
         id: 'access-control',
       },
       {
@@ -33,7 +30,7 @@ describe('readingOrderOf', () => {
     ];
 
     // Act
-    const order = readingOrderOf(blocks);
+    const order = Block.readingOrderOf(blocks);
 
     // Assert
     expect(order).toStrictEqual([
@@ -47,7 +44,7 @@ describe('readingOrderOf', () => {
   });
 });
 
-describe('chapterListGapsOf', () => {
+describe('Block.chapterListGapsOf', () => {
   it('should find no gap when the list names every chapter once', () => {
     // Arrange
     const chapters = [
@@ -56,7 +53,7 @@ describe('chapterListGapsOf', () => {
     ];
 
     // Act
-    const gaps = chapterListGapsOf({
+    const gaps = Block.chapterListGapsOf({
       chapters,
       listed: chapters.toReversed(),
     });
@@ -77,7 +74,7 @@ describe('chapterListGapsOf', () => {
     ];
 
     // Act
-    const gaps = chapterListGapsOf({
+    const gaps = Block.chapterListGapsOf({
       chapters,
       listed: [
         'code',

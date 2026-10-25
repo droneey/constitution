@@ -2,20 +2,20 @@ import { afterEach, describe, expect, test } from 'bun:test';
 
 import { cleanup, render } from '@testing-library/react';
 
+import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { DocsRepositoryIcon } from '../docs-repository-icon';
 
 afterEach(cleanup);
 
 describe('DocsRepositoryIcon', () => {
-  test('should draw the mark hidden from assistive technology, since its link carries the name', () => {
+  test('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
-    const icon = <DocsRepositoryIcon />;
+    render(<DocsRepositoryIcon />);
 
     // Act
-    const { container } = render(icon);
+    const violations = await componentViolationsIn();
 
     // Assert
-    // biome-ignore lint/plugin/queries-by-role-label-text: the mark is an image hidden from assistive technology, which no role, label or text names
-    expect(container.querySelector('svg[aria-hidden="true"] > path') === null).toBe(false);
+    expect(violations).toStrictEqual([]);
   });
 });

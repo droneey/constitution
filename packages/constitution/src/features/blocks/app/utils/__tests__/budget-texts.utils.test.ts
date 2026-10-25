@@ -23,11 +23,8 @@ describe('budgetTexts', () => {
       text: 'has 501 lines; a file holds at most 500, and a longer block splits into chapters',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(budgetTexts, reported.code, reported.details);
+    const said = textOf(budgetTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

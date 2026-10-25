@@ -7,6 +7,12 @@ import type { Renderer, Report, Task } from '#/shared/cli';
 import { SectionKind } from '#/shared/cli';
 import { SectionView } from '#/shared/ui';
 
+interface Streams {
+  readonly stderr: NodeJS.WritableStream;
+  readonly stdin: NodeJS.ReadableStream;
+  readonly stdout: NodeJS.WritableStream;
+}
+
 interface TerminalRenderer extends Renderer {
   readonly close: () => Promise<void>;
 }
@@ -19,20 +25,18 @@ const nextTurn = async (): Promise<void> => {
   });
 };
 
+interface TerminalRendererInput {
+  readonly accent: AccentTokens;
+  readonly output: Output;
+  readonly streams: Streams;
+  readonly write: (text: string) => void;
+}
+
 /**
  * Ink draws on the streams; the lines of data, which it never draws, go to standard output through
  * write.
  */
-const createTerminalRenderer = (input: {
-  accent: AccentTokens;
-  output: Output;
-  streams: {
-    readonly stderr: NodeJS.WritableStream;
-    readonly stdin: NodeJS.ReadableStream;
-    readonly stdout: NodeJS.WritableStream;
-  };
-  write: (text: string) => void;
-}): TerminalRenderer => {
+const createTerminalRenderer = (input: TerminalRendererInput): TerminalRenderer => {
   const settled: StepContent[] = [];
   let progress: TerminalView | undefined;
 
@@ -116,4 +120,5 @@ const createTerminalRenderer = (input: {
   };
 };
 
+export type { Streams, TerminalRenderer };
 export { createTerminalRenderer };

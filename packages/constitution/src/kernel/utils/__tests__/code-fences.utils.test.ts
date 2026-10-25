@@ -52,11 +52,8 @@ describe('withoutCodeFences', () => {
   ])(
     'should blank every line of the fence and keep the line count when the text holds $name',
     ({ expected, text }) => {
-      // Arrange
-      const input = text;
-
       // Act
-      const stripped = withoutCodeFences(input);
+      const stripped = withoutCodeFences(text);
 
       // Assert
       expect(stripped).toBe(expected);
@@ -77,11 +74,8 @@ describe('withoutCodeFences', () => {
       text: 'Wrap a sample in ~~~ fences.\nfoo',
     },
   ])('should keep the text as written when $name', ({ text }) => {
-    // Arrange
-    const input = text;
-
     // Act
-    const stripped = withoutCodeFences(input);
+    const stripped = withoutCodeFences(text);
 
     // Assert
     expect(stripped).toBe(text);

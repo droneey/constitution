@@ -95,11 +95,8 @@ describe('requirementsTexts', () => {
       text: 'answers "plurals-by-cldr" twice',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(requirementsTexts, reported.code, reported.details);
+    const said = textOf(requirementsTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

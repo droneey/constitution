@@ -1,3 +1,5 @@
+import { MARKDOWN_EXTENSION } from '#/kernel/constants';
+import type { ProjectWarning } from '#/kernel/entities';
 import { StatedRule, WarningKind } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId, Glob } from '#/kernel/value-objects';
@@ -9,8 +11,6 @@ import type { WarningLog } from '../../shared/warning-log';
 import type { BlockDraft, ReadState } from './catalogue.utils';
 import { readFile } from './catalogue.utils';
 import { inCatalogueOrder } from './catalogue-order.utils';
-
-const MARKDOWN = '.md';
 
 const draftNamed = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
@@ -57,91 +57,87 @@ const ancestorsOf = (input: {
   return ancestors;
 };
 
-// Whether the block extends a block, which it may only when that base is abstract.
-const checkBase = (input: {
+// A block may extend only a block, and only an abstract one.
+const baseWarningsOf = (input: {
   draft: BlockDraft;
   drafts: ReadonlyMap<BlockId, BlockDraft>;
-  log: WarningLog;
-}): boolean => {
-  const { draft, log } = input;
+}): readonly ProjectWarning[] => {
+  const { draft } = input;
   const base = draft.card.extends;
 
   if (base === undefined) {
-    return false;
+    return [];
   }
 
   const baseDraft = draftNamed({
     drafts: input.drafts,
     name: base,
   });
+  const details = {
+    base,
+    block: draft.id,
+    source: draft.source.kind,
+  };
 
   if (baseDraft === undefined) {
-    log.add({
-      details: {
-        base,
-        block: draft.id,
-        source: draft.source.kind,
+    return [
+      {
+        details,
+        kind: WarningKind.BaseNoBlock,
       },
-      kind: WarningKind.BaseNoBlock,
-    });
-
-    return false;
+    ];
   }
 
-  if (!baseDraft.card.isAbstract) {
-    log.add({
-      details: {
-        base,
-        block: draft.id,
-        source: draft.source.kind,
-      },
-      kind: WarningKind.BaseConcrete,
-    });
-  }
-
-  return true;
+  return baseDraft.card.isAbstract
+    ? []
+    : [
+        {
+          details,
+          kind: WarningKind.BaseConcrete,
+        },
+      ];
 };
 
-// The blocks that extend a block, in the order they were read.
-const checkLinks = (input: {
-  drafts: ReadonlyMap<BlockId, BlockDraft>;
-  log: WarningLog;
-}): readonly BlockDraft[] => {
-  const { drafts, log } = input;
-  const heirs: BlockDraft[] = [];
-
-  for (const draft of drafts.values()) {
-    for (const required of draft.card.requires) {
-      if (
-        draftNamed({
-          drafts,
-          name: required,
-        }) === undefined
-      ) {
-        log.add({
+// What a block requires and extends must be blocks.
+const linkWarningsOf = (drafts: ReadonlyMap<BlockId, BlockDraft>): readonly ProjectWarning[] =>
+  [
+    ...drafts.values(),
+  ].flatMap((draft) => [
+    ...draft.card.requires
+      .filter(
+        (required) =>
+          draftNamed({
+            drafts,
+            name: required,
+          }) === undefined,
+      )
+      .map(
+        (required): ProjectWarning => ({
           details: {
             block: draft.id,
             required,
             source: draft.source.kind,
           },
           kind: WarningKind.RequiredNoBlock,
-        });
-      }
-    }
+        }),
+      ),
+    ...baseWarningsOf({
+      draft,
+      drafts,
+    }),
+  ]);
 
-    if (
-      checkBase({
-        draft,
+// The blocks that extend a block, in the order they were read.
+const heirsOf = (drafts: ReadonlyMap<BlockId, BlockDraft>): readonly BlockDraft[] =>
+  [
+    ...drafts.values(),
+  ].filter(
+    (draft) =>
+      draftNamed({
         drafts,
-        log,
-      })
-    ) {
-      heirs.push(draft);
-    }
-  }
-
-  return heirs;
-};
+        name: draft.card.extends,
+      }) !== undefined,
+  );
 
 // A rule that tightens a slug no rule has.
 const checkTightened = (input: {
@@ -184,17 +180,26 @@ const blockOf = (draft: BlockDraft): CatalogueBlock => {
     requires: draft.card.requires.filter(BlockId.is),
     seams: draft.seams,
     source: draft.source,
-    summary: draft.card.summary,
+    // Stryker disable next-line ConditionalExpression: create leaves an absent summary out
+    ...(draft.card.summary === undefined
+      ? {}
+      : {
+          summary: draft.card.summary,
+        }),
   });
 };
 
+interface ReadCatalogueInput {
+  readonly log: WarningLog;
+  readonly parser: BlockCardParser;
+  readonly sources: readonly CatalogueSource[];
+}
+
 // Reads the blocks of the Constitution, then of each pack in the order constitution.yaml lists
 // them; a block read first keeps its id, and a rule read first its slug.
-const readCatalogue = (input: {
-  log: WarningLog;
-  parser: BlockCardParser;
-  sources: readonly CatalogueSource[];
-}): Catalogue & {
+const readCatalogue = (
+  input: ReadCatalogueInput,
+): Catalogue & {
   readonly ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
 } => {
   const state: ReadState = {
@@ -221,7 +226,7 @@ const readCatalogue = (input: {
     }
 
     for (const file of inCatalogueOrder(
-      source.files.filter((listed) => listed.path.endsWith(MARKDOWN)),
+      source.files.filter((listed) => listed.path.endsWith(MARKDOWN_EXTENSION)),
     )) {
       readFile({
         source,
@@ -231,10 +236,9 @@ const readCatalogue = (input: {
     }
   }
 
-  const heirs = checkLinks({
-    drafts: state.drafts,
-    log: input.log,
-  });
+  for (const warning of linkWarningsOf(state.drafts)) {
+    input.log.add(warning);
+  }
 
   checkTightened({
     drafts: state.drafts,
@@ -245,7 +249,7 @@ const readCatalogue = (input: {
   return {
     ancestors: ancestorsOf({
       drafts: state.drafts,
-      heirs,
+      heirs: heirsOf(state.drafts),
     }),
     answers: state.answers,
     blocks: [

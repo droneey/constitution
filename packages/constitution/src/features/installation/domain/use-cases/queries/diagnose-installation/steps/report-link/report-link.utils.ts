@@ -53,12 +53,14 @@ const unreadDiagnosisOf = (input: {
   };
 };
 
-const linkReport = (input: {
-  files: ProjectFiles;
-  place: ProjectPlace | undefined;
-  program: Version;
-  source: ProjectSource;
-}): PartDiagnosis => {
+interface LinkReportInput {
+  readonly files: ProjectFiles;
+  readonly place: ProjectPlace | undefined;
+  readonly program: Version;
+  readonly source: ProjectSource;
+}
+
+const linkReport = (input: LinkReportInput): PartDiagnosis => {
   const { place } = input;
 
   if (place === undefined) {

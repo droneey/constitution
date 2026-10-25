@@ -70,6 +70,6 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Non-functional notes
 
-- The hooks run the `constitution` program, compiled for each platform and installed by mise, through a wrapper bash 3.2 runs; a project needs no other runtime, on macOS, Linux and Windows.
+- The hooks run the `constitution` program, compiled for each platform and installed by mise, through a wrapper bash 3.2 runs; a project needs no other runtime, on macOS and Linux.
 - The digest stays within 9,400 bytes after its header; core's part within 3,500.
 - The repository is public: no private project is named in a committed file.

@@ -35,12 +35,14 @@ describe('Spinner', () => {
 describe('the spinner', () => {
   it('should move to its next frame at the pace of the theme while the theme moves', async () => {
     // Arrange
-    const output = createPlainOutput({
-      isMotionReduced: false,
-    });
+    const { lastFrame, unmount } = renderWithTheme(
+      <Spinner label='Reading' />,
+      createPlainOutput({
+        isMotionReduced: false,
+      }),
+    );
 
     // Act
-    const { lastFrame, unmount } = renderWithTheme(<Spinner label='Reading' />, output);
     const moved = await frameOnceShown(lastFrame, '⠙ Reading…');
 
     // Assert

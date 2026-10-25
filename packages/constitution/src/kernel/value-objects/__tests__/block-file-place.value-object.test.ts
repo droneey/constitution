@@ -111,11 +111,9 @@ describe('BlockFilePlace.parse', () => {
       path: `${UI}/architecture/parts/i18n.md`,
     },
   ])('should place $name in its block when the path is $path', ({ file, path }) => {
-    // Arrange
-    const given = path;
-
     // Act
-    const place = BlockFilePlace.parse(given);
+    // the place a caller reads: its fields, the brand being the compiler's alone
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual({
@@ -131,7 +129,8 @@ describe('BlockFilePlace.parse', () => {
     const path = 'blocks/core/workflow/delivery.md';
 
     // Act
-    const place = BlockFilePlace.parse(path);
+    // the place a caller reads: its fields, the brand being the compiler's alone
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual({
@@ -182,11 +181,9 @@ describe('BlockFilePlace.parse', () => {
       path: 'presets/common/biome/foundation/self.jsonc',
     },
   ])('should place $name apart from any block when the path is $path', ({ expected, path }) => {
-    // Arrange
-    const given = path;
-
     // Act
-    const place = BlockFilePlace.parse(given);
+    // the place a caller reads: its fields, the brand being the compiler's alone
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual(expected);
@@ -276,11 +273,8 @@ describe('BlockFilePlace', () => {
       isPlace: false,
     },
   ])('should say $isPlace when $condition', ({ candidate, isPlace }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const answer = BlockFilePlace.is(given);
+    const answer = BlockFilePlace.is(candidate);
 
     // Assert
     expect(answer).toBe(isPlace);

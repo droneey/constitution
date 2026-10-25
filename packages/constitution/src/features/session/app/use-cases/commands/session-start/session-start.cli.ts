@@ -52,11 +52,7 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
       const start: SessionStart = {
         event: hookEventNameOf(eventText),
         origin: sessionOriginOf(event.field('source')),
-        searchFrom:
-          [
-            places.projectDir,
-            event.field('cwd') ?? '',
-          ].find((folder) => folder !== '') ?? places.cwd,
+        searchFrom: places.projectDir ?? event.field('cwd') ?? places.cwd,
       };
       const started = context.digestSession(start);
       const session = sessionIdOf(event);

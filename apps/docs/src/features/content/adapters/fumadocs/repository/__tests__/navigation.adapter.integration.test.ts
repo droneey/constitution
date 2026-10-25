@@ -261,11 +261,8 @@ describe('documentIconOf', () => {
       path: '/repository/README.md',
     },
   ])('should give the icon when $condition', ({ icon, path }) => {
-    // Arrange
-    const file = path;
-
     // Act
-    const found = documentIconOf(file);
+    const found = documentIconOf(path);
 
     // Assert
     expect(found).toBe(icon);

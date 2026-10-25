@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from source_fixtures import function_of, python
 
-from droneey_python_check.findings import Finding
+from droneey_python_check.findings import Finding, Rule
 from droneey_python_check.lines import line_findings
 
 
@@ -55,7 +55,8 @@ def test_should_report_a_function_when_it_holds_more_than_100_lines() -> None:
     Finding(
       path=Path('src/shop/orders.py'),
       line=4,
-      message='tally holds 101 lines, more than 100',
+      rule=Rule.FUNCTION_LINES,
+      values=('tally', '101', '100'),
     ),
   )
 
@@ -68,7 +69,14 @@ def test_should_report_a_function_when_it_lifts_its_limit_without_a_reason() -> 
   findings = _findings(path='src/shop/orders.py', source=source)
 
   # Assert
-  assert [finding.line for finding in findings] == [1]
+  assert findings == (
+    Finding(
+      path=Path('src/shop/orders.py'),
+      line=1,
+      rule=Rule.FUNCTION_LINES,
+      values=('tally', '101', '100'),
+    ),
+  )
 
 
 def test_should_report_the_file_when_it_holds_more_than_500_lines() -> None:
@@ -83,6 +91,7 @@ def test_should_report_the_file_when_it_holds_more_than_500_lines() -> None:
     Finding(
       path=Path('src/shop/orders.py'),
       line=1,
-      message='the file holds 501 lines, more than 500',
+      rule=Rule.FILE_LINES,
+      values=('501', '500'),
     ),
   )

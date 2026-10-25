@@ -29,11 +29,11 @@ export function DocsTocDropdownProgress(): ReactElement {
         strokeDasharray={circumference}
         strokeDashoffset={circumference * (1 - readShare)}
         strokeLinecap='round'
-        // Stryker disable ObjectLiteral,StringLiteral: only the ring's offset transitions, a choice of design a spec could only restate
+        // Stryker disable next-line ObjectLiteral: only the ring's offset transitions, a choice of design a spec could only restate
         style={{
+          // Stryker disable next-line StringLiteral: as above
           '--toc-fill-property': 'stroke-dashoffset',
         }}
-        // Stryker restore ObjectLiteral,StringLiteral
         transform='rotate(-90 8 8)'
       />
     </svg>

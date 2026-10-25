@@ -21,6 +21,10 @@ import { createNodeProjectFiles } from '../node-project-files.adapter';
 let made = '';
 let real = '';
 
+// A folder of a listing holds two files, as many as listFiles lists.
+const limits = {
+  maxFiles: 2,
+};
 const LOCKED = 0o000;
 const OPEN = 0o755;
 
@@ -189,7 +193,7 @@ describe('createNodeProjectFiles', () => {
     'should tell what is there and read only a readable file when the path is $condition',
     ({ expected, path }) => {
       // Arrange
-      const files = createNodeProjectFiles();
+      const files = createNodeProjectFiles(limits);
 
       // Act
       const seen = {
@@ -207,7 +211,7 @@ describe('createNodeProjectFiles', () => {
 
   it('should keep the system error as the cause when the file cannot be read', () => {
     // Arrange
-    const files = createNodeProjectFiles();
+    const files = createNodeProjectFiles(limits);
 
     // Act
     const cause = FileRead.causeOf(files.read(at('locked.md')));
@@ -229,7 +233,7 @@ describe('createNodeProjectFiles', () => {
     'should list the regular files below the folder, no link followed and no pipe, when it is $condition',
     ({ path }) => {
       // Arrange
-      const files = createNodeProjectFiles();
+      const files = createNodeProjectFiles(limits);
 
       // Act
       const listed = files.listFiles(at(path));
@@ -257,10 +261,50 @@ describe('createNodeProjectFiles', () => {
     },
   ])('should list nothing when the folder is $condition', ({ path }) => {
     // Arrange
-    const files = createNodeProjectFiles();
+    const files = createNodeProjectFiles(limits);
 
     // Act
     const listed = files.listFiles(at(path));
+
+    // Assert
+    expect(listed).toBe(undefined);
+  });
+
+  it('should list nothing when a folder below it holds more files than the limit', () => {
+    // Arrange
+    mkdirSync(at('nest/inner'), {
+      recursive: true,
+    });
+    writeFileSync(at('nest/inner/a.md'), 'a\n');
+    writeFileSync(at('nest/inner/b.md'), 'b\n');
+    writeFileSync(at('nest/inner/c.md'), 'c\n');
+
+    const files = createNodeProjectFiles(limits);
+
+    // Act
+    const listed = files.listFiles(at('nest'));
+
+    // Assert
+    expect(listed).toBe(undefined);
+  });
+
+  it.each([
+    {
+      condition: 'the limit lets no file be listed',
+      maxFiles: 0,
+    },
+    {
+      condition: 'the folder holds one file more than the limit',
+      maxFiles: 1,
+    },
+  ])('should list nothing when $condition', ({ maxFiles }) => {
+    // Arrange
+    const files = createNodeProjectFiles({
+      maxFiles,
+    });
+
+    // Act
+    const listed = files.listFiles(at('folder'));
 
     // Assert
     expect(listed).toBe(undefined);
@@ -299,7 +343,7 @@ describe('createNodeProjectFiles', () => {
     },
   ])('should resolve the folder link by link when $condition', ({ expected, path }) => {
     // Arrange
-    const files = createNodeProjectFiles();
+    const files = createNodeProjectFiles(limits);
 
     // Act
     const resolved = files.realFolder(`${made}/${path}`);
@@ -319,7 +363,7 @@ describe('createNodeProjectFiles', () => {
     },
   ])('should resolve to the root when the folder is $condition', ({ path }) => {
     // Arrange
-    const files = createNodeProjectFiles();
+    const files = createNodeProjectFiles(limits);
 
     // Act
     const resolved = files.realFolder(path);
@@ -343,7 +387,7 @@ describe('createNodeProjectFiles', () => {
     },
   ])('should resolve no folder when the path is $condition', ({ path }) => {
     // Arrange
-    const files = createNodeProjectFiles();
+    const files = createNodeProjectFiles(limits);
 
     // Act
     const resolved = files.realFolder(at(path));

@@ -53,7 +53,13 @@ const shellcheck = miseBinary('shellcheck');
 const presetConfig = (part: string): unknown =>
   YAML.parse(readFileSync(join(presetsFolder, `${part}.yaml`), 'utf8'));
 
-const jobRun = (input: { hook: Hook; job: string; part: string }): string =>
+interface JobRunInput {
+  readonly hook: Hook;
+  readonly job: string;
+  readonly part: string;
+}
+
+const jobRun = (input: JobRunInput): string =>
   preset.parse(presetConfig(input.part))[input.hook]?.jobs.find(({ name }) => name === input.job)
     ?.run ?? 'exit 99';
 
@@ -177,34 +183,37 @@ const checkBranch = (branch: string | undefined): HookRun => {
 // lefthook passes the message file as {1} and runs the job under sh.
 const checkCommitMessage = (message: string): HookRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-commit-'));
-  const file = join(folder, 'COMMIT_EDITMSG');
 
-  writeFileSync(file, message);
+  try {
+    const file = join(folder, 'COMMIT_EDITMSG');
 
-  const hookRun = spawnSync(
-    'sh',
-    [
-      '-c',
-      jobRun({
-        hook: Hook.CommitMessage,
-        job: 'commit-message',
-        part: 'version-control',
-      }).replaceAll('{1}', file),
-    ],
-    {
-      encoding: 'utf8',
-    },
-  );
+    writeFileSync(file, message);
 
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
+    const hookRun = spawnSync(
+      'sh',
+      [
+        '-c',
+        jobRun({
+          hook: Hook.CommitMessage,
+          job: 'commit-message',
+          part: 'version-control',
+        }).replaceAll('{1}', file),
+      ],
+      {
+        encoding: 'utf8',
+      },
+    );
 
-  return {
-    exitCode: hookRun.status ?? undefined,
-    output: hookRun.stdout.trim(),
-  };
+    return {
+      exitCode: hookRun.status ?? undefined,
+      output: hookRun.stdout.trim(),
+    };
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
 };
 
 export { checkBranch, checkCommitMessage, Hook, jobRun, partJobs, shellCheckRun };

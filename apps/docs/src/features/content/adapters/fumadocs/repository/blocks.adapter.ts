@@ -5,12 +5,7 @@ import type { Nodes } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { parse } from 'yaml';
 
-import {
-  AXIS_FOLDERS,
-  chapterListGapsOf,
-  MARKDOWN_EXTENSION,
-  readingOrderOf,
-} from '../../../domain/entities';
+import { Axis, Block, MARKDOWN_EXTENSION } from '../../../domain/entities';
 import { AXIS_ITEM, corePassport, FRONT_MATTER, SEAMS_FOLDER } from './blocks.constants';
 import { passportModel } from './models';
 import { inRepository } from './repository.adapter';
@@ -42,7 +37,7 @@ const coreChaptersOf = (): readonly string[] => {
     .filter((line) => AXIS_ITEM.test(line))
     .flatMap((line) => linksIn(fromMarkdown(line)))
     .map((url) => url.slice(0, -MARKDOWN_EXTENSION.length));
-  const gaps = chapterListGapsOf({
+  const gaps = Block.chapterListGapsOf({
     chapters: coreChapterFilesOf(),
     listed,
   });
@@ -71,19 +66,28 @@ const extendedBlockOf = (layer: string, id: string): string | undefined =>
     ),
   ).extends;
 
+const blockOf = (layer: string, id: string): Block => {
+  const extended = extendedBlockOf(layer, id);
+
+  // Stryker disable next-line ConditionalExpression: a block whose base is set to undefined sorts as one with none
+  return extended === undefined
+    ? {
+        id,
+      }
+    : {
+        extends: extended,
+        id,
+      };
+};
+
 const layerBlocksOf = (layer: string): readonly string[] =>
-  readingOrderOf(
-    readdirSync(inBlocks(layer)).map((id) => ({
-      extends: extendedBlockOf(layer, id),
-      id,
-    })),
-  );
+  Block.readingOrderOf(readdirSync(inBlocks(layer)).map((id) => blockOf(layer, id)));
 
 const axisFoldersOf = (layer: string): readonly string[] =>
   readdirSync(inBlocks(layer)).flatMap((id) =>
-    AXIS_FOLDERS.filter((axis) => existsSync(inBlocks(layer, id, axis))).map(
-      (axis) => `${layer}/${id}/${axis}`,
-    ),
+    Object.values(Axis)
+      .filter((axis) => existsSync(inBlocks(layer, id, axis)))
+      .map((axis) => `${layer}/${id}/${axis}`),
   );
 
 const seamHoldersOf = (layer: string): readonly string[] =>

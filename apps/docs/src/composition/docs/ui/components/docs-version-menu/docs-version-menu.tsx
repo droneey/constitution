@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { Icon, IconName, Popover, PopoverWidth } from '@droneey/design-browser/react-dom';
 
 import type { Version, VersionsState } from '#/features/versions';
-import { pageAddressIn, VersionsStatus } from '#/features/versions';
+import { Versions, VersionsStatus } from '#/features/versions';
 
 import { POPOVER_OFFSET_PX } from '../../constants';
 
@@ -16,10 +16,9 @@ interface DocsVersionMenuProps {
 const onlyCurrentVersion = (
   currentVersion: Version,
 ): {
-  latest: undefined;
-  versions: Version[];
+  readonly latest?: Version;
+  readonly versions: readonly Version[];
 } => ({
-  latest: undefined,
   versions: [
     currentVersion,
   ],
@@ -54,11 +53,11 @@ export function DocsVersionMenu({
       </Popover.Trigger>
       <Popover.Panel
         align='start'
-        // Stryker disable ObjectLiteral,StringLiteral: the axis matters only when the popup would overflow the viewport, which a document without layout never reports
+        // Stryker disable next-line ObjectLiteral: the axis matters only when the popup would overflow the viewport, which a document without layout never reports
         collisionAvoidance={{
+          // Stryker disable next-line StringLiteral: as above
           fallbackAxisSide: 'none',
         }}
-        // Stryker restore ObjectLiteral,StringLiteral
         sideOffset={POPOVER_OFFSET_PX}
         width={PopoverWidth.Anchor}
       >
@@ -69,7 +68,7 @@ export function DocsVersionMenu({
                 <a
                   aria-current={version === currentVersion ? 'page' : undefined}
                   className='flex h-control-md items-center gap-xs rounded-lg px-xs'
-                  href={pageAddressIn({
+                  href={Versions.pageAddressIn({
                     latest: latest ?? currentVersion,
                     path: pageHref,
                     version,

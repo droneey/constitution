@@ -6,13 +6,7 @@ import { cliPath } from './cli.fixtures';
 import type { Files } from './constitution.fixtures';
 import { contextOf, HookEvent, runHook } from './hook.fixtures';
 import { archiveOf, createRealPluginRoot, LINK, linkArchive } from './plugin-root.fixtures';
-import {
-  ConfigKey,
-  configOf,
-  createProject,
-  memberConfigOf,
-  workspaceOf,
-} from './project.fixtures';
+import { ConfigKey, configOf, createProject, memberConfigOf } from './project.fixtures';
 
 // A release's presets and templates as far as a case reads them: Biome's
 // parts, which a file takes by their paths; dependency-cruiser's, which a
@@ -150,9 +144,6 @@ const wiredMember = (
     ...config,
   });
 
-// A workspace of the members given, each by its path with its constitution.yaml.
-const wiredWorkspace = (members: Readonly<Record<string, string>>): Files => workspaceOf(members);
-
 // A file for every tool the base configuration makes active, each taking its parts.
 const cruiserConfig = (parts: readonly string[]): string =>
   `export default { extends: [${parts.map((path) => `'${part(path)}'`).join(', ')}] };\n`;
@@ -224,13 +215,21 @@ const packFiles: Files = {
 };
 
 const packConfig = (): string =>
-  wiredConfig({
-    [ConfigKey.Implementations]:
-      '[biome, dependency-cruiser, ruff, vulture, import-linter, osv-scanner, acme]',
-    [ConfigKey.Packs]: `[${PACK}]`,
-  });
+  wiredConfig(
+    {
+      [ConfigKey.Packs]: `[${PACK}]`,
+    },
+    [
+      'acme',
+    ],
+  );
 
-const digestOf = (input: { project: string; root: string }): string =>
+interface ProjectUnderPlugin {
+  readonly project: string;
+  readonly root: string;
+}
+
+const digestOf = (input: ProjectUnderPlugin): string =>
   contextOf(
     runHook({
       event: HookEvent.Startup,
@@ -247,7 +246,7 @@ const wiringOf = (context: string): readonly string[] =>
     .filter((line) => line.startsWith(WIRING))
     .map((line) => line.slice(WIRING.length));
 
-const wiringListOf = (input: { project: string; root: string }): readonly string[] => {
+const wiringListOf = (input: ProjectUnderPlugin): readonly string[] => {
   linkArchive({
     archive: archiveOf(input.root),
     project: input.project,
@@ -297,7 +296,6 @@ export {
   vultureCopy,
   wiredConfig,
   wiredMember,
-  wiredWorkspace,
   wiringListOf,
   wiringOf,
 };

@@ -1,5 +1,4 @@
 import { ProjectUnit } from '#/kernel/entities';
-import { BlockSource } from '#/kernel/value-objects';
 
 import type {
   PlannedFile,
@@ -126,15 +125,10 @@ const plannedToolsOf = (
               tool: entry.tool,
               units: entry.units,
             })
-              .filter((part) => part.scope === scope)
-              .map((part) =>
+              .filter(({ address }) => address.scope === scope)
+              .map(({ file }) =>
                 namePathOf({
-                  // Stryker disable ObjectLiteral,StringLiteral: every part taken has its file
-                  file: Parts.fileOf(context.parts, part) ?? {
-                    path: '',
-                    source: BlockSource.create(),
-                  },
-                  // Stryker restore ObjectLiteral,StringLiteral
+                  file,
                   folder,
                 }),
               ),

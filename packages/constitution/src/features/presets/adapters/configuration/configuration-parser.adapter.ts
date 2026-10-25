@@ -2,7 +2,7 @@ import { parseDocument } from 'yaml';
 
 import { attempted, isSyntaxError } from '#/kernel/utils';
 
-import type { ConfigurationParser, Setting } from '../../domain/contracts';
+import type { ConfigurationParser, ConfigurationText, Setting } from '../../domain/contracts';
 import { settingModel } from './models';
 
 const EXTENSION = '.';
@@ -32,8 +32,15 @@ const withoutNull = (_key: string, held: unknown): unknown => {
   return held === null ? undefined : held;
 };
 
-// Written to JSON and back, a TOML date becomes its text, and a text that holds nothing fails.
-const parse = (input: { path: string; text: string }): Setting | undefined => {
+// Written to JSON and back, a TOML date becomes its text; a text that holds nothing, which JSON
+// cannot write, holds no settings.
+const plainOf = (held: unknown): unknown => {
+  const json: string | undefined = JSON.stringify(held, withoutNull);
+
+  return json === undefined ? undefined : JSON.parse(json);
+};
+
+const parse = (input: ConfigurationText): Setting | undefined => {
   const extension = input.path.slice(input.path.lastIndexOf(EXTENSION) + 1);
   const read = Object.entries(parsers).find(([name]) => name === extension)?.[1];
 
@@ -41,12 +48,11 @@ const parse = (input: { path: string; text: string }): Setting | undefined => {
     return undefined;
   }
 
-  const parsed = settingModel.safeParse(
-    attempted<unknown>({
-      effect: () => JSON.parse(JSON.stringify(read(input.text), withoutNull)),
-      isRecognised: isSyntaxError,
-    }),
-  );
+  const held = attempted<unknown>({
+    effect: () => read(input.text),
+    isRecognised: isSyntaxError,
+  });
+  const parsed = settingModel.safeParse(plainOf(held));
 
   return parsed.success ? parsed.data : undefined;
 };

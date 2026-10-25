@@ -3,9 +3,8 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Block, BlockGraph, FrontMatter } from '../../../../entities';
-import { FrontMatterField } from '../../../../entities';
+import { FrontMatterField, requirableBy } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { requirableBy } from '../shared/layers';
 
 enum FrontMatterCode {
   IdMismatch = 'id-mismatches-folder',

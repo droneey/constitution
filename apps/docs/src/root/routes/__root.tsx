@@ -5,9 +5,7 @@ import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanst
 import { ThemeProvider } from '@droneey/design-browser/react-dom';
 
 import { DocsBuiltVersionContext, DocsFrameContext, DocsSearchWidget } from '#/composition/docs';
-import { documentFrame } from '#/composition/docs/adapters/document';
-import { createGetVersions, createVersion, GetVersionsContext } from '#/features/versions';
-import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
+import { GetVersionsContext } from '#/features/versions';
 import { RootProvider } from '#/libs/ui';
 import { APP_NAME, MAIN_CONTENT_ID } from '#/shared/constants';
 
@@ -15,10 +13,7 @@ import brand from '../../../../../brand.tokens.json' with { type: 'json' };
 import appCss from '../app.css?url';
 import { TRANSLATIONS } from '../constants';
 import type { RouterContext } from '../wiring';
-
-const getVersions = createGetVersions(createStaticFileVersionsRepository('/versions.json'));
-
-const builtVersion = createVersion(import.meta.env.VITE_CONSTITUTION_VERSION);
+import { rootProviders } from '../wiring';
 
 // a modifier, so a key typed for a screen reader or a speech command never switches the theme
 const isThemeHotKey = (event: KeyboardEvent): boolean =>
@@ -53,9 +48,9 @@ function RootComponent(): ReactElement {
               hotKey: isThemeHotKey,
             }}
           >
-            <GetVersionsContext value={getVersions}>
-              <DocsBuiltVersionContext value={builtVersion}>
-                <DocsFrameContext value={documentFrame}>
+            <GetVersionsContext value={rootProviders.getVersions}>
+              <DocsBuiltVersionContext value={rootProviders.builtVersion}>
+                <DocsFrameContext value={rootProviders.frame}>
                   <Outlet />
                 </DocsFrameContext>
               </DocsBuiltVersionContext>

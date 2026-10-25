@@ -1,22 +1,28 @@
+import type { Brand } from '#/kernel/types';
+
 import { VersionError } from '../errors';
 
-declare const versionBrand: unique symbol;
-
-type Version = string & {
-  readonly [versionBrand]: true;
-};
+type Version = Brand<string, 'Version'>;
 
 const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
 
-const isVersion = (text: string): text is Version => VERSION_PATTERN.test(text);
+const is = (candidate: unknown): candidate is Version =>
+  typeof candidate === 'string' && VERSION_PATTERN.test(candidate);
 
-const createVersion = (text: string): Version => {
-  if (!isVersion(text)) {
-    throw new VersionError(text);
+/** @throws {@link VersionError} when the text is no `<major>.<minor>.<patch>` */
+const create = (text: string): Version => {
+  if (!is(text)) {
+    throw new VersionError({
+      text,
+    });
   }
 
   return text;
 };
 
-export type { Version };
-export { createVersion };
+const Version = {
+  create,
+  is,
+} as const;
+
+export { Version };

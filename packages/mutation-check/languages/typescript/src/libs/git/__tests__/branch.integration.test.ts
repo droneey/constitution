@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -21,9 +21,35 @@ const WORKSPACE: Files = {
   'packages/web/src/order.utils.ts': BASE_ORDER,
 } as const;
 
+// git sees no configuration of the machine's: its home is a temporary folder, and the system's is off.
+const home = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-home-')));
+
+const gitEnv: Readonly<Record<string, string>> = Object.fromEntries([
+  [
+    'GIT_CONFIG_NOSYSTEM',
+    '1',
+  ],
+  [
+    'HOME',
+    home,
+  ],
+  [
+    'PATH',
+    process.env['PATH'] ?? '',
+  ],
+]);
+
+const branchOf = (folder: string): ReturnType<typeof branchIn> =>
+  branchIn({
+    env: gitEnv,
+    folder,
+    timeoutMs: 30_000,
+  });
+
 const git = (input: { args: readonly string[]; folder: string }): void => {
   spawnSync('git', input.args, {
     cwd: input.folder,
+    env: gitEnv,
   });
 };
 
@@ -51,8 +77,6 @@ const commit = (input: { files: Files; folder: string }): void => {
       'user.name=test',
       '-c',
       'user.email=test@example.com',
-      '-c',
-      'commit.gpgsign=false',
       'commit',
       '--quiet',
       '--no-verify',
@@ -167,6 +191,7 @@ afterAll(() => {
   for (const folder of [
     workspace,
     lone,
+    home,
   ]) {
     rmSync(folder, {
       force: true,
@@ -181,7 +206,7 @@ describe('branchIn', () => {
     const unit = join(workspace, UNIT);
 
     // Act
-    const { diff } = branchIn(unit);
+    const { diff } = branchOf(unit);
 
     // Assert
     expect(diff.match(HEADERS)).toStrictEqual([
@@ -195,7 +220,7 @@ describe('branchIn', () => {
     const unit = join(workspace, UNIT);
 
     // Act
-    const { untracked } = branchIn(unit);
+    const { untracked } = branchOf(unit);
 
     // Assert
     expect(untracked).toStrictEqual([
@@ -205,7 +230,7 @@ describe('branchIn', () => {
 
   test('should read the text a file of the unit had where the branch left the main line', () => {
     // Arrange
-    const { baseText } = branchIn(join(workspace, UNIT));
+    const { baseText } = branchOf(join(workspace, UNIT));
 
     // Act
     const text = baseText('src/order.utils.ts');
@@ -216,7 +241,7 @@ describe('branchIn', () => {
 
   test('should read the text a file had where the branch left the main line when run from the root', () => {
     // Arrange
-    const { baseText } = branchIn(workspace);
+    const { baseText } = branchOf(workspace);
 
     // Act
     const text = baseText(orderPath);
@@ -227,7 +252,7 @@ describe('branchIn', () => {
 
   test('should read no text for a file the main line never had', () => {
     // Arrange
-    const { baseText } = branchIn(join(workspace, UNIT));
+    const { baseText } = branchOf(join(workspace, UNIT));
 
     // Act
     const text = baseText('src/line.utils.ts');
@@ -241,7 +266,7 @@ describe('branchIn', () => {
     const folder = lone;
 
     // Act
-    const failure = failureOf(() => branchIn(folder));
+    const failure = failureOf(() => branchOf(folder));
 
     // Assert
     expect(failure).toStrictEqual({
@@ -264,7 +289,7 @@ describe('branchIn', () => {
     const missing = join(workspace, 'missing');
 
     // Act
-    const failure = failureOf(() => branchIn(missing));
+    const failure = failureOf(() => branchOf(missing));
 
     // Assert
     expect(failure).toStrictEqual({
@@ -277,6 +302,43 @@ describe('branchIn', () => {
           'origin/main',
         ],
         folder: missing,
+      },
+    });
+  });
+
+  test('should fail with its own code when git answers past its time', () => {
+    // Arrange
+    const bin = join(home, 'slow-bin');
+
+    mkdirSync(bin);
+    writeFileSync(join(bin, 'git'), '#!/bin/sh\n/bin/sleep 5\n');
+    chmodSync(join(bin, 'git'), 0o755);
+
+    // Act
+    const failure = failureOf(() =>
+      branchIn({
+        env: Object.fromEntries([
+          [
+            'PATH',
+            bin,
+          ],
+        ]),
+        folder: workspace,
+        timeoutMs: 200,
+      }),
+    );
+
+    // Assert
+    expect(failure).toStrictEqual({
+      causeCode: 'ETIMEDOUT',
+      code: GitFailure.TimedOut,
+      details: {
+        args: [
+          'merge-base',
+          'HEAD',
+          'origin/main',
+        ],
+        folder: workspace,
       },
     });
   });

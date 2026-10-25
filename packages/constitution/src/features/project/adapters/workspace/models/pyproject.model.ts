@@ -18,7 +18,4 @@ const pyprojectModel = z.looseObject({
     .optional(),
 });
 
-type PyprojectWire = z.infer<typeof pyprojectModel>;
-
-export type { PyprojectWire };
 export { pyprojectModel };

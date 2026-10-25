@@ -21,9 +21,11 @@ const isBlank = (character: string): boolean => BLANK.test(character);
 
 const isQuote = (character: string): boolean => character === DOUBLE || character === SINGLE;
 
-// The last character that is no blank, which decides where a quote may open.
-const lastOf = (input: { character: string; last: string }): string =>
-  isBlank(input.character) ? input.last : input.character;
+// The last character that is no blank, which decides where a quote may open; none before the first.
+const lastOf = <TLast extends string | undefined>(input: {
+  character: string;
+  last: TLast;
+}): TLast | string => (isBlank(input.character) ? input.last : input.character);
 
 // What a character does inside a quoted scalar: whether it closes the quote, and whether it escapes
 // the character after it, which a double quote's backslash does.
@@ -48,11 +50,11 @@ const insideQuote = (input: {
 };
 
 // A "#" after a blank starts a comment unless it sits in a quoted scalar, and a quote opens a scalar
-// only where a scalar can start: at the line's start, where last is the '' any text includes, or
-// after a key, a flow list's bracket or comma, or an item's dash.
+// only where a scalar can start: before any character but blanks, or after a key, a flow list's
+// bracket or comma, or an item's dash.
 const withoutComment = (line: string): string => {
   let quote = '';
-  let last = '';
+  let last: string | undefined;
   let isEscaped = false;
 
   for (const [at, character] of line.split('').entries()) {
@@ -68,7 +70,7 @@ const withoutComment = (line: string): string => {
       isEscaped = step.isEscape;
     } else if (character === '#' && (at === 0 || isBlank(line.charAt(at - 1)))) {
       return line.slice(0, at);
-    } else if (isQuote(character) && OPENS_A_QUOTE_AFTER.includes(last)) {
+    } else if (isQuote(character) && (last === undefined || OPENS_A_QUOTE_AFTER.includes(last))) {
       quote = character;
     }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createVersion } from '../../value-objects';
-import { pageAddressIn } from '../versions.entity';
+import { Version } from '../../value-objects';
+import { Versions } from '../versions.entity';
 
 describe('pageAddressIn', () => {
   it.each([
@@ -73,13 +73,13 @@ describe('pageAddressIn', () => {
     },
   ])('should lead to the page when $condition', ({ address, path, version }) => {
     // Arrange
-    const latest = createVersion('0.70.0');
+    const latest = Version.create('0.70.0');
 
     // Act
-    const page = pageAddressIn({
+    const page = Versions.pageAddressIn({
       latest,
       path,
-      version: createVersion(version),
+      version: Version.create(version),
     });
 
     // Assert

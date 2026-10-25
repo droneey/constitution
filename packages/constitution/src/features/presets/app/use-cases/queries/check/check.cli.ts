@@ -24,12 +24,7 @@ const createPresetsCheckCommand = (context: PresetsCheckContext): Command =>
       const warnings = await context.renderer.run({
         label: 'Presets',
         outcomeOf: (checked: readonly ProjectWarning[] | undefined) =>
-          checked === undefined
-            ? {
-                detail: 'no constitution.yaml in this folder or above it',
-                status: StepStatus.Failed,
-              }
-            : presetsOutcomeOf(checked),
+          presetsOutcomeOf(checked, StepStatus.Failed),
         run: () => context.checkPresets(context.places.cwd),
       });
 

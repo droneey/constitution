@@ -246,20 +246,20 @@ describe('the hand-back gate', () => {
     });
 
     // Act
-    const outputs = [
-      stop({
-        session,
-      }),
-      stop({
-        session,
-      }),
-    ];
+    const first = stop({
+      session,
+    });
 
     // Assert
-    expect(outputs).toStrictEqual([
-      BLOCKED,
-      REVIEW,
-    ]);
+    expect(first).toStrictEqual(BLOCKED);
+
+    // Act
+    const second = stop({
+      session,
+    });
+
+    // Assert
+    expect(second).toStrictEqual(REVIEW);
   });
 
   it('should let the agent stop when the check passed on the changed tree', () => {

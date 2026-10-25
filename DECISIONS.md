@@ -11,22 +11,22 @@
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005 |
 | Project files | ADR-0009, ADR-0102, ADR-0208 |
-| Rules and roles | ADR-0013, ADR-0014, ADR-0144 |
+| Rules and roles | ADR-0013, ADR-0014, ADR-0144, ADR-0219 |
 | Overrides and precedence | ADR-0020 |
-| The anatomy | ADR-0032, ADR-0036, ADR-0157, ADR-0158 |
+| The anatomy | ADR-0032, ADR-0036, ADR-0141, ADR-0143, ADR-0157, ADR-0158 |
 | The rest | ADR-0045 |
-| Testing | ADR-0046 – ADR-0048, ADR-0220, ADR-0221 |
+| Testing | ADR-0046 – ADR-0048, ADR-0220 – ADR-0222 |
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
-| Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095, ADR-0209, ADR-0210, ADR-0211 |
+| Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216 |
 | Tools and tests | ADR-0077 – ADR-0079, ADR-0081, ADR-0083, ADR-0084, ADR-0086, ADR-0096, ADR-0099, ADR-0105, ADR-0138 |
 | Axes | ADR-0088, ADR-0089, ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
 | A real application | ADR-0116, ADR-0118 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
-| Workspaces and distribution | ADR-0150, ADR-0151, ADR-0159, ADR-0213, ADR-0217 |
+| Workspaces and distribution | ADR-0150, ADR-0151, ADR-0159, ADR-0213, ADR-0217, ADR-0218 |
 | Line width and licences | ADR-0126 |
-| Python | ADR-0127 – ADR-0129, ADR-0140 |
+| Python | ADR-0127 – ADR-0129, ADR-0140, ADR-0142 |
 | TypeScript configuration | ADR-0131, ADR-0133 |
 | Dependencies | ADR-0134, ADR-0145 |
 | Levels | ADR-0135 |
@@ -35,7 +35,7 @@
 | The fifth audit | ADR-0152 – ADR-0154 |
 | What a tool holds, not how it runs | ADR-0155 |
 | The sixth audit | ADR-0156 |
-| One home per rule | ADR-0160 – ADR-0186 |
+| One home per rule | ADR-0160, ADR-0161, ADR-0163 – ADR-0186 |
 | The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195, ADR-0199 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
@@ -1731,3 +1731,18 @@
   - Exempting renderer specs by path: that hides a fragile assertion in the same file; a suppression names the plugin and its reason in the one place.
   - Binding it in `bun-test`: the rule is core's, and `core` already holds the plugins of core's rules about cases, which read the same Jest-style calls.
 - **Why.** As a SHOULD no tool held, the rule was not kept: the domain built message text, specs compared it, and one rewording broke specs across the suite; a MUST only a reviewer checks fails the same way, while a plugin refuses the pattern as it is written.
+
+## ADR-0222 — A named parameter type only where the function is exported, and Arrange only where a case arranges something, both held by Biome plugins
+
+**Date:** 2026-10-25 · **Status:** Accepted
+
+- **Decision.**
+  - `parameter-object-has-a-named-type` stays a SHOULD and narrows: the object a function takes is typed by a named type when the function is exported by its module or is a member of an exported type, as a port's is; a function inside its module may type it inline. A type not declared by us is derived from its source — `Parameters<typeof lib.fn>[0]`, `ReturnType<typeof lib.parse>` — never typed again. The TypeScript preset holds it with the plugin `parameter-object-has-a-named-type.grit`, bound in the `typescript` part, which reads syntax alone: an object type written inline as the type of a parameter of a function the module exports directly or names in an `export { … }` list, or of a method or a function-typed property of an interface or a type alias it exports so.
+  - `case-split-by-arrange-act-assert-comments` stays a MUST and loosens one part: the Arrange may be left out when the case arranges nothing, as when a table's row gives every input, and is never left empty; Act and Assert are always there, once each and in that order, and a lifecycle or an end-to-end case repeats its Act and Assert pairs. The Act still makes one call, which no tool holds. The plugin `case-split-by-arrange-act-assert-comments.grit`, bound in the `core` part beside the other plugins of core's rules about cases, reads the comments from the text of each case's callback, since Biome keeps comments as trivia no node pattern reaches: each opens a line of its own, and the sections run Arrange, then Act and Assert pairs, ending on an Assert. An Arrange that only copied the row into a local is deleted across the repository.
+- **Rejected.**
+  - A named type for every parameter object, the rule as it stood: a helper inside its module gains a type no caller builds, and the module grows a declaration for each call it makes to itself.
+  - Telling the exported functions by the suffix of their file: a suffix says what a file holds, not what it exports, and a file renamed or a helper exported from a `.utils.ts` escapes it, so the plugin reads the exports themselves.
+  - Deriving our own functions' input types with `Parameters<typeof fn>[0]`: the type then has no name a caller or a spec can build by, and the shape is still written inline where the function is.
+  - An empty Arrange kept for form: a comment over nothing tells the reader nothing, and a section that must be there gets filled with a copy of the row.
+  - Holding the sections by review alone: the rule binds every case, and a MUST no tool checks drifts, as ADR-0221 found for wording.
+- **Why.** A type is worth its name where a caller meets it, at the module's edge and in a contract, and each rule is kept where a plugin refuses what breaks it rather than where a reviewer must notice.

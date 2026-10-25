@@ -1,16 +1,31 @@
 import { describe, expect, it } from 'bun:test';
 
-import { InvalidValueError } from '../../errors';
+import { InvalidValueError, ValueFailure } from '../../errors';
+import { Axis } from '../block.entity';
 import { Term, TermKind } from '../term.entity';
 
 const bindingUnit = Term.create({
   address: '/docs/core/architecture/layout',
-  axis: 'architecture',
+  axis: Axis.Architecture,
   block: 'core',
   kind: TermKind.Concept,
   name: 'binding unit',
   sentence: 'A **binding unit** binds one operation to the program’s framework.',
 });
+
+/** the code and the details a creation failed with, or the error itself when it is none of the feature's */
+const failureOf = (create: () => Term): unknown => {
+  try {
+    return create();
+  } catch (error) {
+    return error instanceof InvalidValueError
+      ? {
+          code: error.code,
+          details: error.details,
+        }
+      : error;
+  }
+};
 
 describe('Term.nameOf', () => {
   it.each([
@@ -169,27 +184,27 @@ describe('Term.nameOf', () => {
 describe('Term.axisOf and Term.blockOf', () => {
   it.each([
     {
-      axis: 'foundation',
+      axis: Axis.Foundation,
       block: 'core',
       path: 'core/core.md',
     },
     {
-      axis: 'architecture',
+      axis: Axis.Architecture,
       block: 'core',
       path: 'core/architecture/layout.md',
     },
     {
-      axis: 'foundation',
+      axis: Axis.Foundation,
       block: 'bun',
       path: 'implementations/bun/bun.md',
     },
     {
-      axis: 'workflow',
+      axis: Axis.Workflow,
       block: 'lefthook',
       path: 'implementations/lefthook/workflow/with/betterleaks.md',
     },
     {
-      axis: 'foundation',
+      axis: Axis.Foundation,
       block: 'python',
       path: 'contexts/languages/python/foundation/types.md',
     },
@@ -212,7 +227,7 @@ describe('Term.axisOf and Term.blockOf', () => {
     const block = Term.blockOf('core.md');
 
     // Assert
-    expect(block).toBe('');
+    expect(block).toBeUndefined();
   });
 });
 
@@ -251,32 +266,22 @@ describe('Term.sentenceAround', () => {
 });
 
 describe('Term.create', () => {
-  it.each([
-    {
-      field: 'name',
-      input: {
+  it('should refuse a term whose name is blank', () => {
+    // Act
+    const failure = failureOf(() =>
+      Term.create({
         ...bindingUnit,
         name: ' ',
-      },
-    },
-    {
-      field: 'axis',
-      input: {
-        ...bindingUnit,
-        axis: 'delivery',
-      },
-    },
-  ])('should refuse a term whose $field is invalid', ({ field, input }) => {
-    // Act
-    const creating = (): Term => Term.create(input);
-
-    // Assert
-    expect(creating).toThrow(
-      new InvalidValueError({
-        field,
-        value: String(Reflect.get(input, field)),
       }),
     );
+
+    // Assert
+    expect(failure).toStrictEqual({
+      code: ValueFailure.TermNameEmpty,
+      details: {
+        value: ' ',
+      },
+    });
   });
 });
 
@@ -302,6 +307,13 @@ describe('Term.is', () => {
       candidate: {
         ...bindingUnit,
         kind: 'word',
+      },
+    },
+    {
+      expected: false,
+      candidate: {
+        ...bindingUnit,
+        axis: 'delivery',
       },
     },
   ])('should tell a term from $candidate', ({ candidate, expected }) => {

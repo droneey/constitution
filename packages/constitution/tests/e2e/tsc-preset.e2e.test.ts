@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'bun:test';
 
 import { createTypeCheckBatch, presetParts } from './tsc-preset.fixtures';
 
-const { typeCheckCases, typeCheckRegistered, typeChecks } = createTypeCheckBatch();
+const { typeCheckCases, typeCheckCodes, typeCheckRegistered } = createTypeCheckBatch();
 
 const EMPTY = 'export {};\n';
 const CHECK_TIMEOUT = 60_000;
@@ -32,7 +32,7 @@ const IMPLICIT_ANY = 'export const double = (n) => n * 2;\n';
 const UNUSED_LABEL =
   'export const first = (): number => {\n  outer: for (const n of [1]) {\n    return n;\n  }\n  return 0;\n};\n';
 const PARAMETER_DECORATOR =
-  'const Inject = (): ParameterDecorator => () => undefined;\nexport class Orders {\n  public constructor(@Inject() public readonly source: object) {}\n}\n';
+  'export const Inject = (): ParameterDecorator => () => undefined;\nexport class Orders {\n  public constructor(@Inject() public readonly source: object) {}\n}\n';
 const EXPORT_UNTYPED = 'export const sum = (a: number, b: number) => a + b;\n';
 const EXPORT_TYPED = 'export const sum = (a: number, b: number): number => a + b;\n';
 
@@ -61,16 +61,19 @@ describe('the tsconfig preset', () => {
     };
 
     // Act
-    const isClean = typeChecks(project);
+    const found = typeCheckCodes(project);
 
     // Assert
-    expect(isClean).toBe(true);
+    expect(found).toStrictEqual([]);
   });
 
   it.each(
     typeCheckCases([
       {
         condition: 'a type is imported without `import type`',
+        codes: [
+          'TS1484',
+        ],
         main: TYPE_IMPORTED_AS_VALUE,
         parts: [
           'self',
@@ -80,6 +83,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'code follows a return',
+        codes: [
+          'TS7027',
+        ],
         main: UNREACHABLE_CODE,
         parts: [
           'self',
@@ -89,6 +95,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a class field has no initializer',
+        codes: [
+          'TS2564',
+        ],
         main: FIELD_WITHOUT_INITIALIZER,
         parts: [
           'self',
@@ -98,6 +107,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a type is imported without `import type`, though Nest reads decorator metadata',
+        codes: [
+          'TS1484',
+        ],
         main: TYPE_IMPORTED_AS_VALUE,
         parts: [
           'self',
@@ -108,6 +120,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a class field has no initializer, though Nest fills request classes',
+        codes: [
+          'TS2564',
+        ],
         main: FIELD_WITHOUT_INITIALIZER,
         parts: [
           'self',
@@ -118,6 +133,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'an import names its .ts extension',
+        codes: [
+          'TS5097',
+        ],
         main: IMPORT_WITH_TS_EXTENSION,
         parts: [
           'self',
@@ -128,6 +146,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'code outside a browser reads the document',
+        codes: [
+          'TS2584',
+        ],
         main: READS_THE_DOCUMENT,
         parts: [
           'self',
@@ -137,6 +158,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'an optional field is set to undefined',
+        codes: [
+          'TS2375',
+        ],
         main: OPTIONAL_SET_TO_UNDEFINED,
         parts: [
           'self',
@@ -146,6 +170,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'an indexed element is read as present',
+        codes: [
+          'TS2322',
+        ],
         main: INDEX_READ_AS_PRESENT,
         parts: [
           'self',
@@ -155,6 +182,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a local is never read',
+        codes: [
+          'TS6133',
+        ],
         main: UNUSED_LOCAL,
         parts: [
           'self',
@@ -164,6 +194,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a parameter is never read',
+        codes: [
+          'TS6133',
+        ],
         main: UNUSED_PARAMETER,
         parts: [
           'self',
@@ -173,6 +206,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a method overrides without override',
+        codes: [
+          'TS4114',
+        ],
         main: OVERRIDE_UNMARKED,
         parts: [
           'self',
@@ -182,6 +218,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a path returns no value',
+        codes: [
+          'TS7030',
+        ],
         main: PATH_WITHOUT_RETURN,
         parts: [
           'self',
@@ -191,6 +230,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a case falls through',
+        codes: [
+          'TS7029',
+        ],
         main: CASE_FALLS_THROUGH,
         parts: [
           'self',
@@ -200,6 +242,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a parameter is implicitly any',
+        codes: [
+          'TS7006',
+        ],
         main: IMPLICIT_ANY,
         parts: [
           'self',
@@ -209,6 +254,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a label is never used',
+        codes: [
+          'TS7028',
+        ],
         main: UNUSED_LABEL,
         parts: [
           'self',
@@ -218,6 +266,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: 'a constructor parameter takes a decorator',
+        codes: [
+          'TS1206',
+        ],
         main: PARAMETER_DECORATOR,
         parts: [
           'self',
@@ -227,6 +278,9 @@ describe('the tsconfig preset', () => {
       },
       {
         condition: "a distributed package's export leaves its type to inference",
+        codes: [
+          'TS9013',
+        ],
         main: EXPORT_UNTYPED,
         parts: [
           'self',
@@ -235,7 +289,7 @@ describe('the tsconfig preset', () => {
         ],
       },
     ]),
-  )('should fail the type check of $parts when $condition', ({ main, parts }) => {
+  )('should fail the type check of $parts when $condition', ({ codes, main, parts }) => {
     // Arrange
     const project = {
       main,
@@ -243,10 +297,10 @@ describe('the tsconfig preset', () => {
     };
 
     // Act
-    const isClean = typeChecks(project);
+    const found = typeCheckCodes(project);
 
     // Assert
-    expect(isClean).toBe(false);
+    expect(found).toStrictEqual(codes);
   });
 
   it.each(
@@ -315,9 +369,9 @@ describe('the tsconfig preset', () => {
     };
 
     // Act
-    const isClean = typeChecks(project);
+    const found = typeCheckCodes(project);
 
     // Assert
-    expect(isClean).toBe(true);
+    expect(found).toStrictEqual([]);
   });
 });

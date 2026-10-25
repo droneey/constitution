@@ -5,7 +5,6 @@ import {
   pressKeys,
   renderWithTheme,
   screenReaderOutputOf,
-  settle,
 } from '../../../__tests__/ink.fixtures';
 import { TextInput } from '../text-input';
 
@@ -28,10 +27,33 @@ describe('TextInput', () => {
     expect(lastFrame()).toBe('Name? › my-project');
   });
 
-  it('should give what was typed, a Backspace taking the last character', async () => {
+  it('should show what was typed, a Backspace taking the last character', async () => {
+    // Arrange
+    const { lastFrame, stdin } = renderWithTheme(
+      <TextInput
+        message='Name?'
+        onInterrupt={mock()}
+        onSubmit={mock()}
+        placeholder='my-project'
+      />,
+    );
+
+    // Act
+    await pressKeys(stdin, [
+      'a',
+      'b',
+      'x',
+      Key.Backspace,
+    ]);
+
+    // Assert
+    expect(lastFrame()).toBe('Name? › ab');
+  });
+
+  it('should give what was typed when Enter is pressed', async () => {
     // Arrange
     const onSubmit = mock();
-    const { lastFrame, stdin } = renderWithTheme(
+    const { stdin } = renderWithTheme(
       <TextInput
         message='Name?'
         onInterrupt={mock()}
@@ -46,15 +68,10 @@ describe('TextInput', () => {
       'b',
       'x',
       Key.Backspace,
+      Key.Enter,
     ]);
 
-    const frame = lastFrame();
-
-    stdin.write(Key.Enter);
-    await settle();
-
     // Assert
-    expect(frame).toBe('Name? › ab');
     expect(onSubmit.mock.calls).toStrictEqual([
       [
         'ab',
@@ -62,7 +79,28 @@ describe('TextInput', () => {
     ]);
   });
 
-  it('should interrupt when Ctrl-C is pressed, and type nothing for another control key', async () => {
+  it('should interrupt when Ctrl-C is pressed', async () => {
+    // Arrange
+    const onInterrupt = mock();
+    const { stdin } = renderWithTheme(
+      <TextInput
+        message='Name?'
+        onInterrupt={onInterrupt}
+        onSubmit={mock()}
+        placeholder='my-project'
+      />,
+    );
+
+    // Act
+    await pressKeys(stdin, [
+      Key.Interrupt,
+    ]);
+
+    // Assert
+    expect(onInterrupt).toHaveBeenCalledTimes(1);
+  });
+
+  it('should neither type nor interrupt when another control key is pressed', async () => {
     // Arrange
     const onInterrupt = mock();
     const { lastFrame, stdin } = renderWithTheme(
@@ -79,16 +117,14 @@ describe('TextInput', () => {
       Key.CtrlA,
     ]);
 
-    const callsAfterCtrlA = onInterrupt.mock.calls.length;
-
-    await pressKeys(stdin, [
-      Key.Interrupt,
-    ]);
-
     // Assert
-    expect(lastFrame()).toBe('Name? › my-project');
-    expect(callsAfterCtrlA).toBe(0);
-    expect(onInterrupt).toHaveBeenCalledTimes(1);
+    expect({
+      frame: lastFrame(),
+      interrupts: onInterrupt.mock.calls.length,
+    }).toStrictEqual({
+      frame: 'Name? › my-project',
+      interrupts: 0,
+    });
   });
 
   it('should read out the question as a text box', () => {

@@ -8,7 +8,6 @@ import {
   pressKeys,
   renderWithTheme,
   screenReaderOutputOf,
-  settle,
 } from '../../../__tests__/ink.fixtures';
 import { Select } from '../select';
 
@@ -194,8 +193,9 @@ describe('Select', () => {
     );
 
     // Act
-    stdin.write(Key.Enter);
-    await settle();
+    await pressKeys(stdin, [
+      Key.Enter,
+    ]);
 
     // Assert
     expect(onSubmit).not.toHaveBeenCalled();
@@ -214,8 +214,9 @@ describe('Select', () => {
     );
 
     // Act
-    stdin.write(Key.Interrupt);
-    await settle();
+    await pressKeys(stdin, [
+      Key.Interrupt,
+    ]);
 
     // Assert
     expect(onInterrupt).toHaveBeenCalledTimes(1);

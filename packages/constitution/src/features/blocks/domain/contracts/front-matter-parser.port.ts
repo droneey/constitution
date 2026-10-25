@@ -2,7 +2,8 @@ import type { FieldIssue, ReadStatus, SkillFrontMatterRead } from '../entities';
 
 interface FrontMatterFields {
   readonly abstract: boolean;
-  readonly extends: string | undefined;
+  /** absent when the block extends none */
+  readonly extends?: string;
   readonly governs: readonly string[];
   readonly id: string;
   readonly languages: readonly string[];
@@ -12,7 +13,7 @@ interface FrontMatterFields {
 
 type FrontMatterRead =
   | {
-      readonly line: number | undefined;
+      readonly line?: number;
       readonly reason: string;
       readonly status: ReadStatus.NotYaml;
     }
@@ -20,10 +21,14 @@ type FrontMatterRead =
       readonly status: ReadStatus.NotMapping;
     }
   | {
-      readonly fields: FrontMatterFields | undefined;
-      readonly issues: readonly FieldIssue[];
+      readonly fields: FrontMatterFields;
       readonly keys: readonly string[];
       readonly status: ReadStatus.Mapping;
+    }
+  | {
+      readonly issues: readonly FieldIssue[];
+      readonly keys: readonly string[];
+      readonly status: ReadStatus.Mismatched;
     };
 
 interface FrontMatterParser {

@@ -5,11 +5,13 @@ import { WiringCheckStatus } from '#/features/session';
 import type { ProjectFiles, WorkingTree } from '#/kernel/contracts';
 import type { OpenedProject } from '#/kernel/entities';
 
-const createPresetsWiringCheck = (input: {
-  files: ProjectFiles;
-  parser: ConfigurationParser;
-  workingTree: WorkingTree;
-}): WiringCheck => ({
+interface PresetsWiringCheckInput {
+  readonly files: ProjectFiles;
+  readonly parser: ConfigurationParser;
+  readonly workingTree: WorkingTree;
+}
+
+const createPresetsWiringCheck = (input: PresetsWiringCheckInput): WiringCheck => ({
   check: (project: OpenedProject): WiringReport => {
     try {
       return {

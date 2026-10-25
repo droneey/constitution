@@ -8,7 +8,7 @@
     z-index: var(--layer-surface-below);
     padding: 0;
     border: 0;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     background-color: var(--color-fill-hover);
     background-clip: content-box;
     opacity: 0;

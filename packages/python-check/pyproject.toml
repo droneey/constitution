@@ -3,6 +3,8 @@ name = "droneey-python-check"
 version = "0.0.0"
 requires-python = ">=3.14"
 authors = [{ name = "Dmytro Kurovskyi", email = "me@kurovskyi.dev" }]
+# it ships only inside the Constitution's release archive
+classifiers = ["Private :: Do Not Upload"]
 dependencies = []
 
 [project.scripts]
@@ -25,7 +27,7 @@ timeout = "10"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["**/main.py"]
+omit = ["**/main.py", "**/root/wiring.py"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -34,7 +36,9 @@ skip_covered = true
 
 [tool.mutmut]
 source_paths = ["src"]
-do_not_mutate = ["*/main.py"]
+do_not_mutate = ["*/main.py", "*/root/wiring.py"]
+# a log call's text and level are no behaviour a caller relies on
+do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
 pytest_add_cli_args = ["-p", "no:randomly"]
 # mutmut runs the type check from mutants/, so the part's path climbs out of it
 type_check_command = ["ty", "check", "--output-format", "gitlab", "--config-file", "../../../.droneey/constitution/presets/python/ty/foundation/self.toml"]

@@ -88,9 +88,13 @@ describe('budgetedBodyOf', () => {
       ],
     },
     {
-      condition: "core's front matter is never closed",
+      condition: "core's front matter is never closed, so it holds none",
       core: '---\nid: core\n# Core\n',
       body: [
+        '---',
+        'id: core',
+        '# Core',
+        '',
         '- ui: the screens.',
       ],
       blockList: [

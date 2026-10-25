@@ -185,9 +185,19 @@ describe('checkBlocks', () => {
     const validation = checkBlocks(source);
 
     // Assert
-    expect(validation?.findings.map((finding) => finding.path)).toStrictEqual([
-      ACME,
-    ]);
+    expect(validation).toStrictEqual({
+      advice: [],
+      findings: [
+        {
+          code: RulesCode.ParentNotRule,
+          details: {
+            parent: RuleSlug.create('no-such-rule'),
+            slug: RuleSlug.create('acme-called-inward'),
+          },
+          path: ACME,
+        },
+      ],
+    });
   });
 
   it("should report the pack's block and not the base's when the pack repeats an id of its base", () => {
@@ -212,9 +222,21 @@ describe('checkBlocks', () => {
     const validation = checkBlocks(source);
 
     // Assert
-    expect(validation?.findings.map((finding) => finding.path)).toStrictEqual([
-      'blocks/domains/i18n/i18n.md',
-    ]);
+    expect(validation).toStrictEqual({
+      advice: [],
+      findings: [
+        {
+          code: LoadCode.IdShared,
+          details: {
+            id: BlockId.create('i18n'),
+            others: [
+              '/work/base/blocks/domains/i18n/i18n.md',
+            ],
+          },
+          path: 'blocks/domains/i18n/i18n.md',
+        },
+      ],
+    });
   });
 
   it('should report the base once when the base it is checked against does not load', () => {

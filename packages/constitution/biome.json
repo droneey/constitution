@@ -12,7 +12,8 @@
     "./.droneey/constitution/presets/typescript/biome/foundation/zod.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc"
+    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/architecture/bun.jsonc"
   ],
   "vcs": {
     "enabled": true,
@@ -35,6 +36,18 @@
         "rules": {
           "suspicious": {
             "noTemplateCurlyInString": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "templates/**"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredDependencies": "off"
           }
         }
       }

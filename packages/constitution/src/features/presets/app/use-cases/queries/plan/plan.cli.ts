@@ -25,11 +25,7 @@ const createPresetsPlanCommand = (context: PresetsPlanContext): Command =>
       const { places } = context;
 
       await context.renderer.print([
-        linesSection(
-          planLinesOf(
-            context.planPresets(places.projectDir === '' ? places.cwd : places.projectDir),
-          ),
-        ),
+        linesSection(planLinesOf(context.planPresets(places.projectDir ?? places.cwd))),
       ]);
     }),
     EXAMPLES,

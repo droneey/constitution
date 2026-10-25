@@ -5,6 +5,7 @@ import { transformSync } from '@babel/core';
 import reactCompiler from 'babel-plugin-react-compiler';
 
 import { pluginFingerprintOf } from '#/libs/claude-plugin';
+import { ExitCode } from '#/shared/cli';
 
 import { BuildError, BuildFailure, isBuildError } from './errors';
 
@@ -24,8 +25,6 @@ const TARGETS: readonly Bun.Build.CompileTarget[] = [
 const COMPONENTS = /\/packages\/[^/]+\/src\/.+\.(?:tsx|hooks\.ts)$/;
 const DEVTOOLS = /^react-devtools-core$/;
 const STUB_NAMESPACE = 'stub';
-const SUCCESS_EXIT_CODE = 0;
-const FAILURE_EXIT_CODE = 1;
 
 const writeError = (text: string): void => {
   process.stderr.write(text);
@@ -201,9 +200,11 @@ const buildProgram = async (): Promise<boolean> => {
   return built.success;
 };
 
+// A build Bun refuses, or a failure the build foresees, is one the user can act on; any other is
+// the build's own defect.
 try {
-  process.exitCode = (await buildProgram()) ? SUCCESS_EXIT_CODE : FAILURE_EXIT_CODE;
+  process.exitCode = (await buildProgram()) ? ExitCode.Success : ExitCode.Failure;
 } catch (error) {
   writeError(`cli-build: ${messageOf(error)}\n`);
-  process.exitCode = FAILURE_EXIT_CODE;
+  process.exitCode = isBuildError(error) ? ExitCode.Failure : ExitCode.Defect;
 }

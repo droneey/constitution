@@ -1,6 +1,6 @@
 import type { RequirementAnswer, Rule } from '#/kernel/entities';
 
-import type { Binding, PresetFile } from './binding.entity';
+import type { Binding } from './binding.entity';
 import type { Block } from './block.entity';
 import type {
   HooksManifest,
@@ -8,15 +8,17 @@ import type {
   MarketplaceManifest,
   PluginManifest,
 } from './manifest.entity';
+import type { PresetFile } from './preset-file.entity';
 import type { Agent, Skill } from './skill.entity';
 
+/** Each document is absent when its file is. */
 interface Documents {
   readonly agents: readonly Agent[];
-  readonly decisions: string | undefined;
-  readonly hooks: ManifestRead<HooksManifest> | undefined;
-  readonly marketplace: ManifestRead<MarketplaceManifest> | undefined;
-  readonly plugin: ManifestRead<PluginManifest> | undefined;
-  readonly readme: string | undefined;
+  readonly decisions?: string;
+  readonly hooks?: ManifestRead<HooksManifest>;
+  readonly marketplace?: ManifestRead<MarketplaceManifest>;
+  readonly plugin?: ManifestRead<PluginManifest>;
+  readonly readme?: string;
   readonly skills: readonly Skill[];
 }
 
@@ -26,7 +28,7 @@ interface Constitution {
   readonly documents: Documents;
   readonly paths: ReadonlySet<string>;
   readonly presets: readonly PresetFile[];
-  // The files of the repository that holds the Constitution, which its README and decision log link to.
+  /** the files of the repository that holds the Constitution, which its README and decision log link to */
   readonly repositoryPaths: ReadonlySet<string>;
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];

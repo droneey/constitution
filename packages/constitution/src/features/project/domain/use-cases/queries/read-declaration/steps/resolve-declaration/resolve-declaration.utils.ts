@@ -48,14 +48,16 @@ const warnOfMembers = (input: { log: WarningLog; unread: readonly UnreadMember[]
   }
 };
 
+interface ResolveDeclarationInput {
+  readonly config: ProjectConfig;
+  readonly parser: BlockCardParser;
+  readonly sources: readonly CatalogueSource[];
+  readonly today: Temporal.PlainDate;
+}
+
 // Which blocks the constitution.yaml of the repository and of each member make active, what is
 // wrong with them, and what the digest and the later hooks give of them.
-const resolveDeclaration = (input: {
-  config: ProjectConfig;
-  parser: BlockCardParser;
-  sources: readonly CatalogueSource[];
-  today: Temporal.PlainDate;
-}): Resolution => {
+const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
   const log = createWarningLog();
   const catalogue = readCatalogue({
     log,

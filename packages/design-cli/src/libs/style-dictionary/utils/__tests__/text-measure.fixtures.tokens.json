@@ -1,0 +1,11 @@
+{
+  "duration": {
+    "$type": "duration",
+    "slow": {
+      "$value": {
+        "unit": "ms",
+        "value": "300"
+      }
+    }
+  }
+}

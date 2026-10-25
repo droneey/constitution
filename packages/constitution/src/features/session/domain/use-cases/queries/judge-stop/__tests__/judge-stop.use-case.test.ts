@@ -5,6 +5,7 @@ import { BlockId } from '#/kernel/value-objects';
 
 import {
   activeBlockOf,
+  heldSessionsOf,
   keptSession,
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
@@ -64,9 +65,11 @@ describe('judgeStop', () => {
     },
   ])('should judge the tree reviewed when $condition', ({ agent, isHookActive }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository({
-      state: savedState,
-    });
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        state: savedState,
+      }),
+    );
 
     // Act
     const judgement = judgeStop({
@@ -128,10 +131,12 @@ describe('judgeStop', () => {
     'should block the hand-back until the check passes when $condition',
     ({ agent, event, marks }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository({
-        marks,
-        state: savedState,
-      });
+      const sessions = createFakeSessionQueryRepository(
+        heldSessionsOf({
+          marks,
+          state: savedState,
+        }),
+      );
 
       // Act
       const judgement = judgeStop({
@@ -200,10 +205,12 @@ describe('judgeStop', () => {
     'should ask for a review of the blocks the changed files fall under when $condition',
     ({ marks, state }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository({
-        marks,
-        state,
-      });
+      const sessions = createFakeSessionQueryRepository(
+        heldSessionsOf({
+          marks,
+          state,
+        }),
+      );
 
       // Act
       const judgement = judgeStop({
@@ -292,10 +299,12 @@ describe('judgeStop', () => {
     },
   ])('should let the agent stop when $condition', ({ changed, event, isHookActive, marks }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository({
-      marks,
-      state: savedState,
-    });
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        marks,
+        state: savedState,
+      }),
+    );
 
     // Act
     const judgement = judgeStop({
@@ -315,9 +324,11 @@ describe('judgeStop', () => {
 
   it('should judge nothing when the session kept no state', () => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository({
-      state: savedState,
-    });
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        state: savedState,
+      }),
+    );
 
     // Act
     const judgement = judgeStop({

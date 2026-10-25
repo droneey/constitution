@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from droneey_python_check.findings import Finding
+from droneey_python_check.findings import Finding, Rule
 from droneey_python_check.packages import package_findings
 from droneey_python_check.settings import Settings
 
@@ -132,309 +132,243 @@ def test_should_find_nothing_when_a_package_is_imported_in_its_home(
 
 
 @pytest.mark.parametrize(
-  ('importer', 'statement', 'message'),
+  ('importer', 'statement', 'breach'),
   [
     pytest.param(
       DOMAIN,
       'import attrs',
-      'features/orders/domain/entities imports no package, and attrs is one',
+      (Rule.PACKAGE_IN_PURE, ('features/orders/domain/entities', 'attrs')),
       id='a package in the domain',
     ),
     pytest.param(
       DOMAIN,
       'from orm.fields import Field',
-      'features/orders/domain/entities imports no package, and orm is one',
+      (Rule.PACKAGE_IN_PURE, ('features/orders/domain/entities', 'orm')),
       id='a package whose home names the domain',
     ),
     pytest.param(
       'src/shop/kernel/money.py',
       'import attrs',
-      'kernel imports no package, and attrs is one',
+      (Rule.PACKAGE_IN_PURE, ('kernel', 'attrs')),
       id='a package in the kernel',
     ),
     pytest.param(
       'src/shop/kernel/contracts/mail_port.py',
       'import attrs',
-      'kernel/contracts imports no package, and attrs is one',
+      (Rule.PACKAGE_IN_PURE, ('kernel/contracts', 'attrs')),
       id='a package in a port the kernel shares',
     ),
     pytest.param(
       'src/shop/contracts/mail/mail_port.py',
       'import attrs',
-      'attrs has no home in contracts/mail; a package without one is imported at the edge',
+      (Rule.PACKAGE_WITHOUT_HOME, ('attrs', 'contracts/mail')),
       id='a package in a top-level folder the tree does not name',
     ),
     pytest.param(
       'src/shop/composition/checkout/domain/totals/total.py',
       'import attrs',
-      'composition/checkout/domain/totals imports no package, and attrs is one',
+      (Rule.PACKAGE_IN_PURE, ('composition/checkout/domain/totals', 'attrs')),
       id="a package in a composition module's domain",
     ),
     pytest.param(
       'src/shop/composition/checkout/domain/totals/total.py',
       'import time',
-      (
-        'composition/checkout/domain/totals holds no effect, and time is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('composition/checkout/domain/totals', 'time')),
       id="an effect in a composition module's domain",
     ),
     pytest.param(
       'src/shop/api/orders_api.py',
       'import fastapi',
-      'fastapi is imported in api, outside its home: edge, app',
+      (Rule.PACKAGE_OUTSIDE_HOME, ('fastapi', 'api', 'edge, app')),
       id='a top-level folder the tree does not name, which is no part of the edge',
     ),
     pytest.param(
       'src/shop/shared/app/web.py',
       'import fastapi',
-      'fastapi is imported in shared/app, outside its home: edge, app',
+      (Rule.PACKAGE_OUTSIDE_HOME, ('fastapi', 'shared/app', 'edge, app')),
       id='a home that names a layer, matched only where the layer is',
     ),
     pytest.param(
       APP,
       'import httpx.auth',
-      (
-        'httpx has no home in features/orders/app/use_cases; '
-        'a package without one is imported at the edge'
-      ),
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'features/orders/app/use_cases')),
       id='a package without a home in a binding unit',
     ),
     pytest.param(
       'src/shop/composition/checkout/checkout.py',
       'import httpx',
-      'httpx has no home in composition/checkout; a package without one is imported at the edge',
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'composition/checkout')),
       id='a package without a home in composition',
     ),
     pytest.param(
       'src/shop/utils/text_utils.py',
       'import httpx',
-      'httpx has no home in utils; a package without one is imported at the edge',
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'utils')),
       id='a package without a home in a role folder at the top of the package',
     ),
     pytest.param(
       'src/shop/version.py',
       'import httpx',
-      'httpx has no home in the package root; a package without one is imported at the edge',
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'the package root')),
       id='a package without a home in a file of the package root',
     ),
     pytest.param(
       'src/shop/entrypoints/worker/jobs.py',
       'import httpx',
-      'httpx has no home in entrypoints/worker; a package without one is imported at the edge',
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'entrypoints/worker')),
       id="a package without a home beside an entrypoint's entry file",
     ),
     pytest.param(
       'src/shop/entrypoints/worker/jobs/main.py',
       'import httpx',
-      (
-        'httpx has no home in entrypoints/worker/jobs; '
-        'a package without one is imported at the edge'
-      ),
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'entrypoints/worker/jobs')),
       id='a package without a home in a main file below an entrypoint',
     ),
     pytest.param(
       'src/shop/features/main.py',
       'import httpx',
-      'httpx has no home in features; a package without one is imported at the edge',
+      (Rule.PACKAGE_WITHOUT_HOME, ('httpx', 'features')),
       id='a package without a home in a main file that is no entry',
     ),
     pytest.param(
       APP,
       'import subprocess',
-      (
-        'features/orders/app/use_cases holds no effect, and subprocess is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'subprocess')),
       id='an effect of the standard library in a binding unit',
     ),
     pytest.param(
       DOMAIN,
       'from secrets import token_hex',
-      (
-        'features/orders/domain/entities holds no effect, and secrets is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'secrets')),
       id='an effect of the standard library in the domain',
     ),
     pytest.param(
       APP,
       'import urllib.request',
-      (
-        'features/orders/app/use_cases holds no effect, and urllib.request is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'urllib.request')),
       id='an effectful submodule imported',
     ),
     pytest.param(
       APP,
       'from urllib.request import urlopen',
-      (
-        'features/orders/app/use_cases holds no effect, and urllib.request is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'urllib.request')),
       id='a name imported from an effectful submodule',
     ),
     pytest.param(
       APP,
       'from uuid import uuid4',
-      (
-        'features/orders/app/use_cases holds no effect, and uuid.uuid4 is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'uuid.uuid4')),
       id='an effectful function imported',
     ),
     pytest.param(
       DOMAIN,
       'STAMP = datetime.now()',
-      (
-        'features/orders/domain/entities holds no effect, and datetime.datetime.now is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'datetime.datetime.now')),
       id='the clock called through an imported class',
     ),
     pytest.param(
       DOMAIN,
       'TODAY = date.today()',
-      (
-        'features/orders/domain/entities holds no effect, and datetime.date.today is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'datetime.date.today')),
       id='the date called through an imported class',
     ),
     pytest.param(
       DOMAIN,
       'IDENTIFIER = uuid.uuid4()',
-      (
-        'features/orders/domain/entities holds no effect, and uuid.uuid4 is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'uuid.uuid4')),
       id='an identifier drawn through its module',
     ),
     pytest.param(
       DOMAIN,
       "TEXT = open('orders.txt').read()",
-      (
-        'features/orders/domain/entities holds no effect, and open is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'open')),
       id='a file opened by the builtin',
     ),
     pytest.param(
       APP,
       'from uuid import uuid7',
-      (
-        'features/orders/app/use_cases holds no effect, and uuid.uuid7 is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'uuid.uuid7')),
       id='a time-ordered identifier imported',
     ),
     pytest.param(
       APP,
       'sys.stdout.write(TEXT)',
-      (
-        'features/orders/app/use_cases holds no effect, and sys.stdout is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'sys.stdout')),
       id='a standard stream written',
     ),
     pytest.param(
       DOMAIN,
       'ARGUMENTS = sys.argv',
-      (
-        'features/orders/domain/entities holds no effect, and sys.argv is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'sys.argv')),
       id='the arguments read',
     ),
     pytest.param(
       APP,
       'PROCESS = asyncio.create_subprocess_exec(COMMAND)',
       (
-        'features/orders/app/use_cases holds no effect, and asyncio.create_subprocess_exec is one; '
-        'it reaches it through a port'
+        Rule.EFFECT_OUTSIDE_EDGE,
+        ('features/orders/app/use_cases', 'asyncio.create_subprocess_exec'),
       ),
       id='a process started through asyncio',
     ),
     pytest.param(
       DOMAIN,
       'from asyncio import sleep',
-      (
-        'features/orders/domain/entities holds no effect, and asyncio.sleep is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'asyncio.sleep')),
       id='a timer in the domain',
     ),
     pytest.param(
       'src/shop/composition/orders/orders_composition.py',
       'WAIT = threading.Timer(1, run)',
-      (
-        'composition/orders holds no effect, and threading.Timer is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('composition/orders', 'threading.Timer')),
       id='a timer in a composition module',
     ),
     pytest.param(
       APP,
       'import datetime as dt, json as j; STAMP = dt.datetime.now()',
-      (
-        'features/orders/app/use_cases holds no effect, and datetime.datetime.now is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'datetime.datetime.now')),
       id='the clock read through a module imported under another name',
     ),
     pytest.param(
       APP,
       'import json as j; from datetime import datetime as moment; STAMP = moment.now()',
-      (
-        'features/orders/app/use_cases holds no effect, and datetime.datetime.now is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'datetime.datetime.now')),
       id='the clock read through a class imported under another name',
     ),
     pytest.param(
       DOMAIN,
       'HERE = Path.cwd()',
-      (
-        'features/orders/domain/entities holds no effect, and Path.cwd is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/domain/entities', 'Path.cwd')),
       id='the working folder read through pathlib',
     ),
     pytest.param(
       APP,
       'from bz2 import open',
-      (
-        'features/orders/app/use_cases holds no effect, and bz2.open is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases', 'bz2.open')),
       id='a compressed file opened',
     ),
     pytest.param(
       'src/shop/adapters/mail/mail_adapter.py',
       'HOST = os.environ[NAME]',
-      'adapters/mail reads the environment through os.environ; only the root reads it',
+      (Rule.ENVIRONMENT_OUTSIDE_ROOT, ('adapters/mail', 'os.environ')),
       id='an adapter reads the environment',
     ),
     pytest.param(
       'src/shop/features/orders/app/use_cases/commands/sync/sync_cli.py',
       'from os import getenv',
-      (
-        'features/orders/app/use_cases/commands/sync holds no effect, and os is one; '
-        'it reaches it through a port'
-      ),
+      (Rule.EFFECT_OUTSIDE_EDGE, ('features/orders/app/use_cases/commands/sync', 'os')),
       id='a delivery unit imports a read of the environment',
     ),
     pytest.param(
       'src/shop/adapters/log/log_adapter.py',
       'import structlog',
-      'structlog is imported in adapters/log, outside its home: root',
+      (Rule.PACKAGE_OUTSIDE_HOME, ('structlog', 'adapters/log', 'root')),
       id='a package outside a home narrower than the edge',
     ),
     pytest.param(
       APP,
       'from pydantic import BaseModel',
-      'pydantic is imported in features/orders/app/use_cases, outside its home: edge, shared',
+      (Rule.PACKAGE_OUTSIDE_HOME, ('pydantic', 'features/orders/app/use_cases', 'edge, shared')),
       id='a package outside a home that names the edge',
     ),
   ],
@@ -443,7 +377,7 @@ def test_should_report_a_package_when_it_is_imported_outside_its_home(
   *,
   importer: str,
   statement: str,
-  message: str,
+  breach: tuple[Rule, tuple[str, ...]],
 ) -> None:
   # Arrange
   code = statement
@@ -452,7 +386,7 @@ def test_should_report_a_package_when_it_is_imported_outside_its_home(
   findings = _findings(importer=importer, statement=code)
 
   # Assert
-  assert findings == (Finding(path=Path(importer), line=1, message=message),)
+  assert findings == (Finding(path=Path(importer), line=1, rule=breach[0], values=breach[1]),)
 
 
 def test_should_report_each_package_when_one_import_names_several() -> None:
@@ -463,7 +397,20 @@ def test_should_report_each_package_when_one_import_names_several() -> None:
   findings = _findings(importer=APP, statement=statement)
 
   # Assert
-  assert [finding.message.split()[0] for finding in findings] == ['httpx', 'attrs']
+  assert findings == (
+    Finding(
+      path=Path(APP),
+      line=1,
+      rule=Rule.PACKAGE_WITHOUT_HOME,
+      values=('httpx', 'features/orders/app/use_cases'),
+    ),
+    Finding(
+      path=Path(APP),
+      line=1,
+      rule=Rule.PACKAGE_WITHOUT_HOME,
+      values=('attrs', 'features/orders/app/use_cases'),
+    ),
+  )
 
 
 def test_should_report_the_line_of_the_import_when_it_is_not_the_first() -> None:
@@ -474,4 +421,11 @@ def test_should_report_the_line_of_the_import_when_it_is_not_the_first() -> None
   findings = _findings(importer=DOMAIN, statement=statement)
 
   # Assert
-  assert [finding.line for finding in findings] == [2]
+  assert findings == (
+    Finding(
+      path=Path(DOMAIN),
+      line=2,
+      rule=Rule.PACKAGE_IN_PURE,
+      values=('features/orders/domain/entities', 'attrs'),
+    ),
+  )

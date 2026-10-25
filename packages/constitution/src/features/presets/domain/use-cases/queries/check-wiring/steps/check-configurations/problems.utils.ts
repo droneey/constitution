@@ -3,9 +3,8 @@ import type { WiringProblem } from '#/kernel/entities';
 import { WiringProblemKind } from '#/kernel/entities';
 import { PartAddress } from '#/kernel/value-objects';
 
-import type { WiringContext } from '../../../../../entities';
+import type { PresetPart, WiringContext } from '../../../../../entities';
 import { Parts } from '../../../../../entities';
-import type { WiringReads } from '../../../shared/wiring';
 import { isAnchored, isComment, namedOf, presetsPrefix } from '../../../shared/wiring';
 
 const FROM = /^[ \t]*#[ \t]*from /;
@@ -55,7 +54,6 @@ interface CopyInput {
   readonly expected: readonly string[];
   readonly folder: string;
   readonly lines: readonly string[];
-  readonly reads: WiringReads;
   readonly tool: string;
 }
 
@@ -92,6 +90,7 @@ const copyProblemOf = (
 
   const part = `${segments[1]}/${segments[3]}/${segments[4]}`.replace(EXTENSION, '');
   const file = Parts.fileAt(context.parts, rel);
+  const text = Parts.textAt(context.parts, rel);
 
   if (file === undefined) {
     return {
@@ -117,7 +116,12 @@ const copyProblemOf = (
     };
   }
 
-  const want = linesOf(input.reads.partText(file));
+  // a part that cannot be read is warned of apart, and its copy is left unjudged
+  if (text === undefined) {
+    return undefined;
+  }
+
+  const want = linesOf(text);
   const got = after.slice(0, close).filter((candidate) => !BLANK.test(candidate));
   const isWhole =
     got.length === want.length &&
@@ -156,29 +160,38 @@ const copyProblemsOf = (input: CopyInput): readonly WiringProblem[] =>
         ];
   });
 
-// A chain's marker lists its links from the first to the end, and the file extends the end.
-const chainProblemsOf = (input: {
-  context: WiringContext;
-  entries: readonly PartAddress[];
-  folder: string;
-  lines: readonly string[];
-  tool: string;
-}): readonly WiringProblem[] => {
+interface ChainInput {
+  readonly context: WiringContext;
+  readonly entries: readonly PresetPart[];
+  readonly folder: string;
+  readonly lines: readonly string[];
+  readonly tool: string;
+}
+
+// A chain's marker lists its links from the first to the end, and the file extends the end; a
+// chain with a link that cannot be read is warned of apart, and left unjudged.
+const chainProblemsOf = (input: ChainInput): readonly WiringProblem[] => {
   const { context, entries, tool } = input;
   const { parts } = context;
-  const byName = new Map<string | undefined, PartAddress>(
-    entries.map((entry) => [
-      entry.name,
-      entry,
-    ]),
-  );
-  const extended = new Set(entries.map((entry) => Parts.linkOf(parts, entry)));
-  const end = entries.findLast((entry) => !extended.has(entry.name));
 
-  if (end === undefined) {
+  if (entries.some(({ file }) => Parts.textAt(parts, file.path) === undefined)) {
     return [];
   }
 
+  const byName = new Map<string | undefined, PartAddress>(
+    entries.map(({ address }) => [
+      address.name,
+      address,
+    ]),
+  );
+  const extended = new Set(entries.map(({ address }) => Parts.linkOf(parts, address)));
+  const endPart = entries.findLast(({ address }) => !extended.has(address.name));
+
+  if (endPart === undefined) {
+    return [];
+  }
+
+  const end = endPart.address;
   const sequence: PartAddress[] = [];
 
   for (
@@ -190,8 +203,7 @@ const chainProblemsOf = (input: {
   }
 
   const order = sequence.toReversed().map(PartAddress.shortOf).join(' ');
-  // Stryker disable next-line OptionalChaining,StringLiteral: every part taken has its file
-  const endPath = Parts.fileOf(parts, end)?.path ?? '';
+  const endPath = endPart.file.path;
   const prefix = `${presetsPrefix}${end.scope}/${tool}/`;
   // a marker that names the end names a part of its scope
   const markers = input.lines

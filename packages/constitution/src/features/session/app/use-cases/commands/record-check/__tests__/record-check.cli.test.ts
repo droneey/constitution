@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
 import { SessionId } from '../../../../../domain/value-objects';
 import { createRecordCheckCommand } from '../record-check.cli';
@@ -72,11 +72,8 @@ describe('createRecordCheckCommand', () => {
       stdin: '{"session_id":"s1","tool_input":{"command":""}}',
     },
   ])('should record nothing, and write nothing, when $condition', async ({ stdin }) => {
-    // Arrange
-    const given = stdin;
-
     // Act
-    const run = await runOf(given);
+    const run = await runOf(stdin);
 
     // Assert
     expect(run).toStrictEqual({

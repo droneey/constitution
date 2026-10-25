@@ -19,11 +19,8 @@ describe('fieldsOf', () => {
       expected: {},
     },
   ])('should give the own fields when $condition', ({ candidate, expected }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const fields = fieldsOf(given);
+    const fields = fieldsOf(candidate);
 
     // Assert
     expect(Object.fromEntries(fields)).toStrictEqual(expected);

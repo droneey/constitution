@@ -1,2 +1,2 @@
-export type { Resolver, ThemeMode } from './types';
+export type { Resolver, ThemeModeFiles } from './types';
 export { themeModesOf } from './utils';

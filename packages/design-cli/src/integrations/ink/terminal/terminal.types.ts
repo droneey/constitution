@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import type { AccentTokens, Output } from '#/libs/ui';
 
+import type { Choice } from '../components';
 import type { AnswerKind } from './terminal.constants';
 
 /** the streams a view draws on and reads keys from: standard error and input for progress and questions */
@@ -15,6 +16,21 @@ interface TerminalInput {
   readonly accent?: AccentTokens | undefined;
   readonly output: Output;
   readonly streams: TerminalStreams;
+}
+
+interface AskSelectInput<T> extends TerminalInput {
+  readonly choices: readonly Choice<T>[];
+  readonly message: string;
+}
+
+interface AskConfirmInput extends TerminalInput {
+  readonly defaultAnswer: boolean;
+  readonly message: string;
+}
+
+interface AskTextInput extends TerminalInput {
+  readonly message: string;
+  readonly placeholder: string;
 }
 
 /** a tree drawn on a terminal, redrawn by each `show`, and gone, the terminal restored, once closed */
@@ -32,4 +48,12 @@ type Answer<T> =
       readonly kind: AnswerKind.Interrupted;
     };
 
-export type { Answer, TerminalInput, TerminalStreams, TerminalView };
+export type {
+  Answer,
+  AskConfirmInput,
+  AskSelectInput,
+  AskTextInput,
+  TerminalInput,
+  TerminalStreams,
+  TerminalView,
+};

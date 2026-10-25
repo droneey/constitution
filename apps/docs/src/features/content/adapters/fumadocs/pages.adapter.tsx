@@ -14,36 +14,45 @@ interface MarkdownPage {
   url: string;
 }
 
-const collectionPathsBySitePath = new Map<string, string>();
+interface SitePaths {
+  /** the path a page has in its collection, from the path the site serves it under */
+  readonly collectionPathOf: (path: string) => string;
+  /** records each file's path in its collection, for `collectionPathOf` */
+  readonly servedUnderSitePaths: <
+    TSource extends {
+      files: {
+        path: string;
+      }[];
+    },
+  >(
+    from: TSource,
+    sitePathOf: (path: string) => string,
+  ) => TSource;
+}
 
-/** records each file's path in its collection, for `collectionPathOf` */
-const servedUnderSitePaths = <
-  TSource extends {
-    files: {
-      path: string;
-    }[];
-  },
->(
-  from: TSource,
-  sitePathOf: (path: string) => string,
-): TSource => ({
-  ...from,
-  files: from.files.map((file) => {
-    const path = sitePathOf(file.path);
+const createSitePaths = (): SitePaths => {
+  const collectionPathsBySitePath = new Map<string, string>();
 
-    collectionPathsBySitePath.set(path, file.path);
+  return {
+    collectionPathOf: (path) => collectionPathsBySitePath.get(path) ?? path,
+    servedUnderSitePaths: (from, sitePathOf) => ({
+      ...from,
+      files: from.files.map((file) => {
+        const path = sitePathOf(file.path);
 
-    return {
-      ...file,
-      path,
-    };
-  }),
-});
+        collectionPathsBySitePath.set(path, file.path);
+
+        return {
+          ...file,
+          path,
+        };
+      }),
+    }),
+  };
+};
 
 const passportAsIndex = (path: string): string =>
   `${pageSlugsOf(path).join('/')}${isPassportPath(path) ? '/index' : ''}.md`;
-
-const collectionPathOf = (path: string): string => collectionPathsBySitePath.get(path) ?? path;
 
 /**
  * A link to a whole page leads to its main region, since the library places a page, for its
@@ -83,4 +92,4 @@ const markdownOfPage = async (
 
 ${await page.data.getText('processed')}`;
 
-export { collectionPathOf, crossLinks, markdownOfPage, passportAsIndex, servedUnderSitePaths };
+export { createSitePaths, crossLinks, markdownOfPage, passportAsIndex };

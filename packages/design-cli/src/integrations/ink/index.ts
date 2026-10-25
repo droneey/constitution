@@ -32,6 +32,9 @@ export {
 export { useTheme } from './hooks';
 export type {
   Answer,
+  AskConfirmInput,
+  AskSelectInput,
+  AskTextInput,
   TerminalInput,
   TerminalStreams,
   TerminalView,

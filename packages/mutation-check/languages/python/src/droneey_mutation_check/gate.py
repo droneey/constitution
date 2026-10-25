@@ -1,24 +1,28 @@
 import fnmatch
 import re
 import sys
-from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TextIO
+from typing import TYPE_CHECKING, Final, Protocol
 
 from droneey_mutation_check.changes import changed_lines
-from droneey_mutation_check.targets import SOURCE_ROOT, Changes, mutant_globs
+from droneey_mutation_check.check_error import CheckError, Failure
+from droneey_mutation_check.outcome import Broken, Mutant, Outcome, Pass, Passed, Survived
+from droneey_mutation_check.targets import Changes, mutant_globs
 
-BASE = 'origin/main'
-ALL = 'all'
+if TYPE_CHECKING:
+  from collections.abc import Sequence
+
+BASE: Final = 'origin/main'
+ALL: Final = 'all'
 # what mutmut stops with when the functions it is given hold no mutant
-NO_MUTANT = (
+NO_MUTANT: Final = (
   'Filtered for specific mutants, but nothing matches',
   'could not find any test case for any mutant',
 )
-PASSING = frozenset({'killed', 'caught by type check', 'skipped', 'not checked'})
+PASSING: Final = frozenset({'killed', 'caught by type check', 'skipped', 'not checked'})
 # a line of `mutmut results`: a mutant's name and its status
-RESULT = re.compile(r'^\s+(?P<name>\S+): (?P<status>.+)$', re.MULTILINE)
+RESULT: Final = re.compile(r'^\s+(?P<name>\S+): (?P<status>.+)$', re.MULTILINE)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -27,25 +31,24 @@ class Completed:
   output: str
 
 
-type Runner = Callable[[Sequence[str]], Completed]
+class Workspace(Protocol):
+  def run(self, command: Sequence[str]) -> Completed: ...
 
+  def read(self, path: Path) -> str: ...
 
-@dataclass(frozen=True, slots=True, kw_only=True)
-class Workspace:
-  run: Runner
-  read: Callable[[Path], str]
-  sources: Callable[[], tuple[Path, ...]]
+  # every Python file under src/
+  def sources(self) -> tuple[Path, ...]: ...
+
   # removes the mutants/ folder mutmut keeps between runs
-  clear: Callable[[], None]
-  output: TextIO
+  def clear(self) -> None: ...
 
 
 def _git(workspace: Workspace, arguments: Sequence[str]) -> str:
-  completed = workspace.run(['git', *arguments])
+  command = ['git', *arguments]
+  completed = workspace.run(command)
 
   if completed.status != 0:
-    message = f'git {" ".join(arguments)} failed: {completed.output}'
-    raise RuntimeError(message)
+    raise CheckError(code=Failure.GIT_FAILED, command=command, output=completed.output)
 
   return completed.output
 
@@ -67,22 +70,26 @@ def _changes(workspace: Workspace) -> Changes:
 
 # Once mutmut stopped before running, a mutant it lists for the functions is
 # one no spec reaches.
-def _failures(*, results: str, globs: Sequence[str], stopped: bool) -> list[str]:
-  return [
-    f'{outcome["name"]}: {outcome["status"]}'
+def _failures(*, results: str, globs: Sequence[str], stopped: bool) -> tuple[Mutant, ...]:
+  return tuple(
+    Mutant(name=outcome['name'], status=outcome['status'])
     for outcome in RESULT.finditer(results)
     if (stopped or outcome['status'] not in PASSING)
     and (not globs or any(fnmatch.fnmatchcase(outcome['name'], glob) for glob in globs))
-  ]
+  )
 
 
-def check(arguments: Sequence[str], *, workspace: Workspace) -> int:
+def check(arguments: Sequence[str], *, workspace: Workspace) -> Outcome:
+  """Mutates the functions a change touches, or every function given `all`.
+
+  Raises:
+    CheckError: git fails, or a command does not start or runs past its time.
+  """
   everything = ALL in arguments
   globs = () if everything else mutant_globs(_changes(workspace))
 
   if not everything and not globs:
-    workspace.output.write('mutation: no function to mutate changed\n')
-    return 0
+    return Passed(why=Pass.UNCHANGED)
 
   workspace.clear()
   mutmut = [sys.executable, '-m', 'mutmut']
@@ -91,27 +98,17 @@ def check(arguments: Sequence[str], *, workspace: Workspace) -> int:
   stopped = running.status != 0
 
   if stopped and not any(message in running.output for message in NO_MUTANT):
-    workspace.output.write(running.output)
-    return 1
+    return Broken(output=running.output)
 
   failures = _failures(
     results=workspace.run([*mutmut, 'results']).output,
     globs=globs,
     stopped=stopped,
   )
-  workspace.output.writelines(f'mutation: {failure}\n' for failure in failures)
 
   if failures:
-    return 1
+    return Survived(mutants=failures)
 
   workspace.clear()
-  workspace.output.write(
-    'mutation: the functions hold nothing to mutate\n'
-    if stopped
-    else 'mutation: every mutant killed\n',
-  )
-  return 0
 
-
-def python_sources(folder: Path) -> tuple[Path, ...]:
-  return tuple(sorted(path.relative_to(folder) for path in (folder / SOURCE_ROOT).rglob('*.py')))
+  return Passed(why=Pass.EMPTY if stopped else Pass.KILLED)

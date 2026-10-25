@@ -248,10 +248,10 @@ const cruise = async (project: Project): Promise<Cruise> => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
   const workingFolder = process.cwd();
 
-  writeProject(folder, project);
-  process.chdir(folder);
-
   try {
+    writeProject(folder, project);
+    process.chdir(folder);
+
     const cruising = await cruiseModules(
       [
         ...(project.roots ?? [

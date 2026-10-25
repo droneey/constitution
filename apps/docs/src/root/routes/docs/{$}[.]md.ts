@@ -1,4 +1,3 @@
-// Stryker disable all: the handler runs only in the server the build starts, over the content fumadocs-mdx's bundler plugin compiles, which no spec can run; the built site proves it
 import { createFileRoute, notFound } from '@tanstack/react-router';
 
 import { slugsOfMarkdownAddress } from '#/features/content';

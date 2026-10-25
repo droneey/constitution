@@ -56,11 +56,8 @@ describe('ProjectError', () => {
       isProject: false,
     },
   ])('should say $isProject when $condition', ({ error, isProject }) => {
-    // Arrange
-    const thrown: unknown = error;
-
     // Act
-    const answer = isProjectError(thrown);
+    const answer = isProjectError(error);
 
     // Assert
     expect(answer).toBe(isProject);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
 import { SessionId } from '../../../../../domain/value-objects';
 import { createUserPromptSubmitCommand } from '../user-prompt-submit.cli';
@@ -60,11 +60,8 @@ describe('createUserPromptSubmitCommand', () => {
       stdin: '{"prompt":"go"}',
     },
   ])('should mark nothing, and write nothing, when $condition', async ({ stdin }) => {
-    // Arrange
-    const given = stdin;
-
     // Act
-    const run = await runOf(given);
+    const run = await runOf(stdin);
 
     // Assert
     expect(run).toStrictEqual({

@@ -25,17 +25,11 @@ const answerOf = (judgement: StopJudgement): string | undefined => {
       return undefined;
     case StopVerdict.Blocked:
       return `{"decision":"block","reason":"The tree changed since the check last passed. Run the project's check, \`${jsonTextOf(judgement.check)}\`, and hand back only when it passes."}\n`;
-    default: {
-      // Review, the one verdict left: a verdict added to the union fails to compile here
-      const review: Extract<
-        StopJudgement,
-        {
-          verdict: StopVerdict.Review;
-        }
-      > = judgement;
-
-      return `{"systemMessage":"Changed files fall under ${jsonTextOf(review.blocks.join(', '))}; /check edits reviews them against the rules."}\n`;
-    }
+    case StopVerdict.Review:
+      return `{"systemMessage":"Changed files fall under ${jsonTextOf(judgement.blocks.join(', '))}; /check edits reviews them against the rules."}\n`;
+    // Stryker disable next-line ConditionalExpression: no verdict reaches the default, which only the compiler reads
+    default:
+      return judgement satisfies never;
   }
 };
 

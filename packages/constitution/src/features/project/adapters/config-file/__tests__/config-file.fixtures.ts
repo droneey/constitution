@@ -1,10 +1,10 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { ConfigRead, UnitConfig } from '../../../domain/entities';
+import type { ConfigRead, DeclaredUnit } from '../../../domain/entities';
 import { ConfigOverride } from '../../../domain/entities';
 
 // constitution.yaml read whole: nothing in it unless the overrides give it.
-const parsedConfigOf = (overrides: Partial<UnitConfig> = {}): ConfigRead => ({
+const parsedConfigOf = (overrides: Partial<DeclaredUnit['config']> = {}): ConfigRead => ({
   config: {
     empties: [],
     items: [],

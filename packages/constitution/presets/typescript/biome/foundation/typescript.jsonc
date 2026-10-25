@@ -152,6 +152,13 @@
         "**/*.tsx",
       ],
     },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/parameter-object-has-a-named-type.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
   ],
   "overrides": [
     {

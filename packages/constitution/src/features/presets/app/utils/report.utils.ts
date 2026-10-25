@@ -6,11 +6,15 @@ import { countOf, noteSection, warningTextOf } from '#/shared/cli';
 
 const WARNING = 'warning';
 
-const presetsOutcomeOf = (warnings: readonly ProjectWarning[] | undefined): TaskOutcome => {
+/** The step's end; one that finds no project ends as statusWithoutProject says, skipped by default. */
+const presetsOutcomeOf = (
+  warnings: readonly ProjectWarning[] | undefined,
+  statusWithoutProject: StepStatus = StepStatus.Skipped,
+): TaskOutcome => {
   if (warnings === undefined) {
     return {
       detail: 'no constitution.yaml in this folder or above it',
-      status: StepStatus.Skipped,
+      status: statusWithoutProject,
     };
   }
 

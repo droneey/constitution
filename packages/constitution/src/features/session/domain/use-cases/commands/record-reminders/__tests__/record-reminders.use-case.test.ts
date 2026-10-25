@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { BlockId } from '#/kernel/value-objects';
 
-import { keptSession } from '../../../../../__tests__/session.fixtures';
+import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { AgentId } from '../../../../value-objects';
 import { recordReminders } from '../record-reminders.use-case';
@@ -28,7 +28,7 @@ describe('recordReminders', () => {
     },
   ])('should record the blocks named when $condition', ({ asker }) => {
     // Arrange
-    const store = createFakeSessionCommandRepository();
+    const store = heldSessionsOf();
 
     // Act
     recordReminders({
@@ -38,35 +38,31 @@ describe('recordReminders', () => {
         BlockId.create('typescript'),
       ],
       session: keptSession,
-      sessions: store.sessions,
+      sessions: createFakeSessionCommandRepository(store),
     });
 
     // Assert
-    expect(store.writes.added).toStrictEqual([
-      {
-        ...asker,
-        ids: [
-          BlockId.create('ui'),
-          BlockId.create('typescript'),
-        ],
-        session: keptSession,
-      },
-    ]);
+    expect(store.get(keptSession)?.reminded.get(asker.agent)).toStrictEqual(
+      new Set([
+        BlockId.create('ui'),
+        BlockId.create('typescript'),
+      ]),
+    );
   });
 
   it('should record nothing when no block was named', () => {
     // Arrange
-    const store = createFakeSessionCommandRepository();
+    const store = heldSessionsOf();
 
     // Act
     recordReminders({
       agent: undefined,
       ids: [],
       session: keptSession,
-      sessions: store.sessions,
+      sessions: createFakeSessionCommandRepository(store),
     });
 
     // Assert
-    expect(store.writes.added).toStrictEqual([]);
+    expect(store.get(keptSession)?.reminded).toStrictEqual(new Map());
   });
 });

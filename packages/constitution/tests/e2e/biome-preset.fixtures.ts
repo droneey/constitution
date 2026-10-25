@@ -12,6 +12,8 @@ import { dirname, join } from 'node:path';
 
 import { z } from 'zod';
 
+import { createBatch } from './batch.fixtures';
+
 interface Project {
   readonly files: Readonly<Record<string, string>>;
   readonly parts?: readonly string[];
@@ -307,17 +309,11 @@ interface LintBatch {
   readonly lintRegistered: () => Promise<void>;
 }
 
-// The tables of a spec file register their projects while the file is collected, and one run lints
-// them all before the first case: a spec file makes its own batch, so no state outlives it.
 const createLintBatch = (): LintBatch => {
-  const registered = new Map<string, Project>();
-  let linted: ReadonlyMap<string, Findings> = new Map();
-
-  const lintCase = <TProject extends Project>(project: TProject): TProject => {
-    registered.set(keyOf(project), project);
-
-    return project;
-  };
+  const { outcomeOf, register, runRegistered } = createBatch({
+    keyOf,
+    runAll: lintAll,
+  });
 
   // A row names the files its case adds to the table's and, where they differ, its parts.
   const lintCases = <TRow extends Partial<Project>>(
@@ -325,7 +321,7 @@ const createLintBatch = (): LintBatch => {
     base: Partial<Project> = {},
   ): readonly (Omit<TRow, keyof Project> & Required<Project>)[] =>
     rows.map((row) =>
-      lintCase({
+      register({
         ...row,
         files: {
           ...base.files,
@@ -335,29 +331,11 @@ const createLintBatch = (): LintBatch => {
       }),
     );
 
-  const lintFindings = (project: Project): Findings => {
-    const findings = linted.get(keyOf(project));
-
-    if (findings === undefined) {
-      throw new Error(
-        `No table registered the project of ${Object.keys(project.files).join(', ')}`,
-      );
-    }
-
-    return findings;
-  };
-
-  const lintRegistered = async (): Promise<void> => {
-    linted = await lintAll([
-      ...registered,
-    ]);
-  };
-
   return {
-    lintCase,
+    lintCase: register,
     lintCases,
-    lintFindings,
-    lintRegistered,
+    lintFindings: outcomeOf,
+    lintRegistered: runRegistered,
   };
 };
 

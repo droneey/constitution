@@ -19,10 +19,10 @@ export default {
       name: 'no-test-code-in-production',
       severity: 'error',
       from: {
-        pathNot: '(^|/)(__tests__|e2e)/|^tests/',
+        pathNot: developmentFiles,
       },
       to: {
-        path: '(^|/)(__tests__|e2e)/|^tests/',
+        path: developmentFiles,
       },
     },
   ],

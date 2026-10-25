@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { StopEvent, StopJudgement } from '../../../../../domain/entities';
@@ -174,11 +174,8 @@ describe('createStopCommand', () => {
   ])(
     'should record the judgement, then answer the gate, when $condition',
     async ({ judgement, stdout }) => {
-      // Arrange
-      const given: StopJudgement = judgement;
-
       // Act
-      const run = await runOf(given);
+      const run = await runOf(judgement);
 
       // Assert
       expect({
@@ -188,7 +185,7 @@ describe('createStopCommand', () => {
         recorded: [
           {
             askedBefore: 1,
-            judgement: given,
+            judgement,
             session: SessionId.create('s1'),
           },
         ],

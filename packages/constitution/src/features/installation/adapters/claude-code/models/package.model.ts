@@ -10,5 +10,4 @@ const packageModel: z.ZodType<PackageWire> = z.looseObject({
   version: z.string().refine(Version.is).transform(Version.create),
 });
 
-export type { PackageWire };
 export { packageModel };

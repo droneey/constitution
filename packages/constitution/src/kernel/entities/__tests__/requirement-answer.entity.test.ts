@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
 import { BlockId, RuleSlug } from '../../value-objects';
-import type { AnswerSource } from '../requirement-answer.entity';
 import { Met, RequirementAnswer, RequirementsTableCode } from '../requirement-answer.entity';
 
 const FILE = 'blocks/implementations/lingui/lingui.md';
 
-const sourceOf = (lines: readonly string[]): AnswerSource => ({
+const sourceOf = (lines: readonly string[]): Parameters<typeof RequirementAnswer.parse>[0] => ({
   block: BlockId.create('lingui'),
   file: FILE,
   text: lines.join('\n'),
@@ -284,11 +283,8 @@ describe('RequirementAnswer', () => {
       fields: answerFields,
     },
   ])('should hold the seam only when $condition', ({ fields }) => {
-    // Arrange
-    const given: RequirementAnswer = fields;
-
     // Act
-    const made = RequirementAnswer.create(given);
+    const made = RequirementAnswer.create(fields);
 
     // Assert
     expect(made).toStrictEqual(fields);

@@ -2,6 +2,27 @@ import type { ConfigReadStatus } from '#/kernel/entities';
 import { attempted, isRangeError } from '#/kernel/utils';
 import { PackPath, UnitPath } from '#/kernel/value-objects';
 
+/** The keys of constitution.yaml but its check, whose key the kernel names for the warnings too. */
+enum ConfigKey {
+  Axes = 'axes',
+  Domains = 'domains',
+  Platforms = 'platforms',
+  Languages = 'languages',
+  Implementations = 'implementations',
+  Packs = 'packs',
+  Overrides = 'overrides',
+}
+
+// The keys whose value is a list, in the order a file writes them.
+const LIST_KEYS = [
+  ConfigKey.Axes,
+  ConfigKey.Domains,
+  ConfigKey.Platforms,
+  ConfigKey.Languages,
+  ConfigKey.Implementations,
+  ConfigKey.Packs,
+] as const satisfies readonly ConfigKey[];
+
 interface ConfigItem {
   readonly key: string;
   readonly text: string;
@@ -127,13 +148,11 @@ type ConfigRead =
       readonly status: ConfigReadStatus.Unparsed;
     };
 
-const PACKS = 'packs';
-
 // The packs a unit lists, each by its path from the repository, which the catalogue reads it at:
 // as the repository writes it, a member's from the member's folder.
 const packsListedBy = (unit: DeclaredUnit): readonly PackPath[] =>
   unit.config.items
-    .filter((listed) => listed.key === PACKS && PackPath.is(listed.text))
+    .filter((listed) => listed.key === ConfigKey.Packs && PackPath.is(listed.text))
     .map((listed) => {
       const pack = PackPath.create(listed.text);
 
@@ -159,5 +178,5 @@ const ProjectConfig = {
   packsOf,
 } as const;
 
-export type { ConfigItem, ConfigRead, UnitConfig, UnreadMember };
-export { ConfigOverride, DeclaredUnit, MemberProblem, ProjectConfig };
+export type { ConfigItem, ConfigRead, UnreadMember };
+export { ConfigKey, ConfigOverride, DeclaredUnit, LIST_KEYS, MemberProblem, ProjectConfig };

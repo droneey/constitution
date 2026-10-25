@@ -39,7 +39,12 @@ const contextWith = (input: {
     .join('\n\n')
     .concat('\n');
 
-const unparsedContext = (input: { line: number; root: string }): string =>
+interface UnparsedContextInput {
+  readonly line: number;
+  readonly root: string;
+}
+
+const unparsedContext = (input: UnparsedContextInput): string =>
   contextWith({
     facts: [
       `constitution.yaml does not parse at line ${input.line}; only core applies.`,

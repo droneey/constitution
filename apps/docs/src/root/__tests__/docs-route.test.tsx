@@ -15,7 +15,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { DocsBuiltVersionContext, DocsNotFoundScreen } from '#/composition/docs';
-import { createVersion } from '#/features/versions';
+import { Version } from '#/features/versions';
 import { RootProvider } from '#/libs/ui';
 
 import { Route } from '../routes/docs/$';
@@ -33,7 +33,7 @@ const routerAt = (address: string, content: DocsContentFake) => {
           enabled: false,
         }}
       >
-        <DocsBuiltVersionContext value={createVersion('0.70.0')}>
+        <DocsBuiltVersionContext value={Version.create('0.70.0')}>
           <Outlet />
         </DocsBuiltVersionContext>
       </RootProvider>

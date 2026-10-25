@@ -14,8 +14,7 @@ import type {
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
 
-import type { Rule } from '../../../domain/entities';
-import { ruleOf } from '../../../domain/entities';
+import { Rule } from '../../../domain/entities';
 import { isHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
 import { exampleTones, LEVEL_LETTERS } from './remark-blocks.constants';
 import { dropTitle } from './remark-drop-title.adapter';
@@ -109,7 +108,7 @@ const ruleHeadingOf = (node: RootContent): RuleHeading | undefined => {
     return undefined;
   }
 
-  const rule = ruleOf(textOf(node));
+  const rule = Rule.of(textOf(node));
 
   return rule === undefined
     ? undefined
@@ -307,7 +306,7 @@ const wrapRules = (tree: Root, options: BlocksOptions): void => {
 };
 
 const ruleHeading = (heading: Heading): void => {
-  const rule = ruleOf(textOf(heading));
+  const rule = Rule.of(textOf(heading));
 
   if (rule === undefined) {
     return;

@@ -9,7 +9,12 @@ const DIAGNOSIS_OF_STATE = {
   [HooksState.Unconfigured]: Diagnosis.HooksUnconfigured,
 } as const satisfies Readonly<Record<HooksState, Diagnosis>>;
 
-const hooksReport = (input: { hooks: GitHooks; project: string | undefined }): PartDiagnosis => ({
+interface HooksReportInput {
+  readonly hooks: GitHooks;
+  readonly project: string | undefined;
+}
+
+const hooksReport = (input: HooksReportInput): PartDiagnosis => ({
   kind:
     input.project === undefined
       ? Diagnosis.HooksWithoutProject

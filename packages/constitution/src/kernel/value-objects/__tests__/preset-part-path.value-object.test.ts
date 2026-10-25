@@ -5,7 +5,7 @@ import { PresetFileKind, PresetPartPath } from '../preset-part-path.value-object
 
 describe('PresetPartPath.parse', () => {
   it.each<{
-    expected: PresetPartPath | undefined;
+    expected: object | undefined;
     name: string;
     path: string;
   }>([
@@ -103,11 +103,9 @@ describe('PresetPartPath.parse', () => {
       path: 'presets/typescript/biome/foundation/notes/surface-only-re-exports.grit',
     },
   ])('should read $name when the path is $path', ({ expected, path }) => {
-    // Arrange
-    const input = path;
-
     // Act
-    const read = PresetPartPath.parse(input);
+    // the file a caller reads: its fields, the brand being the compiler's alone
+    const read: object | undefined = PresetPartPath.parse(path);
 
     // Assert
     expect(read).toStrictEqual(expected);
@@ -127,36 +125,43 @@ describe('PresetPartPath.parse', () => {
       name: 'core',
     },
   ])('should name the part $name when its file is $file', ({ file, name }) => {
-    // Arrange
-    const given = file;
-
     // Act
-    const partName = PresetPartPath.partNameOf(given);
+    const partName = PresetPartPath.partNameOf(file);
 
     // Assert
     expect(partName).toBe(name);
   });
 });
 
-const coreOfBiome: PresetPartPath = {
+const coreOfBiome = {
   axis: Axis.Foundation,
   kind: PresetFileKind.Part,
   name: 'core',
   scope: 'typescript',
   tool: 'biome',
 };
-const bindingsOfBiome: PresetPartPath = {
+const bindingsOfBiome = {
   axis: Axis.Foundation,
   kind: PresetFileKind.Bindings,
   scope: 'typescript',
   tool: 'biome',
 };
-const pluginOfBiome: PresetPartPath = {
+const pluginOfBiome = {
   axis: Axis.Architecture,
   kind: PresetFileKind.Plugin,
   rule: 'surface-only-re-exports',
   scope: 'typescript',
   tool: 'biome',
+};
+
+const presetOf = (path: string): PresetPartPath => {
+  const preset = PresetPartPath.parse(path);
+
+  if (preset === undefined) {
+    throw new Error(`${path} is no file of a preset`);
+  }
+
+  return preset;
 };
 
 describe('PresetPartPath', () => {
@@ -249,59 +254,43 @@ describe('PresetPartPath', () => {
       isPreset: false,
     },
   ])('should say $isPreset when $condition', ({ candidate, isPreset }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const answer = PresetPartPath.is(given);
+    const answer = PresetPartPath.is(candidate);
 
     // Assert
     expect(answer).toBe(isPreset);
   });
 
-  it.each<{
-    condition: string;
-    isEqual: boolean;
-    left: PresetPartPath;
-    right: PresetPartPath;
-  }>([
+  it.each([
     {
       condition: 'they are one part',
       isEqual: true,
-      left: coreOfBiome,
-      right: {
-        ...coreOfBiome,
-      },
+      left: 'presets/typescript/biome/foundation/core.jsonc',
+      right: 'presets/typescript/biome/foundation/core.jsonc',
     },
     {
       condition: 'they are two parts',
       isEqual: false,
-      left: coreOfBiome,
-      right: {
-        ...coreOfBiome,
-        name: 'self',
-      },
+      left: 'presets/typescript/biome/foundation/core.jsonc',
+      right: 'presets/typescript/biome/foundation/self.jsonc',
     },
     {
       condition: 'they are two plugins',
       isEqual: false,
-      left: pluginOfBiome,
-      right: {
-        ...pluginOfBiome,
-        rule: 'no-default-export',
-      },
+      left: 'presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit',
+      right: 'presets/typescript/biome/architecture/plugins/no-default-export.grit',
     },
     {
       condition: 'one is the bindings and one a part of the same folder',
       isEqual: false,
-      left: bindingsOfBiome,
-      right: coreOfBiome,
+      left: 'presets/typescript/biome/foundation/bindings.yaml',
+      right: 'presets/typescript/biome/foundation/core.jsonc',
     },
   ])('should say $isEqual when $condition', ({ isEqual, left, right }) => {
     // Arrange
     const paths = [
-      left,
-      right,
+      presetOf(left),
+      presetOf(right),
     ] as const;
 
     // Act

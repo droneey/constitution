@@ -1,10 +1,10 @@
 import ast
 import sys
 from dataclasses import dataclass
-from enum import StrEnum
-from typing import TYPE_CHECKING
+from enum import StrEnum, unique
+from typing import TYPE_CHECKING, Final
 
-from droneey_python_check.findings import Finding
+from droneey_python_check.findings import Finding, Rule
 from droneey_python_check.imports import import_root_of, in_feature_form
 
 if TYPE_CHECKING:
@@ -12,23 +12,23 @@ if TYPE_CHECKING:
 
   from droneey_python_check.settings import Settings
 
-ROOT = 'root'
-ENTRYPOINTS = 'entrypoints'
-DOMAIN = 'domain'
-ADAPTERS = 'adapters'
-APP = 'app'
+ROOT: Final = 'root'
+ENTRYPOINTS: Final = 'entrypoints'
+DOMAIN: Final = 'domain'
+ADAPTERS: Final = 'adapters'
+APP: Final = 'app'
 # The kernel, the ports it shares among it, is pure, and so is a domain.
-PURE = frozenset({'kernel'})
-EDGE = frozenset({ADAPTERS, 'integrations', 'libs', ROOT})
-ENTRIES = frozenset({'__main__', 'main'})
+PURE: Final = frozenset({'kernel'})
+EDGE: Final = frozenset({ADAPTERS, 'integrations', 'libs', ROOT})
+ENTRIES: Final = frozenset({'__main__', 'main'})
 # The folders of an entry file of its own: entrypoints/<name>/main.py.
-ENTRY_DEPTH = 2
+ENTRY_DEPTH: Final = 2
 # The word a home names the whole edge by.
-EDGE_HOME = 'edge'
-OWN = frozenset({'__future__', *sys.stdlib_module_names})
+EDGE_HOME: Final = 'edge'
+OWN: Final = frozenset({'__future__', *sys.stdlib_module_names})
 # The standard library's modules of input and output, the clock, randomness and identifiers,
 # which only the edge imports.
-EFFECTS = frozenset(
+EFFECTS: Final = frozenset(
   {
     'ctypes',
     'curses',
@@ -74,7 +74,7 @@ EFFECTS = frozenset(
 )
 # What of the standard library reaches an effect although its module's types are pure,
 # named as an import or a call spells it.
-EFFECT_NAMES = frozenset(
+EFFECT_NAMES: Final = frozenset(
   {
     'asyncio.create_subprocess_exec',
     'asyncio.create_subprocess_shell',
@@ -118,15 +118,16 @@ EFFECT_NAMES = frozenset(
   }
 )
 # A call through a class imported from datetime, such as `datetime.now()`.
-DATETIME = 'datetime'
+DATETIME: Final = 'datetime'
 # A timer, which a binding unit alone may hold to schedule its own work.
-TIMERS = frozenset({'asyncio.sleep', 'threading.Timer'})
+TIMERS: Final = frozenset({'asyncio.sleep', 'threading.Timer'})
 # What reads or changes the environment, which only the root and the entry files reach.
-ENVIRONMENT = frozenset(
+ENVIRONMENT: Final = frozenset(
   {'os.environ', 'os.environb', 'os.getenv', 'os.getenvb', 'os.putenv', 'os.unsetenv'}
 )
 
 
+@unique
 class Role(StrEnum):
   PURE = 'pure'
   EDGE = 'edge'
@@ -228,18 +229,18 @@ def _binding(folders: tuple[str, ...]) -> bool:
   return layers_of(folders)[1:] == (APP,)
 
 
-def _message(*, home: tuple[str, ...] | None, package: str, role: Role, where: str) -> str | None:
+# A breach a finding names: its rule and the values its message names.
+type Breach = tuple[Rule, tuple[str, ...]]
+
+
+def _breach(*, home: tuple[str, ...] | None, package: str, role: Role, where: str) -> Breach | None:
   if role is Role.PURE:
-    return f'{where} imports no package, and {package} is one'
+    return Rule.PACKAGE_IN_PURE, (where, package)
 
   if home is None:
-    return (
-      None
-      if role is Role.EDGE
-      else f'{package} has no home in {where}; a package without one is imported at the edge'
-    )
+    return None if role is Role.EDGE else (Rule.PACKAGE_WITHOUT_HOME, (package, where))
 
-  return f'{package} is imported in {where}, outside its home: {", ".join(home)}'
+  return Rule.PACKAGE_OUTSIDE_HOME, (package, where, ', '.join(home))
 
 
 def _in_home(*, folders: tuple[str, ...], home: tuple[str, ...], role: Role) -> bool:
@@ -256,9 +257,9 @@ class _Importer:
   where: str
 
 
-def _package_message(*, importer: _Importer, package: str) -> str | None:
+def _package_breach(*, importer: _Importer, package: str) -> Breach | None:
   if package in EFFECTS and importer.role is not Role.EDGE:
-    return f'{importer.where} holds no effect, and {package} is one; it reaches it through a port'
+    return Rule.EFFECT_OUTSIDE_EDGE, (importer.where, package)
 
   home = importer.settings.homes.get(package)
 
@@ -269,7 +270,7 @@ def _package_message(*, importer: _Importer, package: str) -> str | None:
   ):
     return None
 
-  return _message(home=home, package=package, role=importer.role, where=importer.where)
+  return _breach(home=home, package=package, role=importer.role, where=importer.where)
 
 
 def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tuple[Finding, ...]:
@@ -287,11 +288,11 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
   )
 
   packages = tuple(
-    Finding(path=path, line=node.lineno, message=message)
+    Finding(path=path, line=node.lineno, rule=breach[0], values=breach[1])
     for node in ast.walk(tree)
     if isinstance(node, ast.Import | ast.ImportFrom)
     for package in _packages(node)
-    if (message := _package_message(importer=importer, package=package)) is not None
+    if (breach := _package_breach(importer=importer, package=package)) is not None
   )
   aliases = _aliases_of(tree)
   effects_here = EFFECT_NAMES if _binding(root.package) else EFFECT_NAMES | TIMERS
@@ -299,7 +300,8 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     Finding(
       path=path,
       line=node.lineno,
-      message=f'{importer.where} holds no effect, and {name} is one; it reaches it through a port',
+      rule=Rule.EFFECT_OUTSIDE_EDGE,
+      values=(importer.where, name),
     )
     for node in ast.walk(tree)
     if importer.role is not Role.EDGE
@@ -311,7 +313,8 @@ def package_findings(*, path: Path, settings: Settings, tree: ast.Module) -> tup
     Finding(
       path=path,
       line=node.lineno,
-      message=f'{importer.where} reads the environment through {name}; only the root reads it',
+      rule=Rule.ENVIRONMENT_OUTSIDE_ROOT,
+      values=(importer.where, name),
     )
     for node in ast.walk(tree)
     if importer.role is Role.EDGE

@@ -193,5 +193,4 @@ const PartDiagnosis = {
   partOf: (diagnosis: PartDiagnosis): InstallationPart => PART_OF[diagnosis.kind],
 } as const;
 
-export type { ReleaseLink };
 export { Diagnosis, Health, InstallationPart, PartDiagnosis };

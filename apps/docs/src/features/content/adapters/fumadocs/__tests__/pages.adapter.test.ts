@@ -4,13 +4,7 @@ import type { Node } from 'fumadocs-core/page-tree';
 import { loader } from 'fumadocs-core/source';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import {
-  collectionPathOf,
-  crossLinks,
-  markdownOfPage,
-  passportAsIndex,
-  servedUnderSitePaths,
-} from '../pages.adapter';
+import { createSitePaths, crossLinks, markdownOfPage, passportAsIndex } from '../pages.adapter';
 
 const ARROW = /<svg\b(?=[^>]*\baria-hidden="true")(?=[^>]*\bdata-cross-link="")[^>]*>.*<\/svg>/;
 
@@ -37,9 +31,10 @@ const addressesOf = (nodes: readonly Node[]): readonly string[] =>
       : [],
   );
 
-describe('servedUnderSitePaths', () => {
-  it('should serve every file under the path asked when a source is servedUnderSitePaths', () => {
+describe('createSitePaths', () => {
+  it('should serve every file under the path asked', () => {
     // Arrange
+    const { servedUnderSitePaths } = createSitePaths();
     const source = {
       files: [
         {
@@ -64,11 +59,11 @@ describe('servedUnderSitePaths', () => {
       name: 'overview',
     });
   });
-});
 
-describe('collectionPathOf', () => {
   it('should give the path the collection knows when the site serves the page under another', () => {
     // Arrange
+    const { collectionPathOf, servedUnderSitePaths } = createSitePaths();
+
     servedUnderSitePaths(
       {
         files: [
@@ -77,11 +72,11 @@ describe('collectionPathOf', () => {
           },
         ],
       },
-      () => 'servedUnderSitePaths-glossary.md',
+      () => 'glossary.md',
     );
 
     // Act
-    const path = collectionPathOf('servedUnderSitePaths-glossary.md');
+    const path = collectionPathOf('glossary.md');
 
     // Assert
     expect(path).toBe('PROJECT.md');
@@ -89,13 +84,13 @@ describe('collectionPathOf', () => {
 
   it('should give the path itself when the site serves the page under its own', () => {
     // Arrange
-    const served = 'guides/never-servedUnderSitePaths.md';
+    const { collectionPathOf } = createSitePaths();
 
     // Act
-    const path = collectionPathOf(served);
+    const path = collectionPathOf('guides/write-a-pack.md');
 
     // Assert
-    expect(path).toBe('guides/never-servedUnderSitePaths.md');
+    expect(path).toBe('guides/write-a-pack.md');
   });
 });
 
@@ -142,11 +137,8 @@ describe('passportAsIndex', () => {
       served: 'core.md',
     },
   ])('should serve the page when $condition', ({ path, served }) => {
-    // Arrange
-    const file = path;
-
     // Act
-    const page = passportAsIndex(file);
+    const page = passportAsIndex(path);
 
     // Assert
     expect(page).toBe(served);

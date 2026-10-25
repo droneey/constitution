@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 
 import { cleanup, screen } from '@testing-library/react';
 
+import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { tocFixture } from '../../../../__tests__/docs.fixtures';
 import type { ViewportFake } from '../../../../__tests__/intersection-observer.fake';
 import { viewportFake } from '../../../../__tests__/intersection-observer.fake';
@@ -33,5 +34,16 @@ describe('DocsTocList', () => {
       '1',
       '1',
     ]);
+  });
+
+  test('should pass the WCAG 2.2 A and AA scan', async () => {
+    // Arrange
+    renderOnPage(<DocsTocList />);
+
+    // Act
+    const violations = await componentViolationsIn();
+
+    // Assert
+    expect(violations).toStrictEqual([]);
   });
 });

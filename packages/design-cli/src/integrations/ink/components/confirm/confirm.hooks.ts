@@ -1,12 +1,13 @@
 import { useInput } from 'ink';
 
+import { useInterrupt } from '../../hooks';
+
 interface ConfirmInput {
   readonly defaultAnswer: boolean;
   readonly onInterrupt: () => void;
   readonly onSubmit: (answer: boolean) => void;
 }
 
-const INTERRUPT_KEY = 'c';
 const YES_KEYS: readonly string[] = [
   'y',
   'Y',
@@ -17,10 +18,9 @@ const NO_KEYS: readonly string[] = [
 ] as const;
 
 const useConfirm = ({ defaultAnswer, onInterrupt, onSubmit }: ConfirmInput): void => {
+  useInterrupt(onInterrupt);
   useInput((input, key) => {
-    if (key.ctrl && input === INTERRUPT_KEY) {
-      onInterrupt();
-    } else if (YES_KEYS.includes(input)) {
+    if (YES_KEYS.includes(input)) {
       onSubmit(true);
     } else if (NO_KEYS.includes(input)) {
       onSubmit(false);

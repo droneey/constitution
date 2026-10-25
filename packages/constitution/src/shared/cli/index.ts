@@ -1,6 +1,5 @@
-export type { FlagDeclaration } from './constants';
-export { BASE_FLAG, OUTPUT_FLAGS, SectionKind } from './constants';
-export { isUsageError, UsageFailure } from './errors';
+export { BASE_FLAG, ExitCode, LAYER_ARTICLE, OUTPUT_FLAGS, SectionKind } from './constants';
+export { isUsageError } from './errors';
 export type {
   CommandContext,
   CommandIo,
@@ -8,7 +7,6 @@ export type {
   Renderer,
   Report,
   Section,
-  SectionOf,
   Task,
   TaskOutcome,
   TextsOf,
@@ -19,7 +17,6 @@ export {
   linesSection,
   noteSection,
   outputFlagsOf,
-  pairsSection,
   stepsSection,
   textOf,
   unitText,

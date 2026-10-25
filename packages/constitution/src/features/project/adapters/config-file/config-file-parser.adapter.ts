@@ -1,8 +1,10 @@
+import { CHECK_KEY } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { recognisedFailure } from '#/kernel/utils';
 
 import type { ConfigParser } from '../../domain/contracts';
 import type { ConfigRead } from '../../domain/entities';
+import { ConfigKey, LIST_KEYS } from '../../domain/entities';
 import type { Pending, ReaderState } from './config-reader.utils';
 import {
   closeLevel,
@@ -21,16 +23,7 @@ import { closingBracketOf, scalarOf, trimBlanks, withoutComment } from './scalar
 // constitution.yaml in the fixed subset of YAML its grammar allows, read line by line as a person
 // reads it: a line outside the subset stops the read there, and the hook gives core alone.
 
-const listKeys: ReadonlySet<string> = new Set([
-  'axes',
-  'domains',
-  'platforms',
-  'languages',
-  'implementations',
-  'packs',
-]);
-const CHECK = 'check';
-const OVERRIDES = 'overrides';
+const listKeys: ReadonlySet<string> = new Set(LIST_KEYS);
 const MARKER = '---';
 const TOP_KEY = /^[A-Za-z_][A-Za-z0-9_-]*:/;
 const BLANK_LINE = /^[ \t]*$/;
@@ -51,13 +44,13 @@ const yamlNulls: ReadonlySet<string> = new Set([
 const openTopValue = (input: { key: string; rest: string; state: ReaderState }): void => {
   const { key, rest, state } = input;
 
-  if (key === CHECK) {
+  if (key === CHECK_KEY) {
     const check = scalarOf(rest);
 
     state.level.kind = Kind.Scalar;
 
     if (check === '') {
-      state.empties.push(CHECK);
+      state.empties.push(CHECK_KEY);
     } else if (!yamlNulls.has(check)) {
       state.check = check;
     }
@@ -67,7 +60,7 @@ const openTopValue = (input: { key: string; rest: string; state: ReaderState }):
       rest,
       state,
     });
-  } else if (key === OVERRIDES) {
+  } else if (key === ConfigKey.Overrides) {
     openOverrides({
       rest,
       state,

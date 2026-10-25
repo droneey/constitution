@@ -4,7 +4,8 @@ const corePassport = `core${MARKDOWN_EXTENSION}`;
 
 const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
-const FRONT_MATTER = /---\n([\s\S]*?)\n---\n/;
+/** at the start of a file, its fields in the first group */
+const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 
 const SEAMS_FOLDER = 'with';
 

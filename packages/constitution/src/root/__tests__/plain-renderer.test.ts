@@ -2,7 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { ColourLevel, createTheme, StepStatus, ThemeMode, Tone } from '@droneey/design-cli';
 
-import { linesSection, noteSection, pairsSection, stepsSection } from '#/shared/cli';
+import type { Report } from '#/shared/cli';
+import { linesSection, noteSection, SectionKind, stepsSection } from '#/shared/cli';
 
 import { createPlainRenderer } from '../plain-renderer';
 
@@ -41,7 +42,7 @@ const rendererOf = (): {
 describe('createPlainRenderer: the result', () => {
   it('should write each section as plain text, a blank line apart', async () => {
     // Arrange
-    const report = [
+    const report: Report = [
       stepsSection([
         {
           label: 'Blocks',
@@ -52,12 +53,15 @@ describe('createPlainRenderer: the result', () => {
         'a',
         '  b',
       ]),
-      pairsSection([
-        [
-          'plugin',
-          '1.0.0',
+      {
+        kind: SectionKind.Pairs,
+        pairs: [
+          [
+            'plugin',
+            '1.0.0',
+          ],
         ],
-      ]),
+      },
       noteSection({
         lines: [
           'run mise install',

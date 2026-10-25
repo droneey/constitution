@@ -1,9 +1,11 @@
+interface RecognisedFailureInput {
+  readonly error: unknown;
+  readonly isRecognised: (error: unknown) => boolean;
+}
+
 // A catch handles only the failures it recognises: this gives back the one it recognises and
 // rethrows any other, so a defect never passes for an expected failure.
-const recognisedFailure = (input: {
-  error: unknown;
-  isRecognised: (error: unknown) => boolean;
-}): unknown => {
+const recognisedFailure = (input: RecognisedFailureInput): unknown => {
   if (input.isRecognised(input.error)) {
     return input.error;
   }
@@ -11,12 +13,14 @@ const recognisedFailure = (input: {
   throw input.error;
 };
 
+interface AttemptInput<TOutcome> {
+  readonly effect: () => TOutcome;
+  readonly isRecognised: (error: unknown) => boolean;
+}
+
 // The outcome of an effect, or undefined when it fails as the caller expects; any other failure
 // is rethrown.
-const attempted = <TOutcome>(input: {
-  effect: () => TOutcome;
-  isRecognised: (error: unknown) => boolean;
-}): TOutcome | undefined => {
+const attempted = <TOutcome>(input: AttemptInput<TOutcome>): TOutcome | undefined => {
   let outcome: TOutcome | undefined;
 
   try {

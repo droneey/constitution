@@ -123,20 +123,20 @@ const validate = (
   };
 };
 
+interface CheckBlocksInput extends Parsers {
+  /** the installed Constitution a pack extends */
+  readonly base?: string;
+  readonly files: ProjectFiles;
+  readonly folder: string;
+  readonly trees: FileTrees;
+}
+
 /**
  * undefined when the folder holds no blocks.
  *
  * @throws {@link TreeError} when git cannot list the files of a tree, or a file it lists cannot be read
  */
-const checkBlocks = (
-  input: Parsers & {
-    /** the installed Constitution a pack extends */
-    base?: string | undefined;
-    files: ProjectFiles;
-    folder: string;
-    trees: FileTrees;
-  },
-): Validation | undefined => {
+const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
   const { folder, trees } = input;
 
   if (!input.files.isFolder(`${folder}/${BLOCKS_FOLDER}`)) {
@@ -160,5 +160,5 @@ const checkBlocks = (
   });
 };
 
-export type { Validation };
+export type { CheckBlocksInput, Validation };
 export { checkBlocks };

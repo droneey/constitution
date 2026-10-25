@@ -5,6 +5,8 @@ enum TreeFailure {
   Failed = 'failed',
   TimedOut = 'timed-out',
   Unreadable = 'unreadable',
+  /** the installed Constitution's blocks folder holds more files than any release does */
+  TooLarge = 'too-large',
 }
 
 interface TreeFailureDetails {

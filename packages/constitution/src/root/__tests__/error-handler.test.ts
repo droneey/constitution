@@ -5,11 +5,10 @@ import { CommanderError } from 'commander';
 
 import { TreeError, TreeFailure } from '#/features/blocks';
 import { ProjectError, ProjectFailure } from '#/kernel/errors';
-import { outputFlagsOf } from '#/shared/cli';
+import { ExitCode, outputFlagsOf } from '#/shared/cli';
 
 import { clockOf } from '../configuration';
 import { createErrorHandler } from '../error-handler';
-import { ExitCode } from '../exit-codes';
 
 const testTheme = createTheme({
   colourLevel: ColourLevel.None,
@@ -99,7 +98,7 @@ describe('createErrorHandler', () => {
           path: 'constitution.yaml',
         },
       },
-      line: 'constitution hook: constitution.yaml does not parse at line 0\n',
+      line: 'constitution hook: constitution.yaml does not parse\n',
     },
     {
       condition: 'constitution.yaml cannot be read',
@@ -181,8 +180,7 @@ describe('createErrorHandler', () => {
     },
     {
       failure: ProjectFailure.ConfigUnparsed,
-      written:
-        '✗ constitution.yaml does not parse at line 0\n  → fix constitution.yaml at that line\n',
+      written: '✗ constitution.yaml does not parse\n  → fix constitution.yaml at that line\n',
     },
     {
       failure: ProjectFailure.ConfigUnreadable,
@@ -253,8 +251,13 @@ describe('createErrorHandler', () => {
       written:
         '✗ git could not list the files of /work/constitution\n  → run git status there, which says what git cannot read\n',
     },
+    {
+      code: TreeFailure.TooLarge,
+      written:
+        '✗ the blocks of /work/constitution hold more files than a release does\n  → run constitution doctor, which says what is wrong with the installation\n',
+    },
   ])(
-    'should name the folder git could not list, and end with the failure code, when it $code',
+    'should name the folder whose files could not be listed, and end with the failure code, when it is $code',
     ({ code, written }) => {
       // Arrange
       const handler = handlerOf({

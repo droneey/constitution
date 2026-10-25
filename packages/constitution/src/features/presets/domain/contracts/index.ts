@@ -1,1 +1,1 @@
-export type { ConfigurationParser, Setting } from './configuration-parser.port';
+export type { ConfigurationParser, ConfigurationText, Setting } from './configuration-parser.port';

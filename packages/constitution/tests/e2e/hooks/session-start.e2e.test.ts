@@ -30,6 +30,7 @@ import {
   warningCutOf,
   warningsOf,
 } from '../hook.fixtures';
+import type { PluginRootOptions } from '../plugin-root.fixtures';
 import {
   archiveOf,
   Breakage,
@@ -155,25 +156,22 @@ interface EventCase {
 }
 
 interface NoticeCase {
-  // a field the archive's package.json is written without
-  breakage?: Breakage | undefined;
   condition: string;
-  // the project's link points to a folder that does not exist
-  dangling?: boolean | undefined;
-  // the archive's constitutionFormat, or undefined for the default archive's
-  format?: number | string | undefined;
+  // what the case links into the project before the hook runs, which then links nothing over it
+  link: (project: string) => void;
   // what the notice names: the archive and the command to run
   names: (archive: string) => readonly string[];
+  plugin: PluginRootOptions;
   // no archive is linked into the project
   unlinked?: boolean | undefined;
 }
 
 interface FailureCase {
-  breakage?: Breakage;
   condition: string;
   layout: ProjectLayout;
   // the file the line names, from the paths of the run; empty for a failure that names no file
   named: (paths: { archive: string; project: string }) => string;
+  plugin: PluginRootOptions;
 }
 
 interface AxesView {
@@ -287,6 +285,9 @@ const axesMemberOf = (axes: string): ProjectLayout['files'] =>
   });
 
 const archiveIn = (project: string): string => join(project, LINK);
+
+// runHook links the release's archive into a project that holds no link of its own.
+const linkNothing = (): void => undefined;
 
 let root = '';
 
@@ -2009,28 +2010,48 @@ describe('session-start hook', () => {
     [
       {
         condition: 'the project holds no archive',
+        link: linkNothing,
+        plugin: {},
         unlinked: true,
       },
       {
         condition: "the project's archive link points nowhere",
-        dangling: true,
+        link: (project: string): void => {
+          linkArchive({
+            archive: join(project, 'gone'),
+            project,
+          });
+        },
+        plugin: {},
       },
       {
-        breakage: Breakage.Format,
         condition:
           'the archive is a release from before block format 2, whose package.json names none',
+        link: linkNothing,
+        plugin: {
+          breakage: Breakage.Format,
+        },
       },
       {
         condition: 'the block format is older than the oldest the plugin reads',
-        format: releaseFormat - 1,
+        link: linkNothing,
+        plugin: {
+          format: releaseFormat - 1,
+        },
       },
       {
         condition: 'the block format is written as text',
-        format: String(releaseFormat),
+        link: linkNothing,
+        plugin: {
+          format: String(releaseFormat),
+        },
       },
       {
         condition: 'the block format is newer than the plugin reads',
-        format: releaseFormat + 1,
+        link: linkNothing,
+        plugin: {
+          format: releaseFormat + 1,
+        },
       },
     ].map((notice: Omit<NoticeCase, 'names'>) => ({
       ...notice,
@@ -2042,38 +2063,19 @@ describe('session-start hook', () => {
     })),
   )(
     'should point to doctor in one line and save no state when $condition',
-    ({ breakage, dangling, format, names, unlinked }) => {
+    ({ link, names, plugin, unlinked }) => {
       // Arrange
-      const plugin =
-        breakage === undefined && format === undefined
-          ? root
-          : createPluginRoot({
-              ...(breakage === undefined
-                ? {}
-                : {
-                    breakage,
-                  }),
-              ...(format === undefined
-                ? {}
-                : {
-                    format,
-                  }),
-            });
+      const pluginRoot = createPluginRoot(plugin);
       const project = createProject(cli);
       const session = newSession();
 
-      if (dangling === true) {
-        linkArchive({
-          archive: join(project, 'gone'),
-          project,
-        });
-      }
+      link(project);
 
       // Act
       const run = runHook({
         event: HookEvent.Startup,
         project,
-        root: plugin,
+        root: pluginRoot,
         session,
         unlinked,
       });
@@ -2124,22 +2126,28 @@ describe('session-start hook', () => {
 
   it.each<FailureCase>([
     {
-      breakage: Breakage.Manifest,
       condition: 'the archive lacks package.json',
       layout: cli,
       named: ({ archive }): string => `${archive}/package.json`,
+      plugin: {
+        breakage: Breakage.Manifest,
+      },
     },
     {
-      breakage: Breakage.Core,
       condition: "the archive lacks core's card",
       layout: cli,
       named: (): string => '',
+      plugin: {
+        breakage: Breakage.Core,
+      },
     },
     {
-      breakage: Breakage.Version,
       condition: "the archive's package.json has no version",
       layout: cli,
       named: ({ archive }): string => `${archive}/package.json`,
+      plugin: {
+        breakage: Breakage.Version,
+      },
     },
     {
       condition: 'constitution.yaml cannot be read',
@@ -2150,18 +2158,13 @@ describe('session-start hook', () => {
         ],
       },
       named: ({ project }): string => `${project}/constitution.yaml`,
+      plugin: {},
     },
   ])(
     'should write one line of the hook to stderr, naming the file it stopped at, and exit 1 when $condition',
-    ({ breakage, layout, named }) => {
+    ({ layout, named, plugin }) => {
       // Arrange
-      const plugin = createPluginRoot(
-        breakage === undefined
-          ? {}
-          : {
-              breakage,
-            },
-      );
+      const pluginRoot = createPluginRoot(plugin);
       const project = createProject(layout);
       const file = named({
         archive: archiveIn(project),
@@ -2172,7 +2175,7 @@ describe('session-start hook', () => {
       const run = runHook({
         event: HookEvent.Startup,
         project,
-        root: plugin,
+        root: pluginRoot,
       });
 
       // Assert
@@ -2480,6 +2483,7 @@ describe('session-start hook', () => {
         session,
       });
 
+      // Assert
       const shown: readonly string[] = mustsOf(session).filter((must) =>
         [
           'four-data-states',
@@ -2489,7 +2493,6 @@ describe('session-start hook', () => {
         ].includes(must.split(' ')[0] ?? ''),
       );
 
-      // Assert
       expect(shown).toStrictEqual(musts);
     },
   );

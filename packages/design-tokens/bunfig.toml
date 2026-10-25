@@ -1,6 +1,6 @@
 [test]
 root = "."
-preload = ["./tests/sandbox.fixtures.ts"]
+preload = ["./src/__tests__/sandbox.fixtures.ts"]
 randomize = true
 coverage = true
 coverageReporter = ["text"]

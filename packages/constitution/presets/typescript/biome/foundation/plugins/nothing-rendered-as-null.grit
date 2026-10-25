@@ -22,6 +22,12 @@ language js
         JsxTagExpression(),
         JsParenthesizedExpression(expression=JsxTagExpression())
       }
+    },
+    JsConditionalExpression(consequent=`null`, alternate=$shown) where {
+      $shown <: or {
+        JsxTagExpression(),
+        JsParenthesizedExpression(expression=JsxTagExpression())
+      }
     }
   },
   register_diagnostic(span=$value, message="[nothing-rendered-as-null] null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")

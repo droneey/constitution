@@ -38,55 +38,45 @@ describe('createYamlBlockCardParser', () => {
     },
     {
       card: {
-        extends: undefined,
         governs: [],
         isAbstract: false,
         requires: [],
-        summary: '',
       },
       condition: 'the fields are of another form or empty',
       yaml: 'summary: {text: Screens.}\nextends: ""\nabstract: yes\nrequires: ""\ngoverns: {a: b}',
     },
     {
       card: {
-        extends: undefined,
         governs: [],
         isAbstract: false,
         requires: [],
-        summary: '',
       },
       condition: 'the fields are left out',
       yaml: 'id: ui',
     },
     {
       card: {
-        extends: undefined,
         governs: [],
         isAbstract: false,
         requires: [],
-        summary: '',
       },
       condition: 'the front matter is no YAML',
       yaml: 'summary: Screens.\ngoverns: ["**/ui/**" "**/web/**"]',
     },
     {
       card: {
-        extends: undefined,
         governs: [],
         isAbstract: false,
         requires: [],
-        summary: '',
       },
       condition: 'the front matter is a list',
       yaml: '- summary\n- governs',
     },
     {
       card: {
-        extends: undefined,
         governs: [],
         isAbstract: false,
         requires: [],
-        summary: '',
       },
       condition: 'the front matter is null',
       yaml: '~',

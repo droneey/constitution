@@ -40,6 +40,7 @@ import {
   vulturePart,
   vultureSection,
   wired,
+  wiringFileUnreadable,
   wiringOf,
 } from '../../../../../__tests__/wiring.fixtures';
 import { checkWiring } from '../check-wiring.use-case';
@@ -1420,10 +1421,7 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        toolWiredNowhere({
-          tool: 'biome',
-          unit: '',
-        }),
+        wiringFileUnreadable('biome.json'),
       ],
     },
     {
@@ -2594,7 +2592,80 @@ describe('checkWiring', () => {
     expect(warnings).toStrictEqual(warned);
   });
 
-  it('should hold an empty copy to its part when the part cannot be read', () => {
+  it.each<{
+    condition: string;
+    fixture: WiringFixture;
+    warned: ProjectWarning[];
+  }>([
+    {
+      condition: 'a template cannot be read',
+      fixture: {
+        unreadable: [
+          '.droneey/constitution/templates/project/common/osv-scanner/mise.toml',
+        ],
+      },
+      warned: [
+        wiringFileUnreadable(
+          '.droneey/constitution/templates/project/common/osv-scanner/mise.toml',
+        ),
+      ],
+    },
+    {
+      condition: 'a part of a chain cannot be read',
+      fixture: {
+        unreadable: [
+          '.droneey/constitution/presets/python/ruff/foundation/core.toml',
+        ],
+      },
+      warned: [
+        wiringFileUnreadable('.droneey/constitution/presets/python/ruff/foundation/core.toml'),
+      ],
+    },
+    {
+      condition: 'a part a file lists by its path cannot be read',
+      fixture: {
+        unreadable: [
+          '.droneey/constitution/presets/common/biome/foundation/self.jsonc',
+        ],
+      },
+      warned: [],
+    },
+    {
+      condition: 'a tracked file is gone from the folder',
+      fixture: {
+        tracked: [
+          'tools/lint/biome.json',
+        ],
+      },
+      warned: [],
+    },
+    {
+      condition: 'a tracked file below a unit that has none of its own is gone from the folder',
+      fixture: {
+        project: UNBIOMED,
+        tracked: [
+          'tools/lint/biome.json',
+        ],
+      },
+      warned: [
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: '',
+        }),
+      ],
+    },
+  ])('should warn only of the files it reads and cannot when $condition', ({ fixture, warned }) => {
+    // Arrange
+    const input = wiringOf(fixture);
+
+    // Act
+    const warnings = checkWiring(input);
+
+    // Assert
+    expect(warnings).toStrictEqual(warned);
+  });
+
+  it('should warn of a part that cannot be read and leave its copy unjudged', () => {
     // Arrange
     const input = wiringOf({
       project: pyprojectOf({
@@ -2609,7 +2680,11 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnings).toStrictEqual([]);
+    expect(warnings).toStrictEqual([
+      wiringFileUnreadable(
+        '.droneey/constitution/presets/python/import-linter/foundation/core.toml',
+      ),
+    ]);
   });
 
   it.each<{
@@ -2895,6 +2970,17 @@ describe('checkWiring', () => {
       condition: "it skips each member's folder",
       fixture: {},
       warned: [],
+    },
+    {
+      condition: "the root's file cannot be read",
+      fixture: {
+        unreadable: [
+          'biome.json',
+        ],
+      },
+      warned: [
+        wiringFileUnreadable('biome.json'),
+      ],
     },
     {
       condition: 'it skips a folder that holds no member',

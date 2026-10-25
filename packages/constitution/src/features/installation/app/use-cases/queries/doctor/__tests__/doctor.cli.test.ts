@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
 import type { PartDiagnosis } from '../../../../../domain/entities';
 import { Diagnosis } from '../../../../../domain/entities';

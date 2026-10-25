@@ -93,17 +93,19 @@ const SEPARATOR = '/';
 const folderOf = (base: Base): string =>
   `${base.folder.startsWith(SEPARATOR) ? SEPARATOR : ''}${normalizePath(`${base.folder}${SEPARATOR}.`)}`;
 
+interface LoadConstitutionInput {
+  readonly base?: Base;
+  readonly bindingsParser: BindingsParser;
+  readonly frontMatterParser: FrontMatterParser;
+  readonly manifestParser: ManifestParser;
+  readonly repository: FileTree;
+  readonly tree: FileTree;
+}
+
 // The tree is the Constitution's own package; the repository is the one that
 // holds it, the same tree when the package is the repository. A pack is loaded
 // beside the base it extends, so its arrows and requires resolve against it.
-const loadConstitution = (input: {
-  base?: Base;
-  bindingsParser: BindingsParser;
-  frontMatterParser: FrontMatterParser;
-  manifestParser: ManifestParser;
-  repository: FileTree;
-  tree: FileTree;
-}): ConstitutionLoaded => {
+const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
   const listed = input.tree.list();
   const paths: ReadonlySet<string> = new Set(listed);
   const repositoryPaths: ReadonlySet<string> = new Set(input.repository.list());

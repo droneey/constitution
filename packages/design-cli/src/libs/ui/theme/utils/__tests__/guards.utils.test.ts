@@ -22,11 +22,8 @@ describe('isRecord', () => {
       isOne: false,
     },
   ])('should tell whether $raw is a record: $isOne', ({ isOne, raw }) => {
-    // Arrange
-    const value: unknown = raw;
-
     // Act
-    const answer = isRecord(value);
+    const answer = isRecord(raw);
 
     // Assert
     expect(answer).toBe(isOne);

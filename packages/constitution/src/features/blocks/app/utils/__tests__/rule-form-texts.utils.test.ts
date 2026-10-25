@@ -118,11 +118,8 @@ describe('ruleFormTexts', () => {
       text: 'has the heading "# requirements", which names the Requirements section; it is "## Requirements"',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(ruleFormTexts, reported.code, reported.details);
+    const said = textOf(ruleFormTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

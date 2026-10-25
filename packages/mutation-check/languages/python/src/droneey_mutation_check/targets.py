@@ -1,15 +1,15 @@
 import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
   from collections.abc import Callable, Iterator, Mapping
 
-SOURCE_ROOT = Path('src')
-INIT = '__init__'
+SOURCE_ROOT: Final = Path('src')
+INIT: Final = '__init__'
 # mutmut names a method's mutants by its class between these separators
-SEPARATOR = 'ǁ'
+SEPARATOR: Final = 'ǁ'
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

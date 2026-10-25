@@ -52,11 +52,8 @@ describe('referencesTexts', () => {
       text: 'links to a missing file "local/plan.md"',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(referencesTexts, reported.code, reported.details);
+    const said = textOf(referencesTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

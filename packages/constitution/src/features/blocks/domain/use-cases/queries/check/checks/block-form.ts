@@ -1,9 +1,9 @@
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { withoutCodeFences } from '#/kernel/utils';
 import type { RuleSlug } from '#/kernel/value-objects';
 
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../../../constants';
 import type { Block, BlockFile } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 

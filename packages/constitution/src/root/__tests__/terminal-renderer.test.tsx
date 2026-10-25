@@ -3,8 +3,12 @@ import { PassThrough } from 'node:stream';
 import { describe, expect, it } from 'bun:test';
 
 import { ColourLevel, OutputMode, StepStatus, ThemeMode, Tone } from '@droneey/design-cli';
+import { ThemeProvider } from '@droneey/design-cli/ink';
+import { render } from 'ink-testing-library';
 
-import { linesSection, noteSection, pairsSection } from '#/shared/cli';
+import type { Section } from '#/shared/cli';
+import { linesSection, noteSection, SectionKind } from '#/shared/cli';
+import { SectionView } from '#/shared/ui';
 
 import { createTerminalRenderer } from '../terminal-renderer';
 
@@ -62,6 +66,21 @@ const terminalOf = (): {
   };
 };
 
+// A section as the shared view draws it, whose spec pins the design system's drawing.
+const frameOf = (
+  section: Exclude<
+    Section,
+    {
+      readonly kind: SectionKind.Lines;
+    }
+  >,
+): string =>
+  render(
+    <ThemeProvider output={outputStream}>
+      <SectionView section={section} />
+    </ThemeProvider>,
+  ).lastFrame() ?? '';
+
 describe('createTerminalRenderer', () => {
   it('should draw each step on standard error, keep the work’s result, and close the steps before the result', async () => {
     // Arrange
@@ -77,6 +96,10 @@ describe('createTerminalRenderer', () => {
       run: () => 2,
     });
 
+    // Assert
+    expect(returned).toBe(2);
+
+    // Act
     await renderer.run({
       label: 'Presets',
       outcomeOf: () => ({
@@ -86,22 +109,21 @@ describe('createTerminalRenderer', () => {
         await Promise.resolve();
       },
     });
+
+    // Assert
+    expect(drawn.stdout).toStrictEqual([]);
+
+    // Act
     await renderer.print([]);
 
     // Assert
-    expect({
-      drawn,
-      returned,
-    }).toStrictEqual({
-      drawn: {
-        stderr: [
-          '✗ Blocks — 2 findings\n',
-          '⚠ Presets\n',
-          '\n',
-        ],
-        stdout: [],
-      },
-      returned: 2,
+    expect(drawn).toStrictEqual({
+      stderr: [
+        '✗ Blocks — 2 findings\n',
+        '⚠ Presets\n',
+        '\n',
+      ],
+      stdout: [],
     });
   });
 
@@ -109,6 +131,20 @@ describe('createTerminalRenderer', () => {
     // Arrange
     const { drawn, renderer } = terminalOf();
     const long = `  biome ${'x'.repeat(200)}`;
+    const note = noteSection({
+      lines: [],
+      title: 'Advice',
+      tone: Tone.Info,
+    });
+    const pairs = {
+      kind: SectionKind.Pairs,
+      pairs: [
+        [
+          'plugin',
+          '1.0.0',
+        ],
+      ],
+    } as const;
 
     // Act
     await renderer.print([
@@ -116,31 +152,12 @@ describe('createTerminalRenderer', () => {
         long,
         'next',
       ]),
-      noteSection({
-        lines: [],
-        title: 'Advice',
-        tone: Tone.Info,
-      }),
-      pairsSection([
-        [
-          'plugin',
-          '1.0.0',
-        ],
-      ]),
+      note,
+      pairs,
     ]);
 
     // Assert
-    expect(drawn.stdout.join('').split('\n')).toStrictEqual([
-      long,
-      'next',
-      '',
-      '╭──────────╮',
-      '│ ℹ Advice │',
-      '╰──────────╯',
-      '',
-      'plugin  1.0.0',
-      '',
-    ]);
+    expect(drawn.stdout.join('')).toBe(`${long}\nnext\n\n${frameOf(note)}\n\n${frameOf(pairs)}\n`);
   });
 
   it('should end the steps it drew when it closes', async () => {

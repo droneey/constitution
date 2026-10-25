@@ -23,6 +23,18 @@ export default {
     tanstackStart,
     architectureCore,
     architectureTanstackStart,
+    // the project's own settings, joined after the parts
+    {
+      mutate: [
+        // the server's handlers and the source over the collections fumadocs-mdx generates at build
+        // time, which no spec can load; the built site proves them
+        '!src/root/routes/**/*.ts',
+        '!src/features/content/adapters/fumadocs/source.adapter.ts',
+        // the titles and icons the site chose, which a spec could only restate
+        '!src/features/content/adapters/fumadocs/repository/folders.constants.ts',
+        '!src/features/content/adapters/fumadocs/repository/navigation-icons.constants.ts',
+      ],
+    },
   ),
   // this repository runs the mutation check from its source, not from the archive's build
   plugins: [

@@ -106,11 +106,8 @@ describe('planLinesOf', () => {
       },
     },
   ])('should word the plan as presets plan prints it when $condition', ({ lines, plan }) => {
-    // Arrange
-    const planned = plan;
-
     // Act
-    const printed = planLinesOf(planned);
+    const printed = planLinesOf(plan);
 
     // Assert
     expect(printed).toStrictEqual(lines);

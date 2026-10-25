@@ -1,4 +1,4 @@
-import type { KeyValue, NoteContent, StepContent } from '@droneey/design-cli';
+import type { NoteContent, StepContent } from '@droneey/design-cli';
 
 import { SectionKind } from '../constants';
 import type { SectionOf } from '../types';
@@ -13,14 +13,9 @@ const noteSection = (note: NoteContent): SectionOf<SectionKind.Note> => ({
   note,
 });
 
-const pairsSection = (pairs: readonly KeyValue[]): SectionOf<SectionKind.Pairs> => ({
-  kind: SectionKind.Pairs,
-  pairs,
-});
-
 const stepsSection = (steps: readonly StepContent[]): SectionOf<SectionKind.Steps> => ({
   kind: SectionKind.Steps,
   steps,
 });
 
-export { linesSection, noteSection, pairsSection, stepsSection };
+export { linesSection, noteSection, stepsSection };

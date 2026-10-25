@@ -1,4 +1,3 @@
-// biome-ignore-all lint/correctness/noUndeclaredDependencies: a template; the project that copies it declares Lingui
 import { basename, relative } from 'node:path';
 
 import { plugin } from 'bun';

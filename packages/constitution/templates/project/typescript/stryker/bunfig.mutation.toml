@@ -1,6 +1,6 @@
 [test]
-root = "./src"
-pathIgnorePatterns = ["**/main.test.*"]
+root = "."
+pathIgnorePatterns = ["tests/**"]
 coverage = false
 
 [run]

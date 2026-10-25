@@ -15,16 +15,18 @@ type TreeState =
       readonly status: TreeStateStatus.Unavailable;
     };
 
+interface TrackedFilesInput {
+  readonly names: readonly string[];
+  readonly project: string;
+}
+
 interface WorkingTree {
   /** the files changed since HEAD and those untracked, from the project's folder; none where git lists none */
   readonly changedFiles: (project: string) => readonly string[];
   readonly stateOf: (project: string) => TreeState;
   /** the tracked files named one of names, in any folder, from the project's folder; none where git lists none */
-  readonly trackedFiles: (input: {
-    names: readonly string[];
-    project: string;
-  }) => readonly string[];
+  readonly trackedFiles: (input: TrackedFilesInput) => readonly string[];
 }
 
-export type { TreeState, WorkingTree };
+export type { TrackedFilesInput, TreeState, WorkingTree };
 export { TreeStateStatus };

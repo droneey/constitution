@@ -17,7 +17,7 @@ export function DocsToc(): ReactElement | undefined {
   return (
     // biome-ignore lint/correctness/useUniqueElementIds: the library's id for its TOC column, which this column replaces in its slot and the site's layout styles by
     <div
-      className='sticky top-0 flex h-full w-(--fd-toc-width) shrink-0 flex-col overflow-clip @max-5xl:invisible @max-5xl:w-0 @max-5xl:ps-0'
+      className='invisible sticky top-0 flex h-full w-0 shrink-0 flex-col overflow-clip ps-0 @5xl:visible @5xl:w-(--fd-toc-width)'
       id='nd-toc'
     >
       <h3 className='inline-flex items-center text-sm text-fd-muted-foreground'>

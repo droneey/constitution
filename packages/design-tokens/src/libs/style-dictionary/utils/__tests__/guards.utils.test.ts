@@ -48,11 +48,8 @@ describe('isConfigList', () => {
       isOne: false,
     },
   ])('should tell whether $raw is a list of configurations: $isOne', ({ isOne, raw }) => {
-    // Arrange
-    const value: unknown = raw;
-
     // Act
-    const answer = isConfigList(value);
+    const answer = isConfigList(raw);
 
     // Assert
     expect(answer).toBe(isOne);

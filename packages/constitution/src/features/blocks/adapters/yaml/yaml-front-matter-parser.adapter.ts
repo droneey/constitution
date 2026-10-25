@@ -1,12 +1,16 @@
 import type { Document } from 'yaml';
 import { isAlias, LineCounter, parseDocument, visit } from 'yaml';
 
+import { attempted } from '#/kernel/utils';
+
 import type { FrontMatterParser, FrontMatterRead } from '../../domain/contracts';
 import type { SkillFrontMatterRead } from '../../domain/entities';
 import { ReadStatus } from '../../domain/entities';
 import { frontMatterModel, skillFrontMatterModel } from './models';
 
 const ALIAS_REASON = 'an unquoted value starts with "*", which YAML reads as an alias; quote it';
+
+const isReferenceError = (error: unknown): boolean => error instanceof ReferenceError;
 
 const isMapping = (parsed: unknown): parsed is Record<string, unknown> =>
   typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
@@ -30,18 +34,22 @@ const aliasOffset = (document: Document): number | undefined => {
 
 const mappingOf = (mapping: Record<string, unknown>): FrontMatterRead => {
   const parsing = frontMatterModel.safeParse(mapping);
+  const keys = Object.keys(mapping);
 
-  return {
-    fields: parsing.success ? parsing.data : undefined,
-    issues: parsing.success
-      ? []
-      : parsing.error.issues.map((issue) => ({
+  return parsing.success
+    ? {
+        fields: parsing.data,
+        keys,
+        status: ReadStatus.Mapping,
+      }
+    : {
+        issues: parsing.error.issues.map((issue) => ({
           field: issue.path.map(String).join('.'),
           message: issue.message,
         })),
-    keys: Object.keys(mapping),
-    status: ReadStatus.Mapping,
-  };
+        keys,
+        status: ReadStatus.Mismatched,
+      };
 };
 
 const parse = (yaml: string): FrontMatterRead => {
@@ -94,11 +102,33 @@ const skill = (yaml: string): SkillFrontMatterRead => {
     };
   }
 
-  const parsing = skillFrontMatterModel.safeParse(document.toJS());
+  // An alias without its anchor parses without an error and throws only as it resolves.
+  const parsed: unknown = attempted({
+    effect: (): unknown => document.toJS(),
+    isRecognised: isReferenceError,
+  });
+
+  if (parsed === undefined) {
+    return {
+      reason: ALIAS_REASON,
+      status: ReadStatus.NotYaml,
+    };
+  }
+
+  const parsing = skillFrontMatterModel.safeParse(parsed);
+  const { description, name } = parsing.success ? parsing.data : {};
 
   return {
-    description: parsing.success ? parsing.data.description : undefined,
-    name: parsing.success ? parsing.data.name : undefined,
+    ...(description === undefined
+      ? {}
+      : {
+          description,
+        }),
+    ...(name === undefined
+      ? {}
+      : {
+          name,
+        }),
     status: ReadStatus.Parsed,
   };
 };

@@ -1,4 +1,4 @@
-import { Axis, BLOCKS_FOLDER, LAYER_FOLDER, Layer } from '#/kernel/constants';
+import { Axis, BLOCKS_FOLDER, LAYER_FOLDER, Layer, SEAM_FOLDER } from '#/kernel/constants';
 import type { BlockListing, ListedBlock, ListedFiles, UnitListing } from '#/kernel/entities';
 import { UnitEntryKind } from '#/kernel/entities';
 import { SourceKind, UnitPath } from '#/kernel/value-objects';
@@ -23,7 +23,6 @@ const TITLES = [
 ] as const;
 const KEY =
   "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
-const SEAM_FOLDER = 'with';
 
 // The chapters and seams of a block by axis: foundation's bare, any other's after its axis.
 const filesText = (files: readonly ListedFiles[]): string =>
@@ -43,7 +42,7 @@ const alsoOf = (files: readonly ListedFiles[]): string =>
 // An implementation is known by its library's name; the digest's budget goes to the blocks a
 // name alone does not explain.
 const summaryOf = (block: ListedBlock): string =>
-  block.layer === Layer.Implementation ? '' : `: ${block.summary}`;
+  block.layer === Layer.Implementation || block.summary === undefined ? '' : `: ${block.summary}`;
 
 const sourceOf = (block: ListedBlock): string =>
   block.source.kind === SourceKind.Pack ? ` [${block.source.pack}]` : '';

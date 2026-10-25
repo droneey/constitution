@@ -25,7 +25,6 @@ const SKIPPED = 'node_modules';
 const HIDDEN = '.';
 const PARENT = '..';
 const WILDCARDS = /[*?[{]/u;
-const SPECIAL = /[.+^$|()\\]/gu;
 
 interface Declared {
   // the globs of the members, a "!" before those left out
@@ -41,7 +40,8 @@ const readModel = <T>(input: {
   path: string;
 }): T | undefined => {
   const parsed = attempted<unknown>({
-    effect: () => input.parse(readFileSync(input.path).toString()),
+    // Stryker disable next-line StringLiteral: without an encoding Bun gives the bytes, which both parsers read as UTF-8 too
+    effect: () => input.parse(readFileSync(input.path, 'utf8')),
     // Stryker disable next-line ConditionalExpression: reading a file fails only by the system and parsing it only by its syntax, so no other failure reaches here
     isRecognised: (error: unknown): boolean => isSystemError(error) || isSyntaxError(error),
   });
@@ -85,19 +85,6 @@ const declaredOf = (project: string): readonly Declared[] => {
     },
   ];
 };
-
-// A segment of a glob as a pattern: "*" any name, "?" one character, "{a,b}" either, "[ab]" one of.
-const segmentPatternOf = (segment: string): RegExp =>
-  new RegExp(
-    `^${segment
-      .replace(SPECIAL, '\\$&')
-      .replaceAll('*', '[^/]*')
-      .replaceAll('?', '[^/]')
-      .replaceAll('{', '(?:')
-      .replaceAll('}', ')')
-      .replaceAll(',', '|')}$`,
-    'u',
-  );
 
 interface Walk {
   // the folders listed so far, across the walk, and the most it lists
@@ -175,10 +162,12 @@ const expand = (input: {
     });
   }
 
-  const pattern = segmentPatternOf(segment);
+  // "*" is any name, "?" one character, "{a,b}" either, "[ab]" one of; Bun's glob matches in linear
+  // time, where a pattern built from a manifest's glob could backtrack.
+  const glob = new Bun.Glob(segment);
 
   return childrenOf(input)
-    .filter((child) => pattern.test(child.slice(child.lastIndexOf(SEPARATOR) + 1)))
+    .filter((child) => glob.match(child.slice(child.lastIndexOf(SEPARATOR) + 1)))
     .flatMap((child) =>
       expand({
         ...input,
@@ -211,10 +200,12 @@ const isFile = (path: string): boolean =>
     isRecognised: isSystemError,
   }) === true;
 
-/**
- * maxFolders bounds the folders the globs of one look list, so a glob over a vast tree stops there.
- */
-const createManifestWorkspace = (input: { maxFolders: number }): Workspace => ({
+interface ManifestWorkspaceInput {
+  /** bounds the folders the globs of one look list, so a glob over a vast tree stops there */
+  readonly maxFolders: number;
+}
+
+const createManifestWorkspace = (input: ManifestWorkspaceInput): Workspace => ({
   membersOf: (project: string): readonly UnitPath[] => {
     const walk: Walk = {
       listed: 0,

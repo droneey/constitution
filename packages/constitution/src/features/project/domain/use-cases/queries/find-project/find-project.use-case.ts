@@ -21,12 +21,17 @@ const placeOf = (project: string): ProjectPlace =>
     }),
   });
 
+interface FindProjectInput {
+  readonly files: ProjectFiles;
+  readonly start: string;
+}
+
 /**
  * The farthest folder with a constitution.yaml at or above the start, up to the root of its
  * repository, whose members each hold one of their own; outside any repository, only the start
  * folder's own. Undefined when there is none.
  */
-const findProject = (input: { files: ProjectFiles; start: string }): ProjectPlace | undefined => {
+const findProject = (input: FindProjectInput): ProjectPlace | undefined => {
   const { files } = input;
   const start = files.realFolder(input.start);
 

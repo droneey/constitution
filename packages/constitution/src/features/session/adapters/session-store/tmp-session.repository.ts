@@ -17,7 +17,6 @@ import { isSystemError } from '#/libs/system-error';
 
 import type { SessionCommandRepository } from '../../domain/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../../domain/contracts/repositories/queries';
-import type { SessionMark } from '../../domain/entities';
 import { CheckKind, CheckState, SessionState } from '../../domain/entities';
 import type { AgentId, SessionId } from '../../domain/value-objects';
 
@@ -220,25 +219,26 @@ const tryWrite = (write: () => void): void => {
 const writeWhole = (input: { path: string; text: string }): void => {
   const pending = `${input.path}.${String(process.pid)}.tmp`;
 
-  writeFileSync(pending, input.text);
+  // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well; the rule asks that it be named
+  writeFileSync(pending, input.text, 'utf8');
   renameSync(pending, input.path);
 };
 
 const remindedFile = (input: { agent: AgentId | undefined; folder: string }): string =>
   join(input.folder, input.agent === undefined ? REMINDED : `${REMINDED}.${input.agent}`);
 
-/** folder holds a folder per session. */
-const createTmpSessionRepository = (input: {
-  folder: string;
-}): SessionCommandRepository & SessionQueryRepository => {
+interface TmpSessionRepositoryInput {
+  /** holds a folder per session */
+  readonly folder: string;
+}
+
+const createTmpSessionRepository = (
+  input: TmpSessionRepositoryInput,
+): SessionCommandRepository & SessionQueryRepository => {
   const folderOf = (session: SessionId): string => join(input.folder, session);
 
   return {
-    addReminded: (added: {
-      agent: AgentId | undefined;
-      ids: readonly BlockId[];
-      session: SessionId;
-    }): void => {
+    addReminded: (added): void => {
       tryWrite(() => {
         appendFileSync(
           remindedFile({
@@ -246,10 +246,12 @@ const createTmpSessionRepository = (input: {
             folder: folderOf(added.session),
           }),
           added.ids.map((id) => `${id}\n`).join(''),
+          // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well; the rule asks that it be named
+          'utf8',
         );
       });
     },
-    recordMark: (recorded: { mark: SessionMark; session: SessionId; value: string }): void => {
+    recordMark: (recorded): void => {
       tryWrite(() => {
         writeWhole({
           path: join(folderOf(recorded.session), recorded.mark),
@@ -257,11 +259,7 @@ const createTmpSessionRepository = (input: {
         });
       });
     },
-    saveState: (saved: {
-      isReminderKept: boolean;
-      session: SessionId;
-      state: SessionState;
-    }): void => {
+    saveState: (saved): void => {
       const folder = folderOf(saved.session);
       const text = linesOfState(saved.state)
         .map((line) => `${line}\n`)
@@ -277,7 +275,8 @@ const createTmpSessionRepository = (input: {
         });
 
         if (!saved.isReminderKept) {
-          writeFileSync(join(folder, REMINDED), '');
+          // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well; the rule asks that it be named
+          writeFileSync(join(folder, REMINDED), '', 'utf8');
 
           for (const name of readdirSync(folder).filter((file) =>
             file.startsWith(`${REMINDED}.`),
@@ -287,9 +286,9 @@ const createTmpSessionRepository = (input: {
         }
       });
     },
-    mark: (asked: { mark: SessionMark; session: SessionId }): string | undefined =>
+    mark: (asked): string | undefined =>
       readText(join(folderOf(asked.session), asked.mark))?.replace(/\n+$/, ''),
-    reminded: (asked: { agent: AgentId | undefined; session: SessionId }): ReadonlySet<BlockId> =>
+    reminded: (asked): ReadonlySet<BlockId> =>
       new Set(
         readText(
           remindedFile({

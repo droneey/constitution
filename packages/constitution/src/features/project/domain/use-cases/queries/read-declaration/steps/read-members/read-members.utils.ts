@@ -7,12 +7,16 @@ import type { DeclaredUnit, UnreadMember } from '../../../../../entities';
 import { MemberProblem } from '../../../../../entities';
 import { joinPath } from '../../../shared/project-paths';
 
-const readMembers = (input: {
-  configParser: ConfigParser;
-  files: ProjectFiles;
-  project: string;
-  workspace: Workspace;
-}): {
+interface ReadMembersInput {
+  readonly configParser: ConfigParser;
+  readonly files: ProjectFiles;
+  readonly project: string;
+  readonly workspace: Workspace;
+}
+
+const readMembers = (
+  input: ReadMembersInput,
+): {
   readonly declared: readonly DeclaredUnit[];
   readonly unread: readonly UnreadMember[];
 } => {

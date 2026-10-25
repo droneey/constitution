@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { TermKind } from '../../../../domain/entities';
+import { Axis, TermKind } from '../../../../domain/entities';
 import { termsOf } from '../terms.adapter';
 import { enterRepository } from './repository.fixtures';
 
@@ -58,6 +58,7 @@ describe('termsOf', () => {
           'Plain **emphasis `here`** defines nothing, nor do **`here` and there** or `**/root/**`.',
           '',
         ].join('\n'),
+        [`${BLOCKS}/README.md`]: 'A **file of no block** defines no term.\n',
         [`${BLOCKS}/implementations/bun/foundation/notes.txt`]: '**Not a term**\n',
         [`${BLOCKS}/implementations/bun/foundation/runtime.md`]: [
           'An **early** term, before any heading.',
@@ -83,7 +84,7 @@ describe('termsOf', () => {
     expect(terms).toStrictEqual([
       {
         address: '/docs/implementations/bun',
-        axis: 'foundation',
+        axis: Axis.Foundation,
         block: 'bun',
         kind: TermKind.Brand,
         name: 'Bun',
@@ -91,7 +92,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/implementations/bun',
-        axis: 'foundation',
+        axis: Axis.Foundation,
         block: 'bun',
         kind: TermKind.File,
         name: 'bunfig.toml',
@@ -99,7 +100,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
-        axis: 'architecture',
+        axis: Axis.Architecture,
         block: 'core',
         kind: TermKind.Concept,
         name: 'composition root',
@@ -107,7 +108,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
-        axis: 'architecture',
+        axis: Axis.Architecture,
         block: 'core',
         kind: TermKind.Concept,
         name: 'delivery unit',
@@ -115,7 +116,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/implementations/bun/foundation/runtime',
-        axis: 'foundation',
+        axis: Axis.Foundation,
         block: 'bun',
         kind: TermKind.Concept,
         name: 'early',
@@ -123,7 +124,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
-        axis: 'architecture',
+        axis: Axis.Architecture,
         block: 'core',
         kind: TermKind.Concept,
         name: 'graph',
@@ -131,7 +132,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/core/architecture/root',
-        axis: 'architecture',
+        axis: Axis.Architecture,
         block: 'core',
         kind: TermKind.Concept,
         name: 'note',
@@ -139,7 +140,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/implementations/bun/foundation/runtime',
-        axis: 'foundation',
+        axis: Axis.Foundation,
         block: 'bun',
         kind: TermKind.Concept,
         name: 'section',
@@ -147,7 +148,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/implementations/bun/foundation/runtime',
-        axis: 'foundation',
+        axis: Axis.Foundation,
         block: 'bun',
         kind: TermKind.Concept,
         name: 'thematic',
@@ -155,7 +156,7 @@ describe('termsOf', () => {
       },
       {
         address: '/docs/core/architecture/root',
-        axis: 'architecture',
+        axis: Axis.Architecture,
         block: 'core',
         kind: TermKind.Concept,
         name: 'wiring file',

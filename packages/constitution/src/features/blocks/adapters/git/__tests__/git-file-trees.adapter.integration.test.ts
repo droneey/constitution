@@ -1,10 +1,11 @@
 import { execFileSync } from 'node:child_process';
-import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { runFileTreeSuite } from '../../../__tests__/file-tree.suite';
 import { TreeError, TreeFailure } from '../../../domain/errors';
 import { createGitFileTrees } from '../git-file-trees.adapter';
 
@@ -20,6 +21,8 @@ const gitOptions = {
       process.env['PATH'] ?? '',
     ],
   ]),
+  // an unpacked Constitution of the specs holds three entries at most
+  maxFiles: 3,
   timeoutMs: 30_000,
 };
 
@@ -35,6 +38,7 @@ const write = (input: { path: string; text: string }): void => {
 const git = (args: readonly string[]): void => {
   execFileSync('git', args, {
     cwd: root,
+    env: gitOptions.env,
     stdio: 'ignore',
   });
 };
@@ -180,11 +184,11 @@ describe('createGitFileTrees: repository', () => {
 });
 
 describe('createGitFileTrees: installed', () => {
-  it('should list the blocks of an unpacked Constitution in order and nothing else when it holds other folders', () => {
+  it('should list the blocks of an unpacked Constitution in order and nothing else when it holds other folders and a dangling link', () => {
     // Arrange
     write({
       path: 'blocks/core/core.md',
-      text: '# Core\r\n',
+      text: '# Core\n',
     });
     write({
       path: 'presets/common/biome/foundation/self.jsonc',
@@ -198,6 +202,7 @@ describe('createGitFileTrees: installed', () => {
       path: 'notes.yaml',
       text: 'topics: {}\n',
     });
+    symlinkSync('gone.md', join(root, 'blocks/core/dangling.md'));
 
     const tree = createGitFileTrees(gitOptions).installed(root);
 
@@ -205,15 +210,57 @@ describe('createGitFileTrees: installed', () => {
     const listed = tree.list();
 
     // Assert
-    expect({
-      core: tree.read('blocks/core/core.md'),
-      listed,
-    }).toStrictEqual({
-      core: '# Core\n',
-      listed: [
-        'blocks/core/architecture/layout.md',
-        'blocks/core/core.md',
-      ],
+    expect(listed).toStrictEqual([
+      'blocks/core/architecture/layout.md',
+      'blocks/core/core.md',
+    ]);
+  });
+
+  it('should turn CRLF into LF when a file of an unpacked Constitution is read', () => {
+    // Arrange
+    write({
+      path: 'blocks/core/core.md',
+      text: '# Core\r\n',
+    });
+
+    const tree = createGitFileTrees(gitOptions).installed(root);
+
+    // Act
+    const text = tree.read('blocks/core/core.md');
+
+    // Assert
+    expect(text).toBe('# Core\n');
+  });
+
+  it('should fail the tree with too-large when its blocks hold more files than the limit', () => {
+    // Arrange
+    write({
+      path: 'blocks/core/core.md',
+      text: '# Core\n',
+    });
+    write({
+      path: 'blocks/core/architecture/layout.md',
+      text: '# Layout\n',
+    });
+    write({
+      path: 'blocks/domains/ui/ui.md',
+      text: '# UI\n',
+    });
+    write({
+      path: 'blocks/domains/api/api.md',
+      text: '# API\n',
+    });
+
+    const tree = createGitFileTrees(gitOptions).installed(root);
+
+    // Act
+    const failure = failureOf(() => tree.list());
+
+    // Assert
+    expect(failure).toStrictEqual({
+      causeCode: undefined,
+      code: TreeFailure.TooLarge,
+      path: root,
     });
   });
 
@@ -227,6 +274,34 @@ describe('createGitFileTrees: installed', () => {
     // Assert
     expect(listed).toStrictEqual([]);
   });
+});
+
+// The files a tree holds, written into the temporary root.
+const writeAll = (files: Readonly<Record<string, string>>): void => {
+  for (const [path, text] of Object.entries(files)) {
+    write({
+      path,
+      text,
+    });
+  }
+};
+
+runFileTreeSuite({
+  name: 'createGitFileTrees: tracked',
+  treeOf: (files) => {
+    writeAll(files);
+
+    return createGitFileTrees(gitOptions).tracked(root);
+  },
+});
+
+runFileTreeSuite({
+  name: 'createGitFileTrees: installed',
+  treeOf: (files) => {
+    writeAll(files);
+
+    return createGitFileTrees(gitOptions).installed(root);
+  },
 });
 
 describe('createGitFileTrees', () => {
@@ -293,6 +368,7 @@ describe('createGitFileTrees: git', () => {
           folder,
         ],
       ]),
+      maxFiles: gitOptions.maxFiles,
       timeoutMs: input.timeoutMs,
     };
   };

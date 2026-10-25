@@ -8,16 +8,16 @@ import { governingOf } from '../shared/governing';
 
 const REVIEWER = 'constitution:reviewer';
 
+interface JudgeStopInput extends StopEvent {
+  readonly sessions: SessionQueryRepository;
+  readonly workingTree: WorkingTree;
+}
+
 /**
  * The hand-back gate: whether the agent, or a subagent, may stop now, and what it is told when it
  * may not; undefined when it may stop, or the session keeps no state.
  */
-const judgeStop = (
-  input: StopEvent & {
-    sessions: SessionQueryRepository;
-    workingTree: WorkingTree;
-  },
-): StopJudgement | undefined => {
+const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
   const { sessions, session } = input;
   const state = sessions.state(session);
 

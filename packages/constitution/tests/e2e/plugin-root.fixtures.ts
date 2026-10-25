@@ -153,10 +153,15 @@ const createRealPluginRoot = (): string => {
   return root;
 };
 
+interface ArchiveLink {
+  readonly archive: string;
+  readonly project: string;
+}
+
 // Links the archive into a project as mise's postinstall does, unless the
 // project holds something there already; the project's git ignores the link,
 // as a project's .gitignore does.
-const linkArchive = (input: { archive: string; project: string }): void => {
+const linkArchive = (input: ArchiveLink): void => {
   const link = join(input.project, LINK);
 
   if (
@@ -210,6 +215,7 @@ const removePluginRoots = (): void => {
   }
 };
 
+export type { PluginRootOptions };
 export {
   archiveOf,
   Breakage,

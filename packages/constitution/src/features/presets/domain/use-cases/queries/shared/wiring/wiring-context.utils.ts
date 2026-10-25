@@ -1,9 +1,10 @@
 import type { Axis } from '#/kernel/constants';
 import { AXES, COMMON_SCOPE, Layer, SELF_PART, WORKSPACE_PART } from '#/kernel/constants';
-import { ProjectUnit } from '#/kernel/entities';
+import type { FileRead } from '#/kernel/entities';
+import { FileReadStatus, ProjectUnit } from '#/kernel/entities';
 import { BlockId, coreBlockId, PartAddress, RuleSlug } from '#/kernel/value-objects';
 
-import type { SourceFile } from '../../../../entities';
+import type { PresetPart } from '../../../../entities';
 import { Parts, WiringContext } from '../../../../entities';
 import { namedOf } from './named.utils';
 
@@ -16,18 +17,28 @@ interface Reach {
 }
 
 interface WiringReads {
-  readonly content: (path: string) => string;
-  readonly partText: (file: SourceFile) => string;
+  /** a file of the project, by its path from the project */
+  readonly content: (path: string) => FileRead;
 }
 
 const holdsBlock = (blocks: ReadonlySet<BlockId>, name: string): boolean =>
   BlockId.is(name) && blocks.has(name);
 
-const isBeneath = (input: { folder: string; path: string }): boolean =>
+interface PathInFolder {
+  readonly folder: string;
+  readonly path: string;
+}
+
+const isBeneath = (input: PathInFolder): boolean =>
   input.folder === '' || `${input.path}/`.startsWith(`${input.folder}/`);
 
+interface OwnerInput {
+  readonly context: WiringContext;
+  readonly folder: string;
+}
+
 // The unit a folder lies in: the deepest unit at or above it, the repository, at '', at the least.
-const ownerOf = (input: { context: WiringContext; folder: string }): ProjectUnit =>
+const ownerOf = (input: OwnerInput): ProjectUnit =>
   input.context.resolution.units
     .filter((unit) =>
       isBeneath({
@@ -40,7 +51,7 @@ const ownerOf = (input: { context: WiringContext; folder: string }): ProjectUnit
       unit.path.length > nearest.path.length ? unit : nearest,
     );
 
-const fileOf = (input: { folder: string; path: string }): string =>
+const fileOf = (input: PathInFolder): string =>
   input.folder === '' ? input.path : `${input.folder}/${input.path}`;
 
 const reachOf = (units: readonly ProjectUnit[]): Reach => ({
@@ -52,8 +63,13 @@ const reachOf = (units: readonly ProjectUnit[]): Reach => ({
   ),
 });
 
+interface ScopesInput {
+  readonly context: WiringContext;
+  readonly reach: Reach;
+}
+
 // common, then the languages a reach holds, in the order of the blocks.
-const scopesOf = (input: { context: WiringContext; reach: Reach }): readonly string[] => [
+const scopesOf = (input: ScopesInput): readonly string[] => [
   COMMON_SCOPE,
   ...input.context.resolution.blocks
     .filter((block) => block.layer === Layer.Language && input.reach.blocks.has(block.id))
@@ -71,7 +87,8 @@ interface ToolAxis {
   readonly tool: string;
 }
 
-// A chained tool takes every link the parts it takes extend, as far as the chain runs.
+// A chained tool takes every link the parts it takes extend, as far as the chain runs; a link with
+// no part of its own is taken in name alone, and so adds no part.
 const withLinks = (
   input: ToolAxis & {
     names: readonly string[];
@@ -93,9 +110,7 @@ const withLinks = (
 
   for (const id of input.names.filter((name) => taken.has(name))) {
     for (let next = linkOf(id); next !== undefined && !taken.has(next); next = linkOf(next)) {
-      if (Parts.fileOf(parts, addressOf(next)) !== undefined) {
-        taken.add(next);
-      }
+      taken.add(next);
     }
   }
 
@@ -108,13 +123,14 @@ const partsOf = (
   input: ToolAxis & {
     reach: Reach;
   },
-): readonly PartAddress[] => {
+): readonly PresetPart[] => {
   const { axis, context, scope, tool } = input;
-  const names = Parts.namesOf(context.parts, {
+  const found = Parts.partsOf(context.parts, {
     axis,
     scope,
     tool,
   });
+  const names = found.map((part) => part.address.name);
   const chosen = new Set(
     names.filter((id) =>
       isTaken({
@@ -130,27 +146,21 @@ const partsOf = (
         taken: chosen,
       })
     : chosen;
-  // a name is taken only when the tool has a part of it
-  const own = [
-    taken.has(SELF_PART) ? SELF_PART : '',
-    taken.has(coreBlockId) ? coreBlockId : '',
-    scope !== COMMON_SCOPE && taken.has(scope) ? scope : '',
-  ].filter((name) => name !== '');
-  const ids = context.blocks.filter(
-    (id) => id !== SELF_PART && !BlockId.equals(id, coreBlockId) && id !== scope && taken.has(id),
-  );
-
-  return [
-    ...own,
-    ...ids,
-  ].map((name) =>
-    PartAddress.create({
-      axis,
-      name,
+  // common has no part of its own: one named after it is a block's
+  const order = [
+    ...[
+      SELF_PART,
+      coreBlockId,
       scope,
-      tool,
-    }),
-  );
+    ].filter((name) => name !== COMMON_SCOPE),
+    ...context.blocks.filter(
+      (id) => id !== SELF_PART && !BlockId.equals(id, coreBlockId) && id !== scope,
+    ),
+  ];
+
+  return order
+    .filter((name) => taken.has(name))
+    .flatMap((name) => found.filter((part) => part.address.name === name));
 };
 
 const hasFragmentAt = (input: {
@@ -161,16 +171,18 @@ const hasFragmentAt = (input: {
 }): boolean =>
   Parts.fragmentsOf(input.context.parts, input).some((fragment) => fragment.path === input.path);
 
+interface ExpectedInput {
+  readonly context: WiringContext;
+  readonly isAtRoot: boolean;
+  readonly path: string;
+  readonly tool: string;
+  readonly units: readonly ProjectUnit[];
+}
+
 // The parts the tool's template at path takes for the units, their blocks and axes joined. The
 // root of a workspace runs a tool that has a workspace part only for what crosses its packages:
 // there it takes its own part and the workspace's on the axes it follows.
-const expectedOf = (input: {
-  context: WiringContext;
-  isAtRoot: boolean;
-  path: string;
-  tool: string;
-  units: readonly ProjectUnit[];
-}): readonly PartAddress[] => {
+const expectedOf = (input: ExpectedInput): readonly PresetPart[] => {
   const { context, path, tool } = input;
   const reach = reachOf(input.units);
   const isWorkspaceRoot =
@@ -210,33 +222,49 @@ const expectedOf = (input: {
         }),
       ),
     )
-    .filter((part) => !isWorkspaceRoot || part.name === SELF_PART || part.name === WORKSPACE_PART);
+    .filter(
+      ({ address }) =>
+        !isWorkspaceRoot || address.name === SELF_PART || address.name === WORKSPACE_PART,
+    );
 };
 
-const namesPartsOf = (input: {
-  context: WiringContext;
-  file: string;
-  folder: string;
-  reads: WiringReads;
-  tool: string;
-}): boolean =>
-  namedOf({
-    folder: input.folder,
-    isCodeOnly: false,
-    naming: input.context,
-    text: input.reads.content(input.file),
-    tool: input.tool,
-  }).length > 0;
+interface FileOfToolInput {
+  readonly context: WiringContext;
+  readonly file: string;
+  readonly folder: string;
+  readonly reads: WiringReads;
+  readonly tool: string;
+}
+
+// Whether a file of the project names the tool's parts; one that cannot be read may, and is
+// warned of apart.
+const namesPartsOf = (input: FileOfToolInput): boolean => {
+  const read = input.reads.content(input.file);
+
+  return (
+    read.status === FileReadStatus.Unreadable ||
+    (read.status === FileReadStatus.Read &&
+      namedOf({
+        folder: input.folder,
+        isCodeOnly: false,
+        naming: input.context,
+        text: read.text,
+        tool: input.tool,
+      }).length > 0)
+  );
+};
+
+interface ServingFolderInput {
+  readonly context: WiringContext;
+  readonly path: string;
+  readonly reads: WiringReads;
+  readonly tool: string;
+  readonly unit: ProjectUnit;
+}
 
 // The unit's own folder when its file of path names the tool's parts, or undefined when it does
 // not: a configuration serves only the unit it lies in.
-const servingFolderOf = (input: {
-  context: WiringContext;
-  path: string;
-  reads: WiringReads;
-  tool: string;
-  unit: ProjectUnit;
-}): string | undefined => {
+const servingFolderOf = (input: ServingFolderInput): string | undefined => {
   const { context, path } = input;
   const folder = input.unit.path;
   const file = fileOf({
@@ -259,8 +287,13 @@ const servingFolderOf = (input: {
     : undefined;
 };
 
+interface RepositoryToolInput {
+  readonly context: WiringContext;
+  readonly tool: string;
+}
+
 // A tool no member follows, only the root: the root's configuration of it serves every unit.
-const isRepositoryTool = (input: { context: WiringContext; tool: string }): boolean =>
+const isRepositoryTool = (input: RepositoryToolInput): boolean =>
   !input.context.resolution.units.some(
     (unit) => !ProjectUnit.isRepository(unit) && holdsBlock(unit.blocks, input.tool),
   );
@@ -272,6 +305,7 @@ export {
   holdsBlock,
   isBeneath,
   isRepositoryTool,
+  namesPartsOf,
   ownerOf,
   reachOf,
   scopesOf,

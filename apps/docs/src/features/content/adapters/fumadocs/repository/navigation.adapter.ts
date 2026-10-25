@@ -12,7 +12,8 @@ import {
   SECTION_HEADING_DEPTH,
   SUBSECTION_HEADING_DEPTH,
 } from '../markdown';
-import { DOCUMENTATION_SECTION, ICONS_BY_ADDRESS } from './navigation.constants';
+import { DOCUMENTATION_SECTION } from './navigation.constants';
+import { ICONS_BY_ADDRESS } from './navigation-icons.constants';
 import { addressOf, blockLayerOf, inRepository, repositoryPathOf } from './repository.adapter';
 import {
   DOCS_FOLDER,

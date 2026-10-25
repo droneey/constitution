@@ -1,15 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Level, ruleOf, ruleSlugsOf, unknownExamplesOf } from '../rule.entity';
+import { Level, Rule } from '../rule.entity';
 
-describe('ruleOf', () => {
+describe('Rule.of', () => {
   it.each([
     {
       condition: 'a rule binds',
       heading: 'name-says-what · MUST',
       rule: {
         level: Level.Must,
-        tightens: undefined,
         slug: 'name-says-what',
       },
     },
@@ -18,7 +17,6 @@ describe('ruleOf', () => {
       heading: 'name-says-what · SHOULD',
       rule: {
         level: Level.Should,
-        tightens: undefined,
         slug: 'name-says-what',
       },
     },
@@ -27,7 +25,6 @@ describe('ruleOf', () => {
       heading: 'name-says-what · MAY',
       rule: {
         level: Level.May,
-        tightens: undefined,
         slug: 'name-says-what',
       },
     },
@@ -45,16 +42,12 @@ describe('ruleOf', () => {
       heading: 'file-within-500-lines · MUST',
       rule: {
         level: Level.Must,
-        tightens: undefined,
         slug: 'file-within-500-lines',
       },
     },
   ])('should read the rule when $condition', ({ heading, rule }) => {
-    // Arrange
-    const text = heading;
-
     // Act
-    const read = ruleOf(text);
+    const read = Rule.of(heading);
 
     // Assert
     expect(read).toStrictEqual(rule);
@@ -98,18 +91,15 @@ describe('ruleOf', () => {
       heading: '',
     },
   ])('should read no rule when $condition', ({ heading }) => {
-    // Arrange
-    const text = heading;
-
     // Act
-    const read = ruleOf(text);
+    const read = Rule.of(heading);
 
     // Assert
     expect(read).toBeUndefined();
   });
 });
 
-describe('ruleSlugsOf', () => {
+describe('Rule.slugsIn', () => {
   it('should list the slugs of the third-level rule headings when a file holds them', () => {
     // Arrange
     const markdown = [
@@ -124,7 +114,7 @@ describe('ruleSlugsOf', () => {
     ].join('\n');
 
     // Act
-    const slugs = ruleSlugsOf(markdown);
+    const slugs = Rule.slugsIn(markdown);
 
     // Assert
     expect(slugs).toStrictEqual([
@@ -138,14 +128,14 @@ describe('ruleSlugsOf', () => {
     const markdown = '# Names\n\nNo rule here.';
 
     // Act
-    const slugs = ruleSlugsOf(markdown);
+    const slugs = Rule.slugsIn(markdown);
 
     // Assert
     expect(slugs).toStrictEqual([]);
   });
 });
 
-describe('unknownExamplesOf', () => {
+describe('Rule.unknownExamplesOf', () => {
   it('should list the examples no rule names when some name none', () => {
     // Arrange
     const rules = new Set([
@@ -154,7 +144,7 @@ describe('unknownExamplesOf', () => {
     ]);
 
     // Act
-    const unknown = unknownExamplesOf(
+    const unknown = Rule.unknownExamplesOf(
       [
         'name-says-what',
         'no-such-rule',

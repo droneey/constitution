@@ -1,4 +1,4 @@
-export type { BindingsDocument, BindingsRead, PresetFile } from './binding.entity';
+export type { BindingsDocument, BindingsRead } from './binding.entity';
 export { Binding } from './binding.entity';
 export type { BlockPlace } from './block.entity';
 export { Block, BlockOrigin } from './block.entity';
@@ -17,6 +17,10 @@ export type {
   MarketplacePlugin,
   PluginManifest,
 } from './manifest.entity';
+export type { PresetFile } from './preset-file.entity';
+export { mayReachAxis, pairableBy, requirableBy } from './reach.entity';
 export type { SimilarRules } from './similar-rules.entity';
 export type { Agent, Skill, SkillFrontMatterRead } from './skill.entity';
 export { SkillField } from './skill.entity';
+export type { Term } from './term.entity';
+export { TermKind } from './term.entity';

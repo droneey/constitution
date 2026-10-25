@@ -51,11 +51,16 @@ const checksumOf = (bytes: Uint8Array): string => {
 
 const noBytes = new Uint8Array();
 
+interface FingerprintInput {
+  readonly project: string;
+  readonly workingTree: WorkingTree;
+}
+
 /** The tree's fingerprint; a tree git cannot report reads as the empty one. */
-const fingerprintOf = (input: { project: string; workingTree: WorkingTree }): string => {
+const fingerprintOf = (input: FingerprintInput): string => {
   const state = input.workingTree.stateOf(input.project);
 
   return checksumOf(state.status === TreeStateStatus.Read ? state.bytes : noBytes);
 };
 
-export { checksumOf, fingerprintOf };
+export { fingerprintOf };

@@ -118,11 +118,8 @@ describe('requiresTexts', () => {
       text: 'extends lingui, a concrete block; a block extends only an abstract base — require it instead',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(requiresTexts, reported.code, reported.details);
+    const said = textOf(requiresTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

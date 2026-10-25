@@ -6,8 +6,8 @@ import { FrameworkProvider } from 'fumadocs-core/framework';
 import { RootProvider } from 'fumadocs-ui/provider/base';
 
 import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
-import type { GetVersions, Version, Versions } from '#/features/versions';
-import { createVersion, GetVersionsContext } from '#/features/versions';
+import type { GetVersions, Versions } from '#/features/versions';
+import { GetVersionsContext, Version } from '#/features/versions';
 import type { mdxComponents, PageTreeRoot, TocHeading } from '#/libs/ui';
 
 import type { DocsFrame } from '../app/providers';
@@ -33,10 +33,10 @@ const staticRouter = (): {
 });
 
 const versionsFixture = (overrides: Partial<Versions> = {}): Versions => ({
-  latest: createVersion('0.70.0'),
+  latest: Version.create('0.70.0'),
   versions: [
-    createVersion('0.70.0'),
-    createVersion('0.69.2'),
+    Version.create('0.70.0'),
+    Version.create('0.69.2'),
   ],
   ...overrides,
 });
@@ -100,7 +100,7 @@ const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry
 };
 
 const releaseOf = (providers: DocsProviders): Version | undefined =>
-  'release' in providers ? providers.release : createVersion('0.70.0');
+  'release' in providers ? providers.release : Version.create('0.70.0');
 
 /** the release is 0.70.0 unless the providers name one, or `undefined` for none */
 const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): RenderResult => {

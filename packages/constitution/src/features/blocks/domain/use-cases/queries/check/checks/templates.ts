@@ -1,6 +1,5 @@
-import { COMMON_SCOPE, Layer, Placeholder } from '#/kernel/constants';
+import { COMMON_SCOPE, Layer, Placeholder, PRESETS_FOLDER } from '#/kernel/constants';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
-import type { PartAddress } from '#/kernel/value-objects';
 import { PresetFileKind, PresetPartPath, TemplatePath } from '#/kernel/value-objects';
 
 import { BlockGraph } from '../../../../entities';
@@ -84,7 +83,7 @@ const toolFindings = (input: CheckInput): readonly TemplatesFinding[] => {
         part,
       ): readonly [
         string,
-        PartAddress,
+        PresetPartPath,
       ] => [
         folderOf(part),
         part,
@@ -112,7 +111,7 @@ const toolFindings = (input: CheckInput): readonly TemplatesFinding[] => {
           scope: part.scope,
           tool: part.tool,
         },
-        path: `presets/${folder}/`,
+        path: `${PRESETS_FOLDER}/${folder}/`,
       }),
     );
 };

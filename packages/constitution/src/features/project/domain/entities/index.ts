@@ -7,10 +7,12 @@ export type {
   SourceFile,
 } from './catalogue.entity';
 export { CatalogueAnswer, CatalogueBlock, CatalogueRule } from './catalogue.entity';
-export type { ConfigItem, ConfigRead, UnitConfig, UnreadMember } from './project-config.entity';
+export type { ConfigItem, ConfigRead, UnreadMember } from './project-config.entity';
 export {
+  ConfigKey,
   ConfigOverride,
   DeclaredUnit,
+  LIST_KEYS,
   MemberProblem,
   ProjectConfig,
 } from './project-config.entity';

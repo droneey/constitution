@@ -2,16 +2,16 @@ import type { FieldIssue, ReadStatus } from './document-read.entity';
 
 interface PluginManifest {
   readonly name: string;
-  readonly repository: string | undefined;
+  readonly repository?: string;
   readonly skills: readonly string[];
 }
 
 interface MarketplacePlugin {
   readonly name: string;
-  // The folder of the repository that holds the plugin, '' for its root.
+  /** the folder of the repository that holds the plugin, '' for its root */
   readonly path: string;
-  readonly ref: string | undefined;
-  readonly repo: string | undefined;
+  readonly ref?: string;
+  readonly repo?: string;
 }
 
 interface MarketplaceManifest {

@@ -5,7 +5,6 @@ import {
   pressKeys,
   renderWithTheme,
   screenReaderOutputOf,
-  settle,
 } from '../../../__tests__/ink.fixtures';
 import { Confirm } from '../confirm';
 
@@ -71,8 +70,9 @@ describe('Confirm', () => {
     );
 
     // Act
-    stdin.write(key);
-    await settle();
+    await pressKeys(stdin, [
+      key,
+    ]);
 
     // Assert
     expect(onSubmit.mock.calls).toStrictEqual([
@@ -120,8 +120,9 @@ describe('Confirm', () => {
     );
 
     // Act
-    stdin.write(Key.Interrupt);
-    await settle();
+    await pressKeys(stdin, [
+      Key.Interrupt,
+    ]);
 
     // Assert
     expect(onInterrupt).toHaveBeenCalledTimes(1);

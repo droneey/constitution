@@ -192,6 +192,32 @@ describe('blockListLines', () => {
     ]);
   });
 
+  it('should name a block alone when its card gives no summary', () => {
+    // Arrange
+    const listing = {
+      overrides: [],
+      repository: [
+        {
+          files: [],
+          id: BlockId.create('ui'),
+          layer: Layer.Domain,
+          source: BlockSource.create(),
+        },
+      ],
+      units: [],
+    };
+
+    // Act
+    const lines = blockListLines(listing);
+
+    // Assert
+    expect(lines).toStrictEqual([
+      '## Domains (blocks/domains/<id>/<id>.md)',
+      KEY,
+      '- ui',
+    ]);
+  });
+
   it('should give no line when no block, member or override is listed', () => {
     // Arrange
     const listing = {

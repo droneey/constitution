@@ -1,18 +1,18 @@
 import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
-from droneey_python_check.findings import Finding
+from droneey_python_check.findings import Finding, Rule
 
 if TYPE_CHECKING:
   from collections.abc import Iterator
 
-SOURCE_ROOT = 'src'
+SOURCE_ROOT: Final = 'src'
 # The layers whose modules take a feature's form, each module a folder of its own.
-FEATURE_FORM = frozenset({'composition', 'features'})
+FEATURE_FORM: Final = frozenset({'composition', 'features'})
 # A module of that form is its layer's folder and its own: features/<f>, composition/<m>.
-MODULE_DEPTH = 2
+MODULE_DEPTH: Final = 2
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -21,9 +21,11 @@ class ImportRoot:
   folder: Path
   # the importing file's folder, relative to the import package
   package: tuple[str, ...]
+  # every folder of the import package, read at the edge
+  folders: frozenset[Path] = frozenset()
 
 
-def import_root_of(path: Path) -> ImportRoot | None:
+def import_root_of(path: Path, *, folders: frozenset[Path] = frozenset()) -> ImportRoot | None:
   parts = path.parts[:-1]
 
   if SOURCE_ROOT not in parts:
@@ -37,6 +39,7 @@ def import_root_of(path: Path) -> ImportRoot | None:
   return ImportRoot(
     folder=Path(*parts[: start + 1]),
     package=parts[start + 1 :],
+    folders=folders,
   )
 
 
@@ -51,7 +54,7 @@ def module_of(folder: tuple[str, ...]) -> tuple[str, ...]:
 
 
 def target_folder(*, root: ImportRoot, target: tuple[str, ...]) -> tuple[str, ...]:
-  return target if root.folder.joinpath(*target).is_dir() else target[:-1]
+  return target if root.folder.joinpath(*target) in root.folders else target[:-1]
 
 
 def _relative_targets(
@@ -88,14 +91,15 @@ def _relative_findings(
       yield Finding(
         path=path,
         line=node.lineno,
-        message='a relative import climbs out of the import package',
+        rule=Rule.IMPORT_CLIMBS_OUT,
       )
     elif module_of(target_folder(root=root, target=target)) != module:
       name = '/'.join(module) or 'the package root'
       yield Finding(
         path=path,
         line=node.lineno,
-        message=f'a relative import leaves its module, {name}; import it by its absolute path',
+        rule=Rule.IMPORT_LEAVES_MODULE,
+        values=(name,),
       )
 
 
@@ -126,12 +130,15 @@ def _absolute_findings(
       yield Finding(
         path=path,
         line=node.lineno,
-        message=f'a module imports itself by its absolute path, {name}; import it relatively',
+        rule=Rule.IMPORT_OF_ITSELF,
+        values=(name,),
       )
 
 
-def import_findings(*, path: Path, tree: ast.Module) -> tuple[Finding, ...]:
-  root = import_root_of(path)
+def import_findings(
+  *, path: Path, tree: ast.Module, folders: frozenset[Path]
+) -> tuple[Finding, ...]:
+  root = import_root_of(path, folders=folders)
 
   if root is None:
     return ()

@@ -1,15 +1,21 @@
-class InvalidValueError extends Error {
-  public readonly field: string;
-  public readonly value: string;
+import type { ProgramErrorInput } from '#/kernel/errors';
+import { ProgramError } from '#/kernel/errors';
 
-  public constructor(input: {
-    field: string;
-    value: string;
-  }) {
-    super(`${input.field} "${input.value}" is invalid`);
-    this.field = input.field;
-    this.value = input.value;
+enum ValueFailure {
+  TermNameEmpty = 'term-name-empty',
+}
+
+interface RefusedValue {
+  readonly value: string;
+}
+
+/** a value of the content refused what it was asked to hold: a defect of the repository's Markdown */
+class InvalidValueError extends ProgramError<ValueFailure, RefusedValue> {
+  public constructor(input: ProgramErrorInput<ValueFailure, RefusedValue>) {
+    super(input);
+    // Stryker disable next-line StringLiteral: the name only labels the error in a trace
+    this.name = 'InvalidValueError';
   }
 }
 
-export { InvalidValueError };
+export { InvalidValueError, ValueFailure };

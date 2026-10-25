@@ -9,10 +9,12 @@ interface TemporaryRepository {
   root: string;
 }
 
-export const enterRepository = (input: {
-  files?: Readonly<Record<string, string>>;
-  folders?: readonly string[];
-}): TemporaryRepository => {
+interface EnterRepositoryInput {
+  readonly files?: Readonly<Record<string, string>>;
+  readonly folders?: readonly string[];
+}
+
+export const enterRepository = (input: EnterRepositoryInput): TemporaryRepository => {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-')));
   const started = process.cwd();
 

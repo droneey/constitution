@@ -58,6 +58,7 @@
   --spacing-layout-sidebar: var(--size-layout-sidebar);
   --size-layout-page: var(--size-layout-page);
   --spacing-layout-page: var(--size-layout-page);
+  --radius-control-base: var(--radius-control-base);
   --radius-surface-raised: var(--radius-surface-raised);
   --text-xs: var(--text-xs);
   --text-sm: var(--text-sm);

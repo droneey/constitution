@@ -6,16 +6,18 @@ import type { Reminder } from '../../../entities';
 import type { AgentId, SessionId } from '../../../value-objects';
 import { governingOf } from '../shared/governing';
 
+interface RemindOfFileInput {
+  readonly agent: AgentId | undefined;
+  readonly path: string;
+  readonly session: SessionId;
+  readonly sessions: SessionQueryRepository;
+}
+
 /**
  * The blocks that govern a file the agent touched and that the session, or its agent, was not yet
  * reminded of; undefined when the session keeps no state or the file lies outside its project.
  */
-const remindOfFile = (input: {
-  agent: AgentId | undefined;
-  path: string;
-  session: SessionId;
-  sessions: SessionQueryRepository;
-}): Reminder | undefined => {
+const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
   const state = input.sessions.state(input.session);
 
   if (state === undefined) {

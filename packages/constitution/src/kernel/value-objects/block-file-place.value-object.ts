@@ -1,5 +1,14 @@
 import type { Axis } from '../constants';
-import { AXES, BLOCKS_FOLDER, LAYER_FOLDER, LAYERS, Layer } from '../constants';
+import {
+  AXES,
+  BLOCKS_FOLDER,
+  LAYER_FOLDER,
+  LAYERS,
+  Layer,
+  MARKDOWN_EXTENSION,
+  SEAM_FOLDER,
+} from '../constants';
+import type { Brand } from '../types';
 import { compareText, fieldsOf, isDeepEqual } from '../utils';
 import { BlockId, coreBlockId } from './block-id.value-object';
 
@@ -49,7 +58,7 @@ type FileInBlock =
         | BlockFileKind.Stray;
     };
 
-type BlockFilePlace = {
+type PlaceFields = {
   readonly path: string;
 } & (
   | {
@@ -69,15 +78,15 @@ type BlockFilePlace = {
     }
 );
 
+type BlockFilePlace = Brand<PlaceFields, 'BlockFilePlace'>;
+
 interface LayerFolder {
   readonly layer: Layer;
   readonly prefix: string;
 }
 
 const SEPARATOR = '/';
-const MARKDOWN_EXTENSION = '.md';
 const MARKDOWN = /^[^.].*\.md$/;
-const SEAM_FOLDER = 'with';
 const layerFolders: readonly LayerFolder[] = LAYERS.map((layer) => ({
   layer,
   prefix: `${BLOCKS_FOLDER}/${LAYER_FOLDER[layer]}/`,
@@ -153,7 +162,7 @@ const inFolder = (input: {
   name: string;
   path: string;
   segments: readonly string[];
-}): BlockFilePlace =>
+}): PlaceFields =>
   BlockId.is(input.name)
     ? {
         file: fileOf({
@@ -176,8 +185,7 @@ const inFolder = (input: {
         placement: Placement.MisnamedFolder,
       };
 
-/** Where a path from a Constitution's or a pack's folder sits, or undefined outside every layer. */
-const parse = (path: string): BlockFilePlace | undefined => {
+const placeOf = (path: string): PlaceFields | undefined => {
   const folder = layerFolders.find((candidate) => path.startsWith(candidate.prefix));
 
   if (folder === undefined) {
@@ -271,7 +279,15 @@ const compare = (left: BlockFilePlace, right: BlockFilePlace): number => {
 const is = (candidate: unknown): candidate is BlockFilePlace => {
   const path = fieldsOf(candidate).get('path');
 
-  return typeof path === 'string' && isDeepEqual(parse(path), candidate);
+  return typeof path === 'string' && isDeepEqual(placeOf(path), candidate);
+};
+
+/** Where a path from a Constitution's or a pack's folder sits, or undefined outside every layer. */
+const parse = (path: string): BlockFilePlace | undefined => {
+  const place = placeOf(path);
+
+  // Stryker disable next-line ConditionalExpression: a place made from a path is always the place it parses to
+  return is(place) ? place : undefined;
 };
 
 // A place is all its path says of it, so one path is one place.

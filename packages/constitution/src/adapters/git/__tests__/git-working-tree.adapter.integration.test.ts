@@ -5,9 +5,10 @@ import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { runWorkingTreeSuite } from '#/__tests__/working-tree.suite';
 import type { TreeState } from '#/kernel/contracts';
 import { TreeStateStatus } from '#/kernel/contracts';
-import { isWorkingTreeError, WorkingTreeFailure } from '#/kernel/errors';
+import { WorkingTreeError, WorkingTreeFailure } from '#/kernel/errors';
 
 import { createGitWorkingTree } from '../git-working-tree.adapter';
 
@@ -112,7 +113,7 @@ const failureOf = (
     } => {
   const cause = state.status === TreeStateStatus.Unavailable ? state.cause : undefined;
 
-  if (isWorkingTreeError(cause)) {
+  if (cause instanceof WorkingTreeError) {
     return {
       code: cause.code,
       hasStderr: cause.details.stderr.trim() !== '',
@@ -363,4 +364,51 @@ describe('createGitWorkingTree', () => {
       });
     },
   );
+});
+
+runWorkingTreeSuite({
+  name: 'createGitWorkingTree',
+  treeOf: (world) => {
+    git([
+      'init',
+      '--quiet',
+    ]);
+
+    for (const path of world.committed) {
+      write({
+        path,
+        text: `${path}\n`,
+      });
+    }
+
+    git([
+      'add',
+      '.',
+    ]);
+    git([
+      'commit',
+      '--quiet',
+      '--allow-empty',
+      '--message',
+      'init',
+    ]);
+
+    for (const path of world.untracked) {
+      write({
+        path,
+        text: `${path}\n`,
+      });
+    }
+
+    mkdirSync(join(folder, 'elsewhere'));
+
+    return {
+      elsewhere: join(folder, 'elsewhere'),
+      project,
+      tree: createGitWorkingTree({
+        env,
+        timeoutMs: TIMEOUT_MS,
+      }),
+    };
+  },
 });

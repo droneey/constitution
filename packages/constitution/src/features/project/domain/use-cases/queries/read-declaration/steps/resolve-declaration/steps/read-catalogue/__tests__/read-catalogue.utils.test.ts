@@ -412,7 +412,7 @@ describe('readCatalogue', () => {
         blocks: [
           catalogueBlockOf({
             id: 'ui',
-            summary: '',
+            summary: undefined,
           }),
         ],
         rules: [],
@@ -523,7 +523,7 @@ describe('readCatalogue', () => {
         blocks: [
           catalogueBlockOf({
             id: 'ui',
-            summary: '',
+            summary: undefined,
           }),
         ],
         rules: [
@@ -953,11 +953,8 @@ describe('readCatalogue', () => {
       ],
     },
   ])('should warn and read what it can when $condition', ({ expected, sources }) => {
-    // Arrange
-    const given = sources;
-
     // Act
-    const catalogue = catalogueOf(given);
+    const catalogue = catalogueOf(sources);
 
     // Assert
     expect(catalogue).toStrictEqual(expected);

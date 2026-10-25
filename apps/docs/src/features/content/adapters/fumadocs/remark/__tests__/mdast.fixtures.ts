@@ -2,6 +2,11 @@ import type { Emphasis, InlineCode, Link, Nodes, PhrasingContent, Root, Table, T
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
 
+interface RuleTableRow {
+  readonly tags: string;
+  readonly why: PhrasingContent[];
+}
+
 /** so a case can state the tree as written */
 export const withoutPositions = <TNode extends Nodes>(tree: TNode): TNode => {
   visit(tree, (node) => {
@@ -47,7 +52,7 @@ export const span = (
 });
 
 /** built by hand, since GitHub's tables need an extension the parser lacks */
-export const ruleTable = (row?: { tags: string; why: PhrasingContent[] }): Table => ({
+export const ruleTable = (row?: RuleTableRow): Table => ({
   align: [
     null,
     null,

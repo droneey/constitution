@@ -1,59 +1,78 @@
 import ast
+from dataclasses import dataclass
+from enum import IntEnum, unique
 from pathlib import Path
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING
 
-from droneey_python_check.findings import Finding, render
+from droneey_python_check.findings import Finding, Rule
 from droneey_python_check.imports import import_findings
 from droneey_python_check.lines import line_findings
 from droneey_python_check.packages import package_findings
+from droneey_python_check.usage_error import Misuse, UsageError
 
 if TYPE_CHECKING:
-  from collections.abc import Iterator, Sequence
+  from collections.abc import Sequence
 
   from droneey_python_check.settings import Settings
 
-USAGE = 'usage: python-check <path>...\n'
-SKIPPED = '__pycache__'
+
+@unique
+class ExitStatus(IntEnum):
+  PASSED = 0
+  FAILED = 1
+  USAGE = 2
 
 
-def python_files(path: Path) -> Iterator[Path]:
-  if path.is_file():
-    yield path
-    return
-
-  for file in sorted(path.rglob('*.py')):
-    if SKIPPED not in file.parts:
-      yield file
+@dataclass(frozen=True, slots=True, kw_only=True)
+class Source:
+  path: Path
+  text: bytes
 
 
-def file_findings(*, path: Path, settings: Settings) -> tuple[Finding, ...]:
-  source = path.read_bytes()
+@dataclass(frozen=True, slots=True, kw_only=True)
+class Sources:
+  files: tuple[Source, ...]
+  # every folder of the import packages the files sit in
+  folders: frozenset[Path]
+
+
+def paths_of(arguments: Sequence[str]) -> tuple[Path, ...]:
+  """The paths the command line names.
+
+  Raises:
+    UsageError: it names none.
+  """
+  if not arguments:
+    raise UsageError(code=Misuse.NO_PATH)
+
+  return tuple(Path(argument) for argument in arguments)
+
+
+def file_findings(
+  *, source: Source, settings: Settings, folders: frozenset[Path]
+) -> tuple[Finding, ...]:
+  path = source.path
 
   try:
-    tree = ast.parse(source)
+    tree = ast.parse(source.text)
   except SyntaxError as error:
     line = error.lineno or 1  # pragma: no mutate -- ast.parse gives every SyntaxError its line
-    return (Finding(path=path, line=line, message=f'the file does not parse: {error.msg}'),)
+    return (Finding(path=path, line=line, rule=Rule.SYNTAX, values=(error.msg,)),)
 
   return (
-    line_findings(path=path, tree=tree, source=source)
-    + import_findings(path=path, tree=tree)
+    line_findings(path=path, tree=tree, source=source.text)
+    + import_findings(path=path, tree=tree, folders=folders)
     + package_findings(path=path, settings=settings, tree=tree)
   )
 
 
-def run(arguments: Sequence[str], *, output: TextIO, settings: Settings) -> int:
-  if not arguments:
-    output.write(USAGE)
-    return 2
-
-  findings = [
+def findings_of(*, sources: Sources, settings: Settings) -> tuple[Finding, ...]:
+  return tuple(
     finding
-    for argument in arguments
-    for file in python_files(Path(argument))
-    for finding in file_findings(path=file, settings=settings)
-  ]
+    for source in sources.files
+    for finding in file_findings(source=source, settings=settings, folders=sources.folders)
+  )
 
-  output.writelines(f'{render(finding)}\n' for finding in findings)
 
-  return 1 if findings else 0
+def exit_status(findings: tuple[Finding, ...]) -> ExitStatus:
+  return ExitStatus.FAILED if findings else ExitStatus.PASSED

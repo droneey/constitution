@@ -12,7 +12,7 @@ interface ListedBlock {
   readonly id: BlockId;
   readonly layer: Layer;
   readonly source: BlockSource;
-  readonly summary: string;
+  readonly summary?: string;
 }
 
 enum UnitEntryKind {

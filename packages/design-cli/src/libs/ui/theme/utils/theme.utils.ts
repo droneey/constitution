@@ -1,6 +1,6 @@
 import { Ansis } from 'ansis';
 
-import type { ThemeMode, Tone } from '../constants';
+import type { ThemeMode } from '../constants';
 import {
   DESIGN_TOKENS,
   FRAME_DURATION,
@@ -9,7 +9,9 @@ import {
   SPINNER_FRAMES,
   Space,
   TONE_ROLES,
+  Tone,
 } from '../constants';
+import { MissingTokenError } from '../errors';
 import type { AccentTokens, TerminalTokens, Theme, ThemeInput } from '../types';
 import { isRecord } from './guards.utils';
 
@@ -35,13 +37,13 @@ const amountOf = (measures: Readonly<Record<string, number>>, name: string): num
   const amount = measures[name];
 
   if (amount === undefined) {
-    throw new Error(`the design tokens hold no ${name}`);
+    throw new MissingTokenError(name);
   }
 
   return amount;
 };
 
-/** @throws {@link Error} when the tokens hold no colour for a tone's role, or no duration or space */
+/** @throws {@link MissingTokenError} when the tokens hold no colour for a tone's role, or no duration or space */
 const createTheme = (
   { accent, colourLevel, isMotionReduced, mode }: ThemeInput,
   modes: Readonly<Record<ThemeMode, TerminalTokens>> = DESIGN_TOKENS,
@@ -59,10 +61,19 @@ const createTheme = (
     const hex = step === undefined ? tokens.colour[role] : scale[step];
 
     if (hex === undefined) {
-      throw new Error(`the design tokens hold no colour for ${role}`);
+      throw new MissingTokenError(role);
     }
 
     return hex;
+  };
+
+  const hexes: Readonly<Record<Tone, string>> = {
+    [Tone.Accent]: hexOf(Tone.Accent),
+    [Tone.Success]: hexOf(Tone.Success),
+    [Tone.Error]: hexOf(Tone.Error),
+    [Tone.Warning]: hexOf(Tone.Warning),
+    [Tone.Info]: hexOf(Tone.Info),
+    [Tone.Muted]: hexOf(Tone.Muted),
   };
 
   const cellsOf = (space: Space): number =>
@@ -71,7 +82,7 @@ const createTheme = (
   return {
     glyphs: GLYPHS,
     isMotionReduced,
-    paint: (tone: Tone, text: string): string => ansis.hex(hexOf(tone))(text),
+    paint: (tone: Tone, text: string): string => ansis.hex(hexes[tone])(text),
     space: {
       [Space.Xs]: cellsOf(Space.Xs),
       [Space.Sm]: cellsOf(Space.Sm),

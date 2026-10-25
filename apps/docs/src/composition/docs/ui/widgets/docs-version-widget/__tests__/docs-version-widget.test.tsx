@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 
 import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
 import type { GetVersions } from '#/features/versions';
-import { createVersion } from '#/features/versions';
+import { Version, VersionsError, VersionsFailure } from '#/features/versions';
 
 import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { renderInDocs, versionsFixture } from '../../../../__tests__/docs.fixtures';
@@ -16,7 +16,7 @@ import { DocsVersionWidget } from '../docs-version-widget';
 
 afterEach(cleanup);
 
-const olderRelease = createVersion('0.69.2');
+const olderRelease = Version.create('0.69.2');
 
 /** on an older release's site */
 const onGuidePage = (): ReactElement => (
@@ -100,7 +100,16 @@ describe('DocsVersionWidget', () => {
 
   test('should say the releases are unavailable when they cannot be read', async () => {
     // Arrange
-    renderWidget(createFakeGetVersions(new Error('versions.json is unreachable')).getVersions);
+    renderWidget(
+      createFakeGetVersions(
+        new VersionsError({
+          code: VersionsFailure.Unreachable,
+          details: {
+            address: '/versions.json',
+          },
+        }),
+      ).getVersions,
+    );
 
     // Act
     await userEvent.click(screen.getByRole('button'));

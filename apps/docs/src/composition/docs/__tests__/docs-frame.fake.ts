@@ -1,5 +1,9 @@
 import type { DocsFrame } from '../app/providers';
 
+interface FrameFakeInput {
+  readonly narrow?: boolean;
+}
+
 export enum FrameMark {
   Collapsed = 'collapsed',
   Open = 'open',
@@ -11,7 +15,7 @@ export interface FrameFake {
   marks: FrameMark[];
 }
 
-export const frameFake = ({ narrow = false }: { narrow?: boolean } = {}): FrameFake => {
+export const frameFake = ({ narrow = false }: FrameFakeInput = {}): FrameFake => {
   const marks: FrameMark[] = [];
 
   return {

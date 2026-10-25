@@ -1,4 +1,4 @@
-export type { BlockCardParser, Clock, ConfigParser, Workspace } from './domain/contracts';
+export type { Clock } from './domain/contracts';
 export { findProject } from './domain/use-cases/queries/find-project';
 export { openProject } from './domain/use-cases/queries/open-project';
 export { readCore } from './domain/use-cases/queries/read-core';

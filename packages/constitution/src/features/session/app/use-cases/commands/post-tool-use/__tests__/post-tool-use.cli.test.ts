@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { z } from 'zod';
+
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Reminder } from '../../../../../domain/entities';
 import { AgentId, SessionId } from '../../../../../domain/value-objects';
+import { reminderNotesOf } from '../../../../utils';
 import { createPostToolUseCommand } from '../post-tool-use.cli';
 
 interface Asked {
@@ -22,6 +25,29 @@ interface Recorded {
 interface Named extends Recorded {
   askedBefore: number;
 }
+
+// What the hook wrote on standard output, read as Claude Code reads it: the event it answers and the
+// notes of the context it adds; a note's wording is reminderNotesOf's, which its own spec pins.
+const contextOf = (
+  stdout: string,
+): {
+  readonly event: unknown;
+  readonly notes: readonly string[];
+} => {
+  const output = z
+    .strictObject({
+      hookSpecificOutput: z.strictObject({
+        additionalContext: z.string(),
+        hookEventName: z.string(),
+      }),
+    })
+    .parse(JSON.parse(stdout)).hookSpecificOutput;
+
+  return {
+    event: output.hookEventName,
+    notes: output.additionalContext.split('\n'),
+  };
+};
 
 const runOf = async (input: {
   reminder: Reminder | undefined;
@@ -107,7 +133,11 @@ describe('createPostToolUseCommand', () => {
       const run = await runOf(asked);
 
       // Assert
-      expect(run).toStrictEqual({
+      expect({
+        asked: run.asked,
+        context: contextOf(run.stdout),
+        named: run.named,
+      }).toStrictEqual({
         asked: [
           {
             agent: AgentId.create('agent-1'),
@@ -126,8 +156,10 @@ describe('createPostToolUseCommand', () => {
             session: SessionId.create('s1'),
           },
         ],
-        stdout:
-          '{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"ui governs src/ui/a.ts: read ui.md.\\ntypescript governs src/ui/a.ts: read typescript.md."}}\n',
+        context: {
+          event: 'PostToolUse',
+          notes: reminderNotesOf(asked.reminder),
+        },
       });
     },
   );

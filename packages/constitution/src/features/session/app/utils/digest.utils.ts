@@ -64,19 +64,12 @@ const digestOf = (contents: DigestContents): Digest => {
       return doctorNoticeOf(contents.releaseFolder);
     case DigestKind.Unparsed:
       return unparsedDigestOf(contents);
-    default: {
-      // Resolved, the one kind left: a kind added to the union fails to compile here
-      const resolved: Extract<
-        DigestContents,
-        {
-          kind: DigestKind.Resolved;
-        }
-      > = contents;
-
-      return resolvedDigestOf(resolved);
-    }
+    case DigestKind.Resolved:
+      return resolvedDigestOf(contents);
+    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
+    default:
+      return contents satisfies never;
   }
 };
 
-export type { Digest };
 export { digestOf };

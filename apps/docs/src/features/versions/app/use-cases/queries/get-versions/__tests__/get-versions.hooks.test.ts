@@ -1,16 +1,26 @@
-import { afterEach, describe, expect, it } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, renderHook, waitFor } from '@testing-library/react';
 
 import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
 
-import { createVersion } from '../../../../../domain/value-objects';
+import { VersionsError, VersionsFailure } from '../../../../../domain/errors';
+import { Version } from '../../../../../domain/value-objects';
 import { VersionsStatus } from '../get-versions.constants';
 import { useGetVersions } from '../get-versions.hooks';
 import { renderVersionsState } from './get-versions.hooks.fixtures';
+import type { ReportErrorFake } from './report-error.fake';
+import { reportErrorFake } from './report-error.fake';
+
+let reportError: ReportErrorFake;
+
+beforeEach(() => {
+  reportError = reportErrorFake();
+});
 
 afterEach(() => {
   cleanup();
+  reportError.restore();
 });
 
 describe('useGetVersions', () => {
@@ -43,10 +53,10 @@ describe('useGetVersions', () => {
   it('should hold the releases when the read answers', async () => {
     // Arrange
     const { getVersions } = createFakeGetVersions({
-      latest: createVersion('0.70.0'),
+      latest: Version.create('0.70.0'),
       versions: [
-        createVersion('0.70.0'),
-        createVersion('0.69.2'),
+        Version.create('0.70.0'),
+        Version.create('0.69.2'),
       ],
     });
 
@@ -56,27 +66,64 @@ describe('useGetVersions', () => {
     // Assert
     await waitFor(() => {
       expect(versionsState.current).toStrictEqual({
-        latest: createVersion('0.70.0'),
+        latest: Version.create('0.70.0'),
         status: VersionsStatus.Loaded,
         versions: [
-          createVersion('0.70.0'),
-          createVersion('0.69.2'),
+          Version.create('0.70.0'),
+          Version.create('0.69.2'),
         ],
       });
     });
   });
 
-  it('should have failed when the read fails', async () => {
+  it('should have failed, reporting nothing, when the list cannot be read', async () => {
     // Arrange
-    const { getVersions } = createFakeGetVersions(new Error('unreadable'));
+    const { getVersions } = createFakeGetVersions(
+      new VersionsError({
+        code: VersionsFailure.Unreachable,
+        details: {
+          address: '/versions.json',
+        },
+      }),
+    );
 
     // Act
     const { result: versionsState } = renderVersionsState(getVersions);
 
     // Assert
     await waitFor(() => {
-      expect(versionsState.current).toStrictEqual({
-        status: VersionsStatus.Failed,
+      expect({
+        reported: reportError.reported,
+        state: versionsState.current,
+      }).toStrictEqual({
+        reported: [],
+        state: {
+          status: VersionsStatus.Failed,
+        },
+      });
+    });
+  });
+
+  it('should have failed and reported the defect when the read meets one', async () => {
+    // Arrange
+    const defect = new RangeError('a defect');
+    const { getVersions } = createFakeGetVersions(defect);
+
+    // Act
+    const { result: versionsState } = renderVersionsState(getVersions);
+
+    // Assert
+    await waitFor(() => {
+      expect({
+        reported: reportError.reported,
+        state: versionsState.current,
+      }).toStrictEqual({
+        reported: [
+          defect,
+        ],
+        state: {
+          status: VersionsStatus.Failed,
+        },
       });
     });
   });
@@ -101,10 +148,10 @@ describe('useGetVersions', () => {
       createFakeGetVersions().getVersions,
     );
     const newer = createFakeGetVersions({
-      latest: createVersion('0.71.0'),
+      latest: Version.create('0.71.0'),
       versions: [
-        createVersion('0.71.0'),
-        createVersion('0.70.0'),
+        Version.create('0.71.0'),
+        Version.create('0.70.0'),
       ],
     });
 
@@ -114,11 +161,11 @@ describe('useGetVersions', () => {
     // Assert
     await waitFor(() => {
       expect(versionsState.current).toStrictEqual({
-        latest: createVersion('0.71.0'),
+        latest: Version.create('0.71.0'),
         status: VersionsStatus.Loaded,
         versions: [
-          createVersion('0.71.0'),
-          createVersion('0.70.0'),
+          Version.create('0.71.0'),
+          Version.create('0.70.0'),
         ],
       });
     });

@@ -1,6 +1,6 @@
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../domain/constants';
 import type {
   AbstractBlocksDetails,
   BlockFormDetails,

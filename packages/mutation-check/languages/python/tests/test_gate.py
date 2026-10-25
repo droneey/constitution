@@ -1,11 +1,10 @@
-import io
-from pathlib import Path
-
 import pytest
 from changes_fixtures import FILES
-from runner_fake import DIFF, MUTMUT, UNTRACKED, RunnerFake, workspace_of
+from workspace_fake import DIFF, MUTMUT, UNTRACKED, WorkspaceFake
 
-from droneey_mutation_check.gate import Completed, check, python_sources
+from droneey_mutation_check.check_error import CheckError, Failure
+from droneey_mutation_check.gate import Completed, check
+from droneey_mutation_check.outcome import Broken, Mutant, Outcome, Pass, Passed, Survived
 
 TOTAL_CHANGED = Completed(
   status=0,
@@ -34,12 +33,10 @@ KILLED = Completed(
 
 def _check(
   *, arguments: list[str], answers: dict[tuple[str, ...], Completed]
-) -> tuple[int, str, RunnerFake]:
-  runner = RunnerFake(answers=answers)
-  output = io.StringIO()
-  status = check(arguments, workspace=workspace_of(runner=runner, files=FILES, output=output))
+) -> tuple[Outcome, WorkspaceFake]:
+  workspace = WorkspaceFake(answers=answers, files=FILES)
 
-  return status, output.getvalue(), runner
+  return check(arguments, workspace=workspace), workspace
 
 
 def test_should_pass_without_mutmut_when_no_function_changed() -> None:
@@ -47,12 +44,11 @@ def test_should_pass_without_mutmut_when_no_function_changed() -> None:
   answers: dict[tuple[str, ...], Completed] = {}
 
   # Act
-  status, output, runner = _check(arguments=[], answers=answers)
+  outcome, workspace = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output, runner.commands, runner.cleared) == (
-    0,
-    'mutation: no function to mutate changed\n',
+  assert (outcome, workspace.commands, workspace.cleared) == (
+    Passed(why=Pass.UNCHANGED),
     [DIFF, UNTRACKED],
     0,
   )
@@ -63,12 +59,11 @@ def test_should_pass_and_remove_the_mutants_when_every_changed_mutant_is_killed(
   answers = {DIFF: TOTAL_CHANGED, (*MUTMUT, 'results'): KILLED}
 
   # Act
-  status, output, runner = _check(arguments=[], answers=answers)
+  outcome, workspace = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output, runner.commands, runner.cleared) == (
-    0,
-    'mutation: every mutant killed\n',
+  assert (outcome, workspace.commands, workspace.cleared) == (
+    Passed(why=Pass.KILLED),
     [DIFF, UNTRACKED, (*MUTMUT, 'run', TOTAL), (*MUTMUT, 'results')],
     2,
   )
@@ -79,14 +74,15 @@ def test_should_fail_and_keep_the_mutants_when_a_changed_mutant_is_not_killed() 
   answers = {DIFF: TOTAL_CHANGED, (*MUTMUT, 'results'): RESULTS}
 
   # Act
-  status, output, runner = _check(arguments=[], answers=answers)
+  outcome, workspace = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output, runner.cleared) == (
-    1,
-    (
-      'mutation: shop.orders.x_total__mutmut_1: survived\n'
-      'mutation: shop.orders.x_total__mutmut_2: no tests\n'
+  assert (outcome, workspace.cleared) == (
+    Survived(
+      mutants=(
+        Mutant(name='shop.orders.x_total__mutmut_1', status='survived'),
+        Mutant(name='shop.orders.x_total__mutmut_2', status='no tests'),
+      ),
     ),
     1,
   )
@@ -97,15 +93,16 @@ def test_should_fail_with_every_mutant_not_killed_when_all_are_mutated() -> None
   answers: dict[tuple[str, ...], Completed] = {(*MUTMUT, 'results'): RESULTS}
 
   # Act
-  status, output, runner = _check(arguments=['all'], answers=answers)
+  outcome, workspace = _check(arguments=['all'], answers=answers)
 
   # Assert
-  assert (status, output, runner.commands) == (
-    1,
-    (
-      'mutation: shop.orders.x_total__mutmut_1: survived\n'
-      'mutation: shop.orders.x_total__mutmut_2: no tests\n'
-      'mutation: shop.orders.x_discount__mutmut_2: survived\n'
+  assert (outcome, workspace.commands) == (
+    Survived(
+      mutants=(
+        Mutant(name='shop.orders.x_total__mutmut_1', status='survived'),
+        Mutant(name='shop.orders.x_total__mutmut_2', status='no tests'),
+        Mutant(name='shop.orders.x_discount__mutmut_2', status='survived'),
+      ),
     ),
     [(*MUTMUT, 'run'), (*MUTMUT, 'results')],
   )
@@ -133,10 +130,10 @@ def test_should_pass_when_the_changed_functions_hold_nothing_to_mutate(stop: str
   }
 
   # Act
-  status, output, _ = _check(arguments=[], answers=answers)
+  outcome, _ = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output) == (0, 'mutation: the functions hold nothing to mutate\n')
+  assert outcome == Passed(why=Pass.EMPTY)
 
 
 def test_should_fail_with_the_changed_mutants_when_mutmut_stops_before_running_them() -> None:
@@ -157,10 +154,12 @@ def test_should_fail_with_the_changed_mutants_when_mutmut_stops_before_running_t
   }
 
   # Act
-  status, output, _ = _check(arguments=[], answers=answers)
+  outcome, _ = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output) == (1, 'mutation: shop.orders.x_total__mutmut_1: not checked\n')
+  assert outcome == Survived(
+    mutants=(Mutant(name='shop.orders.x_total__mutmut_1', status='not checked'),),
+  )
 
 
 def test_should_fail_with_its_output_when_mutmut_fails() -> None:
@@ -171,43 +170,26 @@ def test_should_fail_with_its_output_when_mutmut_fails() -> None:
   }
 
   # Act
-  status, output, runner = _check(arguments=[], answers=answers)
+  outcome, workspace = _check(arguments=[], answers=answers)
 
   # Assert
-  assert (status, output, runner.commands[-1]) == (
-    1,
-    'failed to run the clean tests\n',
+  assert (outcome, workspace.commands[-1]) == (
+    Broken(output='failed to run the clean tests\n'),
     (*MUTMUT, 'run', TOTAL),
   )
 
 
-def test_should_raise_when_git_fails() -> None:
+def test_should_stop_with_the_command_when_git_fails() -> None:
   # Arrange
   answers = {DIFF: Completed(status=128, output='fatal: bad revision origin/main\n')}
 
   # Act
-  with pytest.raises(
-    RuntimeError, match=r'git diff .* failed: fatal: bad revision origin/main'
-  ) as raised:
+  with pytest.raises(CheckError) as raised:
     _check(arguments=[], answers=answers)
 
   # Assert
-  assert raised.type is RuntimeError
-
-
-def test_should_list_the_python_files_under_src_relative_to_the_package(tmp_path: Path) -> None:
-  # Arrange
-  for name in (
-    'src/shop/orders.py',
-    'src/shop/kernel/money.py',
-    'src/shop/data.json',
-    'tests/test_orders.py',
-  ):
-    (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
-    (tmp_path / name).write_text('', encoding='utf-8')
-
-  # Act
-  sources = python_sources(tmp_path)
-
-  # Assert
-  assert sources == (Path('src/shop/kernel/money.py'), Path('src/shop/orders.py'))
+  assert (raised.value.code, raised.value.command, raised.value.output) == (
+    Failure.GIT_FAILED,
+    DIFF,
+    'fatal: bad revision origin/main\n',
+  )

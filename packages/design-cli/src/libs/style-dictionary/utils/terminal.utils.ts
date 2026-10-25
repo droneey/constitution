@@ -1,6 +1,8 @@
 import type { FormatFn, TransformedToken } from 'style-dictionary/types';
 import { fileHeader, getReferences } from 'style-dictionary/utils';
 
+import { MalformedTokenError } from '../errors';
+
 const JSON_INDENT = 2;
 
 /** the scale an app's own brand.tokens.json replaces */
@@ -9,6 +11,32 @@ const ACCENT_SCALE = 'brand';
 const nameOf = ({ path: [, ...name] }: TransformedToken): string => name.join('.');
 
 const isOnAccentScale = ({ path: [, scale] }: TransformedToken): boolean => scale === ACCENT_SCALE;
+
+/**
+ * A colour without an alpha, which a terminal can draw as it is.
+ *
+ * @throws {@link MalformedTokenError} when the token's value is no colour object
+ */
+const isOpaque = ({ name, original }: TransformedToken): boolean => {
+  const colour: unknown = original.$value;
+
+  if (!(colour instanceof Object)) {
+    throw new MalformedTokenError(name);
+  }
+
+  return !('alpha' in colour);
+};
+
+/** @throws {@link MalformedTokenError} when the token's value is no measure */
+const amountOf = ({ $value, name }: TransformedToken): number => {
+  const measure: unknown = $value;
+
+  if (measure instanceof Object && 'value' in measure && typeof measure.value === 'number') {
+    return measure.value;
+  }
+
+  throw new MalformedTokenError(name);
+};
 
 /**
  * Style Dictionary has no format for a terminal: the module holds the accent's roles as steps, so an
@@ -44,7 +72,7 @@ const terminalModule: FormatFn = async ({ dictionary }) => {
     // a terminal cannot lay a colour over another
     colour: Object.fromEntries(
       roles
-        .filter(({ step }) => !isOnAccentScale(step) && step.original.$value.alpha === undefined)
+        .filter(({ step }) => !isOnAccentScale(step) && isOpaque(step))
         .map(({ role }) => [
           nameOf(role),
           role.$value,
@@ -53,13 +81,13 @@ const terminalModule: FormatFn = async ({ dictionary }) => {
     duration: Object.fromEntries(
       tokensOf('duration').map((token) => [
         nameOf(token),
-        token.$value.value,
+        amountOf(token),
       ]),
     ),
     spacing: Object.fromEntries(
       tokensOf('spacing').map((token) => [
         nameOf(token),
-        token.$value.value,
+        amountOf(token),
       ]),
     ),
   };

@@ -262,11 +262,8 @@ describe('loadTexts', () => {
       text: "is named after its block; an axis holds named chapters and seams, and the block's id names only its passport <id>.md",
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(loadTexts, reported.code, reported.details);
+    const said = textOf(loadTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

@@ -1,19 +1,19 @@
 import ast
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
-from droneey_python_check.findings import Finding
+from droneey_python_check.findings import Finding, Rule
 
 if TYPE_CHECKING:
   from pathlib import Path
 
-FUNCTION_LINES = 100
-FILE_LINES = 500
-TESTS = 'tests'
-GENERATED_FILE = '_gen'
-GENERATED_FOLDER = '_gen'
+FUNCTION_LINES: Final = 100
+FILE_LINES: Final = 500
+TESTS: Final = 'tests'
+GENERATED_FILE: Final = '_gen'
+GENERATED_FOLDER: Final = '_gen'
 # A function whose body is one data literal lifts its limit by this comment on its `def` line.
-LIFTED = re.compile(rb'#\s*python-check: ignore\[function-lines\] -- \S')
+LIFTED: Final = re.compile(rb'#\s*python-check: ignore\[function-lines\] -- \S')
 
 
 def _function_lines(node: ast.FunctionDef | ast.AsyncFunctionDef) -> int:
@@ -36,7 +36,8 @@ def line_findings(*, path: Path, tree: ast.Module, source: bytes) -> tuple[Findi
       Finding(
         path=path,
         line=1,
-        message=f'the file holds {len(lines)} lines, more than {FILE_LINES}',
+        rule=Rule.FILE_LINES,
+        values=(str(len(lines)), str(FILE_LINES)),
       ),
     )
     if len(lines) > FILE_LINES
@@ -47,7 +48,8 @@ def line_findings(*, path: Path, tree: ast.Module, source: bytes) -> tuple[Findi
     Finding(
       path=path,
       line=node.lineno,
-      message=f'{node.name} holds {_function_lines(node)} lines, more than {FUNCTION_LINES}',
+      rule=Rule.FUNCTION_LINES,
+      values=(node.name, str(_function_lines(node)), str(FUNCTION_LINES)),
     )
     for node in ast.walk(tree)
     if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)

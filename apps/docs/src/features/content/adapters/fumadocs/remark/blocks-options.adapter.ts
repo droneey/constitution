@@ -1,12 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
-import {
-  MARKDOWN_EXTENSION,
-  pageSlugsOf,
-  ruleSlugsOf,
-  unknownExamplesOf,
-} from '../../../domain/entities';
+import { MARKDOWN_EXTENSION, pageSlugsOf, Rule } from '../../../domain/entities';
 import type { BlocksOptions } from './remark-blocks.adapter';
 
 const markdownFilesOf = (root: string, folder: string): readonly string[] =>
@@ -17,12 +12,14 @@ const markdownFilesOf = (root: string, folder: string): readonly string[] =>
     .filter((path) => path.endsWith(MARKDOWN_EXTENSION))
     .map((path) => `${folder}/${path}`);
 
-const blocksOptionsOf = (input: {
-  baseUrl: string;
-  blocks: string;
-  examples: string;
-  folders: readonly string[];
-}): BlocksOptions => {
+interface BlocksOptionsInput {
+  readonly baseUrl: string;
+  readonly blocks: string;
+  readonly examples: string;
+  readonly folders: readonly string[];
+}
+
+const blocksOptionsOf = (input: BlocksOptionsInput): BlocksOptions => {
   const addresses = new Map<string, string>();
 
   for (const path of input.folders.flatMap((folder) => markdownFilesOf(input.blocks, folder))) {
@@ -31,13 +28,13 @@ const blocksOptionsOf = (input: {
       ...pageSlugsOf(path),
     ].join('/');
 
-    for (const slug of ruleSlugsOf(readFileSync(join(input.blocks, path), 'utf8'))) {
+    for (const slug of Rule.slugsIn(readFileSync(join(input.blocks, path), 'utf8'))) {
       addresses.set(slug, `${page}#${slug}`);
     }
   }
 
   const files = readdirSync(input.examples).filter((name) => name.endsWith(MARKDOWN_EXTENSION));
-  const unknown = unknownExamplesOf(
+  const unknown = Rule.unknownExamplesOf(
     files.map((name) => basename(name, MARKDOWN_EXTENSION)),
     new Set(addresses.keys()),
   );

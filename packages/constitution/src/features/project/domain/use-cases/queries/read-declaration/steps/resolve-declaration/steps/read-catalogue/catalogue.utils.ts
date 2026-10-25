@@ -12,6 +12,7 @@ import {
 } from '#/kernel/value-objects';
 
 import type { BlockCard, BlockCardParser } from '../../../../../../../contracts';
+import { EMPTY_CARD } from '../../../../../../../contracts';
 import type {
   CatalogueSource,
   ChapterPlace,
@@ -51,14 +52,6 @@ interface FileInput {
   readonly sourceFile: SourceFile;
   readonly state: ReadState;
 }
-
-const EMPTY_CARD: BlockCard = {
-  extends: undefined,
-  governs: [],
-  isAbstract: false,
-  requires: [],
-  summary: '',
-} as const;
 
 const whereOf = (input: { path: string; source: CatalogueSource }): string =>
   `${input.source.where}/${input.path}`;

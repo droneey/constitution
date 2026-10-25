@@ -56,11 +56,8 @@ describe('BlockId', () => {
       text: 'js_runtime',
     },
   ])('should tell a block id when $condition', ({ isBlockId, text }) => {
-    // Arrange
-    const candidate = text;
-
     // Act
-    const isId = BlockId.is(candidate);
+    const isId = BlockId.is(text);
 
     // Assert
     expect(isId).toBe(isBlockId);
@@ -76,11 +73,8 @@ describe('BlockId', () => {
       given: 42,
     },
   ])('should tell no block id when $condition', ({ given }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const isValue = BlockId.is(candidate);
+    const isValue = BlockId.is(given);
 
     // Assert
     expect(isValue).toBe(false);

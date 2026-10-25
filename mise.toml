@@ -34,4 +34,4 @@ minimum_release_age = "3d"
 locked = true
 
 [tasks."audit:check"]
-run = 'osv-scanner scan source --licenses="$(cat .droneey/constitution/presets/common/osv-scanner/foundation/core.txt | paste -sd, -)" --no-ignore .'
+run = 'scripts/audit.sh .droneey/constitution/presets/common/osv-scanner/foundation/core.txt'

@@ -12,7 +12,7 @@ import {
   textOf,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { TermKind } from '../../shared/terms';
+import { TermKind } from '../../../../../entities';
 import type { TermsDetails } from '../terms';
 import { TermsCode, termsCheck } from '../terms';
 

@@ -57,11 +57,14 @@ const uncheckedWiring: WiringCheck = {
   }),
 };
 
+interface SessionPortsInput {
+  readonly project?: FakeProject;
+  readonly wiring?: WiringCheck;
+}
+
 // The ports a session's start reads through: the project around the start, quiet by default, and
 // the wiring check given.
-const sessionPortsOf = (
-  input: { project?: FakeProject; wiring?: WiringCheck } = {},
-): DigestSessionPorts => ({
+const sessionPortsOf = (input: SessionPortsInput = {}): DigestSessionPorts => ({
   source: createFakeProjectSource({
     declaration: {
       packs: [],

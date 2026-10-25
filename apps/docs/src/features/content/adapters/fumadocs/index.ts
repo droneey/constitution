@@ -1,2 +1,1 @@
-export { collectionPathOf } from './pages.adapter';
-export { contentLlms, contentSource } from './source.adapter';
+export { collectionPathOf, contentLlms, contentSource } from './source.adapter';

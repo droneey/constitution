@@ -1,1 +1,1 @@
-export { InvalidValueError } from './invalid-value.error';
+export { InvalidValueError, ValueFailure } from './invalid-value.error';

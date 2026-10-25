@@ -166,6 +166,7 @@
   --size-popup-max: var(--dimension-352); /** A common token: the widest a dropdown opens. */
   --size-layout-sidebar: var(--dimension-272); /** A common token: the width of the sidebar and of the contents column beside the page. */
   --size-layout-page: var(--dimension-768); /** A common token: the widest the page's text runs. */
+  --radius-control-base: var(--radius-8);
   --radius-surface-raised: var(--radius-12);
   --text-xs: var(--dimension-12);
   --text-sm: var(--dimension-14);

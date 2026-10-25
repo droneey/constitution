@@ -144,6 +144,11 @@ describe('createGitHubReleaseFeed', () => {
       cause: expect.any(SyntaxError),
       condition: 'the answer is no JSON',
     },
+    {
+      answer: async (): Promise<Response> => await Promise.resolve(new Response(null)),
+      cause: expect.any(SyntaxError),
+      condition: 'the answer has no body',
+    },
   ])(
     'should say the latest release is unknown, with why, when $condition',
     async ({ answer, cause }) => {
@@ -213,6 +218,53 @@ describe('createGitHubReleaseFeed', () => {
     expect(latest).toStrictEqual({
       cause: refusal,
       lookup: ReleaseLookup.Unreachable,
+    });
+  });
+
+  it.each([
+    {
+      body: `[{"tag_name":"v0.81.0","body":"${'x'.repeat(1_048_576)}"}]`,
+      condition: 'its answer runs past the size it reads',
+    },
+    {
+      body: `[{"tag_name":"v0.81.0","assets":${'['.repeat(16)}${']'.repeat(16)}}]`,
+      condition: 'its answer nests deeper than it reads',
+    },
+  ])(
+    'should say the latest release is unknown, with the answer, when $condition',
+    async ({ body }) => {
+      // Arrange
+      const refused = new Response(body);
+      const feed = feedOf({
+        answer: async (): Promise<Response> => await Promise.resolve(refused),
+      });
+
+      // Act
+      const latest = await feed.latest();
+
+      // Assert
+      expect(latest).toStrictEqual({
+        cause: refused,
+        lookup: ReleaseLookup.Unreachable,
+      });
+    },
+  );
+
+  it('should give the release when its answer is as large and as deep as it reads', async () => {
+    // Arrange
+    const tag = `{"tag_name":"v0.81.0","assets":${'['.repeat(14)}${']'.repeat(14)},"body":"`;
+    const feed = feedOf({
+      answer: async (): Promise<Response> =>
+        await Promise.resolve(new Response(`[${tag}${'x'.repeat(1_048_576 - tag.length - 4)}"}]`)),
+    });
+
+    // Act
+    const latest = await feed.latest();
+
+    // Assert
+    expect(latest).toStrictEqual({
+      lookup: ReleaseLookup.Found,
+      version: Version.create('0.81.0'),
     });
   });
 

@@ -4,7 +4,13 @@ import type { Column, TableContent } from './text.types';
 /** the cells a text takes on a terminal, its wide and its invisible characters counted as such */
 const widthOf = (text: string): number => Bun.stringWidth(text);
 
-const padTo = (input: { align?: ColumnAlign | undefined; text: string; width: number }): string => {
+interface PadInput {
+  readonly align?: ColumnAlign | undefined;
+  readonly text: string;
+  readonly width: number;
+}
+
+const padTo = (input: PadInput): string => {
   const padding = ' '.repeat(Math.max(0, input.width - widthOf(input.text)));
 
   return input.align === ColumnAlign.End ? `${padding}${input.text}` : `${input.text}${padding}`;
@@ -20,7 +26,12 @@ interface Share {
   readonly percent: number;
 }
 
-const shareOf = (input: { done: number; total: number }): Share => {
+interface ShareInput {
+  readonly done: number;
+  readonly total: number;
+}
+
+const shareOf = (input: ShareInput): Share => {
   const ratio = input.total <= 0 ? 0 : Math.min(1, Math.max(0, input.done / input.total));
 
   return {

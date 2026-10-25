@@ -15,11 +15,6 @@ enum ExitCode {
   Failure = 1,
 }
 
-/** the module a platform hands the runner, its configurations its default export */
-interface ConfigModule {
-  readonly default: unknown;
-}
-
 const writeError = (text: string): void => {
   process.stderr.write(text);
 };
@@ -43,8 +38,11 @@ const runDesignCommand = async ([command, configPath]: readonly string[]): Promi
     return ExitCode.Failure;
   }
 
-  const configModule: ConfigModule = await import(pathToFileURL(path).href);
-  const configs = configModule.default;
+  const configModule: unknown = await import(pathToFileURL(path).href);
+  const configs =
+    typeof configModule === 'object' && configModule !== null && 'default' in configModule
+      ? configModule.default
+      : undefined;
 
   if (!isConfigList(configs)) {
     writeError(`design-tokens: ${configPath} exports no list of Style Dictionary configurations\n`);

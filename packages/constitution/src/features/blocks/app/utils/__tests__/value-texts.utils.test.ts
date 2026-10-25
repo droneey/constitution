@@ -96,11 +96,8 @@ describe('valueTexts', () => {
   ])(
     'should say $problem.code at $problem.details.site as the report words it',
     ({ problem, text }) => {
-      // Arrange
-      const reported = problem;
-
       // Act
-      const said = textOf(valueTexts, reported.code, reported.details);
+      const said = textOf(valueTexts, problem.code, problem.details);
 
       // Assert
       expect(said).toBe(text);

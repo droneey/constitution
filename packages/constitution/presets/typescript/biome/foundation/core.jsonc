@@ -95,6 +95,14 @@
       ],
     },
     {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/case-split-by-arrange-act-assert-comments.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/case-pins-meaning-never-wording.grit",
       "includes": [
         "**/__tests__/**",

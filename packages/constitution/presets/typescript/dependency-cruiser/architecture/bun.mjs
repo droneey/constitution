@@ -15,7 +15,7 @@ export default {
         ],
       },
       to: {
-        path: '^bun:',
+        path: '^bun(?::|$)',
         reachable: true,
       },
     },

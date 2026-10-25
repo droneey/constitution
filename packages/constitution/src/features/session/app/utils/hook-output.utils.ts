@@ -47,7 +47,12 @@ const jsonTextOf = (text: string): string =>
     .map(escapedOf)
     .join('');
 
-const contextOutputOf = (input: { event: string; text: string }): string =>
+interface ContextOutputInput {
+  readonly event: string;
+  readonly text: string;
+}
+
+const contextOutputOf = (input: ContextOutputInput): string =>
   `{"hookSpecificOutput":{"hookEventName":"${jsonTextOf(input.event)}","additionalContext":"${jsonTextOf(input.text)}"}}\n`;
 
 export { contextOutputOf, jsonTextOf };

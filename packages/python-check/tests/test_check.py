@@ -1,30 +1,33 @@
-import io
-from typing import TYPE_CHECKING
+from pathlib import Path
 
-from source_fixtures import function_of, python, write_files
+import pytest
+from source_fixtures import function_of, python
 
-from droneey_python_check.check import run
+from droneey_python_check.check import (
+  ExitStatus,
+  Source,
+  Sources,
+  exit_status,
+  findings_of,
+  paths_of,
+)
+from droneey_python_check.findings import Finding, Rule
 from droneey_python_check.settings import Settings
+from droneey_python_check.usage_error import Misuse, UsageError
 
-if TYPE_CHECKING:
-  from pathlib import Path
+SETTINGS = Settings(homes={'pydantic': ('adapters',)})
 
 
-def _run(*, folder: Path, arguments: list[str]) -> tuple[int, str]:
-  output = io.StringIO()
-  status = run(
-    [str(folder / argument) for argument in arguments],
-    output=output,
-    settings=Settings(homes={'pydantic': ('adapters',)}),
+def _sources(files: dict[str, str]) -> Sources:
+  return Sources(
+    files=tuple(Source(path=Path(name), text=text.encode()) for name, text in files.items()),
+    folders=frozenset({Path('src/shop'), Path('src/shop/kernel'), Path('src/shop/adapters')}),
   )
 
-  return status, output.getvalue()
 
-
-def test_should_pass_when_every_file_keeps_the_rules(tmp_path: Path) -> None:
+def test_should_find_nothing_when_every_file_keeps_the_rules() -> None:
   # Arrange
-  write_files(
-    tmp_path,
+  sources = _sources(
     {
       'src/shop/__init__.py': '',
       'src/shop/kernel/money.py': python('from . import currency'),
@@ -34,69 +37,104 @@ def test_should_pass_when_every_file_keeps_the_rules(tmp_path: Path) -> None:
   )
 
   # Act
-  outcome = _run(folder=tmp_path, arguments=['src', 'tests'])
+  findings = findings_of(sources=sources, settings=SETTINGS)
 
   # Assert
-  assert outcome == (0, '')
+  assert findings == ()
 
 
-def test_should_fail_with_each_finding_when_files_break_the_rules(tmp_path: Path) -> None:
+def test_should_find_each_rule_a_file_breaks_when_files_break_several() -> None:
   # Arrange
-  write_files(
-    tmp_path,
+  sources = _sources(
     {
       'src/shop/kernel/money.py': python('from ..features import orders', 'import pydantic'),
-      'src/shop/kernel/__pycache__/stale.py': function_of(101),
       'src/shop/orders.py': function_of(101),
     },
   )
 
   # Act
-  outcome = _run(folder=tmp_path, arguments=['src'])
+  findings = findings_of(sources=sources, settings=SETTINGS)
 
   # Assert
-  assert outcome == (
-    1,
-    (
-      f'{tmp_path}/src/shop/kernel/money.py:1: '
-      'a relative import leaves its module, kernel; import it by its absolute path\n'
-      f'{tmp_path}/src/shop/kernel/money.py:2: kernel imports no package, and pydantic is one\n'
-      f'{tmp_path}/src/shop/orders.py:1: tally holds 101 lines, more than 100\n'
+  assert findings == (
+    Finding(
+      path=Path('src/shop/kernel/money.py'),
+      line=1,
+      rule=Rule.IMPORT_LEAVES_MODULE,
+      values=('kernel',),
+    ),
+    Finding(
+      path=Path('src/shop/kernel/money.py'),
+      line=2,
+      rule=Rule.PACKAGE_IN_PURE,
+      values=('kernel', 'pydantic'),
+    ),
+    Finding(
+      path=Path('src/shop/orders.py'),
+      line=1,
+      rule=Rule.FUNCTION_LINES,
+      values=('tally', '101', '100'),
     ),
   )
 
 
-def test_should_check_a_file_when_a_path_names_one(tmp_path: Path) -> None:
+def test_should_report_a_file_when_it_does_not_parse() -> None:
   # Arrange
-  write_files(tmp_path, {'src/shop/orders.py': function_of(101)})
+  sources = _sources({'src/shop/orders.py': python('LIMIT = 1', 'def total(')})
 
   # Act
-  outcome = _run(folder=tmp_path, arguments=['src/shop/orders.py'])
+  findings = findings_of(sources=sources, settings=SETTINGS)
 
   # Assert
-  assert outcome == (1, f'{tmp_path}/src/shop/orders.py:1: tally holds 101 lines, more than 100\n')
-
-
-def test_should_print_its_usage_when_no_path_is_given() -> None:
-  # Arrange
-  output = io.StringIO()
-
-  # Act
-  status = run([], output=output, settings=Settings())
-
-  # Assert
-  assert (status, output.getvalue()) == (2, 'usage: python-check <path>...\n')
-
-
-def test_should_report_a_file_when_it_does_not_parse(tmp_path: Path) -> None:
-  # Arrange
-  write_files(tmp_path, {'src/shop/orders.py': python('LIMIT = 1', 'def total(')})
-
-  # Act
-  outcome = _run(folder=tmp_path, arguments=['src'])
-
-  # Assert
-  assert outcome == (
-    1,
-    f"{tmp_path}/src/shop/orders.py:2: the file does not parse: '(' was never closed\n",
+  assert findings == (
+    Finding(
+      path=Path('src/shop/orders.py'),
+      line=2,
+      rule=Rule.SYNTAX,
+      values=("'(' was never closed",),
+    ),
   )
+
+
+def test_should_take_each_path_the_command_line_names() -> None:
+  # Arrange
+  arguments = ['src', 'tests/test_money.py']
+
+  # Act
+  paths = paths_of(arguments)
+
+  # Assert
+  assert paths == (Path('src'), Path('tests/test_money.py'))
+
+
+def test_should_refuse_a_command_line_when_it_names_no_path() -> None:
+  # Arrange
+  arguments: list[str] = []
+
+  # Act
+  with pytest.raises(UsageError) as raised:
+    paths_of(arguments)
+
+  # Assert
+  assert (raised.value.code, raised.value.paths) == (Misuse.NO_PATH, ())
+
+
+@pytest.mark.parametrize(
+  ('findings', 'status'),
+  [
+    pytest.param((), ExitStatus.PASSED, id='no finding'),
+    pytest.param(
+      (Finding(path=Path('src/shop/orders.py'), line=1, rule=Rule.IMPORT_CLIMBS_OUT),),
+      ExitStatus.FAILED,
+      id='a finding',
+    ),
+  ],
+)
+def test_should_end_with_the_status_of_the_findings(
+  findings: tuple[Finding, ...], status: ExitStatus
+) -> None:
+  # Act
+  ended = exit_status(findings)
+
+  # Assert
+  assert ended == status

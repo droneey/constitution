@@ -103,11 +103,8 @@ describe('isSyntaxError', () => {
       isSyntax: false,
     },
   ])('should say $isSyntax when $condition', ({ error, isSyntax }) => {
-    // Arrange
-    const thrown: unknown = error;
-
     // Act
-    const answer = isSyntaxError(thrown);
+    const answer = isSyntaxError(error);
 
     // Assert
     expect(answer).toBe(isSyntax);
@@ -127,11 +124,8 @@ describe('isRangeError', () => {
       isRange: false,
     },
   ])('should say $isRange when $condition', ({ error, isRange }) => {
-    // Arrange
-    const thrown: unknown = error;
-
     // Act
-    const answer = isRangeError(thrown);
+    const answer = isRangeError(error);
 
     // Assert
     expect(answer).toBe(isRange);

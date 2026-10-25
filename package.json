@@ -42,8 +42,9 @@
     "markdown:fix": "rumdl check --fix && bun run --filter '*' markdown:fix",
     "yaml:check": "yamllint --strict . && bun run --filter '*' yaml:check && scripts/poe-each.sh yaml:check",
     "renovate:check": "renovate-config-validator --strict",
+    "workflows:check": "actionlint",
     "design:check": "bun run --filter '*' design:check",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run design:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run design:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run renovate:check && bun run workflows:check"
   },
   "workspaces": [
     "apps/*",

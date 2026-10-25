@@ -3,6 +3,9 @@ import { mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import type { Entries } from './batch.fixtures';
+import { createBatch } from './batch.fixtures';
+
 interface Project {
   main: string;
   parts: readonly string[];
@@ -53,111 +56,93 @@ const writeProject = (folder: string, project: Project): void => {
   writeFileSync(join(folder, 'main.ts'), project.main);
 };
 
-// One build checks every project given, each in a folder named by its index; tsc writes a
-// diagnostic as <path>(<line>,<column>): error TS<code>, so a project is clean when no error
-// names its folder.
+// The TypeScript code of each error tsc reports: <path>(<line>,<column>): error TS<code>.
+const ERROR = /^(?<path>[^\n]*): error (?<code>TS\d+)/gm;
+
+// One build checks every project given, each in a folder named by its index, and gives each the
+// codes of its errors.
 /** @throws Error when tsc leaves a project unbuilt or reports an error outside every project. */
-const typeCheckAll = (
-  entries: readonly (readonly [
-    string,
-    Project,
-  ])[],
-): ReadonlyMap<string, boolean> => {
+const typeCheckAll = (entries: Entries<Project>): ReadonlyMap<string, readonly string[]> => {
   const root = mkdtempSync(join(tmpdir(), 'constitution-tsconfig-'));
 
-  entries.forEach(([, project], index) => {
-    writeProject(join(root, String(index)), project);
-  });
+  try {
+    entries.forEach(([, project], index) => {
+      writeProject(join(root, String(index)), project);
+    });
 
-  const compilation = spawnSync(
-    tsc,
-    [
-      '-b',
-      ...entries.map((_, index) => String(index)),
-      '--pretty',
-      'false',
-      '--verbose',
-    ],
-    {
-      cwd: root,
-      encoding: 'utf8',
-    },
-  );
-
-  rmSync(root, {
-    force: true,
-    recursive: true,
-  });
-
-  // --verbose names each project it builds: Building project '<folder>/tsconfig.json'.
-  const unbuilt = entries.filter(
-    (_, index) => !compilation.stdout.includes(`Building project '${String(index)}/tsconfig.json'`),
-  );
-
-  if (unbuilt.length > 0) {
-    throw new Error(
-      `tsc built no project of ${String(unbuilt.length)} folders: ${compilation.stdout}`,
+    const compilation = spawnSync(
+      tsc,
+      [
+        '-b',
+        ...entries.map((_, index) => String(index)),
+        '--pretty',
+        'false',
+        '--verbose',
+      ],
+      {
+        cwd: root,
+        encoding: 'utf8',
+      },
     );
+
+    // --verbose names each project it builds: Building project '<folder>/tsconfig.json'.
+    const unbuilt = entries.filter(
+      (_, index) =>
+        !compilation.stdout.includes(`Building project '${String(index)}/tsconfig.json'`),
+    );
+
+    if (unbuilt.length > 0) {
+      throw new Error(
+        `tsc built no project of ${String(unbuilt.length)} folders: ${compilation.stdout}`,
+      );
+    }
+
+    const errors = [
+      ...compilation.stdout.matchAll(ERROR),
+    ].map((match) => ({
+      code: match.groups?.['code'] ?? '',
+      folder: match.groups?.['path']?.split('/')[0] ?? '',
+    }));
+
+    if (errors.some(({ folder }) => !/^\d+$/.test(folder))) {
+      throw new Error(`tsc reported an error outside every project: ${compilation.stdout}`);
+    }
+
+    return new Map(
+      entries.map(([key], index) => [
+        key,
+        [
+          ...new Set(
+            errors.filter(({ folder }) => folder === String(index)).map(({ code }) => code),
+          ),
+        ].toSorted((left, right) => left.localeCompare(right)),
+      ]),
+    );
+  } finally {
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
   }
-
-  const failing = compilation.stdout
-    .split('\n')
-    .filter((line) => line.includes(': error TS'))
-    .map((line) => line.split('/')[0] ?? '');
-  const stray = failing.filter((folder) => !/^\d+$/.test(folder));
-
-  if (stray.length > 0) {
-    throw new Error(`tsc reported an error outside every project: ${compilation.stdout}`);
-  }
-
-  return new Map(
-    entries.map(([key], index) => [
-      key,
-      !failing.includes(String(index)),
-    ]),
-  );
 };
 
 interface TscBatch {
   readonly typeCheckCases: <TRow extends Project>(rows: readonly TRow[]) => readonly TRow[];
-  readonly typeCheckRegistered: () => void;
   /** @throws Error when no table registered the project, or before the batch is checked. */
-  readonly typeChecks: (project: Project) => boolean;
+  readonly typeCheckCodes: (project: Project) => readonly string[];
+  readonly typeCheckRegistered: () => Promise<void>;
 }
 
-// The tables of a spec file register their projects while the file is collected, and one build
-// checks them all before the first case: a spec file makes its own batch, so no state outlives it.
 const createTypeCheckBatch = (): TscBatch => {
-  const registered = new Map<string, Project>();
-  let checked: ReadonlyMap<string, boolean> = new Map();
-
-  const typeCheckCases = <TRow extends Project>(rows: readonly TRow[]): readonly TRow[] =>
-    rows.map((row) => {
-      registered.set(keyOf(row), row);
-
-      return row;
-    });
-
-  const typeCheckRegistered = (): void => {
-    checked = typeCheckAll([
-      ...registered,
-    ]);
-  };
-
-  const typeChecks = (project: Project): boolean => {
-    const isClean = checked.get(keyOf(project));
-
-    if (isClean === undefined) {
-      throw new Error(`No table registered the project of ${project.parts.join(', ')}`);
-    }
-
-    return isClean;
-  };
+  const { outcomeOf, register, runRegistered } = createBatch({
+    keyOf,
+    runAll: (entries: Entries<Project>) => Promise.resolve(typeCheckAll(entries)),
+  });
 
   return {
-    typeCheckCases,
-    typeCheckRegistered,
-    typeChecks,
+    typeCheckCases: (rows) => rows.map(register),
+    typeCheckCodes: outcomeOf,
+    typeCheckRegistered: runRegistered,
   };
 };
 

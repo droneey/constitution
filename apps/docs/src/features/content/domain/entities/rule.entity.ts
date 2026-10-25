@@ -7,7 +7,7 @@ enum Level {
 interface Rule {
   readonly level: Level;
   readonly slug: string;
-  readonly tightens: string | undefined;
+  readonly tightens?: string;
 }
 
 const RULE_HEADING =
@@ -32,17 +32,29 @@ const ruleOf = (heading: string): Rule | undefined => {
   const [, slug, tightens, level] = match;
   const known = levelsByText.get(level);
 
-  // Stryker disable next-line ConditionalExpression,LogicalOperator: a match holds the slug and one of the levels, so the check only narrows their types
-  return slug === undefined || known === undefined
+  const rule =
+    // Stryker disable next-line ConditionalExpression,LogicalOperator: a match holds the slug and one of the levels, so the check only narrows their types
+    slug === undefined || known === undefined
+      ? undefined
+      : {
+          level: known,
+          slug,
+        };
+
+  if (tightens === undefined) {
+    return rule;
+  }
+
+  // Stryker disable next-line ConditionalExpression: a match always makes the rule, so its check only narrows the type
+  return rule === undefined
     ? undefined
     : {
-        level: known,
-        slug,
+        ...rule,
         tightens,
       };
 };
 
-const ruleSlugsOf = (markdown: string): readonly string[] =>
+const slugsIn = (markdown: string): readonly string[] =>
   markdown.split('\n').flatMap((line) => {
     const rule = line.startsWith(RULE_HEADING_MARK)
       ? ruleOf(line.slice(RULE_HEADING_MARK.length))
@@ -60,5 +72,10 @@ const unknownExamplesOf = (
   ruleSlugs: ReadonlySet<string>,
 ): readonly string[] => examples.filter((slug) => !ruleSlugs.has(slug));
 
-export type { Rule };
-export { Level, ruleOf, ruleSlugsOf, unknownExamplesOf };
+const Rule = {
+  of: ruleOf,
+  slugsIn,
+  unknownExamplesOf,
+} as const;
+
+export { Level, Rule };

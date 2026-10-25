@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { PhrasingContent, TableCell, TableRow } from 'mdast';
 
-import { Term, TermKind } from '../../../../domain/entities';
+import { Axis, Term, TermKind } from '../../../../domain/entities';
 import { remarkTerms } from '../remark-terms.adapter';
 import { inlineCode, link, text, treeOf, withoutPositions } from './mdast.fixtures';
 
@@ -18,7 +18,7 @@ const row = (cells: PhrasingContent[][]): TableRow => ({
 
 const bun = Term.create({
   address: '/docs/implementations/bun',
-  axis: 'foundation',
+  axis: Axis.Foundation,
   block: 'bun',
   kind: TermKind.Brand,
   name: 'Bun',
@@ -27,7 +27,7 @@ const bun = Term.create({
 
 const widgets = Term.create({
   address: '/docs/domains/ui/architecture/components',
-  axis: 'architecture',
+  axis: Axis.Architecture,
   block: 'ui',
   kind: TermKind.Folder,
   name: 'widgets/',
@@ -36,7 +36,7 @@ const widgets = Term.create({
 
 const bindingUnit = Term.create({
   address: '/docs/core/architecture/layout',
-  axis: 'architecture',
+  axis: Axis.Architecture,
   block: 'core',
   kind: TermKind.Concept,
   name: 'binding unit',

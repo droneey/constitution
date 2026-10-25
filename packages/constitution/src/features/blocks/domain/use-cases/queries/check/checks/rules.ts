@@ -1,13 +1,13 @@
 import type { Axis, Level } from '#/kernel/constants';
-import { Layer, Lens } from '#/kernel/constants';
+import { Layer } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId } from '#/kernel/value-objects';
 
-import { BlockGraph } from '../../../../entities';
+import { Lens } from '../../../../constants';
+import { BlockGraph, mayReachAxis } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { mayReachAxis } from '../shared/axes';
 
 enum RulesCode {
   SlugOpensWithNo = 'slug-opens-with-no',

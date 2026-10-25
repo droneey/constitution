@@ -7,13 +7,11 @@ export {
   syntaxErrorOf,
 } from './failures.utils';
 export { fieldsOf, isDeepEqual } from './fields.utils';
-export type { MarkdownDocument } from './front-matter.utils';
 export { splitFrontMatter } from './front-matter.utils';
 export { isGoverned } from './globs.utils';
 export { compareText } from './order.utils';
 export {
   directoryOf,
-  fileNameOf,
   isPathSegment,
   joinPaths,
   normalizePath,

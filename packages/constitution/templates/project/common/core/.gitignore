@@ -19,6 +19,11 @@ pids
 .temp/
 .tmp/
 
+# core: backups
+*.bak
+*.orig
+*~
+
 # core: logs
 **/logs/
 *.log

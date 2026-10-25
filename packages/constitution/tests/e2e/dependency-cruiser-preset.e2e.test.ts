@@ -645,6 +645,19 @@ describe('the dependency-cruiser layer set', () => {
       rule: 'bun-effects-reached-only-from-the-edge',
     },
     {
+      condition: "a feature's application layer spawns a process through Bun's bare module",
+      files: {
+        'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+          "import { spawn } from 'bun';\nexport const listOrders = spawn;\n",
+      },
+      parts: [
+        'typescript/bun',
+        'typescript/architecture/bun',
+        'typescript/architecture/core',
+      ],
+      rule: 'bun-effects-reached-only-from-the-edge',
+    },
+    {
       condition: 'a component imports an adapter',
       files: {
         'src/adapters/api/index.ts': exported('fetchOrders'),

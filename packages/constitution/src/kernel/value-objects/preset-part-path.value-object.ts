@@ -1,6 +1,8 @@
 import type { Axis } from '../constants';
 import { AXES, PRESETS_FOLDER } from '../constants';
+import type { Brand } from '../types';
 import { fieldsOf, isDeepEqual, isPathSegment } from '../utils';
+import type { PartFields } from './part-address.value-object';
 import { PartAddress } from './part-address.value-object';
 
 enum PresetFileKind {
@@ -16,17 +18,19 @@ interface PresetFolder {
   readonly tool: string;
 }
 
-type PresetPartPath =
+type PresetPartPath = Brand<
   | (PresetFolder & {
       readonly kind: PresetFileKind.Bindings;
     })
-  | (PartAddress & {
+  | (PartFields & {
       readonly kind: PresetFileKind.Part;
     })
   | (PresetFolder & {
       readonly kind: PresetFileKind.Plugin;
       readonly rule: string;
-    });
+    }),
+  'PresetPartPath'
+>;
 
 type FolderFields = Readonly<Record<keyof PresetFolder, string | undefined>>;
 

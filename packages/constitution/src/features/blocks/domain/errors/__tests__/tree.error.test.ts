@@ -51,11 +51,8 @@ describe('TreeError', () => {
       isTree: false,
     },
   ])('should say $isTree when $condition', ({ error, isTree }) => {
-    // Arrange
-    const thrown: unknown = error;
-
     // Act
-    const answer = isTreeError(thrown);
+    const answer = isTreeError(error);
 
     // Assert
     expect(answer).toBe(isTree);

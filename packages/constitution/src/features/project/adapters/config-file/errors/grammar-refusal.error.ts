@@ -18,4 +18,4 @@ class GrammarRefusal extends ProgramError<GrammarFailure, object> {
 const isGrammarRefusal = (error: unknown): error is GrammarRefusal =>
   error instanceof GrammarRefusal;
 
-export { GrammarFailure, GrammarRefusal, isGrammarRefusal };
+export { GrammarRefusal, isGrammarRefusal };

@@ -7,6 +7,7 @@ import { BlockId, BlockSource, Version } from '#/kernel/value-objects';
 import { warningTextOf } from '#/shared/cli';
 
 import { DigestKind } from '../../../domain/entities';
+import { blockListLines } from '../block-list.utils';
 import { digestOf } from '../digest.utils';
 
 const RELEASE_FOLDER = '/work/project/.droneey/constitution';
@@ -79,9 +80,7 @@ describe('digestOf', () => {
           '',
           '# Core',
           '',
-          '## Domains (blocks/domains/<id>/<id>.md)',
-          "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.",
-          '- ui: The screens.',
+          ...blockListLines(contents.listing),
         ],
         head: [
           RELEASE_LINE,

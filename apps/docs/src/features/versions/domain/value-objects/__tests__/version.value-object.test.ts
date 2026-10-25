@@ -1,18 +1,29 @@
 import { describe, expect, it } from 'bun:test';
 
 import { VersionError } from '../../errors';
-import { createVersion } from '../version.value-object';
+import { Version } from '../version.value-object';
 
-describe('createVersion', () => {
+/** the code and the details a creation failed with, or the error itself when it is none of the feature's */
+const failureOf = (create: () => Version): unknown => {
+  try {
+    return create();
+  } catch (error) {
+    return error instanceof VersionError
+      ? {
+          code: error.code,
+          details: error.details,
+        }
+      : error;
+  }
+};
+
+describe('Version.create', () => {
   it.each([
     '0.70.0',
     '10.20.30',
   ])('should keep %p, a release version', (text) => {
-    // Arrange
-    const released = text;
-
     // Act
-    const version = createVersion(released);
+    const version = Version.create(text);
 
     // Assert
     expect<string>(version).toBe(text);
@@ -44,13 +55,15 @@ describe('createVersion', () => {
       text: '0..0',
     },
   ])('should refuse the text when $condition', ({ text }) => {
-    // Arrange
-    const released = text;
-
     // Act
-    const create = (): unknown => createVersion(released);
+    const failure = failureOf(() => Version.create(text));
 
     // Assert
-    expect(create).toThrow(VersionError);
+    expect(failure).toStrictEqual({
+      code: 'version-not-semantic',
+      details: {
+        text,
+      },
+    });
   });
 });

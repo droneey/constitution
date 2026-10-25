@@ -26,11 +26,8 @@ describe('isProgramError', () => {
       isDeclared: false,
     },
   ])('should say $isDeclared when $condition', ({ error, isDeclared }) => {
-    // Arrange
-    const thrown: unknown = error;
-
     // Act
-    const answer = isProgramError(thrown);
+    const answer = isProgramError(error);
 
     // Assert
     expect(answer).toBe(isDeclared);

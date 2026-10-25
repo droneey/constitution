@@ -12,8 +12,8 @@ interface CommandIo {
 
 interface CommandPlaces {
   readonly cwd: string;
-  /** the project Claude Code names, '' when it names none */
-  readonly projectDir: string;
+  /** the project Claude Code names */
+  readonly projectDir?: string;
 }
 
 interface CommandContext {

@@ -43,36 +43,46 @@ const read = (path: string): FileRead => {
   }
 };
 
+interface WalkInput {
+  readonly folder: string;
+  /** the files found so far, in the order find lists them */
+  readonly found: string[];
+  readonly maxFiles: number;
+  readonly under: string;
+}
+
 // The regular files below a folder, from it, as `find -type f` lists them: a link is neither
-// listed nor followed.
-const filesBelow = (input: { folder: string; under: string }): readonly string[] =>
-  readdirSync(join(input.folder, input.under), {
+// listed nor followed. The walk stops, and says so, once it finds more files than the limit.
+const isWalkedWithin = (input: WalkInput): boolean => {
+  for (const entry of readdirSync(join(input.folder, input.under), {
     withFileTypes: true,
-  }).flatMap((entry) => {
+  })) {
     const path = join(input.under, entry.name);
 
     if (entry.isDirectory()) {
-      return filesBelow({
-        folder: input.folder,
-        under: path,
-      });
+      if (
+        !isWalkedWithin({
+          ...input,
+          under: path,
+        })
+      ) {
+        return false;
+      }
+
+      continue;
     }
 
-    return entry.isFile()
-      ? [
-          path,
-        ]
-      : [];
-  });
+    if (entry.isFile()) {
+      input.found.push(path);
+    }
 
-// No folder, or a folder below it that cannot be read, which fails find too, lists nothing.
-const listFiles = (folder: string): readonly string[] | undefined =>
-  attempt(() =>
-    filesBelow({
-      folder,
-      under: '',
-    }),
-  );
+    if (input.found.length > input.maxFiles) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 // As `pwd -P` resolves it, link by link: Bun 1.4.3's realpath takes a backslash in a name for a
 // separator.
@@ -129,12 +139,30 @@ const realFolder = (path: string): string | undefined => {
   return hops > LINK_HOPS ? undefined : real;
 };
 
+interface NodeProjectFilesInput {
+  /** the files a folder may hold for listFiles to list them */
+  readonly maxFiles: number;
+}
+
 /** The files as a shell sees them through its links. */
-const createNodeProjectFiles = (): ProjectFiles => ({
+const createNodeProjectFiles = (input: NodeProjectFilesInput): ProjectFiles => ({
   exists: (path: string): boolean => existsSync(path),
   isFile: (path: string): boolean => statOf(path)?.isFile() === true,
   isFolder: (path: string): boolean => statOf(path)?.isDirectory() === true,
-  listFiles,
+  // No folder, or a folder below it that cannot be read, which fails find too, lists nothing.
+  listFiles: (folder: string): readonly string[] | undefined => {
+    const found: string[] = [];
+    const isWithin = attempt(() =>
+      isWalkedWithin({
+        folder,
+        found,
+        maxFiles: input.maxFiles,
+        under: '',
+      }),
+    );
+
+    return isWithin === true ? found : undefined;
+  },
   read,
   realFolder,
 });

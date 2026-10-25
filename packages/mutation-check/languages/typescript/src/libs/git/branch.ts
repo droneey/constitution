@@ -4,9 +4,16 @@ import { spawnSync } from 'node:child_process';
 import { GitError, GitFailure } from './git.error.ts';
 
 interface Branch {
-  baseText: (path: string) => string;
-  diff: string;
-  untracked: readonly string[];
+  readonly baseText: (path: string) => string;
+  readonly diff: string;
+  readonly untracked: readonly string[];
+}
+
+interface BranchInput {
+  // the environment git runs with, built for it
+  readonly env: Readonly<Record<string, string>>;
+  readonly folder: string;
+  readonly timeoutMs: number;
 }
 
 const MAINLINE = 'origin/main';
@@ -15,20 +22,33 @@ const MAINLINE = 'origin/main';
 // output cut at that size would read as no change at all.
 const GIT_OUTPUT_LIMIT_BYTES = 268_435_456;
 
-// Git reads paths from the folder and lists only its subtree, so a unit of a workspace checks its own
-// changes.
-const branchIn = (folder: string): Branch => {
+const TIMED_OUT = 'ETIMEDOUT';
+
+/**
+ * Git reads paths from the folder and lists only its subtree, so a unit of a workspace checks its
+ * own changes.
+ *
+ * @throws {@link GitError} when git does not run, fails, or answers past its time.
+ */
+const branchIn = (input: BranchInput): Branch => {
+  const { folder } = input;
+
   const runGit = (args: readonly string[]): SpawnSyncReturns<string> => {
     const done = spawnSync('git', args, {
       cwd: folder,
       encoding: 'utf8',
+      env: input.env,
       maxBuffer: GIT_OUTPUT_LIMIT_BYTES,
+      timeout: input.timeoutMs,
     });
 
     if (done.error !== undefined) {
       throw new GitError({
         cause: done.error,
-        code: GitFailure.NotRun,
+        code:
+          'code' in done.error && done.error.code === TIMED_OUT
+            ? GitFailure.TimedOut
+            : GitFailure.NotRun,
         details: {
           args,
           folder,
@@ -91,4 +111,5 @@ const branchIn = (folder: string): Branch => {
   };
 };
 
+export type { Branch, BranchInput };
 export { branchIn };

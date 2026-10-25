@@ -1,0 +1,51 @@
+{
+  // Biome 2.5.15 refuses a global by path only in an override, and a later override of the same rule
+  // over the same files replaces its denied globals: this list repeats core's and adds Bun's.
+  "overrides": [
+    {
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/__tests__/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "EventSource": "Outside the edge, the network reaches this code through a port.",
+                  "WebSocket": "Outside the edge, the network reaches this code through a port.",
+                  "XMLHttpRequest": "Outside the edge, the network reaches this code through a port.",
+                  "fetch": "Outside the edge, the network reaches this code through a port.",
+                  "indexedDB": "Outside the edge, storage reaches this code through a port.",
+                  "localStorage": "Outside the edge, storage reaches this code through a port.",
+                  "performance": "Outside the edge, the clock reaches this code through a port.",
+                  "process": "Outside the edge, the process, its streams and its arguments reach this code through a port.",
+                  "caches": "Outside the edge, input and output reach this code through a port.",
+                  "cookieStore": "Outside the edge, input and output reach this code through a port.",
+                  "document": "Outside the edge, input and output reach this code through a port.",
+                  "globalThis": "Outside the edge, input and output reach this code through a port.",
+                  "navigator": "Outside the edge, input and output reach this code through a port.",
+                  "self": "Outside the edge, input and output reach this code through a port.",
+                  "window": "Outside the edge, input and output reach this code through a port.",
+                  "sessionStorage": "Outside the edge, storage reaches this code through a port.",
+                  "Bun": "Outside the edge, Bun's files, processes, environment and network reach this code through a port.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ],
+}

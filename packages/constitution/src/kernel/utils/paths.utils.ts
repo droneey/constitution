@@ -11,7 +11,12 @@ const directoryOf = (path: string): string => {
 
 const fileNameOf = (path: string): string => path.slice(path.lastIndexOf(SEPARATOR) + 1);
 
-const stemOf = (input: { extension: string; path: string }): string => {
+interface StemInput {
+  readonly extension: string;
+  readonly path: string;
+}
+
+const stemOf = (input: StemInput): string => {
   const name = fileNameOf(input.path);
 
   return name.endsWith(input.extension) ? name.slice(0, -input.extension.length) : name;
@@ -46,12 +51,4 @@ const joinPaths = (paths: readonly string[]): string => normalizePath(paths.join
 const isPathSegment = (candidate: unknown): candidate is string =>
   typeof candidate === 'string' && candidate !== '' && !candidate.includes(SEPARATOR);
 
-export {
-  directoryOf,
-  fileNameOf,
-  isPathSegment,
-  joinPaths,
-  normalizePath,
-  stemOf,
-  withoutDotSlash,
-};
+export { directoryOf, isPathSegment, joinPaths, normalizePath, stemOf, withoutDotSlash };

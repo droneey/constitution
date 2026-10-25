@@ -45,11 +45,8 @@ describe('paths', () => {
       path: './',
     },
   ])('should normalise the path when $condition', ({ expected, path }) => {
-    // Arrange
-    const input = path;
-
     // Act
-    const normalised = normalizePath(input);
+    const normalised = normalizePath(path);
 
     // Assert
     expect(normalised).toBe(expected);
@@ -79,11 +76,8 @@ describe('isPathSegment', () => {
       candidate: 7,
     },
   ])('should say $isSegment when $condition', ({ candidate, isSegment }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const answer = isPathSegment(given);
+    const answer = isPathSegment(candidate);
 
     // Assert
     expect(answer).toBe(isSegment);

@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { z } from 'zod';
+
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { Version } from '#/kernel/value-objects';
 
 import { sessionStateOf } from '../../../../../__tests__/session.fixtures';
 import type { SessionDigest, SessionStart, SessionState } from '../../../../../domain/entities';
 import { DigestKind, HookEventName, SessionOrigin } from '../../../../../domain/entities';
 import { SessionId } from '../../../../../domain/value-objects';
+import { digestOf } from '../../../../utils';
 import { createSessionStartCommand } from '../session-start.cli';
 
 interface Kept {
@@ -22,8 +25,6 @@ interface KeptAfter extends Kept {
 
 const EVENT =
   '{"session_id":"session-1","cwd":"/work/event","hook_event_name":"SubagentStart","source":"startup"}';
-const NO_RELEASE_CONTEXT =
-  'The Droneey Constitution gives no rules here: /work/project/.droneey/constitution is missing or holds a release this program cannot read. Tell the user to run constitution doctor.\\n';
 
 const keptState = sessionStateOf();
 const noRelease: SessionDigest = {
@@ -33,12 +34,46 @@ const noRelease: SessionDigest = {
   },
   state: keptState,
 };
+const noReleaseLines = digestOf(noRelease.contents).head;
+const UNPARSED = {
+  core: '# The "droneey" core\n',
+  kind: DigestKind.Unparsed,
+  line: 2,
+  release: {
+    folder: '/work/project/.droneey/constitution',
+    version: Version.create('1.0.0'),
+  },
+} as const;
+const unparsedDigest = digestOf(UNPARSED);
+
+// What a hook wrote on standard output, read as Claude Code reads it: the event it answers and the
+// lines of the context it adds; the digest's wording is digestOf's, which its own spec pins.
+const contextOf = (
+  stdout: string,
+): {
+  readonly event: unknown;
+  readonly lines: readonly string[];
+} => {
+  const output = z
+    .strictObject({
+      hookSpecificOutput: z.strictObject({
+        additionalContext: z.string(),
+        hookEventName: z.string(),
+      }),
+    })
+    .parse(JSON.parse(stdout)).hookSpecificOutput;
+
+  return {
+    event: output.hookEventName,
+    lines: output.additionalContext.split('\n').slice(0, -1),
+  };
+};
 
 const runOf = async (input: {
   digest: SessionDigest | undefined;
   places?: {
     cwd: string;
-    projectDir: string;
+    projectDir?: string;
   };
   stdin: string;
 }): Promise<{
@@ -97,7 +132,6 @@ describe('createSessionStartCommand', () => {
       condition: 'only the event names a folder',
       places: {
         cwd: '/work/package',
-        projectDir: '',
       },
       searchFrom: '/work/event',
     },
@@ -135,7 +169,6 @@ describe('createSessionStartCommand', () => {
       digest: undefined,
       places: {
         cwd: '/work/package',
-        projectDir: '',
       },
       stdin: '{"session_id":"session-1"}',
     };
@@ -150,29 +183,21 @@ describe('createSessionStartCommand', () => {
   it.each([
     {
       condition: 'the digest has a body',
-      contents: {
-        core: '# The "droneey" core\n',
-        kind: DigestKind.Unparsed,
-        line: 2,
-        release: {
-          folder: '/work/project/.droneey/constitution',
-          version: Version.create('1.0.0'),
-        },
-      },
-      context:
-        'The Droneey Constitution 1.0.0 supplies this repository\'s rules. Block files live under /work/project/.droneey/constitution.\\nconstitution.yaml does not parse at line 2; only core applies.\\n\\n# The \\"droneey\\" core\\n',
+      contents: UNPARSED,
+      lines: [
+        ...unparsedDigest.head,
+        '',
+        ...unparsedDigest.body,
+      ],
     },
     {
       condition: 'the digest is its head alone',
-      contents: {
-        kind: DigestKind.NoRelease,
-        releaseFolder: '/work/project/.droneey/constitution',
-      },
-      context: NO_RELEASE_CONTEXT,
+      contents: noRelease.contents,
+      lines: noReleaseLines,
     },
   ])(
     'should keep the state the start gave, then give the digest as the context of its event, when $condition',
-    async ({ contents, context }) => {
+    async ({ contents, lines }) => {
       // Arrange
       const asked = {
         digest: {
@@ -187,9 +212,13 @@ describe('createSessionStartCommand', () => {
 
       // Assert
       expect({
+        context: contextOf(run.stdout),
         kept: run.kept,
-        stdout: run.stdout,
       }).toStrictEqual({
+        context: {
+          event: 'SubagentStart',
+          lines,
+        },
         kept: [
           {
             askedBefore: 1,
@@ -199,7 +228,6 @@ describe('createSessionStartCommand', () => {
             state: keptState,
           },
         ],
-        stdout: `{"hookSpecificOutput":{"hookEventName":"SubagentStart","additionalContext":"${context}"}}\n`,
       });
     },
   );
@@ -226,7 +254,11 @@ describe('createSessionStartCommand', () => {
       const run = await runOf(asked);
 
       // Assert
-      expect(run).toStrictEqual({
+      expect({
+        asked: run.asked,
+        context: contextOf(run.stdout),
+        kept: run.kept,
+      }).toStrictEqual({
         asked: [
           {
             event: HookEventName.SessionStart,
@@ -243,7 +275,10 @@ describe('createSessionStartCommand', () => {
             state: keptState,
           },
         ],
-        stdout: `{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"${NO_RELEASE_CONTEXT}"}}\n`,
+        context: {
+          event: 'SessionStart',
+          lines: noReleaseLines,
+        },
       });
     },
   );
@@ -269,11 +304,14 @@ describe('createSessionStartCommand', () => {
 
     // Assert
     expect({
+      context: contextOf(run.stdout),
       kept: run.kept,
-      stdout: run.stdout,
     }).toStrictEqual({
+      context: {
+        event: 'SessionStart',
+        lines: noReleaseLines,
+      },
       kept: [],
-      stdout: `{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"${NO_RELEASE_CONTEXT}"}}\n`,
     });
   });
 });

@@ -9,6 +9,8 @@ type Files = Readonly<Record<string, string>>;
 
 const repository = join(import.meta.dir, '..', '..');
 
+const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
+
 // A package laid out as the python block lays it out.
 const SHOP_PACKAGE: Files = {
   'src/shop/__init__.py': '',
@@ -140,11 +142,13 @@ const fillPythonProject = (
   });
 };
 
-const inPythonProject = <TResult>(input: {
-  files: Files;
-  run: (folder: string) => TResult;
-  tools?: readonly BuiltTool[];
-}): TResult => {
+interface PythonProjectRun<TResult> {
+  readonly files: Files;
+  readonly run: (folder: string) => TResult;
+  readonly tools?: readonly BuiltTool[];
+}
+
+const inPythonProject = <TResult>(input: PythonProjectRun<TResult>): TResult => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
 
   try {
@@ -159,11 +163,9 @@ const inPythonProject = <TResult>(input: {
   }
 };
 
-const inPythonProjectAsync = async <TResult>(input: {
-  files: Files;
-  run: (folder: string) => Promise<TResult>;
-  tools?: readonly BuiltTool[];
-}): Promise<TResult> => {
+const inPythonProjectAsync = async <TResult>(
+  input: PythonProjectRun<Promise<TResult>>,
+): Promise<TResult> => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
 
   try {
@@ -179,4 +181,4 @@ const inPythonProjectAsync = async <TResult>(input: {
 };
 
 export type { BuiltTool, Files };
-export { buildTools, inPythonProject, inPythonProjectAsync, repository, writeFiles };
+export { buildTools, inPythonProject, inPythonProjectAsync, python, repository, writeFiles };

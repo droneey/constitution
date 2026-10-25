@@ -16,11 +16,8 @@ describe('PackPath', () => {
       text: '',
     },
   ])('should tell a pack path when $condition', ({ isPackPath, text }) => {
-    // Arrange
-    const candidate = text;
-
     // Act
-    const isPath = PackPath.is(candidate);
+    const isPath = PackPath.is(text);
 
     // Assert
     expect(isPath).toBe(isPackPath);
@@ -36,11 +33,8 @@ describe('PackPath', () => {
       given: 42,
     },
   ])('should tell no pack path when $condition', ({ given }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const isValue = PackPath.is(candidate);
+    const isValue = PackPath.is(given);
 
     // Assert
     expect(isValue).toBe(false);

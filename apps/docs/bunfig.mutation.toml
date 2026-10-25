@@ -1,7 +1,6 @@
 [test]
 root = "./src"
 preload = ["./src/__tests__/dom.fixtures.ts", "./src/__tests__/sandbox.fixtures.ts"]
-pathIgnorePatterns = ["**/main.test.*"]
 coverage = false
 
 [run]

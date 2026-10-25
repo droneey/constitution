@@ -86,15 +86,7 @@ interface FrontMatterLoaded {
   readonly frontMatter?: FrontMatter;
 }
 
-const FIELDS: readonly FrontMatterField[] = [
-  FrontMatterField.Id,
-  FrontMatterField.Summary,
-  FrontMatterField.Requires,
-  FrontMatterField.Extends,
-  FrontMatterField.Abstract,
-  FrontMatterField.Languages,
-  FrontMatterField.Governs,
-] as const;
+const fieldOrder: readonly FrontMatterField[] = Object.values(FrontMatterField);
 const LIST_FIELDS: readonly ListField[] = [
   FrontMatterField.Requires,
   FrontMatterField.Languages,
@@ -114,7 +106,7 @@ const keyAt = (input: { line: number; lines: readonly string[] }): string | unde
     .find((key) => key !== undefined);
 
 const yamlProblem = (input: {
-  line: number | undefined;
+  line?: number;
   lines: readonly string[];
   reason: string;
 }): FrontMatterReadProblem => {
@@ -151,16 +143,18 @@ const yamlProblem = (input: {
 };
 
 const keyProblems = (keys: readonly string[]): readonly FrontMatterReadProblem[] => {
-  const missing = FIELDS.filter((field) => !keys.includes(field)).map(
-    (field): FrontMatterReadProblem => ({
-      code: FrontMatterReadCode.FieldMissing,
-      details: {
-        field,
-      },
-    }),
-  );
+  const missing = fieldOrder
+    .filter((field) => !keys.includes(field))
+    .map(
+      (field): FrontMatterReadProblem => ({
+        code: FrontMatterReadCode.FieldMissing,
+        details: {
+          field,
+        },
+      }),
+    );
   const unknown = keys
-    .filter((key) => !FIELDS.some((field) => field === key))
+    .filter((key) => !fieldOrder.some((field) => field === key))
     .map(
       (key): FrontMatterReadProblem => ({
         code: FrontMatterReadCode.FieldUnknown,
@@ -177,13 +171,13 @@ const keyProblems = (keys: readonly string[]): readonly FrontMatterReadProblem[]
     ];
   }
 
-  return keys.every((key, index) => key === FIELDS[index])
+  return keys.every((key, index) => key === fieldOrder[index])
     ? []
     : [
         {
           code: FrontMatterReadCode.OutOfOrder,
           details: {
-            order: FIELDS,
+            order: fieldOrder,
           },
         },
       ];
@@ -331,11 +325,13 @@ const frontMatterOf = (fields: FrontMatterFields): FrontMatter => {
   });
 };
 
-const readFrontMatter = (input: {
-  parser: FrontMatterParser;
-  path: string;
-  text: string;
-}): FrontMatterLoaded => {
+interface ReadFrontMatterInput {
+  readonly parser: FrontMatterParser;
+  readonly path: string;
+  readonly text: string;
+}
+
+const readFrontMatter = (input: ReadFrontMatterInput): FrontMatterLoaded => {
   const parts = splitFrontMatter(input.text);
 
   // A problem met at several entries, such as two empty ones, is reported once.
@@ -368,9 +364,8 @@ const readFrontMatter = (input: {
   if (read.status === ReadStatus.NotYaml) {
     return failed([
       yamlProblem({
-        line: read.line,
+        ...read,
         lines: parts.frontMatter.split('\n'),
-        reason: read.reason,
       }),
     ]);
   }
@@ -386,8 +381,12 @@ const readFrontMatter = (input: {
 
   const keys = keyProblems(read.keys);
 
-  if (keys.length > 0 || read.fields === undefined) {
-    return failed(keys.length > 0 ? keys : read.issues.map(issueProblem));
+  if (keys.length > 0) {
+    return failed(keys);
+  }
+
+  if (read.status === ReadStatus.Mismatched) {
+    return failed(read.issues.map(issueProblem));
   }
 
   const problems = fieldProblems(read.fields);

@@ -3,13 +3,15 @@ import { Version } from '#/kernel/value-objects';
 import type { InstalledPlugin, PartDiagnosis } from '../../../../../entities';
 import { Diagnosis } from '../../../../../entities';
 
+interface PluginReportInput {
+  readonly fingerprint: string | undefined;
+  readonly plugin: InstalledPlugin | undefined;
+  readonly program: Version;
+}
+
 // The plugin is only glue to this program: it matters only when its own files differ from those this
 // program was built with, and then its version says which is older.
-const pluginReport = (input: {
-  fingerprint: string | undefined;
-  plugin: InstalledPlugin | undefined;
-  program: Version;
-}): PartDiagnosis => {
+const pluginReport = (input: PluginReportInput): PartDiagnosis => {
   const { plugin, program } = input;
 
   if (plugin === undefined) {

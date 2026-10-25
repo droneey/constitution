@@ -57,6 +57,8 @@ core:
     - case-named-should-when.grit
   case-holds-no-logic:
     - case-holds-no-logic.grit
+  case-split-by-arrange-act-assert-comments:
+    - case-split-by-arrange-act-assert-comments.grit
   case-pins-meaning-never-wording:
     - case-pins-meaning-never-wording.grit
   error-keeps-its-cause:
@@ -255,6 +257,8 @@ typescript:
     - useNullishCoalescing
   equality-never-loose:
     - noDoubleEquals
+  parameter-object-has-a-named-type:
+    - parameter-object-has-a-named-type.grit
   type-names-undecorated:
     - type-names-undecorated.grit
   undefined-is-the-only-absence:

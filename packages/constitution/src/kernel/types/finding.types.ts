@@ -24,4 +24,4 @@ type ProblemOf<TDetails> = {
   readonly [TCode in keyof TDetails & string]: Problem<TCode, TDetails[TCode]>;
 }[keyof TDetails & string];
 
-export type { Finding, FindingOf, Problem, ProblemOf };
+export type { Finding, FindingOf, ProblemOf };

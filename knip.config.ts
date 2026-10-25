@@ -33,6 +33,7 @@ export default join(
       'packages/*/languages/typescript',
     ],
     ignoreBinaries: [
+      'actionlint',
       'renovate-config-validator',
     ],
   },

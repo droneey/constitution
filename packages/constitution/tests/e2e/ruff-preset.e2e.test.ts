@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { python } from './python-project.fixtures';
 import { isFormatted, lintCodes } from './ruff-preset.fixtures';
-
-const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
 const wellFormed = python(
   '"""Orders and their totals."""',

@@ -7,7 +7,6 @@
     "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
   ],
   "compilerOptions": {
-    "exactOptionalPropertyTypes": true,
     "paths": {
       "#/*": [
         "./src/*"

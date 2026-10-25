@@ -56,11 +56,8 @@ describe('Version', () => {
       text: '1.2.3 ',
     },
   ])('should tell a release version when $condition', ({ isRelease, text }) => {
-    // Arrange
-    const candidate = text;
-
     // Act
-    const isVersion = Version.is(candidate);
+    const isVersion = Version.is(text);
 
     // Assert
     expect(isVersion).toBe(isRelease);
@@ -82,11 +79,8 @@ describe('Version', () => {
       ],
     },
   ])('should tell no version when $condition', ({ given }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const isVersion = Version.is(candidate);
+    const isVersion = Version.is(given);
 
     // Assert
     expect(isVersion).toBe(false);

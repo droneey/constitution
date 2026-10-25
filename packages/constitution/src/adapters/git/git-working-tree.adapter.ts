@@ -1,16 +1,12 @@
 import { spawnSync } from 'node:child_process';
 
-import type { TreeState, WorkingTree } from '#/kernel/contracts';
+import type { TrackedFilesInput, TreeState, WorkingTree } from '#/kernel/contracts';
 import { TreeStateStatus } from '#/kernel/contracts';
 import { WorkingTreeError, WorkingTreeFailure } from '#/kernel/errors';
+import type { ChildProcessSettings } from '#/libs/child-process';
 
 // A diff of a large tree runs past the 1 MiB that spawnSync keeps by default.
 const OUTPUT_LIMIT_BYTES = 268_435_456;
-
-interface Git {
-  readonly env: Readonly<Record<string, string>>;
-  readonly timeoutMs: number;
-}
 
 interface GitRun {
   /** why git gave no answer: the failure to start or to finish it, or what it wrote of its error */
@@ -21,7 +17,7 @@ interface GitRun {
 
 // git's output, empty when it fails, finds no repository or does not answer within its time.
 const runGit = (
-  input: Git & {
+  input: ChildProcessSettings & {
     args: readonly string[];
     project: string;
   },
@@ -56,7 +52,7 @@ const linesOf = (output: Uint8Array): readonly string[] =>
 
 // The status, then the diff from HEAD, which a repository with no commit yet lacks.
 const stateOf = (
-  input: Git & {
+  input: ChildProcessSettings & {
     project: string;
   },
 ): TreeState => {
@@ -98,7 +94,7 @@ const stateOf = (
 };
 
 /** timeoutMs bounds each run of git. */
-const createGitWorkingTree = (input: Git): WorkingTree => ({
+const createGitWorkingTree = (input: ChildProcessSettings): WorkingTree => ({
   changedFiles: (project: string): readonly string[] => [
     ...linesOf(
       runGit({
@@ -128,7 +124,7 @@ const createGitWorkingTree = (input: Git): WorkingTree => ({
       ...input,
       project,
     }),
-  trackedFiles: (tracked: { names: readonly string[]; project: string }): readonly string[] =>
+  trackedFiles: (tracked: TrackedFilesInput): readonly string[] =>
     linesOf(
       runGit({
         ...input,

@@ -48,11 +48,9 @@ describe('TemplatePath.parse', () => {
       path: 'presets/typescript/biome/foundation/core.jsonc',
     },
   ])('should read $name when the path is $path', ({ expected, path }) => {
-    // Arrange
-    const input = path;
-
     // Act
-    const read = TemplatePath.parse(input);
+    // the template a caller reads: its fields, the brand being the compiler's alone
+    const read: object | undefined = TemplatePath.parse(path);
 
     // Assert
     expect(read).toStrictEqual(expected);
@@ -63,6 +61,16 @@ const biomeJson = {
   scope: 'typescript',
   tool: 'biome',
   writes: 'biome.json',
+};
+
+const templateOf = (path: string): TemplatePath => {
+  const template = TemplatePath.parse(path);
+
+  if (template === undefined) {
+    throw new Error(`${path} is no template`);
+  }
+
+  return template;
 };
 
 describe('TemplatePath', () => {
@@ -105,11 +113,8 @@ describe('TemplatePath', () => {
       isTemplate: false,
     },
   ])('should say $isTemplate when $condition', ({ candidate, isTemplate }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const answer = TemplatePath.is(given);
+    const answer = TemplatePath.is(candidate);
 
     // Assert
     expect(answer).toBe(isTemplate);
@@ -119,40 +124,30 @@ describe('TemplatePath', () => {
     {
       condition: 'they name one template',
       isEqual: true,
-      other: {
-        ...biomeJson,
-      },
+      other: 'templates/project/typescript/biome/biome.json',
     },
     {
       condition: 'their scopes differ',
       isEqual: false,
-      other: {
-        ...biomeJson,
-        scope: 'common',
-      },
+      other: 'templates/project/common/biome/biome.json',
     },
     {
       condition: 'their tools differ',
       isEqual: false,
-      other: {
-        ...biomeJson,
-        tool: 'knip',
-      },
+      other: 'templates/project/typescript/knip/biome.json',
     },
     {
       condition: 'they write two paths',
       isEqual: false,
-      other: {
-        ...biomeJson,
-        writes: 'biome.jsonc',
-      },
+      other: 'templates/project/typescript/biome/biome.jsonc',
     },
   ])('should say $isEqual when $condition', ({ isEqual, other }) => {
     // Arrange
-    const template = biomeJson;
+    const template = templateOf('templates/project/typescript/biome/biome.json');
+    const another = templateOf(other);
 
     // Act
-    const isSame = TemplatePath.equals(template, other);
+    const isSame = TemplatePath.equals(template, another);
 
     // Assert
     expect(isSame).toBe(isEqual);

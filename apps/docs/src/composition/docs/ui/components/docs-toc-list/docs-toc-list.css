@@ -6,7 +6,7 @@
     align-items: center;
     height: var(--spacing-control-md);
     padding-inline: var(--spacing-xs);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     font-size: var(--text-sm);
     font-weight: var(--font-weight-ui);
     cursor: pointer;

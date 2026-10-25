@@ -1,11 +1,9 @@
-// Stryker disable all: it loads the collections fumadocs-mdx generates at build time, which no spec can load; the site's build proves it
 import type { FC, ReactNode } from 'react';
 
 import type { TOCItemType } from 'fumadocs-core/toc';
 import type { CompiledMDXProperties } from 'fumadocs-mdx';
+import { createClientLoader } from 'fumadocs-mdx/runtime/browser';
 import type { MDXComponents } from 'mdx/types';
-
-import browserCollections from '#collections/browser';
 
 interface Loaded {
   toc: TOCItemType[];
@@ -21,112 +19,73 @@ interface PageBody {
   loaded: () => Loaded | undefined;
 }
 
-interface Bodies {
-  loader: {
-    getComponent: (path: string) => FC<BodyProps>;
-    preload: (path: string) => Promise<Loaded>;
-  };
-  raw: Readonly<Record<string, unknown>>;
+/** a collection's compiled files by their path, `./<path>`, as fumadocs-mdx's browser collections hold them */
+interface BodyCollection {
+  readonly raw: Readonly<Record<string, () => Promise<CompiledMDXProperties>>>;
+}
+
+interface PageBodies {
+  readonly pageBodyOf: (type: string, path: string) => PageBody | undefined;
 }
 
 const render = ({ default: Body }: CompiledMDXProperties, props: BodyProps): ReactNode => (
   <Body {...props} />
 );
 
-const bodiesByCollection: ReadonlyMap<string, Bodies> = new Map([
-  [
-    'blocks',
-    {
-      loader: browserCollections.blocks.createClientLoader({
-        component: render,
-      }),
-      raw: browserCollections.blocks.raw,
-    },
-  ],
-  [
-    'documents',
-    {
-      loader: browserCollections.documents.createClientLoader({
-        component: render,
-      }),
-      raw: browserCollections.documents.raw,
-    },
-  ],
-  [
-    'glossary',
-    {
-      loader: browserCollections.glossary.createClientLoader({
-        component: render,
-      }),
-      raw: browserCollections.glossary.raw,
-    },
-  ],
-  [
-    'guide',
-    {
-      loader: browserCollections.guide.createClientLoader({
-        component: render,
-      }),
-      raw: browserCollections.guide.raw,
-    },
-  ],
-  [
-    'overview',
-    {
-      loader: browserCollections.overview.createClientLoader({
-        component: render,
-      }),
-      raw: browserCollections.overview.raw,
-    },
-  ],
-  [
-    'quickStart',
-    {
-      loader: browserCollections.quickStart.createClientLoader({
-        component: render,
-      }),
-      raw: browserCollections.quickStart.raw,
-    },
-  ],
-]);
+/** the bodies of the pages, each loaded once and kept, as React's `use` needs */
+const createPageBodies = (collections: Readonly<Record<string, BodyCollection>>): PageBodies => {
+  const loaders = new Map(
+    Object.entries(collections).map(([type, collection]) => [
+      type,
+      {
+        loader: createClientLoader(collection.raw, {
+          component: render,
+          id: type,
+        }),
+        raw: collection.raw,
+      },
+    ]),
+  );
+  const loadings = new Map<string, Promise<Loaded>>();
 
-const loadings = new Map<string, Promise<Loaded>>();
+  /**
+   * Read at once, as the library's own renderer does: a page whose route loaded its body renders whole
+   * in its first commit, so the router finds a heading the address names.
+   */
+  const loadedBodies = new Map<string, Loaded>();
 
-/**
- * Read at once, as the library's own renderer does: a page whose route loaded its body renders whole
- * in its first commit, so the router finds a heading the address names.
- */
-const loadedBodies = new Map<string, Loaded>();
+  const pageBodyOf = (type: string, path: string): PageBody | undefined => {
+    const bodies = loaders.get(type);
+    const key = `${type}:${path}`;
 
-/** a body's loading, started once and kept, as React's `use` needs */
-const loadingOf = (type: string, path: string, bodies: Bodies): Promise<Loaded> => {
-  const key = `${type}:${path}`;
-  const started =
-    loadings.get(key) ??
-    bodies.loader.preload(path).then((loaded) => {
-      loadedBodies.set(key, loaded);
+    if (bodies === undefined || !Object.hasOwn(bodies.raw, `./${path}`)) {
+      return undefined;
+    }
 
-      return loaded;
-    });
+    const load = (): Promise<Loaded> => {
+      const started =
+        loadings.get(key) ??
+        bodies.loader.preload(path).then((loaded) => {
+          loadedBodies.set(key, loaded);
 
-  loadings.set(key, started);
+          return loaded;
+        });
 
-  return started;
-};
+      loadings.set(key, started);
 
-const pageBodyOf = (type: string, path: string): PageBody | undefined => {
-  const bodies = bodiesByCollection.get(type);
+      return started;
+    };
 
-  if (bodies === undefined || !Object.hasOwn(bodies.raw, `./${path}`)) {
-    return undefined;
-  }
+    return {
+      body: bodies.loader.getComponent(path),
+      load,
+      loaded: () => loadedBodies.get(key),
+    };
+  };
 
   return {
-    body: bodies.loader.getComponent(path),
-    load: () => loadingOf(type, path, bodies),
-    loaded: () => loadedBodies.get(`${type}:${path}`),
+    pageBodyOf,
   };
 };
 
-export type { PageBody };
-export { pageBodyOf };
+export { createPageBodies };

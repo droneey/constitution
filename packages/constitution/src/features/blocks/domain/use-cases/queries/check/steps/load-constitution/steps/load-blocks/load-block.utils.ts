@@ -25,13 +25,16 @@ interface BlockLoadDetails {
 
 type BlockLoadFinding = FindingOf<BlockLoadDetails> | FrontMatterReadFinding;
 
+/** the kinds of a file in a block's folder that is no part of the block */
+type UnplacedFile =
+  | BlockFileKind.NamedAfterBlock
+  | BlockFileKind.SeamOfNoBlockId
+  | BlockFileKind.Stray;
+
 type PlacedFile = Exclude<
   FileInBlock,
   {
-    readonly kind:
-      | BlockFileKind.NamedAfterBlock
-      | BlockFileKind.SeamOfNoBlockId
-      | BlockFileKind.Stray;
+    readonly kind: UnplacedFile;
   }
 >;
 
@@ -106,11 +109,13 @@ const partOf = ({ file, place, text }: Secondary): PartFile => {
     : BlockFile.chapter(blockText);
 };
 
-const loadBlock = (input: {
-  group: BlockGroup;
-  parser: FrontMatterParser;
-  tree: FileTree;
-}): BlockLoaded => {
+interface LoadBlockInput {
+  readonly group: BlockGroup;
+  readonly parser: FrontMatterParser;
+  readonly tree: FileTree;
+}
+
+const loadBlock = (input: LoadBlockInput): BlockLoaded => {
   const { entries, folder } = input.group;
   const passport = entries.find((entry) => entry.file.kind === BlockFileKind.Passport);
 
@@ -174,5 +179,5 @@ const loadBlock = (input: {
   };
 };
 
-export type { BlockLoadDetails, BlockLoadFinding, Located };
+export type { BlockLoadDetails, BlockLoadFinding, Located, PlacedFile, UnplacedFile };
 export { BlockLoadCode, groupByFolder, loadBlock };

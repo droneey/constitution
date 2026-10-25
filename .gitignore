@@ -1,24 +1,95 @@
-# core: OS
-.DS_Store
-
 # core: the Constitution, unpacked by mise
 /.droneey
 
+# core: OS
+.DS_Store
+
+# core: environment
+.env*
+!.env.example
+mise.local.toml
+
+# core: runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# core: temporary
+.temp/
+.tmp/
+
+# core: backups
+*.bak
+*.orig
+*~
+
+# core: logs
+**/logs/
+*.log
+
 # core: build
-/dist/
+**/dist/
+**/build/
+**/coverage/
 
 # core: IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
 .claude/settings.local.json
 .claude/worktrees/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# core: diagnostic
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# core: keys and credentials
+ssl/
+acme.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.crt
+credentials.json
+id_rsa
+*.secrets
+.htpasswd
 
 # core: working notes
 /local/
 
 # typescript: dependencies
-/node_modules/
+**/node_modules/
 
-# mise
-/mise.local.toml
+# typescript: logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# typescript: build
+*.tgz
+*.lcov
+
+# typescript: auth
+.npmrc
+
+# typescript: caches
+.eslintcache
+.cache
+*.tsbuildinfo
 
 # python: environments
 .venv/

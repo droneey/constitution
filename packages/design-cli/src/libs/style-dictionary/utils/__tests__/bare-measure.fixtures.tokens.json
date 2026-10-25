@@ -1,0 +1,8 @@
+{
+  "duration": {
+    "$type": "duration",
+    "slow": {
+      "$value": 300
+    }
+  }
+}

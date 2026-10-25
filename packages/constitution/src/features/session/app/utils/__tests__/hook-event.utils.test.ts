@@ -42,6 +42,12 @@ describe('hookEventOf', () => {
       name: 'agent_id',
       text: '{"agent_id":7,"nested":{"agent_id":"later"}}',
     },
+    {
+      condition: 'it sits as deep as an event may nest',
+      expected: 'deep',
+      name: 'file_path',
+      text: `${'['.repeat(63)}{"file_path":"deep"}${']'.repeat(63)}`,
+    },
   ])('should read the first string of the name when $condition', ({ expected, name, text }) => {
     // Arrange
     const event = hookEventOf(text);
@@ -73,6 +79,11 @@ describe('hookEventOf', () => {
       condition: 'the event is no JSON',
       name: 'session_id',
       text: 'session_id: session-1',
+    },
+    {
+      condition: 'the event nests deeper than an event may',
+      name: 'file_path',
+      text: `${'['.repeat(64)}{"file_path":"deep"}${']'.repeat(64)}`,
     },
   ])('should read the field as absent when $condition', ({ name, text }) => {
     // Arrange
@@ -155,11 +166,8 @@ describe('hookEventNameOf', () => {
       text: undefined,
     },
   ])('should read $expected when Claude Code names the event $text', ({ expected, text }) => {
-    // Arrange
-    const given = text;
-
     // Act
-    const name = hookEventNameOf(given);
+    const name = hookEventNameOf(text);
 
     // Assert
     expect(name).toBe(expected);
@@ -193,11 +201,8 @@ describe('sessionOriginOf', () => {
       text: undefined,
     },
   ])('should read $expected when Claude Code names the origin $text', ({ expected, text }) => {
-    // Arrange
-    const given = text;
-
     // Act
-    const origin = sessionOriginOf(given);
+    const origin = sessionOriginOf(text);
 
     // Assert
     expect(origin).toBe(expected);

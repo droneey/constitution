@@ -27,7 +27,7 @@
   }
 
   [data-docs-body] [data-rule-card] figure:not([data-diagram]) {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     background-color: var(--color-surface-base);
   }
 
@@ -138,7 +138,7 @@
     height: var(--spacing-control-xs);
     padding-inline: var(--spacing-xs);
     border: 1px solid var(--color-accent-solid);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     color: var(--color-accent-text);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
@@ -250,7 +250,7 @@
     height: var(--spacing-control-xs);
     padding-inline: var(--spacing-xs);
     border: 1px solid var(--color-border-base);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     background: transparent;
     color: var(--color-text-muted);
     font-size: var(--text-xs);

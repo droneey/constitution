@@ -1,4 +1,5 @@
 import { PassThrough } from 'node:stream';
+import { stripVTControlCharacters } from 'node:util';
 
 import { describe, expect, it } from 'bun:test';
 
@@ -109,12 +110,19 @@ describe('createPresentation', () => {
 
       // Act
       await presentation.renderer.run(task);
+
+      // Assert
+      expect(written()).toStrictEqual({
+        stderr: '✓ Blocks\n',
+        stdout: '',
+      });
+
+      // Act
       await presentation.renderer.print([
         linesSection([
           'a line',
         ]),
       ]);
-      await presentation.close();
 
       // Assert
       expect(written()).toStrictEqual({
@@ -159,7 +167,13 @@ describe('createPresentation', () => {
     const painted = presentation.theme().strong('a');
 
     // Assert
-    expect(painted).not.toBe('a');
+    expect({
+      isPlain: painted === 'a',
+      text: stripVTControlCharacters(painted),
+    }).toStrictEqual({
+      isPlain: false,
+      text: 'a',
+    });
   });
 
   it('should draw on the terminal streams, never through the plain writers, and end what it drew when it closes', async () => {
@@ -180,24 +194,26 @@ describe('createPresentation', () => {
     // Act
     const returned = await presentation.renderer.run(task);
 
-    await presentation.close();
-
     // Assert
     expect({
-      drawn,
       returned,
       written: written(),
     }).toStrictEqual({
-      drawn: [
-        '✓ Blocks\n',
-        '\n',
-      ],
       returned: 'done',
       written: {
         stderr: '',
         stdout: '',
       },
     });
+
+    // Act
+    await presentation.close();
+
+    // Assert
+    expect(drawn).toStrictEqual([
+      '✓ Blocks\n',
+      '\n',
+    ]);
   });
 
   it('should close without drawing when nothing was rendered', async () => {

@@ -6,7 +6,12 @@ import type { SerializedPageTree } from 'fumadocs-core/source/client';
 import { z } from 'zod';
 
 import type { DocsPageEntry } from '#/composition/docs';
-import { pageBodyOf } from '#/features/content/adapters/fumadocs-browser';
+import { documentFrame } from '#/composition/docs/adapters/document';
+import { createPageBodies } from '#/features/content/adapters/fumadocs-browser';
+import type { GetVersions } from '#/features/versions';
+import { createGetVersions, Version } from '#/features/versions';
+import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
+import browserCollections from '#collections/browser';
 
 import { slugsShape } from './constants';
 
@@ -63,6 +68,8 @@ interface RouterContext {
   docs: DocsContent;
 }
 
+const pageBodies = createPageBodies(browserCollections);
+
 const routerContext: RouterContext = {
   docs: {
     loadPage: (slugs) =>
@@ -70,7 +77,7 @@ const routerContext: RouterContext = {
         data: slugs,
       }),
     pageOf: ({ description, path, title, type }) => {
-      const body = pageBodyOf(type, path);
+      const body = pageBodies.pageBodyOf(type, path);
 
       if (body === undefined) {
         throw notFound();
@@ -86,5 +93,22 @@ const routerContext: RouterContext = {
   },
 };
 
+interface RootProviders {
+  readonly builtVersion: Version;
+  readonly frame: typeof documentFrame;
+  readonly getVersions: GetVersions;
+}
+
+/** what the root route provides to every screen */
+const rootProviders: RootProviders = {
+  builtVersion: Version.create(import.meta.env.VITE_CONSTITUTION_VERSION),
+  frame: documentFrame,
+  getVersions: createGetVersions(
+    createStaticFileVersionsRepository({
+      address: '/versions.json',
+    }),
+  ),
+};
+
 export type { DocsPageData, RouterContext };
-export { routerContext };
+export { rootProviders, routerContext };

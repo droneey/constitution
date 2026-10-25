@@ -4,8 +4,12 @@ import type { VFile } from 'vfile';
 
 import { addressOf, repositoryPathOf } from '../repository';
 
+interface RepoLinksOptions {
+  readonly baseUrl: string;
+}
+
 const remarkRepoLinks =
-  ({ baseUrl }: { baseUrl: string }) =>
+  ({ baseUrl }: RepoLinksOptions) =>
   (tree: Root, file: VFile): void => {
     visit(tree, 'link', (link) => {
       const target = file.path === undefined ? undefined : repositoryPathOf(file.path, link.url);

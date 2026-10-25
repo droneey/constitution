@@ -1,5 +1,6 @@
 import { StepStatus, Tone } from '@droneey/design-cli';
 
+import { PROGRAM_NAME } from '#/kernel/constants';
 import { OLDEST_FORMAT } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import type { Section, TaskOutcome } from '#/shared/cli';
@@ -7,7 +8,6 @@ import { countOf, noteSection, stepsSection } from '#/shared/cli';
 
 import { Diagnosis, Health, InstallationPart, PartDiagnosis } from '../../domain/entities';
 
-const PROGRAM = 'constitution';
 const MISE_INSTALL = 'run mise install';
 const RAISE_PIN = 'raise the Constitution pin in mise.toml, then run mise install';
 const UPDATE_PLUGIN =
@@ -41,7 +41,7 @@ const sayings: {
   readonly [TKind in Diagnosis]: (diagnosis: PartDiagnosis<TKind>) => Said;
 } = {
   [Diagnosis.ProgramRuns]: ({ program }) => ({
-    summary: `${PROGRAM} ${program}`,
+    summary: `${PROGRAM_NAME} ${program}`,
   }),
   [Diagnosis.PluginMissing]: () => ({
     hint: 'run claude plugin marketplace add droneey/constitution, then claude plugin install constitution@droneey',
@@ -76,7 +76,7 @@ const sayings: {
   }),
   [Diagnosis.ProgramNotOnPath]: () => ({
     hint: 'pin github:droneey/constitution in mise.toml as the README shows, then run mise install',
-    summary: `${PROGRAM} is not on PATH, so the hooks cannot run`,
+    summary: `${PROGRAM_NAME} is not on PATH, so the hooks cannot run`,
   }),
   [Diagnosis.PathMatches]: ({ path }) => ({
     summary: path,

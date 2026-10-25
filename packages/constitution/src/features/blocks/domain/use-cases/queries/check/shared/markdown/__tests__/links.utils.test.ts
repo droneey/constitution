@@ -60,11 +60,8 @@ describe('localLinkTargets', () => {
       text: '[a](https://a.dev) [b](HTTPS://b.dev) [c](mailto:x@y.z) [d](git+https://d.dev) [e](//e.dev) [f](#f) [g](tel:+100) [h](s3://bucket/key)',
     },
   ])('should return the local targets when the text holds $name', ({ expected, text }) => {
-    // Arrange
-    const input = text;
-
     // Act
-    const targets = localLinkTargets(input);
+    const targets = localLinkTargets(text);
 
     // Assert
     expect(targets).toStrictEqual(expected);

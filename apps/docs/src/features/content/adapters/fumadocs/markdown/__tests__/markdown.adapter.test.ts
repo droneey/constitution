@@ -54,11 +54,8 @@ describe('isHeading', () => {
       },
     },
   ])('should tell a heading of the depth when $condition', ({ depth, expected, node }) => {
-    // Arrange
-    const asked = depth;
-
     // Act
-    const found = isHeading(node, asked);
+    const found = isHeading(node, depth);
 
     // Assert
     expect(found).toBe(expected);

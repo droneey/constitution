@@ -209,6 +209,11 @@
         "value": 32
       }
     },
+    "control": {
+      "base": {
+        "$value": "{radius.8}"
+      }
+    },
     "surface": {
       "raised": {
         "$value": "{radius.12}"

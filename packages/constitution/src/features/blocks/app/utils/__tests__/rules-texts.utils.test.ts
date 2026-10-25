@@ -175,11 +175,8 @@ describe('rulesTexts', () => {
       text: `rule "types-point-inward" sits in the chapter "untitled" while it carries out "dependencies-point-inward" of core's chapter "Principles"; a rule of a language or a platform that tightens core sits in the chapter titled like its parent's`,
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(rulesTexts, reported.code, reported.details);
+    const said = textOf(rulesTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

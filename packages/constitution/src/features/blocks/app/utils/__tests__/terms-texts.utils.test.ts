@@ -5,9 +5,9 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
+import { TermKind } from '../../../domain/entities';
 import type { TermsDetails } from '../../../domain/use-cases/queries/check';
 import { TermsCode } from '../../../domain/use-cases/queries/check';
-import { TermKind } from '../../../domain/use-cases/queries/check/shared/terms';
 import { termsTexts } from '../terms-texts.utils';
 
 describe('termsTexts', () => {
@@ -69,11 +69,8 @@ describe('termsTexts', () => {
       text: 'writes `adapters`, which core defines as `adapters/`; a folder keeps one spelling',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(termsTexts, reported.code, reported.details);
+    const said = textOf(termsTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

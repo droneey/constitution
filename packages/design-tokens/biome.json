@@ -10,7 +10,8 @@
     "./.droneey/constitution/presets/typescript/biome/foundation/dependency-cruiser.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc"
+    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/architecture/bun.jsonc"
   ],
   "vcs": {
     "enabled": true,

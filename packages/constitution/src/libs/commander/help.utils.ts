@@ -38,10 +38,12 @@ const sectionOf = (input: {
   ];
 };
 
-const createHelpLayout = (input: {
-  examplesOf: ExamplesOf;
-  theme: Theme;
-}): Pick<Help, 'formatHelp'> => ({
+interface HelpLayoutInput {
+  readonly examplesOf: ExamplesOf;
+  readonly theme: Theme;
+}
+
+const createHelpLayout = (input: HelpLayoutInput): Pick<Help, 'formatHelp'> => ({
   formatHelp: (command: Command, helper: Help): string => {
     const { theme } = input;
     const indent = ' '.repeat(theme.space[Space.Sm]);
@@ -102,5 +104,4 @@ const createHelpLayout = (input: {
   },
 });
 
-export type { ExamplesOf };
 export { createHelpLayout };

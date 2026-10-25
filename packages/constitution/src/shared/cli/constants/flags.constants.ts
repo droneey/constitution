@@ -11,7 +11,7 @@ const BASE_FLAG: FlagDeclaration = {
   flags: '--base <folder>',
 } as const;
 
-const baseFlagsSchema = z.object({
+const baseFlagsSchema = z.strictObject({
   base: z.string().optional(),
 });
 
@@ -38,11 +38,10 @@ const OUTPUT_FLAGS: readonly FlagDeclaration[] = [
   },
 ] as const;
 
-const outputFlagsSchema = z.object({
+const outputFlagsSchema = z.strictObject({
   color: z.boolean().optional(),
   motion: z.boolean().optional(),
   plain: z.boolean().optional(),
 });
 
-export type { FlagDeclaration };
 export { BASE_FLAG, baseFlagsSchema, OUTPUT_FLAGS, outputFlagsSchema };

@@ -22,11 +22,8 @@ describe('isRecord', () => {
       isOne: false,
     },
   ])('should tell whether $raw is a record: $isOne', ({ isOne, raw }) => {
-    // Arrange
-    const value: unknown = raw;
-
     // Act
-    const answer = isRecord(value);
+    const answer = isRecord(raw);
 
     // Assert
     expect(answer).toBe(isOne);
@@ -72,11 +69,8 @@ describe('isOklch', () => {
       isOne: false,
     },
   ])('should tell whether $raw is a colour in OKLCH: $isOne', ({ isOne, raw }) => {
-    // Arrange
-    const value: unknown = raw;
-
     // Act
-    const answer = isOklch(value);
+    const answer = isOklch(raw);
 
     // Assert
     expect(answer).toBe(isOne);

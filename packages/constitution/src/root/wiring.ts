@@ -58,17 +58,17 @@ import {
   remindOfFile,
 } from '#/features/session';
 import { createTmpSessionRepository } from '#/features/session/adapters/session-store';
+import { PROGRAM_NAME } from '#/kernel/constants';
 import type { ProjectFiles, ProjectSource, WorkingTree } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import { createHelpLayout } from '#/libs/commander';
 import type { CommandContext, CommandIo, CommandPlaces } from '#/shared/cli';
-import { OUTPUT_FLAGS, outputFlagsOf } from '#/shared/cli';
+import { ExitCode, OUTPUT_FLAGS, outputFlagsOf } from '#/shared/cli';
 
 import { clockOf } from './configuration';
 import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
-import { ExitCode } from './exit-codes';
 import type { Streams } from './presentation';
 import { createPresentation } from './presentation';
 
@@ -99,12 +99,13 @@ interface ProgramInput {
 }
 
 interface Program {
+  /** the handler of last resort for a failure outside a run: writes it and gives its code */
+  readonly fail: (error: unknown) => ExitCode;
   readonly run: (args: readonly string[]) => Promise<ExitCode>;
   /** ends whatever is still drawn, as an interrupt asks */
   readonly stop: () => Promise<void>;
 }
 
-const NAME = 'constitution';
 const HOOK = 'hook';
 // The time each outside call may take: a run of git, of a program on PATH, of lefthook, and the
 // call that asks GitHub for the latest release.
@@ -112,7 +113,8 @@ const GIT_TIMEOUT_MS = 30_000;
 const PROGRAM_TIMEOUT_MS = 5000;
 const LEFTHOOK_TIMEOUT_MS = 10_000;
 const RELEASE_TIMEOUT_MS = 3000;
-// The folders the workspace's globs list at most in one look.
+// The files a folder of a release or a pack lists at most, and the workspace's folders in one look.
+const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
 
 interface Ports {
@@ -126,7 +128,9 @@ interface Ports {
 
 const portsOf = (input: ProgramInput): Ports => {
   const configurations = createConfigurationParser();
-  const files = createNodeProjectFiles();
+  const files = createNodeProjectFiles({
+    maxFiles: FOLDER_FILES,
+  });
   const workingTree = createGitWorkingTree({
     env: input.environment.commands,
     timeoutMs: GIT_TIMEOUT_MS,
@@ -319,13 +323,19 @@ const registerCommands = (registration: Registration): void => {
     folder: string;
   }): Validation | undefined =>
     checkBlocks({
-      ...asked,
+      ...(asked.base === undefined
+        ? {}
+        : {
+            base: asked.base,
+          }),
       bindingsParser: createYamlBindingsParser(),
       files: ports.files,
+      folder: asked.folder,
       frontMatterParser: createYamlFrontMatterParser(),
       manifestParser: createJsonManifestParser(),
       trees: createGitFileTrees({
         env: programInput.environment.commands,
+        maxFiles: FOLDER_FILES,
         timeoutMs: GIT_TIMEOUT_MS,
       }),
     });
@@ -393,7 +403,7 @@ const registerCommands = (registration: Registration): void => {
 
 const createProgram = (input: ProgramInput): Program => {
   const examples = new Map<unknown, readonly string[]>();
-  const program = new Command(NAME);
+  const program = new Command(PROGRAM_NAME);
   let running: Command | undefined;
   let isFailed = false;
   const presentation = createPresentation({
@@ -445,28 +455,31 @@ const createProgram = (input: ProgramInput): Program => {
     'constitution doctor',
     'constitution presets plan',
   ]);
-  registerCommands({
-    ports: portsOf(input),
-    context: {
-      io: input.io,
-      places: input.places,
-      renderer: presentation.renderer,
-      setFailed: (): void => {
-        isFailed = true;
-      },
-      withExamples: <TCommand>(command: TCommand, given: readonly string[]): TCommand => {
-        examples.set(command, given);
-
-        return command;
-      },
-    },
-    program,
-    programInput: input,
-  });
 
   return {
+    fail: errors.codeOf,
     run: async (args: readonly string[]): Promise<ExitCode> => {
       try {
+        // building the ports parses the configuration: a malformed setting fails the start here
+        registerCommands({
+          ports: portsOf(input),
+          context: {
+            io: input.io,
+            places: input.places,
+            renderer: presentation.renderer,
+            setFailed: (): void => {
+              isFailed = true;
+            },
+            withExamples: <TCommand>(command: TCommand, given: readonly string[]): TCommand => {
+              examples.set(command, given);
+
+              return command;
+            },
+          },
+          program,
+          programInput: input,
+        });
+
         await program.parseAsync(args, {
           from: 'user',
         });
@@ -484,5 +497,4 @@ const createProgram = (input: ProgramInput): Program => {
   };
 };
 
-export type { Program, ProgramInput };
 export { createProgram };

@@ -8,6 +8,10 @@ import type { ProjectPorts } from '../read-declaration';
 import { readDeclaration } from '../read-declaration';
 import { joinPath } from '../shared/project-paths';
 
+interface OpenProjectInput extends ProjectPorts {
+  readonly start: string;
+}
+
 /**
  * The project around the start folder with what it declares resolved, for the commands a person
  * runs in it.
@@ -15,11 +19,7 @@ import { joinPath } from '../shared/project-paths';
  * @throws {@link ProjectError} when no project is found, its release is not installed, or its
  * constitution.yaml or its blocks cannot be read
  */
-const openProject = (
-  input: ProjectPorts & {
-    start: string;
-  },
-): OpenedProject => {
+const openProject = (input: OpenProjectInput): OpenedProject => {
   const place = findProject(input);
 
   if (place === undefined) {

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Term, TermsRead } from '../terms.utils';
-import { otherSpellingOf, TermKind, termMatcher, termsIn } from '../terms.utils';
+import type { Term } from '../../../../../../entities';
+import { TermKind } from '../../../../../../entities';
+import type { TermsRead } from '../terms.utils';
+import { otherSpellingOf, termMatcher, termsIn } from '../terms.utils';
 
 const termOf = (kind: TermKind, term: string): Term => ({
   kind,
@@ -162,8 +164,11 @@ describe('termMatcher', () => {
       text: 'Each src/index.ts re-exports.',
     },
   ])('should tell whether text uses $name', ({ expected, term, text }) => {
+    // Arrange
+    const matcher = termMatcher(term);
+
     // Act
-    const matches = termMatcher(term)(text);
+    const matches = matcher(text);
 
     // Assert
     expect(matches).toBe(expected);

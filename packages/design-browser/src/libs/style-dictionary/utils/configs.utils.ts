@@ -6,6 +6,12 @@ import { usesReferences } from 'style-dictionary/utils';
 
 import { tailwindTheme } from './tailwind.utils';
 
+const TAILWIND_THEME_FORMAT = 'tailwind/theme';
+
+/** writes every duration as none, for those who ask for reduced motion */
+// Stryker disable next-line StringLiteral: the name only joins the transform to the platform that runs it, so any name serves
+const DURATION_NONE_TRANSFORM = 'duration/none';
+
 /** the tokens Tailwind's theme takes besides the roles */
 const tailwindTypes: ReadonlySet<string | undefined> = new Set([
   'duration',
@@ -21,10 +27,10 @@ const tailwindTypes: ReadonlySet<string | undefined> = new Set([
 const configsOf = (resolver: Resolver, resolverUrl: string, buildPath: string): Config[] => {
   const hooks: Hooks = {
     formats: {
-      'tailwind/theme': tailwindTheme,
+      [TAILWIND_THEME_FORMAT]: tailwindTheme,
     },
     transforms: {
-      'duration/none': {
+      [DURATION_NONE_TRANSFORM]: {
         type: 'value',
         transform: (): string => '0s',
       },
@@ -71,7 +77,7 @@ const configsOf = (resolver: Resolver, resolverUrl: string, buildPath: string): 
                 },
                 {
                   destination: 'tailwind.gen.css',
-                  format: 'tailwind/theme',
+                  format: TAILWIND_THEME_FORMAT,
                   filter: (token: TransformedToken) =>
                     usesReferences(token.original.$value) || tailwindTypes.has(token.$type),
                 },
@@ -92,7 +98,7 @@ const configsOf = (resolver: Resolver, resolverUrl: string, buildPath: string): 
               'reduced-motion': {
                 transforms: [
                   transforms.nameKebab,
-                  'duration/none',
+                  DURATION_NONE_TRANSFORM,
                 ],
                 buildPath,
                 files: [

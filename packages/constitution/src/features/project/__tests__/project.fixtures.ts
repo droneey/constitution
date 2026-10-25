@@ -56,11 +56,13 @@ const passportOf = (block: BlockFixture): string =>
 const blockFolderOf = (input: { block: BlockFixture; root: string }): string =>
   `${input.root}/blocks/${input.block.folder ?? Folder.Domain}/${input.block.id}`;
 
+interface BlockFilesFixture {
+  readonly blocks: readonly BlockFixture[];
+  readonly root?: string;
+}
+
 // The files of blocks below a source's folder, the release folder's by default.
-const blockFilesOf = (input: {
-  blocks: readonly BlockFixture[];
-  root?: string;
-}): Readonly<Record<string, string>> =>
+const blockFilesOf = (input: BlockFilesFixture): Readonly<Record<string, string>> =>
   Object.fromEntries(
     input.blocks.flatMap((block) => {
       const folder = blockFolderOf({
@@ -81,7 +83,13 @@ const blockFilesOf = (input: {
     }),
   );
 
-const ruleOf = (input: { level?: string; slug: string; tightens?: string }): string => {
+interface RuleFixture {
+  readonly level?: string;
+  readonly slug: string;
+  readonly tightens?: string;
+}
+
+const ruleOf = (input: RuleFixture): string => {
   const arrow = input.tightens === undefined ? '' : ` → ${input.tightens}`;
   const level = input.level === undefined ? '' : ` · ${input.level}`;
 
@@ -97,7 +105,12 @@ const ruleOf = (input: { level?: string; slug: string; tightens?: string }): str
   ].join('\n');
 };
 
-const manifestOf = (input: { format?: number | string; version?: string } = {}): string =>
+interface ManifestFixture {
+  readonly format?: number | string;
+  readonly version?: string;
+}
+
+const manifestOf = (input: ManifestFixture = {}): string =>
   `${JSON.stringify(
     {
       name: '@droneey/constitution',
@@ -108,12 +121,14 @@ const manifestOf = (input: { format?: number | string; version?: string } = {}):
     2,
   )}\n`;
 
+interface ProjectTreeFixture {
+  readonly blocks?: readonly BlockFixture[];
+  readonly config: string;
+  readonly files?: Readonly<Record<string, string>>;
+}
+
 // A project whose release holds core and the blocks given, and whose constitution.yaml is config.
-const projectTreeOf = (input: {
-  blocks?: readonly BlockFixture[];
-  config: string;
-  files?: Readonly<Record<string, string>>;
-}): FakeTree => ({
+const projectTreeOf = (input: ProjectTreeFixture): FakeTree => ({
   files: {
     [`${PROJECT}/.git/HEAD`]: 'ref: refs/heads/main\n',
     [configPath]: input.config,

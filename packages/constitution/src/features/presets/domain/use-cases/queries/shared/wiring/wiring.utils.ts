@@ -1,16 +1,16 @@
-import { PRESETS_FOLDER, TEMPLATES_FOLDER } from '#/kernel/constants';
+import { TEMPLATES_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles, WorkingTree } from '#/kernel/contracts';
-import type { Resolution } from '#/kernel/entities';
-import { FileRead, FileReadStatus, ProjectUnit } from '#/kernel/entities';
+import type { FileRead, Resolution } from '#/kernel/entities';
+import { FileReadStatus, ProjectUnit } from '#/kernel/entities';
 import { compareText, withoutDotSlash } from '#/kernel/utils';
 import { BlockSource, PackPath, SourceKind, UnitPath } from '#/kernel/value-objects';
 
 import type { SourceFile } from '../../../../entities';
 import { Parts, WiringContext } from '../../../../entities';
+import { presetsPrefix } from './named.utils';
 import type { WiringReads } from './wiring-context.utils';
 
 const HIDDEN_OR_TEMPLATE = /\/\.|\/templates\/project\//;
-const presetsPrefix = `${PRESETS_FOLDER}/`;
 const templatesPrefix = `${TEMPLATES_FOLDER}/`;
 
 interface WiringInput {
@@ -32,15 +32,20 @@ interface PackListing extends Listing {
   readonly pack: PackPath;
 }
 
-const readText = (wiring: WiringInput, path: string): string | undefined =>
-  FileRead.textOf(wiring.files.read(path));
+// A file as it was read, its lines without their carriage returns.
+const readOf = (wiring: WiringInput, path: string): FileRead => {
+  const read = wiring.files.read(path);
 
-// A file's lines without their carriage returns; a file that cannot be read is empty.
-const textOf = (text: string | undefined): string =>
-  (text ?? '')
-    .split('\n')
-    .map((line) => (line.endsWith('\r') ? line.slice(0, -1) : line))
-    .join('\n');
+  return read.status === FileReadStatus.Read
+    ? {
+        ...read,
+        text: read.text
+          .split('\n')
+          .map((line) => (line.endsWith('\r') ? line.slice(0, -1) : line))
+          .join('\n'),
+      }
+    : read;
+};
 
 // The files a folder of the release or of a pack holds under one of its folders, in order.
 const filesUnder = (input: {
@@ -87,32 +92,30 @@ const packsOf = (wiring: WiringInput): readonly PackListing[] =>
 
 const sourceReaderOf =
   (wiring: WiringInput) =>
-  (file: SourceFile): string =>
-    textOf(
-      readText(
-        wiring,
-        `${file.source.kind === SourceKind.Release ? wiring.releaseFolder : `${wiring.project}/${withoutDotSlash(file.source.pack)}`}/${file.path}`,
-      ),
+  (file: SourceFile): FileRead =>
+    readOf(
+      wiring,
+      `${file.source.kind === SourceKind.Release ? wiring.releaseFolder : `${wiring.project}/${withoutDotSlash(file.source.pack)}`}/${file.path}`,
     );
 
-// A file of the project, read once; one that cannot be read is empty.
-const projectReaderOf = (wiring: WiringInput): ((path: string) => string) => {
-  const contents = new Map<string, string>();
+// A file of the project, read once.
+const projectReaderOf = (wiring: WiringInput): ((path: string) => FileRead) => {
+  const contents = new Map<string, FileRead>();
 
-  const readOnce = (path: string): string => {
-    const text = textOf(readText(wiring, `${wiring.project}/${path}`));
+  const readOnce = (path: string): FileRead => {
+    const read = readOf(wiring, `${wiring.project}/${path}`);
 
     // Stryker disable next-line CallExpression: the cache only spares a second read
-    contents.set(path, text);
+    contents.set(path, read);
 
-    return text;
+    return read;
   };
 
-  return (path: string): string => contents.get(path) ?? readOnce(path);
+  return (path: string): FileRead => contents.get(path) ?? readOnce(path);
 };
 
 // The folders of the project that hold a file at each template's path: a tracked file of that
-// name in a folder that is neither hidden nor a template, then a unit's own file.
+// name in a folder that is neither hidden nor a template, then a unit's own file, read or not.
 const foldersOf = (input: {
   configs: readonly string[];
   parts: Parts;
@@ -132,8 +135,8 @@ const foldersOf = (input: {
     wiring.resolution.units
       .filter(
         (unit) =>
-          wiring.files.read(`${wiring.project}/${UnitPath.pathOf(unit.path, path)}`).status ===
-          FileReadStatus.Read,
+          wiring.files.read(`${wiring.project}/${UnitPath.pathOf(unit.path, path)}`).status !==
+          FileReadStatus.Missing,
       )
       .map((unit) => ({
         folder: unit.path,
@@ -154,7 +157,6 @@ const foldersOf = (input: {
 
 const readsOf = (wiring: WiringInput): WiringReads => ({
   content: projectReaderOf(wiring),
-  partText: sourceReaderOf(wiring),
 });
 
 const contextOf = (wiring: WiringInput): WiringContext => {

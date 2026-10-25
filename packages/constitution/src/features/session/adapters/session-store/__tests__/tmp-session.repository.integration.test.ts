@@ -8,6 +8,7 @@ import { Level } from '#/kernel/constants';
 import { BlockId, repositoryUnit, UnitPath } from '#/kernel/value-objects';
 
 import { activeBlockOf, keptSession, mustOf } from '../../../__tests__/session.fixtures';
+import { runSessionRepositorySuite } from '../../../__tests__/session-repository.suite';
 import type { SessionState } from '../../../domain/entities';
 import { CheckState, SessionMark } from '../../../domain/entities';
 import { AgentId } from '../../../domain/value-objects';
@@ -359,19 +360,6 @@ describe('createTmpSessionRepository', () => {
     expect(state).toBeUndefined();
   });
 
-  it('should give no state when the session saved none', () => {
-    // Arrange
-    const sessions = createTmpSessionRepository({
-      folder,
-    });
-
-    // Act
-    const state = sessions.state(keptSession);
-
-    // Assert
-    expect(state).toBe(undefined);
-  });
-
   it.each<{
     asker: {
       agent: AgentId | undefined;
@@ -610,22 +598,6 @@ describe('createTmpSessionRepository', () => {
     expect(mark).toBe(expected);
   });
 
-  it('should give no mark when the session recorded none', () => {
-    // Arrange
-    const sessions = createTmpSessionRepository({
-      folder,
-    });
-
-    // Act
-    const mark = sessions.mark({
-      mark: SessionMark.Reviewed,
-      session: keptSession,
-    });
-
-    // Assert
-    expect(mark).toBe(undefined);
-  });
-
   it.each([
     {
       condition: 'a state is saved',
@@ -678,4 +650,12 @@ describe('createTmpSessionRepository', () => {
       ]);
     },
   );
+});
+
+runSessionRepositorySuite({
+  name: 'createTmpSessionRepository',
+  repositoryOf: () =>
+    createTmpSessionRepository({
+      folder,
+    }),
 });

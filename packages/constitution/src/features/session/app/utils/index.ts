@@ -1,6 +1,4 @@
-export type { Digest } from './digest.utils';
 export { digestOf } from './digest.utils';
-export type { HookEvent } from './hook-event.utils';
 export {
   HOOK_EVENT_TEXT,
   hookEventNameOf,

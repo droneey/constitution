@@ -49,11 +49,8 @@ describe('decisionsTexts', () => {
       text: 'entry ADR-0123 is dated 2026-02-30, which is not a calendar date',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(decisionsTexts, reported.code, reported.details);
+    const said = textOf(decisionsTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

@@ -1,13 +1,17 @@
 /** the same folders in blocks/ and on the site */
-// Stryker disable StringLiteral: the site's loader and build read the layers, which no spec loads; the specs see contexts/ through either of its layers
+// The site's loader and build read the layers, which no spec loads; the specs see contexts/ through either of its layers.
 const BLOCK_LAYERS: readonly string[] = [
+  // Stryker disable next-line StringLiteral: read only by the site's loader and build
   'core',
+  // Stryker disable next-line StringLiteral: read only by the site's loader and build
   'domains',
+  // Stryker disable next-line StringLiteral: read only by the site's loader and build
   'contexts/platforms',
+  // Stryker disable next-line StringLiteral: read only by the site's loader and build
   'contexts/languages',
+  // Stryker disable next-line StringLiteral: read only by the site's loader and build
   'implementations',
 ] as const;
-// Stryker restore StringLiteral
 
 const BLOCKS_FOLDER = 'packages/constitution/blocks/';
 

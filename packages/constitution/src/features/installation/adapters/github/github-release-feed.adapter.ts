@@ -1,5 +1,6 @@
-import { isSyntaxError, recognisedFailure } from '#/kernel/utils';
+import { recognisedFailure, syntaxErrorOf } from '#/kernel/utils';
 import { Version } from '#/kernel/value-objects';
+import { isNestedWithin, readTextWithin } from '#/libs/bounded-input';
 
 import type { ReleaseFeed } from '../../domain/contracts';
 import type { LatestRelease } from '../../domain/entities';
@@ -10,6 +11,10 @@ import { releasesModel } from './models';
 // newest of the list is read; one is all the list is asked for.
 const RELEASES = 'https://api.github.com/repos/droneey/constitution/releases?per_page=1';
 const TAG_PREFIX = /^v/;
+// One release's record is a few kilobytes and a few levels deep; an answer past these is refused
+// unread.
+const MAX_ANSWER_BYTES = 1_048_576;
+const MAX_ANSWER_DEPTH = 16;
 
 const unreachable = (cause: unknown): LatestRelease => ({
   cause,
@@ -23,10 +28,12 @@ const isUnreachable = (error: unknown): boolean =>
   error instanceof DOMException ||
   (error instanceof Error && 'code' in error);
 
-const createGitHubReleaseFeed = (input: {
-  fetch: (url: string, init: RequestInit) => Promise<Response>;
-  timeoutMs: number;
-}): ReleaseFeed => {
+interface GitHubReleaseFeedInput {
+  readonly fetch: (url: string, init: RequestInit) => Promise<Response>;
+  readonly timeoutMs: number;
+}
+
+const createGitHubReleaseFeed = (input: GitHubReleaseFeedInput): ReleaseFeed => {
   const answerOf = async (): Promise<Response | LatestRelease> => {
     try {
       return await input.fetch(RELEASES, {
@@ -58,15 +65,28 @@ const createGitHubReleaseFeed = (input: {
         return unreachable(answer);
       }
 
-      const body: unknown = await answer.json().catch((error: unknown) =>
-        recognisedFailure({
-          error,
-          isRecognised: isSyntaxError,
-        }),
-      );
+      const text = await readTextWithin({
+        maxBytes: MAX_ANSWER_BYTES,
+        // an answer with no body is an empty one
+        stream: answer.body ?? [],
+      });
 
-      if (body instanceof SyntaxError) {
-        return unreachable(body);
+      if (
+        text === undefined ||
+        !isNestedWithin({
+          maxDepth: MAX_ANSWER_DEPTH,
+          text,
+        })
+      ) {
+        return unreachable(answer);
+      }
+
+      let body: unknown;
+
+      try {
+        body = JSON.parse(text);
+      } catch (error) {
+        return unreachable(syntaxErrorOf(error));
       }
 
       const read = releasesModel.safeParse(body);

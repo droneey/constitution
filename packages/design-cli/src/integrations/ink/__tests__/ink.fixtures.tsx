@@ -71,14 +71,28 @@ const createTerminalOutput = (): TerminalOutput => {
   });
 };
 
-const createTerminalInput = (): PassThrough =>
-  Object.assign(new PassThrough(), {
+interface TerminalInput extends PassThrough {
+  /** whether the keys reach the program one by one, as Ink sets it while it reads them */
+  isRaw: boolean;
+}
+
+const createTerminalInput = (): TerminalInput => {
+  const input = Object.assign(new PassThrough(), {
+    isRaw: false,
     // biome-ignore lint/style/useNamingConvention: Node.js names the property
     isTTY: true,
     ref: (): void => undefined,
-    setRawMode: (): void => undefined,
     unref: (): void => undefined,
   });
+
+  return Object.assign(input, {
+    setRawMode: (isRaw: boolean): TerminalInput => {
+      input.isRaw = isRaw;
+
+      return input;
+    },
+  });
+};
 
 const screenReaderOutputOf = (tree: ReactElement): string => {
   const output = createTerminalOutput();

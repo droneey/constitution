@@ -1,15 +1,18 @@
 import type { Axis } from '../constants';
 import { AXES } from '../constants';
 import { InvalidValueError, ValueFailure } from '../errors';
+import type { Brand } from '../types';
 import { fieldsOf, isPathSegment } from '../utils';
 
-/** A part of a preset: presets/<scope>/<tool>/<axis>/<name>.<extension>. */
-interface PartAddress {
+interface PartFields {
   readonly axis: Axis;
   readonly name: string;
   readonly scope: string;
   readonly tool: string;
 }
+
+/** A part of a preset: presets/<scope>/<tool>/<axis>/<name>.<extension>. */
+type PartAddress = Brand<PartFields, 'PartAddress'>;
 
 /** Whether a value is an address: an axis, and a scope, a tool and a name that are each one path segment. */
 const is = (candidate: unknown): candidate is PartAddress => {
@@ -24,27 +27,28 @@ const is = (candidate: unknown): candidate is PartAddress => {
 };
 
 /** @throws {@link InvalidValueError} when the scope, the tool or the name is empty or holds a "/" */
-const create = (input: PartAddress): PartAddress => {
-  const text = `${input.scope}/${input.tool}/${input.axis}/${input.name}`;
-
-  if (!is(input)) {
-    throw new InvalidValueError({
-      code: ValueFailure.PartAddress,
-      details: {
-        text,
-      },
-    });
-  }
-
-  return {
+const create = (input: PartFields): PartAddress => {
+  const address = {
     axis: input.axis,
     name: input.name,
     scope: input.scope,
     tool: input.tool,
   };
+
+  if (!is(address)) {
+    throw new InvalidValueError({
+      code: ValueFailure.PartAddress,
+      details: {
+        text: `${input.scope}/${input.tool}/${input.axis}/${input.name}`,
+      },
+    });
+  }
+
+  return address;
 };
 
-const equals = (left: PartAddress, right: PartAddress): boolean =>
+// A preset's part file is compared by the fields of its address alone.
+const equals = (left: PartFields, right: PartFields): boolean =>
   left.axis === right.axis &&
   left.name === right.name &&
   left.scope === right.scope &&
@@ -61,4 +65,5 @@ const PartAddress = {
   shortOf,
 } as const;
 
+export type { PartFields };
 export { PartAddress };

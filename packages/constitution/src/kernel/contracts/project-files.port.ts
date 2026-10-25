@@ -10,7 +10,7 @@ interface ProjectFiles {
   readonly isFolder: (path: string) => boolean;
   /**
    * the regular files below a folder, from it, links to files left out; undefined when it is no
-   * folder
+   * folder, or when it holds more files than the implementation lists
    */
   readonly listFiles: (folder: string) => readonly string[] | undefined;
   readonly read: (path: string) => FileRead;

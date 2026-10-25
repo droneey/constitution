@@ -1,4 +1,5 @@
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
+import { AXES, Axis } from '#/kernel/constants';
 
 import { createJsonManifestParser } from '../adapters/json';
 import { createYamlBindingsParser, createYamlFrontMatterParser } from '../adapters/yaml';
@@ -9,7 +10,7 @@ import type {
   ManifestParser,
 } from '../domain/contracts';
 import { BlockGraph } from '../domain/entities';
-import type { CheckInput, checkBlocks } from '../domain/use-cases/queries/check';
+import type { CheckBlocksInput, CheckInput } from '../domain/use-cases/queries/check';
 import type {
   Base,
   ConstitutionLoaded,
@@ -67,15 +68,9 @@ const passportFile = (block: BlockFixture): string =>
     block.body,
   ].join('\n');
 
-const AXIS_FOLDERS: readonly string[] = [
-  'foundation',
-  'architecture',
-  'workflow',
-] as const;
-
 /** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
-  AXIS_FOLDERS.some((axis) => path.startsWith(`${axis}/`)) ? path : `foundation/${path}`;
+  AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
 
 const blockFiles = (input: BlockFilesFixture): Files => {
   const { dir, files = {}, ...card } = input;
@@ -129,12 +124,16 @@ const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = fil
   tree: createFakeFileTree(files),
 });
 
+interface PackSourceInput {
+  readonly base: Readonly<Files>;
+  readonly folder?: string;
+  readonly pack: Readonly<Files>;
+}
+
 // A pack beside the base it extends, installed where a project keeps it unless the case says otherwise.
-const packSourceOf = (input: {
-  base: Readonly<Files>;
-  folder?: string;
-  pack: Readonly<Files>;
-}): Source & {
+const packSourceOf = (
+  input: PackSourceInput,
+): Source & {
   base: Base;
 } => ({
   ...sourceOf(input.pack),
@@ -149,10 +148,12 @@ const packSourceOf = (input: {
 const FOLDER = '/work/constitution';
 const BASE = '/work/base';
 
-const checkSourceOf = (input: {
-  base?: Readonly<Files>;
-  files: Readonly<Files>;
-}): Parameters<typeof checkBlocks>[0] => ({
+interface CheckSourceInput {
+  readonly base?: Readonly<Files>;
+  readonly files: Readonly<Files>;
+}
+
+const checkSourceOf = (input: CheckSourceInput): CheckBlocksInput => ({
   ...sourceOf(input.files),
   ...(input.base === undefined
     ? {}
@@ -198,7 +199,12 @@ const checkInputOf = (
   };
 };
 
-const textOf = (input: { files: Readonly<Files>; path: string }): string => {
+interface FixtureFileInput {
+  readonly files: Readonly<Files>;
+  readonly path: string;
+}
+
+const textOf = (input: FixtureFileInput): string => {
   const text: string | undefined = input.files[input.path];
 
   if (text === undefined) {
@@ -208,7 +214,7 @@ const textOf = (input: { files: Readonly<Files>; path: string }): string => {
   return text;
 };
 
-const without = (input: { files: Readonly<Files>; path: string }): Files =>
+const without = (input: FixtureFileInput): Files =>
   Object.fromEntries(Object.entries(input.files).filter(([candidate]) => candidate !== input.path));
 
 export type { BlockFixture, Files, RuleFixture };

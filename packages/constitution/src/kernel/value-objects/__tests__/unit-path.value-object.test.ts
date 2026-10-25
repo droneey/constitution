@@ -41,11 +41,8 @@ describe('UnitPath', () => {
       text: 'apps/../web',
     },
   ])('should tell a unit path when $condition', ({ isUnitPath, text }) => {
-    // Arrange
-    const candidate = text;
-
     // Act
-    const isPath = UnitPath.is(candidate);
+    const isPath = UnitPath.is(text);
 
     // Assert
     expect(isPath).toBe(isUnitPath);
@@ -61,11 +58,8 @@ describe('UnitPath', () => {
       given: 42,
     },
   ])('should tell no unit path when $condition', ({ given }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const isValue = UnitPath.is(candidate);
+    const isValue = UnitPath.is(given);
 
     // Assert
     expect(isValue).toBe(false);

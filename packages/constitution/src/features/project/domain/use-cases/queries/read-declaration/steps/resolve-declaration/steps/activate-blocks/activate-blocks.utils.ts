@@ -1,4 +1,10 @@
-import { BLOCKS_FOLDER, LAYER_FOLDER, Level } from '#/kernel/constants';
+import {
+  BLOCKS_FOLDER,
+  LAYER_FOLDER,
+  Level,
+  MARKDOWN_EXTENSION,
+  SEAM_FOLDER,
+} from '#/kernel/constants';
 import { ActiveBlock, MustRule } from '#/kernel/entities';
 import { BlockId, coreBlockId, SourceKind } from '#/kernel/value-objects';
 
@@ -9,15 +15,14 @@ import type {
 } from '../../../../../../../entities';
 import { ProjectModel, ResolvedUnit } from '../../../../../../../entities';
 
-const MARKDOWN = '.md';
-const SEAM_FOLDER = 'with';
+interface MustRulesInput {
+  readonly applied: AppliedOverrides;
+  readonly rules: readonly CatalogueRule[];
+  readonly units: readonly ResolvedUnit[];
+}
 
 // The MUST rules of the active blocks, core's aside, each with the overrides that lower it.
-const mustRulesOf = (input: {
-  applied: AppliedOverrides;
-  rules: readonly CatalogueRule[];
-  units: readonly ResolvedUnit[];
-}): readonly MustRule[] =>
+const mustRulesOf = (input: MustRulesInput): readonly MustRule[] =>
   input.rules.flatMap((rule) => {
     const isActive = input.units.some((unit) => ResolvedUnit.isActiveRule(unit, rule));
 
@@ -86,23 +91,25 @@ const filesOf = (input: { block: CatalogueBlock; unit: ResolvedUnit }): readonly
   const folder = `${source}${BLOCKS_FOLDER}/${LAYER_FOLDER[block.layer]}/${block.id}/`;
 
   return [
-    `${folder}${block.id}${MARKDOWN}`,
+    `${folder}${block.id}${MARKDOWN_EXTENSION}`,
     ...block.chapters
       .filter((chapter) => ResolvedUnit.isAxisOn(unit, chapter.axis))
-      .map((chapter) => `${folder}${chapter.axis}/${chapter.name}${MARKDOWN}`),
+      .map((chapter) => `${folder}${chapter.axis}/${chapter.name}${MARKDOWN_EXTENSION}`),
     ...block.seams
       .filter(
         (seam) => ResolvedUnit.isAxisOn(unit, seam.axis) && ResolvedUnit.isActive(unit, seam.other),
       )
-      .map((seam) => `${folder}${seam.axis}/${SEAM_FOLDER}/${seam.other}${MARKDOWN}`),
+      .map((seam) => `${folder}${seam.axis}/${SEAM_FOLDER}/${seam.other}${MARKDOWN_EXTENSION}`),
   ];
 };
 
+interface ActiveBlocksInput {
+  readonly model: ProjectModel;
+  readonly units: readonly ResolvedUnit[];
+}
+
 // A block also governs what every active block that needs it, directly or through others, governs.
-const activeBlocksOf = (input: {
-  model: ProjectModel;
-  units: readonly ResolvedUnit[];
-}): readonly ActiveBlock[] =>
+const activeBlocksOf = (input: ActiveBlocksInput): readonly ActiveBlock[] =>
   input.units.flatMap((unit) => {
     const blocks = input.model.blocks.filter(
       (block) => !BlockId.equals(block.id, coreBlockId) && ResolvedUnit.isActive(unit, block.id),

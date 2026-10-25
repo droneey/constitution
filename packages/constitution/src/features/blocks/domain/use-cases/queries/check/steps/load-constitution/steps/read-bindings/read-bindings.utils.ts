@@ -135,10 +135,12 @@ const loadFile = (input: {
   };
 };
 
-const readBindings = (input: {
-  parser: BindingsParser;
-  presets: readonly PresetFile[];
-}): BindingsLoaded => {
+interface ReadBindingsInput {
+  readonly parser: BindingsParser;
+  readonly presets: readonly PresetFile[];
+}
+
+const readBindings = (input: ReadBindingsInput): BindingsLoaded => {
   const loaded = input.presets.flatMap((preset) => {
     const path = PresetPartPath.parse(preset.path);
 

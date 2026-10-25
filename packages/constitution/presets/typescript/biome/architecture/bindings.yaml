@@ -4,6 +4,9 @@ core:
     - noRestrictedGlobals
   surface-only-re-exports:
     - noReExportAll
+bun:
+  effects-held-only-by-the-edge:
+    - noRestrictedGlobals
 ui:
   component-reaches-no-io-global:
     - noRestrictedGlobals

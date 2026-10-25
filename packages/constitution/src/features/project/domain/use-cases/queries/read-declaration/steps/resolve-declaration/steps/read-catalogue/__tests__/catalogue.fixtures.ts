@@ -12,13 +12,15 @@ import { readCatalogue } from '../read-catalogue.utils';
 const RELEASE = '/release';
 const PROJECT = '/project';
 
+interface SourceFixture {
+  readonly files?: Readonly<Record<string, string>>;
+  readonly source?: string;
+  readonly unreadable?: readonly string[];
+  readonly where?: string;
+}
+
 // A source whose files are given by their path from its folder, the unreadable ones without text.
-const sourceOf = (input: {
-  files?: Readonly<Record<string, string>>;
-  source?: string;
-  unreadable?: readonly string[];
-  where?: string;
-}): CatalogueSource => ({
+const sourceOf = (input: SourceFixture): CatalogueSource => ({
   files: [
     ...Object.entries(input.files ?? {}).map(([path, text]) => ({
       path,
@@ -34,12 +36,14 @@ const sourceOf = (input: {
   where: input.where ?? RELEASE,
 });
 
+interface PackFixture {
+  readonly files: Readonly<Record<string, string>>;
+  readonly source: string;
+  readonly unreadable?: readonly string[];
+}
+
 // A pack listed as source, under the project's folder.
-const packOf = (input: {
-  files: Readonly<Record<string, string>>;
-  source: string;
-  unreadable?: readonly string[];
-}): CatalogueSource =>
+const packOf = (input: PackFixture): CatalogueSource =>
   sourceOf({
     ...input,
     where: `${PROJECT}/${input.source}`,
@@ -55,21 +59,26 @@ const axisOf = (place: string): Axis => {
   return axis;
 };
 
+interface CatalogueBlockFixture {
+  readonly chapters?: readonly string[];
+  readonly extends?: string;
+  readonly governs?: readonly string[];
+  readonly id: string;
+  readonly isAbstract?: boolean;
+  readonly layer?: Layer;
+  readonly requires?: readonly string[];
+  readonly seams?: readonly string[];
+  readonly source?: string;
+  // undefined given for a block whose card has no summary
+  readonly summary?: string | undefined;
+}
+
 // A block as the catalogue reads it, the release's domain unless the case says; a chapter as
 // "<axis>/<name>.md", a seam as "<axis>/<other block>".
-const catalogueBlockOf = (block: {
-  chapters?: readonly string[];
-  extends?: string;
-  governs?: readonly string[];
-  id: string;
-  isAbstract?: boolean;
-  layer?: Layer;
-  requires?: readonly string[];
-  seams?: readonly string[];
-  source?: string;
-  summary?: string;
-}): CatalogueBlock =>
-  CatalogueBlock.create({
+const catalogueBlockOf = (block: CatalogueBlockFixture): CatalogueBlock => {
+  const summary = 'summary' in block ? block.summary : `The ${block.id} block.`;
+
+  return CatalogueBlock.create({
     chapters: (block.chapters ?? []).map((chapter) => ({
       axis: axisOf(chapter),
       name: chapter.slice(chapter.indexOf('/') + 1, -'.md'.length),
@@ -91,19 +100,26 @@ const catalogueBlockOf = (block: {
     source: BlockSource.create(
       block.source === undefined ? undefined : PackPath.create(block.source),
     ),
-    summary: block.summary ?? `The ${block.id} block.`,
+    ...(summary === undefined
+      ? {}
+      : {
+          summary,
+        }),
   });
+};
+
+interface CatalogueRuleFixture {
+  readonly axis?: Axis;
+  readonly block: string;
+  readonly isLevelStated?: boolean;
+  readonly level?: Level;
+  readonly seam?: string;
+  readonly slug: string;
+  readonly tightens?: string;
+}
 
 // A rule as the catalogue reads it: a MUST it states on foundation unless the case says.
-const catalogueRuleOf = (rule: {
-  axis?: Axis;
-  block: string;
-  isLevelStated?: boolean;
-  level?: Level;
-  seam?: string;
-  slug: string;
-  tightens?: string;
-}): CatalogueRule =>
+const catalogueRuleOf = (rule: CatalogueRuleFixture): CatalogueRule =>
   CatalogueRule.create({
     axis: rule.axis ?? Axis.Foundation,
     block: BlockId.create(rule.block),
@@ -133,11 +149,13 @@ const ancestorsOf = (
     ]),
   );
 
-const catalogueAnswerOf = (answer: {
-  block: string;
-  met?: Met;
-  requirement: string;
-}): CatalogueAnswer =>
+interface CatalogueAnswerFixture {
+  readonly block: string;
+  readonly met?: Met;
+  readonly requirement: string;
+}
+
+const catalogueAnswerOf = (answer: CatalogueAnswerFixture): CatalogueAnswer =>
   CatalogueAnswer.create({
     block: BlockId.create(answer.block),
     ...(answer.met === undefined

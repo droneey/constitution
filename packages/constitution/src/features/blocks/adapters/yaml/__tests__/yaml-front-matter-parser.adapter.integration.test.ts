@@ -35,7 +35,6 @@ describe('createYamlFrontMatterParser', () => {
     expect(read).toStrictEqual({
       fields: {
         abstract: false,
-        extends: undefined,
         governs: [
           '**/ui/**',
         ],
@@ -46,13 +45,40 @@ describe('createYamlFrontMatterParser', () => {
         requires: [],
         summary: 'Screens.',
       },
-      issues: [],
       keys: keyLines,
       status: ReadStatus.Mapping,
     });
   });
 
-  it('should return every wire issue at its dotted field and no fields when values have the wrong type', () => {
+  it('should keep the base when the block extends one', () => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
+    const yaml = fieldTable.replace('extends: null', 'extends: screens');
+
+    // Act
+    const read = parser.parse(yaml);
+
+    // Assert
+    expect(read).toStrictEqual({
+      fields: {
+        abstract: false,
+        extends: 'screens',
+        governs: [
+          '**/ui/**',
+        ],
+        id: 'ui',
+        languages: [
+          'css',
+        ],
+        requires: [],
+        summary: 'Screens.',
+      },
+      keys: keyLines,
+      status: ReadStatus.Mapping,
+    });
+  });
+
+  it('should return every wire issue at its dotted field when values have the wrong type', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
     const yaml = fieldTable
@@ -64,7 +90,6 @@ describe('createYamlFrontMatterParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      fields: undefined,
       issues: [
         {
           field: 'abstract',
@@ -76,7 +101,7 @@ describe('createYamlFrontMatterParser', () => {
         },
       ],
       keys: keyLines,
-      status: ReadStatus.Mapping,
+      status: ReadStatus.Mismatched,
     });
   });
 
@@ -149,33 +174,23 @@ describe('createYamlFrontMatterParser', () => {
     },
     {
       expected: {
-        description: undefined,
         name: 'amend',
       },
       name: 'the description is blank',
       yaml: 'name: amend\ndescription: "  "',
     },
     {
-      expected: {
-        description: undefined,
-        name: undefined,
-      },
+      expected: {},
       name: 'the fields are not text',
       yaml: 'name: [ratify]\ndescription: 7',
     },
     {
-      expected: {
-        description: undefined,
-        name: undefined,
-      },
+      expected: {},
       name: 'the front matter is a list',
       yaml: '- name\n- description',
     },
     {
-      expected: {
-        description: undefined,
-        name: undefined,
-      },
+      expected: {},
       name: 'the front matter is empty',
       yaml: '',
     },
@@ -190,6 +205,20 @@ describe('createYamlFrontMatterParser', () => {
     expect(read).toStrictEqual({
       ...expected,
       status: ReadStatus.Parsed,
+    });
+  });
+
+  it("should report the reason when a skill's front matter names an alias without its anchor", () => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
+
+    // Act
+    const read = parser.skill('name: ratify\ndescription: *bold');
+
+    // Assert
+    expect(read).toStrictEqual({
+      reason: 'an unquoted value starts with "*", which YAML reads as an alias; quote it',
+      status: ReadStatus.NotYaml,
     });
   });
 

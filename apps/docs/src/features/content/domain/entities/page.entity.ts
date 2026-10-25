@@ -1,4 +1,4 @@
-import { AXIS_FOLDERS } from './block.entity';
+import { Axis } from './block.entity';
 
 /** the segments of a page's address under the site's base */
 type PageSlugs = readonly string[];
@@ -27,7 +27,10 @@ const summaryLineOf = (markdown: string): string | undefined =>
 const isPassportPath = (path: string): boolean => {
   const [name, folder] = path.split('/').toReversed();
 
-  return !AXIS_FOLDERS.some((axis) => axis === folder) && name === `${folder}${MARKDOWN_EXTENSION}`;
+  return (
+    !Object.values(Axis).some((axis) => axis === folder) &&
+    name === `${folder}${MARKDOWN_EXTENSION}`
+  );
 };
 
 const pageSlugsOf = (path: string): PageSlugs => {

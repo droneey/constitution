@@ -4,7 +4,16 @@ import { visit } from 'unist-util-visit';
 
 import { nodesOf, span, text, withoutPositions } from './mdast.fixtures';
 
-const markOf = (input: { letter: string; level: string; mark: string }): PhrasingContent =>
+interface LevelInput {
+  readonly level: string;
+  readonly mark: string;
+}
+
+interface MarkInput extends LevelInput {
+  readonly letter: string;
+}
+
+const markOf = (input: MarkInput): PhrasingContent =>
   span(
     {
       'data-rule-mark': input.mark,
@@ -31,7 +40,7 @@ const markOf = (input: { letter: string; level: string; mark: string }): Phrasin
     ],
   );
 
-const levelOf = (input: { level: string; mark: string }): PhrasingContent =>
+const levelOf = (input: LevelInput): PhrasingContent =>
   span(
     {
       'data-rule-level': input.mark,
@@ -127,7 +136,13 @@ const boxOf = (
   type: 'box',
 });
 
-const columnOf = (input: { code: string; title: string; tone: string }): RootContent =>
+interface ColumnInput {
+  readonly code: string;
+  readonly title: string;
+  readonly tone: string;
+}
+
+const columnOf = (input: ColumnInput): RootContent =>
   boxOf(
     {
       'data-rule-example-column': input.tone,

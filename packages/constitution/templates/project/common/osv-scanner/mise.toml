@@ -4,4 +4,4 @@ osv-scanner = "2.7.0"
 
 # osv-scanner: the lockfiles, their licences held to the parts' allowlist
 [tasks."audit:check"]
-run = 'osv-scanner scan source --licenses="$(cat <parts> | paste -sd, -)" .'
+run = 'licenses="$(cat <parts> | paste -sd, -)" && osv-scanner scan source --licenses="$licenses" .'

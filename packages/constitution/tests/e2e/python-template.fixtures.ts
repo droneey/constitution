@@ -4,10 +4,12 @@ import { delimiter, join } from 'node:path';
 
 import { z } from 'zod';
 
+import { createBatch } from './batch.fixtures';
 import type { BuiltTool, Files } from './python-project.fixtures';
 import {
   buildTools,
   inPythonProjectAsync,
+  python,
   repository,
   writeFiles,
 } from './python-project.fixtures';
@@ -33,8 +35,6 @@ const gitIdentity = [
   '-c',
   'user.email=constitution@example.com',
 ];
-
-const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
 // The blocks of the shop's scope, Python's, in the order the hook reads them:
 // the language, then its tools and libraries by id.
@@ -342,24 +342,39 @@ const runInTemplate = (input: {
     tools: input.tools,
   });
 
-// The command of each area a project's check runs over the template's
-// configuration; the template prescribes none, so the specs name their own.
-const TASKS: Readonly<Record<string, string>> = {
-  'format:check': 'ruff format --check',
-  'lint:check': 'ruff check',
-  'type:check':
-    'ty check --config-file .droneey/constitution/presets/python/ty/foundation/self.toml',
-  'code:check': 'python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests',
-  'complexity:check': 'complexipy src tests',
-  'architecture:check': 'lint-imports --no-logo',
-  'dependencies:check': 'deptry src',
-  'unused:check': 'vulture',
-  'test:check': 'pytest --cov',
-  'mutation:check': 'python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz',
-} as const;
+const poeTasksSchema = z.object({
+  tool: z.object({
+    poe: z.object({
+      tasks: z.record(z.string(), z.unknown()),
+    }),
+  }),
+});
+
+// The command of each task the assembled [tool.poe.tasks] declares; `check`, a sequence, is not one.
+const tasks: ReadonlyMap<string, string> = new Map(
+  Object.entries(poeTasksSchema.parse(Bun.TOML.parse(pyproject)).tool.poe.tasks).flatMap(
+    ([task, command]) =>
+      typeof command === 'string'
+        ? [
+            [
+              task,
+              command,
+            ] as const,
+          ]
+        : [],
+  ),
+);
+
+// The tasks a project's check runs: its gates, never a fix or a run over the whole program.
+const checkCommand = [
+  ...tasks,
+]
+  .filter(([task]) => task === 'test' || task.endsWith(':check'))
+  .map(([, command]) => command)
+  .join(' && ');
 
 const commandOf = (task: string): string => {
-  const command = task === 'check' ? Object.values(TASKS).join(' && ') : TASKS[task];
+  const command = task === 'check' ? checkCommand : tasks.get(task);
 
   if (command === undefined) {
     throw new Error(`no command for ${task}`);
@@ -446,42 +461,17 @@ interface TaskBatch {
   readonly taskCases: <TRow extends TaskRun>(rows: readonly TRow[]) => readonly TRow[];
 }
 
-// The tables of a spec file register their runs while the file is collected, and they all run
-// before the first case: a spec file makes its own batch, so no state outlives it.
 const createTaskBatch = (): TaskBatch => {
-  const registered = new Map<string, TaskRun>();
-  let ran: ReadonlyMap<string, Run> = new Map();
-
-  const taskCase = <TRow extends TaskRun>(row: TRow): TRow => {
-    registered.set(keyOf(row), row);
-
-    return row;
-  };
-
-  const taskCases = <TRow extends TaskRun>(rows: readonly TRow[]): readonly TRow[] =>
-    rows.map(taskCase);
-
-  const runOf = (input: TaskRun): Run => {
-    const run = ran.get(keyOf(input));
-
-    if (run === undefined) {
-      throw new Error(`No table registered the run of ${input.task}`);
-    }
-
-    return run;
-  };
-
-  const runRegistered = async (): Promise<void> => {
-    ran = await runAll([
-      ...registered,
-    ]);
-  };
+  const { outcomeOf, register, runRegistered } = createBatch({
+    keyOf,
+    runAll,
+  });
 
   return {
-    runOf,
+    runOf: outcomeOf,
     runRegistered,
-    taskCase,
-    taskCases,
+    taskCase: register,
+    taskCases: (rows) => rows.map(register),
   };
 };
 
@@ -499,9 +489,22 @@ const partTable = (tool: string): unknown =>
     tool
   ];
 
+interface FoundInInput {
+  readonly finding: readonly string[];
+  readonly output: string;
+}
+
 // Whether one line of a tool's output holds every text of a finding: the package,
 // the place and the home a finding names, say, rather than its sentence.
-const isFoundIn = (input: { finding: readonly string[]; output: string }): boolean =>
+const isFoundIn = (input: FoundInInput): boolean =>
   input.output.split('\n').some((line) => input.finding.every((text) => line.includes(text)));
 
-export { createTaskBatch, isFoundIn, partTable, python, templateTable };
+// mutmut-check opens each line of its report with its code: `mutation: <code>: `.
+const MUTATION_CODE = /^mutation: (?<code>[a-z-]+): /gm;
+
+const mutationCodesOf = (output: string): readonly string[] =>
+  [
+    ...output.matchAll(MUTATION_CODE),
+  ].map((match) => match.groups?.['code'] ?? '');
+
+export { createTaskBatch, isFoundIn, mutationCodesOf, partTable, templateTable };

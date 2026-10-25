@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 import { createFileRoute, notFound, useLocation } from '@tanstack/react-router';
 
-import { DocsPageScreen } from '#/composition/docs';
+import { DocsErrorScreen, DocsPageScreen } from '#/composition/docs';
 import { useFumadocsLoader } from '#/libs/ui';
 import { APP_NAME } from '#/shared/constants';
 
@@ -68,6 +68,7 @@ const headOf = ({
 // Stryker disable next-line StringLiteral: the router takes the route's address from its file; the string only types it
 export const Route = createFileRoute('/docs/$')({
   component: DocsRoute,
+  errorComponent: DocsErrorScreen,
   loader: loadDocsPage,
   head: headOf,
 });
